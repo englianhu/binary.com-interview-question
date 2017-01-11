@@ -43,7 +43,7 @@ ui <- shinyUI(fluidPage(
       titlePanel(
         tags$a(href='https://www.binary.com/ja/home.html', target='_blank', 
                tags$img(height = '20px', alt='hot', #align='right', 
-                        src='binary-logo.jpg'))), 
+                        src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/binary-logo-resize.jpg'))), 
       navbarPage('Shiny Apps', 
                  tabPanel('Binary Questionaire', 
                           # Sidebar with a slider input for number of bins 
@@ -69,7 +69,7 @@ ui <- shinyUI(fluidPage(
                                                     h4('Betting Strategy and Model Validation'), 
                                                     p('You are feel free to read the source of article through', 
                                                       HTML("<a href='https://en.wikipedia.org/wiki/Kelly_criterion'>Kelly Criterion</a>"), '. Below is the research paper wrote by John Kelly.'), 
-                                                    HTML('<iframe src=\"reference/quant-analyst-skills-test.pdf" width=\"900\" height=\"600\"></iframe>'),
+                                                    HTML('<iframe src=\"https://render.githubusercontent.com/view/pdf?commit=700f2682cccc0fc4e41924c4a555a342adb2af79&enc_url=68747470733a2f2f7261772e67697468756275736572636f6e74656e742e636f6d2f656e676c69616e68752f62696e6172792e636f6d2d696e746572766965772d7175657374696f6e2f373030663236383263636363306663346534313932346334613535356133343261646232616637392f7265666572656e63652f7175616e742d616e616c7973742d736b696c6c732d746573742e706466&nwo=englianhu%2Fbinary.com-interview-question&path=reference%2Fquant-analyst-skills-test.pdf&repository_id=78606262#c29a9079-71e1-487c-82e4-dab75fa2942e" width=\"900\" height=\"600\"></iframe>'),
                                                     imageOutput('imp_pdf', width = '500px', height = '800px')), 
                                            tabPanel('Q1',
                                                     h4('John Larry Kelly (1956) - Kelly criterion'), 
@@ -96,7 +96,7 @@ ui <- shinyUI(fluidPage(
                  
                  ## Section 2 Kelly Portfolio Management
                  tabPanel('Portfolio Management', h4('Investment Fund Portfolio Management'), 
-                          tags$iframe(src='https://github.com/scibrokes/kelly-criterion', height = 800, width = 500, frameborder = 0, seamless = 'seamless'))))),
+                          tags$iframe(src='https://github.com/scibrokes/kelly-criterion', height = 800, width = 500, frameborder = 0, seamless = 'seamless')))),
   br(), 
   p('Powered by - Copyright® Intellectual Property Rights of ', 
     tags$a(href='http://www.scibrokes.com', target='_blank', 
