@@ -19,7 +19,7 @@ server <- shinyServer(function(input, output, session) {
   
   ## Define a reactive expression for the document term matrix
   terms <- reactive({
-    ## Change when the "update" button is pressed...
+    ## Change when the "Update" button is pressed...
     input$updatePred
     ## ...but not for anything else
     isolate({

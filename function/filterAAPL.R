@@ -1,4 +1,4 @@
-filterAAPL <- function(mbase, startDate = NULL, endDate = NULL) {
+filterAAPL <- function(startDate = NULL, endDate = NULL) {
   ## ==================== Load Packages ===================================
   library('BBmisc')
   library('readr')
@@ -11,11 +11,20 @@ filterAAPL <- function(mbase, startDate = NULL, endDate = NULL) {
   library('quantmod')
   
   ## ==================== Data Validation ===================================
+  if(exists('AAPL')) {
+    mbase <- AAPL
+    
+  } else {
+    tryCatch(suppressAll(getSymbols('AAPL')), 
+             error = function(e) mbase <- read_rds(path = './data/AAPL.rds'))
+    mbase <- AAPL; rm(AAPL)
+  }
+  
   mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
     tbl_df %>% mutate(Date = ymd(Date), 
                       AAPL.Volume = formattable::digits(
                         AAPL.Volume, 0, format = 'd', big.mark = ','))
-  dateID <- mbase$Date
+  dateID <- mbaseDT$Date
   
   if(is.null(startDate) & is.null(endDate)) {
     startDate <- dateID[1]
@@ -33,7 +42,7 @@ filterAAPL <- function(mbase, startDate = NULL, endDate = NULL) {
       tbl_df %>% mutate(Date = ymd(Date), 
                         AAPL.Volume = formattable::digits(
                           AAPL.Volume, 0, format = 'd', big.mark = ','))
-    dateID <- mbase$Date
+    dateID <- mbaseDT$Date
     startDate <- dateID[1]
     endDate <- tail(dateID, 1)
     

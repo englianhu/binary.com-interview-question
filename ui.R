@@ -138,8 +138,20 @@ ui <- shinyUI(fluidPage(
 											                 individual games, not the final outcome directly, and you must bet a positive amount on each game. 
 											                 So, if Team A wins the series, you must walk away with $200, but if Team A loses the series, you 
 											                 must walk away with zero, and you must do so having placed a non-zero bet on every game. How do you 
-											                 place your bets?')))))))),
-											
+											                 place your bets?')))))), 
+      
+      tabPanel('Appendix', 
+               tabsetPanel(
+                 tabPanel('Reference', 
+                          h4('Reference'), 
+                          p('01. ', HTML("<a href='http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top'>Using LASSO from lars (or glmnet) package in R for variable selection</a>")),
+                          p('02. ', HTML("<a href='http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top'>Using LASSO from lars (or glmnet) package in R for variable selection</a>")),
+                          p('03. ', HTML("<a href='https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r/'>Testing Kelly Criterion and Optimal f in R</a>"))), 
+                 
+                 tabPanel('Applicant', 
+                          h4('Applicant\'s CV'), 
+                          tags$iframe(src='https://englianhu.github.io/2016/12/ryo-eng.html', height = 800, width = '100%', frameborder = 0)))))),
+	
   br(), 
   p('Powered by - Copyright® Intellectual Property Rights of ', 
     tags$a(href='http://www.scibrokes.com', target='_blank', 
