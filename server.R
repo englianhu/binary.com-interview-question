@@ -17,4 +17,5 @@ server <- shinyServer(function(input, output, session) {
   onclick('toggleAdvanced', shinyjs::toggle(id = 'advanced', anim = TRUE, animType = 'fade'))    
   onclick('update', shinyjs::html('time', date()))
   
+  
 })
