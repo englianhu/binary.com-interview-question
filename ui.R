@@ -39,7 +39,7 @@ ui <- shinyUI(fluidPage(
                  tabPanel('Q1', 
                           tabsetPanel(
                             tabPanel('Question', 
-                                     h4('Question Paper'), 
+                                     h4('Answer the Question'), 
                                      p('Find a formula to price the following fixed-odds contract:'), 
                                      br(), 
                                      p('I wish to win $', em('B'), ' if over the next days, ', 
@@ -58,8 +58,8 @@ ui <- shinyUI(fluidPage(
                                   bsCollapse(id = 'selectSIFund', open = 'Select Fund', 
                                              bsCollapsePanel('Select Your Data Range and Predicted Date :', 
                                                              dateRangeInput('dataRange', label = 'Data Range', 
-                                                                            start = dateID[1], end = tail(dateID, 1)), 
-                                                             dateInput('preDate', label = 'Predicted Date', min = ), 
+                                                                            start = first(dateID), end = last(dateID)), 
+                                                             dateInput('preDate', label = 'Predicted Date'), 
                                                              actionButton('updatePred', label = 'Update'), 
                                                              actionButton('tabBut', 'View Table'), style = 'primary'), 
                                              bsCollapsePanel('Chart Option', 
@@ -100,9 +100,22 @@ ui <- shinyUI(fluidPage(
                                         actionButton('reset', 'Reset form'), style = 'info'))),
                                 
                                 mainPanel(
+                                  h4('Observation'), 
+                                  p('In order to predict the AAPL (stock price of Apple Inc), I get the real-time stock price from ', 
+                                    strong('Yahoo'), '. Below is a chart trend of AAPL.'), 
+                                  br(), 
                                   highchartOutput("hcontainer", height = "500px"), 
                                   bsModal("modalExample", "Data Table", "tabBut", size = "large",
-                                          dataTableOutput('distTable'))))))), 
+                                          dataTableOutput('distTable')), 
+                                  br(), 
+                                  h4('Answer'), 
+                                  p('Here I refer to 1st and 4th papers in subtab ', strong('Reference') , ' under tab ', 
+                                    strong('Appendix'), 'inside ', strong('MENU'), 
+                                    ' bar for stock price prediction as well as the investment fund management. You are feel free to read ', 
+                                    HTML("<a href='http://statweb.stanford.edu/~tibs/lasso/simple.html'>A simple explanation of the Lasso and Least Angle Regression</a>"), ' for understanding the LASSO model (if any).'), 
+                                  p('The dataset from the 1st trading day within a calendar year until the ')
+                                  
+                                  ))))), 
                  
                  tabPanel('Q2', 
                           tabsetPanel(
@@ -138,15 +151,23 @@ ui <- shinyUI(fluidPage(
 											                 individual games, not the final outcome directly, and you must bet a positive amount on each game. 
 											                 So, if Team A wins the series, you must walk away with $200, but if Team A loses the series, you 
 											                 must walk away with zero, and you must do so having placed a non-zero bet on every game. How do you 
-											                 place your bets?')))))), 
+											                 place your bets?')), 
+                            tabPanel('Answer', 
+                                     p('')))))), 
       
       tabPanel('Appendix', 
                tabsetPanel(
                  tabPanel('Reference', 
                           h4('Reference'), 
-                          p('01. ', HTML("<a href='http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top'>Using LASSO from lars (or glmnet) package in R for variable selection</a>")),
+                          p('01. ', HTML("<a href='https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf'>Stock Market Forecasting Using LASSO Linear Regression Model</a>")),
                           p('02. ', HTML("<a href='http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top'>Using LASSO from lars (or glmnet) package in R for variable selection</a>")),
-                          p('03. ', HTML("<a href='https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r/'>Testing Kelly Criterion and Optimal f in R</a>"))), 
+                          p('03. ', HTML("<a href='http://stackoverflow.com/questions/29311323/difference-between-glmnet-and-cv-glmnet-in-r?answertab=votes#tab-top'>Difference between glmnet() and cv.glmnet() in R?</a>")), 
+                          p('04. ', HTML("<a href='https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r/'>Testing Kelly Criterion and Optimal f in R</a>")), 
+                          p('05. ', HTML("<a href='https://github.com/scibrokes/kelly-criterion/blob/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf'>Portfolio Optimization and Monte Carlo Simulation</a>"),
+                            tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                   tags$img(height = '20px', alt='hot', #align='right', 
+                                            src='hot.jpg'))), 
+                          p('06. ', HTML("<a href='https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html'>Glmnet Vignette</a>"))), 
                  
                  tabPanel('Applicant', 
                           h4('Applicant\'s CV'), 

@@ -1,4 +1,4 @@
-filterAAPL <- function(startDate = NULL, endDate = NULL) {
+filterAAPL <- memoise(function(startDate = NULL, endDate = NULL) {
   ## ==================== Load Packages ===================================
   library('BBmisc')
   library('readr')
@@ -53,10 +53,11 @@ filterAAPL <- function(startDate = NULL, endDate = NULL) {
   ## ==================== Data Filtering ===================================
   mbase <- mbase[paste0(startDate, '/', endDate)]
   
-  mbaseDT <- mbase %>% mutate(Date = ymd(Date), 
+  mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
+    tbl_df %>% mutate(Date = ymd(Date), 
                     AAPL.Volume = formattable::digits(
                       AAPL.Volume, 0, format = 'd', big.mark = ','))
   
   tmp <- list(fund = mbase, fundDT = mbaseDT)
   return(tmp)
-}
+})

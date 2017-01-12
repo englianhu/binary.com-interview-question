@@ -1,9 +1,4 @@
-## ========= Setup Options =================================
-## Setup Options, Loading Required Libraries and Preparing Environment
-## Loading the packages and setting adjustment
-
-
-## ========= ShinyServer ================================
+## ========================== ShinyServer ================================
 # Define server logic required to draw a histogram
 server <- shinyServer(function(input, output, session) {
   
@@ -21,14 +16,26 @@ server <- shinyServer(function(input, output, session) {
   terms <- reactive({
     ## Change when the "Update" button is pressed...
     input$updatePred
-    ## ...but not for anything else
+    
+    ## make sure end date later than start date
+    validate(
+      need(input$dataRange[2] > input$dataRange[1], 
+           'end date is earlier than start date.'))
+    
+    ## make sure greater than 1 day
+    validate(
+      need(difftime(input$dataRange[2], input$dataRange[1], 'days') > 1, 
+           'date range less the 1 days'))
+    
     isolate({
       withProgress({
         setProgress(message = "Processing graph...")
-        filterAAPL(AAPL, input$dataRange[1], input$dataRange[2])
+        filterAAPL(startDate = input$dataRange[1], endDate = input$dataRange[2])
       })
     })
   })
+  
+  #'@ repeatable()
   
   output$hcontainer <- renderHighchart({
     fund <- terms()$fund

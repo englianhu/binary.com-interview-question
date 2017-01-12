@@ -19,6 +19,7 @@ suppressAll(library('quantmod'))
 suppressAll(library('formattable'))
 suppressAll(library('highcharter'))
 suppressAll(library('PerformanceAnalytics'))
+suppressAll(library('memoise'))
 source('./function/filterAAPL.R')
 source('./function/plotChart2.R')
 
