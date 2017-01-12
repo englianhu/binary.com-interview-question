@@ -3,7 +3,9 @@ lmStocks <- function(mbase) {
   # http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection
   suppressPackageStartupMessages(library("BBmisc"))
   suppressAll(library('lubridate'))
+  suppressAll(library('MASS'))
   suppressAll(library('glmnet'))
+  suppressAll(library('Matrix'))
   
   ## ======================= Data Validation ===================================
   if(is.xts(mbase)) {
@@ -41,6 +43,12 @@ lmStocks <- function(mbase) {
   ##the regression
   #summary(lm(write ~ race.f, hsb2))
   
+  
+  # http://amunategui.github.io/sparse-matrix-glmnet/
+  # {Matrix} - creates sparse/dense matrices
+  # {glmnet} - generalized linear models
+  # {pROC} - ROC tools
+  
   h <- function() {
     
     AAPLDT_DF <- AAPLDT[, 1:5] %>% gather(Category, Price, AAPL.Open:AAPL.Close) %>% 
@@ -48,8 +56,12 @@ lmStocks <- function(mbase) {
                factor(Category, 
                       levels = c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')), 
              wt = 1, b0 = Price / first(Price))
-    #'@ contrasts(AAPLDT_DF$Date) <- contr.treatment(AAPLDT_DF$Date)
+    #'@ contrasts(AAPLDT_DF$Category) <- contr.treatment(AAPLDT_DF$Category)
     #'@ attr(AAPLDT_DF$Category, 'levels') <- c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')
+    
+    attr(AAPLDT_DF$Category,'contrasts') <- contrasts(C(factor(AAPLDT_DF$Category), 'contr.treatment'))
+    
+    
     tmp <- model.matrix(Category ~ Date + Price + wt + b0, data = AAPLDT_DF) %>% 
       tbl_df %>% mutate(Category = AAPLDT_DF$Category)
     return(tmp)
@@ -77,7 +89,7 @@ lmStocks <- function(mbase) {
   ##   an automatically selected range of lambda which may not give the lowest test MSE. 
   ## Hope this helps!
   
-  glmmod <- glmnet(dplyr::select(xy, -c(Date, resp)), y = dplyr::select(xy, resp), alpha = 1, family = 'binomial')
+  glmmod <- glmnet(dplyr::select(xy, -c(Category, resp)), y = dplyr::select(xy, resp), alpha = 1, family = 'binomial')
   
   ## Test cv.glmnet with binomial and multinomial logistic regression.
   # http://faculty.chicagobooth.edu/max.farrell/bus41100/week8-Rcode.R

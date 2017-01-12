@@ -109,10 +109,13 @@ ui <- shinyUI(fluidPage(
                                           dataTableOutput('distTable')), 
                                   br(), 
                                   h4('Answer'), 
-                                  p('Here I refer to 1st and 4th papers in subtab ', strong('Reference') , ' under tab ', 
+                                  p('Here I refer to papers in subtab ', strong('Reference') , ' under tab ', 
                                     strong('Appendix'), 'inside ', strong('MENU'), 
                                     ' bar for stock price prediction as well as the investment fund management. You are feel free to read ', 
-                                    HTML("<a href='http://statweb.stanford.edu/~tibs/lasso/simple.html'>A simple explanation of the Lasso and Least Angle Regression</a>"), ' for understanding the LASSO model (if any).'), 
+                                    HTML("<a href='http://statweb.stanford.edu/~tibs/lasso/simple.html'>A simple explanation of the Lasso and Least Angle Regression</a>"), 
+                                    HTML("<a href='http://cos.name/2016/10/data-mining-1-lasso/'>Popular model for data mining (Part I) : Lasso Regression (Chinese)</a>"), 
+                                    HTML("<a href='http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html'>LASSO, Ridge, and Elastic Net</a>"), 
+                                    ' for understanding the LASSO model (if any).'), 
                                   p('The dataset from the 1st trading day within a calendar year until the ')
                                   
                                   ))))), 
@@ -167,7 +170,11 @@ ui <- shinyUI(fluidPage(
                             tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
                                    tags$img(height = '20px', alt='hot', #align='right', 
                                             src='hot.jpg'))), 
-                          p('06. ', HTML("<a href='https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html'>Glmnet Vignette</a>"))), 
+                          p('06. ', HTML("<a href='https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html'>Glmnet Vignette</a>")),
+                          p('07. ', HTML("<a href='http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html'>LASSO, Ridge, and Elastic Net</a>"),
+                            tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                   tags$img(height = '20px', alt='hot', #align='right', 
+                                            src='hot.jpg')))), 
                  
                  tabPanel('Applicant', 
                           h4('Applicant\'s CV'), 
