@@ -102,13 +102,14 @@ ui <- shinyUI(fluidPage(
                                 mainPanel(
                                   h4('Observation'), 
                                   p('In order to predict the AAPL (stock price of Apple Inc), I get the real-time stock price from ', 
-                                    strong('Yahoo'), '. Below is a chart trend of AAPL.'), 
+                                    strong('Yahoo'), '. Below is a chart trend of AAPL stock price from 2014-01-01 onwards.'), 
                                   br(), 
                                   highchartOutput("hcontainer", height = "500px"), 
                                   bsModal("modalExample", "Data Table", "tabBut", size = "large",
                                           dataTableOutput('distTable')), 
                                   br(), 
                                   h4('Answer'), 
+                                  h4('Part I : Stock Price Modelling'), 
                                   p('Here I refer to papers in subtab ', strong('Reference') , ' under tab ', 
                                     strong('Appendix'), 'inside ', strong('MENU'), 
                                     ' bar for stock price prediction as well as the investment fund management. You are feel free to read ', 
@@ -116,8 +117,18 @@ ui <- shinyUI(fluidPage(
                                     HTML("<a href='http://cos.name/2016/10/data-mining-1-lasso/'>Popular model for data mining (Part I) : Lasso Regression (Chinese)</a>"), 
                                     HTML("<a href='http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html'>LASSO, Ridge, and Elastic Net</a>"), 
                                     ' for understanding the LASSO model (if any).'), 
-                                  p('The dataset from the 1st trading day within a calendar year until the ')
-                                  
+                                  p('The dataset gather from 2014-01-01 until the latest trading day (unless unable connect to Yahoo and read local saved dataset.)', 
+                                     'Here I simply apply Lasso regression as below :', 
+                                    withMathJax(helpText('$$Y=\\sum_{j=1}^dX_j\\beta_j+e \\cdots equation\\ 1.1.1$$ where ', em('d'), ' is dimension and ', 
+                                                         em('Xo'), ' is baseline to make above equation valid.')), 'for stock price prediction.'), 
+                                  p('I dont\'t pretend to know the corrected model, here I tried quite some models to compare and get the best fit.'), 
+                                  br(), 
+                                  h4('Part II : Prediction'), 
+                                  br(), 
+                                  h4('Part III : Staking Model'), 
+                                  br(), 
+                                  h4('Part IV : Profit & Loss'), 
+                                  p('')
                                   ))))), 
                  
                  tabPanel('Q2', 

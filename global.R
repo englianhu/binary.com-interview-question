@@ -24,14 +24,16 @@ source('./function/filterAAPL.R')
 source('./function/plotChart2.R')
 
 ## ========= Read Data =================================
-tryCatch(suppressAll(getSymbols('AAPL')), 
-         error = function(e) AAPL <- read_rds(path = './data/AAPL.rds'))
+tryCatch({
+  suppressAll(getSymbols('AAPL', from = '2015-01-01'))
+  if(exists('AAPL')) saveRDS(AAPL, file = './data/AAPL.rds')
+  }, error = function(e) AAPL <- read_rds(path = './data/AAPL.rds'))
 
 if(!exists('AAPL')) AAPL <- read_rds(path = './data/AAPL.rds')
 
 AAPLDT <- AAPL %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-  tbl_df %>% mutate(Date = ymd(Date), 
-                    AAPL.Volume = formattable::digits(
-                      AAPL.Volume, 0, format = 'd', big.mark = ','))
+  tbl_df %>% mutate(Date = ymd(Date))#, 
+                    #AAPL.Volume = formattable::digits(
+                    #AAPL.Volume, 0, format = 'd', big.mark = ','))
 dateID <- AAPLDT$Date
 

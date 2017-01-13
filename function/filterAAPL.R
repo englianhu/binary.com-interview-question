@@ -15,7 +15,7 @@ filterAAPL <- memoise(function(startDate = NULL, endDate = NULL) {
     mbase <- AAPL
     
   } else {
-    tryCatch(suppressAll(getSymbols('AAPL')), 
+    tryCatch(suppressAll(getSymbols('AAPL', from = '2015-01-01')), 
              error = function(e) mbase <- read_rds(path = './data/AAPL.rds'))
     mbase <- AAPL; rm(AAPL)
   }
@@ -35,7 +35,7 @@ filterAAPL <- memoise(function(startDate = NULL, endDate = NULL) {
     endDate <- endDate
     
   } else {
-    tryCatch(suppressAll(getSymbols('AAPL', start = startDate, end = endDate)), 
+    tryCatch(suppressAll(getSymbols('AAPL', from = startDate, to = endDate)), 
              error = function(e) getSymbols('AAPL'))
     mbase <- AAPL; rm(AAPL)
     mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 

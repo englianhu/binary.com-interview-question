@@ -5,7 +5,7 @@
 
   The sample question for Interview a job in Binary options. Here I created a shiny app for the job application.
 
-![[*shinyApp*](http://rstudioconnect.com/englianhu/xxxxxx)](www/20170113_104005.gif)
+![*Kindly click* [**Here**](http://rstudioconnect.com/englianhu/xxxxxx) *to access the shiny app*](www/20170113_104005.gif)
 
 **Under Construction...**
 
@@ -22,3 +22,7 @@
   09. [Regularization and Variable Selection via the Elastic Net](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Regularization%20and%20Variable%20Selection%20via%20the%20Elastic%20Net.pdf)
   10. [LASSO, Ridge, and Elastic Net](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) <img src='www/hot.jpg' width='20'>
   11. [热门数据挖掘模型应用入门（一）: LASSO回归](http://cos.name/2016/10/data-mining-1-lasso/)
+  12. [The Lasso Page](http://statweb.stanford.edu/~tibs/lasso.html)
+  13. [Call_Valuation.R](https://api.rpubs.com/Mariano/call)
+  14. [Lecture 6 – Stochastic Processes and Monte Carlo](http://zorro-trader.com/manual/en/Lecture%206.htm)
+

@@ -19,8 +19,13 @@ server <- shinyServer(function(input, output, session) {
     
     ## make sure end date later than start date
     validate(
+      need(input$dataRange[1] > '2014-01-01', 
+           'start date need to start from 2014-01-01 onwards.'))
+    
+    ## make sure end date later than start date
+    validate(
       need(input$dataRange[2] > input$dataRange[1], 
-           'end date is earlier than start date.'))
+           'end date need to later than start date.'))
     
     ## make sure greater than 1 day
     validate(
