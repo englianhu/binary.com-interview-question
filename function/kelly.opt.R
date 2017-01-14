@@ -63,7 +63,9 @@ for (i in 1:5000) {
 }
 
 # generate graph
-require(ggplot)
+require(ggplot2)
 m <- ggplot(compare, aes(colour=compare)) + xlim(c(0, 1)) + xlab('distribution')
 m + stat_density(aes(x=kelly, colour='kelly'), adjust = 2, fill=NA) +
   stat_density(aes(x=opt.f, colour='opt.f'), adjust = 2, fill=NA)
+
+

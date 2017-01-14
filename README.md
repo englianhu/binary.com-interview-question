@@ -5,7 +5,7 @@
 
   The sample question for Interview a job in Binary options. Here I created a shiny app for the job application.
 
-![*Kindly click* [**Here**](http://rstudioconnect.com/englianhu/xxxxxx) *to access the shiny app*](www/20170113_104005.gif)
+![*Kindly click* [**Here**](https://beta.rstudioconnect.com/content/2367/) *to access the shiny app*](www/20170113_104005.gif)
 
 **Under Construction...**
 

@@ -1,12 +1,42 @@
-lmStocks <- function(mbase, family = 'binomial', alpha, yv = 'daily mean', tmeasure = 'deviance', 
-                     nfolds = 10, s = 'lambda.min', weight.date = NULL, weight.volume = NULL, 
-                     parallel = FALSE, .log = FALSE) {
+lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean', 
+                     tmeasure = 'deviance', tmultinomial = 'grouped', maxit = 1000, 
+                     nfolds = 10, s = 'lambda.min', weight.date = FALSE, 
+                     weight.volume = FALSE, parallel = TRUE, .log = FALSE) {
   ## mbase = default AAPL or in data frame format.
-  ## family = 'gaussian', 'binomial', 'multinomial'
-  
+  ## 
+  ## family = 'gaussian', 'binomial', 'poisson', 'multinomial and 'cox'.
+  ## 
+  ## alpha from 0, 0.1, 0.2 ... until 1.0. Ridge is alpha = 0; Elastic Net is 0 < alpha < 1; Lasso is alpha = 1
+  ## 
+  ## yv = "daily.mean", yv = "baseline" or yv = "mixed" to model the y (respondence variables)
+  ## 
+  ## tmeasure is type.measure for residuals.
+  ## 
+  ## tmultinomial is type.multinomial for which is "grouped" or "ungrouped".
+  ## 
+  ## default glmnet is maxit = 100000 but it will be error if there is high volume data.
+  ##   therefore I set as maxit = 1000.
+  ## 
+  ## default nfolds = 10 for cv.glmnet().
+  ## 
+  ## Never rely on glmnet's default lambda sequence! Notorious issue. 
+  ## Always provide your own sequence. Then get the optimal lambda value 
+  ##   afterwards from fit$lambda.min and use it with the s=lambda.min parameter 
+  ##   in all calls to predict(), coef() etc.
+  ## therefore I set default as s = lambda.min. You can choose s = lambda.1se as well.
+  ## 
+  ## weight.date = FALSE or TRUE for time series weighted function prediction.
+  ## 
+  ## weight.volume = FALSE for time series weighted function prediction with volume effect.
+  ## 
+  ## parallel = TRUE or FALSE for parallel computing.
+  ## 
+  ## .log = FALSE or TRUE convert the value yv into log or not.
+  ## 
   
   ## ========================= Load Packages ===================================
   # http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection
+  options(warn = -1)
   suppressPackageStartupMessages(library("BBmisc"))
   suppressAll(library('lubridate'))
   suppressAll(library('MASS'))
@@ -29,7 +59,40 @@ lmStocks <- function(mbase, family = 'binomial', alpha, yv = 'daily mean', tmeas
   
   dateID <- sort(unique(mbase$Date))
   
-  ## ========================= Weight Function =================================
+  if(is.numeric(alpha)) {
+    alpha <- alpha
+  } else if(is.character(alpha)) {
+    if(anyNA(suppressAll(as.numeric(alpha)))) {
+      stop('alpha must be minimum 1 to maximum 10 numbers which is within 0:10.')
+    } else {
+      alpha <- as.numeric(alpha)
+    }    
+  }
+  
+  ## default glmnet is maxit = 100000 but it will be error if there is high volume data.
+  ##   therefore I set as maxit = 1000.
+  if((is.numeric(maxit)) & (length(maxit) == 1)) {
+    maxit <- maxit
+  } else if(is.character(maxit)) {
+    if(anyNA(suppressAll(as.numeric(maxit)))) {
+      stop('maxit must be a numeric number from 1 to Inf.')
+    } else {
+      maxit <- as.numeric(maxit)
+    }    
+  }
+  
+  ## default is nfolds = 10.
+  if((is.numeric(nfolds)) & (length(nfolds) == 1)) {
+    nfolds <- nfolds
+  } else if(is.character(nfolds)) {
+    if(anyNA(suppressAll(as.numeric(nfolds)))) {
+      stop('nfolds must be a numeric number from 1 to 10.')
+    } else {
+      nfolds <- as.numeric(nfolds)
+    }    
+  }
+  
+  ## ========================= Respondence Variable =================================
   ## http://www.ats.ucla.edu/stat/r/library/contrast_coding.htm
   ## set the first dat as baseline.
   #
@@ -56,14 +119,12 @@ lmStocks <- function(mbase, family = 'binomial', alpha, yv = 'daily mean', tmeas
   ##the regression
   #summary(lm(write ~ race.f, hsb2))
   
-  
   # http://amunategui.github.io/sparse-matrix-glmnet/
   # {Matrix} - creates sparse/dense matrices
   # {glmnet} - generalized linear models
   # {pROC} - ROC tools
   
   h <- function(ddt) {
-    
     #AAPLDT_DF <- AAPLDT[, 1:5] %>% gather(Category, Price, AAPL.Open:AAPL.Close) %>% 
     #  mutate(Date = as.character(Date), Category = factor(
     #    Category, levels = c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')), 
@@ -138,191 +199,53 @@ lmStocks <- function(mbase, family = 'binomial', alpha, yv = 'daily mean', tmeas
   if(.log == TRUE) y %<>% mutate(b0 = log(b0), dmean =log(dmean))
   
   yt <- rep(0, nrow(y))
-  if(yv == 'daily mean') { 
+  if(yv == 'daily.mean') { 
     yt <- y$dmean
   } else if(yv == 'baseline') {
-    yt <- y$dmean
+    yt <- y$b0
+  } else if(yv == 'mixed') {
+    yt <- y$dmean * y$b0
   } else {
-    stop('Kindly select "yv = daily mean" or "yv = baseline".')
+    stop('Kindly select yv = "daily.mean", yv = "baseline" or yv = "mixed".')
   }
   
   ## “lambda.1se”: the largest λλ at which the MSE is within one standard error of the minimal MSE.
   ## “lambda.min”: the λλ at which the minimal MSE is achieved.
   if(s == 'lambda.1se') {
-    s <- 'lambda.1se'
+    s <- s
   } else if(s == 'lambda.min') {
-    s <- 'lambda.min'
+    s <- s
   } else {
     stop('Kindly select s = "lambda.1se" or s = "lambda.min".')
   }
   
-  if(tmeasure == 'deviance') { #which uses squared-error for gaussian models
-    tmeasure <- 'deviance'     #deviance for logistic and poisson regression, and partial-likelihood for the Cox model.
-  } else if(tmeasure == 'mse') { #can be used by all models except the "cox"
-    tmeasure <- 'mse'
-  } else if(tmeasure == 'mae') { #can be used by all models except the "cox"
-    tmeasure <- 'mae'
+  if(tmeasure == 'deviance') {    #which uses squared-error for gaussian models
+    tmeasure <- tmeasure          #deviance for logistic and poisson regression, and partial-likelihood for the Cox model.
+  } else if(tmeasure == 'mse') {  #can be used by all models except the "cox"
+    tmeasure <- tmeasure
+  } else if(tmeasure == 'mae') {  #can be used by all models except the "cox"
+    tmeasure <- tmeasure
   } else if(tmeasure == 'class') {#applies to binomial and multinomial logistic regression only
-    tmeasure <- 'class'
+    tmeasure <- tmeasure
   } else if(tmeasure == 'auc') {  #for two-class logistic regression only, and gives area under the ROC curve.
-    tmeasure <- 'auc'
+    tmeasure <- tmeasure
   } else if(tmeasure == 'cox') {
-    tmeasure <- 'cox'
+    tmeasure <- tmeasure
   } else {
     stop('Kindly select tmeasure = "deviance", tmeasure = "mse", tmeasure = "mae", tmeasure = "class", tmeasure = "cox".')
   }
   
-  ## ==================== Regression Models ===============================
-  if(family == 'gaussian') {
-    ## -------------------------- gaussian --------------------------------
-    ## standardize is a logical flag for x variable standardization, prior to fitting the model sequence. 
-    ##   The coefficients are always returned on the original scale. Default is standardize=TRUE.
-    ## 
-    ## http://stackoverflow.com/questions/17887747/how-does-glmnets-standardize-argument-handle-dummy-variables?answertab=votes#tab-top
-    ## If you take a look at the R function, glmnet codes the standardize parameter internally as `isd = as.integer(standardize)`.
-    ## 
-    for (i in 0:10) {
-      ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'
-      assign(paste('fit', i, sep = ''),
-             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'gaussian', nfolds = 10))
-      }; rm(i)
-    
-  } else if(family == 'binomial') {
-    ## -------------------------- binomial --------------------------------
-    ## https://rstudio-pubs-static.s3.amazonaws.com/71750_a733595676d3437f940244bc678b4f1f.html
-    ## http://ricardoscr.github.io/how-to-use-ridge-and-lasso-in-r.html
-    for (i in 0:10) {
-      ## 5 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
-      ##            tmeasure = 'mae' or tmeasure = 'class' or 
-      ##            tmeasure = 'auc'.
-      assign(paste('fit', i, sep = ''),
-             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'binomial', nfolds = 10))
-    }; rm(i)
-    
-  } else if(family == 'poisson') {
-    ## -------------------------- poisson ---------------------------------
-    for (i in 0:10) {
-      ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'
-      assign(paste('fit', i, sep = ''),
-             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'poisson', nfolds = 10))
-    }; rm(i)
-    
-  } else if(family == 'multinomial') {
-    ## ----------------------- multinomial --------------------------------
-    for (i in 0:10) {
-      ## 4 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
-      ##            tmeasure = 'mae' or tmeasure = 'class'
-      assign(paste('fit', i, sep = ''),
-             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'multinomial', nfolds = 10))
-    }; rm(i)
-    
-  } else if(family == 'cox') {
-    ## ------------------------------ cox ---------------------------------
-    for (i in 0:10) {
-      ## 1 model : tmeasure = 'cox'
-      assign(paste('fit', i, sep = ''),
-             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'cox', nfolds = 10))
-    }; rm(i)
-    
+  if(tmultinomial == 'grouped') {
+    type.multinomial <- tmultinomial
+  } else if(tmultinomial == 'ungrouped') {
+    type.multinomial <- tmultinomial
   } else {
-    stop('Kindly select family == "gaussian", family == "binomial", family == "poisson", family == "multinomial" or family == "cox".')
+    stop('Kindly set tmultinomial = "grouped" or tmultinomial = "ungrouped" for family = "multinomial".')
   }
   
-  ## 
+  ## ==================== Regression Models ===============================
   ## In order to avoid llply() occupy a lot of RAM, here I seperate the model independently.
-  ## 
-  ## binomial
-  ## 
-  # 
-  #cv.glmnet(x, y, family='binomial', alpha=1, parallel = parallel, standardize=TRUE, type.measure='auc')
-  #cv.glmnet(x, y, family='binomial', alpha=1, parallel = parallel, standardize=TRUE, type.measure='auc')
-  
-  ## multinomial
-  ## http://faculty.chicagobooth.edu/max.farrell/bus41100/week8-Rcode.R
-  # 
-  #cv.glmnet(X, class, standardize=FALSE, family='multinomial', alpha=1, nfolds = 10)
-  #for (i in 0:10) {
-  #  assign(paste('fit.m', i, sep = ''), cv.glmnet(x, y = yt, family = 'multinomial', 
-  #                                                type.measure = 'class', parallel = parallel, 
-  #                                                alpha = i/10, nfolds = 10))}
-  #rm(i)
-  
-  yhat.b0  <- predict(fit.b0 , s = fit.b0$lambda.1se , newx = x)
-  yhat.b1  <- predict(fit.b1 , s = fit.b1$lambda.1se , newx = x)
-  yhat.b2  <- predict(fit.b2 , s = fit.b2$lambda.1se , newx = x)
-  yhat.b3  <- predict(fit.b3 , s = fit.b3$lambda.1se , newx = x)
-  yhat.b4  <- predict(fit.b4 , s = fit.b4$lambda.1se , newx = x)
-  yhat.b5  <- predict(fit.b5 , s = fit.b5$lambda.1se , newx = x)
-  yhat.b6  <- predict(fit.b6 , s = fit.b6$lambda.1se , newx = x)
-  yhat.b7  <- predict(fit.b7 , s = fit.b7$lambda.1se , newx = x)
-  yhat.b8  <- predict(fit.b8 , s = fit.b8$lambda.1se , newx = x)
-  yhat.b9  <- predict(fit.b9 , s = fit.b9$lambda.1se , newx = x)
-  yhat.b10 <- predict(fit.b10, s = fit.b10$lambda.1se, newx = x)
-  
-  mse.b0  <- mean((yt - yhat.b0 )^2)
-  mse.b1  <- mean((yt - yhat.b1 )^2)
-  mse.b2  <- mean((yt - yhat.b2 )^2)
-  mse.b3  <- mean((yt - yhat.b3 )^2)
-  mse.b4  <- mean((yt - yhat.b4 )^2)
-  mse.b5  <- mean((yt - yhat.b5 )^2)
-  mse.b6  <- mean((yt - yhat.b6 )^2)
-  mse.b7  <- mean((yt - yhat.b7 )^2)
-  mse.b8  <- mean((yt - yhat.b8 )^2)
-  mse.b9  <- mean((yt - yhat.b9 )^2)
-  mse.b10 <- mean((yt - yhat.b10)^2)
-  
-  #yhat.m0  <- predict(fit.m0 , s = fit.m0$lambda.1se , newx = x)
-  #yhat.m1  <- predict(fit.m1 , s = fit.m1$lambda.1se , newx = x)
-  #yhat.m2  <- predict(fit.m2 , s = fit.m2$lambda.1se , newx = x)
-  #yhat.m3  <- predict(fit.m3 , s = fit.m3$lambda.1se , newx = x)
-  #yhat.m4  <- predict(fit.m4 , s = fit.m4$lambda.1se , newx = x)
-  #yhat.m5  <- predict(fit.m5 , s = fit.m5$lambda.1se , newx = x)
-  #yhat.m6  <- predict(fit.m6 , s = fit.m6$lambda.1se , newx = x)
-  #yhat.m7  <- predict(fit.m7 , s = fit.m7$lambda.1se , newx = x)
-  #yhat.m8  <- predict(fit.m8 , s = fit.m8$lambda.1se , newx = x)
-  #yhat.m9  <- predict(fit.m9 , s = fit.m9$lambda.1se , newx = x)
-  #yhat.m10 <- predict(fit.m10, s = fit.m10$lambda.1se, newx = x)
-  
-  #mse.m0  <- mean((yt - yhat.m0 )^2)
-  #mse.m1  <- mean((yt - yhat.m1 )^2)
-  #mse.m2  <- mean((yt - yhat.m2 )^2)
-  #mse.m3  <- mean((yt - yhat.m3 )^2)
-  #mse.m4  <- mean((yt - yhat.m4 )^2)
-  #mse.m5  <- mean((yt - yhat.m5 )^2)
-  #mse.m6  <- mean((yt - yhat.m6 )^2)
-  #mse.m7  <- mean((yt - yhat.m7 )^2)
-  #mse.m8  <- mean((yt - yhat.m8 )^2)
-  #mse.m9  <- mean((yt - yhat.m9 )^2)
-  #mse.m10 <- mean((yt - yhat.m10)^2)
-  
-  mse1 <- eval(parse(
-    text = paste0('t(data.frame(', paste(paste0('mse.b', 1:10), collapse = ', '), '))')))
-  paste0('rm(mse.b', 1:10,')')
-  
-  mse1 %<>% data.frame(model = rownames(.), mse = .) %>% tbl_df
-  #                [,1]
-  #mse.b1  2.530778e-05
-  #mse.b2  2.523219e-05
-  #mse.b3  2.534738e-05
-  #mse.b4  2.533257e-05
-  #mse.b5  2.526375e-05
-  #mse.b6  2.527281e-05
-  #mse.b7  2.533669e-05
-  #mse.b8  2.545001e-05
-  #mse.b9  2.561610e-05
-  #mse.b10 2.558813e-05
-  mse1[mse1$mse == min(mse1$mse), ]
-  # A tibble: 1 × 2
-  #model          mse
-  #<fctr>        <dbl>
-  #  1 mse.b2 2.523219e-05
-  
-  ## ==================== Test Regression Models ===============================
+  ##
   ## glmnet() is a R package which can be used to fit Regression models,lasso model 
   ##   and others. Alpha argument determines what type of model is fit. When alpha=0, 
   ##   Ridge Model is fit and if alpha=1, a lasso model is fit.
@@ -338,60 +261,142 @@ lmStocks <- function(mbase, family = 'binomial', alpha, yv = 'daily mean', tmeas
   ##   value of lambda. By default, glmnet() will perform Ridge or Lasso regression for 
   ##   an automatically selected range of lambda which may not give the lowest test MSE. 
   ## Hope this helps!
+  ##
   
-  #glmmod <- glmnet(dplyr::select(xy, -c(Category, resp)), y = dplyr::select(xy, resp), alpha = 1, family = 'binomial')
+  ## http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top
+  ## Please note that glmnet is the preferred package now, it is actively maintained, 
+  ##   more so than lars, and that there have been questions about glmnet vs lars answered 
+  ##   before (algorithms used differ).
+  ##
   
-  ## Test cv.glmnet with binomial and multinomial logistic regression.
-  # http://faculty.chicagobooth.edu/max.farrell/bus41100/week8-Rcode.R
-  #fit1 <- cv.glmnet(x = as.matrix(AAPL), y = as.matrix(AAPL)[, 1], family = 'multinomial', type.measure = 'class')
+  if(family == 'gaussian') {
+    ## -------------------------- gaussian --------------------------------
+    ## standardize is a logical flag for x variable standardization, prior to fitting the model sequence. 
+    ##   The coefficients are always returned on the original scale. Default is standardize=TRUE.
+    ## 
+    ## http://stackoverflow.com/questions/17887747/how-does-glmnets-standardize-argument-handle-dummy-variables?answertab=votes#tab-top
+    ## If you take a look at the R function, glmnet codes the standardize parameter internally as `isd = as.integer(standardize)`.
+    ## 
+    
+    for (i in alpha) {
+      ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
+      assign(paste('fit', i, sep = ''),
+             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                       alpha = i/10, family = 'gaussian', maxit = maxit, nfolds = nfolds))
+      }; rm(i)
+    
+  } else if(family == 'binomial') {
+    ## -------------------------- binomial --------------------------------
+    ## https://rstudio-pubs-static.s3.amazonaws.com/71750_a733595676d3437f940244bc678b4f1f.html
+    ## http://ricardoscr.github.io/how-to-use-ridge-and-lasso-in-r.html
+    ## 
+    
+    ## http://faculty.chicagobooth.edu/max.farrell/bus41100/week8-Rcode.R
+    ## sample data : germancredit.csv
+    ## 
+    ## slide 21
+    ##LASSO selection
+    # install.packages("glmnet") #just run this once (on each computer)
+    #'@ library(glmnet)
+    #
+    #'@ X <- model.matrix(formula(full), credit)
+    # need to subtract the intercept
+    #'@ X <- X[,-1]
+    #
+    #'@ set.seed(1) #so cross-validation results are the same every time.
+    #'@ cvfit <- cv.glmnet(x = X[train,], y = credit$GoodCredit[train], family="binomial", alpha=1, standardize=TRUE)
+    # sometimes adding type.measure="auc" is useful for logistic regression, sometimes not
+    #'@ betas <- coef(cvfit, s = "lambda.1se")
+    #'@ model.1se <- which(betas[2:length(betas)]!=0)
+    
+    for (i in alpha) {
+      ## 5 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
+      ##            tmeasure = 'mae' or tmeasure = 'class' or 
+      ##            tmeasure = 'auc'.
+      assign(paste('fit', i, sep = ''),
+             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                       alpha = i/10, family = 'binomial', maxit = maxit, nfolds = nfolds))
+    }; rm(i)
+    
+  } else if(family == 'poisson') {
+    ## -------------------------- poisson ---------------------------------
+    for (i in alpha) {
+      ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
+      assign(paste('fit', i, sep = ''),
+             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                       alpha = i/10, family = 'poisson', maxit = maxit, nfolds = nfolds))
+    }; rm(i)
+    
+  } else if(family == 'multinomial') {
+    ## ----------------------- multinomial --------------------------------
+    ## http://faculty.chicagobooth.edu/max.farrell/bus41100/week8-Rcode.R
+    ## sample data : fueleconomy.csv
+    ##
+    ## not in slides
+    ## Lasso with multinomial logistic regression
+    ##take a random sample of the data to select variables. Doing cv.glmnet on the full data set can be very slow.
+    ##eventually, try it without this step (and remove all the [indexes.to.keep] and [indexes.to.keep,] from the glmnet command
+    #'@ indexes.to.keep <- sample(1:length(mpg.data$hwy.factor), 2000)
+    #'@ X <- model.matrix(~(trans + cyl + displ)^2, mpg.data)
+    #'@ X <- X[,-1] #need to subtract the intercept
+    #'@ cv.fit <- cv.glmnet(X[indexes.to.keep,], mpg.data$hwy.factor[indexes.to.keep], family=c("multinomial"), alpha=1, intercept=TRUE, standardize=FALSE, type.measure="class", type.multinomial="grouped")
+    #'@ lambda.index <- which(cv.fit$lambda==cv.fit$lambda.min) #or use lambda.min at the end
+    #'@ selected.variables <- unlist(predict(cv.fit, type="nonzero")[lambda.index])
+    #
+    ## if you want to put more variables back in:
+    #'@ refitting.variables <- sort(union(which(colnames(X)=="cyl"), selected.variables))
+    # or just set refitting.variables <- selected.variables
+    #
+    ##refit on the full data
+    #'@ mlogit.post.lasso <- multinom(hwy.factor ~ X[,refitting.variables], data=mpg.data)
+    ## 
+    
+    for (i in alpha) {
+      ## 4 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
+      ##            tmeasure = 'mae' or tmeasure = 'class'.
+      ## 2 models : tmultinomial = 'grouped' or tmultinomial = 'ungrouped'.
+      assign(paste('fit', i, sep = ''),
+             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                       alpha = i/10, family = 'multinomial', 
+                       type.multinomial = tmultinomial, maxit = maxit, nfolds = nfolds))
+    }; rm(i)
+    
+  } else if(family == 'cox') {
+    ## ------------------------------ cox ---------------------------------
+    ## Example : 
+    #'@ fit = glmnet(x , y ,family = "cox", maxit = 1000)
+    #'@ cv.fit = cv.glmnet(x , y ,family = "cox", maxit = 1000)
+    #'@ risk.fit <- predict(fit, newdata, s = cv.fit$lambda.1se)
+    #'@ risk.cv <- predict(cv.fit, newdata)
+    ##
+    
+    for (i in alpha) {
+      ## 1 model : tmeasure = 'cox'
+      assign(paste('fit', i, sep = ''),
+             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                       alpha = i/10, family = 'cox', maxit = maxit, nfolds = nfolds))
+    }; rm(i)
+    
+  } else {
+    stop('Kindly select family == "gaussian", family == "binomial", family == "poisson", family == "multinomial" or family == "cox".')
+  }
   
+  ## ==================== Models Comparison ===============================
   ## http://stackoverflow.com/questions/29311323/difference-between-glmnet-and-cv-glmnet-in-r?answertab=votes#tab-top
-  ## Never rely on glmnet's default lambda sequence! Notorious issue. Always provide your own sequence. Then get the optimal lambda value afterwards from fit$lambda.min and use it with the s=lambda.min parameter in all calls to predict(), coef() etc.
-  predict(fit1, s = 'lambda.min')
-  
-  ## testing...
-  ## http://faculty.chicagobooth.edu/max.farrell/bus41100/week8-Rcode.R
-  cv.glmnet(x = mxt[, 1:4], y = rowMeans(mxt[, 1:4]), family = 'multinomial', type.measure = 'class')
-  
-  ## not in slides
-  ## Lasso with multinomial logistic regression
-  ##take a random sample of the data to select variables. Doing cv.glmnet on the full data set can be very slow.
-  ##eventually, try it without this step (and remove all the [indexes.to.keep] and [indexes.to.keep,] from the glmnet command
-  indexes.to.keep <- sample(1:length(mpg.data$hwy.factor), 2000)
-  
-  X <- model.matrix(~(trans + cyl + displ)^2, mpg.data)
-  #need to subtract the intercept
-  X <- X[,-1]
-  
-  cv.fit <- cv.glmnet(X[indexes.to.keep,], mpg.data$hwy.factor[indexes.to.keep], family=c("multinomial"), alpha=1, intercept=TRUE, standardize=FALSE, type.measure="class", type.multinomial="grouped")
-  
-  lambda.index <- which(cv.fit$lambda==cv.fit$lambda.min) #or use lambda.min at the end
-  
-  selected.variables <- unlist(predict(cv.fit, type="nonzero")[lambda.index])
-  
-  ## if you want to put more variables back in:
-  refitting.variables <- sort(union(which(colnames(X)=="cyl"), selected.variables))
-  # or just set refitting.variables <- selected.variables
-  
-  ##refit on the full data
-  mlogit.post.lasso <- multinom(hwy.factor ~ X[,refitting.variables], data=mpg.data)
-  
-  
-  ## testing 2...
-  fit = glmnet(x , y ,family = "cox", maxit = 1000)
-  cv.fit = cv.glmnet(x , y ,family = "cox", maxit = 1000)
-  
-  risk.fit <- predict(fit, newdata, s = cv.fit$lambda.1se)
-  risk.cv <- predict(cv.fit, newdata)
+  ## Never rely on glmnet's default lambda sequence! Notorious issue. 
+  ##   Always provide your own sequence. Then get the optimal lambda value 
+  ##   afterwards from fit$lambda.min and use it with the s=lambda.min parameter 
+  ##   in all calls to predict(), coef() etc.
+  #'@ predict(fit1, s = 'lambda.min')
+  ## 
   
   ## http://stats.stackexchange.com/questions/121842/getting-to-predicted-values-using-cv-glmnet
-  cvFit <- cv.glmnet(x = as.matrix(imputedTrainingData[,2:33]), y = imputedTrainingData[,1], family = "binomial", type.measure = "class" )
-  
-  response<-predict(cvFit, as.matrix(imputedTestData[,2:33]), s= "lambda.min")
-  
-  response <- predict(cvFit, as.matrix(imputedTestData[,2:33]),
-                      s = "lambda.min",
-                      type = "class")
+  #'@ cvFit <- cv.glmnet(x = as.matrix(imputedTrainingData[,2:33]), 
+  #'@                    y = imputedTrainingData[,1], family = "binomial", 
+  #'@                    type.measure = "class" )
+  #'@ response<-predict(cvFit, as.matrix(imputedTestData[,2:33]), s= "lambda.min")
+  #'@ response <- predict(cvFit, as.matrix(imputedTestData[,2:33]), 
+  #'@                     s = "lambda.min",type = "class")
   ## where type = "class" has meaning:
   ## 
   ## Type ‘"class"’ applies only to
@@ -402,9 +407,77 @@ lmStocks <- function(mbase, family = 'binomial', alpha, yv = 'daily mean', tmeas
   ##   (link function), i.e. before the inverse of the logit function had been applied to 
   ##   yield probability of class == 1. This is fairly typical in R, and just as typically 
   ##   this behaviour can be controlled via a type argument.
+  ##
   
-  ## http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top
+  #'@ yhat0  <- predict(fit0 , s = fit0$lambda.1se , newx = x)
+  #'@ yhat1  <- predict(fit1 , s = fit1$lambda.1se , newx = x)
+  #'@ yhat2  <- predict(fit2 , s = fit2$lambda.1se , newx = x)
+  #'@ yhat3  <- predict(fit3 , s = fit3$lambda.1se , newx = x)
+  #'@ yhat4  <- predict(fit4 , s = fit4$lambda.1se , newx = x)
+  #'@ yhat5  <- predict(fit5 , s = fit5$lambda.1se , newx = x)
+  #'@ yhat6  <- predict(fit6 , s = fit6$lambda.1se , newx = x)
+  #'@ yhat7  <- predict(fit7 , s = fit7$lambda.1se , newx = x)
+  #'@ yhat8  <- predict(fit8 , s = fit8$lambda.1se , newx = x)
+  #'@ yhat9  <- predict(fit9 , s = fit9$lambda.1se , newx = x)
+  #'@ yhat10 <- predict(fit10, s = fit10$lambda.1se, newx = x)
   
+  ## evaluate all yhat0 to yhat10
+  eval(parse(text = paste(paste0('yhat', alpha, ' <- predict(fit', 
+                                 alpha, ', s = fit', alpha, '$', s, 
+                                 ', newx = x)'), collapse ='; ')))
   
-  return()
+  #'@ mse0  <- mean((yt - yhat0 )^2)
+  #'@ mse1  <- mean((yt - yhat1 )^2)
+  #'@ mse2  <- mean((yt - yhat2 )^2)
+  #'@ mse3  <- mean((yt - yhat3 )^2)
+  #'@ mse4  <- mean((yt - yhat4 )^2)
+  #'@ mse5  <- mean((yt - yhat5 )^2)
+  #'@ mse6  <- mean((yt - yhat6 )^2)
+  #'@ mse7  <- mean((yt - yhat7 )^2)
+  #'@ mse8  <- mean((yt - yhat8 )^2)
+  #'@ mse9  <- mean((yt - yhat9 )^2)
+  #'@ mse10 <- mean((yt - yhat10)^2)
+  
+  ## evaluate all mse0 to mse10
+  eval(parse(text = paste(paste0('mse', alpha, ' <- mean((yt - yhat', 
+                                 alpha, ')^2)'), collapse ='; ')))
+  
+  ## combine all mse0 to mse10 into a data.frame named mse
+  eval(parse(
+    text = paste0('mse <- t(data.frame(', paste(paste0('mse', alpha), 
+                                                collapse = ', '), '))')))
+  ## rm all mse0 to mse10
+  eval(parse(text = paste0('rm(', paste0(paste0('mse', alpha), 
+                                         collapse = ', '), ')')))
+  
+  mse %<>% data.frame(model = rownames(.), mse = .) %>% tbl_df
+  
+  ## ==================== Return Function ===============================
+  
+  #'@ eval(parse(
+  #'@   text = paste0('yhat <- list(', 
+  #'@                 paste(ls(envir = .GlobalEnv, pattern = "[yhat]"), '=', 
+  #'@                       ls(envir = .GlobalEnv, pattern = "[yhat]"), 
+  #'@                       collapse = ', '), ')')))
+  
+  ## combine all yhat0 to yhat10 into a list named yhat
+  eval(parse(text = paste0('yhat <- list(', paste(paste0('yhat', alpha), 
+                                                  collapse = ', '), ')')))
+  
+  ## rm all yhat0 to yhat10
+  eval(parse(text = paste0('rm(', paste0(paste0('yhat', alpha), 
+                                         collapse = ', '), ')')))
+  
+  ## combine all fit0 to fit10 into a list named fit
+  eval(parse(text = paste0('fit <- list(', paste(paste0('fit', alpha), 
+                                                  collapse = ', '), ')')))
+  
+  ## rm all fit0 to fit10
+  eval(parse(text = paste0('rm(', paste0(paste0('fit', alpha), 
+                                         collapse = ', '), ')')))
+  
+  tmp <- list(fit = fit, yhat = yhat, mse = mse)
+  options(warn = 0)
+  
+  return(tmp)
 }
