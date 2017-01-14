@@ -1,12 +1,16 @@
-lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean', 
-                     tmeasure = 'deviance', tmultinomial = 'grouped', maxit = 1000, 
-                     nfolds = 10, s = 'lambda.min', weight.date = FALSE, 
-                     weight.volume = FALSE, parallel = TRUE, .log = FALSE) {
+lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10, 
+                     yv = 'daily.mean', tmeasure = 'deviance', tmultinomial = 'grouped', 
+                     maxit = 1000, pred.type = 'class', nfolds = 10, foldid = NULL, 
+                     s = 'lambda.min', weight.date = FALSE, weight.volume = FALSE, 
+                     parallel = TRUE, .log = FALSE) {
   ## mbase = default AAPL or in data frame format.
   ## 
-  ## family = 'gaussian', 'binomial', 'poisson', 'multinomial and 'cox'.
+  ## family = 'gaussian', 'binomial', 'poisson', 'multinomial, 'cox' and 'mgaussian'.
   ## 
-  ## alpha from 0, 0.1, 0.2 ... until 1.0. Ridge is alpha = 0; Elastic Net is 0 < alpha < 1; Lasso is alpha = 1
+  ## xy.matrix = 'h1' or xy.matrix = 'h2'. setting x and y variables.
+  ## 
+  ## alpha from 0, 0.1, 0.2 ... until 1.0. Ridge is alpha = 0; 
+  ##   Elastic Net is 0 < alpha < 1; Lasso is alpha = 1
   ## 
   ## yv = "daily.mean", yv = "baseline" or yv = "mixed" to model the y (respondence variables)
   ## 
@@ -17,7 +21,12 @@ lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean'
   ## default glmnet is maxit = 100000 but it will be error if there is high volume data.
   ##   therefore I set as maxit = 1000.
   ## 
+  ## pred.type = "link", pred.type = "response", pred.type = "coefficients", 
+  ## pred.type = "nonzero", pred.type = "class"
+  ## 
   ## default nfolds = 10 for cv.glmnet().
+  ## 
+  ## default foldid = NULL. You can choose foldid among nfolds. Once choose nfold will be missing.
   ## 
   ## Never rely on glmnet's default lambda sequence! Notorious issue. 
   ## Always provide your own sequence. Then get the optimal lambda value 
@@ -86,10 +95,36 @@ lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean'
     nfolds <- nfolds
   } else if(is.character(nfolds)) {
     if(anyNA(suppressAll(as.numeric(nfolds)))) {
-      stop('nfolds must be a numeric number from 1 to 10.')
+      stop('nfolds must be a numeric from 1 to 10.')
     } else {
       nfolds <- as.numeric(nfolds)
     }    
+  }
+  
+  ## once set foldid the nfold will be missing.
+  if(is.numeric(foldid)) {
+    foldid <- foldid
+  } else if(is.character(foldid)) {
+    if(anyNA(suppressAll(as.numeric(foldid)))) {
+      stop('foldid must be a numeric vector from 1 to 10.')
+    } else {
+      foldid <- as.numeric(foldid)
+    }    
+  }
+  
+  # default is pred.type = 'class'
+  if(pred.type == 'link') {
+    pred.type <- pred.type
+  } else if(pred.type == 'response') {
+    pred.type <- pred.type
+  } else if(pred.type == 'coefficients') {
+    pred.type <- pred.type
+  } else if(pred.type == 'nonzero') {
+    pred.type <- pred.type
+  } else if(pred.type == 'class') {
+    pred.type <- pred.type
+  } else {
+    stop('Kindly select pred.type = "link", pred.type = "response", pred.type = "coefficients", pred.type = "nonzero", pred.type = "class".')
   }
   
   ## ========================= Respondence Variable =================================
@@ -124,31 +159,63 @@ lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean'
   # {glmnet} - generalized linear models
   # {pROC} - ROC tools
   
-  h <- function(ddt) {
-    #AAPLDT_DF <- AAPLDT[, 1:5] %>% gather(Category, Price, AAPL.Open:AAPL.Close) %>% 
-    #  mutate(Date = as.character(Date), Category = factor(
-    #    Category, levels = c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')), 
-    #    wt = 1, b0 = Price / first(Price)) #set `Date` as a ccategory variable.
+  h <- function(ddt, xy.matrix = 'h1', .log = .log) {
     
-    ddt_DF <- ddt[, 1:5] %>% gather(Category, Price, AAPL.Open:AAPL.Close) %>% 
-      mutate(Category = factor(
-        Category, levels = c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')))
-         #let `Date` be numeric variable as convert by system.
+    if(xy.matrix == 'h1') {
+      
+      #AAPLDT_DF <- AAPLDT[, 2:5] %>% gather(Category, Price, AAPL.Open:AAPL.Close) %>% 
+      #  mutate(Date = as.character(Date), Category = factor(
+      #    Category, levels = c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')), 
+      #    wt = 1, b0 = Price / first(Price)) #set `Date` as a category variable.
+      
+      ddt_DF <- ddt[, 1:5] %>% gather(Category, Price, AAPL.Open:AAPL.Close) %>% 
+        mutate(Category = factor(
+          Category, levels = c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')))
+          #let `Date` be numeric variable as convert by system.
+      
+      Y <- ddt_DF %>% mutate(wt = 1, b0 = Price / first(Price))
+      Y <- ddply(Y, .(Date), transform, dmean = mean(Price)) %>% tbl_df
+      #> mean(y$b0)
+      #[1] 1.009086
+      
+      ddt_DF <- ddt_DF[, -1]
+      Y <- Y[-c(1:3)]
+      
+      ## ----------------- start omit below codes ---------------------------------------
+      #'@ contrasts(AAPLDT_DF$Category) <- contr.treatment(AAPLDT_DF$Category)
+      #'@ attr(AAPLDT_DF$Category, 'levels') <- c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')
+      #'@ attr(AAPLDT_DF$Category,'contrasts') <- contrasts(C(factor(AAPLDT_DF$Category), 'contr.treatment'))
+      
+      #'@ tmp <- model.matrix(Category ~ Date + Price + wt + b0, data = AAPLDT_DF) %>% 
+      #'@   tbl_df %>% mutate(Category = AAPLDT_DF$Category)
+      ## -------------------------- end omit codes ---------------------------------------
+      
+      ## 
+      ## http://stats.stackexchange.com/questions/136085/is-it-posible-to-use-factor-categorical-variables-in-glmnet-for-logistic-regre
+      ## glmnet cannot take factor directly, you need to transform factor variables to dummies. 
+      ##    It is only one simple step using model.matrix, for instance:
+      # 
+      #'@ x_train <- model.matrix( ~ .-1, train[,features])
+      #'@ lm = cv.glmnet(x=x_train,y = as.factor(train$y), intercept=FALSE ,family = "binomial", alpha=1, nfolds=7)
+      #'@ best_lambda <- lm$lambda[which.min(lm$cvm)]
+      # 
+      ## alpha=1 will build a LASSO.
+      ## 
+      
+    } else if(xy.matrix == 'h2') {
+      ddt_DF <- ddt[, 2:5]
+      Y <- ddt_DF %>% mutate(dmean = rowMeans(.), wt = 1, b0 = dmean / first(dmean))
+      Y <- Y[c('wt', 'b0', 'dmean')]
+      
+    } else {
+      stop('Kindly set xy.matrix = "h1" or xy.matrix = "h2".')
+    }
     
-    Y <- ddt_DF %>% mutate(wt = 1, b0 = Price / first(Price))
-    Y <- ddply(Y, .(Date), transform, dmean = mean(Price)) %>% tbl_df
-    #> mean(y$b0)
-    #[1] 1.009086
-    
-    ## ----------------- start omit below codes ---------------------------------------
-    #'@ contrasts(AAPLDT_DF$Category) <- contr.treatment(AAPLDT_DF$Category)
-    #'@ attr(AAPLDT_DF$Category, 'levels') <- c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')
-    #'@ attr(AAPLDT_DF$Category,'contrasts') <- contrasts(C(factor(AAPLDT_DF$Category), 'contr.treatment'))
-    
-    #'@ tmp <- model.matrix(Category ~ Date + Price + wt + b0, data = AAPLDT_DF) %>% 
-    #'@   tbl_df %>% mutate(Category = AAPLDT_DF$Category)
-    ## -------------------------- end omit codes ---------------------------------------
-    tmp <- list(x = sparse.model.matrix(~ -1 + ., ddt_DF[, -1]), y = Y)
+    if(.log == TRUE) {
+      ddt_DF %<>% mutate_each(funs(log))
+      Y %<>% mutate_each(funs(log))
+    }
+    tmp <- list(x = sparse.model.matrix(~ -1 + ., ddt_DF), y = Y)
     
     return(tmp)
   }
@@ -177,7 +244,8 @@ lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean'
   #ridge.coef <- (coef(ridge.fit.cv, s = ridge.fit.lambda))[-1]
   #
   ## Get coefficients "by definition"
-  #ridge.coef.DEF <- drop(solve(crossprod(X) + diag(n.tmp * ridge.fit.lambda, p.tmp), crossprod(X, Y)))
+  #ridge.coef.DEF <- drop(solve(crossprod(X) + diag(n.tmp * ridge.fit.lambda, p.tmp), 
+  #   crossprod(X, Y)))
   #
   ## Plot estimates
   #plot(ridge.coef, type = "l", ylim = range(c(ridge.coef, ridge.coef.DEF)),
@@ -192,11 +260,12 @@ lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean'
   #           resp = sum(((Price * wt * b0) - Price)^2) / nrow(x)) %>% tbl_df
   #xy <- join(x, y) %>% tbl_df
   #xy <- h(mbase)
-  eval(parse(text = paste(paste0(c('x', 'y'), ' <- h(mbase)[[', c('\'x\'', '\'y\''),']]'), 
-                          collapse = '; ')))
+  eval(parse(
+    text = paste(paste0(c('x', 'y'), 
+                        ' <- h(mbase, xy.matrix = xy.matrix, .log = .log)[[', 
+                        c('\'x\'', '\'y\''),']]'), collapse = '; ')))
   
   ## ======================= Parameter Adjustment ==================================
-  if(.log == TRUE) y %<>% mutate(b0 = log(b0), dmean =log(dmean))
   
   yt <- rep(0, nrow(y))
   if(yv == 'daily.mean') { 
@@ -282,7 +351,8 @@ lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean'
       ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
       assign(paste('fit', i, sep = ''),
              cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'gaussian', maxit = maxit, nfolds = nfolds))
+                       alpha = i/10, family = 'gaussian', type = pred.type, 
+                       maxit = maxit, nfolds = nfolds, foldid = foldid))
       }; rm(i)
     
   } else if(family == 'binomial') {
@@ -315,7 +385,8 @@ lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean'
       ##            tmeasure = 'auc'.
       assign(paste('fit', i, sep = ''),
              cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'binomial', maxit = maxit, nfolds = nfolds))
+                       alpha = i/10, family = 'binomial', type = pred.type, 
+                       maxit = maxit, nfolds = nfolds, foldid = foldid))
     }; rm(i)
     
   } else if(family == 'poisson') {
@@ -324,7 +395,8 @@ lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean'
       ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
       assign(paste('fit', i, sep = ''),
              cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'poisson', maxit = maxit, nfolds = nfolds))
+                       alpha = i/10, family = 'poisson', type = pred.type, 
+                       maxit = maxit, nfolds = nfolds, foldid = foldid))
     }; rm(i)
     
   } else if(family == 'multinomial') {
@@ -358,7 +430,8 @@ lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean'
       assign(paste('fit', i, sep = ''),
              cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
                        alpha = i/10, family = 'multinomial', 
-                       type.multinomial = tmultinomial, maxit = maxit, nfolds = nfolds))
+                       type.multinomial = tmultinomial, type = pred.type, 
+                       maxit = maxit, nfolds = nfolds, foldid = foldid))
     }; rm(i)
     
   } else if(family == 'cox') {
@@ -374,11 +447,23 @@ lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean'
       ## 1 model : tmeasure = 'cox'
       assign(paste('fit', i, sep = ''),
              cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'cox', maxit = maxit, nfolds = nfolds))
+                       alpha = i/10, family = 'cox', type = pred.type, 
+                       maxit = maxit, nfolds = nfolds, foldid = foldid))
     }; rm(i)
     
-  } else {
-    stop('Kindly select family == "gaussian", family == "binomial", family == "poisson", family == "multinomial" or family == "cox".')
+  }  else if(family == 'mgaussian') {
+    ## ------------------------------ mgaussian ---------------------------------
+    
+    for (i in alpha) {
+      ## 1 model : tmeasure = 'mgaussian'
+      assign(paste('fit', i, sep = ''),
+             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                       alpha = i/10, family = 'mgaussian', type = pred.type, 
+                       maxit = maxit, nfolds = nfolds, foldid = foldid))
+    }; rm(i)
+    
+  }else {
+    stop('Kindly select family == "gaussian", family == "binomial", family == "poisson", family == "multinomial", family == "cox" or family == "mgaussian".')
   }
   
   ## ==================== Models Comparison ===============================
@@ -421,10 +506,21 @@ lmStocks <- function(mbase, family = 'gaussian', alpha = 0:10, yv = 'daily.mean'
   #'@ yhat9  <- predict(fit9 , s = fit9$lambda.1se , newx = x)
   #'@ yhat10 <- predict(fit10, s = fit10$lambda.1se, newx = x)
   
+  ## 
+  ## how to get probabilities between 0 and 1 using glmnet logistic regression
+  ## http://stackoverflow.com/questions/26806902/how-to-get-probabilities-between-0-and-1-using-glmnet-logistic-regression
+  ## 
+  ## In your predict call you need the type="response" argument set. As per the 
+  ##   documentation it returns the fitted probabilities.
+  #'@ pred = predict(fit, s='lambda.min', newx=x_test, type="response")
+  ## Also, if you are just wanted the classification labels you can use type="class"
+  ## 
+  
   ## evaluate all yhat0 to yhat10
   eval(parse(text = paste(paste0('yhat', alpha, ' <- predict(fit', 
                                  alpha, ', s = fit', alpha, '$', s, 
-                                 ', newx = x)'), collapse ='; ')))
+                                 ', newx = x, type = \'', pred.type, ', \')'), 
+                          collapse ='; ')))
   
   #'@ mse0  <- mean((yt - yhat0 )^2)
   #'@ mse1  <- mean((yt - yhat1 )^2)
