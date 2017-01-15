@@ -5,7 +5,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
                      parallel = TRUE, .log = FALSE) {
   ## mbase = default AAPL or in data frame format.
   ## 
-  ## family = 'gaussian', 'binomial', 'poisson', 'multinomial, 'cox' and 'mgaussian'.
+  ## family = 'gaussian', 'binomial', 'poisson', 'multinomial', 'cox' and 'mgaussian'.
   ## 
   ## xy.matrix = 'h1' or xy.matrix = 'h2'. setting x and y variables.
   ## 
@@ -54,7 +54,15 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   suppressAll(library('broom'))
   suppressAll(library('parallel'))
   suppressAll(library('doParallel'))
-  doParallel::registerDoParallel(cores = parallel::detectCores())
+  suppressAll(library('foreach'))
+  
+  #'@ doParallel::registerDoParallel(cores = parallel::detectCores())
+  
+  ## https://github.com/tobigithub/R-parallel/wiki/R-parallel-Errors
+  ### Register parallel backend
+  cl <- makeCluster(detectCores())
+  registerDoParallel(cl)
+  getDoParWorkers()
   
   ## ======================= Data Validation ===================================
   if(is.xts(mbase)) {
@@ -76,6 +84,8 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
     } else {
       alpha <- as.numeric(alpha)
     }    
+  } else {
+    stop('alpha must be minimum 1 to maximum 10 numbers which is within 0:10.')
   }
   
   ## default glmnet is maxit = 100000 but it will be error if there is high volume data.
@@ -88,30 +98,50 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
     } else {
       maxit <- as.numeric(maxit)
     }    
+  } else {
+    stop('maxit must be a numeric number from 1 to Inf.')
   }
   
   ## default is nfolds = 10.
-  if((is.numeric(nfolds)) & (length(nfolds) == 1)) {
-    nfolds <- nfolds
-  } else if(is.character(nfolds)) {
-    if(anyNA(suppressAll(as.numeric(nfolds)))) {
-      stop('nfolds must be a numeric from 1 to 10.')
+  if(!is.null(nfolds)) {
+    if((is.numeric(nfolds)) & (length(nfolds) == 1) & (nfolds > 0 & nfolds <= 10)) {
+      nfolds <- nfolds
+      foldid <- NULL
+    } else if(is.character(nfolds)) {
+      if(anyNA(suppressAll(as.numeric(nfolds)))) {
+        stop('nfolds must be a numeric from 1 to 10.')
+      } else {
+        nfolds <- as.numeric(nfolds)
+        foldid <- NULL
+      }
     } else {
-      nfolds <- as.numeric(nfolds)
-    }    
+      stop('nfolds must be a numeric from 1 to 10.')
+    }
+  } else  {
+    nfolds <- NULL
+    foldid <- foldid
   }
   
   ## once set foldid the nfold will be missing.
-  if(is.numeric(foldid)) {
-    foldid <- foldid
-  } else if(is.character(foldid)) {
-    if(anyNA(suppressAll(as.numeric(foldid)))) {
-      stop('foldid must be a numeric vector from 1 to 10.')
+  if(!is.null(foldid)) {
+    if(is.numeric(foldid) * (foldid %in% 1:10)) {
+      foldid <- foldid
+      nfolds <- NULL
+    } else if(is.character(foldid)) {
+      if(anyNA(suppressAll(as.numeric(foldid)))) {
+        stop('foldid must be a numeric vector from 1 to 10.')
+      } else {
+        foldid <- as.numeric(foldid)
+        nfolds <- NULL
+      }
     } else {
-      foldid <- as.numeric(foldid)
-    }    
+      stop('foldid must be a numeric vector from 1 to 10.')
+    }
+  } else {
+    foldid <- NULL
+    nfolds <- nfolds
   }
-  
+    
   # default is pred.type = 'class'
   if(pred.type == 'link') {
     pred.type <- pred.type
@@ -267,6 +297,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   
   ## ======================= Parameter Adjustment ==================================
   
+  ## response parameters.
   yt <- rep(0, nrow(y))
   if(yv == 'daily.mean') { 
     yt <- y$dmean
@@ -277,6 +308,19 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   } else {
     stop('Kindly select yv = "daily.mean", yv = "baseline" or yv = "mixed".')
   }
+  
+  ## -------------------- start need to modify ------------------------------
+  ## weight parameters.
+  if(weight.date == FALSE) {
+    wetd <- rep(1, nrow(y))
+  }
+  
+  if(weight.volume == FALSE) {
+    wetv <- rep(1, nrow(y))
+  }
+  
+  wt <- wetd * wetv
+  ## --------------------- end need to modify ------------------------------
   
   ## “lambda.1se”: the largest λλ at which the MSE is within one standard error of the minimal MSE.
   ## “lambda.min”: the λλ at which the minimal MSE is achieved.
@@ -346,14 +390,25 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
     ## http://stackoverflow.com/questions/17887747/how-does-glmnets-standardize-argument-handle-dummy-variables?answertab=votes#tab-top
     ## If you take a look at the R function, glmnet codes the standardize parameter internally as `isd = as.integer(standardize)`.
     ## 
-    
-    for (i in alpha) {
-      ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
-      assign(paste('fit', i, sep = ''),
-             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'gaussian', type = pred.type, 
-                       maxit = maxit, nfolds = nfolds, foldid = foldid))
+    if(!is.null(nfolds)) {
+      for (i in alpha) {
+        ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'gaussian', 
+                         weights = wt, maxit = maxit, nfolds = nfolds))
       }; rm(i)
+    }
+    
+    if(!is.null(foldid)) {
+      for (i in alpha) {
+        ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'gaussian', 
+                         weights = wt, maxit = maxit, foldid = foldid))
+      }; rm(i)
+    }
     
   } else if(family == 'binomial') {
     ## -------------------------- binomial --------------------------------
@@ -379,25 +434,52 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
     #'@ betas <- coef(cvfit, s = "lambda.1se")
     #'@ model.1se <- which(betas[2:length(betas)]!=0)
     
-    for (i in alpha) {
-      ## 5 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
-      ##            tmeasure = 'mae' or tmeasure = 'class' or 
-      ##            tmeasure = 'auc'.
-      assign(paste('fit', i, sep = ''),
-             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'binomial', type = pred.type, 
-                       maxit = maxit, nfolds = nfolds, foldid = foldid))
-    }; rm(i)
+    if(!is.null(nfolds)) {
+      for (i in alpha) {
+        ## 5 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
+        ##            tmeasure = 'mae' or tmeasure = 'class' or 
+        ##            tmeasure = 'auc'.
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'binomial', 
+                         weights = wt, maxit = maxit, nfolds = nfolds))
+      }; rm(i)
+    }
+    
+    if(!is.null(foldid)) {
+      for (i in alpha) {
+        ## 5 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
+        ##            tmeasure = 'mae' or tmeasure = 'class' or 
+        ##            tmeasure = 'auc'.
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'binomial', 
+                         weights = wt, maxit = maxit, foldid = foldid))
+      }; rm(i)
+    }
     
   } else if(family == 'poisson') {
     ## -------------------------- poisson ---------------------------------
-    for (i in alpha) {
-      ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
-      assign(paste('fit', i, sep = ''),
-             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'poisson', type = pred.type, 
-                       maxit = maxit, nfolds = nfolds, foldid = foldid))
-    }; rm(i)
+    
+    if(!is.null(nfolds)) {
+      for (i in alpha) {
+        ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'poisson', 
+                         weights = wt, maxit = maxit, nfolds = nfolds))
+      }; rm(i)
+    }
+    
+    if(!is.null(foldid)) {
+      for (i in alpha) {
+        ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'poisson', 
+                         weights = wt, maxit = maxit, foldid = foldid))
+      }; rm(i)
+    }
     
   } else if(family == 'multinomial') {
     ## ----------------------- multinomial --------------------------------
@@ -423,16 +505,31 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
     #'@ mlogit.post.lasso <- multinom(hwy.factor ~ X[,refitting.variables], data=mpg.data)
     ## 
     
-    for (i in alpha) {
-      ## 4 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
-      ##            tmeasure = 'mae' or tmeasure = 'class'.
-      ## 2 models : tmultinomial = 'grouped' or tmultinomial = 'ungrouped'.
-      assign(paste('fit', i, sep = ''),
-             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'multinomial', 
-                       type.multinomial = tmultinomial, type = pred.type, 
-                       maxit = maxit, nfolds = nfolds, foldid = foldid))
-    }; rm(i)
+    if(!is.null(nfolds)) {
+      for (i in alpha) {
+        ## 4 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
+        ##            tmeasure = 'mae' or tmeasure = 'class'.
+        ## 2 models : tmultinomial = 'grouped' or tmultinomial = 'ungrouped'.
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'multinomial', 
+                         type.multinomial = tmultinomial, 
+                         weights = wt, maxit = maxit, nfolds = nfolds))
+      }; rm(i)
+    }
+    
+    if(!is.null(foldid)) {
+      for (i in alpha) {
+        ## 4 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
+        ##            tmeasure = 'mae' or tmeasure = 'class'.
+        ## 2 models : tmultinomial = 'grouped' or tmultinomial = 'ungrouped'.
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'multinomial', 
+                         type.multinomial = tmultinomial, 
+                         weights = wt, maxit = maxit, foldid = foldid))
+      }; rm(i)
+    }
     
   } else if(family == 'cox') {
     ## ------------------------------ cox ---------------------------------
@@ -443,27 +540,51 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
     #'@ risk.cv <- predict(cv.fit, newdata)
     ##
     
-    for (i in alpha) {
-      ## 1 model : tmeasure = 'cox'
-      assign(paste('fit', i, sep = ''),
-             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'cox', type = pred.type, 
-                       maxit = maxit, nfolds = nfolds, foldid = foldid))
-    }; rm(i)
+    if(!is.null(nfolds)) {
+      for (i in alpha) {
+        ## 1 model : tmeasure = 'cox'
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'cox', 
+                         weights = wt, maxit = maxit, nfolds = nfolds))
+      }; rm(i)
+    }
+    
+    if(!is.null(foldid)) {
+      for (i in alpha) {
+        ## 1 model : tmeasure = 'cox'
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'cox', 
+                         weights = wt, maxit = maxit, foldid = foldid))
+      }; rm(i)
+    }
     
   }  else if(family == 'mgaussian') {
     ## ------------------------------ mgaussian ---------------------------------
     
-    for (i in alpha) {
-      ## 1 model : tmeasure = 'mgaussian'
-      assign(paste('fit', i, sep = ''),
-             cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
-                       alpha = i/10, family = 'mgaussian', type = pred.type, 
-                       maxit = maxit, nfolds = nfolds, foldid = foldid))
-    }; rm(i)
+    if(!is.null(nfolds)) {
+      for (i in alpha) {
+        ## 1 model : tmeasure = 'mgaussian'
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'mgaussian', 
+                         weights = wt, maxit = maxit, nfolds = nfolds))
+      }; rm(i)
+    }
+    
+    if(!is.null(foldid)) {
+      for (i in alpha) {
+        ## 1 model : tmeasure = 'mgaussian'
+        assign(paste('fit', i, sep = ''),
+               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+                         alpha = i/10, family = 'mgaussian', 
+                         weights = wt, maxit = maxit, foldid = foldid))
+      }; rm(i)
+    }
     
   }else {
-    stop('Kindly select family == "gaussian", family == "binomial", family == "poisson", family == "multinomial", family == "cox" or family == "mgaussian".')
+    stop('Kindly select family = "gaussian", family = "binomial", family = "poisson", family = "multinomial", family = "cox" or family = "mgaussian".')
   }
   
   ## ==================== Models Comparison ===============================
@@ -519,7 +640,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   ## evaluate all yhat0 to yhat10
   eval(parse(text = paste(paste0('yhat', alpha, ' <- predict(fit', 
                                  alpha, ', s = fit', alpha, '$', s, 
-                                 ', newx = x, type = \'', pred.type, ', \')'), 
+                                 ', newx = x, type = \'', pred.type, '\')'), 
                           collapse ='; ')))
   
   #'@ mse0  <- mean((yt - yhat0 )^2)
@@ -573,6 +694,10 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
                                          collapse = ', '), ')')))
   
   tmp <- list(fit = fit, yhat = yhat, mse = mse)
+  
+  ### Stop cluster
+  stopCluster(cl)
+  
   options(warn = 0)
   
   return(tmp)

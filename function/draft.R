@@ -47,6 +47,13 @@ weight.volume = FALSE   #weight.volume is ...
 pred.type = 'class'     #pred.type %in% c('link', 'response', 'coefficients', 'nonzero', 'class')
 nfolds = 10
 
+## args(lmStocks) setting for all models.
+#'@ mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10, 
+#'@ yv = 'daily.mean', tmeasure = 'deviance', tmultinomial = 'grouped', 
+#'@ maxit = 1000, pred.type = 'class', nfolds = 10, foldid = NULL, 
+#'@ s = 'lambda.min', weight.date = FALSE, weight.volume = FALSE, 
+#'@ parallel = TRUE, .log = FALSE
+## 
 
 ## ------------------ 1. Linear Regression : Gaussian --------------------------------
 ## ------ 1. 1A gaussian (daily.mean + deviance + lambda.min) ------------------------
@@ -633,3 +640,113 @@ mmse <- llply(compr, function(x) x$mse)
 names(mmse) <- ls(envir = .GlobalEnv, pattern = "lm1")
 mmse %<>% ldply %>% tbl_df
 filter(mmse, mse == min(mse))
+
+
+###############################################################################################
+## ============================== Modified Comparison Models ==================================
+###############################################################################################
+suppressPackageStartupMessages(library("BBmisc"))
+suppressAll(library('devtools'))
+suppressAll(library('lubridate'))
+suppressAll(library('plyr'))
+suppressAll(library('stringr'))
+suppressAll(library('magrittr'))
+suppressAll(library('dplyr'))
+suppressAll(library('tidyr'))
+suppressAll(library('readr'))
+suppressAll(library('tidyverse')) #load c(dplyr, tidyr, stringr, readr) due to system doesn't work.
+suppressAll(library("shiny"))
+suppressAll(library("shinyjs"))
+suppressAll(library('shinyBS'))
+suppressAll(library('DT'))
+suppressAll(library('quantmod'))
+suppressAll(library('formattable'))
+suppressAll(library('highcharter'))
+suppressAll(library('PerformanceAnalytics'))
+suppressAll(library('memoise'))
+#'@ suppressAll(source('./function/lmStocks.R'))
+suppressMessages(source('./function/compStocks.R'))
+
+tryCatch({
+  suppressAll(getSymbols('AAPL', from = '2015-01-01'))
+  if(exists('AAPL')) saveRDS(AAPL, file = './data/AAPL.rds')
+}, error = function(e) AAPL <- read_rds(path = './data/AAPL.rds'))
+
+if(!exists('AAPL')) AAPL <- read_rds(path = './data/AAPL.rds')
+
+AAPLDT <- AAPL %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
+  tbl_df %>% mutate(Date = ymd(Date))#, 
+#AAPL.Volume = formattable::digits(
+#AAPL.Volume, 0, format = 'd', big.mark = ','))
+dateID <- AAPLDT$Date
+
+families <- c('gaussian', 'binomial', 'poisson', 'multinomial', 'cox', 'mgaussian', 'all')
+gsfit <- compStocks(AAPLDT, family = families[1])
+bnfit <- compStocks(AAPLDT, family = families[2])
+psfit <- compStocks(AAPLDT, family = families[3])
+mnfit <- compStocks(AAPLDT, family = families[4])
+cxfit <- compStocks(AAPLDT, family = families[5])
+mgfit <- compStocks(AAPLDT, family = families[6])
+alfit <- compStocks(AAPLDT, family = families[7])
+
+ldply(gsfit$fit, function(x) x$mse) %>% tbl_df
+ldply(bnfit$fit, function(x) x$mse) %>% tbl_df
+ldply(psfit$fit, function(x) x$mse) %>% tbl_df
+ldply(mnfit$fit, function(x) x$mse) %>% tbl_df
+ldply(cxfit$fit, function(x) x$mse) %>% tbl_df
+ldply(mgfit$fit, function(x) x$mse) %>% tbl_df
+ldply(alfit$fit, function(x) x$mse) %>% tbl_df
+
+ldply(gsfit$fit, function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
+# A tibble: 18 × 3
+#.id  model          mse
+#<chr> <fctr>        <dbl>
+#1   fitgaum97   mse0 9.847582e-06
+#2   fitgaum98   mse0 9.847582e-06
+#3   fitgaum99   mse0 9.847582e-06
+#4  fitgaum100   mse0 9.847582e-06
+#5  fitgaum103   mse0 9.847582e-06
+#6  fitgaum104   mse0 9.847582e-06
+#7  fitgaum105   mse0 9.847582e-06
+#8  fitgaum106   mse0 9.847582e-06
+#9  fitgaum107   mse0 9.847582e-06
+#10 fitgaum108   mse0 9.847582e-06
+#11 fitgaum111   mse0 9.847582e-06
+#12 fitgaum112   mse0 9.847582e-06
+#13 fitgaum113   mse0 9.847582e-06
+#14 fitgaum114   mse0 9.847582e-06
+#15 fitgaum115   mse0 9.847582e-06
+#16 fitgaum116   mse0 9.847582e-06
+#17 fitgaum119   mse0 9.847582e-06
+#18 fitgaum120   mse0 9.847582e-06
+gsfit$formula1[c(97:100, 103:108, 111:116, 119:120)]
+
+
+#> ldply(psfit$fit, function(x) x$mse) %>% tbl_df
+# A tibble: 1,188 × 3
+#.id  model      mse
+#<chr> <fctr>    <dbl>
+#1  fitpoim1   mse0 11713.62
+#2  fitpoim1   mse1 11713.62
+#3  fitpoim1   mse2 11713.62
+#4  fitpoim1   mse3 11713.62
+#5  fitpoim1   mse4 11713.62
+#6  fitpoim1   mse5 11713.62
+#7  fitpoim1   mse6 11713.62
+#8  fitpoim1   mse7 11713.62
+#9  fitpoim1   mse8 11713.62
+#10 fitpoim1   mse9 11713.62
+# ... with 1,178 more rows
+
+#> ldply(fitpoim, function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
+# A tibble: 2 × 3
+#.id  model          mse
+#<chr> <fctr>        <dbl>
+#1 fitpoim75   mse2 2.375528e-05
+#2 fitpoim81   mse2 2.375528e-05
+
+#> poim[c(75, 81)]
+#[1] "lmStocks(mbase, family = family, xy.matrix = 'h2', alpha = alpha, yv = 'baseline', tmeasure = 'deviance', maxit = maxit, pred.type = 'response', nfolds = nfolds, foldid = foldid, s = 'lambda.min', weight.date = 'FALSE', weight.volume = 'FALSE', parallel = parallel, .log = .log)"
+#[2] "lmStocks(mbase, family = family, xy.matrix = 'h2', alpha = alpha, yv = 'baseline', tmeasure = 'mse', maxit = maxit, pred.type = 'response', nfolds = nfolds, foldid = foldid, s = 'lambda.min', weight.date = 'FALSE', weight.volume = 'FALSE', parallel = parallel, .log = .log)"
+
+
