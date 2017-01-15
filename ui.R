@@ -26,7 +26,9 @@ ui <- shinyUI(fluidPage(
       navbarPage('Shiny App', 
         
       tabPanel('Job Discription', h4('Quantitative Analyst at Binary.com'), 
-               tags$iframe(src='https://angel.co/binary-com-1/jobs/145277-quantitative-analyst', height = 800, width = '100%', frameborder = 0)),#, seamless = 'seamless')), #seamless will hide the scroller.
+               tags$iframe(src='https://angel.co/binary-com-1/jobs/145277-quantitative-analyst', 
+                           height = 800, width = '100%', frameborder = 0)),
+      #, seamless = 'seamless')), #seamless will hide the scroller.
       
       tabPanel('Interview Questionaire', 
                tabsetPanel(
@@ -45,13 +47,15 @@ ui <- shinyUI(fluidPage(
                                      p('I wish to win $', em('B'), ' if over the next days, ', 
                                        em('i'),' the ', em('y'),' has a high-low range
                                        [exceeding/not exceeding] ', em('p'), ' points.'), 
-                                       p('Implement the solution in the programming language of your choice.'), 
-                                       p('Example: I wish to win $1000 if over the next 7 days the USD/JPY has a high-low range exceeding
-                                       2 points.'), 
-                                       p('For example, if the USD/JPY has a range of low=98.45 and high=100.98 over the next 7 days, I will
-                                       win $1000 (because high minus low = 2.53 > 2).'), 
-                                       p('You can use Monte Carlo simulation to confirm/verify your results, but it shouldn\'t be the
-                                       primary solution. Please provide all the relevant details about the solution.')), 
+                                     p('Implement the solution in the programming language of your choice.'), 
+                                     p('Example: I wish to win $1000 if over the next 7 days the USD/JPY has 
+                                       a high-low range exceeding 2 points.'), 
+                                     p('For example, if the USD/JPY has a range of low=98.45 and high=100.98 
+                                       over the next 7 days, I will win $1000 (because high minus 
+                                       low = 2.53 > 2).'), 
+                                     p('You can use Monte Carlo simulation to confirm/verify your results, 
+                                       but it shouldn\'t be the primary solution. Please provide all the relevant 
+                                       details about the solution.')), 
                             tabPanel('Answer', 
                               sidebarLayout(
                                 sidebarPanel(
@@ -112,16 +116,28 @@ ui <- shinyUI(fluidPage(
                                   h4('Part I : Stock Price Modelling'), 
                                   p('Here I refer to papers in subtab ', strong('Reference') , ' under tab ', 
                                     strong('Appendix'), 'inside ', strong('MENU'), 
-                                    ' bar for stock price prediction as well as the investment fund management. You are feel free to read ', 
-                                    HTML("<a href='http://statweb.stanford.edu/~tibs/lasso/simple.html'>A simple explanation of the Lasso and Least Angle Regression</a>"), 
-                                    HTML("<a href='http://cos.name/2016/10/data-mining-1-lasso/'>Popular model for data mining (Part I) : Lasso Regression (Chinese)</a>"), 
-                                    HTML("<a href='http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html'>LASSO, Ridge, and Elastic Net</a>"), 
-                                    ' for understanding the LASSO model (if any).'), 
+                                    ' bar for stock price prediction as well as the investment fund management. 
+                                    You are feel free to read few articles as below for understanding the LASSO 
+                                    model (if any).', 
+                                    tags$ul(
+                                      tags$li(HTML("<a href='http://statweb.stanford.edu/~tibs/lasso/simple.html'>A simple explanation of the Lasso and Least Angle Regression</a>")), 
+                                      tags$li(HTML("<a href='http://cos.name/2016/10/data-mining-1-lasso/'>Popular model for data mining (Part I) : Lasso Regression (Chinese)</a>")), 
+                                      tags$li(HTML("<a href='http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html'>LASSO, Ridge, and Elastic Net</a>")))), 
                                   p('The dataset gather from 2014-01-01 until the latest trading day (unless unable connect to Yahoo and read local saved dataset.)', 
-                                     'Here I simply apply Lasso regression as below :', 
-                                    withMathJax(helpText('$$Y=\\sum_{j=1}^dX_j\\beta_j+e \\cdots equation\\ 1.1.1$$ where ', em('d'), ' is dimension and ', 
-                                                         em('Xo'), ' is baseline to make above equation valid.')), 'for stock price prediction.'), 
-                                  p('I dont\'t pretend to know the corrected model, here I tried quite some models to compare and get the best fit.'), 
+                                    'Here I simply apply Lasso regression as below :', 
+                                    withMathJax(helpText('$$Y=\\sum_{j=1}^dX_j\\beta_j+e \\cdots equation\\ 1.1.1$$')), 'Where', 
+                                                         tags$ul(
+                                                           tags$li(em('d'), ' is dimension of matrix Xj'), 
+                                                           tags$li(em('Xo'), ' is baseline'), 
+                                                           tags$li('A cost function for residuals measurement')
+                                                         ), 'to make above equation valid.'), 
+                                  p('I dont\'t pretend to know the corrected model, the paper', 
+                                    em('Sanjiban Sekhar Roy, Dishant Mittal, Avik Basu, and Ajith Abraham (2011)'), 
+                                    'using a linear model (gaussian model) with above criteria but here I test 
+                                    couples of models (includes 4 models which are \'gaussian\', \'poisson (log link)\', 
+                                    \'binomial (logit link)\' and \'multinomial (nominal response)\' but skip 2 
+                                    models which are \'cox\' and \'mgaussian\'.) to compare among them and get the 
+                                    best fit.'), 
                                   br(), 
                                   h4('Part II : Prediction'), 
                                   br(), 

@@ -5,7 +5,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
                      parallel = TRUE, .log = FALSE) {
   ## mbase = default AAPL or in data frame format.
   ## 
-  ## family = 'gaussian', 'binomial', 'poisson', 'multinomial', 'cox' and 'mgaussian'.
+  ## family = gaussian', 'binomial', 'poisson', 'multinomial', 'cox' and 'mgaussian'.
   ## 
   ## xy.matrix = 'h1' or xy.matrix = 'h2'. setting x and y variables.
   ## 
@@ -14,7 +14,8 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   ## 
   ## yv = "daily.mean", yv = "baseline" or yv = "mixed" to model the y (respondence variables)
   ## 
-  ## tmeasure is type.measure for residuals.
+  ## tmeasure is type.measure for residuals which is cost function.
+  ##   tmeasure = 'deviance', 'mse', 'mae', 'auc', 'class' and 'cox'.
   ## 
   ## tmultinomial is type.multinomial for which is "grouped" or "ungrouped".
   ## 
@@ -45,12 +46,36 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   
   ## ========================= Load Packages ===================================
   # http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection
+  # http://www4.stat.ncsu.edu/~reich/BigData/code/glmnet.html
+  
+  ## 
+  ## https://books.google.co.jp/books?id=uIDOBQAAQBAJ&pg=PA278&dq=cv.glmnet++binomial&hl=en&sa=X&redir_esc=y#v=onepage&q=cv.glmnet%20%20binomial&f=false
+  ## page278 : 
+  ## Although the LASSO estimates often result in better prediction than the 
+  ##   ordinary MLEs, subsequent inference procedures have not yet been fully 
+  ##   developed. For example, confidence intervals for regression parameters or 
+  ##   predicted values do not tey exists. Therefore the LASSO is used primarily 
+  ##   as a variable selection tool or for making predictions where interval 
+  ##   estimates are not required.
+  
   options(warn = -1)
   suppressPackageStartupMessages(library("BBmisc"))
   suppressAll(library('lubridate'))
   suppressAll(library('MASS'))
   suppressAll(library('glmnet'))
   suppressAll(library('Matrix'))
+  # useful::build.x() will convert the matrix into a dummy variable matrix.
+  # https://books.google.co.jp/books?id=EkpvAgAAQBAJ&pg=PA285&dq=cv.glmnet++binomial&hl=en&sa=X&redir_esc=y#v=onepage&q=cv.glmnet%20%20binomial&f=false
+  # page273:
+  # matrix.model() and sparse.matrix.model() both create a factor class into an 
+  #   ordered levels but will but only 0 and 1 if more than 2 levels. However, 
+  #   it is generally considered undesirable for the predictor matrix to be 
+  #   designed this way for the Elastic Net. It is possible to have model.matrix() 
+  #   return indicator variables for all levels of a factor, although doing so can 
+  #   take some creative coding. To make the rocess easier we incorporated a solution 
+  #   in the build.x() in the 'useful' package.
+  
+  suppressAll(library('useful'))
   suppressAll(library('broom'))
   suppressAll(library('parallel'))
   suppressAll(library('doParallel'))
@@ -245,6 +270,84 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
       ddt_DF %<>% mutate_each(funs(log))
       Y %<>% mutate_each(funs(log))
     }
+    
+    # useful::build.x() will convert the matrix into a dummy variable matrix.
+    # https://books.google.co.jp/books?id=EkpvAgAAQBAJ&pg=PA285&dq=cv.glmnet++binomial&hl=en&sa=X&redir_esc=y#v=onepage&q=cv.glmnet%20%20binomial&f=false
+    # page273:
+    # matrix.model() and sparse.matrix.model() both create a factor class into an 
+    #   ordered levels but will but only 0 and 1 if more than 2 levels. However, 
+    #   it is generally considered undesirable for the predictor matrix to be 
+    #   designed this way for the Elastic Net. It is possible to have model.matrix() 
+    #   return indicator variables for all levels of a factor, although doing so can 
+    #   take some creative coding. To make the rocess easier we incorporated a solution 
+    #   in the build.x() in the 'useful' package.
+    # 
+    # http://stackoverflow.com/questions/4560459/all-levels-of-a-factor-in-a-model-matrix-in-r
+    #'@ testFrame <- data.frame(First = sample(1:10, 20, replace = TRUE),
+    #'@                         Second = sample(1:20, 20, replace = TRUE), 
+    #'@                         Third = sample(1:10, 20, replace = TRUE),
+    #'@                         Fourth = rep(c("Alice", "Bob", "Charlie", "David"), 5),
+    #'@                         Fifth = rep(c("Edward", "Frank", "Georgia", "Hank", "Isaac"), 4))
+    # 
+    # You need to reset the contrasts for the factor variables:
+    #'@ model.matrix(~ Fourth + Fifth, data = testFrame, 
+    #'@              contrasts.arg = list(Fourth = contrasts(testFrame$Fourth, contrasts = FALSE), 
+    #'@                                   Fifth = contrasts(testFrame$Fifth, contrasts = FALSE)))
+    # 
+    #   or, with a little less typing and without the proper names:
+    # 
+    #'@ model.matrix(~ Fourth + Fifth, data = testFrame, 
+    #'@              contrasts.arg = list(Fourth = diag(nlevels(testFrame$Fourth)), 
+    #'@                                   Fifth = diag(nlevels(testFrame$Fifth))))
+    # 
+    #'@ model.matrix(~ ., data = testFrame, 
+    #'@              contrasts.arg = lapply(testFrame[, 4:5], contrasts, contrasts = FALSE))
+    # 
+    # page274
+    #'@ require('useful')
+    # always use all levels
+    #'@ build.x(First ~ Second + Fourth + Fifth, textFrame, contrasts = FALSE)
+    # 
+    # just use all levels for Fourth
+    #'@ build.x(First ~ Second + Fourth + Fifth, testFrame, contrasts = c(Fourth = FALSE, Fifth = TRUE))
+    # 
+    # Using build.x appropriately on `acs` dataset builds a nice predictor matrix for use in 
+    #   glmnet. We control the desired matrix by using a formula for our model 
+    #   specification just like we would in lm, interactions and all.
+    # 
+    # make a binary Income variable for building a logistic regression
+    #'@ acs$Income <- with(acs, FamilyIncome >= 150000)
+    # 
+    # page275
+    # build predictor matrix
+    # do not include the intercept as glmnet will add that automatically
+    #'@ acsX <- build.x(Income ~ NumBedrooms + NumChildren + NumPeople + 
+    #'@                 NumRooms + NumUnits + NumVehicles + NumWorkers + 
+    #'@                 OwnRent + YearBuilt + ElectricBill + FoodStamp + 
+    #'@                 HeatingFuel + Insurance + Language - 1, 
+    #'@                 data = acs, contrasts = FALSE)
+    # 
+    # check class and dimensions
+    #'@ class(acsX)
+    #[1] "matrix"
+    #'@ dim(acsX)
+    #[1] 22745 44
+    # 
+    # page275
+    # view the top left and top right of the data
+    #'@ topleft(acsX, c = 6)
+    #'@ topright(acsX, c = 6)
+    #
+    # build response predictor
+    #'@ acsY <- build.y(Income ~ NumBedrooms + NumChildren + NumPeople + 
+    #'@                 NumRooms + NumUnits + NumVehicles + NumWorkers + 
+    #'@                 OwnRent + YearBuilt + ElectricBill + FoodStamp + 
+    #'@                 HeatingFuel + Insurance + Language - 1, data = acs)
+    #
+    #'@ head(acsY)
+    #'@ tail(acsY)
+    # 
+    
     tmp <- list(x = sparse.model.matrix(~ -1 + ., ddt_DF), y = Y)
     
     return(tmp)
@@ -296,7 +399,6 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
                         c('\'x\'', '\'y\''),']]'), collapse = '; ')))
   
   ## ======================= Parameter Adjustment ==================================
-  
   ## response parameters.
   yt <- rep(0, nrow(y))
   if(yv == 'daily.mean') { 
@@ -322,7 +424,10 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   wt <- wetd * wetv
   ## --------------------- end need to modify ------------------------------
   
-  ## “lambda.1se”: the largest λλ at which the MSE is within one standard error of the minimal MSE.
+  ## ======================= Cost Function ==================================
+  ## “lambda.1se”: the largest λλ at which the MSE is within one standard error 
+  ##    of the minimal MSE.
+  ## 
   ## “lambda.min”: the λλ at which the minimal MSE is achieved.
   if(s == 'lambda.1se') {
     s <- s
@@ -332,6 +437,18 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
     stop('Kindly select s = "lambda.1se" or s = "lambda.min".')
   }
   
+  ## http://stats.stackexchange.com/questions/48811/cost-function-for-validating-poisson-regression-models?answertab=votes#tab-top
+  ## Assuming nothing special in your particular case, I think there is a good 
+  ##   argument for either using the default (Mean Square Error) or use the 
+  ##   mean of the error of the logs, or even the chi-squared error.
+  ## 
+  ## The purpose of the cost function is to express how "upset" you are with 
+  ##   wrong predictions, specifically what "wrongness" bothers you most. This 
+  ##   is particularly important for binary responses, but can matter in any 
+  ##   situation.
+  
+  ## http://stackoverflow.com/questions/36121171/extract-error-rate-with-cost-function-from-cv-glmnet
+  ## 
   if(tmeasure == 'deviance') {    #which uses squared-error for gaussian models
     tmeasure <- tmeasure          #deviance for logistic and poisson regression, and partial-likelihood for the Cox model.
   } else if(tmeasure == 'mse') {  #can be used by all models except the "cox"
@@ -414,7 +531,8 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
     ## -------------------------- binomial --------------------------------
     ## https://rstudio-pubs-static.s3.amazonaws.com/71750_a733595676d3437f940244bc678b4f1f.html
     ## http://ricardoscr.github.io/how-to-use-ridge-and-lasso-in-r.html
-    ## 
+    ## https://rpubs.com/chihst01/15922
+    ## http://54.225.166.221/arifulmondal/creditscoring
     
     ## http://faculty.chicagobooth.edu/max.farrell/bus41100/week8-Rcode.R
     ## sample data : germancredit.csv

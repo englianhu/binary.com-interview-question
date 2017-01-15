@@ -26,7 +26,12 @@ tryCatch({
   if(exists('AAPL')) saveRDS(AAPL, file = './data/AAPL.rds')
 }, error = function(e) AAPL <- read_rds(path = './data/AAPL.rds'))
 
-if(!exists('AAPL')) AAPL <- read_rds(path = './data/AAPL.rds')
+if(!exists('AAPL')) {
+  if(readRDS('./data/AAPL.rds') %>% attributes %>% .$updated) {
+    
+  }
+  AAPL <- read_rds(path = './data/AAPL.rds')
+}
 
 AAPLDT <- AAPL %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
   tbl_df %>% mutate(Date = ymd(Date))#, 
@@ -667,12 +672,24 @@ suppressAll(library('memoise'))
 #'@ suppressAll(source('./function/lmStocks.R'))
 suppressMessages(source('./function/compStocks.R'))
 
-tryCatch({
+## check if the saved dataset is today's data? if previous day then need to scrap from website.
+if(file.exists('./data/AAPL.rds')) {
+  if(readRDS('./data/AAPL.rds') %>% attributes %>% .$updated %>% as.Date < today()) {
+    suppressAll(getSymbols('AAPL', from = '2015-01-01'))
+  } else {
+    AAPL <- read_rds(path = './data/AAPL.rds')
+  }
+} else {
   suppressAll(getSymbols('AAPL', from = '2015-01-01'))
-  if(exists('AAPL')) saveRDS(AAPL, file = './data/AAPL.rds')
-}, error = function(e) AAPL <- read_rds(path = './data/AAPL.rds'))
+  saveRDS(AAPL, file = './data/AAPL.rds')
+}
 
-if(!exists('AAPL')) AAPL <- read_rds(path = './data/AAPL.rds')
+#'@ tryCatch({
+#'@   suppressAll(getSymbols('AAPL', from = '2015-01-01'))
+#'@   if(exists('AAPL')) saveRDS(AAPL, file = './data/AAPL.rds')
+#'@   }, error = function(e) AAPL <- read_rds(path = './data/AAPL.rds'))
+
+#'@ if(!exists('AAPL')) AAPL <- read_rds(path = './data/AAPL.rds')
 
 AAPLDT <- AAPL %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
   tbl_df %>% mutate(Date = ymd(Date))#, 
