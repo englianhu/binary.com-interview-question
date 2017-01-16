@@ -64,7 +64,7 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     fname <- names(Op(Fund)) %>% str_replace_all('.Open', '')
     
     plotc <- plotch %>% 
-      hc_title(text = "Apple Inc") %>% 
+      hc_title(text = "LadbrokesCoral PLC") %>% 
       hc_subtitle(text = paste0("Candle stick chart with initial stock price : ", 
                                 paste0(initial, collapse = ', '))) %>% 
       hc_yAxis_multiples(

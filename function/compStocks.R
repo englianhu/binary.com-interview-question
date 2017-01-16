@@ -1,6 +1,6 @@
 compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE) {
   ## ========================= Load Packages ===================================
-  suppressMessages(source('./function/lmStocks.R', local = TRUE))
+  suppressMessages(source('./function/lmStocks.R'))
   
   ## ========================= Set Arguments ===================================
   mbase <- LADDT

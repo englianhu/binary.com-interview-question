@@ -1,4 +1,4 @@
-filterAAPL <- memoise(function(startDate = NULL, endDate = NULL) {
+filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
   ## ==================== Load Packages ===================================
   library('BBmisc')
   library('readr')
@@ -11,19 +11,20 @@ filterAAPL <- memoise(function(startDate = NULL, endDate = NULL) {
   library('quantmod')
   
   ## ==================== Data Validation ===================================
-  if(exists('AAPL')) {
-    mbase <- AAPL
+  if(exists('LAD')) {
+    mbase <- LAD
     
   } else {
-    tryCatch(suppressAll(getSymbols('AAPL', from = '2015-01-01')), 
-             error = function(e) mbase <- read_rds(path = './data/AAPL.rds'))
-    mbase <- AAPL; rm(AAPL)
+    tryCatch({
+      suppressAll(getSymbols('LAD'))
+    }, error = function(e) stop('Kindly restart the shiny app.'))
+    mbase <- LAD; rm(LAD)
   }
   
   mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
     tbl_df %>% mutate(Date = ymd(Date), 
-                      AAPL.Volume = formattable::digits(
-                        AAPL.Volume, 0, format = 'd', big.mark = ','))
+                      LAD.Volume = formattable::digits(
+                        LAD.Volume, 0, format = 'd', big.mark = ','))
   dateID <- mbaseDT$Date
   
   if(is.null(startDate) & is.null(endDate)) {
@@ -35,13 +36,13 @@ filterAAPL <- memoise(function(startDate = NULL, endDate = NULL) {
     endDate <- endDate
     
   } else {
-    tryCatch(suppressAll(getSymbols('AAPL', from = startDate, to = endDate)), 
-             error = function(e) getSymbols('AAPL'))
-    mbase <- AAPL; rm(AAPL)
+    tryCatch(suppressAll(getSymbols('LAD', from = startDate, to = endDate)), 
+             error = function(e) getSymbols('LAD'))
+    mbase <- LAD; rm(LAD)
     mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
       tbl_df %>% mutate(Date = ymd(Date), 
-                        AAPL.Volume = formattable::digits(
-                          AAPL.Volume, 0, format = 'd', big.mark = ','))
+                        LAD.Volume = formattable::digits(
+                          LAD.Volume, 0, format = 'd', big.mark = ','))
     dateID <- mbaseDT$Date
     startDate <- dateID[1]
     endDate <- tail(dateID, 1)
@@ -55,8 +56,8 @@ filterAAPL <- memoise(function(startDate = NULL, endDate = NULL) {
   
   mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
     tbl_df %>% mutate(Date = ymd(Date), 
-                    AAPL.Volume = formattable::digits(
-                      AAPL.Volume, 0, format = 'd', big.mark = ','))
+                    LAD.Volume = formattable::digits(
+                      LAD.Volume, 0, format = 'd', big.mark = ','))
   
   tmp <- list(fund = mbase, fundDT = mbaseDT)
   return(tmp)

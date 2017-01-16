@@ -1,4 +1,4 @@
-loadAAPL <- function() {
+loadLAD <- function() {
   suppressPackageStartupMessages(library("BBmisc"))
   suppressAll(library('devtools'))
   suppressAll(library('lubridate'))
@@ -11,21 +11,35 @@ loadAAPL <- function() {
   suppressAll(library('tidyverse')) #load c(dplyr, tidyr, stringr, readr) due to system doesn't work.
   suppressAll(library('quantmod'))
   
-  tryCatch({
-    suppressAll(getSymbols('AAPL', from = '2015-01-01'))
-    if(exists('AAPL')) saveRDS(AAPL, file = './data/AAPL.rds')
-  }, error = function(e) AAPL <- read_rds(path = './data/AAPL.rds'))
-  
-  if(!exists('AAPL')) AAPL <- read_rds(path = './data/AAPL.rds')
-  
-  AAPLDT <- AAPL %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-    tbl_df %>% mutate(Date = ymd(Date))#, 
-  #AAPL.Volume = formattable::digits(
-  #AAPL.Volume, 0, format = 'd', big.mark = ','))
-  dateID <- AAPLDT$Date
-  
-  #'@ return(eval(parse(text = paste0('AAPL = AAPL; AAPLDT = AAPLDT; dateID = dateID'))))
-  return(list(assign('AAPL', AAPL), assign('AAPLDT', AAPLDT), assign('dateID', dateID)))
+  ## check if the saved dataset is today's data? if previous day then need to scrap from website.
+if(file.exists('./data/LAD.rds')) {
+  if(readRDS('./data/LAD.rds') %>% attributes %>% .$updated %>% as.Date < today()) {
+    tryCatch({
+      suppressAll(getSymbols('LAD'))
+    }, error = function(e) stop('Kindly restart the shiny app.'))
+  } else {
+    LAD <- read_rds(path = './data/LAD.rds')
+  }
+} else {
+  suppressAll(getSymbols('LAD'))
+  saveRDS(LAD, file = './data/LAD.rds')
+}
+
+#'@ tryCatch({
+#'@   suppressAll(getSymbols('LAD'))
+#'@   if(exists('LAD')) saveRDS(LAD, file = './data/LAD.rds')
+#'@   }, error = function(e) LAD <- read_rds(path = './data/LAD.rds'))
+
+#'@ if(!exists('LAD')) LAD <- read_rds(path = './data/LAD.rds')
+
+LADDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
+  tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+                    #mutate(LAD.Volume = formattable::digits(
+                    #       LAD.Volume, 0, format = 'd', big.mark = ','))
+dateID <- LADDT$Date
+
+  #'@ return(eval(parse(text = paste0('LAD = LAD; LADDT = LADDT; dateID = dateID'))))
+  return(list(assign('LAD', LAD), assign('LADDT', LADDT), assign('dateID', dateID)))
 }
 
 

@@ -87,7 +87,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   suppressAll(library('parallel'))
   suppressAll(library('doParallel'))
   suppressAll(library('foreach'))
-  suppressMessages(source('./function/h.R', local = TRUE))
+  suppressMessages(source('./function/h.R'))
   
   #'@ doParallel::registerDoParallel(cores = parallel::detectCores())
   

@@ -24,8 +24,8 @@ suppressAll(library('formattable'))
 suppressAll(library('highcharter'))
 suppressAll(library('PerformanceAnalytics'))
 suppressAll(library('memoise'))
-suppressAll(source('./function/filterLAD.R', local = TRUE))
-suppressAll(source('./function/plotChart2.R', local = TRUE))
+suppressAll(source('./function/filterLAD.R'))
+suppressAll(source('./function/plotChart2.R'))
 
 ## ========= Read Data =================================
 ## check if the saved dataset is today's data? if previous day then need to scrap from website.

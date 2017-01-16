@@ -2,6 +2,21 @@
 ## Setup Options, Loading Required Libraries and Preparing Environment
 ## Loading the packages and setting adjustment
 
+appCSS <- "
+#loading-content {
+position: absolute;
+opacity: 0.9;
+z-index: 100;
+top: 0;
+bottom: 0;
+left: 0;
+right: 0;
+height: 100%;
+text-align: center;
+background: url(loader.gif) center no-repeat #fff;
+}
+"
+
 ## ========= ShinyUI ================================
 # Define UI for application that draws a histogram
 ui <- shinyUI(fluidPage(
@@ -17,12 +32,15 @@ ui <- shinyUI(fluidPage(
                     "))),
   #'@ tags$audio(src = 'sound.mp3', type = 'audio/mp3', autoplay = NA, controls = 'controls'), 
   useShinyjs(),
+  shinyjs::inlineCSS(appCSS), 
   
+  div(id = 'loading-content'), 
+  shinyjs::hidden(
   div(id = 'app-content', 
       titlePanel(
         tags$a(href='https://www.binary.com/ja/home.html', target='_blank', 
                tags$img(height = '40px', alt='hot', #align='right', 
-                        src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/binary-logo-resize.jpg'))), 
+                        src='binary-logo-resize.jpg'))), 
       navbarPage('Shiny App', 
         
       tabPanel('Job Discription', h4('Quantitative Analyst at Binary.com'), 
@@ -36,7 +54,7 @@ ui <- shinyUI(fluidPage(
                           h4('Question Paper'), 
                           p('You are feel free to read the questions below.'), 
                           br(),             
-                          HTML('<iframe src=\"https://raw.githubusercontent.com/englianhu/binary.com-interview-question/837b08778ca826ab123911d1db239facf7e68306/reference/quant-analyst-skills-test.pdf" width=\"900\" height=\"600\"></iframe>'), 
+                          HTML('<iframe src=\"https://raw.githubusercontent.com/englianhu/binary.com-interview-question/ff20ee95aa60ef5cca3cf797066089103eb62acf/reference/quant-analyst-skills-test.pdf" width=\"900\" height=\"600\"></iframe>'), 
                           imageOutput('imp_pdf', width = '100%')),#, height = '500px')), 
                  tabPanel('Q1', 
                           tabsetPanel(
@@ -58,6 +76,9 @@ ui <- shinyUI(fluidPage(
                                        details about the solution.')), 
                             tabPanel('Answer (Font-End)', 
                                      h4('Under construction'), 
+                                     p(tags$a(href='https://www.ladbrokescoralplc.com/', target='_blank', 
+                                              tags$img(height = '40px', alt='hot', #align='right', 
+                                                       src='LC.jpg'))), 
                                      p('...')
                             ), 
                             tabPanel('Answer (Back-End)', 
@@ -110,10 +131,10 @@ ui <- shinyUI(fluidPage(
                                 mainPanel(
                                   h4('Observation'), 
                                   p(tags$a(href='https://www.ladbrokescoralplc.com/', target='_blank', 
-                                           tags$img(height = '120px', alt='hot', #align='right', 
-                                                    src='https://raw.githubusercontent.com/scibrokes/betting-strategy-and-model-validation/master/regressionApps/oda-army.jpg'))), 
-                                  p('In order to predict the LAD (stock price of Apple Inc), I get the real-time stock price from ', 
-                                    strong('Yahoo'), '. Below is a chart trend of LAD stock price from ', textOutput('firstday'), ' onwards.'), 
+                                           tags$img(height = '40px', alt='hot', #align='right', 
+                                                    src='LC.jpg'))), 
+                                  p('In order to predict the LAD (stock price of ', HTML("<a href='https://www.ladbrokescoralplc.com/'>LadbrokesCoral PLC</a>"), '), I get the real-time stock price from ', 
+                                    strong('Yahoo'), '. Below is a chart trend of LAD stock price from ', textOutput('firstday', inline = TRUE), ' onwards.'), 
                                   br(), 
                                   highchartOutput("hcontainer", height = "500px"), 
                                   bsModal("modalExample", "Data Table", "tabBut", size = "large",
@@ -148,7 +169,7 @@ ui <- shinyUI(fluidPage(
                                   p('Besides, I also apply ', code('caret'), ' package to do the comparison as well. You are feel 
                                     free to read through below reference or more over the ', strong('Reference'),' tab : ', 
                                     tags$ul(
-                                      tags$li(HTML("<a href='http://topepo.github.io/caret/index.html'>The `caret` Package</a>")), 
+                                      tags$li(HTML("<a href='http://topepo.github.io/caret/index.html'>The ", code('caret'), " Package</a>")), 
                                       tags$li(HTML("<a href='https://rpubs.com/crossxwill/time-series-cv'>Time Series Cross Validation</a>")))), 
                                   br(), 
                                   h4('Part II : Prediction'), 
@@ -238,13 +259,13 @@ ui <- shinyUI(fluidPage(
                  
                  tabPanel('Applicant', 
                           h4('Applicant\'s CV'), 
-                          tags$iframe(src='https://englianhu.github.io/2016/12/ryo-eng.html', height = 800, width = '100%', frameborder = 0)))))),
+                          tags$iframe(src='https://englianhu.github.io/2016/12/ryo-eng.html', height = 800, width = '100%', frameborder = 0))))))),
 	
   br(), 
   p('Powered by - Copyright® Intellectual Property Rights of ', 
     tags$a(href='http://www.scibrokes.com', target='_blank', 
            tags$img(height = '20px', alt='hot', #align='right', 
-                    src='https://raw.githubusercontent.com/scibrokes/betting-strategy-and-model-validation/master/regressionApps/oda-army.jpg')), 
+                    src='oda-army.jpg')), 
     HTML("<a href='http://www.scibrokes.com'>Scibrokes®</a>"))))
 
 

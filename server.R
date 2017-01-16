@@ -6,13 +6,13 @@ server <- shinyServer(function(input, output, session) {
   Sys.sleep(1)
   
   # Hide the loading message when the rest of the server function has executed
-  #'@ hide(id = 'loading-content', anim = TRUE, animType = 'fade')   
-  #'@ show(id = 'app-content', anim = TRUE, animType = 'fade')
+  shinyjs::hide(id = 'loading-content', anim = TRUE, animType = 'fade')
+  shinyjs::show(id = 'app-content', anim = TRUE, animType = 'fade')
   
   onclick('toggleAdvanced', shinyjs::toggle(id = 'advanced', anim = TRUE, animType = 'fade'))    
   onclick('update', shinyjs::html('time', date()))
   
-  ## Define a reactive expression for the document term matrix
+  ## Define a reactive expression for the date range
   terms <- reactive({
     ## Change when the "Update" button is pressed...
     input$updatePred
@@ -46,7 +46,7 @@ server <- shinyServer(function(input, output, session) {
   })
   
   output$firstday <- renderText({ 
-    first(dateID)
+    as.character(first(dateID))
   })
   
   #'@ repeatable()
@@ -55,7 +55,6 @@ server <- shinyServer(function(input, output, session) {
     fund <- terms()$fund
     plotChart2(fund, type = 'single', chart.type2 = input$type, 
                chart.theme = input$hc_theme, stacked = input$stacked)
-    
   })
   
   output$distTable <- renderDataTable({
