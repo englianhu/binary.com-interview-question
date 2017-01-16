@@ -1,9 +1,9 @@
 lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10, 
-                     yv = 'daily.mean', tmeasure = 'deviance', tmultinomial = 'grouped', 
-                     maxit = 1000, pred.type = 'class', nfolds = 10, foldid = NULL, 
-                     s = 'lambda.min', weight.date = FALSE, weight.volume = FALSE, 
-                     parallel = TRUE, .log = FALSE) {
-  ## mbase = default AAPL or in data frame format.
+                     yv = 'daily.mean', tmeasure = 'deviance', 
+                     tmultinomial = 'grouped', maxit = 1000, pred.type = 'class', 
+                     nfolds = 10, foldid = NULL, s = 'lambda.min', weight.date = FALSE, 
+                     weight.volume = FALSE, parallel = TRUE, .log = FALSE) {
+  ## mbase = default quantmod xts format or in data frame format.
   ## 
   ## family = gaussian', 'binomial', 'poisson', 'multinomial', 'cox' and 'mgaussian'.
   ## 
@@ -12,7 +12,14 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   ## alpha from 0, 0.1, 0.2 ... until 1.0. Ridge is alpha = 0; 
   ##   Elastic Net is 0 < alpha < 1; Lasso is alpha = 1
   ## 
-  ## yv = "daily.mean", yv = "baseline" or yv = "mixed" to model the y (respondence variables)
+  ## yvs <- c('baseline', 'close1', 'close2', 'daily.mean1', 'daily.mean2', 'daily.mean3', 
+  ##   'mixed1', 'mixed2', 'mixed3') #to model the y (respondence variables)
+  ##   baseline only use first element of opening price as baseline.
+  ##   close1 = X = data.frame(Op(LAD), Hi(LAD), Lo(LAD)) and Y = Cl(LAD), 
+  ##   close2 = X = data.frame(Op(LAD), Hi(LAD), Lo(LAD), Cl(LAD)) and Y = Cl(LAD), 
+  ##   daily.mean1 = mean(Op(LAD), Cl(LAD)), daily.mean2 = mean(Hi(LAD), Lo(LAD)), 
+  ##   daily.mean3 = mean(Op(LAD), Hi(LAD), Lo(LAD), Cl(LAD)).
+  ##   mixed1,2,3 are the Y = baseline * daily.mean1,2,3
   ## 
   ## tmeasure is type.measure for residuals which is cost function.
   ##   tmeasure = 'deviance', 'mse', 'mae', 'auc', 'class' and 'cox'.
@@ -80,6 +87,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   suppressAll(library('parallel'))
   suppressAll(library('doParallel'))
   suppressAll(library('foreach'))
+  suppressMessages(source('./function/h.R', local = TRUE))
   
   #'@ doParallel::registerDoParallel(cores = parallel::detectCores())
   
@@ -92,14 +100,37 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   ## ======================= Data Validation ===================================
   if(is.xts(mbase)) {
     mbase <- as.matrix(mbase) %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-      tbl_df %>% mutate(Date = ymd(Date))
+      tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+    
   } else if(is.data.frame(mbase)) {
     mbase <- mbase
   } else {
-    stop('Kindly apply filterAAPL and fit the dataset into the function.')
+    stop('Kindly apply filterLAD and fit the dataset into the function.')
   }
   
   dateID <- sort(unique(mbase$Date))
+  
+  families <- c('gaussian', 'binomial', 'poisson', 'multinomial', 'cox', 'mgaussian')
+  if(family %in% families) {
+    family <- family
+  } else {
+    stop('family must be one among c(\'', paste(families, collapse = '\', \''), '\').')
+  }
+  
+  yvs <- c('baseline', 'daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 
+           'mixed2', 'mixed3')
+  if(yv %in% yvs) {
+    yv <- yv
+  } else {
+    stop('yv must be one among c(\'', paste(yvs, collapse = '\', \''), '\').')
+  }
+  
+  xy.matries <- c('h1', 'h2')
+  if(xy.matrix %in% xy.matries) {
+    xy.matrix <- xy.matrix
+  } else {
+    stop('xy.matrix must be one among c(\'', paste(xy.matries, collapse = '\', \''), '\').')
+  }
   
   if(is.numeric(alpha)) {
     alpha <- alpha
@@ -183,176 +214,6 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   }
   
   ## ========================= Respondence Variable =================================
-  ## http://www.ats.ucla.edu/stat/r/library/contrast_coding.htm
-  ## set the first dat as baseline.
-  #
-  #hsb2 = read.table('http://www.ats.ucla.edu/stat/data/hsb2.csv', header=T, sep=",")
-  #
-  #creating the factor variable race.f
-  #hsb2$race.f = factor(hsb2$race, labels=c("Hispanic", "Asian", "African-Am", "Caucasian"))
-  #Before considering any analyses, let's look at the mean of the dependent variable, write, for each level of race.  This will help in interpreting the output from later analyses.
-  #
-  #tapply(hsb2$write, hsb2$race.f, mean)
-  #Hispanic Asian African-Am Caucasian 
-  #46.45833    58       48.2  54.05517
-  #
-  #the contrast matrix for categorical variable with four levels
-  #contr.treatment(4)
-  #2 3 4 
-  #1 0 0 0
-  #2 1 0 0
-  #3 0 1 0
-  #4 0 0 1
-  #
-  ##assigning the treatment contrasts to race.f
-  #contrasts(hsb2$race.f) = contr.treatment(4)
-  ##the regression
-  #summary(lm(write ~ race.f, hsb2))
-  
-  # http://amunategui.github.io/sparse-matrix-glmnet/
-  # {Matrix} - creates sparse/dense matrices
-  # {glmnet} - generalized linear models
-  # {pROC} - ROC tools
-  
-  h <- function(ddt, xy.matrix = 'h1', .log = .log) {
-    
-    if(xy.matrix == 'h1') {
-      
-      #AAPLDT_DF <- AAPLDT[, 2:5] %>% gather(Category, Price, AAPL.Open:AAPL.Close) %>% 
-      #  mutate(Date = as.character(Date), Category = factor(
-      #    Category, levels = c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')), 
-      #    wt = 1, b0 = Price / first(Price)) #set `Date` as a category variable.
-      
-      ddt_DF <- ddt[, 1:5] %>% gather(Category, Price, AAPL.Open:AAPL.Close) %>% 
-        mutate(Category = factor(
-          Category, levels = c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')))
-          #let `Date` be numeric variable as convert by system.
-      
-      Y <- ddt_DF %>% mutate(wt = 1, b0 = Price / first(Price))
-      Y <- ddply(Y, .(Date), transform, dmean = mean(Price)) %>% tbl_df
-      #> mean(y$b0)
-      #[1] 1.009086
-      
-      ddt_DF <- ddt_DF[, -1]
-      Y <- Y[-c(1:3)]
-      
-      ## ----------------- start omit below codes ---------------------------------------
-      #'@ contrasts(AAPLDT_DF$Category) <- contr.treatment(AAPLDT_DF$Category)
-      #'@ attr(AAPLDT_DF$Category, 'levels') <- c('AAPL.Open', 'AAPL.High', 'AAPL.Low', 'AAPL.Close')
-      #'@ attr(AAPLDT_DF$Category,'contrasts') <- contrasts(C(factor(AAPLDT_DF$Category), 'contr.treatment'))
-      
-      #'@ tmp <- model.matrix(Category ~ Date + Price + wt + b0, data = AAPLDT_DF) %>% 
-      #'@   tbl_df %>% mutate(Category = AAPLDT_DF$Category)
-      ## -------------------------- end omit codes ---------------------------------------
-      
-      ## 
-      ## http://stats.stackexchange.com/questions/136085/is-it-posible-to-use-factor-categorical-variables-in-glmnet-for-logistic-regre
-      ## glmnet cannot take factor directly, you need to transform factor variables to dummies. 
-      ##    It is only one simple step using model.matrix, for instance:
-      # 
-      #'@ x_train <- model.matrix( ~ .-1, train[,features])
-      #'@ lm = cv.glmnet(x=x_train,y = as.factor(train$y), intercept=FALSE ,family = "binomial", alpha=1, nfolds=7)
-      #'@ best_lambda <- lm$lambda[which.min(lm$cvm)]
-      # 
-      ## alpha=1 will build a LASSO.
-      ## 
-      
-    } else if(xy.matrix == 'h2') {
-      ddt_DF <- ddt[, 2:5]
-      Y <- ddt_DF %>% mutate(dmean = rowMeans(.), wt = 1, b0 = dmean / first(dmean))
-      Y <- Y[c('wt', 'b0', 'dmean')]
-      
-    } else {
-      stop('Kindly set xy.matrix = "h1" or xy.matrix = "h2".')
-    }
-    
-    if(.log == TRUE) {
-      ddt_DF %<>% mutate_each(funs(log))
-      Y %<>% mutate_each(funs(log))
-    }
-    
-    # useful::build.x() will convert the matrix into a dummy variable matrix.
-    # https://books.google.co.jp/books?id=EkpvAgAAQBAJ&pg=PA285&dq=cv.glmnet++binomial&hl=en&sa=X&redir_esc=y#v=onepage&q=cv.glmnet%20%20binomial&f=false
-    # page273:
-    # matrix.model() and sparse.matrix.model() both create a factor class into an 
-    #   ordered levels but will but only 0 and 1 if more than 2 levels. However, 
-    #   it is generally considered undesirable for the predictor matrix to be 
-    #   designed this way for the Elastic Net. It is possible to have model.matrix() 
-    #   return indicator variables for all levels of a factor, although doing so can 
-    #   take some creative coding. To make the rocess easier we incorporated a solution 
-    #   in the build.x() in the 'useful' package.
-    # 
-    # http://stackoverflow.com/questions/4560459/all-levels-of-a-factor-in-a-model-matrix-in-r
-    #'@ testFrame <- data.frame(First = sample(1:10, 20, replace = TRUE),
-    #'@                         Second = sample(1:20, 20, replace = TRUE), 
-    #'@                         Third = sample(1:10, 20, replace = TRUE),
-    #'@                         Fourth = rep(c("Alice", "Bob", "Charlie", "David"), 5),
-    #'@                         Fifth = rep(c("Edward", "Frank", "Georgia", "Hank", "Isaac"), 4))
-    # 
-    # You need to reset the contrasts for the factor variables:
-    #'@ model.matrix(~ Fourth + Fifth, data = testFrame, 
-    #'@              contrasts.arg = list(Fourth = contrasts(testFrame$Fourth, contrasts = FALSE), 
-    #'@                                   Fifth = contrasts(testFrame$Fifth, contrasts = FALSE)))
-    # 
-    #   or, with a little less typing and without the proper names:
-    # 
-    #'@ model.matrix(~ Fourth + Fifth, data = testFrame, 
-    #'@              contrasts.arg = list(Fourth = diag(nlevels(testFrame$Fourth)), 
-    #'@                                   Fifth = diag(nlevels(testFrame$Fifth))))
-    # 
-    #'@ model.matrix(~ ., data = testFrame, 
-    #'@              contrasts.arg = lapply(testFrame[, 4:5], contrasts, contrasts = FALSE))
-    # 
-    # page274
-    #'@ require('useful')
-    # always use all levels
-    #'@ build.x(First ~ Second + Fourth + Fifth, textFrame, contrasts = FALSE)
-    # 
-    # just use all levels for Fourth
-    #'@ build.x(First ~ Second + Fourth + Fifth, testFrame, contrasts = c(Fourth = FALSE, Fifth = TRUE))
-    # 
-    # Using build.x appropriately on `acs` dataset builds a nice predictor matrix for use in 
-    #   glmnet. We control the desired matrix by using a formula for our model 
-    #   specification just like we would in lm, interactions and all.
-    # 
-    # make a binary Income variable for building a logistic regression
-    #'@ acs$Income <- with(acs, FamilyIncome >= 150000)
-    # 
-    # page275
-    # build predictor matrix
-    # do not include the intercept as glmnet will add that automatically
-    #'@ acsX <- build.x(Income ~ NumBedrooms + NumChildren + NumPeople + 
-    #'@                 NumRooms + NumUnits + NumVehicles + NumWorkers + 
-    #'@                 OwnRent + YearBuilt + ElectricBill + FoodStamp + 
-    #'@                 HeatingFuel + Insurance + Language - 1, 
-    #'@                 data = acs, contrasts = FALSE)
-    # 
-    # check class and dimensions
-    #'@ class(acsX)
-    #[1] "matrix"
-    #'@ dim(acsX)
-    #[1] 22745 44
-    # 
-    # page275
-    # view the top left and top right of the data
-    #'@ topleft(acsX, c = 6)
-    #'@ topright(acsX, c = 6)
-    #
-    # build response predictor
-    #'@ acsY <- build.y(Income ~ NumBedrooms + NumChildren + NumPeople + 
-    #'@                 NumRooms + NumUnits + NumVehicles + NumWorkers + 
-    #'@                 OwnRent + YearBuilt + ElectricBill + FoodStamp + 
-    #'@                 HeatingFuel + Insurance + Language - 1, data = acs)
-    #
-    #'@ head(acsY)
-    #'@ tail(acsY)
-    # 
-    
-    tmp <- list(x = sparse.model.matrix(~ -1 + ., ddt_DF), y = Y)
-    
-    return(tmp)
-  }
-  
   ## http://stackoverflow.com/questions/39863367/ridge-regression-with-glmnet-gives-different-coefficients-than-what-i-compute?answertab=votes#tab-top
   #library(MASS)
   #library(glmnet)
@@ -388,14 +249,14 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   #wt <- rep(0, nrow(x))
   #y.true <- x %*% wt
   #x <- h()
-  #y <- AAPLDT['AAPL.Volume']
+  #y <- LADDT['LAD.Volume']
   #y <- ddply(x, .(Category), summarise, 
   #           resp = sum(((Price * wt * b0) - Price)^2) / nrow(x)) %>% tbl_df
   #xy <- join(x, y) %>% tbl_df
   #xy <- h(mbase)
   eval(parse(
     text = paste(paste0(c('x', 'y'), 
-                        ' <- h(mbase, xy.matrix = xy.matrix, .log = .log)[[', 
+                        ' <- h(mbase, family = family, xy.matrix = xy.matrix, .log = .log)[[', 
                         c('\'x\'', '\'y\''),']]'), collapse = '; ')))
   
   ## ======================= Parameter Adjustment ==================================

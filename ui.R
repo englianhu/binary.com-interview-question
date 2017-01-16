@@ -17,7 +17,7 @@ ui <- shinyUI(fluidPage(
                     "))),
   #'@ tags$audio(src = 'sound.mp3', type = 'audio/mp3', autoplay = NA, controls = 'controls'), 
   useShinyjs(),
-
+  
   div(id = 'app-content', 
       titlePanel(
         tags$a(href='https://www.binary.com/ja/home.html', target='_blank', 
@@ -56,7 +56,11 @@ ui <- shinyUI(fluidPage(
                                      p('You can use Monte Carlo simulation to confirm/verify your results, 
                                        but it shouldn\'t be the primary solution. Please provide all the relevant 
                                        details about the solution.')), 
-                            tabPanel('Answer', 
+                            tabPanel('Answer (Font-End)', 
+                                     h4('Under construction'), 
+                                     p('...')
+                            ), 
+                            tabPanel('Answer (Back-End)', 
                               sidebarLayout(
                                 sidebarPanel(
                                   bsCollapse(id = 'selectSIFund', open = 'Select Fund', 
@@ -105,8 +109,11 @@ ui <- shinyUI(fluidPage(
                                 
                                 mainPanel(
                                   h4('Observation'), 
-                                  p('In order to predict the AAPL (stock price of Apple Inc), I get the real-time stock price from ', 
-                                    strong('Yahoo'), '. Below is a chart trend of AAPL stock price from 2014-01-01 onwards.'), 
+                                  p(tags$a(href='https://www.ladbrokescoralplc.com/', target='_blank', 
+                                           tags$img(height = '120px', alt='hot', #align='right', 
+                                                    src='https://raw.githubusercontent.com/scibrokes/betting-strategy-and-model-validation/master/regressionApps/oda-army.jpg'))), 
+                                  p('In order to predict the LAD (stock price of Apple Inc), I get the real-time stock price from ', 
+                                    strong('Yahoo'), '. Below is a chart trend of LAD stock price from ', textOutput('firstday'), ' onwards.'), 
                                   br(), 
                                   highchartOutput("hcontainer", height = "500px"), 
                                   bsModal("modalExample", "Data Table", "tabBut", size = "large",
@@ -123,21 +130,26 @@ ui <- shinyUI(fluidPage(
                                       tags$li(HTML("<a href='http://statweb.stanford.edu/~tibs/lasso/simple.html'>A simple explanation of the Lasso and Least Angle Regression</a>")), 
                                       tags$li(HTML("<a href='http://cos.name/2016/10/data-mining-1-lasso/'>Popular model for data mining (Part I) : Lasso Regression (Chinese)</a>")), 
                                       tags$li(HTML("<a href='http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html'>LASSO, Ridge, and Elastic Net</a>")))), 
-                                  p('The dataset gather from 2014-01-01 until the latest trading day (unless unable connect to Yahoo and read local saved dataset.)', 
+                                  p('The dataset gather from 2015-01-01 until the latest trading day (unless unable connect to Yahoo and read local saved dataset.)', 
                                     'Here I simply apply Lasso regression as below :', 
                                     withMathJax(helpText('$$Y=\\sum_{j=1}^dX_j\\beta_j+e \\cdots equation\\ 1.1.1$$')), 'Where', 
-                                                         tags$ul(
-                                                           tags$li(em('d'), ' is dimension of matrix Xj'), 
-                                                           tags$li(em('Xo'), ' is baseline'), 
-                                                           tags$li('A cost function for residuals measurement')
-                                                         ), 'to make above equation valid.'), 
+                                    tags$ul(
+                                      tags$li(em('d'), ' is dimension of matrix Xj'), 
+                                      tags$li(em('Xo'), ' is baseline'), 
+                                      tags$li('A cost function for residuals measurement')
+                                    ), 'to make above equation valid.'), 
                                   p('I dont\'t pretend to know the corrected model, the paper', 
                                     em('Sanjiban Sekhar Roy, Dishant Mittal, Avik Basu, and Ajith Abraham (2011)'), 
                                     'using a linear model (gaussian model) with above criteria but here I test 
                                     couples of models (includes 4 models which are \'gaussian\', \'poisson (log link)\', 
                                     \'binomial (logit link)\' and \'multinomial (nominal response)\' but skip 2 
-                                    models which are \'cox\' and \'mgaussian\'.) to compare among them and get the 
-                                    best fit.'), 
+                                    models which are \'cox\' and \'mgaussian\'.) from ', code('glmnet'), ' package to compare among 
+                                    them and get the best fit.'), 
+                                  p('Besides, I also apply ', code('caret'), ' package to do the comparison as well. You are feel 
+                                    free to read through below reference or more over the ', strong('Reference'),' tab : ', 
+                                    tags$ul(
+                                      tags$li(HTML("<a href='http://topepo.github.io/caret/index.html'>The `caret` Package</a>")), 
+                                      tags$li(HTML("<a href='https://rpubs.com/crossxwill/time-series-cv'>Time Series Cross Validation</a>")))), 
                                   br(), 
                                   h4('Part II : Prediction'), 
                                   br(), 
@@ -189,16 +201,37 @@ ui <- shinyUI(fluidPage(
                tabsetPanel(
                  tabPanel('Reference', 
                           h4('Reference'), 
-                          p('01. ', HTML("<a href='https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf'>Stock Market Forecasting Using LASSO Linear Regression Model</a>")),
-                          p('02. ', HTML("<a href='http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top'>Using LASSO from lars (or glmnet) package in R for variable selection</a>")),
-                          p('03. ', HTML("<a href='http://stackoverflow.com/questions/29311323/difference-between-glmnet-and-cv-glmnet-in-r?answertab=votes#tab-top'>Difference between glmnet() and cv.glmnet() in R?</a>")), 
-                          p('04. ', HTML("<a href='https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r/'>Testing Kelly Criterion and Optimal f in R</a>")), 
-                          p('05. ', HTML("<a href='https://github.com/scibrokes/kelly-criterion/blob/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf'>Portfolio Optimization and Monte Carlo Simulation</a>"),
+                          p('01. ', HTML("<a href='https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf'>Stock Market Forecasting Using LASSO Linear Regression Model</a>"), 
                             tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
                                    tags$img(height = '20px', alt='hot', #align='right', 
                                             src='hot.jpg'))), 
-                          p('06. ', HTML("<a href='https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html'>Glmnet Vignette</a>")),
-                          p('07. ', HTML("<a href='http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html'>LASSO, Ridge, and Elastic Net</a>"),
+                          p('02. ', HTML("<a href='http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top'>Using LASSO from lars (or glmnet) package in R for variable selection</a>")),
+                          p('03. ', HTML("<a href='http://stackoverflow.com/questions/29311323/difference-between-glmnet-and-cv-glmnet-in-r?answertab=votes#tab-top'>Difference between glmnet() and cv.glmnet() in R?</a>")), 
+                          p('04. ', HTML("<a href='https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r/'>Testing Kelly Criterion and Optimal f in R</a>"), 
+                            tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                   tags$img(height = '20px', alt='hot', #align='right', 
+                                            src='hot.jpg'))), 
+                          p('05. ', HTML("<a href='https://github.com/scibrokes/kelly-criterion/blob/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf'>Portfolio Optimization and Monte Carlo Simulation</a>"), 
+                            tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                   tags$img(height = '20px', alt='hot', #align='right', 
+                                            src='hot.jpg'))), 
+                          p('06. ', HTML("<a href='https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html'>Glmnet Vignette</a>")), 
+                          p('07. ', HTML("<a href='http://cos.name/cn/topic/101533/#post-418215'>How to implement Lasso Algorithm? (Chinese Version)</a>")),
+                          p('08. ', HTML("<a href='http://amunategui.github.io/sparse-matrix-glmnet/'>The Sparse Matrix and {glmnet}</a>")),
+                          p('09. ', HTML("<a href='https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Regularization%20and%20Variable%20Selection%20via%20the%20Elastic%20Net.pdf'>Regularization and Variable Selection via the Elastic Net</a>")),
+                          p('10. ', HTML("<a href='http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html'>LASSO, Ridge, and Elastic Net</a>"), 
+                            tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                   tags$img(height = '20px', alt='hot', #align='right', 
+                                            src='hot.jpg'))), 
+                          p('11. ', HTML("<a href='https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html'>Popular Data Mining Models for Beginner(1) (Chinese Version)</a>")), 
+                          p('12. ', HTML("<a href='http://statweb.stanford.edu/~tibs/lasso.html'>The Lasso Page</a>")), 
+                          p('13. ', HTML("<a href='https://api.rpubs.com/Mariano/call'>Call_Valuation.R</a>")), 
+                          p('14. ', HTML("<a href='http://zorro-trader.com/manual/en/Lecture%206.htm'>Lecture 6 - Stochastic Processes and Monte Carlo</a>")), 
+                          p('15. ', HTML("<a href='http://topepo.github.io/caret/index.html'>The `caret` Package</a>"), 
+                            tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                   tags$img(height = '20px', alt='hot', #align='right', 
+                                            src='hot.jpg'))), 
+                          p('16. ', HTML("<a href='https://rpubs.com/crossxwill/time-series-cv'>Time Series Cross Validation</a>"),
                             tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
                                    tags$img(height = '20px', alt='hot', #align='right', 
                                             src='hot.jpg')))), 

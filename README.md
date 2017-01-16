@@ -11,10 +11,10 @@
 
 ## Reference
 
-  01. [Stock Market Forecasting Using LASSO Linear Regression Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)
+  01. [Stock Market Forecasting Using LASSO Linear Regression Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
   02. [Using LASSO from lars (or glmnet) package in R for variable selection](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
   03. [Difference between glmnet() and cv.glmnet() in R?](Difference between glmnet() and cv.glmnet() in R?)
-  04. [Testing Kelly Criterion and Optimal f in R](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) 
+  04. [Testing Kelly Criterion and Optimal f in R](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) <img src='www/hot.jpg' width='20'>
   05. [Portfolio Optimization and Monte Carlo Simulation](https://github.com/scibrokes/kelly-criterion/blob/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf) <img src='www/hot.jpg' width='20'>
   06. [Glmnet Vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
   07. [lasso怎么用算法实现？](http://cos.name/cn/topic/101533/#post-418215)
@@ -25,4 +25,6 @@
   12. [The Lasso Page](http://statweb.stanford.edu/~tibs/lasso.html)
   13. [Call_Valuation.R](https://api.rpubs.com/Mariano/call)
   14. [Lecture 6 – Stochastic Processes and Monte Carlo](http://zorro-trader.com/manual/en/Lecture%206.htm)
+  15. [The `caret` Package](http://topepo.github.io/caret/index.html) <img src='www/hot.jpg' width='20'>
+  16. [Time Series Cross Validation](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
 

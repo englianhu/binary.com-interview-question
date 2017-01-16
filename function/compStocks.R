@@ -1,14 +1,13 @@
-compStocks <- function(mbase, family = 'gaussian', .print = TRUE) {
+compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE) {
   ## ========================= Load Packages ===================================
-  suppressMessages(source('./function/lmStocks.R'))
+  suppressMessages(source('./function/lmStocks.R', local = TRUE))
   
   ## ========================= Set Arguments ===================================
-  mbase <- AAPLDT
+  mbase <- LADDT
   families <- c('gaussian', 'binomial', 'poisson', 'multinomial', 'cox', 'mgaussian', 'all')
   xy.matrix <- c('h1', 'h2')
   alpha <- 0:10
   yv <- c('daily.mean', 'baseline', 'mixed')
-  maxit = 1000
   pred.type <- c('link', 'response', 'coefficients', 'nonzero', 'class')
   nfolds = 10
   foldid = NULL

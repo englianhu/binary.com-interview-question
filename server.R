@@ -17,10 +17,15 @@ server <- shinyServer(function(input, output, session) {
     ## Change when the "Update" button is pressed...
     input$updatePred
     
-    ## make sure end date later than start date
+    ## make sure start date inside dataset
     validate(
-      need(input$dataRange[1] > '2014-01-01', 
-           'start date need to start from 2014-01-01 onwards.'))
+      need(input$dataRange[1] %in% (dateID), 
+           'start date need to within dateset.'))
+    
+    ## make sure end date inside dataset
+    validate(
+      need(input$dataRange[2] %in% (dateID), 
+           'end date need to within dateset.'))
     
     ## make sure end date later than start date
     validate(
@@ -35,9 +40,13 @@ server <- shinyServer(function(input, output, session) {
     isolate({
       withProgress({
         setProgress(message = "Processing graph...")
-        filterAAPL(startDate = input$dataRange[1], endDate = input$dataRange[2])
+        filterLAD(startDate = input$dataRange[1], endDate = input$dataRange[2])
       })
     })
+  })
+  
+  output$firstday <- renderText({ 
+    first(dateID)
   })
   
   #'@ repeatable()
@@ -52,7 +61,7 @@ server <- shinyServer(function(input, output, session) {
   output$distTable <- renderDataTable({
     fundDT <- terms()$fundDT
     fundDT %>% datatable(
-      caption = "Table : AAPL Stocks Price", 
+      caption = "Table : LAD Stocks Price", 
       escape = FALSE, filter = "top", rownames = FALSE, 
       extensions = list("ColReorder" = NULL, "RowReorder" = NULL, 
                         "Buttons" = NULL, "Responsive" = NULL), 

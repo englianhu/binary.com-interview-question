@@ -24,32 +24,34 @@ suppressAll(library('formattable'))
 suppressAll(library('highcharter'))
 suppressAll(library('PerformanceAnalytics'))
 suppressAll(library('memoise'))
-source('./function/filterAAPL.R')
-source('./function/plotChart2.R')
+suppressAll(source('./function/filterLAD.R', local = TRUE))
+suppressAll(source('./function/plotChart2.R', local = TRUE))
 
 ## ========= Read Data =================================
 ## check if the saved dataset is today's data? if previous day then need to scrap from website.
-if(file.exists('./data/AAPL.rds')) {
-  if(readRDS('./data/AAPL.rds') %>% attributes %>% .$updated %>% as.Date < today()) {
-    suppressAll(getSymbols('AAPL', from = '2015-01-01'))
+if(file.exists('./data/LAD.rds')) {
+  if(readRDS('./data/LAD.rds') %>% attributes %>% .$updated %>% as.Date < today()) {
+    tryCatch({
+      suppressAll(getSymbols('LAD'))
+    }, error = function(e) stop('Kindly restart the shiny app.'))
   } else {
-    AAPL <- read_rds(path = './data/AAPL.rds')
+    LAD <- read_rds(path = './data/LAD.rds')
   }
 } else {
-  suppressAll(getSymbols('AAPL', from = '2015-01-01'))
-  saveRDS(AAPL, file = './data/AAPL.rds')
+  suppressAll(getSymbols('LAD'))
+  saveRDS(LAD, file = './data/LAD.rds')
 }
 
 #'@ tryCatch({
-#'@   suppressAll(getSymbols('AAPL', from = '2015-01-01'))
-#'@   if(exists('AAPL')) saveRDS(AAPL, file = './data/AAPL.rds')
-#'@   }, error = function(e) AAPL <- read_rds(path = './data/AAPL.rds'))
+#'@   suppressAll(getSymbols('LAD'))
+#'@   if(exists('LAD')) saveRDS(LAD, file = './data/LAD.rds')
+#'@   }, error = function(e) LAD <- read_rds(path = './data/LAD.rds'))
 
-#'@ if(!exists('AAPL')) AAPL <- read_rds(path = './data/AAPL.rds')
+#'@ if(!exists('LAD')) LAD <- read_rds(path = './data/LAD.rds')
 
-AAPLDT <- AAPL %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-  tbl_df %>% mutate(Date = ymd(Date))#, 
-                    #AAPL.Volume = formattable::digits(
-                    #AAPL.Volume, 0, format = 'd', big.mark = ','))
-dateID <- AAPLDT$Date
+LADDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
+  tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+                    #mutate(LAD.Volume = formattable::digits(
+                    #       LAD.Volume, 0, format = 'd', big.mark = ','))
+dateID <- LADDT$Date
 
