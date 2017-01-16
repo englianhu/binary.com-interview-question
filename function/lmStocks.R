@@ -1,5 +1,5 @@
 lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10, 
-                     yv = 'daily.mean', tmeasure = 'deviance', 
+                     yv = 'daily.mean', logistic.yv = TRUE, tmeasure = 'deviance', 
                      tmultinomial = 'grouped', maxit = 1000, pred.type = 'class', 
                      nfolds = 10, foldid = NULL, s = 'lambda.min', weight.date = FALSE, 
                      weight.volume = FALSE, parallel = TRUE, .log = FALSE) {
@@ -20,6 +20,11 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   ##   daily.mean1 = mean(Op(LAD), Cl(LAD)), daily.mean2 = mean(Hi(LAD), Lo(LAD)), 
   ##   daily.mean3 = mean(Op(LAD), Hi(LAD), Lo(LAD), Cl(LAD)).
   ##   mixed1,2,3 are the Y = baseline * daily.mean1,2,3
+  ##   For binomial and multinomial, the dmean1,2,3 or mixed1,2,3 values greater than 
+  ##   opening price will be set as 1 and lower will be 0.
+  ## 
+  ## logistic.yv = TRUE will convert the greater value of X into 1,0 mode but 
+  ##   yv == baseline the price of levels c(Op, Hi, Lo, Cl) will be set as 1,2,3,4.
   ## 
   ## tmeasure is type.measure for residuals which is cost function.
   ##   tmeasure = 'deviance', 'mse', 'mae', 'auc', 'class' and 'cox'.
