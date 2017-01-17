@@ -1,14 +1,15 @@
 filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
   ## ==================== Load Packages ===================================
-  library('BBmisc')
-  library('readr')
-  library('plyr')
-  library('dplyr')
-  library('stringr')
-  library('magrittr')
-  library('lubridate')
-  library('formattable')
-  library('quantmod')
+  suppressPackageStartupMessages(library('BBmisc'))
+  suppressAll(library('readr'))
+  suppressAll(library('plyr'))
+  suppressAll(library('dplyr'))
+  suppressAll(library('stringr'))
+  suppressAll(library('magrittr'))
+  suppressAll(library('lubridate'))
+  suppressAll(library('formattable'))
+  suppressAll(library('quantmod'))
+  suppressAll(library('tidyquant'))
   
   ## ==================== Data Validation ===================================
   if(exists('LAD')) {
