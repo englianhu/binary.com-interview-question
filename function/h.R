@@ -1,5 +1,5 @@
 h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL, 
-              xy.matrix = 'h1', .log = .log) {
+              xy.matrix = 'h1', .log = FALSE) {
   ## mbase = default LAD or in data frame format.
   ## 
   ## family = gaussian', 'binomial', 'poisson', 'multinomial', 'cox' and 'mgaussian'.
@@ -119,32 +119,36 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
     stop('xy.matrix must be one among c(\'', paste(xy.matries, collapse = '\', \''), '\').')
   }
   
-  ## ------------------------- start need to modify the length ------------------------
+  wt <- wt
   if(!is.null(wt)) {
     if(is.numeric(wt)) {
-      wt <- wt
+      ddt$wt <- wt
+      rm(wt)
+      
     } else if(anyNA(suppressWarnings(as.numeric(wt)))) {
       stop('Kindly select a numeric vector as weight parameters.')
     }
   } else {
-    wt <- rep(1, nrow(ddt))
+    ddt$wt <- 1
+    rm(wt)
   }
-  ## ------------------------- end need to modify the length --------------------------
   
   ## ============================= Regression Model ===================================
   if(family %in% families[c(1, 3)]) {
     ## -------------------------- gaussian or poisson ---------------------------------
     if(yv %in% c('baseline', 'close1', 'close2')) {
-      X <- ddt[, 1:6]
+      X <- ddt[c('Date', 'LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume', 'wt')]
       
     } else if(yv %in%  c('daily.mean1', 'mixed1')) {
-      X <- ddt[, 1:6] %>% mutate(dmean1 = (LAD.Open + LAD.Close) / 2)
+      X <- ddt[c('Date', 'LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume', 'wt')] %>% 
+        mutate(dmean1 = (LAD.Open + LAD.Close) / 2)
       
     } else if(yv %in% c('daily.mean2', 'mixed2')) {
-      X <- ddt[, 1:6] %>% mutate(dmean2 = (LAD.High + LAD.Low) / 2)
+      X <- ddt[c('Date', 'LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume', 'wt')] %>% 
+        mutate(dmean2 = (LAD.High + LAD.Low) / 2)
       
     } else {
-      X <- ddt[, 1:6] %>% 
+      X <- ddt[c('Date', 'LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume', 'wt')] %>% 
         mutate(dmean3 = (LAD.Open + LAD.High + LAD.Low + LAD.Close) / 4)
     }
     
@@ -156,13 +160,11 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
         X %<>% gather(Category, Price, LAD.Open:LAD.Close) %>% 
           mutate(Category = factor(
             Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
-          arrange(Date)
+          arrange(Date) %>% mutate(b0 = Price / first(Price))
         #let `Date` be numeric variable as convert by system.
         
-        Y <- X %>% mutate(wt = wt, b0 = Price / first(Price))
-        Y %<>% .[c('wt', 'b0')]
+        Y <- X[c('wt', 'b0')]
         X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-        rm(wt)
       }
       
       if(yv == 'close1') {
@@ -171,22 +173,20 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
             Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low'))) %>% 
           arrange(Date)
         
-        Y <- X['LAD.Close'] %>% mutate(wt = wt)
-        Y %<>% .[c('wt', 'LAD.Close')]
+        Y <- X[c('wt', 'LAD.Close')]
         X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-        rm(wt)
       }
       
       if(yv == 'close2') {
-        X %<>% gather(Category, Price, LAD.Open:LAD.Close) %>% 
+        X %<>% mutate(LAD.Close2 = LAD.Close) %>% 
+          gather(Category, Price, LAD.Open:LAD.Close) %>% 
           mutate(Category = factor(
             Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
           arrange(Date)
         
-        Y <- X['LAD.Close'] %>% mutate(wt = wt)
+        Y <- X %>% mutate(LAD.Close = ifelse(LAD.Close2 >= Price, 1, 0))
         Y %<>% .[c('wt', 'LAD.Close')]
         X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-        rm(wt)
       }
       
       if(yv == 'daily.mean1') {
@@ -196,10 +196,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
-        Y <- X %>% mutate(wt = wt)
-        Y %<>% .[c('wt', 'dmean1')]
+        Y <- X[c('wt', 'dmean1')]
         X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-        rm(wt)
       }
       
       if(yv == 'daily.mean2') {
@@ -209,10 +207,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
-        Y <- X %>% mutate(wt = wt)
-        Y %<>% .[c('wt', 'dmean2')]
+        Y <- X[c('wt', 'dmean2')]
         X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-        rm(wt)
       }
       
       if(yv == 'daily.mean3') {
@@ -222,10 +218,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
-        Y <- X %>% mutate(wt = wt)
-        Y %<>% .[c('wt', 'dmean3')]
+        Y <- X[c('wt', 'dmean3')]
         X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-        rm(wt)
       }
       
       if(yv == 'mixed1') {
@@ -235,10 +229,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
-        Y <- X %>% mutate(wt = wt, mixed1 = (Price / first(Price)) * dmean1)
+        Y <- X %>% mutate(mixed1 = (Price / first(Price)) * dmean1)
         Y %<>% .[c('wt', 'mixed1')]
         X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-        rm(wt)
       }
       
       if(yv == 'mixed2') {
@@ -248,10 +241,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
-        Y <- X %>% mutate(wt = wt, mixed2 = (Price / first(Price)) * dmean2)
+        Y <- X %>% mutate(mixed2 = (Price / first(Price)) * dmean2)
         Y %<>% .[c('wt', 'mixed2')]
         X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-        rm(wt)
       }
       
       if(yv == 'mixed3') {
@@ -261,10 +253,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
-        Y <- X %>% mutate(wt = wt, mixed3 = (Price / first(Price)) * dmean3)
+        Y <- X %>% mutate(mixed3 = (Price / first(Price)) * dmean3)
         Y %<>% .[c('wt', 'mixed3')]
         X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-        rm(wt)
       }
       
       if(.log == TRUE) {
@@ -282,66 +273,52 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
       ## h2 is wide format or default quantmmod xts.
       
       if(yv == 'baseline') {
-        Y <- X %>% mutate(wt = wt, b0 = LAD.Open / first(LAD.Open))
+        Y <- X %>% mutate(b0 = LAD.Open / first(LAD.Open))
         Y %<>% .[c('wt', 'b0')]
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-        rm(wt)
       }
       
       if(yv == 'close1') {
-        Y <- X['LAD.Close'] %>% mutate(wt = wt)
-        Y %<>% .[c('wt', 'LAD.Close')]
+        Y <- X[c('wt', 'LAD.Close')]
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Volume')]
-        rm(wt)
       }
       
       if(yv == 'close2') {
-        Y <- X['LAD.Close'] %>% mutate(wt = wt)
-        Y %<>% .[c('wt', 'LAD.Close')]
+        Y <- X[c('wt', 'LAD.Close')]
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-        rm(wt)
       }
       
       if(yv == 'daily.mean1') {
-        Y <- X %>% mutate(wt = wt)
-        Y %<>% .[c('wt', 'dmean1')]
+        Y <- X[c('wt', 'dmean1')]
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-        rm(wt)
       }
       
       if(yv == 'daily.mean2') {
-        Y <- X %>% mutate(wt = wt)
-        Y %<>% .[c('wt', 'dmean2')]
+        Y <- X[c('wt', 'dmean2')]
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-        rm(wt)
       }
       
       if(yv == 'daily.mean3') {
-        Y <- X %>% mutate(wt = wt)
-        Y %<>% .[c('wt', 'dmean3')]
+        Y <- X[c('wt', 'dmean3')]
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-        rm(wt)
       }
       
       if(yv == 'mixed1') {
-        Y <- X %>% mutate(wt = wt, mixed1 = (Price / first(Price)) * dmean1)
+        Y <- X %>% mutate(mixed1 = (LAD.Close / first(LAD.Open)) * dmean1)
         Y %<>% .[c('wt', 'mixed1')]
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-        rm(wt)
       }
       
       if(yv == 'mixed2') {
-        Y <- X %>% mutate(wt = wt, mixed2 = (Price / first(Price)) * dmean2)
-        Y %<>% .[c('wt', 'mixed1')]
+        Y <- X %>% mutate(mixed2 = (LAD.Close / first(LAD.Open)) * dmean2)
+        Y %<>% .[c('wt', 'mixed2')]
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-        rm(wt)
       }
       
       if(yv == 'mixed3') {
-        Y <- X %>% mutate(wt = wt, mixed3 = (Price / first(Price)) * dmean3)
-        Y %<>% .[c('wt', 'mixed1')]
+        Y <- X %>% mutate(mixed3 = (LAD.Close / first(LAD.Open)) * dmean3)
+        Y %<>% .[c('wt', 'mixed3')]
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-        rm(wt)
       }
       
       if(.log == TRUE) {
@@ -366,22 +343,23 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
   } else if(family %in% families[c(2, 4)]) {
     ## ----------------------- binomial or multinomial -------------------------------
     if(yv %in% c('baseline', 'close1', 'close2')) {
-      X <- ddt[, 1:6]
+      X <- ddt[c('Date', 'LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume', 'wt')]
       
     } else if(yv %in%  c('daily.mean1', 'mixed1')) {
-      X <- ddt[, 1:6] %>% mutate(dmean1 = (LAD.Open + LAD.Close) / 2)
+      X <- ddt[c('Date', 'LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume', 'wt')] %>% 
+        mutate(dmean1 = (LAD.Open + LAD.Close) / 2)
       
     } else if(yv %in% c('daily.mean2', 'mixed2')) {
-      X <- ddt[, 1:6] %>% mutate(dmean2 = (LAD.High + LAD.Low) / 2)
+      X <- ddt[c('Date', 'LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume', 'wt')] %>% 
+        mutate(dmean2 = (LAD.High + LAD.Low) / 2)
       
     } else {
-      X <- ddt[, 1:6] %>% 
+      X <- ddt[c('Date', 'LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume', 'wt')] %>% 
         mutate(dmean3 = (LAD.Open + LAD.High + LAD.Low + LAD.Close) / 4)
     }
     
     if((logistic.yv == 'l1')|(logistic.yv == 'l3')) {
       ## --------------------- logistic.yv = 'l1' or 'l3' ------------------------------
-      ## ------------ start need to modify ---------------------------
       if(xy.matrix == 'h1') {
         ## ---------------------------------- h1 ---------------------------------------
         ## h1 is long format converted from default quantmmod xts.
@@ -398,126 +376,278 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
         ## alpha=1 will build a LASSO.
         
         if(yv == 'baseline') {
-          X %<>% mutate(wt = wt, b0 = Price / first(Price)) %>% 
+          X %<>% gather(Category, Price, LAD.Open:LAD.Close) %>% 
+            mutate(Category = factor(
+              Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
+            arrange(Date) %>% mutate(b0 = Price / first(Price))
+          #let `Date` be numeric variable as convert by system.
+          
+          Y <- X[c('wt', 'Category')]
+          X %<>% .[c('LAD.Volume', 'b0', 'Price')]
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ baseline formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
+        }
+        
+        if(yv == 'close1') {
+          X %<>% mutate(LAD.Close2 = ifelse(LAD.Close > LAD.Open, 1, 0)) %>% 
+            gather(Category, Price, LAD.Open:LAD.Low) %>% 
+            mutate(Category = factor(
+              Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low'))) %>% 
+            arrange(Date)
+          
+          Y <- X %>% mutate(LAD.Close = LAD.Close2)
+          Y %<>% .[c('wt', 'LAD.Close')]
+          X %<>% .[c('LAD.Volume', 'Category', 'Price')]
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ close1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
+        }
+        
+        if(yv == 'close2') {
+          X %<>% mutate(LAD.Close2 = ifelse(LAD.Close > LAD.Open, 1, 0)) %>% 
+            gather(Category, Price, LAD.Open:LAD.Close) %>% 
+            mutate(Category = factor(
+              Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
+            arrange(Date)
+          
+          Y <- X %>% mutate(LAD.Close = LAD.Close2)
+          Y %<>% .[c('wt', 'LAD.Close')]
+          X %<>% .[c('LAD.Volume', 'Category', 'Price')]
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ close2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
+        }
+        
+        if(yv == 'daily.mean1') {
+          X %<>% mutate(dmean1 = ifelse(dmean1 > LAD.Open, 1, 0)) %>% 
             gather(Category, Price, LAD.Open:LAD.Close) %>% 
             mutate(Category = factor(
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X[c('wt', 'Category')]
-          X %<>% .[c('LAD.Volume', 'b0', 'Price')]
-          rm(wt)
-        }
-        
-        if(yv == 'close1') {
-          X %<>% gather(Category, Price, LAD.Open:LAD.Low) %>% 
-            mutate(Category = factor(
-              Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low'))) %>% 
-            arrange(Date)
-          
-          Y <- X %>% mutate(wt = wt, LAD.Close = ifelse(LAD.Close > LAD.Open, 1, 0))
-          Y %<>% .[c('wt', 'LAD.Close')]
+          Y <- X[c('wt', 'dmean1')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
-        }
-        
-        if(yv == 'close2') {
-          X %<>% gather(Category, Price, LAD.Open:LAD.Close) %>% 
-            mutate(Category = factor(
-              Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
-            arrange(Date)
           
-          Y <- X %>% mutate(wt = wt, LAD.Close = ifelse(LAD.Close > LAD.Open, 1, 0))
-          Y %<>% .[c('wt', 'LAD.Close')]
-          X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
-        }
-        
-        if(yv == 'daily.mean1') {
-          X %<>% gather(Category, Price, LAD.Open:LAD.Close) %>% 
-            mutate(Category = factor(
-              Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
-            arrange(Date)
-          #let `Date` be numeric variable as convert by system.
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
           
-          Y <- X %>% mutate(wt = wt, dmean1 = ifelse(dmean1 > LAD.Open, 1, 0))
-          Y %<>% .[c('wt', 'dmean1')]
-          X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          ## ------------ daily.mean1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'daily.mean2') {
-          X %<>% gather(Category, Price, LAD.Open:LAD.Close) %>% 
+          X %<>% mutate(dmean2 = ifelse(dmean2 > LAD.Open, 1, 0)) %>% 
+            gather(Category, Price, LAD.Open:LAD.Close) %>% 
             mutate(Category = factor(
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, dmean2 = ifelse(dmean2 > LAD.Open, 1, 0))
-          Y %<>% .[c('wt', 'dmean2')]
+          Y <- X[c('wt', 'dmean2')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ daily.mean2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'daily.mean3') {
-          X %<>% gather(Category, Price, LAD.Open:LAD.Close) %>% 
+          X %<>% mutate(dmean3 = ifelse(dmean3 > LAD.Open, 1, 0)) %>% 
+            gather(Category, Price, LAD.Open:LAD.Close) %>% 
             mutate(Category = factor(
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, dmean3 = ifelse(dmean3 > LAD.Open, 1, 0))
-          Y %<>% .[c('wt', 'dmean3')]
+          Y <- X[c('wt', 'dmean3')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ daily.mean3 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed1') {
-          X %<>% gather(Category, Price, LAD.Open:LAD.Close) %>% 
+          X %<>% mutate(LAD.Open2 = LAD.Open) %>% 
+            gather(Category, Price, LAD.Open:LAD.Close) %>% 
             mutate(Category = factor(
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, mixed1 = (Price / first(Price)) * dmean1, 
-                            mixed1 = ifelse(mixed1 > LAD.Open, 1, 0))
+          Y <- X %>% mutate(mixed1 = (Price / first(Price)) * dmean1, 
+                            mixed1 = ifelse(mixed1 > LAD.Open2, 1, 0))
           Y %<>% .[c('wt', 'mixed1')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed2') {
-          X %<>% gather(Category, Price, LAD.Open:LAD.Close) %>% 
+          X %<>% mutate(LAD.Open2 = LAD.Open) %>% 
+            gather(Category, Price, LAD.Open:LAD.Close) %>% 
             mutate(Category = factor(
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, mixed2 = (Price / first(Price)) * dmean2, 
-                            mixed2 = ifelse(mixed2 > LAD.Open, 1, 0))
+          Y <- X %>% mutate(mixed2 = (Price / first(Price)) * dmean2, 
+                            mixed2 = ifelse(mixed2 > LAD.Open2, 1, 0))
           Y %<>% .[c('wt', 'mixed2')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed3') {
-          X %<>% gather(Category, Price, LAD.Open:LAD.Close) %>% 
+          X %<>% mutate(LAD.Open2 = LAD.Open) %>% 
+            gather(Category, Price, LAD.Open:LAD.Close) %>% 
             mutate(Category = factor(
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, mixed3 = (Price / first(Price)) * dmean3, 
-                            mixed3 = ifelse(mixed3 > LAD.Open, 1, 0))
+          Y <- X %>% mutate(mixed3 = (Price / first(Price)) * dmean3, 
+                            mixed3 = ifelse(mixed3 > LAD.Open2, 1, 0))
           Y %<>% .[c('wt', 'mixed3')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
-        }
-        
-        if(.log == TRUE) {
-          X %<>% mutate_each(funs(log))
-          Y %<>% mutate_each(funs(log))
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed3 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         ## sample for contrasts :
@@ -607,25 +737,34 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
         #'@ tail(acsY)
         # 
         
+        #'@ if(.log == TRUE) {
+        #'@   X %<>% mutate_each(funs(log))
+        #'@   Y %<>% mutate_each(funs(log))
+        #'@ }
+        
         #'@ suppressWarnings(build.x(~ -1 + ., ddt_DF, contrasts = TRUE))
         
         #set X_i0 as baseline (intercept).
         if(logistic.yv == 'l1') {
           tmp <- list(x = build.x(~ -1 + ., X), y = Y)
-        } else {
+        }
+        
+        if(logistic.yv == 'l3') {
           tmp <- list() #----------------------------------
         }
-        ## ------------ end need to modify ---------------------------
         
       } else if(xy.matrix == 'h2') {
         ## ---------------------------------- h2 ---------------------------------------
         ## h2 is wide format or default quantmmod xts.
         
         if(yv == 'baseline') {
-          X <- data.frame(X[, 1], as.matrix(X[-c(1, 6)]) / as.numeric(as.matrix(X[1, 2])), 
-                     X[, 6], Price = as.numeric(as.matrix(X[1, 2]))) %>% tbl_df
-          X %>% mutate(
-            wt = wt, b0 = ifelse(LAD.Open >= first(LAD.Open), 1, 0), 
+          X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')] <- 
+            data.frame(as.matrix(X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')]) / 
+                         first(X$LAD.Open)) %>% tbl_df
+          
+          X %<>% mutate(
+            Price = first(LAD.Open), 
+            b0 = ifelse(LAD.Open >= first(LAD.Open), 1, 0), 
             LAD.Open = ifelse(LAD.Open >= first(LAD.Open), 1, 0), 
             LAD.High = ifelse(LAD.High >= first(LAD.Open), 1, 0), 
             LAD.Low = ifelse(LAD.Low >= first(LAD.Open), 1, 0), 
@@ -633,14 +772,32 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           
           Y <- X[c('wt', 'b0')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ baseline formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'close1') {
-          X <- data.frame(X[, 1], as.matrix(X[-c(1, 6)]) / as.numeric(as.matrix(X[1, 2])), 
-                          X[, 6], Price = as.numeric(as.matrix(X[1, 2]))) %>% tbl_df
-          X %>% mutate(
-            wt = wt, LAD.Close = ifelse(LAD.Close >= LAD.Open, 1, 0), 
+          X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')] <- 
+            data.frame(as.matrix(X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')]) / 
+                         first(X$LAD.Open)) %>% tbl_df
+          
+          X %<>% mutate(
             LAD.Open = ifelse(LAD.Open >= LAD.Open, 1, 0), 
             LAD.High = ifelse(LAD.High >= LAD.Open, 1, 0), 
             LAD.Low = ifelse(LAD.Low >= LAD.Open, 1, 0), 
@@ -648,14 +805,32 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           
           Y <- X[c('wt', 'LAD.Close')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ close1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'close2') {
-          X <- data.frame(X[, 1], as.matrix(X[-c(1, 6)]) / as.numeric(as.matrix(X[1, 2])), 
-                          X[, 6], Price = as.numeric(as.matrix(X[1, 2]))) %>% tbl_df
-          X %>% mutate(
-            wt = wt, LAD.Close = ifelse(LAD.Close >= LAD.Open, 1, 0), 
+          X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')] <- 
+            data.frame(as.matrix(X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')]) / 
+                         first(X$LAD.Open)) %>% tbl_df
+          
+          X %<>% mutate(
             LAD.Open = ifelse(LAD.Open >= LAD.Open, 1, 0), 
             LAD.High = ifelse(LAD.High >= LAD.Open, 1, 0), 
             LAD.Low = ifelse(LAD.Low >= LAD.Open, 1, 0), 
@@ -663,14 +838,33 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           
           Y <- X[c('wt', 'LAD.Close')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ close2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'daily.mean1') {
-          X <- data.frame(X[, 1], as.matrix(X[-c(1, 6)]) / as.numeric(as.matrix(X[1, 2])), 
-                          X[, 6], Price = as.numeric(as.matrix(X[1, 2]))) %>% tbl_df
-          X %>% mutate(
-            wt = wt, dmean1 = ifelse(dmean1 >= LAD.Open, 1, 0), 
+          X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')] <- 
+            data.frame(as.matrix(X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')]) / 
+                         first(X$LAD.Open)) %>% tbl_df
+          
+          X %<>% mutate(
+            dmean1 = ifelse(dmean1 >= LAD.Open, 1, 0), 
             LAD.Open = ifelse(LAD.Open >= dmean1, 1, 0), 
             LAD.High = ifelse(LAD.High >= dmean1, 1, 0), 
             LAD.Low = ifelse(LAD.Low >= dmean1, 1, 0), 
@@ -678,14 +872,33 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           
           Y <- X[c('wt', 'dmean1')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ daily.mean1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'daily.mean2') {
-          X <- data.frame(X[, 1], as.matrix(X[-c(1, 6)]) / as.numeric(as.matrix(X[1, 2])), 
-                          X[, 6], Price = as.numeric(as.matrix(X[1, 2]))) %>% tbl_df
-          X %>% mutate(
-            wt = wt, dmean2 = ifelse(dmean2 >= LAD.Open, 1, 0), 
+          X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')] <- 
+            data.frame(as.matrix(X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')]) / 
+                         first(X$LAD.Open)) %>% tbl_df
+          
+          X %<>% mutate(
+            dmean2 = ifelse(dmean2 >= LAD.Open, 1, 0), 
             LAD.Open = ifelse(LAD.Open >= dmean2, 1, 0), 
             LAD.High = ifelse(LAD.High >= dmean2, 1, 0), 
             LAD.Low = ifelse(LAD.Low >= dmean2, 1, 0), 
@@ -693,14 +906,33 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           
           Y <- X[c('wt', 'dmean2')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ daily.mean2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'daily.mean3') {
-          X <- data.frame(X[, 1], as.matrix(X[-c(1, 6)]) / as.numeric(as.matrix(X[1, 2])), 
-                          X[, 6], Price = as.numeric(as.matrix(X[1, 2]))) %>% tbl_df
-          X %>% mutate(
-            wt = wt, dmean3 = ifelse(dmean3 >= LAD.Open, 1, 0), 
+          X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')] <- 
+            data.frame(as.matrix(X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')]) / 
+                         first(X$LAD.Open)) %>% tbl_df
+          
+          X %<>% mutate(
+            dmean3 = ifelse(dmean3 >= LAD.Open, 1, 0), 
             LAD.Open = ifelse(LAD.Open >= dmean3, 1, 0), 
             LAD.High = ifelse(LAD.High >= dmean3, 1, 0), 
             LAD.Low = ifelse(LAD.Low >= dmean3, 1, 0), 
@@ -708,46 +940,103 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           
           Y <- X[c('wt', 'dmean3')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ daily.mean3 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed1') {
-          X <- data.frame(X[, 1], as.matrix(X[-c(1, 6)]) / as.numeric(as.matrix(X[1, 2])), 
-                          X[, 6], Price = as.numeric(as.matrix(X[1, 2]))) %>% tbl_df
-          X %>% mutate(
-            wt = wt, mixed1 = (Price / first(Price)) * dmean1, 
+          X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')] <- 
+            data.frame(as.matrix(X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')]) / 
+                         first(X$LAD.Open)) %>% tbl_df
+          
+          X %<>% mutate(
+            mixed1 = (LAD.Open / first(LAD.Open)) * dmean1, 
             mixed1 = ifelse(mixed1 >= LAD.Open, 1, 0), 
-            LAD.Open = ifelse(LAD.Open >= dmean3, 1, 0), 
-            LAD.High = ifelse(LAD.High >= dmean3, 1, 0), 
-            LAD.Low = ifelse(LAD.Low >= dmean3, 1, 0), 
-            LAD.Close = ifelse(LAD.Close >= dmean3, 1, 0))
+            LAD.Open = ifelse(LAD.Open >= dmean1, 1, 0), 
+            LAD.High = ifelse(LAD.High >= dmean1, 1, 0), 
+            LAD.Low = ifelse(LAD.Low >= dmean1, 1, 0), 
+            LAD.Close = ifelse(LAD.Close >= dmean1, 1, 0))
           
           Y <- X[c('wt', 'mixed1')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed2') {
-          X <- data.frame(X[, 1], as.matrix(X[-c(1, 6)]) / as.numeric(as.matrix(X[1, 2])), 
-                          X[, 6], Price = as.numeric(as.matrix(X[1, 2]))) %>% tbl_df
-          X %>% mutate(
-            wt = wt, mixed2 = (Price / first(Price)) * dmean2, 
+          X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')] <- 
+            data.frame(as.matrix(X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')]) / 
+                         first(X$LAD.Open)) %>% tbl_df
+          
+          X %<>% mutate(
+            mixed2 = (LAD.Open / first(LAD.Open)) * dmean2, 
             mixed2 = ifelse(mixed2 >= LAD.Open, 1, 0), 
-            LAD.Open = ifelse(LAD.Open >= dmean3, 1, 0), 
-            LAD.High = ifelse(LAD.High >= dmean3, 1, 0), 
-            LAD.Low = ifelse(LAD.Low >= dmean3, 1, 0), 
-            LAD.Close = ifelse(LAD.Close >= dmean3, 1, 0))
+            LAD.Open = ifelse(LAD.Open >= dmean2, 1, 0), 
+            LAD.High = ifelse(LAD.High >= dmean2, 1, 0), 
+            LAD.Low = ifelse(LAD.Low >= dmean2, 1, 0), 
+            LAD.Close = ifelse(LAD.Close >= dmean2, 1, 0))
           
           Y <- X[c('wt', 'mixed2')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed3') {
-          X <- data.frame(X[, 1], as.matrix(X[-c(1, 6)]) / as.numeric(as.matrix(X[1, 2])), 
-                          X[, 6], Price = as.numeric(as.matrix(X[1, 2]))) %>% tbl_df
-          X %>% mutate(
-            wt = wt, mixed3 = (Price / first(Price)) * dmean3, 
+          X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')] <- 
+            data.frame(as.matrix(X[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close')]) / 
+                         first(X$LAD.Open)) %>% tbl_df
+          
+          X %<>% mutate(
+            mixed3 = (LAD.Open / first(LAD.Open)) * dmean3, 
             mixed3 = ifelse(mixed3 >= LAD.Open, 1, 0), 
             LAD.Open = ifelse(LAD.Open >= dmean3, 1, 0), 
             LAD.High = ifelse(LAD.High >= dmean3, 1, 0), 
@@ -756,7 +1045,24 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
           
           Y <- X[c('wt', 'mixed3')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed3 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(.log == TRUE) {
@@ -769,7 +1075,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
         #set X_i0 as baseline (intercept).
         if(logistic.yv == 'l1') {
           tmp <- list(x = build.x(~ -1 + ., X), y = Y)
-        } else {
+        }
+        
+        if(logistic.yv == 'l3') {
           tmp <- list() #----------------------------------
         }
         
@@ -808,11 +1116,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, b0 = Price / first(Price), 
+          Y <- X %>% mutate(b0 = Price / first(Price), 
                             b0 = ifelse(b0 >= b0[1], 1, 0))
           Y %<>% .[c('wt', 'b0')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ baseline formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'close1') {
@@ -821,10 +1146,27 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low'))) %>% 
             arrange(Date)
           
-          Y <- X %>% mutate(wt = wt, LAD.Close = ifelse(LAD.Close >= Price, 1, 0))
+          Y <- X %>% mutate(LAD.Close = ifelse(LAD.Close >= Price, 1, 0))
           Y %<>% .[c('wt', 'LAD.Close')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ close1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'close2') {
@@ -834,10 +1176,27 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
             arrange(Date)
           
-          Y <- X %>% mutate(wt = wt, LAD.Close = ifelse(LAD.Close2 >= Price, 1, 0))
+          Y <- X %>% mutate(LAD.Close = ifelse(LAD.Close2 >= Price, 1, 0))
           Y %<>% .[c('wt', 'LAD.Close')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ close2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'daily.mean1') {
@@ -847,10 +1206,27 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, dmean1 = ifelse(dmean1 >= Price, 1, 0))
+          Y <- X %>% mutate(dmean1 = ifelse(dmean1 >= Price, 1, 0))
           Y %<>% .[c('wt', 'dmean1')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ daily.mean1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'daily.mean2') {
@@ -860,10 +1236,27 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, dmean2 = ifelse(dmean2 >= Price, 1, 0))
+          Y <- X %>% mutate(dmean2 = ifelse(dmean2 >= Price, 1, 0))
           Y %<>% .[c('wt', 'dmean2')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ daily.mean2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'daily.mean3') {
@@ -873,10 +1266,27 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, dmean3 = ifelse(dmean3 >= Price, 1, 0))
+          Y <- X %>% mutate(dmean3 = ifelse(dmean3 >= Price, 1, 0))
           Y %<>% .[c('wt', 'dmean3')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ daily.mean3 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed1') {
@@ -886,11 +1296,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, mixed1 = (Price / first(Price)) * dmean1, 
+          Y <- X %>% mutate(mixed1 = (Price / first(Price)) * dmean1, 
                             mixed1 = ifelse(mixed1 >= Price, 1, 0))
           Y %<>% .[c('wt', 'mixed1')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed2') {
@@ -900,11 +1327,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, mixed2 = (Price / first(Price)) * dmean2, 
+          Y <- X %>% mutate(mixed2 = (Price / first(Price)) * dmean2, 
                             mixed2 = ifelse(mixed2 >= Price, 1, 0))
           Y %<>% .[c('wt', 'mixed2')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed3') {
@@ -914,11 +1358,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- X %>% mutate(wt = wt, mixed3 = (Price / first(Price)) * dmean3, 
+          Y <- X %>% mutate(mixed3 = (Price / first(Price)) * dmean3, 
                             mixed3 = ifelse(mixed3 >= Price, 1, 0))
           Y %<>% .[c('wt', 'mixed3')]
           X %<>% .[c('LAD.Volume', 'Category', 'Price')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed3 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(.log == TRUE) {
@@ -1018,7 +1479,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
         #set X_i0 as baseline (intercept).
         if(logistic.yv == 'l2') {
           tmp <- list(x = build.x(~ -1 + ., X), y = Y)
-        } else {
+        }
+        
+        if(logistic.yv == 'l4') {
           tmp <- list() #----------------------------------
         }
         
@@ -1027,82 +1490,237 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = 'l1', wt = NULL,
         ## h2 is wide format or default quantmmod xts.
         
         if(yv == 'baseline') {
-          Y <- X %>% mutate(wt = wt, b0 = ifelse(LAD.Open >= first(LAD.Open), 1, 0))
+          Y <- X %>% mutate(b0 = ifelse(LAD.Open >= first(LAD.Open), 1, 0))
           Y %<>% .[c('wt', 'b0')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ baseline formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'close1') {
-          Y <- X %>% mutate(wt = wt, LAD.Close = ifelse(LAD.Close >= LAD.Open, 1, 0))
+          Y <- X %>% mutate(LAD.Close = ifelse(LAD.Close >= LAD.Open, 1, 0))
           Y %<>% .[c('wt', 'LAD.Close')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ close1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'close2') {
-          Y <- X %>% mutate(wt = wt, LAD.Close = ifelse(LAD.Close >= LAD.Open, 1, 0))
+          Y <- X %>% mutate(LAD.Close = ifelse(LAD.Close >= LAD.Open, 1, 0))
           Y %<>% .[c('wt', 'LAD.Close')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ closed2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'daily.mean1') {
-          Y <- X %>% mutate(wt = wt, dmean1 = ifelse(dmean1 >= LAD.Open, 1, 0))
+          Y <- X %>% mutate(dmean1 = ifelse(dmean1 >= LAD.Open, 1, 0))
           Y %<>% .[c('wt', 'dmean1')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ daily.mean1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'daily.mean2') {
-          Y <- X %>% mutate(wt = wt, dmean2 = ifelse(dmean2 >= LAD.Open, 1, 0))
+          Y <- X %>% mutate(dmean2 = ifelse(dmean2 >= LAD.Open, 1, 0))
           Y %<>% .[c('wt', 'dmean2')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ daily.mean2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'daily.mean3') {
-          Y <- X %>% mutate(wt = wt, dmean3 = ifelse(dmean3 >= LAD.Open, 1, 0))
+          Y <- X %>% mutate(dmean3 = ifelse(dmean3 >= LAD.Open, 1, 0))
           Y %<>% .[c('wt', 'dmean3')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ daily.mean3 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed1') {
-          Y <- X %>% mutate(wt = wt, mixed1 = (Price / first(Price)) * dmean1, 
+          Y <- X %>% mutate(mixed1 = (LAD.Close / first(LAD.Open)) * dmean1, 
                             mixed1 = ifelse(mixed1 >= LAD.Open, 1, 0))
           Y %<>% .[c('wt', 'mixed1')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed1 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed2') {
-          Y <- X %>% mutate(wt = wt, mixed2 = (Price / first(Price)) * dmean2, 
+          Y <- X %>% mutate(mixed2 = (LAD.Close / first(LAD.Open)) * dmean2, 
                             mixed2 = ifelse(mixed2 >= LAD.Open, 1, 0))
-          Y %<>% .[c('wt', 'mixed1')]
+          Y %<>% .[c('wt', 'mixed2')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed2 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
         if(yv == 'mixed3') {
-          Y <- X %>% mutate(wt = wt, mixed3 = (Price / first(Price)) * dmean3, 
+          Y <- X %>% mutate(mixed3 = (LAD.Close / first(LAD.Open)) * dmean3, 
                             mixed3 = ifelse(mixed3 >= LAD.Open, 1, 0))
-          Y %<>% .[c('wt', 'mixed1')]
+          Y %<>% .[c('wt', 'mixed3')]
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 'LAD.Volume')]
-          rm(wt)
+          
+          if(.log == TRUE) {
+            X %<>% mutate_each(funs(log))
+            Y %<>% mutate_each(funs(log))
+          }
+          
+          ## ------------ mixed3 formula ---------------------------
+          if(logistic.yv == 'l1'){
+            
+          } else if(logistic.yv == 'l2'){
+            
+          } else if(logistic.yv == 'l3'){
+            
+          } else if(logistic.yv == 'l4'){
+            
+          } else {
+            stop('logistic.yv must be one among c(\'', paste(logistic.yvs, collapse = '\', \''), '\').')
+          }
         }
         
-        if(.log == TRUE) {
-          X %<>% mutate_each(funs(log))
-          Y %<>% mutate_each(funs(log))
-        }
+        #'@ if(.log == TRUE) {
+        #'@   X %<>% mutate_each(funs(log))
+        #'@   Y %<>% mutate_each(funs(log))
+        #'@ }
         
         #'@ suppressWarnings(build.x(~ -1 + ., ddt_DF, contrasts = TRUE))
         
         #set X_i0 as baseline (intercept).
         if(logistic.yv == 'l2') {
           tmp <- list(x = build.x(~ -1 + ., X), y = Y)
-        } else {
+        }
+        
+        if(logistic.yv == 'l4') {
           tmp <- list() #----------------------------------
         }
         
