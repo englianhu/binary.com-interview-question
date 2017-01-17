@@ -16,7 +16,7 @@ filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
     
   } else {
     tryCatch({
-      suppressAll(getSymbols('LAD'))
+      suppressAll(getSymbols('LAD', from = '2015-01-01'))
     }, error = function(e) stop('Kindly restart the shiny app.'))
     mbase <- LAD; rm(LAD)
   }
@@ -37,7 +37,7 @@ filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
     
   } else {
     tryCatch(suppressAll(getSymbols('LAD', from = startDate, to = endDate)), 
-             error = function(e) getSymbols('LAD'))
+             error = function(e) getSymbols('LAD', from = '2015-01-01'))
     mbase <- LAD; rm(LAD)
     mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
       tbl_df %>% mutate(Date = ymd(Date), 

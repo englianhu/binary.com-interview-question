@@ -22,7 +22,7 @@ suppressAll(source('./function/lmStocks.R', local = TRUE))
 
 ## =================================== Read Data =====================================
 tryCatch({
-  suppressAll(getSymbols('LAD'))
+  suppressAll(getSymbols('LAD', from = '2015-01-01'))
   if(exists('LAD')) saveRDS(LAD, file = './data/LAD.rds')
 }, error = function(e) LAD <- read_rds(path = './data/LAD.rds'))
 
@@ -675,17 +675,17 @@ suppressMessages(source('./function/compStocks.R'))
 ## check if the saved dataset is today's data? if previous day then need to scrap from website.
 if(file.exists('./data/LAD.rds')) {
   if(readRDS('./data/LAD.rds') %>% attributes %>% .$updated %>% as.Date < today()) {
-    suppressAll(getSymbols('LAD'))
+    suppressAll(getSymbols('LAD', from = '2015-01-01'))
   } else {
     LAD <- read_rds(path = './data/LAD.rds')
   }
 } else {
-  suppressAll(getSymbols('LAD'))
+  suppressAll(getSymbols('LAD', from = '2015-01-01'))
   saveRDS(LAD, file = './data/LAD.rds')
 }
 
 #'@ tryCatch({
-#'@   suppressAll(getSymbols('LAD'))
+#'@   suppressAll(getSymbols('LAD', from = '2015-01-01'))
 #'@   if(exists('LAD')) saveRDS(LAD, file = './data/LAD.rds')
 #'@   }, error = function(e) LAD <- read_rds(path = './data/LAD.rds'))
 
