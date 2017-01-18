@@ -1,13 +1,16 @@
-lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10, 
+lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1', 
                      yv = 'daily.mean', logistic.yv = TRUE, tmeasure = 'deviance', 
                      tmultinomial = 'grouped', maxit = 1000, pred.type = 'class', 
-                     nfolds = 10, foldid = NULL, s = 'lambda.min', weight.date = FALSE, 
-                     weight.volume = FALSE, parallel = TRUE, .log = FALSE) {
+                     alpha = 0:10, nfolds = 10, foldid = NULL, s = 'lambda.min', 
+                     weight.date = FALSE, weight.volume = FALSE, wt.control = FALSE, 
+                     parallel = TRUE, .log = FALSE) {
   ## mbase = default quantmod xts format or in data frame format.
   ## 
   ## family = gaussian', 'binomial', 'poisson', 'multinomial', 'cox' and 'mgaussian'.
   ## 
   ## xy.matrix = 'h1' or xy.matrix = 'h2'. setting x and y variables.
+  ## 
+  ## setform %in% c('l1', 'l2', 'l3', 'l4') will set a formula for build.x() and build.y().
   ## 
   ## alpha from 0, 0.1, 0.2 ... until 1.0. Ridge is alpha = 0; 
   ##   Elastic Net is 0 < alpha < 1; Lasso is alpha = 1
@@ -50,6 +53,10 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   ## weight.date = FALSE or TRUE for time series weighted function prediction.
   ## 
   ## weight.volume = FALSE for time series weighted function prediction with volume effect.
+  ## 
+  ## wt.control = TRUE if internal weighted values applied. For both binomial and 
+  ##   multinomial will not be applicable and skip it due to logical Y cannot mlultiplied 
+  ##   by a vector of weighted parameters.
   ## 
   ## parallel = TRUE or FALSE for parallel computing.
   ## 
@@ -261,7 +268,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10,
   #xy <- h(mbase)
   eval(parse(
     text = paste(paste0(c('x', 'y'), 
-                        ' <- h(mbase, family = family, xy.matrix = xy.matrix, .log = .log)[[', 
+                        ' <- h(mbase, family = family, yv = yv, logistic.yv = logistic.yv, wt = wt, wt.control = wt.control, xy.matrix = xy.matrix, setform = setform, .log = .log)[[', 
                         c('\'x\'', '\'y\''),']]'), collapse = '; ')))
   
   ## ======================= Parameter Adjustment ==================================

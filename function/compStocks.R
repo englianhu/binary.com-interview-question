@@ -8,6 +8,7 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
   xy.matrix <- c('h1', 'h2')
   alpha <- 0:10
   yv <- c('daily.mean', 'baseline', 'mixed')
+  setform <- c('l1', 'l2', 'l3', 'l4')
   pred.type <- c('link', 'response', 'coefficients', 'nonzero', 'class')
   nfolds = 10
   foldid = NULL
@@ -30,6 +31,7 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
     tmeasure <- c('deviance', 'mse', 'mae')
     family <- 'gaussian'
     pred.type <- c('link', 'response', 'nonzero', 'class')
+    wt.control = c(TRUE, FALSE)
     
     gaum <- sapply(xy.matrix, function(x) {
       sapply(yv, function(y) {
@@ -76,6 +78,7 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
     ##            tmeasure = 'auc'.
     tmeasure <- c('deviance', 'mse', 'mae', 'class', 'auc')
     family <- 'binomial'
+    wt.control = FALSE #wt.control not applicable in binomial nor multinomial.
     
     binm <- sapply(xy.matrix, function(x) {
       sapply(yv, function(y) {
@@ -121,6 +124,7 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
     tmeasure <- c('deviance', 'mse', 'mae')
     family <- 'poisson'
     pred.type <- c('link', 'response', 'nonzero')
+    wt.control = c(TRUE, FALSE)
     
     poim <- sapply(xy.matrix, function(x) {
       sapply(yv, function(y) {
@@ -168,6 +172,7 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
     tmeasure <- c('deviance', 'mse', 'mae', 'class')
     tmultinomial <- c('grouped', 'ungrouped')
     family <- 'multinomial'
+    wt.control = FALSE #wt.control not applicable in binomial nor multinomial.
     
     mnmm <- sapply(xy.matrix, function(x) {
       sapply(yv, function(y) {
