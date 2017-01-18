@@ -660,6 +660,7 @@ suppressAll(library('dplyr'))
 suppressAll(library('tidyr'))
 suppressAll(library('readr'))
 suppressAll(library('tidyverse')) #load c(dplyr, tidyr, stringr, readr) due to system doesn't work.
+suppressAll(library('tidyquant'))
 suppressAll(library("shiny"))
 suppressAll(library("shinyjs"))
 suppressAll(library('shinyBS'))
@@ -675,7 +676,9 @@ suppressMessages(source('./function/compStocks.R'))
 ## check if the saved dataset is today's data? if previous day then need to scrap from website.
 if(file.exists('./data/LAD.rds')) {
   if(readRDS('./data/LAD.rds') %>% attributes %>% .$updated %>% as.Date < today()) {
-    suppressAll(getSymbols('LAD', from = '2015-01-01'))
+    tryCatch({
+      suppressAll(getSymbols('LAD', from = '2015-01-01'))
+    }, error = function(e) stop('Kindly restart the shiny app.'))
   } else {
     LAD <- read_rds(path = './data/LAD.rds')
   }
@@ -692,11 +695,12 @@ if(file.exists('./data/LAD.rds')) {
 #'@ if(!exists('LAD')) LAD <- read_rds(path = './data/LAD.rds')
 
 LADDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-  tbl_df %>% mutate(Date = ymd(Date))#, 
-#LAD.Volume = formattable::digits(
-#LAD.Volume, 0, format = 'd', big.mark = ','))
+  tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+#mutate(LAD.Volume = formattable::digits(
+#       LAD.Volume, 0, format = 'd', big.mark = ','))
 dateID <- LADDT$Date
 
+## list the cv.glmnet models.
 families <- c('gaussian', 'binomial', 'poisson', 'multinomial', 'cox', 'mgaussian', 'all')
 gsfit <- compStocks(LADDT, family = families[1], maxit = 1000, .print = TRUE)
 bnfit <- compStocks(LADDT, family = families[2], maxit = 1000, .print = TRUE)
@@ -705,6 +709,14 @@ mnfit <- compStocks(LADDT, family = families[4], maxit = 1000, .print = TRUE)
 cxfit <- compStocks(LADDT, family = families[5], maxit = 1000, .print = TRUE)
 mgfit <- compStocks(LADDT, family = families[6], maxit = 1000, .print = TRUE)
 alfit <- compStocks(LADDT, family = families[7], maxit = 1000, .print = TRUE)
+
+saveRDS(gsfit, file = './data/gsfit.rds')
+saveRDS(bnfit, file = './data/bnfit.rds')
+saveRDS(psfit, file = './data/psfit.rds')
+saveRDS(mnfit, file = './data/mnfit.rds')
+saveRDS(cxfit, file = './data/cxfit.rds')
+saveRDS(mgfit, file = './data/mgfit.rds')
+saveRDS(alfit, file = './data/alfit.rds')
 
 ldply(gsfit$fit, function(x) x$mse) %>% tbl_df
 ldply(bnfit$fit, function(x) x$mse) %>% tbl_df

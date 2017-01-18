@@ -1,5 +1,5 @@
 lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1', 
-                     yv = 'daily.mean', logistic.yv = TRUE, tmeasure = 'deviance', 
+                     yv = 'baseline', logistic.yv = TRUE, tmeasure = 'deviance', 
                      tmultinomial = 'grouped', maxit = 1000, pred.type = 'class', 
                      alpha = 0:10, nfolds = 10, foldid = NULL, s = 'lambda.min', 
                      weight.date = FALSE, weight.volume = FALSE, wt.control = FALSE, 
@@ -226,6 +226,20 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
   }
   
   ## ========================= Respondence Variable =================================
+  ## weight parameters.
+  wt <- data_frame(wt = rep(1, nrow(mbase)))
+  if(weight.date == FALSE) {
+    wt %<>% mutate(wetd = rep(1, nrow(mbase)))
+  }
+  
+  if(weight.volume == FALSE) {
+    wt %<>% mutate(wetv = rep(1, nrow(mbase)))
+  }
+  
+  ## applicable to internal or external or both weight values.
+  wt %<>% mutate(wt = wetd * wetv)
+  wt %<>% .['wt'] %>% tbl_df
+  
   ## http://stackoverflow.com/questions/39863367/ridge-regression-with-glmnet-gives-different-coefficients-than-what-i-compute?answertab=votes#tab-top
   #library(MASS)
   #library(glmnet)
@@ -267,41 +281,35 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
   #xy <- join(x, y) %>% tbl_df
   #xy <- h(mbase)
   eval(parse(
-    text = paste(paste0(c('x', 'y'), 
+    text = paste(paste0(c('x', 'y', 'wt'), 
                         ' <- h(mbase, family = family, yv = yv, logistic.yv = logistic.yv, wt = wt, wt.control = wt.control, xy.matrix = xy.matrix, setform = setform, .log = .log)[[', 
-                        c('\'x\'', '\'y\''),']]'), collapse = '; ')))
+                        c('\'x\'', '\'y\'', '\'wt\''),']]'), collapse = '; ')))
   
-  ## ======================= Parameter Adjustment ==================================
-  ## response parameters.
-  yt <- rep(0, nrow(y))
-  if(yv == 'daily.mean') { 
-    yt <- y$dmean
-  } else if(yv == 'baseline') {
-    yt <- y$b0
-  } else if(yv == 'mixed') {
-    yt <- y$dmean * y$b0
-  } else {
-    stop('Kindly select yv = "daily.mean", yv = "baseline" or yv = "mixed".')
-  }
+  ## convert the single column y and wt into a numeric vector.
+  if(!is.numeric(y)) y <- unlist(y)
+  if(!is.numeric(wt)) wt <- unlist(wt)
   
-  ## -------------------- start need to modify ------------------------------
+  ## x is a matrix while y is a vector.
+  #'@ if(nrow(x) != nrow(y)) stop('number of observation of x must be same with y.')
+  
   ## weight parameters.
-  if(weight.date == FALSE) {
-    wetd <- rep(1, nrow(y))
-  }
+  #'@ if(weight.date == FALSE) {
+  #'@   wt <- data_frame(wt = rep(1, nrow(x))) %>% mutate(wetd = rep(1, nrow(x)))
+  #'@ }
   
-  if(weight.volume == FALSE) {
-    wetv <- rep(1, nrow(y))
-  }
+  #'@ if(weight.volume == FALSE) {
+  #'@   wt <- data_frame(wt = rep(1, nrow(x))) %>% mutate(wetv = rep(1, nrow(x)))
+  #'@ }
   
-  wt <- wetd * wetv
-  ## --------------------- end need to modify ------------------------------
+  ## applicable to internal or external or both weight values.
+  #'@ wt %<>% mutate(wt = wetd * wetv)
+  #'@ wt %<>% .['wt'] %>% tbl_df
   
   ## ======================= Cost Function ==================================
-  ## “lambda.1se”: the largest λλ at which the MSE is within one standard error 
+  ## "lambda.1se": the largest λλ at which the MSE is within one standard error 
   ##    of the minimal MSE.
   ## 
-  ## “lambda.min”: the λλ at which the minimal MSE is achieved.
+  ## "lambda.min": the λλ at which the minimal MSE is achieved.
   if(s == 'lambda.1se') {
     s <- s
   } else if(s == 'lambda.min') {
@@ -384,7 +392,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'gaussian', 
                          weights = wt, maxit = maxit, nfolds = nfolds))
       }; rm(i)
@@ -394,7 +402,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'gaussian', 
                          weights = wt, maxit = maxit, foldid = foldid))
       }; rm(i)
@@ -431,7 +439,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
         ##            tmeasure = 'mae' or tmeasure = 'class' or 
         ##            tmeasure = 'auc'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'binomial', 
                          weights = wt, maxit = maxit, nfolds = nfolds))
       }; rm(i)
@@ -443,7 +451,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
         ##            tmeasure = 'mae' or tmeasure = 'class' or 
         ##            tmeasure = 'auc'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'binomial', 
                          weights = wt, maxit = maxit, foldid = foldid))
       }; rm(i)
@@ -456,7 +464,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'poisson', 
                          weights = wt, maxit = maxit, nfolds = nfolds))
       }; rm(i)
@@ -466,7 +474,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'poisson', 
                          weights = wt, maxit = maxit, foldid = foldid))
       }; rm(i)
@@ -502,7 +510,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
         ##            tmeasure = 'mae' or tmeasure = 'class'.
         ## 2 models : tmultinomial = 'grouped' or tmultinomial = 'ungrouped'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'multinomial', 
                          type.multinomial = tmultinomial, 
                          weights = wt, maxit = maxit, nfolds = nfolds))
@@ -515,7 +523,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
         ##            tmeasure = 'mae' or tmeasure = 'class'.
         ## 2 models : tmultinomial = 'grouped' or tmultinomial = 'ungrouped'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'multinomial', 
                          type.multinomial = tmultinomial, 
                          weights = wt, maxit = maxit, foldid = foldid))
@@ -535,7 +543,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 1 model : tmeasure = 'cox'
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'cox', 
                          weights = wt, maxit = maxit, nfolds = nfolds))
       }; rm(i)
@@ -545,7 +553,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 1 model : tmeasure = 'cox'
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'cox', 
                          weights = wt, maxit = maxit, foldid = foldid))
       }; rm(i)
@@ -558,7 +566,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 1 model : tmeasure = 'mgaussian'
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'mgaussian', 
                          weights = wt, maxit = maxit, nfolds = nfolds))
       }; rm(i)
@@ -568,7 +576,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 1 model : tmeasure = 'mgaussian'
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, yt, type.measure = tmeasure, parallel = parallel, 
+               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
                          alpha = i/10, family = 'mgaussian', 
                          weights = wt, maxit = maxit, foldid = foldid))
       }; rm(i)
@@ -596,8 +604,8 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
   #'@                     s = "lambda.min",type = "class")
   ## where type = "class" has meaning:
   ## 
-  ## Type ‘"class"’ applies only to
-  ##   ‘"binomial"’ or ‘"multinomial"’ models, and produces the
+  ## Type "class" applies only to
+  ##   "binomial" or "multinomial" models, and produces the
   ##   class label corresponding to the maximum probability.
   ## (from ?predict.glmnet)
   ##   What you were seeing was the predicted values on the scale of the linear predictor 
@@ -634,20 +642,20 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
                                  ', newx = x, type = \'', pred.type, '\')'), 
                           collapse ='; ')))
   
-  #'@ mse0  <- mean((yt - yhat0 )^2)
-  #'@ mse1  <- mean((yt - yhat1 )^2)
-  #'@ mse2  <- mean((yt - yhat2 )^2)
-  #'@ mse3  <- mean((yt - yhat3 )^2)
-  #'@ mse4  <- mean((yt - yhat4 )^2)
-  #'@ mse5  <- mean((yt - yhat5 )^2)
-  #'@ mse6  <- mean((yt - yhat6 )^2)
-  #'@ mse7  <- mean((yt - yhat7 )^2)
-  #'@ mse8  <- mean((yt - yhat8 )^2)
-  #'@ mse9  <- mean((yt - yhat9 )^2)
-  #'@ mse10 <- mean((yt - yhat10)^2)
+  #'@ mse0  <- mean((y - yhat0 )^2)
+  #'@ mse1  <- mean((y - yhat1 )^2)
+  #'@ mse2  <- mean((y - yhat2 )^2)
+  #'@ mse3  <- mean((y - yhat3 )^2)
+  #'@ mse4  <- mean((y - yhat4 )^2)
+  #'@ mse5  <- mean((y - yhat5 )^2)
+  #'@ mse6  <- mean((y - yhat6 )^2)
+  #'@ mse7  <- mean((y - yhat7 )^2)
+  #'@ mse8  <- mean((y - yhat8 )^2)
+  #'@ mse9  <- mean((y - yhat9 )^2)
+  #'@ mse10 <- mean((y - yhat10)^2)
   
   ## evaluate all mse0 to mse10
-  eval(parse(text = paste(paste0('mse', alpha, ' <- mean((yt - yhat', 
+  eval(parse(text = paste(paste0('mse', alpha, ' <- mean((y - yhat', 
                                  alpha, ')^2)'), collapse ='; ')))
   
   ## combine all mse0 to mse10 into a data.frame named mse

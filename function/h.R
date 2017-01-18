@@ -23,7 +23,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
   ## 
   ## setform %in% c('l1', 'l2', 'l3', 'l4') will set a formula for build.x() and build.y().
   ## 
-  ## wt is a vector of internal weight values on build.y() Y values. 
+  ## wt is 1 column data frame (a vector) of internal weight values on build.y() Y values. 
   ## 
   ## wt.control = TRUE if internal weighted values applied. For both binomial and 
   ##   multinomial will not be applicable and skip it due to logical Y cannot mlultiplied 
@@ -131,10 +131,14 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
     if(is.numeric(wt)) {
       ddt$wt <- wt
       rm(wt)
-      
-    } else if(anyNA(suppressWarnings(as.numeric(wt)))) {
-      stop('Kindly select a numeric vector as weight parameters.')
     }
+    
+    if(is.data.frame(wt)) {
+      ddt %<>% cbind(., wt)
+    }
+    #'@ } else if(anyNA(suppressWarnings(as.numeric(wt)))) {
+    #'@   stop('Kindly select a numeric vector as weight parameters.')
+    #'@ }
   } else {
     ddt$wt <- 1
     rm(wt)
@@ -174,16 +178,17 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           arrange(Date) %>% mutate(b0 = Price / first(Price))
         #let `Date` be numeric variable as convert by system.
         
+        wt <- X['wt'] %>% tbl_df
         Y <- X[c('wt', 'b0')] %>% tbl_df
         X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(b0 = wt * b0)
-          Y %<>% select(b0)
+          Y %<>% .['b0'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(b0)
+          Y %<>% .['b0'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -193,24 +198,24 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ baseline formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(x = build.x(b0 ~ LAD.Volume + Category + Price - 1, X, 
-                                  contrasts = TRUE, sparse = TRUE), y = Y)
+                                  contrasts = TRUE, sparse = TRUE), y = Y, wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(b0 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(~ -1 + ., tbl_df(select(Y, b0))))
+                      y = build.y(~ -1 + ., tbl_df(Y['b0'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(b0 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(b0 ~ LAD.Volume + Category + Price - 1, Y))
+                      y = build.y(b0 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -223,16 +228,17 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low'))) %>% 
           arrange(Date)
         
+        wt <- X['wt'] %>% tbl_df
         Y <- X[c('wt', 'LAD.Close')] %>% tbl_df
         X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(LAD.Close = wt * LAD.Close)
-          Y %<>% select(LAD.Close)
+          Y %<>% .['LAD.Close'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(LAD.Close)
+          Y %<>% .['LAD.Close'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -242,25 +248,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ close1 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(x = build.x(LAD.Close ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = tbl_df(select(Y, LAD.Close)))
+                      y = tbl_df(Y['LAD.Close']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(LAD.Close ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close))))
+                      y = build.y(~ -1 + ., tbl_df(Y['LAD.Close'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(LAD.Close ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(LAD.Close ~ LAD.Volume + Category + Price - 1, Y))
+                      y = build.y(LAD.Close ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -274,17 +280,18 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
           arrange(Date)
         
+        wt <- X['wt'] %>% tbl_df
         Y <- X %>% mutate(LAD.Close2 = ifelse(LAD.Close2 >= Price, 1, 0))
         Y %<>% .[c('wt', 'LAD.Close2')] %>% tbl_df
         X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(LAD.Close2 = wt * LAD.Close2)
-          Y %<>% select(LAD.Close2)
+          Y %<>% .['LAD.Close2'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(LAD.Close2)
+          Y %<>% .['LAD.Close2'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -294,25 +301,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ close2 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(x = build.x(LAD.Close2 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = tbl_df(select(Y, LAD.Close2)))
+                      y = tbl_df(Y['LAD.Close2']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(LAD.Close2 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close2))))
+                      y = build.y(~ -1 + ., tbl_df(Y['LAD.Close2'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(LAD.Close2 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(LAD.Close2 ~ LAD.Volume + Category + Price - 1, Y))
+                      y = build.y(LAD.Close2 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -326,16 +333,17 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
+        wt <- X['wt'] %>% tbl_df
         Y <- X[c('wt', 'dmean1')] %>% tbl_df
         X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(dmean1 = wt * dmean1)
-          Y %<>% select(dmean1)
+          Y %<>% .['dmean1'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(dmean1)
+          Y %<>% .['dmean1'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -345,25 +353,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ daily.mean1 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(x = build.x(dmean1 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = tbl_df(select(Y, dmean1)))
+                      y = tbl_df(Y['dmean1']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(dmean1 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(~ -1 + ., tbl_df(select(Y, dmean1))))
+                      y = build.y(~ -1 + ., tbl_df(Y['dmean1'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(dmean1 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(dmean1 ~ LAD.Volume + Category + Price - 1, Y))
+                      y = build.y(dmean1 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -377,16 +385,17 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
+        wt <- X['wt'] %>% tbl_df
         Y <- X[c('wt', 'dmean2')] %>% tbl_df
         X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(dmean2 = wt * dmean2)
-          Y %<>% select(dmean2)
+          Y %<>% .['dmean2'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(dmean2)
+          Y %<>% .['dmean2'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -396,25 +405,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ daily.mean2 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(x = build.x(dmean2 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = tbl_df(select(Y, dmean2)))
+                      y = tbl_df(Y['dmean2']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(dmean2 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(~ -1 + ., tbl_df(select(Y, dmean2))))
+                      y = build.y(~ -1 + ., tbl_df(Y['dmean2'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(dmean2 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(dmean2 ~ LAD.Volume + Category + Price - 1, Y))
+                      y = build.y(dmean2 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -428,16 +437,17 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
+        wt <- X['wt'] %>% tbl_df
         Y <- X[c('wt', 'dmean3')] %>% tbl_df
         X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(dmean3 = wt * dmean3)
-          Y %<>% select(dmean3)
+          Y %<>% .['dmean3'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(dmean3)
+          Y %<>% .['dmean3'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -447,25 +457,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ daily.mean3 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(x = build.x(dmean3 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = tbl_df(select(Y, dmean3)))
+                      y = tbl_df(Y['dmean3']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(dmean3 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(~ -1 + ., tbl_df(select(Y, dmean3))))
+                      y = build.y(~ -1 + ., tbl_df(Y['dmean3'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(dmean3 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(dmean3 ~ LAD.Volume + Category + Price - 1, Y))
+                      y = build.y(dmean3 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -479,17 +489,18 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
+        wt <- X['wt'] %>% tbl_df
         Y <- X %>% mutate(mixed1 = (Price / first(Price)) * dmean1)
         Y %<>% .[c('wt', 'mixed1')] %>% tbl_df
         X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(mixed1 = wt * mixed1)
-          Y %<>% select(mixed1)
+          Y %<>% .['mixed1'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(mixed1)
+          Y %<>% .['mixed1'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -499,25 +510,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ mixed1 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(x = build.x(mixed1 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = tbl_df(select(Y, mixed1)))
+                      y = tbl_df(Y['mixed1']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(mixed1 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(~ -1 + ., tbl_df(select(Y, mixed1))))
+                      y = build.y(~ -1 + ., tbl_df(Y['mixed1'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(mixed1 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(mixed1 ~ LAD.Volume + Category + Price - 1, Y))
+                      y = build.y(mixed1 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -531,17 +542,18 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
+        wt <- X['wt'] %>% tbl_df
         Y <- X %>% mutate(mixed2 = (Price / first(Price)) * dmean2)
         Y %<>% .[c('wt', 'mixed2')] %>% tbl_df
         X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(mixed2 = wt * mixed2)
-          Y %<>% select(mixed2)
+          Y %<>% .['mixed2'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(mixed2)
+          Y %<>% .['mixed2'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -551,25 +563,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ mixed2 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(x = build.x(mixed2 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = tbl_df(select(Y, mixed2)))
+                      y = tbl_df(Y['mixed2']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(mixed2 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(~ -1 + ., tbl_df(select(Y, mixed2))))
+                      y = build.y(~ -1 + ., tbl_df(Y['mixed2'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(mixed2 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(mixed2 ~ LAD.Volume + Category + Price - 1, Y))
+                      y = build.y(mixed2 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -583,17 +595,18 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           arrange(Date)
         #let `Date` be numeric variable as convert by system.
         
+        wt <- X['wt'] %>% tbl_df
         Y <- X %>% mutate(mixed3 = (Price / first(Price)) * dmean3)
         Y %<>% .[c('wt', 'mixed3')] %>% tbl_df
         X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(mixed3 = wt * mixed3)
-          Y %<>% select(mixed3)
+          Y %<>% .['mixed3'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(mixed3)
+          Y %<>% .['mixed3'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -603,25 +616,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ mixed3 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(x = build.x(mixed3 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = tbl_df(select(Y, mixed3)))
+                      y = tbl_df(Y['mixed3']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(mixed3 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(~ -1 + ., tbl_df(select(Y, mixed3))))
+                      y = build.y(~ -1 + ., tbl_df(Y['mixed3'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(x = build.x(mixed3 ~ LAD.Volume + Category + Price - 1, X, 
                                   contrasts = TRUE, sparse = TRUE), 
-                      y = build.y(mixed3 ~ LAD.Volume + Category + Price - 1, Y))
+                      y = build.y(mixed3 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -634,7 +647,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
       #'@ }
       
       #set X_i0 as baseline (intercept).
-      #'@ tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+      #'@ tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
       #'@ suppressWarnings(build.x(~ -1 + ., ddt_DF, contrasts = TRUE, sparse = TRUE))
       
     } else if(xy.matrix == 'h2') {
@@ -642,6 +655,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
       ## h2 is wide format or default quantmmod xts.
       
       if(yv == 'baseline') {
+        wt <- X['wt'] %>% tbl_df
         Y <- X %>% mutate(b0 = LAD.Open / first(LAD.Open))
         Y %<>% .[c('wt', 'b0')] %>% tbl_df
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
@@ -649,11 +663,11 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         if(wt.control == TRUE) {
           Y %<>% mutate(b0 = wt * b0)
-          Y %<>% select(b0)
+          Y %<>% .['b0'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(b0)
+          Y %<>% .['b0'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -663,28 +677,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ baseline formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(
             x = build.x(b0 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = tbl_df(select(Y, b0)))
+            y = tbl_df(Y['b0']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(b0 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(~ -1 + ., tbl_df(select(Y, b0))))
+            y = build.y(~ -1 + ., tbl_df(Y['b0'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(b0 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(b0 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y))
+            y = build.y(b0 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -692,16 +706,17 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
       }
       
       if(yv == 'close1') {
+        wt <- X['wt'] %>% tbl_df
         Y <- X[c('wt', 'LAD.Close')] %>% tbl_df
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Volume')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(LAD.Close = wt * LAD.Close)
-          Y %<>% select(LAD.Close)
+          Y %<>% .['LAD.Close'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(LAD.Close)
+          Y %<>% .['LAD.Close'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -711,28 +726,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ close1 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(
             x = build.x(LAD.Close ~ LAD.Open + LAD.High + LAD.Low + LAD.Volume - 1, X, 
                         contrasts = TRUE, sparse = TRUE), 
-            y = tbl_df(select(Y, LAD.Close)))
+            y = tbl_df(Y['LAD.Close']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(LAD.Close ~ LAD.Open + LAD.High + LAD.Low + LAD.Volume - 1, X, 
                         contrasts = TRUE, sparse = TRUE), 
-            y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close))))
+            y = build.y(~ -1 + ., tbl_df(Y['LAD.Close'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(LAD.Close ~ LAD.Open + LAD.High + LAD.Low + LAD.Volume - 1, X, 
                         contrasts = TRUE, sparse = TRUE), 
-            y = build.y(LAD.Close ~ LAD.Open + LAD.High + LAD.Low + LAD.Volume - 1, Y))
+            y = build.y(LAD.Close ~ LAD.Open + LAD.High + LAD.Low + LAD.Volume - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -740,17 +755,18 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
       }
       
       if(yv == 'close2') {
+        wt <- X['wt'] %>% tbl_df
         Y <- X %>% mutate(LAD.Close2 = LAD.Close) %>% .[c('wt', 'LAD.Close2')] %>% tbl_df
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                    'LAD.Volume')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(LAD.Close2 = wt * LAD.Close2)
-          Y %<>% select(LAD.Close2)
+          Y %<>% .['LAD.Close2'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(LAD.Close2)
+          Y %<>% .['LAD.Close2'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -760,28 +776,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ close2 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(
             x = build.x(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = tbl_df(select(Y, LAD.Close2)))
+            y = tbl_df(Y['LAD.Close2']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close2))))
+            y = build.y(~ -1 + ., tbl_df(Y['LAD.Close2'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y))
+            y = build.y(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -789,17 +805,18 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
       }
       
       if(yv == 'daily.mean1') {
+        wt <- X['wt'] %>% tbl_df
         Y <- X[c('wt', 'dmean1')] %>% tbl_df
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                    'LAD.Volume')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(dmean1 = wt * dmean1)
-          Y %<>% select(dmean1)
+          Y %<>% .['dmean1'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(dmean1)
+          Y %<>% .['dmean1'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -809,28 +826,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ daily.mean1 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(
             x = build.x(dmean1 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = tbl_df(select(Y, dmean1)))
+            y = tbl_df(Y['dmean1']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(dmean1 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(~ -1 + ., tbl_df(select(Y, dmean1))))
+            y = build.y(~ -1 + ., tbl_df(Y['dmean1'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(dmean1 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(dmean1 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y))
+            y = build.y(dmean1 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -838,17 +855,18 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
       }
       
       if(yv == 'daily.mean2') {
+        wt <- X['wt'] %>% tbl_df
         Y <- X[c('wt', 'dmean2')] %>% tbl_df
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                    'LAD.Volume')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(dmean2 = wt * dmean2)
-          Y %<>% select(dmean2)
+          Y %<>% .['dmean2'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(dmean2)
+          Y %<>% .['dmean2'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -858,28 +876,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ daily.mean2 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(
             x = build.x(dmean2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = tbl_df(select(Y, dmean2)))
+            y = tbl_df(Y['dmean2']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(dmean2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(~ -1 + ., tbl_df(select(Y, dmean2))))
+            y = build.y(~ -1 + ., tbl_df(Y['dmean2'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(dmean2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(dmean2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y))
+            y = build.y(dmean2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -887,17 +905,18 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
       }
       
       if(yv == 'daily.mean3') {
+        wt <- X['wt'] %>% tbl_df
         Y <- X[c('wt', 'dmean3')] %>% tbl_df
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                    'LAD.Volume')] %>% tbl_df
         
         if(wt.control == TRUE) {
           Y %<>% mutate(dmean3 = wt * dmean3)
-          Y %<>% select(dmean3)
+          Y %<>% .['dmean3'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(dmean3)
+          Y %<>% .['dmean3'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -907,28 +926,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ daily.mean3 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(
             x = build.x(dmean3 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = tbl_df(select(Y, dmean3)))
+            y = tbl_df(Y['dmean3']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(dmean3 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(~ -1 + ., tbl_df(select(Y, dmean3))))
+            y = build.y(~ -1 + ., tbl_df(Y['dmean3'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(dmean3 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(dmean3 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y))
+            y = build.y(dmean3 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -936,6 +955,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
       }
       
       if(yv == 'mixed1') {
+        wt <- X['wt'] %>% tbl_df
         Y <- X %>% mutate(mixed1 = (LAD.Close / first(LAD.Open)) * dmean1)
         Y %<>% .[c('wt', 'mixed1')] %>% tbl_df
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
@@ -943,11 +963,11 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         if(wt.control == TRUE) {
           Y %<>% mutate(mixed1 = wt * mixed1)
-          Y %<>% select(mixed1)
+          Y %<>% .['mixed1'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(mixed1)
+          Y %<>% .['mixed1'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -957,28 +977,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ mixed1 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(
             x = build.x(mixed1 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = tbl_df(select(Y, mixed1)))
+            y = tbl_df(Y['mixed1']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(mixed1 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(~ -1 + ., tbl_df(select(Y, mixed1))))
+            y = build.y(~ -1 + ., tbl_df(Y['mixed1'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(mixed1 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(mixed1 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y))
+            y = build.y(mixed1 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -986,6 +1006,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
       }
       
       if(yv == 'mixed2') {
+        wt <- X['wt'] %>% tbl_df
         Y <- X %>% mutate(mixed2 = (LAD.Close / first(LAD.Open)) * dmean2)
         Y %<>% .[c('wt', 'mixed2')] %>% tbl_df
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
@@ -993,11 +1014,11 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         if(wt.control == TRUE) {
           Y %<>% mutate(mixed2 = wt * mixed2)
-          Y %<>% select(mixed2)
+          Y %<>% .['mixed2'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(mixed2)
+          Y %<>% .['mixed2'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -1007,28 +1028,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ mixed2 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(
             x = build.x(mixed2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = tbl_df(select(Y, mixed2)))
+            y = tbl_df(Y['mixed2']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(mixed2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(~ -1 + ., tbl_df(select(Y, mixed2))))
+            y = build.y(~ -1 + ., tbl_df(Y['mixed2'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(mixed2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(mixed2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y))
+            y = build.y(mixed2 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1036,6 +1057,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
       }
       
       if(yv == 'mixed3') {
+        wt <- X['wt'] %>% tbl_df
         Y <- X %>% mutate(mixed3 = (LAD.Close / first(LAD.Open)) * dmean3)
         Y %<>% .[c('wt', 'mixed3')] %>% tbl_df
         X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
@@ -1043,11 +1065,11 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         if(wt.control == TRUE) {
           Y %<>% mutate(mixed3 = wt * mixed3)
-          Y %<>% select(mixed3)
+          Y %<>% .['mixed3'] %>% tbl_df
         }
         
         if(wt.control == FALSE) {
-          Y %<>% select(mixed3)
+          Y %<>% .['mixed3'] %>% tbl_df
         }
         
         if(.log == TRUE) {
@@ -1057,28 +1079,28 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         
         ## ------------ mixed3 formula ---------------------------
         if(setform == 'l1'){
-          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+          tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
           
         } else if(setform == 'l2'){
           X <- cbind(X, Y)
           tmp <- list(
             x = build.x(mixed3 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = tbl_df(select(Y, mixed3)))
+            y = tbl_df(Y['mixed3']), wt = wt)
           
         } else if(setform == 'l3'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(mixed3 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(~ -1 + ., tbl_df(select(Y, mixed3))))
+            y = build.y(~ -1 + ., tbl_df(Y['mixed3'])), wt = wt)
           
         } else if(setform == 'l4'){
           X <- Y <- cbind(X, Y)
           tmp <- list(
             x = build.x(mixed3 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, 
                         X, contrasts = TRUE, sparse = TRUE), 
-            y = build.y(mixed3 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y))
+            y = build.y(mixed3 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + LAD.Volume - 1, Y), wt = wt)
           
         } else {
           stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1091,7 +1113,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
       #'@ }
       
       #set X_i0 as baseline (intercept).
-      #'@ tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+      #'@ tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
       #'@ suppressWarnings(build.x(~ -1 + ., ddt_DF, contrasts = TRUE, sparse = TRUE))
       
     } else {
@@ -1147,7 +1169,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date) %>% mutate(b0 = Price / first(Price))
           #let `Date` be numeric variable as convert by system.
           
-          Y <- select(X, Category)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['Category'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'b0', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -1157,18 +1180,18 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ baseline formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(Category ~ LAD.Volume + b0 + Price - 1, X, 
-                                    contrasts = TRUE, sparse = TRUE), y = Y)
+                                    contrasts = TRUE, sparse = TRUE), y = Y, wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(Category ~ LAD.Volume + b0 + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, Category))))
+                        y = build.y(~ -1 + ., tbl_df(Y['Category'])))
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -1188,7 +1211,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low'))) %>% 
             arrange(Date)
           
-          Y <- select(X, LAD.Close)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['LAD.Close'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -1198,25 +1222,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ close1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, LAD.Close)))
+                        y = tbl_df(Y['LAD.Close']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close))))
+                        y = build.y(~ -1 + ., tbl_df(Y['LAD.Close'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(LAD.Close ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(LAD.Close ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1230,7 +1254,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
             arrange(Date)
           
-          Y <- select(X, LAD.Close2)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['LAD.Close2'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -1240,25 +1265,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ close2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, LAD.Close2)))
+                        y = tbl_df(Y['LAD.Close2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close2))))
+                        y = build.y(~ -1 + ., tbl_df(Y['LAD.Close2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(LAD.Close2 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(LAD.Close2 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1273,7 +1298,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- select(X, dmean1)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['dmean1'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -1283,25 +1309,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(dmean1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, dmean1)))
+                        y = tbl_df(Y['dmean1']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, dmean1))))
+                        y = build.y(~ -1 + ., tbl_df(Y['dmean1'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(dmean1 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(dmean1 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1316,7 +1342,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- select(X, dmean2)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['dmean2'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -1326,25 +1353,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(dmean2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, dmean2)))
+                        y = tbl_df(Y['dmean2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, dmean2))))
+                        y = build.y(~ -1 + ., tbl_df(Y['dmean2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(dmean2 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(dmean2 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1359,7 +1386,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
-          Y <- select(X, dmean3)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['dmean3'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -1369,25 +1397,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean3 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(dmean3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, dmean3)))
+                        y = tbl_df(Y['dmean3']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, dmean3))))
+                        y = build.y(~ -1 + ., tbl_df(Y['dmean3'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(dmean3 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(dmean3 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1402,9 +1430,10 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(mixed1 = (Price / first(Price)) * dmean1, 
                             mixed1 = ifelse(mixed1 > LAD.Open2, 1, 0))
-          Y %<>% select(mixed1)
+          Y %<>% .['mixed1'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -1414,25 +1443,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(mixed1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, mixed1)))
+                        y = tbl_df(Y['mixed1']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, mixed1))))
+                        y = build.y(~ -1 + ., tbl_df(Y['mixed1'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(mixed1 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(mixed1 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1447,9 +1476,10 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(mixed2 = (Price / first(Price)) * dmean2, 
                             mixed2 = ifelse(mixed2 > LAD.Open2, 1, 0))
-          Y %<>% select(mixed2)
+          Y %<>% .['mixed2'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -1459,25 +1489,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(mixed2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, mixed2)))
+                        y = tbl_df(Y['mixed2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, mixed2))))
+                        y = build.y(~ -1 + ., tbl_df(Y['mixed2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(mixed2 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(mixed2 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1492,9 +1522,10 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(mixed3 = (Price / first(Price)) * dmean3, 
                             mixed3 = ifelse(mixed3 > LAD.Open2, 1, 0))
-          Y %<>% select(mixed3)
+          Y %<>% .['mixed3'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -1504,25 +1535,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed3 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(mixed3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, mixed3)))
+                        y = tbl_df(Y['mixed3']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, mixed3))))
+                        y = build.y(~ -1 + ., tbl_df(Y['mixed3'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(mixed3 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(mixed3 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1642,7 +1673,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             LAD.Low = ifelse(LAD.Low >= first(LAD.Open), 1, 0), 
             LAD.Close = ifelse(LAD.Close >= first(LAD.Open), 1, 0))
           
-          Y <- select(X, b0)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['b0'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume', 'Price')] %>% tbl_df
           
@@ -1653,7 +1685,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ baseline formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -1661,7 +1693,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(b0 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + 
                             LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, b0)))
+              y = tbl_df(Y['b0']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -1669,7 +1701,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(b0 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + 
                             LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, b0))))
+              y = build.y(~ -1 + ., tbl_df(Y['b0'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -1678,7 +1710,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(b0 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + 
-                            LAD.Volume + Price - 1, Y))
+                            LAD.Volume + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1697,7 +1729,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             LAD.Low = ifelse(LAD.Low >= LAD.Open, 1, 0), 
             LAD.Close = ifelse(LAD.Close >= LAD.Open, 1, 0))
           
-          Y <- select(X, LAD.Close)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['LAD.Close'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Volume', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -1707,7 +1740,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ close1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -1715,7 +1748,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(LAD.Close ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Volume + Price - 1, X, 
                           contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, LAD.Close)))
+              y = tbl_df(Y['LAD.Close']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -1723,7 +1756,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(LAD.Close ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Volume + Price - 1, X, 
                           contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close))))
+              y = build.y(~ -1 + ., tbl_df(Y['LAD.Close'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -1732,7 +1765,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Volume + Price - 1, X, 
                           contrasts = TRUE, sparse = TRUE), 
               y = build.y(LAD.Close ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Volume + Price - 1, Y))
+                            LAD.Volume + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1751,7 +1784,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             LAD.Low = ifelse(LAD.Low >= LAD.Open, 1, 0), 
             LAD.Close = ifelse(LAD.Close >= LAD.Open, 1, 0))
           
-          Y <- select(X, LAD.Close2)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['LAD.Close2'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume', 'Price')] %>% tbl_df
           
@@ -1762,7 +1796,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ close2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -1770,7 +1804,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, LAD.Close2)))
+              y = tbl_df(Y['LAD.Close2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -1778,7 +1812,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close2))))
+              y = build.y(~ -1 + ., tbl_df(Y['LAD.Close2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -1787,7 +1821,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume + Price - 1, Y))
+                            LAD.Close + LAD.Volume + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1807,7 +1841,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             LAD.Low = ifelse(LAD.Low >= dmean1, 1, 0), 
             LAD.Close = ifelse(LAD.Close >= dmean1, 1, 0))
           
-          Y <- select(X, dmean1)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['dmean1'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume', 'Price')] %>% tbl_df
           
@@ -1818,7 +1853,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -1826,7 +1861,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean1 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, dmean1)))
+              y = tbl_df(Y['dmean1']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -1834,7 +1869,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean1 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, dmean1))))
+              y = build.y(~ -1 + ., tbl_df(Y['dmean1'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -1843,7 +1878,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(dmean1 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume + Price - 1, Y))
+                            LAD.Close + LAD.Volume + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1863,7 +1898,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             LAD.Low = ifelse(LAD.Low >= dmean2, 1, 0), 
             LAD.Close = ifelse(LAD.Close >= dmean2, 1, 0))
           
-          Y <- select(X, dmean2)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['dmean2'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume', 'Price')] %>% tbl_df
           
@@ -1874,7 +1910,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -1882,7 +1918,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, dmean2)))
+              y = tbl_df(Y['dmean2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -1890,7 +1926,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, dmean2))))
+              y = build.y(~ -1 + ., tbl_df(Y['dmean2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -1899,7 +1935,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(dmean2 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume + Price - 1, Y))
+                            LAD.Close + LAD.Volume + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1919,7 +1955,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             LAD.Low = ifelse(LAD.Low >= dmean3, 1, 0), 
             LAD.Close = ifelse(LAD.Close >= dmean3, 1, 0))
           
-          Y <- select(X, dmean3)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['dmean3'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume', 'Price')] %>% tbl_df
           
@@ -1930,7 +1967,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean3 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -1938,7 +1975,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean3 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, dmean3)))
+              y = tbl_df(Y['dmean3']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -1946,7 +1983,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean3 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, dmean3))))
+              y = build.y(~ -1 + ., tbl_df(Y['dmean3'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -1955,7 +1992,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(dmean3 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume + Price - 1, Y))
+                            LAD.Close + LAD.Volume + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -1976,7 +2013,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             LAD.Low = ifelse(LAD.Low >= dmean1, 1, 0), 
             LAD.Close = ifelse(LAD.Close >= dmean1, 1, 0))
           
-          Y <- select(X, mixed1)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['mixed1'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume', 'Price')] %>% tbl_df
           
@@ -1987,7 +2025,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -1995,7 +2033,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed1 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, mixed1)))
+              y = tbl_df(Y['mixed1']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -2003,7 +2041,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed1 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, mixed1))))
+              y = build.y(~ -1 + ., tbl_df(Y['mixed1'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -2012,7 +2050,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(mixed1 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume + Price - 1, Y))
+                            LAD.Close + LAD.Volume + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2033,7 +2071,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             LAD.Low = ifelse(LAD.Low >= dmean2, 1, 0), 
             LAD.Close = ifelse(LAD.Close >= dmean2, 1, 0))
           
-          Y <- select(X, mixed2)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['mixed2'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume', 'Price')] %>% tbl_df
           
@@ -2044,7 +2083,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -2052,7 +2091,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, mixed2)))
+              y = tbl_df(Y['mixed2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -2060,7 +2099,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, mixed2))))
+              y = build.y(~ -1 + ., tbl_df(Y['mixed2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -2069,7 +2108,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(mixed2 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume + Price - 1, Y))
+                            LAD.Close + LAD.Volume + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2090,7 +2129,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             LAD.Low = ifelse(LAD.Low >= dmean3, 1, 0), 
             LAD.Close = ifelse(LAD.Close >= dmean3, 1, 0))
           
-          Y <- select(X, mixed3)
+          wt <- X['wt'] %>% tbl_df
+          Y <- X['mixed3'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume', 'Price')] %>% tbl_df
           
@@ -2101,7 +2141,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed3 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -2109,7 +2149,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed3 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, mixed3)))
+              y = tbl_df(Y['mixed3']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -2117,7 +2157,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed3 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, mixed3))))
+              y = build.y(~ -1 + ., tbl_df(Y['mixed3'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -2126,7 +2166,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume + Price - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(mixed3 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume + Price - 1, Y))
+                            LAD.Close + LAD.Volume + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2173,9 +2213,10 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(b0 = Price / first(Price), 
                             b0 = ifelse(b0 >= b0[1], 1, 0))
-          Y %<>% select(X, b0)
+          Y %<>% .['b0'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -2185,24 +2226,24 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ baseline formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(b0 ~ LAD.Volume + Category + Price - 1, X, 
-                                    contrasts = TRUE, sparse = TRUE), y = Y)
+                                    contrasts = TRUE, sparse = TRUE), y = Y, wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(b0 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, b0))))
+                        y = build.y(~ -1 + ., tbl_df(Y['b0'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(b0 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(b0 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(b0 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2215,8 +2256,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low'))) %>% 
             arrange(Date)
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(LAD.Close = ifelse(LAD.Close >= Price, 1, 0))
-          Y %<>% select(X, LAD.Close)
+          Y %<>% .['LAD.Close'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -2226,25 +2268,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ close1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, LAD.Close)))
+                        y = tbl_df(Y['LAD.Close']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close))))
+                        y = build.y(~ -1 + ., tbl_df(Y['LAD.Close'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(LAD.Close ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(LAD.Close ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2258,8 +2300,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               Category, levels = c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close'))) %>% 
             arrange(Date)
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(LAD.Close2 = ifelse(LAD.Close2 >= Price, 1, 0))
-          Y %<>% select(X, LAD.Close2)
+          Y %<>% .['LAD.Close2'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -2269,25 +2312,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ close2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, LAD.Close2)))
+                        y = tbl_df(Y['LAD.Close2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close2))))
+                        y = build.y(~ -1 + ., tbl_df(Y['LAD.Close2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(LAD.Close2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(LAD.Close2 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(LAD.Close2 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2301,8 +2344,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(dmean1 = ifelse(dmean1 >= Price, 1, 0))
-          Y %<>% select(X, dmean1)
+          Y %<>% .['dmean1'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -2312,25 +2356,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(dmean1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, dmean1)))
+                        y = tbl_df(Y['dmean1']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, dmean1))))
+                        y = build.y(~ -1 + ., tbl_df(Y['dmean1'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(dmean1 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(dmean1 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2344,8 +2388,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(dmean2 = ifelse(dmean2 >= Price, 1, 0))
-          Y %<>% select(X, dmean2)
+          Y %<>% .['dmean2'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -2355,25 +2400,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(dmean2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, dmean2)))
+                        y = tbl_df(Y['dmean2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, dmean2))))
+                        y = build.y(~ -1 + ., tbl_df(Y['dmean2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(dmean2 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(dmean2 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2387,8 +2432,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(dmean3 = ifelse(dmean3 >= Price, 1, 0))
-          Y %<>% select(X, dmean3)
+          Y %<>% .['dmean3'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -2398,25 +2444,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean3 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(dmean3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, dmean3)))
+                        y = tbl_df(Y['dmean3']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, dmean3))))
+                        y = build.y(~ -1 + ., tbl_df(Y['dmean3'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(dmean3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(dmean3 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(dmean3 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2430,9 +2476,10 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(mixed1 = (Price / first(Price)) * dmean1, 
                             mixed1 = ifelse(mixed1 >= Price, 1, 0))
-          Y %<>% select(mixed1)
+          Y %<>% .['mixed1'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -2442,25 +2489,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(mixed1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, mixed1)))
+                        y = tbl_df(Y['mixed1']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, mixed1))))
+                        y = build.y(~ -1 + ., tbl_df(Y['mixed1'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed1 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(mixed1 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(mixed1 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2474,9 +2521,10 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(mixed2 = (Price / first(Price)) * dmean2, 
                             mixed2 = ifelse(mixed2 >= Price, 1, 0))
-          Y %<>% select(mixed2)
+          Y %<>% .['mixed2'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -2486,25 +2534,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(mixed2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, mixed2)))
+                        y = tbl_df(Y['mixed2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, mixed2))))
+                        y = build.y(~ -1 + ., tbl_df(Y['mixed2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed2 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(mixed2 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(mixed2 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2518,9 +2566,10 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
             arrange(Date)
           #let `Date` be numeric variable as convert by system.
           
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(mixed3 = (Price / first(Price)) * dmean3, 
                             mixed3 = ifelse(mixed3 >= Price, 1, 0))
-          Y %<>% select(mixed3)
+          Y %<>% .['mixed3'] %>% tbl_df
           X %<>% .[c('LAD.Volume', 'Category', 'Price')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -2530,25 +2579,25 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed3 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
             tmp <- list(x = build.x(mixed3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = tbl_df(select(Y, mixed3)))
+                        y = tbl_df(Y['mixed3']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(~ -1 + ., tbl_df(select(Y, mixed3))))
+                        y = build.y(~ -1 + ., tbl_df(Y['mixed3'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
             tmp <- list(x = build.x(mixed3 ~ LAD.Volume + Category + Price - 1, X, 
                                     contrasts = TRUE, sparse = TRUE), 
-                        y = build.y(mixed3 ~ LAD.Volume + Category + Price - 1, Y))
+                        y = build.y(mixed3 ~ LAD.Volume + Category + Price - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2656,8 +2705,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         ## h2 is wide format or default quantmmod xts.
         
         if(yv == 'baseline') {
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(b0 = ifelse(LAD.Open >= first(LAD.Open), 1, 0))
-          Y %<>% select(X, b0)
+          Y %<>% .['b0'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume')] %>% tbl_df
           
@@ -2668,7 +2718,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ baseline formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -2676,7 +2726,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(b0 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + 
                             LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, b0)))
+              y = tbl_df(Y['b0']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -2684,7 +2734,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(b0 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + 
                             LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, b0))))
+              y = build.y(~ -1 + ., tbl_df(Y['b0'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -2693,7 +2743,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(b0 ~ LAD.Open + LAD.High + LAD.Low + LAD.Close + 
-                            LAD.Volume - 1, Y))
+                            LAD.Volume - 1, Y, wt = wt))
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2701,8 +2751,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         }
         
         if(yv == 'close1') {
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(LAD.Close = ifelse(LAD.Close >= LAD.Open, 1, 0))
-          Y %<>% select(X, LAD.Close)
+          Y %<>% .['LAD.Close'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Volume')] %>% tbl_df
           
           if(.log == TRUE) {
@@ -2712,7 +2763,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ close1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -2720,7 +2771,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(LAD.Close ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Volume - 1, X, 
                           contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, LAD.Close)))
+              y = tbl_df(Y['LAD.Close']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -2728,7 +2779,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(LAD.Close ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Volume - 1, X, 
                           contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close))))
+              y = build.y(~ -1 + ., tbl_df(Y['LAD.Close'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -2737,7 +2788,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Volume - 1, X, 
                           contrasts = TRUE, sparse = TRUE), 
               y = build.y(LAD.Close ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Volume - 1, Y))
+                            LAD.Volume - 1, Y, wt = wt))
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2745,8 +2796,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         }
         
         if(yv == 'close2') {
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(LAD.Close2 = ifelse(LAD.Close >= LAD.Open, 1, 0))
-          Y %<>% select(X, LAD.Close2)
+          Y %<>% .['LAD.Close2'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume')] %>% tbl_df
           
@@ -2757,7 +2809,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ close2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -2765,7 +2817,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, LAD.Close2)))
+              y = tbl_df(Y['LAD.Close2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -2773,7 +2825,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, LAD.Close2))))
+              y = build.y(~ -1 + ., tbl_df(Y['LAD.Close2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -2782,7 +2834,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y))
+                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2790,8 +2842,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         }
         
         if(yv == 'daily.mean1') {
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(dmean1 = ifelse(dmean1 >= LAD.Open, 1, 0))
-          Y %<>% select(X, dmean1)
+          Y %<>% .['dmean1'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume')] %>% tbl_df
           
@@ -2802,7 +2855,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -2810,7 +2863,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean1 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, dmean1)))
+              y = tbl_df(Y['dmean1']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -2818,7 +2871,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean1 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, dmean1))))
+              y = build.y(~ -1 + ., tbl_df(Y['dmean1'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -2827,7 +2880,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(dmean1 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y))
+                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2835,8 +2888,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         }
         
         if(yv == 'daily.mean2') {
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(dmean2 = ifelse(dmean2 >= LAD.Open, 1, 0))
-          Y %<>% select(X, dmean2)
+          Y %<>% .['dmean2'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume')] %>% tbl_df
           
@@ -2847,7 +2901,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -2855,7 +2909,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, dmean2)))
+              y = tbl_df(Y['dmean2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -2863,7 +2917,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, dmean2))))
+              y = build.y(~ -1 + ., tbl_df(Y['dmean2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -2872,7 +2926,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(dmean2 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y))
+                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2880,8 +2934,9 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         }
         
         if(yv == 'daily.mean3') {
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(dmean3 = ifelse(dmean3 >= LAD.Open, 1, 0))
-          Y %<>% select(X, dmean3)
+          Y %<>% .['dmean3'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume')] %>% tbl_df
           
@@ -2892,7 +2947,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ daily.mean3 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -2900,7 +2955,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean3 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, dmean3)))
+              y = tbl_df(Y['dmean3']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -2908,7 +2963,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(dmean3 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, dmean3))))
+              y = build.y(~ -1 + ., tbl_df(Y['dmean3'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -2917,7 +2972,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(dmean3 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y))
+                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2925,9 +2980,10 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         }
         
         if(yv == 'mixed1') {
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(mixed1 = (LAD.Close / first(LAD.Open)) * dmean1, 
                             mixed1 = ifelse(mixed1 >= LAD.Open, 1, 0))
-          Y %<>% select(X, mixed1)
+          Y %<>% .['mixed1'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume')] %>% tbl_df
           
@@ -2938,7 +2994,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed1 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -2946,7 +3002,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed1 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, mixed1)))
+              y = tbl_df(Y['mixed1']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -2954,7 +3010,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed1 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, mixed1))))
+              y = build.y(~ -1 + ., tbl_df(Y['mixed1'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -2963,7 +3019,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(mixed1 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y))
+                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2971,9 +3027,10 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         }
         
         if(yv == 'mixed2') {
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(mixed2 = (LAD.Close / first(LAD.Open)) * dmean2, 
                             mixed2 = ifelse(mixed2 >= LAD.Open, 1, 0))
-          Y %<>% select(X, mixed2)
+          Y %<>% .['mixed2'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume')] %>% tbl_df
           
@@ -2984,7 +3041,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed2 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -2992,7 +3049,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, mixed2)))
+              y = tbl_df(Y['mixed2']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -3000,7 +3057,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed2 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, mixed2))))
+              y = build.y(~ -1 + ., tbl_df(Y['mixed2'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -3009,7 +3066,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(mixed2 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y))
+                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -3017,9 +3074,10 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
         }
         
         if(yv == 'mixed3') {
+          wt <- X['wt'] %>% tbl_df
           Y <- X %>% mutate(mixed3 = (LAD.Close / first(LAD.Open)) * dmean3, 
                             mixed3 = ifelse(mixed3 >= LAD.Open, 1, 0))
-          Y %<>% select(X, mixed3)
+          Y %<>% .['mixed3'] %>% tbl_df
           X %<>% .[c('LAD.Open', 'LAD.High', 'LAD.Low', 'LAD.Close', 
                      'LAD.Volume')] %>% tbl_df
           
@@ -3030,7 +3088,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
           
           ## ------------ mixed3 formula ---------------------------
           if(setform == 'l1'){
-            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y)
+            tmp <- list(x = sparse.model.matrix(~ -1 + ., X), y = Y, wt = wt)
             
           } else if(setform == 'l2'){
             X <- cbind(X, Y)
@@ -3038,7 +3096,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed3 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = tbl_df(select(Y, mixed3)))
+              y = tbl_df(Y['mixed3']), wt = wt)
             
           } else if(setform == 'l3'){
             X <- Y <- cbind(X, Y)
@@ -3046,7 +3104,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
               x = build.x(mixed3 ~ LAD.Open + LAD.High + LAD.Low + 
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
-              y = build.y(~ -1 + ., tbl_df(select(Y, mixed3))))
+              y = build.y(~ -1 + ., tbl_df(Y['mixed3'])), wt = wt)
             
           } else if(setform == 'l4'){
             X <- Y <- cbind(X, Y)
@@ -3055,7 +3113,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(mixed3 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y))
+                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')

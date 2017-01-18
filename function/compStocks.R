@@ -1,27 +1,39 @@
 compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE) {
   ## ========================= Load Packages ===================================
-  suppressMessages(source('./function/lmStocks.R'))
+  source('./function/lmStocks.R')
   
   ## ========================= Set Arguments ===================================
   mbase <- LADDT
   families <- c('gaussian', 'binomial', 'poisson', 'multinomial', 'cox', 'mgaussian', 'all')
   xy.matrix <- c('h1', 'h2')
   alpha <- 0:10
-  yv <- c('daily.mean', 'baseline', 'mixed')
+  
+  yv <- c('baseline', 'daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 'mixed2', 'mixed3')
   setform <- c('l1', 'l2', 'l3', 'l4')
   pred.type <- c('link', 'response', 'coefficients', 'nonzero', 'class')
+  
   nfolds = 10
   foldid = NULL
   s = c('lambda.min', 'lambda.1se')
+  
   weight.date = FALSE     #weight.date is ...
   weight.volume = FALSE   #weight.volume is ...
   parallel = FALSE
   .log = FALSE
   
+  ## ======================= Data Validation ===================================
   if(family %in% families) {
     family <- family
   } else {
     stop("family must be within c('gaussian', 'binomial', 'poisson', 'multinomial', 'cox', 'mgaussian', 'all').")
+  }
+  alpha <- ifelse(length(alpha) > 1, paste(range(alpha), collapse = ':'), alpha)
+  nfolds <- ifelse(length(nfolds) > 1, paste(range(nfolds), collapse = ':'), nfolds)
+  
+  if(is.null(foldid)) {
+    foldid <- 'NULL'
+  } else {
+    foldid <- ifelse(length(foldid) > 1, paste(range(foldid), collapse = ':'), foldid)
   }
   
   ## ======================== Regression Models ================================
@@ -38,23 +50,31 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
         sapply(tmeasure, function(z) {
           sapply(pred.type, function(xx) {
             sapply(s, function(xy) {
-              paste0('lmStocks(mbase, family = family, xy.matrix = \'', x, 
-                     '\', alpha = alpha, yv = \'', y, '\', tmeasure = \'', z, 
-                     '\', maxit = maxit, pred.type = \'', xx, 
-                     '\', nfolds = nfolds, foldid = foldid, s = \'', xy, 
-                     '\', weight.date = \'', weight.date, '\', weight.volume = \'', 
-                     weight.volume, '\', parallel = parallel, .log = .log)')
+              sapply(setform, function(xz) {
+                sapply(wt.control, function(yx) {
+                  paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
+                         '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
+                         '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                         '\', alpha = ', alpha, ', nfolds = ', nfolds, 
+                         ', foldid = ', foldid, ', s = \'', xy, 
+                         '\', weight.date = ', weight.date, ', weight.volume = ', 
+                         weight.volume, ', wt.control = ', yx, 
+                         ', parallel = ', parallel, ', .log = ', .log, ')')
+                })
+              })
             })
           })
         })
       })
     }) %>% as.character
     
-    ## start algorithmic calculation.
-    eval(parse(text = paste(paste0(
+    gm <- paste(paste0(
       "fitgaum", seq(gaum), " <- ", gaum, 
-      "; if(.print == TRUE) cat('model ", seq(gaum), "/", length(gaum), " calculated.\n')"), 
-      collapse = "; ")))
+      "; if(.print == TRUE) cat('gaussian model ", seq(gaum), "/", length(gaum), " calculated.\n')"), 
+      collapse = "; ")
+    
+    ## start algorithmic calculation.
+    eval(parse(text = gm)); rm(gm)
     
     ## combine all fitgaum1 to fitgaum~ into a list named fitgaum
     eval(parse(text = paste0('fitgaum <- list(', 
@@ -85,12 +105,18 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
         sapply(tmeasure, function(z) {
           sapply(pred.type, function(xx) {
             sapply(s, function(xy) {
-              paste0('lmStocks(mbase, family = family, xy.matrix = \'', x, 
-                     '\', alpha = alpha, yv = \'', y, '\', tmeasure = \'', z, 
-                     '\', maxit = maxit, pred.type = \'', xx, 
-                     '\', nfolds = nfolds, foldid = foldid, s = \'', xy, 
-                     '\', weight.date = \'', weight.date, '\', weight.volume = \'', 
-                     weight.volume, '\', parallel = parallel, .log = .log)')
+              sapply(setform, function(xz) {
+                sapply(wt.control, function(yx) {
+                  paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
+                         '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
+                         '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                         '\', alpha = ', alpha, ', nfolds = ', nfolds, 
+                         ', foldid = ', foldid, ', s = \'', xy, 
+                         '\', weight.date = ', weight.date, ', weight.volume = ', 
+                         weight.volume, ', wt.control = ', yx, 
+                         ', parallel = ', parallel, ', .log = ', .log, ')')
+                })
+              })
             })
           })
         })
@@ -100,7 +126,7 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
     ## start algorithmic calculation.
     eval(parse(text = paste(paste0(
       "fitbinm", seq(binm), " <- ", binm, 
-      "; if(.print == TRUE) cat('model ", seq(binm), "/", length(binm), " calculated.\n')"), 
+      "; if(.print == TRUE) cat('binomial model ", seq(binm), "/", length(binm), " calculated.\n')"), 
       collapse = "; ")))
     
     ## combine all fitbinm1 to fitbinm~ into a list named fitbinm
@@ -131,12 +157,18 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
         sapply(tmeasure, function(z) {
           sapply(pred.type, function(xx) {
             sapply(s, function(xy) {
-              paste0('lmStocks(mbase, family = family, xy.matrix = \'', x, 
-                     '\', alpha = alpha, yv = \'', y, '\', tmeasure = \'', z, 
-                     '\', maxit = maxit, pred.type = \'', xx, 
-                     '\', nfolds = nfolds, foldid = foldid, s = \'', xy, 
-                     '\', weight.date = \'', weight.date, '\', weight.volume = \'', 
-                     weight.volume, '\', parallel = parallel, .log = .log)')
+              sapply(setform, function(xz) {
+                sapply(wt.control, function(yx) {
+                  paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
+                         '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
+                         '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                         '\', alpha = ', alpha, ', nfolds = ', nfolds, 
+                         ', foldid = ', foldid, ', s = \'', xy, 
+                         '\', weight.date = ', weight.date, ', weight.volume = ', 
+                         weight.volume, ', wt.control = ', yx, 
+                         ', parallel = ', parallel, ', .log = .log)')
+                })
+              })
             })
           })
         })
@@ -146,7 +178,7 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
     ## start algorithmic calculation.
     eval(parse(text = paste(paste0(
       "fitpoim", seq(poim), " <- ", poim, 
-      "; if(.print == TRUE) cat('model ", seq(poim), "/", length(poim), " calculated.\n')"), 
+      "; if(.print == TRUE) cat('poisson model ", seq(poim), "/", length(poim), " calculated.\n')"), 
       collapse = "; ")))
     
     ## combine all fitpoim1 to fitpoim~ into a list named fitpoim
@@ -179,13 +211,19 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
         sapply(tmeasure, function(z) {
           sapply(pred.type, function(xx) {
             sapply(s, function(xy) {
-              sapply(tmultinomial, function(xz) {
-                paste0('lmStocks(mbase, family = family, xy.matrix = \'', x, 
-                       '\', alpha = alpha, yv = \'', y, '\', tmeasure = \'', z, 
-                       '\', tmultinomial = ', xz, 'maxit = maxit, pred.type = \'', xx, 
-                       '\', nfolds = nfolds, foldid = foldid, s = \'', xy, 
-                       '\', weight.date = \'', weight.date, '\', weight.volume = \'', 
-                       weight.volume, '\', parallel = parallel, .log = .log)')
+              sapply(tmultinomial, function(tm) {
+                sapply(setform, function(xz) {
+                  sapply(wt.control, function(yx) {
+                    paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
+                           '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
+                           '\', tmultinomial = ', tm, '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                           '\', alpha = ', alpha, ', nfolds = ', nfolds, 
+                           ', foldid = ', foldid, ', s = \'', xy, 
+                           '\', weight.date = ', weight.date, ', weight.volume = ', 
+                           weight.volume, ', wt.control = ', yx, 
+                           ', parallel = ', parallel, ', .log = .log)')
+                  })
+                })
               })
             })
           })
@@ -196,7 +234,7 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
     ## start algorithmic calculation.
     eval(parse(text = paste(paste0(
       "fitmnmm", seq(mnmm), " <- ", mnmm, 
-      "; if(.print == TRUE) cat('model ", seq(mnmm), "/", length(mnmm), " calculated.\n')"), 
+      "; if(.print == TRUE) cat('multinomial model ", seq(mnmm), "/", length(mnmm), " calculated.\n')"), 
       collapse = "; ")))
     
     ## combine all fitmnmm1 to fitmnmm~ into a list named fitmnmm
@@ -219,18 +257,25 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
     ## 1 model : tmeasure = 'cox'
     tmeasure <- 'cox'
     family <- 'cox'
+    wt.control = c(TRUE, FALSE)
     
     coxm <- sapply(xy.matrix, function(x) {
       sapply(yv, function(y) {
         sapply(tmeasure, function(z) {
           sapply(pred.type, function(xx) {
             sapply(s, function(xy) {
-              paste0('lmStocks(mbase, family = family, xy.matrix = \'', x, 
-                     '\', alpha = alpha, yv = \'', y, '\', tmeasure = \'', z, 
-                     '\', maxit = maxit, pred.type = \'', xx, 
-                     '\', nfolds = nfolds, foldid = foldid, s = \'', xy, 
-                     '\', weight.date = \'', weight.date, '\', weight.volume = \'', 
-                     weight.volume, '\', parallel = parallel, .log = .log)')
+              sapply(setform, function(xz) {
+                sapply(wt.control, function(yx) {
+                  paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
+                         '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
+                         '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                         '\', alpha = ', alpha, ', nfolds = ', nfolds, 
+                         ', foldid = ', foldid, ', s = \'', xy, 
+                         '\', weight.date = ', weight.date, ', weight.volume = ', 
+                         weight.volume, ', wt.control = ', yx, 
+                         ', parallel = ', parallel, ', .log = .log)')
+                })
+              })
             })
           })
         })
@@ -240,7 +285,7 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
     ## start algorithmic calculation.
     eval(parse(text = paste(paste0(
       "fitcoxm", seq(coxm), " <- ", coxm, 
-      "; if(.print == TRUE) cat('model ", seq(coxm), "/", length(coxm), " calculated.\n')"), 
+      "; if(.print == TRUE) cat('cox model ", seq(coxm), "/", length(coxm), " calculated.\n')"), 
       collapse = "; ")))
     
     ## combine all fitcoxm1 to fitcoxm~ into a list named fitcoxm
@@ -263,18 +308,25 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
     ## 1 model : tmeasure = 'mgaussian'
     tmeasure <- 'mgaussian'
     family <- 'mgaussian'
+    wt.control = c(TRUE, FALSE)
     
     mgam <- sapply(xy.matrix, function(x) {
       sapply(yv, function(y) {
         sapply(tmeasure, function(z) {
           sapply(pred.type, function(xx) {
             sapply(s, function(xy) {
-              paste0('lmStocks(mbase, family = family, xy.matrix = \'', x, 
-                     '\', alpha = alpha, yv = \'', y, '\', tmeasure = \'', z, 
-                     '\', maxit = maxit, pred.type = \'', xx, 
-                     '\', nfolds = nfolds, foldid = foldid, s = \'', xy, 
-                     '\', weight.date = \'', weight.date, '\', weight.volume = \'', 
-                     weight.volume, '\', parallel = parallel, .log = .log)')
+              sapply(setform, function(xz) {
+                sapply(wt.control, function(yx) {
+                  paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
+                         '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
+                         '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                         '\', alpha = ', alpha, ', nfolds = ', nfolds, 
+                         ', foldid = ', foldid, ', s = \'', xy, 
+                         '\', weight.date = ', weight.date, ', weight.volume = ', 
+                         weight.volume, ', wt.control = ', yx, 
+                         ', parallel = ', parallel, ', .log = .log)')
+                })
+              })
             })
           })
         })
@@ -284,7 +336,7 @@ compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE)
     ## start algorithmic calculation.
     eval(parse(text = paste(paste0(
       "fitmgam", seq(mgam), " <- ", mgam, 
-      "; if(.print == TRUE) cat('model ", seq(mgam), "/", length(mgam), " calculated.\n')"), 
+      "; if(.print == TRUE) cat('mgaussian model ", seq(mgam), "/", length(mgam), " calculated.\n')"), 
       collapse = "; ")))
     
     ## combine all fitmgam1 to fitmgam~ into a list named fitmgam
