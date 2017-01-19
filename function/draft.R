@@ -853,6 +853,77 @@ tmptable <- data.frame(LADDT, g1410 = gsfit$fit$fitgaum1410$yhat[[7]],
   mutate(g1410.Price = g1410 * first(LAD.Open), g1425.Price = g1425 * first(LAD.Open))
 saveRDS(tmptable, file = './data/tmptable.rds')
 
+## ------------------- Testing -----------------------------------
+## Testing 
+gsfit <- compStocks(LADDT, family = 'gaussian', xy.matrix = 'h2', maxit = 100000, 
+                    yv = c('daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 
+                           'mixed2', 'mixed3'), .print = TRUE)
+
+mse1 <- ldply(gsfit$fit, function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
+name514gs <- unique(mse1$.id)
+tmpsumgs <- ldply(gsfit$fit[name514gs], function(x) x$mse) %>% tbl_df
+saveRDS(tmpsumgs, file = './data/tmpsumgs.rds')
+
+tmpgsfit <- gsfit$fit[name514gs]
+saveRDS(tmpgsfit, file = './data/tmpgsfit.rds')
+
+tmpgsform <- gsfit$formula1[str_replace_all(name514gs, 'fitgaum', '') %>% as.numeric]
+saveRDS(tmpgsform, file = './data/tmpgsform.rds')
+
+## table
+lmse <- tmpsumgs %>% filter(mse == min(mse)) %>% .$model %>% 
+  str_replace_all('mse', '') %>% as.numeric
+tmptable <- llply(seq(lmse), function(i) {
+    y <- data.frame(tmpgsfit[[i]]$yhat) %>% tbl_df %>% bind_cols
+    names(y) <- paste0('alpha', (0:10)/10, '.Close')
+    y[paste0('alpha', lmse[[i]]/10)]
+    })
+tmptable %<>% bind_cols %>% tbl_df
+names(tmptable) <- paste0(names(tmpgsfit), '.', names(tmptable))
+
+tmptable <- data.frame(LADDT, tmptable) %>% tbl_df
+saveRDS(tmptable, file = './data/tmptable.rds')
+
+## from below comparison, we can concludes that the tmpgsform is same and it only different in predict type.
+#'@ tmp <- llply(seq(lmse), function(i) {
+#'@   y <- data.frame(tmpgsfit[[i]]$yhat) %>% tbl_df %>% bind_cols
+#'@   names(y) <- paste0('alpha', (0:10)/10)
+#'@   y[paste0('alpha', lmse[[i]]/10)]
+#'@ }) %>% bind_cols
+#'@ > as.matrix(tmp)[, 1] - as.matrix(tmp) %>% as.matrix %>% data.frame %>% tbl_df %>% unlist %>% unique
+#[1] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+#[54] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+#[107] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+#[160] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+#[213] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+#[266] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+#[319] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+#[372] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+#[425] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+#[478] 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0
+
+#now I try to take one among them (since all exactly same) to plot.
+fitgaum193 <- gsfit$fit['fitgaum193'] # gsfit$fit[name514gs[1]]
+saveRDS(fitgaum193, file = './data/fitgaum193.rds')
+
+fitgaum193 <- read_rds(path = './data/fitgaum193.rds')
+## plot a graph to compare the alpha 0 to 1 (rigde, alpha 0.1~0.9, lasso)
+tblgaum193 <- llply(fitgaum193, function(x) {
+  y <- x$yhat %>% data.frame %>% tbl_df
+  names(y) <- paste0('alpha', str_replace_all((0:10)/10, '\\.', ''), '.Close')
+  y
+}) %>% data.frame(LADDT, .) %>% tbl_df
+gaum193.price <- xts(tblgaum193[, -1], tblgaum193$Date)
+saveRDS(gaum193.price, file = './data/gaum193.price.rds')
+gaum193.price <- read_rds(path = './data/gaum193.price.rds')
+
+
+fitgaum193.alpha08 <- list(fit = fitgaum193$fit$fit[[8]], 
+                           yhat = fitgaum193$fitgaum193$yhat[[8]], 
+                           mse = fitgaum193$fitgaum193$mse)
+saveRDS(fitgaum193.alpha08, file = './data/fitgaum193.alpha08.rds')
+fitgaum193.alpha08 <- read_rds(path = './data/fitgaum193.alpha08.rds')
+
 
 
 

@@ -103,9 +103,9 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     chart.type <- ifelse(is.null(chart.type), 'Cl', chart.type)
     initial <- Op(Fund)[1, ] %>% unique %>% currency
     
-    fname <- grep('.Open', names(Op(Kbase)), value = TRUE) %>% 
+    fname <- grep('.Close', names(Cl(Fund)), value = TRUE) %>% 
       str_split('\\.') %>% llply(., function(x) 
-        paste0(str_replace_all(x, 'Open', '')[1:2], collapse = '.')) %>% unlist
+        paste0(str_replace_all(x, 'Close', '')[1:2], collapse = '.')) %>% unlist
     
     ## comparison of fund size and growth of various Kelly models
     #'@ event <- c('netEMEdge', 'PropHKPriceEdge', 'PropnetProbBEdge', 'KProbHKPrice',
@@ -118,7 +118,7 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     ##   label the high volatility daily event.
     if(is.null(event.dates)) {
       event.dates <- as.Date(period.apply(
-        diff(Op(Fund)), INDEX = endpoints(Fund), FUN = max) %>% data.frame %>% 
+        diff(Cl(Fund)), INDEX = endpoints(Fund), FUN = max) %>% data.frame %>% 
           rownames, format = '%Y-%m-%d')
     } else {
       event.dates <- as.Date(event.dates)
@@ -154,7 +154,7 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     
     plotc <- paste0(
       'highchart(type = \'stock\') %>% ', 
-      'hc_title(text = \'Apple Inc\') %>% ', 
+      'hc_title(text = \'LadbrokesCoral PLC\') %>% ', 
       'hc_subtitle(text = paste0(\'Multiple funds trend chart initial stock price : \', paste0(initial, collapse = \', \'))) %>% ', 
       paste0('hc_add_series_xts(Fund[,', seq(fname), '], name = \'', fname,'\', id = \'', fname, '\')', collapse = ' %>% '), 
       ' %>% hc_add_series_flags(event.dates, title = paste0(\'E\', event), text = paste(\'Event : High volatility \', event), id = id) %>% hc_add_theme(hc_theme_flat());')

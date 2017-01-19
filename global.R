@@ -36,9 +36,10 @@ if(file.exists('./data/LAD.rds')) {
     #'@   suppressAll(getSymbols('LAD', from = '2015-01-01'))
     #'@ }, error = function(e) stop('Kindly restart the shiny app.'))
     
-    LAD <- tryCatch({
+    ## http://mazamascience.com/WorkingWithData/?p=912
+    tryCatch({
       suppressAll(getSymbols('LAD', from = '2015-01-01'))
-    }, error = function(e) read_rds(path = './data/LAD.rds'))
+    }, error = function(e) LAD <- read_rds(path = './data/LAD.rds'))
     
     #'@ suppressAll(getSymbols('LAD', from = '2015-01-01'))
     #'@ saveRDS(LAD, file = './data/LAD.rds')
@@ -65,9 +66,12 @@ LADDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>%
 dateID <- LADDT$Date
 
 ## need to modify... temporarily use since baseline * times the coef rates will be consider as a weighted models but need to test. 
-tmpsumgs <- read_rds(path = './data/tmpsumgs.rds')
-tmptable <- read_rds(path = './data/tmptable.rds')
+tmpsumgs <- read_rds(path = './data/tmpsumgs.rds') %>% tbl_df
+#'@ tmptable <- read_rds(path = './data/tmptable.rds') %>% tbl_df
+#'@ tmpgsfit <- read_rds(path = './data/tmpgsfit.rds') #file too big and heavily to load, need to only pick the best fit.
+#'@ tmpgsform <- read_rds(path = './data/tmpgsform.rds')
+gaum193.price <- read_rds(path = './data/gaum193.price.rds')
 
-
+fitgaum193.alpha08 <- read_rds(path = './data/fitgaum193.alpha08.rds')
 
 

@@ -73,10 +73,9 @@ server <- shinyServer(function(input, output, session) {
                                          text = 'Download'), I('colvis'))))
   })#, options = list(pageLength = 10))
   
-  output$gsform <- renderPrint({
-    #gsfit$formula[seq(name514gs)]
-    paste('under constraction... testing among models.')
-  })
+  #'@ output$gsform <- renderPrint({
+  #'@    read_rds(path = './data/tmpgsform.rds') %>% as.list
+  #'@  })
   
   output$gsmse <- renderDataTable({
     tmpsumgs %>% datatable(
@@ -106,19 +105,31 @@ server <- shinyServer(function(input, output, session) {
     ))#)
   })
   
-  output$testTable <- renderDataTable({
-    tmptable %>% datatable(
-      #caption = "Table : LAD Stocks Price", 
-      escape = FALSE, filter = "top", rownames = FALSE, 
-      extensions = list("ColReorder" = NULL, "RowReorder" = NULL, 
-                        "Buttons" = NULL, "Responsive" = NULL), 
-      options = list(dom = 'BRrltpi', autoWidth = TRUE, scrollX = TRUE, 
-                     lengthMenu = list(c(10, 50, 100, -1), c('10', '50', '100', 'All')), 
-                     ColReorder = TRUE, rowReorder = TRUE, 
-                     buttons = list('copy', 'print', 
-                                    list(extend = 'collection', 
-                                         buttons = c('csv', 'excel', 'pdf'), 
-                                         text = 'Download'), I('colvis'))))
+  #'@ output$testTable <- renderDataTable({
+  #'@   tmptable %>% datatable(
+  #'@     #caption = "Table : LAD Stocks Price", 
+  #'@     escape = FALSE, filter = "top", rownames = FALSE, 
+  #'@     extensions = list("ColReorder" = NULL, "RowReorder" = NULL, 
+  #'@                       "Buttons" = NULL, "Responsive" = NULL), 
+  #'@     options = list(dom = 'BRrltpi', autoWidth = TRUE, scrollX = TRUE, 
+  #'@                    lengthMenu = list(c(10, 50, 100, -1), c('10', '50', '100', 'All')), 
+  #'@                    ColReorder = TRUE, rowReorder = TRUE, 
+  #'@                    buttons = list('copy', 'print', 
+  #'@                                   list(extend = 'collection', 
+  #'@                                        buttons = c('csv', 'excel', 'pdf'), 
+  #'@                                        text = 'Download'), I('colvis'))))
+  #'@ })
+  
+  output$bestalpha <- renderText({
+    alphaV <- tmpsumgs %>% filter(mse == min(mse)) %>% .$model %>% 
+      str_replace_all('mse', '') %>% as.numeric %>% unique
+    alphaV <- alphaV/10
   })
+  
+  output$hcmp <- renderHighchart({
+    plotChart2(gaum193.price, type = 'multiple', chart.type2 = input$type, 
+               chart.theme = input$hc_theme, stacked = input$stacked)
+  })
+  
   
 })

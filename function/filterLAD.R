@@ -20,9 +20,9 @@ filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
     #'@   suppressAll(getSymbols('LAD', from = '2015-01-01'))
     #'@ }, error = function(e) stop('Kindly restart the shiny app.'))
     
-    LAD <- tryCatch({
+    tryCatch({
       suppressAll(getSymbols('LAD', from = '2015-01-01'))
-    }, error = function(e) read_rds(path = './data/LAD.rds'))
+    }, error = function(e) LAD <- read_rds(path = './data/LAD.rds'))
     
     #'@ suppressAll(getSymbols('LAD', from = '2015-01-01'))
     #'@ saveRDS(LAD, file = './data/LAD.rds')
