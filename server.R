@@ -73,4 +73,52 @@ server <- shinyServer(function(input, output, session) {
                                          text = 'Download'), I('colvis'))))
   })#, options = list(pageLength = 10))
   
+  output$gsform <- renderPrint({
+    #gsfit$formula[seq(name514gs)]
+    paste('under constraction... testing among models.')
+  })
+  
+  output$gsmse <- renderDataTable({
+    tmpsumgs %>% datatable(
+      #caption = "Table : LAD Stocks Price", 
+      escape = FALSE, filter = "top", rownames = FALSE, 
+      extensions = list("ColReorder" = NULL, "RowReorder" = NULL, 
+                        "Buttons" = NULL, "Responsive" = NULL), 
+      options = list(dom = 'BRrltpi', autoWidth = TRUE, scrollX = TRUE, 
+                     lengthMenu = list(c(10, 50, 100, -1), c('10', '50', '100', 'All')), 
+                     ColReorder = TRUE, rowReorder = TRUE, 
+                     buttons = list('copy', 'print', 
+                                    list(extend = 'collection', 
+                                         buttons = c('csv', 'excel', 'pdf'), 
+                                         text = 'Download'), I('colvis'))))
+  })
+  
+  output$gsmse1 <- renderFormattable({
+    mse1 <- tmpsumgs %>% filter(mse == min(mse))
+    #as.htmlwidget(
+    mse1 %>% formattable(list(
+      .id = color_tile('white', 'darkgoldenrod'), 
+      model = color_tile('white', 'darkgoldenrod'), 
+      mse = formatter('span', style = x ~ 
+                        formattable::style(
+                          color = ifelse(rank(x) <= 3, 'blue', 'grey')), 
+                      x ~ sprintf('%.6f (rank: %.0f)', x, rank(x)))
+    ))#)
+  })
+  
+  output$testTable <- renderDataTable({
+    tmptable %>% datatable(
+      #caption = "Table : LAD Stocks Price", 
+      escape = FALSE, filter = "top", rownames = FALSE, 
+      extensions = list("ColReorder" = NULL, "RowReorder" = NULL, 
+                        "Buttons" = NULL, "Responsive" = NULL), 
+      options = list(dom = 'BRrltpi', autoWidth = TRUE, scrollX = TRUE, 
+                     lengthMenu = list(c(10, 50, 100, -1), c('10', '50', '100', 'All')), 
+                     ColReorder = TRUE, rowReorder = TRUE, 
+                     buttons = list('copy', 'print', 
+                                    list(extend = 'collection', 
+                                         buttons = c('csv', 'excel', 'pdf'), 
+                                         text = 'Download'), I('colvis'))))
+  })
+  
 })

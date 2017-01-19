@@ -32,9 +32,17 @@ suppressAll(source('./function/plotChart2.R'))
 ## check if the saved dataset is today's data? if previous day then need to scrap from website.
 if(file.exists('./data/LAD.rds')) {
   if(readRDS('./data/LAD.rds') %>% attributes %>% .$updated %>% as.Date < today()) {
-    tryCatch({
+    #'@ tryCatch({
+    #'@   suppressAll(getSymbols('LAD', from = '2015-01-01'))
+    #'@ }, error = function(e) stop('Kindly restart the shiny app.'))
+    
+    LAD <- tryCatch({
       suppressAll(getSymbols('LAD', from = '2015-01-01'))
-    }, error = function(e) stop('Kindly restart the shiny app.'))
+    }, error = function(e) read_rds(path = './data/LAD.rds'))
+    
+    #'@ suppressAll(getSymbols('LAD', from = '2015-01-01'))
+    #'@ saveRDS(LAD, file = './data/LAD.rds')
+    
   } else {
     LAD <- read_rds(path = './data/LAD.rds')
   }
@@ -55,4 +63,11 @@ LADDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>%
                     #mutate(LAD.Volume = formattable::digits(
                     #       LAD.Volume, 0, format = 'd', big.mark = ','))
 dateID <- LADDT$Date
+
+## need to modify... temporarily use since baseline * times the coef rates will be consider as a weighted models but need to test. 
+tmpsumgs <- read_rds(path = './data/tmpsumgs.rds')
+tmptable <- read_rds(path = './data/tmptable.rds')
+
+
+
 

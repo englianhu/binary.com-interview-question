@@ -1,25 +1,33 @@
-compStocks <- function(mbase, family = 'gaussian', maxit = 1000, .print = FALSE) {
+compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'), 
+                       maxit = 1000, alpha = 0:10, setform = c('l1', 'l2', 'l3', 'l4'), 
+                       yv = c('baseline', 'daily.mean1', 'daily.mean2', 
+                              'daily.mean3', 'mixed1', 'mixed2', 'mixed3'), 
+                       pred.type = c('link', 'response', 'coefficients', 
+                                     'nonzero', 'class'), 
+                       nfolds = 10, foldid = NULL, s = c('lambda.min', 'lambda.1se'), 
+                       weight.date = FALSE, weight.volume = FALSE, parallel = TRUE, 
+                       .log = FALSE, .print = FALSE) {
   ## ========================= Load Packages ===================================
   source('./function/lmStocks.R')
   
   ## ========================= Set Arguments ===================================
-  mbase <- LADDT
+  #'@ mbase <- LADDT
   families <- c('gaussian', 'binomial', 'poisson', 'multinomial', 'cox', 'mgaussian', 'all')
-  xy.matrix <- c('h1', 'h2')
-  alpha <- 0:10
-  
-  yv <- c('baseline', 'daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 'mixed2', 'mixed3')
-  setform <- c('l1', 'l2', 'l3', 'l4')
-  pred.type <- c('link', 'response', 'coefficients', 'nonzero', 'class')
-  
-  nfolds = 10
-  foldid = NULL
-  s = c('lambda.min', 'lambda.1se')
-  
-  weight.date = FALSE     #weight.date is ...
-  weight.volume = FALSE   #weight.volume is ...
-  parallel = FALSE
-  .log = FALSE
+  #'@ xy.matrix <- c('h1', 'h2')
+  #'@ alpha <- 0:10
+  #'@ 
+  #'@ yv <- c('baseline', 'daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 'mixed2', 'mixed3')
+  #'@ setform <- c('l1', 'l2', 'l3', 'l4')
+  #'@ pred.type <- c('link', 'response', 'coefficients', 'nonzero', 'class')
+  #'@ 
+  #'@ nfolds = 10
+  #'@ foldid = NULL
+  #'@ s = c('lambda.min', 'lambda.1se')
+  #'@ 
+  #'@ weight.date = FALSE     #weight.date is ...
+  #'@ weight.volume = FALSE   #weight.volume is ...
+  #'@ parallel = FALSE
+  #'@ .log = FALSE
   
   ## ======================= Data Validation ===================================
   if(family %in% families) {

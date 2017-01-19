@@ -169,8 +169,22 @@ ui <- shinyUI(fluidPage(
                                   p('Besides, I also apply ', code('caret'), ' package to do the comparison as well. You are feel 
                                     free to read through below reference or more over the ', strong('Reference'),' tab : ', 
                                     tags$ul(
-                                      tags$li(HTML("<a href='http://topepo.github.io/caret/index.html'>The ", code('caret'), " Package</a>")), 
+                                      tags$li(HTML("<a href='http://topepo.github.io/caret/index.html'>The caret Package</a>")), 
                                       tags$li(HTML("<a href='https://rpubs.com/crossxwill/time-series-cv'>Time Series Cross Validation</a>")))), 
+                                  tagList(
+                                    tags$div(align = "center", 
+                                             class = "bg-info", 
+                                             tags$h3(class = "bg-primary", "Mean-Squared Error Summary"), 
+                                             tags$h5(align = "center", class = "text-muted", 
+                                                     "Table Summary of Gaussian Models (Sample)")), dataTableOutput('gsmse')), 
+                                  htmlOutput('gsform'), 
+                                  formattableOutput('gsmse1'), 
+                                  tagList(
+                                    tags$div(align = "center", 
+                                             class = "bg-info", 
+                                             tags$h3(class = "bg-primary", "Testing models"), 
+                                             tags$h5(align = "center", class = "text-muted", 
+                                                     "Fitted Value (Sample)")), dataTableOutput('testTable')), 
                                   br(), 
                                   h4('Part II : Prediction'), 
                                   br(), 

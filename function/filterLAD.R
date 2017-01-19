@@ -16,9 +16,17 @@ filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
     mbase <- LAD
     
   } else {
-    tryCatch({
+    #'@ tryCatch({
+    #'@   suppressAll(getSymbols('LAD', from = '2015-01-01'))
+    #'@ }, error = function(e) stop('Kindly restart the shiny app.'))
+    
+    LAD <- tryCatch({
       suppressAll(getSymbols('LAD', from = '2015-01-01'))
-    }, error = function(e) stop('Kindly restart the shiny app.'))
+    }, error = function(e) read_rds(path = './data/LAD.rds'))
+    
+    #'@ suppressAll(getSymbols('LAD', from = '2015-01-01'))
+    #'@ saveRDS(LAD, file = './data/LAD.rds')
+    
     mbase <- LAD; rm(LAD)
   }
   

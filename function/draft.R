@@ -706,8 +706,8 @@ gsfit <- compStocks(LADDT, family = families[1], maxit = 1000, .print = TRUE)
 bnfit <- compStocks(LADDT, family = families[2], maxit = 1000, .print = TRUE)
 psfit <- compStocks(LADDT, family = families[3], maxit = 1000, .print = TRUE)
 mnfit <- compStocks(LADDT, family = families[4], maxit = 1000, .print = TRUE)
-cxfit <- compStocks(LADDT, family = families[5], maxit = 1000, .print = TRUE)
-mgfit <- compStocks(LADDT, family = families[6], maxit = 1000, .print = TRUE)
+cxfit <- compStocks(LADDT, family = families[5], maxit = 1000, .print = TRUE) #not yet ready
+mgfit <- compStocks(LADDT, family = families[6], maxit = 1000, .print = TRUE) #not yet ready
 alfit <- compStocks(LADDT, family = families[7], maxit = 1000, .print = TRUE)
 
 saveRDS(gsfit, file = './data/gsfit.rds')
@@ -777,5 +777,82 @@ gsfit$formula1[c(97:100, 103:108, 111:116, 119:120)]
 #> poim[c(75, 81)]
 #[1] "lmStocks(mbase, family = family, xy.matrix = 'h2', alpha = alpha, yv = 'baseline', tmeasure = 'deviance', maxit = maxit, pred.type = 'response', nfolds = nfolds, foldid = foldid, s = 'lambda.min', weight.date = 'FALSE', weight.volume = 'FALSE', parallel = parallel, .log = .log)"
 #[2] "lmStocks(mbase, family = family, xy.matrix = 'h2', alpha = alpha, yv = 'baseline', tmeasure = 'mse', maxit = maxit, pred.type = 'response', nfolds = nfolds, foldid = foldid, s = 'lambda.min', weight.date = 'FALSE', weight.volume = 'FALSE', parallel = parallel, .log = .log)"
+
+## checking the number of observation.
+llply(gsfit$fit, function(x) {
+  ldly(x$yhat, function(y) {
+    nrow(y)
+  })
+})
+
+llply(gsfit$fit, function(x) {
+  ldply(x$yhat, function(y) {
+    nrow(y)
+  })
+}) %>% ldply %>% tbl_df %>% filter(V1 == 514)
+
+## Gaussian models - filtered only take nrow same with ibservation (due to saved time, will take all observation includes 2056 obs to compare some other days.)
+name514gs <- llply(gsfit$fit, function(x) {
+  ldply(x$yhat, function(y) {
+    nrow(y)
+  })
+}) %>% ldply %>% tbl_df %>% filter(V1 == 514) %>% .$.id %>% unique
+
+gsfit$fit[name514gs]
+ldply(gsfit$fit[name514gs], function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
+
+## Poisson models - filtered only take nrow same with observation (due to saved time, will take all observation includes 2056 obs to compare some other days.)
+name514ps <- llply(psfit$fit, function(x) {
+  ldply(x$yhat, function(y) {
+    nrow(y)
+  })
+}) %>% ldply %>% tbl_df %>% filter(V1 == 514) %>% .$.id %>% unique
+
+psfit$fit[name514ps]
+ldply(psfit$fit[name514ps], function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
+
+### ----------------- shiny app temporarily models ---------------------
+## 
+gsfit <- read_rds(path = './data/gsfit.rds')
+
+## Gaussian models - filtered only take nrow same with ibservation (due to saved time, will take all observation includes 2056 obs to compare some other days.)
+name514gs <- llply(gsfit$fit, function(x) {
+  ldply(x$yhat, function(y) {
+    nrow(y)
+  })
+}) %>% ldply %>% tbl_df %>% filter(V1 == 514) %>% .$.id %>% unique
+
+tmpsumgs <- ldply(gsfit$fit[name514gs], function(x) x$mse) %>% tbl_df
+saveRDS(tmpsumgs, file = './data/tmpsumgs.rds')
+
+## check
+ldply(gsfit$fit[name514gs], function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
+# A tibble: 2 × 3
+#.id  model          mse
+#<chr> <fctr>        <dbl>
+#1 fitgaum1410   mse7 2.530952e-05
+#2 fitgaum1425   mse7 2.530952e-05
+saveRDS(gsfit$fit$fitgaum1410, file = './data/fitgaum1410.rds')
+saveRDS(gsfit$fit$fitgaum1425, file = './data/fitgaum1425.rds')
+
+#> data.frame(LADDT, g1410 = gsfit$fit$fitgaum1410$yhat[[7]], g1425 = gsfit$fit$fitgaum1425$yhat[[7]]) %>% tbl_df %>% rename(g1410 = X1, g1425 = X1.1) %>% mutate(g1410.Price = g1410 * first(LAD.Open), g1425.Price = g1425 * first(LAD.Open)) %>% select(-LAD.Volume) %>% tail
+# A tibble: 6 × 10
+#Date LAD.Open LAD.High LAD.Low LAD.Close LAD.Adjusted    g1410    g1425 g1410.Price g1425.Price
+#<date>    <dbl>    <dbl>   <dbl>     <dbl>        <dbl>    <dbl>    <dbl>       <dbl>       <dbl>
+#1 2017-01-09    99.55   100.40   98.26     99.81        99.81 1.141922 1.141922    99.42713    99.42713
+#2 2017-01-10    99.74   102.73   99.74    100.94       100.94 1.152180 1.152180   100.32035   100.32035
+#3 2017-01-11   100.67   102.11   99.87    102.08       102.08 1.157380 1.157380   100.77310   100.77310
+#4 2017-01-12   101.87   103.13   99.08    103.02       103.02 1.166039 1.166039   101.52698   101.52698
+#5 2017-01-13   102.94   104.44  100.96    101.33       101.33 1.180093 1.180093   102.75074   102.75074
+#6 2017-01-17   101.53   105.32  101.01    101.67       101.67 1.173030 1.173030   102.13569   102.13569
+
+## the baseline method only get the trend which as the trend of the price.
+tmptable <- data.frame(LADDT, g1410 = gsfit$fit$fitgaum1410$yhat[[7]], 
+           g1425 = gsfit$fit$fitgaum1425$yhat[[7]]) %>% tbl_df %>% 
+  rename(g1410 = X1, g1425 = X1.1) %>% 
+  mutate(g1410.Price = g1410 * first(LAD.Open), g1425.Price = g1425 * first(LAD.Open))
+saveRDS(tmptable, file = './data/tmptable.rds')
+
+
 
 

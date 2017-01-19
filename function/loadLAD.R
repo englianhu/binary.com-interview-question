@@ -15,9 +15,12 @@ loadLAD <- function() {
   ## check if the saved dataset is today's data? if previous day then need to scrap from website.
 if(file.exists('./data/LAD.rds')) {
   if(readRDS('./data/LAD.rds') %>% attributes %>% .$updated %>% as.Date < today()) {
-    tryCatch({
-      suppressAll(getSymbols('LAD', from = '2015-01-01'))
-    }, error = function(e) stop('Kindly restart the shiny app.'))
+    #'@ tryCatch({
+    #'@   suppressAll(getSymbols('LAD', from = '2015-01-01'))
+    #'@ }, error = function(e) stop('Kindly restart the shiny app.'))
+    suppressAll(getSymbols('LAD', from = '2015-01-01'))
+    saveRDS(LAD, file = './data/LAD.rds')
+    
   } else {
     LAD <- read_rds(path = './data/LAD.rds')
   }
