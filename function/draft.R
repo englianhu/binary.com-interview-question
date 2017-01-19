@@ -917,7 +917,6 @@ gaum193.price <- xts(tblgaum193[, -1], tblgaum193$Date)
 saveRDS(gaum193.price, file = './data/gaum193.price.rds')
 gaum193.price <- read_rds(path = './data/gaum193.price.rds')
 
-
 fitgaum193.alpha08 <- list(fit = fitgaum193$fit$fit[[8]], 
                            yhat = fitgaum193$fitgaum193$yhat[[8]], 
                            mse = fitgaum193$fitgaum193$mse)
@@ -925,5 +924,5 @@ saveRDS(fitgaum193.alpha08, file = './data/fitgaum193.alpha08.rds')
 fitgaum193.alpha08 <- read_rds(path = './data/fitgaum193.alpha08.rds')
 
 
-
+## 
 

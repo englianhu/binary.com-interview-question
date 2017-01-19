@@ -10,51 +10,46 @@ filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
   suppressAll(library('formattable'))
   suppressAll(library('quantmod'))
   suppressAll(library('tidyquant'))
+  suppressAll(source('./function/loadLAD.R'))
   
   ## ==================== Data Validation ===================================
   if(exists('LAD')) {
     mbase <- LAD
     
   } else {
-    #'@ tryCatch({
-    #'@   suppressAll(getSymbols('LAD', from = '2015-01-01'))
-    #'@ }, error = function(e) stop('Kindly restart the shiny app.'))
-    
-    tryCatch({
-      suppressAll(getSymbols('LAD', from = '2015-01-01'))
-    }, error = function(e) LAD <- read_rds(path = './data/LAD.rds'))
-    
-    #'@ suppressAll(getSymbols('LAD', from = '2015-01-01'))
-    #'@ saveRDS(LAD, file = './data/LAD.rds')
-    
+    loadLAD()
     mbase <- LAD; rm(LAD)
+    mbaseDT <- LADDT; rm(LADDT)
   }
   
-  mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-    tbl_df %>% mutate(Date = ymd(Date), 
-                      LAD.Volume = formattable::digits(
-                        LAD.Volume, 0, format = 'd', big.mark = ','))
-  dateID <- mbaseDT$Date
+  if(!exists('mbaseDT')) {
+    mbaseDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
+      tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+    # %>% mutate(LAD.Volume = formattable::digits(
+    #       LAD.Volume, 0, format = 'd', big.mark = ','))
+  }
+  
+  if(!exists('dateRange')) dateRange <- c(today() - 365, today())
   
   if(is.null(startDate) & is.null(endDate)) {
-    startDate <- dateID[1]
-    endDate <- tail(dateID, 1)
+    startDate <- dateRange[1]
+    endDate <- dateRange[2]
     
-  } else if((startDate %in% dateID) & (endDate %in% dateID)) {
+  } else if((startDate %in% dateRange) & (endDate %in% dateRange)) {
     startDate <- startDate
     endDate <- endDate
     
   } else {
-    tryCatch(suppressAll(getSymbols('LAD', from = startDate, to = endDate)), 
-             error = function(e) getSymbols('LAD', from = '2015-01-01'))
+    suppressAll(getSymbols('LAD', from = startDate, to = endDate))
+    
     mbase <- LAD; rm(LAD)
     mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-      tbl_df %>% mutate(Date = ymd(Date), 
-                        LAD.Volume = formattable::digits(
-                          LAD.Volume, 0, format = 'd', big.mark = ','))
-    dateID <- mbaseDT$Date
-    startDate <- dateID[1]
-    endDate <- tail(dateID, 1)
+      tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+    # %>% mutate(LAD.Volume = formattable::digits(
+    #       LAD.Volume, 0, format = 'd', big.mark = ','))
+    dateRange <- range(mbaseDT$Date)
+    startDate <- dateRange[1]
+    endDate <- dateRange[2]
     
     tmp <- list(fund = mbase, fundDT = mbaseDT)
     return(tmp)
@@ -64,9 +59,9 @@ filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
   mbase <- mbase[paste0(startDate, '/', endDate)]
   
   mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-    tbl_df %>% mutate(Date = ymd(Date), 
-                    LAD.Volume = formattable::digits(
-                      LAD.Volume, 0, format = 'd', big.mark = ','))
+    tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+  # %>% mutate(LAD.Volume = formattable::digits(
+  #       LAD.Volume, 0, format = 'd', big.mark = ','))
   
   tmp <- list(fund = mbase, fundDT = mbaseDT)
   return(tmp)

@@ -1,9 +1,9 @@
 lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1', 
                      yv = 'baseline', logistic.yv = TRUE, tmeasure = 'deviance', 
-                     tmultinomial = 'grouped', maxit = 1000, pred.type = 'class', 
+                     tmultinomial = 'grouped', maxit = 1000, 
                      alpha = 0:10, nfolds = 10, foldid = NULL, s = 'lambda.min', 
                      weight.date = FALSE, weight.volume = FALSE, wt.control = FALSE, 
-                     parallel = TRUE, .log = FALSE) {
+                     newx = NULL, pred.type = 'class', parallel = TRUE, .log = FALSE) {
   ## mbase = default quantmod xts format or in data frame format.
   ## 
   ## family = gaussian', 'binomial', 'poisson', 'multinomial', 'cox' and 'mgaussian'.
@@ -121,6 +121,7 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
   }
   
   dateID <- sort(unique(mbase$Date))
+  dateRange <- range(dateID)
   
   families <- c('gaussian', 'binomial', 'poisson', 'multinomial', 'cox', 'mgaussian')
   if(family %in% families) {
@@ -636,11 +637,21 @@ lmStocks <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
   ## Also, if you are just wanted the classification labels you can use type="class"
   ## 
   
+  if(!is.null(newx)) {
+    eval(parse(
+      text = paste(paste0(c('x', 'y', 'wt'), 
+                          ' <- h(newx, family = family, yv = yv, logistic.yv = logistic.yv, wt = wt, wt.control = wt.control, xy.matrix = xy.matrix, setform = setform, .log = .log)[[', 
+                          c('\'x\'', '\'y\'', '\'wt\''),']]'), collapse = '; ')))
+    
+    ## convert the single column y and wt into a numeric vector.
+    if(!is.numeric(y)) y <- unlist(y)
+    if(!is.numeric(wt)) wt <- unlist(wt)
+  }
+  
   ## evaluate all yhat0 to yhat10
-  eval(parse(text = paste(paste0('yhat', alpha, ' <- predict(fit', 
-                                 alpha, ', s = fit', alpha, '$', s, 
-                                 ', newx = x, type = \'', pred.type, '\')'), 
-                          collapse ='; ')))
+  eval(parse(text = paste(
+    paste0('yhat', alpha, ' <- predict(fit', alpha, ', s = fit', alpha, '$', s, 
+           ', newx = x, type = \'', pred.type, '\')'), collapse ='; ')))
   
   #'@ mse0  <- mean((y - yhat0 )^2)
   #'@ mse1  <- mean((y - yhat1 )^2)

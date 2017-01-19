@@ -1,12 +1,12 @@
 compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'), 
-                       maxit = 1000, alpha = 0:10, setform = c('l1', 'l2', 'l3', 'l4'), 
+                       maxit = 100000, alpha = 0:10, setform = c('l1', 'l2', 'l3', 'l4'), 
                        yv = c('baseline', 'daily.mean1', 'daily.mean2', 
                               'daily.mean3', 'mixed1', 'mixed2', 'mixed3'), 
-                       pred.type = c('link', 'response', 'coefficients', 
-                                     'nonzero', 'class'), 
+                       newx = NULL, pred.type = c('link', 'response', 'coefficients', 
+                                     'nonzero', 'class'), tmeasure = 'mse', 
                        nfolds = 10, foldid = NULL, s = c('lambda.min', 'lambda.1se'), 
-                       weight.date = FALSE, weight.volume = FALSE, parallel = TRUE, 
-                       .log = FALSE, .print = FALSE) {
+                       weight.date = FALSE, weight.volume = FALSE, wt.control = FALSE, 
+                       parallel = TRUE, .log = FALSE, .print = FALSE) {
   ## ========================= Load Packages ===================================
   source('./function/lmStocks.R')
   
@@ -44,14 +44,31 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
     foldid <- ifelse(length(foldid) > 1, paste(range(foldid), collapse = ':'), foldid)
   }
   
+  if(!is.null(newx)) x <- newx
+  
   ## ======================== Regression Models ================================
   if((family == 'gaussian')|(family == 'all')) {
     ## -------------------------- gaussian --------------------------------
     ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
-    tmeasure <- c('deviance', 'mse', 'mae')
+    if(tmeasure %in% c('deviance', 'mse', 'mae')) {
+      tmeasure <- tmeasure
+    } else {
+      tmeasure <- c('deviance', 'mse', 'mae')
+    }
+    
     family <- 'gaussian'
-    pred.type <- c('link', 'response', 'nonzero', 'class')
-    wt.control = c(TRUE, FALSE)
+    
+    if(pred.type %in% c('link', 'response', 'nonzero', 'class')) {
+      pred.type <- pred.type
+    } else {
+      pred.type <- c('link', 'response', 'nonzero', 'class')
+    }
+      
+    if(wt.control %in% c(TRUE, FALSE)) {
+      wt.control <- wt.control
+    } else {
+      wt.control = c(TRUE, FALSE)
+    }
     
     gaum <- sapply(xy.matrix, function(x) {
       sapply(yv, function(y) {
@@ -62,7 +79,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                 sapply(wt.control, function(yx) {
                   paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
                          '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
-                         '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                         '\', maxit = ', maxit, ', newx = newx, pred.type = \'', xx, 
                          '\', alpha = ', alpha, ', nfolds = ', nfolds, 
                          ', foldid = ', foldid, ', s = \'', xy, 
                          '\', weight.date = ', weight.date, ', weight.volume = ', 
@@ -104,8 +121,19 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
     ## 5 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
     ##            tmeasure = 'mae' or tmeasure = 'class' or 
     ##            tmeasure = 'auc'.
-    tmeasure <- c('deviance', 'mse', 'mae', 'class', 'auc')
+    if(tmeasure %in% c('deviance', 'mse', 'mae', 'class', 'auc')) {
+      tmeasure <- tmeasure
+    } else {
+      tmeasure <- c('deviance', 'mse', 'mae', 'class', 'auc')
+    }
+    
     family <- 'binomial'
+    
+    if(pred.type %in% c('link', 'response', 'nonzero', 'class')) {
+      pred.type <- pred.type
+    } else {
+      pred.type <- c('link', 'response', 'nonzero', 'class')
+    }
     wt.control = FALSE #wt.control not applicable in binomial nor multinomial.
     
     binm <- sapply(xy.matrix, function(x) {
@@ -117,7 +145,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                 sapply(wt.control, function(yx) {
                   paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
                          '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
-                         '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                         '\', maxit = ', maxit, ', newx = newx, pred.type = \'', xx, 
                          '\', alpha = ', alpha, ', nfolds = ', nfolds, 
                          ', foldid = ', foldid, ', s = \'', xy, 
                          '\', weight.date = ', weight.date, ', weight.volume = ', 
@@ -155,10 +183,25 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
   } else if((family == 'poisson')|(family == 'all')) {
     ## -------------------------- poisson ---------------------------------
     ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
-    tmeasure <- c('deviance', 'mse', 'mae')
+    if(tmeasure %in% c('deviance', 'mse', 'mae')) {
+      tmeasure <- tmeasure
+    } else {
+      tmeasure <- c('deviance', 'mse', 'mae')
+    }
+    
     family <- 'poisson'
-    pred.type <- c('link', 'response', 'nonzero')
-    wt.control = c(TRUE, FALSE)
+    
+    if(pred.type %in% c('link', 'response', 'nonzero')) {
+      pred.type <- pred.type
+    } else {
+      pred.type <- c('link', 'response', 'nonzero')
+    }
+    
+    if(wt.control %in% c(TRUE, FALSE)) {
+      wt.control <- wt.control
+    } else {
+      wt.control = c(TRUE, FALSE)
+    }
     
     poim <- sapply(xy.matrix, function(x) {
       sapply(yv, function(y) {
@@ -169,7 +212,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                 sapply(wt.control, function(yx) {
                   paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
                          '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
-                         '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                         '\', maxit = ', maxit, ', newx = newx, pred.type = \'', xx, 
                          '\', alpha = ', alpha, ', nfolds = ', nfolds, 
                          ', foldid = ', foldid, ', s = \'', xy, 
                          '\', weight.date = ', weight.date, ', weight.volume = ', 
@@ -209,9 +252,26 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
     ## 4 models : tmeasure = 'deviance' or tmeasure = 'mse' or 
     ##            tmeasure = 'mae' or tmeasure = 'class'.
     ## 2 models : tmultinomial = 'grouped' or tmultinomial = 'ungrouped'.
-    tmeasure <- c('deviance', 'mse', 'mae', 'class')
-    tmultinomial <- c('grouped', 'ungrouped')
+    
+    
+    
+    wt.control = FALSE #wt.control not applicable in binomial nor multinomial.
+    
+    if(tmeasure %in% c('deviance', 'mse', 'mae', 'class')) {
+      tmeasure <- tmeasure
+    } else {
+      tmeasure <- c('deviance', 'mse', 'mae', 'class')
+    }
+    
     family <- 'multinomial'
+    
+    if(pred.type %in% c('link', 'response', 'nonzero', 'class')) {
+      pred.type <- pred.type
+    } else {
+      pred.type <- c('link', 'response', 'nonzero', 'class')
+    }
+    
+    tmultinomial <- c('grouped', 'ungrouped')
     wt.control = FALSE #wt.control not applicable in binomial nor multinomial.
     
     mnmm <- sapply(xy.matrix, function(x) {
@@ -224,7 +284,8 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                   sapply(wt.control, function(yx) {
                     paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
                            '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
-                           '\', tmultinomial = ', tm, '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                           '\', tmultinomial = ', tm, '\', maxit = ', maxit, 
+                           ', newx = newx, pred.type = \'', xx, 
                            '\', alpha = ', alpha, ', nfolds = ', nfolds, 
                            ', foldid = ', foldid, ', s = \'', xy, 
                            '\', weight.date = ', weight.date, ', weight.volume = ', 
@@ -276,7 +337,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                 sapply(wt.control, function(yx) {
                   paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
                          '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
-                         '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                         '\', maxit = ', maxit, ', newx = newx, pred.type = \'', xx, 
                          '\', alpha = ', alpha, ', nfolds = ', nfolds, 
                          ', foldid = ', foldid, ', s = \'', xy, 
                          '\', weight.date = ', weight.date, ', weight.volume = ', 
@@ -327,7 +388,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                 sapply(wt.control, function(yx) {
                   paste0('lmStocks(mbase, family = \'', family, '\', xy.matrix = \'', x, 
                          '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
-                         '\', maxit = ', maxit, ', pred.type = \'', xx, 
+                         '\', maxit = ', maxit, ', newx = newx, pred.type = \'', xx, 
                          '\', alpha = ', alpha, ', nfolds = ', nfolds, 
                          ', foldid = ', foldid, ', s = \'', xy, 
                          '\', weight.date = ', weight.date, ', weight.volume = ', 

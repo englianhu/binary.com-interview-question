@@ -83,6 +83,8 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
   #   in the build.x() in the 'useful' package.
   options(warn = -1)
   suppressPackageStartupMessages(library("BBmisc"))
+  suppressAll(library('plyr'))
+  suppressAll(library('tidyverse'))
   suppressAll(library('useful'))
   suppressAll(library('Matrix'))
   
