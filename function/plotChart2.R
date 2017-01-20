@@ -12,6 +12,9 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
   suppressMessages(library('tidyverse'))
   
   ## --------------------- Data validation ------------------------------------------
+  
+  if(!is.xts(Fund)) Fund <- xts(Fund[, -1], as.Date(Fund$Date))
+  
   ## check chart.theme
   hctheme <- c('hc_theme()', 'hc_theme_538()', 'hc_theme_chalk()', 'hc_theme_darkunica()' , 
                'hc_theme_db()', 'hc_theme_economist()', 'hc_theme_flat()', 
@@ -57,6 +60,7 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     FUND.SMA.10  <- SMA(Cl(Fund), n = 10)
     FUND.SMA.200 <- SMA(Cl(Fund), n = 200)
     FUND.RSI.14  <- RSI(Cl(Fund), n = 14)
+    FUND.PRED <- RSI(Fund$Pred) #the predicteve stocks price.
     FUND.RSI.SellLevel <- xts(rep(70, NROW(Fund)), index(Fund))
     FUND.RSI.BuyLevel  <- xts(rep(30, NROW(Fund)), index(Fund))
     
@@ -68,9 +72,11 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
       hc_subtitle(text = paste0("Candle stick chart with initial stock price : ", 
                                 paste0(initial, collapse = ', '))) %>% 
       hc_yAxis_multiples(
-        list(title = list(text = NULL), height = '45%', top = '0%'),
-        list(title = list(text = NULL), height = '25%', top = '47.5%', opposite = TRUE),
-        list(title = list(text = NULL), height = '25%', top = '75%')) %>% 
+        create_yaxis(3, height = c(2, 1, 1), turnopposite = TRUE)
+        #'@ list(title = list(text = NULL), height = '45%', top = '0%'),
+        #'@ list(title = list(text = NULL), height = '25%', top = '47.5%', opposite = TRUE),
+        #'@ list(title = list(text = NULL), height = '25%', top = '75%')
+        ) %>% 
       hc_plotOptions(
         series = list(showInLegend = TRUE)) %>% 
       # series :D
@@ -79,11 +85,14 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
       hc_add_series_xts(FUND.SMA.200, yAxis = 0, name = 'Slow MA') %>% 
       hc_add_series_xts(Fund[,names(Vo(Fund))], color = 'gray', yAxis = 1, name = 'Volume', 
                         type = 'column') %>% 
-      hc_add_series_xts(FUND.RSI.14, yAxis = 2, name = 'Osciallator') %>% 
-      hc_add_series_xts(FUND.RSI.SellLevel, color = 'red', yAxis = 2, 
-                        name = 'Sell level', enableMouseTracking = FALSE) %>% 
-      hc_add_series_xts(FUND.RSI.BuyLevel, color = 'blue', yAxis = 2, 
-                        name = 'Buy level', enableMouseTracking = FALSE)
+      hc_add_series_xts(FUND.PRED, yAxis = 2, colot = hex_to_rgba('gold', 0.7), 
+                        name = 'Predicted Price') %>% 
+      hc_add_series_xts(FUND.RSI.14, yAxis = 2, colot = hex_to_rgba('green', 0.7), 
+                        name = 'Osciallator') %>% 
+      hc_add_series_xts(FUND.RSI.SellLevel, color = hex_to_rgba('red', 0.7), yAxis = 2, 
+                        name = 'Sell level') %>% 
+      hc_add_series_xts(FUND.RSI.BuyLevel, color = hex_to_rgba('blue', 0.7), yAxis = 2, 
+                        name = 'Buy level')#, enableMouseTracking = FALSE)
     
     # I <3 themes
     htc <- paste0('hc <- plotc %>% hc_add_theme(', chart.theme, 
@@ -103,9 +112,9 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     chart.type <- ifelse(is.null(chart.type), 'Cl', chart.type)
     initial <- Op(Fund)[1, ] %>% unique %>% currency
     
-    fname <- grep('.Close', names(Cl(Fund)), value = TRUE) %>% 
+    fname <- grep('.Open', names(Op(Fund)), value = TRUE) %>% 
       str_split('\\.') %>% llply(., function(x) 
-        paste0(str_replace_all(x, 'Close', '')[1:2], collapse = '.')) %>% unlist
+        paste0(str_replace_all(x, 'Open', '')[1:2], collapse = '.')) %>% unlist
     
     ## comparison of fund size and growth of various Kelly models
     #'@ event <- c('netEMEdge', 'PropHKPriceEdge', 'PropnetProbBEdge', 'KProbHKPrice',

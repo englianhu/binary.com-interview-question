@@ -28,7 +28,7 @@ loadLAD <- function() {
   #'@   suppressAll(getSymbols('LAD', from = '2015-01-01'))
   #'@   saveRDS(LAD, file = './data/LAD.rds')
   #'@ }
-  dateRange <<- c(today() - 365, today())
+  dateRange <- c(today() - 365, today())
   
   ## check if the saved dataset is today's data? if previous day then need to scrap from website.
   ## http://mazamascience.com/WorkingWithData/?p=912

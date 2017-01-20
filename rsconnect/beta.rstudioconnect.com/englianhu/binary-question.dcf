@@ -3,9 +3,9 @@ title: binary-question
 account: englianhu
 server: beta.rstudioconnect.com
 appId: 2367
-bundleId: 5110
+bundleId: 5119
 url: https://beta.rstudioconnect.com/content/2367/
-when: 1484820722.11505
+when: 1484894707.72317
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: data/AAPL.rds|data/alfit.rds|data/bnfit.rds|data/cxfit.rds|data/fitgaum1410.rds|data/fitgaum193.rds|data/gsfit.rds|data/mgfit.rds|data/mnfit.rds|data/psfit.rds|data/tmpgsfit.rds|data/tmptable.rds
+ignoredFiles: data/AAPL.rds|data/alfit.rds|data/bnfit.rds|data/cxfit.rds|data/fitgaum1410.rds|data/fitgaum193.rds|data/gsfit.rds|data/mgfit.rds|data/mnfit.rds|data/psfit.rds

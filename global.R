@@ -25,8 +25,13 @@ suppressAll(library('formattable'))
 suppressAll(library('highcharter'))
 suppressAll(library('PerformanceAnalytics'))
 suppressAll(library('memoise'))
+suppressAll(library('glmnet'))
+suppressAll(library('forecast'))
+
 suppressAll(source('./function/loadLAD.R'))
 suppressAll(source('./function/filterLAD.R'))
+suppressAll(source('./function/lmStocks.R'))
+suppressAll(source('./function/h.R'))
 suppressAll(source('./function/plotChart2.R'))
 
 ## ========= Read Data =================================

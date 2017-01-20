@@ -2836,7 +2836,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(LAD.Close2 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
+                            LAD.Close + LAD.Volume - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2882,7 +2882,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(dmean1 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
+                            LAD.Close + LAD.Volume - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2928,7 +2928,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(dmean2 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
+                            LAD.Close + LAD.Volume - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -2974,7 +2974,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(dmean3 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
+                            LAD.Close + LAD.Volume - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -3021,7 +3021,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(mixed1 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
+                            LAD.Close + LAD.Volume - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -3068,7 +3068,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(mixed2 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
+                            LAD.Close + LAD.Volume - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')
@@ -3115,7 +3115,7 @@ h <- function(ddt, family, yv = 'baseline', logistic.yv = FALSE, wt = NULL,
                             LAD.Close + LAD.Volume - 1, 
                           X, contrasts = TRUE, sparse = TRUE), 
               y = build.y(mixed3 ~ LAD.Open + LAD.High + LAD.Low + 
-                            LAD.Close + LAD.Volume - 1, Y, wt = wt))
+                            LAD.Close + LAD.Volume - 1, Y), wt = wt)
             
           } else {
             stop('setform must be one among c(\'', paste(setforms, collapse = '\', \''), '\').')

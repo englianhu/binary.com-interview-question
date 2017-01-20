@@ -1,5 +1,6 @@
+## ----------------------- kelly formula test ------------------------------
 # kelly formula test
-kelly.opt <- function(win, loss, p, obs, lev) {
+optKelly <- function(win, loss, p, obs, lev) {
   ## https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r/
   # 
   # win = payout for a win
@@ -27,6 +28,8 @@ kelly.opt <- function(win, loss, p, obs, lev) {
   output$results <- results
   output
 }
+
+## ------------------------- optimal f test ---------------------------------
 # optimal f test
 opt.f <- function(win, loss, p, obs, lev) {
   ## https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r/
@@ -51,6 +54,7 @@ opt.f <- function(win, loss, p, obs, lev) {
   output
 }
 
+## ------------------------- test ---------------------------------
 # get statistics for kelly
 compare <- data.frame(kelly=1:5000, opt.f=1:5000)
 for (i in 1:5000) {

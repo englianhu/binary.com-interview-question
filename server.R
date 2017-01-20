@@ -61,7 +61,7 @@ server <- shinyServer(function(input, output, session) {
     
     isolate({
       withProgress({
-        setProgress(message = "Processing graph...")
+        setProgress(message = "Filtering data...")
         filterLAD(startDate = input$dataDate - 365, endDate = input$dataDate)
         })
       })
@@ -73,15 +73,19 @@ server <- shinyServer(function(input, output, session) {
     
     isolate({
       withProgress({
-        setProgress(message = "Processing graph...")
+        setProgress(message = "Predicting stocks price...")
         fundDT <- terms()$fundDT
-        xy <- memoise(h(fundDT, family = 'gaussian', xy.matrix = 'h2', setform = 'l4', 
-          yv = 'daily.mean2'))
-        pd <- memoise(predict(fitgaum16.alpha08, newx = xy$x, pred.type = 'class')) %>% 
-          tbl_df %>% rename(Pred.Close = X1)
+        xy <- h(fundDT, family = 'gaussian', xy.matrix = 'h2', setform = 'l4', 
+          yv = 'daily.mean2')
+        
+        #'@ fit <- glmnet(xy$x, xy$y, family = 'gaussian', alpha = 0.8)
+        #'@ predict(fit, newx = xy$x, pred.type = 'response')
+        pd <- predict(fitgaum16.alpha08, newx = xy$x, 
+                      s = fitgaum16.alpha08$lambda.1se , 
+                      pred.type = 'class') %>% 
+          data.frame %>% tbl_df %>% rename(Pred = X1)
         
         dfm <- data.frame(fundDT, pd) %>% tbl_df
-        
         return(dfm)
       })
     })
@@ -169,7 +173,8 @@ server <- shinyServer(function(input, output, session) {
   })
   
   output$hcmp <- renderHighchart({
-    plotChart2(terms2(), type = 'multiple', chart.type2 = input$type, 
+    hcM <- terms2()
+    plotChart2(hcM, type = 'single', chart.type2 = input$type, 
                chart.theme = input$hc_theme, stacked = input$stacked)
   })
 })
