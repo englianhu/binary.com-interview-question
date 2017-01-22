@@ -28,4 +28,6 @@
   14. [Lecture 6 – Stochastic Processes and Monte Carlo](http://zorro-trader.com/manual/en/Lecture%206.htm)
   15. [The `caret` Package](http://topepo.github.io/caret/index.html) <img src='www/hot.jpg' width='20'>
   16. [Time Series Cross Validation](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
+  17. [Unicode Math Symbols ∑∞∫π∈ℝ²](http://xahlee.info/comp/unicode_math_operators.html)
+  18. [Size Matters – Kelly Optimization](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
 

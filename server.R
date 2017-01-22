@@ -73,7 +73,7 @@ server <- shinyServer(function(input, output, session) {
     
     isolate({
       withProgress({
-        setProgress(message = "Predicting stocks price...")
+        setProgress(message = "Predicting stock price...")
         fundDT <- terms()$fundDT
         xy <- h(fundDT, family = 'gaussian', xy.matrix = 'h2', setform = 'l4', 
           yv = 'daily.mean2')
@@ -81,11 +81,12 @@ server <- shinyServer(function(input, output, session) {
         #'@ fit <- glmnet(xy$x, xy$y, family = 'gaussian', alpha = 0.8)
         #'@ predict(fit, newx = xy$x, pred.type = 'response')
         pd <- predict(fitgaum16.alpha08, newx = xy$x, 
-                      s = fitgaum16.alpha08$lambda.1se , 
+                      s = fitgaum16.alpha08$lambda.1se, 
                       pred.type = 'class') %>% 
           data.frame %>% tbl_df %>% rename(Pred = X1)
         
-        dfm <- data.frame(fundDT, pd) %>% tbl_df
+        dfm <- fundDT %>% mutate(HL.Mean = (LAD.High + LAD.Low) / 2) %>% 
+          data.frame(., pd) %>% tbl_df
         return(dfm)
       })
     })
@@ -106,7 +107,7 @@ server <- shinyServer(function(input, output, session) {
   output$distTable <- renderDataTable({
     fundDT <- terms()$fundDT
     fundDT %>% datatable(
-      caption = "Table : LAD Stocks Price", 
+      caption = "Table : LAD Stock Price", 
       escape = FALSE, filter = "top", rownames = FALSE, 
       extensions = list("ColReorder" = NULL, "RowReorder" = NULL, 
                         "Buttons" = NULL, "Responsive" = NULL), 
@@ -125,7 +126,7 @@ server <- shinyServer(function(input, output, session) {
   
   output$gsmse <- renderDataTable({
     tmpsumgs %>% datatable(
-      #caption = "Table : LAD Stocks Price", 
+      #caption = "Table : LAD Stock Price", 
       escape = FALSE, filter = "top", rownames = FALSE, 
       extensions = list("ColReorder" = NULL, "RowReorder" = NULL, 
                         "Buttons" = NULL, "Responsive" = NULL), 
@@ -153,7 +154,7 @@ server <- shinyServer(function(input, output, session) {
   
   #'@ output$testTable <- renderDataTable({
   #'@   tmptable %>% datatable(
-  #'@     #caption = "Table : LAD Stocks Price", 
+  #'@     #caption = "Table : LAD Stock Price", 
   #'@     escape = FALSE, filter = "top", rownames = FALSE, 
   #'@     extensions = list("ColReorder" = NULL, "RowReorder" = NULL, 
   #'@                       "Buttons" = NULL, "Responsive" = NULL), 

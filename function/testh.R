@@ -12,7 +12,7 @@ h(LADDT, family = family, yv = 'mixed2', logistic.yv = logistic.yv, xy.matrix = 
 h(LADDT, family = family, yv = 'mixed3', logistic.yv = logistic.yv, xy.matrix = xy.matrix, wt = wt, wt.control = wt.control, setform = setform)
 
 
-source('./function/lmStocks.R')
+source('./function/glmPrice.R')
 
 
 mbase = LADDT; family = 'gaussian'; xy.matrix = 'h1'; setform = 'l1'; 
@@ -22,7 +22,7 @@ alpha = 0:10; nfolds = 10; foldid = NULL; s = 'lambda.min';
 weight.date = FALSE; weight.volume = FALSE; wt.control = FALSE; 
 parallel = TRUE; .log = FALSE
 
-lmStocks(mbase = LADDT, family = 'gaussian', xy.matrix = 'h1', setform = 'l1', 
+glmPrice(mbase = LADDT, family = 'gaussian', xy.matrix = 'h1', setform = 'l1', 
          yv = 'baseline', logistic.yv = TRUE, tmeasure = 'deviance', 
          tmultinomial = 'grouped', maxit = 1000, pred.type = 'class', 
          alpha = 0:10, nfolds = 10, foldid = NULL, s = 'lambda.min', 

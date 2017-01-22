@@ -60,7 +60,8 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     FUND.SMA.10  <- SMA(Cl(Fund), n = 10)
     FUND.SMA.200 <- SMA(Cl(Fund), n = 200)
     FUND.RSI.14  <- RSI(Cl(Fund), n = 14)
-    FUND.PRED <- RSI(Fund$Pred) #the predicteve stocks price.
+    FUND.HLMEAN <- Fund$HL.Mean #the daily High-Low mean price as baseline for buy-sell due to it is the middle value of variance.
+    FUND.PRED <- Fund$Pred #the predicteve stocks price.
     FUND.RSI.SellLevel <- xts(rep(70, NROW(Fund)), index(Fund))
     FUND.RSI.BuyLevel  <- xts(rep(30, NROW(Fund)), index(Fund))
     
@@ -85,7 +86,9 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
       hc_add_series_xts(FUND.SMA.200, yAxis = 0, name = 'Slow MA') %>% 
       hc_add_series_xts(Fund[,names(Vo(Fund))], color = 'gray', yAxis = 1, name = 'Volume', 
                         type = 'column') %>% 
-      hc_add_series_xts(FUND.PRED, yAxis = 2, colot = hex_to_rgba('gold', 0.7), 
+      hc_add_series_xts(FUND.HLMEAN, yAxis = 2, colot = hex_to_rgba('orange', 0.7), 
+                        name = 'High-Low Mean Price') %>% 
+      hc_add_series_xts(FUND.PRED, yAxis = 2, colot = hex_to_rgba('#B8860B', 0.7), 
                         name = 'Predicted Price') %>% 
       hc_add_series_xts(FUND.RSI.14, yAxis = 2, colot = hex_to_rgba('green', 0.7), 
                         name = 'Osciallator') %>% 

@@ -18,7 +18,7 @@ suppressAll(library('formattable'))
 suppressAll(library('highcharter'))
 suppressAll(library('PerformanceAnalytics'))
 suppressAll(library('memoise'))
-suppressAll(source('./function/lmStocks.R', local = TRUE))
+suppressAll(source('./function/glmPrice.R', local = TRUE))
 
 ## =================================== Read Data =====================================
 tryCatch({
@@ -52,7 +52,7 @@ weight.volume = FALSE   #weight.volume is ...
 pred.type = 'class'     #pred.type %in% c('link', 'response', 'coefficients', 'nonzero', 'class')
 nfolds = 10
 
-## args(lmStocks) setting for all models.
+## args(glmPrice) setting for all models.
 #'@ mbase, family = 'gaussian', xy.matrix = 'h1', alpha = 0:10, 
 #'@ yv = 'daily.mean', tmeasure = 'deviance', tmultinomial = 'grouped', 
 #'@ maxit = 1000, pred.type = 'class', nfolds = 10, foldid = NULL, 
@@ -62,575 +62,575 @@ nfolds = 10
 
 ## ------------------ 1. Linear Regression : Gaussian --------------------------------
 ## ------ 1. 1A gaussian (daily.mean + deviance + lambda.min) ------------------------
-lm1AAA <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', 
+lm1AAA <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', 
                    tmeasure = 'deviance', maxit = maxit, nfolds = 10, s = 'lambda.min', 
                    weight.date = weight.date, weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 2. 1B gaussian (daily.mean + deviance + lambda.1se) ------------------------
-lm1AAB <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
+lm1AAB <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 3. 2A gaussian (daily.mean + mse + lambda.min) ------------------------
-lm1ABA <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
+lm1ABA <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 4. 2B gaussian (daily.mean + mse + lambda.1se) ------------------------
-lm1ABB <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
+lm1ABB <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 5. 3A gaussian (daily.mean + mae + lambda.min) ------------------------
-lm1ACA <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
+lm1ACA <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 6. 3B gaussian (daily.mean + mae + lambda.1se) ------------------------
-lm1ACB <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
+lm1ACB <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 7. 4A gaussian (baseline + deviance + lambda.min) ------------------------
-lm1BAA <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
+lm1BAA <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 8. 4B gaussian (baseline + deviance + lambda.1se) ------------------------
-lm1BAB <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
+lm1BAB <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 9. 5A gaussian (baseline + mse + lambda.min) ------------------------
-lm1BBA <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
+lm1BBA <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 10. 5B gaussian (baseline + mse + lambda.1se) ------------------------
-lm1BBB <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
+lm1BBB <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 11. 6A gaussian (baseline + mae + lambda.min) ------------------------
-lm1BCA <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
+lm1BCA <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 12. 6B gaussian (baseline + mae + lambda.1se) ------------------------
-lm1BCB <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
+lm1BCB <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 13. 7A gaussian (mixed + deviance + lambda.min) ------------------------
-lm1CAA <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
+lm1CAA <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 14. 7B gaussian (mixed + deviance + lambda.1se) ------------------------
-lm1CAB <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
+lm1CAB <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 15. 8A gaussian (mixed + mse + lambda.min) ------------------------
-lm1CBA <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
+lm1CBA <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 16. 8B gaussian (mixed + mse + lambda.1se) ------------------------
-lm1CBB <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
+lm1CBB <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 17. 9A gaussian (mixed + mae + lambda.min) ------------------------
-lm1CCA <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
+lm1CCA <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 18. 9B gaussian (mixed + mae + lambda.1se) ------------------------
-lm1CCB <- lmStocks(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
+lm1CCB <- glmPrice(LADDT, family = 'gaussian', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ----------------- 2. Logistic Regression : Binomial --------------------------------
 ## ------ 19. 1A binomial (daily.mean + deviance + lambda.min) ------------------------
-lm2AAA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
+lm2AAA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 20. 1B binomial (daily.mean + deviance + lambda.1se) ------------------------
-lm2AAB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
+lm2AAB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 21. 2A binomial (daily.mean + mse + lambda.min) ------------------------
-lm2ABA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
+lm2ABA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 22. 2B binomial (daily.mean + mse + lambda.1se) ------------------------
-lm2ABB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
+lm2ABB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 23. 3A binomial (daily.mean + mae + lambda.min) ------------------------
-lm2ACA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
+lm2ACA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 24. 3B binomial (daily.mean + mae + lambda.1se) ------------------------
-lm2ACB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
+lm2ACB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 25. 4A binomial (daily.mean + class + lambda.min) ------------------------
-lm2ADA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
+lm2ADA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 26. 4B binomial (daily.mean + class + lambda.1se) ------------------------
-lm2ADB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
+lm2ADB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 27. 5A binomial (daily.mean + auc + lambda.min) ------------------------
-lm2AEA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'auc', 
+lm2AEA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'auc', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 28. 5B binomial (daily.mean + auc + lambda.1se) ------------------------
-lm2AEB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'auc', 
+lm2AEB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'auc', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 29. 6A binomial (baseline + deviance + lambda.min) ------------------------
-lm2BAA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
+lm2BAA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 30. 6B binomial (baseline + deviance + lambda.1se) ------------------------
-lm2BAB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
+lm2BAB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 31. 7A binomial (baseline + mse + lambda.min) ------------------------
-lm2BBA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
+lm2BBA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 32. 7B binomial (baseline + mse + lambda.1se) ------------------------
-lm2BBB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
+lm2BBB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 33. 8A binomial (baseline + mae + lambda.min) ------------------------
-lm2BCA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
+lm2BCA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 34. 8B binomial (baseline + mae + lambda.1se) ------------------------
-lm2BCB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
+lm2BCB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 35. 9A binomial (baseline + class + lambda.min) ------------------------
-lm2BDA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
+lm2BDA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 36. 9B binomial (baseline + class + lambda.1se) ------------------------
-lm2BDB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
+lm2BDB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 37. 10A binomial (baseline + auc + lambda.min) ------------------------
-lm2BEA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'auc', 
+lm2BEA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'auc', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 38. 10B binomial (baseline + auc + lambda.1se) ------------------------
-lm2BEB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'auc', 
+lm2BEB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'auc', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 39. 11A binomial (mixed + deviance + lambda.min) ------------------------
-lm2CAA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
+lm2CAA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 40. 11B binomial (mixed + deviance + lambda.1se) ------------------------
-lm2CAB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
+lm2CAB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 41. 12A binomial (mixed + mse + lambda.min) ------------------------
-lm2CBA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
+lm2CBA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 42. 12B binomial (mixed + mse + lambda.1se) ------------------------
-lm2CBB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
+lm2CBB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 43. 13A binomial (mixed + mae + lambda.min) ------------------------
-lm2CCA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
+lm2CCA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 44. 13B binomial (mixed + mae + lambda.1se) ------------------------
-lm2CCB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
+lm2CCB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 45. 14A binomial (mixed + class + lambda.min) ------------------------
-lm2CDA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
+lm2CDA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 46. 14B binomial (mixed + class + lambda.1se) ------------------------
-lm2CDB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
+lm2CDB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 47. 15A binomial (mixed + auc + lambda.min) ------------------------
-lm2CEA <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'auc', 
+lm2CEA <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'auc', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 48. 15B binomial (mixed + auc + lambda.1se) ------------------------
-lm2CEB <- lmStocks(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'auc', 
+lm2CEB <- glmPrice(LADDT, family = 'binomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'auc', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## -------------------------------- 3. Poisson --------------------------------------
 ## ------ 49. 1A poisson (daily.mean + deviance + lambda.min) ------------------------
-lm3AAA <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
+lm3AAA <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 50. 1B poisson (daily.mean + deviance + lambda.1se) ------------------------
-lm3AAB <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
+lm3AAB <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 51. 2A poisson (daily.mean + mse + lambda.min) ------------------------
-lm3ABA <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
+lm3ABA <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 52. 2B poisson (daily.mean + mse + lambda.1se) ------------------------
-lm3ABB <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
+lm3ABB <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 53. 3A poisson (daily.mean + mae + lambda.min) ------------------------
-lm3ACA <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
+lm3ACA <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 54. 3B poisson (daily.mean + mae + lambda.1se) ------------------------
-lm3ACB <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
+lm3ACB <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 55. 4A poisson (baseline + deviance + lambda.min) ------------------------
-lm3BAA <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
+lm3BAA <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 56. 4B poisson (baseline + deviance + lambda.1se) ------------------------
-lm3BAB <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
+lm3BAB <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 57. 5A poisson (baseline + mse + lambda.min) ------------------------
-lm3BBA <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
+lm3BBA <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 58. 5B poisson (baseline + mse + lambda.1se) ------------------------
-lm3BBB <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
+lm3BBB <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 59. 6A poisson (baseline + mae + lambda.min) ------------------------
-lm3BCA <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
+lm3BCA <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 60. 6B poisson (baseline + mae + lambda.1se) ------------------------
-lm3BCB <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
+lm3BCB <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 61. 7A poisson (mixed + deviance + lambda.min) ------------------------
-lm3CAA <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
+lm3CAA <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 62. 7B poisson (mixed + deviance + lambda.1se) ------------------------
-lm3CAB <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
+lm3CAB <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 63. 8A poisson (mixed + mse + lambda.min) ------------------------
-lm3CBA <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
+lm3CBA <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 64. 8B poisson (mixed + mse + lambda.1se) ------------------------
-lm3CBB <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
+lm3CBB <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 65. 9A poisson (mixed + mae + lambda.min) ------------------------
-lm3CCA <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
+lm3CCA <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 66. 9B poisson (mixed + mae + lambda.1se) ------------------------
-lm3CCB <- lmStocks(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
+lm3CCB <- glmPrice(LADDT, family = 'poisson', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ---------------- 4. Logistic Regression : Multinomial --------------------------------
 ## ------ 67. 1AA multinomial (daily.mean + deviance + grouped + lambda.min) ------------
-lm4AAAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
+lm4AAAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'grouped', parallel = parallel)
 
 ## ------ 68. 1AB multinomial (daily.mean + deviance + grouped + lambda.1se) ------------
-lm4AAAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
+lm4AAAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'grouped', parallel = parallel)
 
 ## ------ 69. 1BA multinomial (daily.mean + deviance + ungrouped + lambda.min) ----------
-lm4AABA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
+lm4AABA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 70. 1BB multinomial (daily.mean + deviance + ungrouped + lambda.1se) ----------
-lm4AABB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
+lm4AABB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'deviance', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 71. 2AA multinomial (daily.mean + mse + grouped + lambda.min) ------------------
-lm4ABAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
+lm4ABAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 72. 2AB multinomial (daily.mean + mse + grouped + lambda.1se) ------------------
-lm4ABAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
+lm4ABAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 73. 2BA multinomial (daily.mean + mse + ungrouped + lambda.min) ----------
-lm4ABBA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
+lm4ABBA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 74. 2BB multinomial (daily.mean + mse + ungrouped + lambda.1se) ----------
-lm4ABBB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
+lm4ABBB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mse', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 75. 3AA multinomial (daily.mean + mae + grouped + lambda.min) ------------------------
-lm4ACAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
+lm4ACAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 76. 3AB multinomial (daily.mean + mae + grouped + lambda.1se) ------------------------
-lm4ACAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
+lm4ACAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 77. 3BA multinomial (daily.mean + mae + ungrouped + lambda.min) ----------
-lm4ACBA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
+lm4ACBA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 78. 3BB multinomial (daily.mean + mae + ungrouped + lambda.1se) ----------
-lm4ACBB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
+lm4ACBB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'mae', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 79. 4AA multinomial (daily.mean + class + grouped + lambda.min) ------------------------
-lm4ADAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
+lm4ADAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 80. 4AB multinomial (daily.mean + class + grouped + lambda.1se) ------------------------
-lm4ADAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
+lm4ADAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 81. 4BA multinomial (daily.mean + class + ungrouped + lambda.min) ----------
-lm4ADBA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
+lm4ADBA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 82. 4BB multinomial (daily.mean + class + ungrouped + lambda.1se) ----------
-lm4ADBB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
+lm4ADBB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'daily.mean', tmeasure = 'class', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 83. 6AA multinomial (baseline + deviance + grouped + lambda.min) ------------------------
-lm4BAAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
+lm4BAAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 84. 6AB multinomial (baseline + deviance + grouped + lambda.1se) ------------------------
-lm4BAAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
+lm4BAAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 85. 6BA multinomial (baseline + deviance + ungrouped + lambda.min) ----------
-lm4BABA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
+lm4BABA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 86. 6BB multinomial (baseline + deviance + ungrouped + lambda.1se) ----------
-lm4BABB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
+lm4BABB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'deviance', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 87. 7AA multinomial (baseline + mse + grouped + lambda.min) ------------------------
-lm4BBAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
+lm4BBAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 88. 7AB multinomial (baseline + mse + grouped + lambda.1se) ------------------------
-lm4BBAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
+lm4BBAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 89. 7BA multinomial (baseline + mse + ungrouped + lambda.min) ----------
-lm4BBBA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
+lm4BBBA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 90. 7BB multinomial (baseline + mse + ungrouped + lambda.1se) ----------
-lm4BBBB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
+lm4BBBB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mse', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 91. 8AA multinomial (baseline + mae + grouped + lambda.min) ------------------------
-lm4BCAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
+lm4BCAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 92. 8AB multinomial (baseline + mae + grouped + lambda.1se) ------------------------
-lm4BCAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
+lm4BCAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 93. 8BA multinomial (baseline + mae + ungrouped + lambda.min) ----------
-lm4BCBA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
+lm4BCBA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 94. 8BB multinomial (baseline + mae + ungrouped + lambda.1se) ----------
-lm4BCBB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
+lm4BCBB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'mae', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 95. 9AA multinomial (baseline + class + grouped + lambda.min) ------------------------
-lm4BDAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
+lm4BDAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 96. 9AB multinomial (baseline + class + grouped + lambda.1se) ------------------------
-lm4BDAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
+lm4BDAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 97. 9BA multinomial (baseline + class + ungrouped + lambda.min) ----------
-lm4BDBA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
+lm4BDBA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 98. 9BB multinomial (baseline + class + ungrouped + lambda.1se) ----------
-lm4BDBB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
+lm4BDBB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'baseline', tmeasure = 'class', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 99. 11AA multinomial (mixed + deviance + grouped + lambda.min) ------------------------
-lm4CAAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
+lm4CAAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 100. 11AB multinomial (mixed + deviance + grouped + lambda.1se) ------------------------
-lm4CAAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
+lm4CAAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 101. 11BA multinomial (mixed + deviance + ungrouped + lambda.min) ----------
-lm4CABA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
+lm4CABA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 102. 11BB multinomial (mixed + deviance + ungrouped + lambda.1se) ----------
-lm4CABB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
+lm4CABB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'deviance', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 103. 12AA multinomial (mixed + mse + grouped + lambda.min) ------------------------
-lm4CBAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
+lm4CBAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 104. 12AB multinomial (mixed + mse + grouped + lambda.1se) ------------------------
-lm4CBAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
+lm4CBAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 105. 12BA multinomial (mixed + mse + ungrouped + lambda.min) ----------
-lm4CBBA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
+lm4CBBA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 106. 12BB multinomial (mixed + mse + ungrouped + lambda.1se) ----------
-lm4CBBB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
+lm4CBBB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mse', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 107. 13AA multinomial (mixed + mae + grouped + lambda.min) ------------------------
-lm4CCAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
+lm4CCAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 108. 13AB multinomial (mixed + mae + grouped + lambda.1se) ------------------------
-lm4CCAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
+lm4CCAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 109. 13BA multinomial (mixed + mae + ungrouped + lambda.min) ----------
-lm4CCBA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
+lm4CCBA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 110. 13BB multinomial (mixed + mae + ungrouped + lambda.1se) ----------
-lm4CCBB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
+lm4CCBB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'mae', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 111. 14AA multinomial (mixed + class + grouped + lambda.min) ------------------------
-lm4CDAA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
+lm4CDAA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 112. 14AB multinomial (mixed + class + grouped + lambda.1se) ------------------------
-lm4CDAB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
+lm4CDAB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
                    maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                    weight.volume = weight.volume, parallel = parallel)
 
 ## ------ 113. 14BA multinomial (mixed + class + ungrouped + lambda.min) ----------
-lm4CDBA <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
+lm4CDBA <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
                     maxit = maxit, nfolds = 10, s = 'lambda.min', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
 ## ------ 114. 14BB multinomial (mixed + class + ungrouped + lambda.1se) ----------
-lm4CDBB <- lmStocks(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
+lm4CDBB <- glmPrice(LADDT, family = 'multinomial', xy.matrix = xy.matrix, yv = 'mixed', tmeasure = 'class', 
                     maxit = maxit, nfolds = 10, s = 'lambda.1se', weight.date = weight.date, 
                     weight.volume = weight.volume, tmultinomial = 'ungrouped', parallel = parallel)
 
@@ -670,7 +670,7 @@ suppressAll(library('formattable'))
 suppressAll(library('highcharter'))
 suppressAll(library('PerformanceAnalytics'))
 suppressAll(library('memoise'))
-#'@ suppressAll(source('./function/lmStocks.R'))
+#'@ suppressAll(source('./function/glmPrice.R'))
 suppressMessages(source('./function/compStocks.R'))
 
 ## check if the saved dataset is today's data? if previous day then need to scrap from website.
@@ -775,8 +775,8 @@ gsfit$formula1[c(97:100, 103:108, 111:116, 119:120)]
 #2 fitpoim81   mse2 2.375528e-05
 
 #> poim[c(75, 81)]
-#[1] "lmStocks(mbase, family = family, xy.matrix = 'h2', alpha = alpha, yv = 'baseline', tmeasure = 'deviance', maxit = maxit, pred.type = 'response', nfolds = nfolds, foldid = foldid, s = 'lambda.min', weight.date = 'FALSE', weight.volume = 'FALSE', parallel = parallel, .log = .log)"
-#[2] "lmStocks(mbase, family = family, xy.matrix = 'h2', alpha = alpha, yv = 'baseline', tmeasure = 'mse', maxit = maxit, pred.type = 'response', nfolds = nfolds, foldid = foldid, s = 'lambda.min', weight.date = 'FALSE', weight.volume = 'FALSE', parallel = parallel, .log = .log)"
+#[1] "glmPrice(mbase, family = family, xy.matrix = 'h2', alpha = alpha, yv = 'baseline', tmeasure = 'deviance', maxit = maxit, pred.type = 'response', nfolds = nfolds, foldid = foldid, s = 'lambda.min', weight.date = 'FALSE', weight.volume = 'FALSE', parallel = parallel, .log = .log)"
+#[2] "glmPrice(mbase, family = family, xy.matrix = 'h2', alpha = alpha, yv = 'baseline', tmeasure = 'mse', maxit = maxit, pred.type = 'response', nfolds = nfolds, foldid = foldid, s = 'lambda.min', weight.date = 'FALSE', weight.volume = 'FALSE', parallel = parallel, .log = .log)"
 
 ## checking the number of observation.
 llply(gsfit$fit, function(x) {
