@@ -1,7 +1,9 @@
 
 ![](www/binary-logo.jpg)
 
-# Interview Sample Question
+# Job Application - Quantitative Analyst
+
+## Interview Sample Question
 
   The sample question for Interview a job in Binary options. Here I created a shiny app for the job application.
 
@@ -11,6 +13,8 @@
 **Under Construction...**
 
 ## Reference
+
+### Question 1
 
   01. [Stock Market Forecasting Using LASSO Linear Regression Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
   02. [Using LASSO from lars (or glmnet) package in R for variable selection](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
@@ -28,6 +32,17 @@
   14. [Lecture 6 – Stochastic Processes and Monte Carlo](http://zorro-trader.com/manual/en/Lecture%206.htm)
   15. [The `caret` Package](http://topepo.github.io/caret/index.html) <img src='www/hot.jpg' width='20'>
   16. [Time Series Cross Validation](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
-  17. [Unicode Math Symbols ∑∞∫π∈ℝ²](http://xahlee.info/comp/unicode_math_operators.html)
+  17. [Character-Code.com](http://character-code.com/)
   18. [Size Matters – Kelly Optimization](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
+
+### Question 2
+
+  1. 
+  2. 
+
+### Question 3
+
+  01. [Data APIs/feeds available as packages in R](http://stats.stackexchange.com/questions/12670/data-apis-feeds-available-as-packages-in-r)
+  02. 
+
 

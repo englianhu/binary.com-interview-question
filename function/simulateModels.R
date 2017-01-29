@@ -37,7 +37,7 @@ LADDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>%
 #       LAD.Volume, 0, format = 'd', big.mark = ','))
 
 dateID0 <- ymd('2015-01-01')
-LADDT %<>% filter(Date >= (dateID0 - years(1)))
+LADDT %<>% filter(Date >= (dateID0 - years(1))) #dateID == ymd('2016-02-29') has error and will need to review the coding.
 dateID <- unique(LADDT$Date)
 dateID <- dateID[dateID >= dateID0]
 #'@ dir.create(paste0('./data/', str_replace_all(dateID, '-', '')))
@@ -45,7 +45,7 @@ dateID <- dateID[dateID >= dateID0]
 ## list the cv.glmnet models.
 families <- c('gaussian', 'binomial', 'poisson', 'multinomial', 'cox', 'mgaussian', 'all')
 
-gsfit <- llply(dateID, function(dt) {
+bsGSfit <- llply(dateID, function(dt) {
   
   ## create a folder to save all models.
   pth = paste0('./data/', str_replace_all(dt, '-', ''))
@@ -57,19 +57,23 @@ gsfit <- llply(dateID, function(dt) {
                      yv = c('open1', 'open2', 'high1', 'high2', 'low1', 'low2', 'close1', 'close2', 'daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 'mixed2', 'mixed3'), 
                      pred.type = 'class', .print = TRUE, .save = TRUE, pth = pth)
   
+  ## basic model weight is FALSE
+  weight.date = FALSE
+  weight.volume = FALSE
+  
+  ## save basic or weight models.
   if(weight.date != FALSE | weight.volume != FALSE) {
     wtfitgaum = gsfit; rm(gsfit)
-    nam = 'wtfitgaum' 
     
     ## generates 224 models
     saveRDS(wtfitgaum, file = paste0(pth, '/wtfitgaum.rds'))
     
     ## saved best mean-squared error comparison.
-    mse1 = ldply(wtfitgaum$fit, function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
+    wtfitgaum.mse1 = ldply(wtfitgaum$fit, function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
     saveRDS(wtfitgaum.mse1, file = paste0(pth, '/wtfitgaum.mse1.rds'))
     
     ## saved summary of all best models. (if more than 1)
-    name514gs = unique(mse1$.id)
+    name514gs = unique(wtfitgaum.mse1$.id)
     wtfitgaum.sum = ldply(wtfitgaum$fit[name514gs], function(x) x$mse) %>% tbl_df
     saveRDS(wtfitgaum.sum, file = paste0(pth, '/wtfitgaum.sum.rds'))
     
@@ -78,22 +82,21 @@ gsfit <- llply(dateID, function(dt) {
     saveRDS(wtfitgaum.best, file = paste0(pth, '/wtfitgaum.best.rds'))
     
     ## saved best model's formula.
-    wtfitgaum.form = wtfitgaum$formula1[str_replace_all(name514gs, nam, '') %>% as.numeric]
+    wtfitgaum.form = wtfitgaum$formula1[str_replace_all(name514gs, 'wtfitgaum', '') %>% as.numeric]
     saveRDS(wtfitgaum.form, file = paste0(pth, '/wtfitgaum.form.rds'))
     
   } else {
     fitgaum = gsfit; rm(gsfit)
-    nam = 'fitgaum'
     
     ## generates 224 models
-    saveRDS(fitgaum, file = paste0(pth, '/fitgaum'))
+    saveRDS(fitgaum, file = paste0(pth, '/fitgaum.rds'))
     
     ## saved best mean-squared error comparison.
-    mse1 = ldply(wtfitgaum$fit, function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
+    fitgaum.mse1 = ldply(fitgaum$fit, function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
     saveRDS(fitgaum.mse1, file = paste0(pth, '/fitgaum.mse1.rds'))
     
     ## saved summary of all best models. (if more than 1)
-    name514gs = unique(mse1$.id)
+    name514gs = unique(fitgaum.mse1$.id)
     fitgaum.sum = ldply(fitgaum$fit[name514gs], function(x) x$mse) %>% tbl_df
     saveRDS(fitgaum.sum, file = paste0(pth, '/fitgaum.sum.rds'))
     
@@ -102,7 +105,7 @@ gsfit <- llply(dateID, function(dt) {
     saveRDS(fitgaum.best, file = paste0(pth, '/fitgaum.best.rds'))
     
     ## saved best model's formula.
-    fitgaum.form = fitgaum$formula1[str_replace_all(name514gs, nam, '') %>% as.numeric]
+    fitgaum.form = fitgaum$formula1[str_replace_all(name514gs, 'fitgaum', '') %>% as.numeric]
     saveRDS(fitgaum.form, file = paste0(pth, '/fitgaum.form.rds'))
   }
   })
