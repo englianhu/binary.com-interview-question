@@ -13,21 +13,21 @@ loadLAD <- function(latestDate = NULL, dataSizeDay = 365) {
   suppressAll(library('tidyquant'))
   
   ## check if the saved dataset is today's data? if previous day then need to scrap from website.
-  #'@ if(file.exists('./data/LAD.rds')) {
-  #'@   if(readRDS('./data/LAD.rds') %>% attributes %>% .$updated %>% as.Date < today()) {
-      #'@ tryCatch({
-      #'@   suppressAll(getSymbols('LAD', from = '2015-01-01'))
-      #'@ }, error = function(e) stop('Kindly restart the shiny app.'))
-  #'@     suppressAll(getSymbols('LAD', from = '2015-01-01'))
-  #'@     saveRDS(LAD, file = './data/LAD.rds')
-  #'@     
-  #'@   } else {
-  #'@     LAD <- read_rds(path = './data/LAD.rds')
-  #'@   }
-  #'@ } else {
-  #'@   suppressAll(getSymbols('LAD', from = '2015-01-01'))
-  #'@   saveRDS(LAD, file = './data/LAD.rds')
-  #'@ }
+  if(file.exists('./data/LAD.rds')) {
+    if(readRDS('./data/LAD.rds') %>% attributes %>% .$updated %>% as.Date < today()) {
+      tryCatch({
+        suppressAll(getSymbols('LAD', from = '2015-01-01'))
+        }, error = function(e) stop('Kindly restart the shiny app.'))
+      suppressAll(getSymbols('LAD', from = '2015-01-01'))
+      saveRDS(LAD, file = './data/LAD.rds')
+  
+      } else {
+        LAD <- read_rds(path = './data/LAD.rds')
+        }
+    } else {
+      suppressAll(getSymbols('LAD', from = '2015-01-01'))
+      saveRDS(LAD, file = './data/LAD.rds')
+      }
   dataSizeDay <- as.numeric(dataSizeDay)
   
   if(is.null(latestDate)) {
@@ -39,9 +39,9 @@ loadLAD <- function(latestDate = NULL, dataSizeDay = 365) {
   
   ## check if the saved dataset is today's data? if previous day then need to scrap from website.
   ## http://mazamascience.com/WorkingWithData/?p=912
-  tryCatch({
-    suppressAll(getSymbols('LAD', from = dateRange[1]))
-    }, error = function(e) suppressAll(getSymbols('LAD', from = dateRange[1], source = 'google')))
+  #'@ tryCatch({
+  #'@   suppressAll(getSymbols('LAD', from = dateRange[1]))
+  #'@   }, error = function(e) suppressAll(getSymbols('LAD', from = dateRange[1], source = 'google')))
   
   if(exists('LAD')) {
     saveRDS(LAD, file = './data/LAD.rds')

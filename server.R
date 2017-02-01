@@ -92,8 +92,22 @@ server <- shinyServer(function(input, output, session) {
     })
   })
   
+  output$jobdes <- renderUI({
+    ## http://stackoverflow.com/questions/28982722/shiny-iframe-reactive
+    if(url.exists('https://angel.co/binary-com-1/jobs/145277-quantitative-analyst')) {
+      m_terms = tags$iframe(src='https://angel.co/binary-com-1/jobs/145277-quantitative-analyst', 
+                            height = 800, width = '100%', frameborder = 0)
+      #, seamless = 'seamless')), #seamless will hide the scroller.
+    } else {
+      m_terms = tags$iframe(src='https://englianhu.github.io/2017/02/Quantitative-Analyst-job-at-Binary.html', 
+                            height = 800, width = '100%', frameborder = 0)
+      #, seamless = 'seamless')), #seamless will hide the scroller.
+    }
+    return(m_terms)
+  })
+  
   output$firstday <- renderText({ 
-    as.character(input$dataDate - 365)
+    as.character(input$dataDate %m-% years(1))
   })
   
   #'@ repeatable()
@@ -121,7 +135,7 @@ server <- shinyServer(function(input, output, session) {
   })#, options = list(pageLength = 10))
   
   output$gsform <- renderPrint({
-    read_rds(path = './data/tmpgsform.rds')
+    pre.gsform %>% head #use first few observations as smaple.
     })
   
   output$gsmse <- renderDataTable({
@@ -140,9 +154,10 @@ server <- shinyServer(function(input, output, session) {
   })
   
   output$gsmse1 <- renderFormattable({
-    mse1 <- tmpsumgs %>% filter(mse == min(mse))
+    smp1 <- head(pre.mse1) #use first few observations as smaple.
+    
     #as.htmlwidget(
-    mse1 %>% formattable(list(
+    smp1 %>% formattable(list(
       .id = color_tile('white', 'darkgoldenrod'), 
       model = color_tile('white', 'darkgoldenrod'), 
       mse = formatter('span', style = x ~ 
@@ -167,15 +182,17 @@ server <- shinyServer(function(input, output, session) {
   #'@                                        text = 'Download'), I('colvis'))))
   #'@ })
   
-  output$bestalpha <- renderText({
-    alphaV <- tmpsumgs %>% filter(mse == min(mse)) %>% .$model %>% 
-      str_replace_all('mse', '') %>% as.numeric %>% unique
-    alphaV <- alphaV/10
-  })
+  #'@ output$bestalpha <- renderText({
+  #'@   alphaV <- unique(pre.mse1$model) %>% as.character %>% 
+  #'@     str_replace_all('mse', '') %>% as.numeric %>% unique
+  #'@   alphaV <- alphaV/10
+  #'@ })
   
   output$hcmp <- renderHighchart({
     hcM <- terms2()
     plotChart2(hcM, type = 'single', chart.type2 = input$type, 
                chart.theme = input$hc_theme, stacked = input$stacked)
   })
+  
+  
 })

@@ -69,7 +69,7 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     fname <- names(Op(Fund)) %>% str_replace_all('.Open', '')
     
     plotc <- plotch %>% 
-      hc_title(text = "LadbrokesCoral PLC") %>% 
+      hc_title(text = "Lithia Auto Stores") %>% 
       hc_subtitle(text = paste0("Candle stick chart with initial stock price : ", 
                                 paste0(initial, collapse = ', '))) %>% 
       hc_yAxis_multiples(
@@ -166,7 +166,7 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     
     plotc <- paste0(
       'highchart(type = \'stock\') %>% ', 
-      'hc_title(text = \'LadbrokesCoral PLC\') %>% ', 
+      'hc_title(text = \'Lithia Auto Stores\') %>% ', 
       'hc_subtitle(text = paste0(\'Multiple funds trend chart initial stock price : \', paste0(initial, collapse = \', \'))) %>% ', 
       paste0('hc_add_series_xts(Fund[,', seq(fname), '], name = \'', fname,'\', id = \'', fname, '\')', collapse = ' %>% '), 
       ' %>% hc_add_series_flags(event.dates, title = paste0(\'E\', event), text = paste(\'Event : High volatility \', event), id = id) %>% hc_add_theme(hc_theme_flat());')

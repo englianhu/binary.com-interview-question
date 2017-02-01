@@ -52,7 +52,12 @@ bsGSfit <- llply(dateID, function(dt) {
   if(!dir.exists(pth)) dir.create(pth)
   
   ## predict dateID onwards from data < dateID
-  smp = filter(LADDT, Date < dt & Date >= (dt - years(1)))
+  ##   for example : in order to predict today price, I used the data from 
+  ##   1 years (365 days or 366 days for leap years.) ago from yesterday.
+  #'@ ymd("2016-2-29") %m-% years(1)
+  ## http://stackoverflow.com/questions/8490799/how-to-account-for-leap-years
+  
+  smp = filter(LADDT, Date < dt & Date >= (dt %m-% years(1)))
   gsfit = compStocks(smp, family = families[1], xy.matrix = 'h2', yv.lm = c(TRUE, FALSE), 
                      yv = c('open1', 'open2', 'high1', 'high2', 'low1', 'low2', 'close1', 'close2', 'daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 'mixed2', 'mixed3'), 
                      pred.type = 'class', .print = TRUE, .save = TRUE, pth = pth)
@@ -110,21 +115,96 @@ bsGSfit <- llply(dateID, function(dt) {
   }
   })
 
+## ================================= Save Basic Model ========================================
+## Arrange the best fit and save the model summary.
+files <- list.files('./data', pattern = '[0-9]{8}')
+#'@ pth <- paste0('./data/', files, '/fitgaum.mse1.rds')
+
+## list all daily minimum standard error models.
+pre.mse1 <- ldply(files, function(x) {
+  y = read_rds(path = paste0('./data/', x, '/fitgaum.mse1.rds'))
+  y %>% data.frame(Date = x, .) %>% tbl_df %>% filter(mse == min(mse))
+}) %>% tbl_df
+
+## filter and only get first unique element since the mse is same.
+#'@ unique(pre.mse1[c('Date', 'model', 'mse')])
+pre.mse1 <- pre.mse1[!duplicated(pre.mse1$Date, pre.mse1$mse), ]
+saveRDS(pre.mse1, file = './data/pre.mse1.rds')
+#> pre.mse1
+# A tibble: 517 × 4
+#       Date        .id  model       mse
+#     <fctr>      <chr> <fctr>     <dbl>
+#1  20150102 fitgaum119   mse9 0.1209190
+#2  20150105 fitgaum135   mse9 0.1211786
+#3  20150106 fitgaum132   mse3 0.1210193
+#4  20150107  fitgaum81   mse8 0.1221952
+#5  20150108 fitgaum144   mse3 0.1220447
+#6  20150109  fitgaum27   mse3 0.1210785
+#7  20150112 fitgaum129   mse3 0.1211022
+#8  20150113  fitgaum17   mse3 0.1214222
+#9  20150114  fitgaum28   mse3 0.1215031
+#10 20150115  fitgaum18   mse3 0.1208796
+
+## list all daily minimum standard error models' formula.
+pre.gsform <- ldply(files, function(x) {
+  y = read_rds(path = paste0('./data/', x, '/fitgaum.form.rds'))
+  z = paste0(substr(x, 1, 4), '-', substr(x, 5, 6), '-', substring(x, nchar(x) - 1)) %>% 
+    ymd 
+  data.frame(Date = z, form = y) %>% tbl_df
+}) %>% tbl_df
+
+## filter and only get first unique element since the mse is same.
+pre.gsform <- pre.gsform[!duplicated(pre.gsform$Date), ]
+saveRDS(pre.gsform, file = './data/pre.gsform.rds')
+
+## ================================= Weighted Model ==========================================
+## Application bayesian as weighted function and MCMC for prediction.
+
+## Read summary of the best fit model
+## From below table, we noted that the dynamic model required compare 
+##   to using constant model across the days as we can know from column `.id`.
+pre.mse1 <- read_rds(path = './data/pre.mse1.rds')
+#> pre.mse1
+# A tibble: 517 × 4
+#       Date        .id  model       mse
+#     <fctr>      <chr> <fctr>     <dbl>
+#1  20150102 fitgaum119   mse9 0.1209190
+#2  20150105 fitgaum135   mse9 0.1211786
+#3  20150106 fitgaum132   mse3 0.1210193
+#4  20150107  fitgaum81   mse8 0.1221952
+#5  20150108 fitgaum144   mse3 0.1220447
+#6  20150109  fitgaum27   mse3 0.1210785
+#7  20150112 fitgaum129   mse3 0.1211022
+#8  20150113  fitgaum17   mse3 0.1214222
+#9  20150114  fitgaum28   mse3 0.1215031
+#10 20150115  fitgaum18   mse3 0.1208796
+
+## Read best fit model.
+pre.gsform <- read_rds(path = './data/pre.gsform.rds')
+
+
+## ============================== Save Weighted Model ========================================
+## Arrange the best fit and save the data.
+## 
+llply(seq(nrow(pre.mse1)), function(i) {
+  y = read_rds(path = paste0('./data/', pre.mse1$Date[i], '/', pre.mse1$.id[i], '.rds'))
+  j = filter(y$mse, mse == pre.mse1$mse[i]) %>% .$model %>% str_replace_all('mse', '') %>% 
+    as.numeric
+  y$yhat[j] %>% unlist
+  })
+
+files <- list.files('./data/20150102/', pattern = 'fitgaum+[0-9]{1,}.rds$')
+
+wt <- ldply(files, function(x) {
+  y = read_rds(path = paste0('./data/', x, '/', x))
+  y %>% data.frame(Date = x, .) %>% tbl_df %>% filter(mse == min(mse))
+}) %>% tbl_df
 
 
 
-
-
-
-## ================================= Weighted Model ===========================================
-
-
-
-
-
-
-
-
+## ==================================== MCMC Model ===========================================
+## Application of MCMC to simulate the Profit and Loss of opt.Kelly() and optimal.f() 
+##   staking model.
 
 
 

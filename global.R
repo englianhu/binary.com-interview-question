@@ -27,6 +27,7 @@ suppressAll(library('PerformanceAnalytics'))
 suppressAll(library('memoise'))
 suppressAll(library('glmnet'))
 suppressAll(library('forecast'))
+suppressAll(library('RCurl'))
 
 suppressAll(source('./function/loadLAD.R'))
 suppressAll(source('./function/filterLAD.R'))
@@ -37,14 +38,25 @@ suppressAll(source('./function/plotChart2.R'))
 ## ========= Read Data =================================
 eval(parse(text = paste0('datam = loadLAD(); LAD = datam$LAD; LADDT = datam$LADDT; rm(datam)')))
 
-## use 365 days dataset.
+## use 365 days dataset but using predict().
 ## need to modify... temporarily use since baseline * times the coef rates will be consider as a weighted models but need to test. 
 tmpsumgs <- read_rds(path = './data/tmpsumgs.rds') %>% tbl_df
 #'@ tmptable <- read_rds(path = './data/tmptable.rds') %>% tbl_df
 #'@ tmpgsfit <- read_rds(path = './data/tmpgsfit.rds') #file too big and heavily to load, need to only pick the best fit.
-tmpgsform <- read_rds(path = './data/tmpgsform.rds')
+#'@ tmpgsform <- read_rds(path = './data/tmpgsform.rds')
 fitgaum16.alpha08 <- read_rds(path = './data/fitgaum16.alpha08.rds')
 
 #'@ fitgaum193.alpha08 <- read_rds(path = './data/fitgaum193.alpha08.rds')
+
+## Use 365 days dataset for time series model.
+pre.mse1 <- read_rds(path = './data/pre.mse1.rds')
+
+## Read best fit model.
+pre.gsform <- read_rds(path = './data/pre.gsform.rds')
+
+
+
+
+
 
 

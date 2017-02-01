@@ -71,9 +71,9 @@ fitgaum16.alpha08 <- read_rds(path = './data/fitgaum16.alpha08.rds')
 #> 
 #> #create test data
 #> tstData <- t(cbind(c("H1", "H", 2, "pol", 185),
-#                       +                    c("M1", "M", 1, "pol", 115),
-#                       +                    c("M1", "M", 1, "inf", 118),
-#                       +                    c("F1", "F", 3, "inf", 210)))
+#                     c("M1", "M", 1, "pol", 115),
+#                     c("M1", "M", 1, "inf", 118),
+#                     c("F1", "F", 3, "inf", 210)))
 #> 
 #> tstData <- data.frame(tstData,stringsAsFactors = F)
 #> colnames(tstData) <- colnames(trnData)

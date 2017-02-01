@@ -6,7 +6,7 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
                      newx = NULL, pred.type = 'class', parallel = TRUE, .log = FALSE) {
   ## mbase = default quantmod xts format or in data frame format.
   ## 
-  ## family = gaussian', 'binomial', 'poisson', 'multinomial', 'cox' and 'mgaussian'.
+  ## family = 'gaussian', 'binomial', 'poisson', 'multinomial', 'cox' and 'mgaussian'.
   ## 
   ## xy.matrix = 'h1' or xy.matrix = 'h2'. setting x and y variables.
   ## 
