@@ -15,7 +15,7 @@ suppressAll(library('dplyr'))
 suppressAll(library('tidyr'))
 suppressAll(library('readr'))
 suppressAll(library('tidyverse')) #load c(dplyr, tidyr, stringr, readr) due to system doesn't work.
-suppressAll(library('tidyquant'))
+#'@ suppressAll(library('tidyquant'))
 suppressAll(library("shiny"))
 suppressAll(library("shinyjs"))
 suppressAll(library('shinyBS'))

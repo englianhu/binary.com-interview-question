@@ -1,6 +1,6 @@
 opt.glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1', 
                          yv = 'baseline', logistic.yv = TRUE, tmeasure = 'deviance', 
-                         tmultinomial = 'grouped', maxit = 1000, 
+                         tmultinomial = 'grouped', maxit = 100000, 
                          alpha = 0:10, nfolds = 10, foldid = NULL, s = 'lambda.min', 
                          weight.date = FALSE, weight.volume = FALSE, wt.control = FALSE, 
                          newx = NULL, pred.type = 'class', data.size = 365, fordate = NULL, 
@@ -110,24 +110,29 @@ opt.glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform =
   suppressAll(library('foreach'))
   suppressMessages(source('./function/glmPrice.R'))
   
-  fit <- glmPrice(mbase = mbase, family = family, xy.matrix = xy.matrix, setform = setform, 
-            yv = yv, logistic.yv = logistic.yv, tmeasure = tmeasure, 
-            tmultinomial = tmultinomial, maxit = maxit, 
-            alpha = alpha, nfolds = nfolds, foldid = foldid, s = s, 
-            weight.date = weight.date, weight.volume = weight.volume, wt.control = wt.control, 
-            newx = newx, pred.type = pred.type, parallel = parallel, .log = .log)
+  fit01 <- glmPrice(mbase = mbase, family = family, xy.matrix = xy.matrix, 
+                    setform = setform, yv = yv, logistic.yv = logistic.yv, 
+                    tmeasure = tmeasure, tmultinomial = tmultinomial, maxit = maxit, 
+                    alpha = alpha, nfolds = nfolds, foldid = foldid, s = s, 
+                    weight.date = weight.date, weight.volume = weight.volume, 
+                    wt.control = wt.control, newx = newx, pred.type = pred.type, 
+                    parallel = parallel, .log = .log)
   
   ## For my understanding, lambda.min or lambda.1se will be the X_i in below article, 
   ##   and we need to add a weight function into it as Y = X_i * W_i.
   ##   [Stock Market Forecasting Using LASSO Linear Regression Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)
   tmp <- fit
   
-  > predict(fitgaum16.alpha08, newx = xy$x, 
-            +         s = fitgaum16.alpha08$lambda.1se, 
-            +         pred.type = 'class') %>% data.frame(Pred = .) %>% tbl_df %>% 
-    +     mutate(lambda1se = 0.2454598, Diff = c(0, diff(X1))) %>% .$Diff %>% mean
-  [1] 0.08847968
+  #'@ > predict(fitgaum16.alpha08, newx = xy$x, 
+  #'@           +         s = fitgaum16.alpha08$lambda.1se, 
+  #'@           +         pred.type = 'class') %>% data.frame(Pred = .) %>% tbl_df %>% 
+  #'@   +     mutate(lambda1se = 0.2454598, Diff = c(0, diff(X1))) %>% .$Diff %>% mean
+  #'@ [1] 0.08847968
   
+  Y = mbase[grep('.Close', names(mbase), value = TRUE)] %>% unlist
+  data.frame(Date = mbase$Date, Y, fit01$yhat) %>% tbl_df
+  
+  paste0('data.frame(y, ', paste(paste0('yhat', alpha), collapse = ', '), ') %>% tbl_df')
   
   ## weighted function
   if(!is.null(fordate)) { 

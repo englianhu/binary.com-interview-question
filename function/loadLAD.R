@@ -10,7 +10,7 @@ loadLAD <- function(latestDate = NULL, dataSizeDay = 365) {
   suppressAll(library('readr'))
   suppressAll(library('tidyverse')) #load c(dplyr, tidyr, stringr, readr) due to system doesn't work.
   suppressAll(library('quantmod'))
-  suppressAll(library('tidyquant'))
+  #'@ suppressAll(library('tidyquant'))
   
   ## check if the saved dataset is today's data? if previous day then need to scrap from website.
   if(file.exists('./data/LAD.rds')) {

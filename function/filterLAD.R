@@ -9,7 +9,7 @@ filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
   suppressAll(library('lubridate'))
   suppressAll(library('formattable'))
   suppressAll(library('quantmod'))
-  suppressAll(library('tidyquant'))
+  #'@ suppressAll(library('tidyquant'))
   suppressAll(source('./function/loadLAD.R'))
   
   ## ==================== Data Validation ===================================

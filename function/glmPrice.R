@@ -1,6 +1,6 @@
 glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1', 
                      yv = 'baseline', yv.lm = TRUE, logistic.yv = TRUE, tmeasure = 'deviance', 
-                     tmultinomial = 'grouped', maxit = 1000, 
+                     tmultinomial = 'grouped', maxit = 100000, 
                      alpha = 0:10, nfolds = 10, foldid = NULL, s = 'lambda.min', 
                      weight.date = FALSE, weight.volume = FALSE, wt.control = FALSE, 
                      newx = NULL, pred.type = 'class', parallel = TRUE, .log = FALSE) {
@@ -696,6 +696,10 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
   #'@ mse8  <- mean((y - yhat8 )^2)
   #'@ mse9  <- mean((y - yhat9 )^2)
   #'@ mse10 <- mean((y - yhat10)^2)
+  
+  ## weighted function,I write in other function.
+  #'@ wt <- paste0('data.frame(y, ', paste(paste0('yhat', alpha), collapse = ', '), ') %>% 
+  #'@    tbl_df')
   
   ## evaluate all mse0 to mse10
   eval(parse(text = paste(paste0('mse', alpha, ' <- mean((y - yhat', 
