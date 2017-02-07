@@ -1,7 +1,7 @@
 compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'), 
                        maxit = 100000, alpha = 0:10, setform = c('l1', 'l2', 'l3', 'l4'), 
                        yv = c('baseline', 'open1', 'open2', 'high1', 'high2', 'low1', 'low2', 'close1', 'close2', 'daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 'mixed2', 'mixed3'), 
-                       yv.lm = FALSE, newx = NULL, 
+                       yv.lm = FALSE, newx = NULL, preset.weight = TRUE, #weight.dist = 'pnorm', predate = NULL, 
                        pred.type = c('link', 'response', 'coefficients', 'nonzero', 'class'), 
                        tmeasure = 'mse', nfolds = 10, foldid = NULL, 
                        s = c('lambda.min', 'lambda.1se'), 
@@ -9,7 +9,9 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                        parallel = TRUE, .log = FALSE, .print = FALSE, .save = FALSE, 
                        pth = './data') {
   ## ========================= Load Packages ===================================
-  source('./function/glmPrice.R')
+  suppressAll(library('fdrtool'))
+  suppressAll(source('./function/phalfnorm.R'))
+  suppressAll(source('./function/glmPrice.R'))
   
   ## ========================= Set Arguments ===================================
   #'@ mbase <- LADDT
@@ -48,7 +50,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
   if(all(yv.lm %in% c(TRUE, FALSE))) {
     yv.lm <- yv.lm
   } else {
-    yv.lm = c(TRUE, FALSE)
+    yv.lm <- c(TRUE, FALSE)
   }
   
   if(!is.null(newx)) x <- newx
@@ -58,6 +60,23 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
   } else {
     txt = 'calculated'
   }
+  
+  #'@ if(weight.dist == 'pnorm') {
+  #'@   weight.dist <- pnorm
+  #'@ } else if(weight.dist == 'phalfnorm'){
+  #'@   weight.dist <- phalfnorm
+  #'@ } else {
+  #'@   stop('Kindly choose weight.dist = "pnorm" or weight.dist = "phalfnorm".')
+  #'@ }
+  
+  ## temporary function for comparison among 224 models.
+  #'@ if(is.null(predate)) {
+  #'@    folder <- list.files('./data', pattern = '[0-9]{8}')
+  #'@ } else if() {
+  #'@    read_rds(path = paste0('./data/', fld, '/wt.fitgaum', 1:224, '.rds'))
+  #'@ } else {
+  #'@   
+  #'@ }
   
   ## ======================== Regression Models ================================
   if((family == 'gaussian')|(family == 'all')) {
@@ -108,6 +127,15 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
         })
       })
     }) %>% as.character
+    
+    ## preset.weight is a temporarily setting for 224 models.
+    if(preset.weight == TRUE & length(gaum) == 224) {
+      weight.volume <- split(weight.volume, as.numeric(rownames(weight.volume)))
+      #'@ weight.date <- exp(-log(as.numeric(difftime(dt, smp$Date))^2))
+      gaum <- str_replace_all(gaum, 'weight.volume = FALSE', paste('weight.volume =', weight.volume))
+    } else {
+      stop('Please make sure preset.weight = TRUE & length(gaum) == 224 for models comparison.')
+    }
     
     if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitgaum' else nam <- 'fitgaum'
     

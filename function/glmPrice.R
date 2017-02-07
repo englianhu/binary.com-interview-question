@@ -1,6 +1,6 @@
 glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1', 
                      yv = 'baseline', yv.lm = TRUE, logistic.yv = TRUE, tmeasure = 'deviance', 
-                     tmultinomial = 'grouped', maxit = 100000, 
+                     tmultinomial = 'grouped', maxit = 100000, fordate = NULL, preset.weight = TRUE, 
                      alpha = 0:10, nfolds = 10, foldid = NULL, s = 'lambda.min', 
                      weight.date = FALSE, weight.volume = FALSE, wt.control = FALSE, 
                      newx = NULL, pred.type = 'class', parallel = TRUE, .log = FALSE) {
@@ -108,7 +108,9 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
   suppressAll(library('parallel'))
   suppressAll(library('doParallel'))
   suppressAll(library('foreach'))
-  suppressMessages(source('./function/h.R'))
+  suppressAll(library('fdrtool'))
+  suppressAll(source('./function/phalfnorm.R'))
+  suppressAll(source('./function/h.R'))
   
   #'@ doParallel::registerDoParallel(cores = parallel::detectCores())
   
@@ -235,20 +237,55 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
     stop('Kindly select pred.type = "link", pred.type = "response", pred.type = "coefficients", pred.type = "nonzero", pred.type = "class".')
   }
   
-  ## ========================= Respondence Variable =================================
+  ## ====================== Respondence Variable =================================
+  ## ============================ Weight Function ================================
+  ## weighted function.
+  #'@ if(weight.dist == 'pnorm') {
+  #'@   weight.dist <- pnorm
+  #'@ } else if(weight.dist == 'phalfnorm'){
+  #'@   weight.dist <- phalfnorm
+  #'@ } else {
+  #'@   stop('Kindly choose weight.dist = "pnorm" or weight.dist = "phalfnorm".')
+  #'@ }
+  
   ## weight parameters.
   wt <- data_frame(wt = rep(1, nrow(mbase)))
-  if(weight.date == FALSE) {
+  if(is.logical(weight.date) && weight.date == FALSE) {
     wt %<>% mutate(wetd = rep(1, nrow(mbase)))
   }
   
-  if(weight.volume == FALSE) {
+  if(is.logical(weight.volume) && weight.volume == FALSE) {
     wt %<>% mutate(wetv = rep(1, nrow(mbase)))
   }
   
+  ## ------------------- start 1 need to modify preset.weight -------------------------------------
+  if(preset.weight == TRUE) {
+    ## temporary for 224 models, only applicable to w.control = FALSE which is external weighted 
+    ##   due to internal weighted will adjust the response variables.
+    #'@ wetv <- llply(wetv, function(x) rep(x, nrow(mbase)) %>% tbl_df) %>% bind_cols
+    #'@ names(wetv) <- grep('P[0-9]', names(testwt), value = TRUE)
+    wetv <- sapply(weight.volume, rep, nrow(mbase)) %>% tbl_df
+    wetd <- -log(as.numeric(difftime(fordate, mbase$Date))^2)
+    wt2 <- exp(wetd * wetv) #convert to exponential figure.
+    wt2 %<>% tbl_df
+    rm(wetv, wetd)
+  }
+  
+  ## ------------------- end 1 need to modify preset.weight -------------------------------------
+  
   ## applicable to internal or external or both weight values.
-  wt %<>% mutate(wt = wetd * wetv)
-  wt %<>% .['wt'] %>% tbl_df
+  #'@ wt %<>% mutate(wt = wetd * wetv)
+  #'@ wt %<>% .['wt'] %>% tbl_df
+  wt %<>% mutate(wetd = rep(1, nrow(mbase)))
+  
+  ## preset.weight is a temporarily setting for 224 models.
+  #'@ if(preset.weight == TRUE & length(gaum) == 224) {
+  #'@ weight.volume <- llply(split(weight.volume, as.numeric(rownames(weight.volume))), unlist)
+  #'@ weight.date <- exp(-log(as.numeric(difftime(dt, smp$Date))^2))
+  #'@   wt <- data.frame(wt = )
+  #'@ } else {
+  #'@   stop('Please make sure preset.weight = TRUE & length(gaum) == 224 for models comparison.')
+  #'@ }
   
   ## http://stackoverflow.com/questions/39863367/ridge-regression-with-glmnet-gives-different-coefficients-than-what-i-compute?answertab=votes#tab-top
   #library(MASS)
@@ -298,6 +335,12 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
   ## convert the single column y and wt into a numeric vector.
   if(!is.numeric(y)) y <- unlist(y)
   if(!is.numeric(wt)) wt <- unlist(wt)
+  
+  ## ------------------- start 2 need to modify preset.weight -----------------------------------
+  if(preset.weight == TRUE) {
+    wt <- wt2; rm(wt2)
+  }
+  ## ------------------- end 2 need to modify preset.weight -------------------------------------
   
   ## x is a matrix while y is a vector.
   #'@ if(nrow(x) != nrow(y)) stop('number of observation of x must be same with y.')
@@ -425,9 +468,10 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'gaussian', 
-                         weights = wt, maxit = maxit, nfolds = nfolds))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'gaussian', weights = unlist(wt[i + 1]), 
+                           maxit = maxit, nfolds = nfolds)))
       }; rm(i)
     }
     
@@ -435,9 +479,10 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'gaussian', 
-                         weights = wt, maxit = maxit, foldid = foldid))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'gaussian', weights = unlist(wt[i + 1]), 
+                           maxit = maxit, foldid = foldid)))
       }; rm(i)
     }
     
@@ -472,9 +517,10 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
         ##            tmeasure = 'mae' or tmeasure = 'class' or 
         ##            tmeasure = 'auc'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'binomial', 
-                         weights = wt, maxit = maxit, nfolds = nfolds))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'binomial', weights = unlist(wt[i + 1]), 
+                           maxit = maxit, nfolds = nfolds)))
       }; rm(i)
     }
     
@@ -484,9 +530,10 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
         ##            tmeasure = 'mae' or tmeasure = 'class' or 
         ##            tmeasure = 'auc'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'binomial', 
-                         weights = wt, maxit = maxit, foldid = foldid))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'binomial', weights = unlist(wt[i + 1]), 
+                           maxit = maxit, foldid = foldid)))
       }; rm(i)
     }
     
@@ -497,9 +544,10 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'poisson', 
-                         weights = wt, maxit = maxit, nfolds = nfolds))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'poisson', weights = unlist(wt[i + 1]), 
+                           maxit = maxit, nfolds = nfolds)))
       }; rm(i)
     }
     
@@ -507,9 +555,10 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 3 models : tmeasure = 'deviance' or tmeasure = 'mse' or tmeasure = 'mae'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'poisson', 
-                         weights = wt, maxit = maxit, foldid = foldid))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'poisson', weights = unlist(wt[i + 1]), 
+                           maxit = maxit, foldid = foldid)))
       }; rm(i)
     }
     
@@ -543,10 +592,11 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
         ##            tmeasure = 'mae' or tmeasure = 'class'.
         ## 2 models : tmultinomial = 'grouped' or tmultinomial = 'ungrouped'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'multinomial', 
-                         type.multinomial = tmultinomial, 
-                         weights = wt, maxit = maxit, nfolds = nfolds))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'multinomial', 
+                           type.multinomial = tmultinomial, 
+                           weights = unlist(wt[i + 1]), maxit = maxit, nfolds = nfolds)))
       }; rm(i)
     }
     
@@ -556,10 +606,11 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
         ##            tmeasure = 'mae' or tmeasure = 'class'.
         ## 2 models : tmultinomial = 'grouped' or tmultinomial = 'ungrouped'.
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'multinomial', 
-                         type.multinomial = tmultinomial, 
-                         weights = wt, maxit = maxit, foldid = foldid))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'multinomial', 
+                           type.multinomial = tmultinomial, 
+                           weights = unlist(wt[i + 1]), maxit = maxit, foldid = foldid)))
       }; rm(i)
     }
     
@@ -576,9 +627,10 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 1 model : tmeasure = 'cox'
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'cox', 
-                         weights = wt, maxit = maxit, nfolds = nfolds))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'cox', weights = unlist(wt[i + 1]), 
+                           maxit = maxit, nfolds = nfolds)))
       }; rm(i)
     }
     
@@ -586,9 +638,10 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 1 model : tmeasure = 'cox'
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'cox', 
-                         weights = wt, maxit = maxit, foldid = foldid))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'cox', weights = unlist(wt[i + 1]), 
+                           maxit = maxit, foldid = foldid)))
       }; rm(i)
     }
     
@@ -599,9 +652,10 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 1 model : tmeasure = 'mgaussian'
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'mgaussian', 
-                         weights = wt, maxit = maxit, nfolds = nfolds))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'mgaussian', weights = unlist(wt[i + 1]), 
+                           maxit = maxit, nfolds = nfolds)))
       }; rm(i)
     }
     
@@ -609,9 +663,10 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
       for (i in alpha) {
         ## 1 model : tmeasure = 'mgaussian'
         assign(paste('fit', i, sep = ''),
-               cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
-                         alpha = i/10, family = 'mgaussian', 
-                         weights = wt, maxit = maxit, foldid = foldid))
+               suppressAll(
+                 cv.glmnet(x, y, type.measure = tmeasure, parallel = parallel, 
+                           alpha = i/10, family = 'mgaussian', weights = unlist(wt[i + 1]), 
+                           maxit = maxit, foldid = foldid)))
       }; rm(i)
     }
     
