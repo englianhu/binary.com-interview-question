@@ -1,4 +1,8 @@
 ## =================================== Basic Model ===========================================
+## remove all include hidden objects but only leave one object.
+rm(list = setdiff(ls(all.names = TRUE), 'tmp'))
+
+
 ## Draft simulate the function while I added-on some-more criterias and selections.
 ## Simulate 365 days dataset with Markov Chain.
 ##   using moving 365 days dataset and rerun the compStocks.
@@ -58,7 +62,7 @@ bsGSfit <- llply(dateID, function(dt) {
   ## http://stackoverflow.com/questions/8490799/how-to-account-for-leap-years
   
   smp = filter(LADDT, Date < dt & Date >= (dt %m-% years(1)))
-  gsfit = compStocks(smp, family = families[1], xy.matrix = 'h2', yv.lm = c(TRUE, FALSE), 
+  gsfit = compStocks(smp, family = families[1], xy.matrix = 'h2', yv.lm = c(TRUE, FALSE), preset.weight = TRUE, 
                      yv = c('open1', 'open2', 'high1', 'high2', 'low1', 'low2', 'close1', 'close2', 'daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 'mixed2', 'mixed3'), 
                      pred.type = 'class', .print = TRUE, .save = TRUE, pth = pth)
   
@@ -202,109 +206,20 @@ saveRDS(pre.gsform, file = './data/pre.gsform.rds')
 suppressAll(source('./function/simulateWT.R'))
 simulateWT(mbase = LADDT, .print = TRUE)
 
-## temporary function for comparison among 224 models.
-if(fordate) {
-  folder <- list.files('./data', pattern = '[0-9]{8}')
-} else {
-  
-} else {
-  
-}
+## simulate 224 preset weighted models.
+suppressAll(source('./function/simcompS.R'))
 
-weight.volume = grep('P[0-9]', names(testwt), value = TRUE)
+## load once and saved.
+#'@ getSymbols('LAD')
+#'@ saveRDS(LAD, file = './data/LAD_full.rds')
+LAD <- read_rds(path = './data/LAD_full.rds')
 
+## weighted model 1 : preset 224 models
+simcompS(mbase = LAD, family = 'gaussian', weight.dist = 'pnorm')
 
-ldply(seq(224), function(x) {
-  read_rds(path = paste0('./data/', folder[1], '/wt.fitgaum', x, '.rds'))
-}) %>% tbl_df
-
-wtGSfit <- llply(dateID, function(dt) {
-  
-  ## create a folder to save all models.
-  pth = paste0('./data/', str_replace_all(dt, '-', ''))
-  if(!dir.exists(pth)) dir.create(pth)
-  
-  ## predict dateID onwards from data < dateID
-  ##   for example : in order to predict today price, I used the data from 
-  ##   1 years (365 days or 366 days for leap years.) ago from yesterday.
-  #'@ ymd("2016-2-29") %m-% years(1)
-  ## http://stackoverflow.com/questions/8490799/how-to-account-for-leap-years
-  
-  smp = filter(LADDT, Date < dt & Date >= (dt %m-% years(1)))
-  fld = str_replace_all(dt, '-', '')
-  fl = ldply(seq(224), function(x) {
-    read_rds(path = paste0('./data/', folder[1], '/wt.fitgaum', x, '.rds'))
-  }) %>% tbl_df
-  #'@ files <- list.files(paste0('./data/', fld), pattern = 'wt.fitgaum+[0-9]{1,}.rds$')
-  #'@ paste0(substr(x, 1, 4), '-', substr(x, 5, 6), '-', 
-  #'@       substring(x, nchar(x) - 1)) %>% ymd
-  
-  ## sqrt to emphasized the recent stock price more heavily. (based on the decay rate to lighten
-  ##   previous stock price effects.)
-  wtdt = exp(-log(as.numeric(difftime(dt, smp$Date))^2))
-  ## I temporary to use `weight.volume` as the weight function on stock price to avoid 
-  ##   troublesome to modify existing function. However the weight function doesn't take 
-  ##   the effect of trade volume.
-  wtpc = fl[, grep('P[0-9]', names(fl), value = TRUE)]
-  
-  #`preset.weight = TRUE` inside compStocks() is the temporarily set argument for testing 224 models.
-  gsfit = compStocks(smp, family = families[1], xy.matrix = 'h2', yv.lm = c(TRUE, FALSE), 
-                     weight.date = wtdt, weight.volume = wtpc, fordate = dt, 
-                     yv = c('open1', 'open2', 'high1', 'high2', 'low1', 'low2', 'close1', 'close2', 'daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 'mixed2', 'mixed3'), 
-                     pred.type = 'class', .print = TRUE, .save = TRUE, pth = pth)
-  
-  ## basic model weight is FALSE
-  weight.date != FALSE
-  weight.volume != FALSE
-  
-  ## save basic or weight models.
-  if(weight.date != FALSE | weight.volume != FALSE) {
-    wtfitgaum = gsfit; rm(gsfit)
-    
-    ## generates 224 models
-    saveRDS(wtfitgaum, file = paste0(pth, '/wtfitgaum.rds'))
-    
-    ## saved best mean-squared error comparison.
-    wtfitgaum.mse1 = ldply(wtfitgaum$fit, function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
-    saveRDS(wtfitgaum.mse1, file = paste0(pth, '/wtfitgaum.mse1.rds'))
-    
-    ## saved summary of all best models. (if more than 1)
-    name514gs = unique(wtfitgaum.mse1$.id)
-    wtfitgaum.sum = ldply(wtfitgaum$fit[name514gs], function(x) x$mse) %>% tbl_df
-    saveRDS(wtfitgaum.sum, file = paste0(pth, '/wtfitgaum.sum.rds'))
-    
-    ## saved best model.
-    wtfitgaum.best = wtfitgaum$fit[name514gs]
-    saveRDS(wtfitgaum.best, file = paste0(pth, '/wtfitgaum.best.rds'))
-    
-    ## saved best model's formula.
-    wtfitgaum.form = wtfitgaum$formula1[str_replace_all(name514gs, 'wtfitgaum', '') %>% as.numeric]
-    saveRDS(wtfitgaum.form, file = paste0(pth, '/wtfitgaum.form.rds'))
-    
-  } else {
-    fitgaum = gsfit; rm(gsfit)
-    
-    ## generates 224 models
-    saveRDS(fitgaum, file = paste0(pth, '/fitgaum.rds'))
-    
-    ## saved best mean-squared error comparison.
-    fitgaum.mse1 = ldply(fitgaum$fit, function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
-    saveRDS(fitgaum.mse1, file = paste0(pth, '/fitgaum.mse1.rds'))
-    
-    ## saved summary of all best models. (if more than 1)
-    name514gs = unique(fitgaum.mse1$.id)
-    fitgaum.sum = ldply(fitgaum$fit[name514gs], function(x) x$mse) %>% tbl_df
-    saveRDS(fitgaum.sum, file = paste0(pth, '/fitgaum.sum.rds'))
-    
-    ## saved best model.
-    fitgaum.best = fitgaum$fit[name514gs]
-    saveRDS(fitgaum.best, file = paste0(pth, '/fitgaum.best.rds'))
-    
-    ## saved best model's formula.
-    fitgaum.form = fitgaum$formula1[str_replace_all(name514gs, 'fitgaum', '') %>% as.numeric]
-    saveRDS(fitgaum.form, file = paste0(pth, '/fitgaum.form.rds'))
-  }
-})
+## weighted model 2 : preset 224 models
+## need to simulate upon completion of weighted model 1
+simcompS(mbase = LAD, family = 'gaussian', weight.dist = 'phalfnorm')
 
 ## ==================================== MCMC Model ===========================================
 ## Application of MCMC to simulate the Profit and Loss of opt.Kelly() and optimal.f() 

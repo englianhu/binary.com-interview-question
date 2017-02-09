@@ -496,6 +496,158 @@ llply(dateID, function(x) {
   })
 as.numeric(difftime(dateID0, LADDT$Date[LADDT$Date < dateID], units = 'days'))^2
 
+## =============================================================
+## Application bayesian as weighted function and MCMC for prediction.
+
+## Read summary of the best fit model
+## From below table, we noted that the dynamic model required compare 
+##   to using constant model across the days as we can know from column `.id`.
+
+## rerun "Save Basic Model" and "Weighted Model" with corrected files.
+#'@ testW <- suppressAll(ldply(seq(nrow(pre.mse1)), function(i) {
+#'@   y = read_rds(path = paste0('./data/', pre.mse1$Date[i], '/', pre.mse1$.id[i], '.rds'))
+#'@   j = filter(y$mse, mse == pre.mse1$mse[i]) %>% .$model %>% str_replace_all('mse', '') %>% 
+#'@     as.numeric
+#'@   z = y$yhat[j] %>% unlist %>% mean
+#'@   data.frame(Date = pre.mse1$Date[i], meanPrice = z) %>% tbl_df
+#'@   })) %>% tbl_df
+
+#'@ folder <- list.files('./data', pattern = '[0-9]{8}')
+#'@ files <- list.files(paste0('./data/', folder), pattern = 'fitgaum+[0-9]{1,}.rds$')
+
+#'@ llply(folder, function(x) {
+#'@   llply(files, function(y) {
+#'@     read_rds(path = paste0('./data/', x, '/', y))
+#'@     })
+#'@   })
+
+#'@ test <- llply(folder[1], function(x) {
+#'@   ldply(files[1], function(y) {
+#'@     y = read_rds(path = paste0('./data/', x, '/', y))
+#'@     z = paste0(substr(x, 1, 4), '-', substr(x, 5, 6), '-', 
+#'@                substring(x, nchar(x) - 1)) %>% ymd
+#'@     yy = filter(LADDT, Date < z & Date >= (z %m-% years(1)))
+#'@     all.yhat = data.frame(Date = yy$Date, 
+#'@                Y = yy[grep('.Close', names(yy), value = TRUE)] %>% 
+#'@                  unlist, y$yhat) %>% tbl_df
+#'@     saveRDS(all.yhat, file = paste0('./data/', x, '/yhat', y))
+#'@     })
+#'@   })
+
+#'@ wt <- ldply(files, function(x) {
+#'@   y = read_rds(path = paste0('./data/', x, '/', x))
+#'@   y %>% data.frame(Date = x, .) %>% tbl_df %>% filter(mse == min(mse))
+#'@ }) %>% tbl_df
+suppressAll(source('./function/simulateWT.R'))
+simulateWT(mbase = LADDT, .print = TRUE)
+
+## read_rds(path = './data/20160601/wt.fitgaum176.rds') %>% data.frame
+## read_rds(path = './data/20160601/wt.fitgaum177.rds') %>% data.frame
+## read_rds(path = './data/20170103/wt.fitgaum176.rds') %>% data.frame
+## read_rds(path = './data/20170103/wt.fitgaum177.rds') %>% data.frame
+
+## temporary function for comparison among 224 models.
+#'@ if(fordate) {
+#'@   folder <- list.files('./data', pattern = '[0-9]{8}')
+#'@ } else {
+#'@   
+#'@ } else {
+#'@   
+#'@ }
+#'@ 
+#'@ weight.volume = grep('P[0-9]', names(testwt), value = TRUE)
+#'@ 
+#'@ ldply(seq(224), function(x) {
+#'@     read_rds(path = paste0('./data/', folder[1], '/wt.fitgaum', x, '.rds'))
+#'@   }) %>% tbl_df
+
+wtGSfit <- llply(dateID, function(dt) {
+  
+  ## create a folder to save all models.
+  pth = paste0('./data/', str_replace_all(dt, '-', ''))
+  if(!dir.exists(pth)) dir.create(pth)
+  
+  ## predict dateID onwards from data < dateID
+  ##   for example : in order to predict today price, I used the data from 
+  ##   1 years (365 days or 366 days for leap years.) ago from yesterday.
+  #'@ ymd("2016-2-29") %m-% years(1)
+  ## http://stackoverflow.com/questions/8490799/how-to-account-for-leap-years
+  
+  smp = filter(LADDT, Date < dt & Date >= (dt %m-% years(1)))
+  fld = str_replace_all(dt, '-', '')
+  fl = ldply(seq(224), function(x) {
+    read_rds(path = paste0('./data/', fld, '/wt.fitgaum', x, '.rds'))
+  }) %>% tbl_df
+  #'@ files <- list.files(paste0('./data/', fld), pattern = 'wt.fitgaum+[0-9]{1,}.rds$')
+  #'@ paste0(substr(x, 1, 4), '-', substr(x, 5, 6), '-', 
+  #'@       substring(x, nchar(x) - 1)) %>% ymd
+  
+  ## sqrt to emphasized the recent stock price more heavily. (based on the decay rate to lighten
+  ##   previous stock price effects.)
+  wtdt = exp(-log(as.numeric(difftime(dt, smp$Date))^2))
+  ## I temporary to use `weight.volume` as the weight function on stock price to avoid 
+  ##   troublesome to modify existing function. However the weight function doesn't take 
+  ##   the effect of trade volume.
+  wtpc = fl[, grep('P[0-9]', names(fl), value = TRUE)]
+  
+  #`preset.weight = TRUE` inside compStocks() is the temporarily set argument for testing 224 models.
+  gsfit = compStocks(smp, family = families[1], xy.matrix = 'h2', yv.lm = c(TRUE, FALSE), 
+                     weight.date = wtdt, weight.volume = wtpc, fordate = dt, preset.weight = TRUE, 
+                     yv = c('open1', 'open2', 'high1', 'high2', 'low1', 'low2', 'close1', 'close2', 'daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 'mixed2', 'mixed3'), 
+                     pred.type = 'class', .print = TRUE, .save = TRUE, pth = pth)
+  
+  ## basic model weight is FALSE
+  weight.date != FALSE
+  weight.volume != FALSE
+  
+  ## save basic or weight models.
+  if(weight.date != FALSE | weight.volume != FALSE) {
+    wtfitgaum = gsfit; rm(gsfit)
+    
+    ## generates 224 models
+    saveRDS(wtfitgaum, file = paste0(pth, '/wtfitgaum.rds'))
+    
+    ## saved best mean-squared error comparison.
+    wtfitgaum.mse1 = ldply(wtfitgaum$fit, function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
+    saveRDS(wtfitgaum.mse1, file = paste0(pth, '/wtfitgaum.mse1.rds'))
+    
+    ## saved summary of all best models. (if more than 1)
+    name514gs = unique(wtfitgaum.mse1$.id)
+    wtfitgaum.sum = ldply(wtfitgaum$fit[name514gs], function(x) x$mse) %>% tbl_df
+    saveRDS(wtfitgaum.sum, file = paste0(pth, '/wtfitgaum.sum.rds'))
+    
+    ## saved best model.
+    wtfitgaum.best = wtfitgaum$fit[name514gs]
+    saveRDS(wtfitgaum.best, file = paste0(pth, '/wtfitgaum.best.rds'))
+    
+    ## saved best model's formula.
+    wtfitgaum.form = wtfitgaum$formula1[str_replace_all(name514gs, 'wtfitgaum', '') %>% as.numeric]
+    saveRDS(wtfitgaum.form, file = paste0(pth, '/wtfitgaum.form.rds'))
+    
+  } else {
+    fitgaum = gsfit; rm(gsfit)
+    
+    ## generates 224 models
+    saveRDS(fitgaum, file = paste0(pth, '/fitgaum.rds'))
+    
+    ## saved best mean-squared error comparison.
+    fitgaum.mse1 = ldply(fitgaum$fit, function(x) x$mse) %>% tbl_df %>% filter(mse == min(mse))
+    saveRDS(fitgaum.mse1, file = paste0(pth, '/fitgaum.mse1.rds'))
+    
+    ## saved summary of all best models. (if more than 1)
+    name514gs = unique(fitgaum.mse1$.id)
+    fitgaum.sum = ldply(fitgaum$fit[name514gs], function(x) x$mse) %>% tbl_df
+    saveRDS(fitgaum.sum, file = paste0(pth, '/fitgaum.sum.rds'))
+    
+    ## saved best model.
+    fitgaum.best = fitgaum$fit[name514gs]
+    saveRDS(fitgaum.best, file = paste0(pth, '/fitgaum.best.rds'))
+    
+    ## saved best model's formula.
+    fitgaum.form = fitgaum$formula1[str_replace_all(name514gs, 'fitgaum', '') %>% as.numeric]
+    saveRDS(fitgaum.form, file = paste0(pth, '/fitgaum.form.rds'))
+  }
+})
 
 ## =============================================================
 files <- list.files('./data/20150102/', pattern = 'fitgaum+[0-9]{1,}.rds$')

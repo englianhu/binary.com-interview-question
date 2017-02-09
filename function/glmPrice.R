@@ -71,6 +71,11 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
   ## 
   ## .log = FALSE or TRUE convert the value yv into log or not.
   ## 
+  ## fordate = NULL, focast date which is only applicable for time series weighted model.
+  ## 
+  ## preset.weight = TRUE, will using default pre-set 224 Gaussian models to fit the 
+  ##   weighted parameters into the basic models.
+  ## 
   
   ## ========================= Load Packages ===================================
   # http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection
@@ -798,8 +803,11 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
   
   ### Stop cluster
   stopCluster(cl)
-  
   options(warn = 0)
   
+  ## remove all include hidden objects but only leave one object.
+  rm(list = setdiff(ls(all.names = TRUE), 'tmp'))
+  
   return(tmp)
-}
+  }
+

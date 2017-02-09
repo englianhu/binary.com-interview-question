@@ -27,17 +27,19 @@ simulateWT <- function(mbase, settledPrice = 'Close', .parallel = TRUE, .save = 
   getDoParWorkers()
   
   folder <- list.files('./data', pattern = '[0-9]{8}')
-  #'@ files <- list.files(paste0('./data/', folder), pattern = 'fitgaum+[0-9]{1,}.rds$')
+  #'@ files <- list.files(paste0('./data/', folder), pattern = '^fitgaum+[0-9]{1,}.rds$')
   
   mbase <- mbase[order(mbase$Date, decreasing = FALSE), ]
   
   smbase <- llply(folder, function(x) {
-    ldply(list.files(paste0('./data/', x), pattern = 'fitgaum+[0-9]{1,}.rds$'), 
-          function(y) {
+	fld = list.files(paste0('./data/', x), pattern = '^fitgaum+[0-9]{1,}.rds$') %>% 
+		str_extract_all('([0-9]{1,})') %>% unlist %>% as.numeric %>% sort %>% 
+		paste0('fitgaum', ., '.rds')
+    ldply(fld, function(y) {
       xy = read_rds(path = paste0('./data/', x, '/', y))
       z = paste0(substr(x, 1, 4), '-', substr(x, 5, 6), '-', 
                  substring(x, nchar(x) - 1)) %>% ymd
-      yy = filter(LADDT, Date < z & Date >= (z %m-% years(1)))
+      yy = filter(mbase, Date < z & Date >= (z %m-% years(1)))
       
       all.yhat = data.frame(Date = yy$Date, 
                             #'@ Diff = as.numeric(difftime(yy$Date[1], yy$Date, units = 'days')), 
@@ -77,15 +79,33 @@ simulateWT <- function(mbase, settledPrice = 'Close', .parallel = TRUE, .save = 
       ##   Either exp(log((T_{i} - T_{i-1}) * x_{i})) or while i is the time point at time_i, 365 days will have 365 observations crossprod().
       ##   exp(log((T_{latest_i} - T_{latest_i-0}) * mean(x_{latest_i}))) while i is the time point at time_i and only latest T_{i} - T_{0}.
       
-      if(.save == TRUE) {
-        saveRDS(wtdf, file = paste0('./data/', x, '/wt.', y))
-        if(.print == TRUE) cat(paste0('./data/', x, '/wt.', y, ' had saved.\n'))
-      } else {
-        if(.print == TRUE) cat(paste0('./data/', x, '/wt.', y, ' had calculated.\n'))
-      }
+      if(.print == TRUE) {
+		if(.save == TRUE) {
+			saveRDS(wtdf, file = paste0('./data/', x, '/wt.', y))
+			cat(paste0('./data/', x, '/wt.', y, ' had saved.\n'))
+		} else {
+			cat(paste0('./data/', x, '/wt.', y, ' had calculated.\n'))
+			}
+		}
       wtdf
     }) %>% tbl_df
+	
+	if(.print == TRUE) {
+		if(.save == TRUE) {			
+			cat(paste0('./data/', x, '. All wt.fitgaum.rds had saved.\n'))
+		} else {
+			cat(paste0('./data/', x, '. All wt.fitgaum.rds had calculated.\n'))
+			}
+		}	
   })
   
+  if(.print == TRUE) {
+		if(.save == TRUE) {			
+			cat('Save all and completed.\n')
+		} else {
+			cat('Calculate all and completed.\n')
+			}
+		}
+	  
   return(smbase)
 }

@@ -1,9 +1,9 @@
 compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'), 
                        maxit = 100000, alpha = 0:10, setform = c('l1', 'l2', 'l3', 'l4'), 
                        yv = c('baseline', 'open1', 'open2', 'high1', 'high2', 'low1', 'low2', 'close1', 'close2', 'daily.mean1', 'daily.mean2', 'daily.mean3', 'mixed1', 'mixed2', 'mixed3'), 
-                       yv.lm = FALSE, newx = NULL, preset.weight = TRUE, #weight.dist = 'pnorm', predate = NULL, 
+                       yv.lm = FALSE, newx = NULL, fordate = NULL, preset.weight = TRUE, 
                        pred.type = c('link', 'response', 'coefficients', 'nonzero', 'class'), 
-                       tmeasure = 'mse', nfolds = 10, foldid = NULL, 
+                       tmeasure = 'mse', nfolds = 10, foldid = NULL, weight.dist = 'none', 
                        s = c('lambda.min', 'lambda.1se'), 
                        weight.date = FALSE, weight.volume = FALSE, wt.control = FALSE, 
                        parallel = TRUE, .log = FALSE, .print = FALSE, .save = FALSE, 
@@ -41,6 +41,13 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
   alpha <- ifelse(length(alpha) > 1, paste(range(alpha), collapse = ':'), alpha)
   nfolds <- ifelse(length(nfolds) > 1, paste(range(nfolds), collapse = ':'), nfolds)
   
+  ## Due to simulate all families models will costing a lot of time, here I only use Gassian as time being.
+  ##   Test Poisson, Logistics and Multinomial models but a baseline need to multiply to the coefficients for mse comparison etc. 
+  ##   Filter few stages with adjustment of the independent and dependent variables to shrink to the 224 models now.
+  if(preset.weight == TRUE & family != 'gaussian') {
+    stop('preset.weight only applicable to family = "gaussian" as time being.')
+  }
+  
   if(is.null(foldid)) {
     foldid <- 'NULL'
   } else {
@@ -60,14 +67,6 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
   } else {
     txt = 'calculated'
   }
-  
-  #'@ if(weight.dist == 'pnorm') {
-  #'@   weight.dist <- pnorm
-  #'@ } else if(weight.dist == 'phalfnorm'){
-  #'@   weight.dist <- phalfnorm
-  #'@ } else {
-  #'@   stop('Kindly choose weight.dist = "pnorm" or weight.dist = "phalfnorm".')
-  #'@ }
   
   ## temporary function for comparison among 224 models.
   #'@ if(is.null(predate)) {
@@ -102,42 +101,80 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
       wt.control = c(TRUE, FALSE)
     }
     
-    gaum <- sapply(xy.matrix, function(x) {
-      sapply(yv, function(y) {
-        sapply(yv.lm, function(yy) {
-          sapply(tmeasure, function(z) {
-            sapply(pred.type, function(xx) {
-              sapply(s, function(xy) {
-                sapply(setform, function(xz) {
-                  sapply(wt.control, function(yx) {
-                    paste0('glmPrice(mbase, family = \'', family, '\', xy.matrix = \'', x, 
-                           '\', setform = \'', xz, '\', yv = \'', y, '\', yv.lm = ', yy, 
-                           ', tmeasure = \'', z, '\', maxit = ', maxit, 
-                           ', newx = newx, pred.type = \'', xx, 
-                           '\', alpha = ', alpha, ', nfolds = ', nfolds, 
-                           ', foldid = ', foldid, ', s = \'', xy, 
-                           '\', weight.date = ', weight.date, ', weight.volume = ', 
-                           weight.volume, ', wt.control = ', yx, 
-                           ', parallel = ', parallel, ', .log = ', .log, ')')
+    ## preset.weight is a temporarily setting for 224 models.
+    if(preset.weight == TRUE) {
+      
+      gaum <- sapply(xy.matrix, function(x) {
+        sapply(yv, function(y) {
+          sapply(yv.lm, function(yy) {
+            sapply(tmeasure, function(z) {
+              sapply(pred.type, function(xx) {
+                sapply(s, function(xy) {
+                  sapply(setform, function(xz) {
+                    sapply(wt.control, function(yx) {
+                      paste0('glmPrice(mbase, family = \'', family, '\', xy.matrix = \'', x, 
+                             '\', setform = \'', xz, '\', yv = \'', y, '\', yv.lm = ', yy, 
+                             ', tmeasure = \'', z, '\', maxit = ', maxit, 
+                             ', newx = newx, pred.type = \'', xx, '\', fordate = fordate', 
+                             ', alpha = ', alpha, ', nfolds = ', nfolds, 
+                             ', foldid = ', foldid, ', s = \'', xy, '\', preset.weight = preset.weight, ', 
+                             'weight.date = weight.date, weight.volume = weight.volume, wt.control = ', yx, 
+                             ', parallel = ', parallel, ', .log = ', .log, ')')
+                    })
                   })
                 })
               })
             })
           })
         })
-      })
-    }) %>% as.character
+      }) %>% as.character
     
-    ## preset.weight is a temporarily setting for 224 models.
-    if(preset.weight == TRUE & length(gaum) == 224) {
       weight.volume <- split(weight.volume, as.numeric(rownames(weight.volume)))
       #'@ weight.date <- exp(-log(as.numeric(difftime(dt, smp$Date))^2))
-      gaum <- str_replace_all(gaum, 'weight.volume = FALSE', paste('weight.volume =', weight.volume))
+      gaum <- str_replace_all(gaum, 'weight.volume = weight.volume', paste('weight.volume =', weight.volume))
+      
+    } else if (preset.weight == FALSE) {
+      
+      gaum <- sapply(xy.matrix, function(x) {
+        sapply(yv, function(y) {
+          sapply(yv.lm, function(yy) {
+            sapply(tmeasure, function(z) {
+              sapply(pred.type, function(xx) {
+                sapply(s, function(xy) {
+                  sapply(setform, function(xz) {
+                    sapply(wt.control, function(yx) {
+                      paste0('glmPrice(mbase, family = \'', family, '\', xy.matrix = \'', x, 
+                             '\', setform = \'', xz, '\', yv = \'', y, '\', yv.lm = ', yy, 
+                             ', tmeasure = \'', z, '\', maxit = ', maxit, 
+                             ', newx = newx, pred.type = \'', xx, '\', fordate = fordate', 
+                             ', alpha = ', alpha, ', nfolds = ', nfolds, 
+                             ', foldid = ', foldid, ', s = \'', xy, 
+                             '\', weight.date = ', weight.date, ', weight.volume = ', 
+                             weight.volume, ', wt.control = ', yx, 
+                             ', parallel = ', parallel, ', .log = ', .log, ')')
+                    })
+                  })
+                })
+              })
+            })
+          })
+        })
+      }) %>% as.character
+      
     } else {
       stop('Please make sure preset.weight = TRUE & length(gaum) == 224 for models comparison.')
     }
     
-    if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitgaum' else nam <- 'fitgaum'
+    #'@ if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitgaum' else nam <- 'fitgaum'
+    if(weight.dist == 'pnorm') {
+      nam <- 'wt.pnorm.fitgaum'
+    } else if(weight.dist == 'phalfnorm') {
+      nam <- 'wt.phalfnorm.fitgaum'
+    } else if(weight.dist == 'none') {
+      nam <- 'fitgaum'
+    } else {
+      stop('Kindly select weight.dist = "pnorm" or weight.dist = "phalfnorm" or weight.dist = "none".')
+    }
     
     gm <- paste(paste0(
       nam, seq(gaum), " <- ", gaum, 
@@ -150,6 +187,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
     
     if(nam == 'fitgaum') {
       ## combine all fitgaum1 to fitgaum~ into a list named fitgaum
+      ## fitgaum
       eval(parse(text = paste0('fitgaum <- list(', 
                                paste(paste0(nam, seq(gaum), ' = ', 'fitgaum', seq(gaum)), 
                                      collapse = ', '), ')')))
@@ -160,16 +198,32 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
       
       tmp1 <- list(formula1 = gaum, fit = fitgaum)
       
-    } else {
-      eval(parse(text = paste0('wtfitgaum <- list(', 
-                               paste(paste0(nam, seq(gaum), ' = ', 'wtfitgaum', seq(gaum)), 
+    } else if(nam == 'wt.pnorm.fitgaum') {
+      ## wt.pnorm.fitgaum
+      eval(parse(text = paste0('wt.pnorm.fitgaum <- list(', 
+                               paste(paste0(nam, seq(gaum), ' = ', 'wt.pnorm.fitgaum', seq(gaum)), 
                                      collapse = ', '), ')')))
       
-      ## rm all wtfitgaum1 to wtfitgaum~
-      eval(parse(text = paste0('rm(', paste0(paste0('wtfitgaum', seq(gaum)), 
+      ## rm all wt.pnorm.fitgaum1 to wt.pnorm.fitgaum~
+      eval(parse(text = paste0('rm(', paste0(paste0('wt.pnorm.fitgaum', seq(gaum)), 
                                              collapse = ', '), ')')))
       
-      tmp1 <- list(formula1 = gaum, fit = wtfitgaum)
+      tmp1 <- list(formula1 = gaum, fit = wt.pnorm.fitgaum)
+      
+    } else if(nam == 'wt.phalfnorm.fitgaum') {
+      ## wt.phalfnorm.fitgaum
+      eval(parse(text = paste0('wt.phalfnorm.fitgaum <- list(', 
+                               paste(paste0(nam, seq(gaum), ' = ', 'wt.phalfnorm.fitgaum', seq(gaum)), 
+                                     collapse = ', '), ')')))
+      
+      ## rm all wt.phalfnorm.fitgaum1 to wt.phalfnorm.fitgaum~
+      eval(parse(text = paste0('rm(', paste0(paste0('wt.phalfnorm.fitgaum', seq(gaum)), 
+                                             collapse = ', '), ')')))
+      
+      tmp1 <- list(formula1 = gaum, fit = wt.phalfnorm.fitgaum)
+      
+    } else {
+      stop('Kindly select weight.dist = "pnorm" or weight.dist = "phalfnorm" or weight.dist = "none".')
     }
     
     ## return if single family
@@ -207,8 +261,8 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                          '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
                          '\', maxit = ', maxit, ', newx = newx, pred.type = \'', xx, 
                          '\', alpha = ', alpha, ', nfolds = ', nfolds, 
-                         ', foldid = ', foldid, ', s = \'', xy, 
-                         '\', weight.date = ', weight.date, ', weight.volume = ', 
+                         ', foldid = ', foldid, ', s = \'', xy,  '\', fordate = fordate', 
+                         ', weight.date = ', weight.date, ', weight.volume = ', 
                          weight.volume, ', wt.control = ', yx, 
                          ', parallel = ', parallel, ', .log = ', .log, ')')
                 })
@@ -219,7 +273,16 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
       })
     }) %>% as.character
     
-    if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitbinm' else nam <- 'fitbinm'
+    #'@ if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitbinm' else nam <- 'fitbinm'
+    if(weight.dist == 'pnorm') {
+      nam <- 'wt.pnorm.fitbinm'
+    } else if(weight.dist == 'phalfnorm'){
+      nam <- 'wt.phalfnorm.fitbinm'
+    } else if(weight.dist == 'none') {
+      nam <- 'fitbinm'
+    } else {
+      stop('Kindly select weight.dist = "pnorm" or weight.dist = "phalfnorm" or weight.dist = "none".')
+    }
     
     bm <- paste(paste0(
       nam, seq(binm), " <- ", binm, 
@@ -292,8 +355,8 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                     paste0('glmPrice(mbase, family = \'', family, '\', xy.matrix = \'', x, 
                            '\', setform = \'', xz, '\', yv = \'', y, '\', yv.lm = ', yy, 
                            ', tmeasure = \'', z, '\', maxit = ', maxit, 
-                           ', newx = newx, pred.type = \'', xx, 
-                           '\', alpha = ', alpha, ', nfolds = ', nfolds, 
+                           ', newx = newx, pred.type = \'', xx, '\', fordate = fordate', 
+                           ', alpha = ', alpha, ', nfolds = ', nfolds, 
                            ', foldid = ', foldid, ', s = \'', xy, 
                            '\', weight.date = ', weight.date, ', weight.volume = ', 
                            weight.volume, ', wt.control = ', yx, 
@@ -307,7 +370,16 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
       })
     }) %>% as.character
     
-    if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitpoim' else nam <- 'fitpoim'
+    #'@ if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitpoim' else nam <- 'fitpoim'
+    if(weight.dist == 'pnorm') {
+      nam <- 'wt.pnorm.fitpoim'
+    } else if(weight.dist == 'phalfpoim'){
+      nam <- 'wt.phalfnorm.fitpoim'
+    } else if(weight.dist == 'none') {
+      nam <- 'fitpoim'
+    } else {
+      stop('Kindly select weight.dist = "pnorm" or weight.dist = "phalfnorm" or weight.dist = "none".')
+    }
     
     pm <- paste(paste0(
       nam, seq(poim), " <- ", poim, 
@@ -383,9 +455,9 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                   sapply(wt.control, function(yx) {
                     paste0('glmPrice(mbase, family = \'', family, '\', xy.matrix = \'', x, 
                            '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
-                           '\', tmultinomial = ', tm, '\', maxit = ', maxit, 
-                           ', newx = newx, pred.type = \'', xx, 
-                           '\', alpha = ', alpha, ', nfolds = ', nfolds, 
+                           '\', tmultinomial = \'', tm, '\', maxit = ', maxit, 
+                           ', newx = newx, pred.type = \'', xx, '\', fordate = fordate', 
+                           ', alpha = ', alpha, ', nfolds = ', nfolds, 
                            ', foldid = ', foldid, ', s = \'', xy, 
                            '\', weight.date = ', weight.date, ', weight.volume = ', 
                            weight.volume, ', wt.control = ', yx, 
@@ -399,7 +471,16 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
       })
     }) %>% as.character
     
-    if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitmnmm' else nam <- 'fitmnmm'
+    #'@ if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitmnmm' else nam <- 'fitmnmm'
+    if(weight.dist == 'pnorm') {
+      nam <- 'wt.pnorm.fitmnmm'
+    } else if(weight.dist == 'phalfmnmm'){
+      nam <- 'wt.phalfnorm.fitmnmm'
+    } else if(weight.dist == 'none') {
+      nam <- 'fitmnmm'
+    } else {
+      stop('Kindly select weight.dist = "pnorm" or weight.dist = "phalfnorm" or weight.dist = "none".')
+    }
     
     mm <- paste(paste0(
       nam, seq(mnmm), " <- ", mnmm, 
@@ -456,8 +537,8 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                          '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
                          '\', maxit = ', maxit, ', newx = newx, pred.type = \'', xx, 
                          '\', alpha = ', alpha, ', nfolds = ', nfolds, 
-                         ', foldid = ', foldid, ', s = \'', xy, 
-                         '\', weight.date = ', weight.date, ', weight.volume = ', 
+                         ', foldid = ', foldid, ', s = \'', xy, '\', fordate = fordate', 
+                         ', weight.date = ', weight.date, ', weight.volume = ', 
                          weight.volume, ', wt.control = ', yx, 
                          ', parallel = ', parallel, ', .log = .log)')
                 })
@@ -468,7 +549,16 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
       })
     }) %>% as.character
     
-    if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitcoxm' else nam <- 'fitcoxm'
+    #'@ if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitcoxm' else nam <- 'fitcoxm'
+    if(weight.dist == 'pnorm') {
+      nam <- 'wt.pnorm.fitcoxm'
+    } else if(weight.dist == 'phalfcoxm'){
+      nam <- 'wt.phalfnorm.fitcoxm'
+    } else if(weight.dist == 'none') {
+      nam <- 'fitcoxm'
+    } else {
+      stop('Kindly select weight.dist = "pnorm" or weight.dist = "phalfnorm" or weight.dist = "none".')
+    }
     
     cm <- paste(paste0(
       nam, seq(coxm), " <- ", coxm, 
@@ -525,8 +615,8 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
                          '\', setform = \'', xz, '\', yv = \'', y, '\', tmeasure = \'', z, 
                          '\', maxit = ', maxit, ', newx = newx, pred.type = \'', xx, 
                          '\', alpha = ', alpha, ', nfolds = ', nfolds, 
-                         ', foldid = ', foldid, ', s = \'', xy, 
-                         '\', weight.date = ', weight.date, ', weight.volume = ', 
+                         ', foldid = ', foldid, ', s = \'', xy, '\', fordate = fordate', 
+                         ', weight.date = ', weight.date, ', weight.volume = ', 
                          weight.volume, ', wt.control = ', yx, 
                          ', parallel = ', parallel, ', .log = .log)')
                 })
@@ -537,7 +627,16 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
       })
     }) %>% as.character
     
-    if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitmgam' else nam <- 'fitmgam'
+    #'@ if(weight.date != FALSE | weight.volume!= FALSE) nam <- 'wtfitmgam' else nam <- 'fitmgam'
+    if(weight.dist == 'pnorm') {
+      nam <- 'wt.pnorm.fitmgam'
+    } else if(weight.dist == 'phalfmgam'){
+      nam <- 'wt.phalfnorm.fitmgam'
+    } else if(weight.dist == 'none') {
+      nam <- 'fitmgam'
+    } else {
+      stop('Kindly select weight.dist = "pnorm" or weight.dist = "phalfnorm" or weight.dist = "none".')
+    }
     
     mgm <- paste(paste0(
       nam, seq(mgam), " <- ", mgam, 
@@ -584,8 +683,10 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
   ## return all famalies.
   tmp <- list(fitgaum = tmp1, fitbinm = tmp2, fitpoim = tmp3, 
               fitmnmm = tmp4, fitcoxm = tmp5, fitmgam = tmp6)
-  rm(tmp1, tmp2, tmp3, tmp4, tmp5, tmp6)
+  #'@ rm(tmp1, tmp2, tmp3, tmp4, tmp5, tmp6)
   
+  ## remove all include hidden objects but only leave one object.
+  rm(list = setdiff(ls(all.names = TRUE), 'tmp'))
   return(tmp)
 }
 
