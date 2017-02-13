@@ -649,6 +649,28 @@ wtGSfit <- llply(dateID, function(dt) {
   }
 })
 
+## ---------- Start corerection on the selected models ---------------------------
+
+check.form <- ldply(list.files('./data', pattern = '^[0-9]{8}$'), function(x) {
+   ldply(list.files(paste0('./data/', x), pattern = '^fitgaum.mse1.rds$'), 
+		function(y) {
+     read_rds(path = paste0('./data/', x, '/', y))
+   }) %>% data.frame(x, .) %>% tbl_df
+}) %>% tbl_df
+
+> ## best fit models across the study from 2015-01-01 to 2017-01-20 (trading days only).
+> check.form$.id %>% as.character %>% unique %>% str_extract_all('[0-9]{1,}') %>% as.numeric %>% sort
+ [1]  17  18  19  20  22  23  24  25  26  27  28  30  31  49  50  51  52  53  54  55  56  57  58  59  60  61
+[27]  62  63  64  81  82  83  84  85  86  87  88  89  90  91  92  93  94  95  96 113 114 115 116 117 118 119
+[53] 120 121 122 123 124 125 126 127 128 129 130 131 132 133 134 135 136 137 138 139 140 141 142 143 144 153
+[79] 154 155 156 157 158 159 160 161 162 163 164 165 166 167 168
+
+## Need to review and filter only take models (based on formula) from 17 to 168 for weighted models.
+
+
+## ---------- End corerection on the selected models ---------------------------
+
+
 ## =============================================================
 files <- list.files('./data/20150102/', pattern = 'fitgaum+[0-9]{1,}.rds$')
 

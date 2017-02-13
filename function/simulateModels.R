@@ -216,6 +216,7 @@ LAD <- read_rds(path = './data/LAD_full.rds')
 
 ## weighted model 1 : preset 224 models
 simcompS(mbase = LAD, family = 'gaussian', weight.dist = 'pnorm')
+## read_rds(path = './data/20160601/wt.pnorm.fitgaum176.rds') #error on wt.pnorm.fitgaum177.rds
 
 ## weighted model 2 : preset 224 models
 ## need to simulate upon completion of weighted model 1

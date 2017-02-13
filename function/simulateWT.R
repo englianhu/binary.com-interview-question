@@ -92,18 +92,18 @@ simulateWT <- function(mbase, settledPrice = 'Close', .parallel = TRUE, .save = 
 	
 	if(.print == TRUE) {
 		if(.save == TRUE) {			
-			cat(paste0('./data/', x, '. All wt.fitgaum.rds had saved.\n'))
+			cat(paste0('./data/', x, '. All wt.fitgaum.rds had saved.\n\n'))
 		} else {
-			cat(paste0('./data/', x, '. All wt.fitgaum.rds had calculated.\n'))
+			cat(paste0('./data/', x, '. All wt.fitgaum.rds had calculated.\n\n'))
 			}
 		}	
   })
   
   if(.print == TRUE) {
 		if(.save == TRUE) {			
-			cat('Save all and completed.\n')
+			cat('Save all and completed.\n\n')
 		} else {
-			cat('Calculate all and completed.\n')
+			cat('Calculate all and completed.\n\n')
 			}
 		}
 	  

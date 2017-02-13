@@ -53,7 +53,10 @@ simcompS <- function(mbase, family, weight.dist = 'none') {
       #'@ ymd("2016-2-29") %m-% years(1)
       ## http://stackoverflow.com/questions/8490799/how-to-account-for-leap-years
       fld = str_replace_all(dt, '-', '')
-      fl = ldply(seq(224), function(x) {
+      fitnum = list.files(paste0('./data/', fld), pattern = '^fitgaum+[0-9]{1,}.rds$') %>% 
+        str_extract_all('([0-9]{1,})') %>% unlist %>% as.numeric %>% sort
+      
+      fl = ldply(seq(fitnum), function(x) {
         read_rds(path = paste0('./data/', fld, '/wt.fitgaum', x, '.rds'))
       }) %>% tbl_df
       #'@ files <- list.files(paste0('./data/', fld), pattern = 'wt.fitgaum+[0-9]{1,}.rds$')
@@ -95,7 +98,8 @@ simcompS <- function(mbase, family, weight.dist = 'none') {
       wt.pnorm.fitgaum.form = wt.pnorm.fitgaum$formula1[str_replace_all(
         name514gs, 'wt.pnorm.fitgaum', '') %>% as.numeric]
       saveRDS(wt.pnorm.fitgaum.form, file = paste0(pth, '/wt.pnorm.fitgaum.form.rds'))
-      
+      rm(fld, fitnum, fl, wtdt, wtpc, wt.pnorm.fitgaum, wt.pnorm.fitgaum.mse1, wt.pnorm.fitgaum.best, wt.pnorm.fitgaum.sum, wt.pnorm.fitgaum.form)
+
     } else if(weight.dist == 'phalfnorm') {
       
       ## predict dateID onwards from data < dateID
@@ -104,7 +108,10 @@ simcompS <- function(mbase, family, weight.dist = 'none') {
       #'@ ymd("2016-2-29") %m-% years(1)
       ## http://stackoverflow.com/questions/8490799/how-to-account-for-leap-years
       fld = str_replace_all(dt, '-', '')
-      fl = ldply(seq(224), function(x) {
+      fitnum = list.files(paste0('./data/', fld), pattern = '^fitgaum+[0-9]{1,}.rds$') %>% 
+        str_extract_all('([0-9]{1,})') %>% unlist %>% as.numeric %>% sort
+      
+      fl = ldply(seq(fitnum), function(x) {
         read_rds(path = paste0('./data/', fld, '/wt.fitgaum', x, '.rds'))
       }) %>% tbl_df
       #'@ files <- list.files(paste0('./data/', fld), pattern = 'wt.fitgaum+[0-9]{1,}.rds$')
@@ -146,7 +153,8 @@ simcompS <- function(mbase, family, weight.dist = 'none') {
       wt.phalfnorm.fitgaum.form = wt.phalfnorm.fitgaum$formula1[str_replace_all(
         name514gs, 'wt.phalfnorm.fitgaum', '') %>% as.numeric]
       saveRDS(wt.phalfnorm.fitgaum.form, file = paste0(pth, '/wt.phalfnorm.fitgaum.form.rds'))
-      
+      rm(fld, fitnum, fl, wtdt, wtpc, wt.phalfnorm.fitgaum, wt.phalfnorm.fitgaum.mse1, wt.phalfnorm.fitgaum.best, wt.phalfnorm.fitgaum.sum, wt.phalfnorm.fitgaum.form)
+
     } else if(weight.dist == 'none') {
       
       fitgaum = compStocks(smp, family = family, xy.matrix = 'h2', yv.lm = c(TRUE, FALSE), preset.weight = TRUE, 
@@ -172,12 +180,13 @@ simcompS <- function(mbase, family, weight.dist = 'none') {
       ## saved best model's formula.
       fitgaum.form = fitgaum$formula1[str_replace_all(name514gs, 'fitgaum', '') %>% as.numeric]
       saveRDS(fitgaum.form, file = paste0(pth, '/fitgaum.form.rds'))
-      
+      rm(fld, fitnum, fl, wtdt, wtpc, fitgaum, fitgaum.mse1, fitgaum.best, fitgaum.sum, fitgaum.form)
+
     } else {
       stop('Kindly select weight.dist = "pnorm" or weight.dist = "phalfnorm" or weight.dist = "none".')
     }
     })
-  
+
   #'@ rm(list = ls(all.names = TRUE))
   return(fitm)
   }
