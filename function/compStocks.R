@@ -179,7 +179,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
     gm <- paste(paste0(
       nam, seq(gaum), " <- ", gaum, 
       "; if(.save == TRUE) saveRDS(", nam, seq(gaum), ", file = '", pth, "/", nam, seq(gaum), ".rds')", 
-      "; if(.print == TRUE) cat('gaussian model ", pth, seq(gaum), "/", length(gaum), " ", txt, ".\n')"), 
+      "; if(.print == TRUE) cat('gaussian model ", pth, ' : ', as.character(now()), ' : ', seq(gaum), "/", length(gaum), " ", txt, ".\n')"), 
       collapse = "; ")
     
     ## start algorithmic calculation.
@@ -287,7 +287,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
     bm <- paste(paste0(
       nam, seq(binm), " <- ", binm, 
       "; if(.save == TRUE) saveRDS(", nam, seq(binm), ", file = '", pth, "/", nam, seq(binm), ".rds')", 
-      "; if(.print == TRUE) cat('binomial model ",  pth, seq(binm), "/", length(binm), " ", txt, ".\n')"), 
+      "; if(.print == TRUE) cat('binomial model ",  pth, ' : ', as.character(now()), ' : ', seq(binm), "/", length(binm), " ", txt, ".\n')"), 
       collapse = "; ")
     
     ## start algorithmic calculation.
@@ -384,7 +384,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
     pm <- paste(paste0(
       nam, seq(poim), " <- ", poim, 
       "; if(.save == TRUE) saveRDS(", nam, seq(poim), ", file = '", pth, "/", nam, seq(poim), ".rds')", 
-      "; if(.print == TRUE) cat('poisson model ",  pth, seq(poim), "/", length(poim), " ", txt, ".\n')"), 
+      "; if(.print == TRUE) cat('poisson model ",  pth, ' : ', as.character(now()), ' : ', seq(poim), "/", length(poim), " ", txt, ".\n')"), 
       collapse = "; ")
     
     ## start algorithmic calculation.
@@ -485,7 +485,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
     mm <- paste(paste0(
       nam, seq(mnmm), " <- ", mnmm, 
       "; if(.save == TRUE) saveRDS(", nam, seq(mnmm), ", file = '", pth, "/", nam, seq(mnmm), ".rds')", 
-      "; if(.print == TRUE) cat('multinomial model ",  pth, seq(mnmm), "/", length(mnmm), " ", txt, ".\n')"), 
+      "; if(.print == TRUE) cat('multinomial model ",  pth, ' : ', as.character(now()), ' : ', seq(mnmm), "/", length(mnmm), " ", txt, ".\n')"), 
       collapse = "; ")
     
     ## start algorithmic calculation.
@@ -563,7 +563,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
     cm <- paste(paste0(
       nam, seq(coxm), " <- ", coxm, 
       "; if(.save == TRUE) saveRDS(", nam, seq(coxm), ", file = '", pth, "/", nam, seq(coxm), ".rds')", 
-      "; if(.print == TRUE) cat('multinomial model ",  pth, seq(coxm), "/", length(coxm), " ", txt, ".\n')"), 
+      "; if(.print == TRUE) cat('multinomial model ",  pth, ' : ', as.character(now()), ' : ', seq(coxm), "/", length(coxm), " ", txt, ".\n')"), 
       collapse = "; ")
     
     ## start algorithmic calculation.
@@ -641,7 +641,7 @@ compStocks <- function(mbase, family = 'gaussian', xy.matrix = c('h1', 'h2'),
     mgm <- paste(paste0(
       nam, seq(mgam), " <- ", mgam, 
       "; if(.save == TRUE) saveRDS(", nam, seq(mgam), ", file = '", pth, "/", nam, seq(mgam), ".rds')", 
-      "; if(.print == TRUE) cat('mgaussian model ",  pth, seq(mgam), "/", length(mgam), " ", txt, ".\n')"), 
+      "; if(.print == TRUE) cat('mgaussian model ",  pth, ' : ', as.character(now()), ' : ', seq(mgam), "/", length(mgam), " ", txt, ".\n')"), 
       collapse = "; ")
     
     ## start algorithmic calculation.

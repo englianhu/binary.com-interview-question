@@ -9,6 +9,7 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
   suppressMessages(library('formattable'))
   suppressMessages(library('quantmod'))
   suppressMessages(library('highcharter'))
+  suppressMessages(library('xts'))
   suppressMessages(library('tidyverse'))
   
   ## --------------------- Data validation ------------------------------------------

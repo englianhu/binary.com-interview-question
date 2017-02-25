@@ -8,6 +8,7 @@ filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
   suppressAll(library('magrittr'))
   suppressAll(library('lubridate'))
   suppressAll(library('formattable'))
+  suppressAll(library('xts'))
   suppressAll(library('quantmod'))
   #'@ suppressAll(library('tidyquant'))
   suppressAll(source('./function/loadLAD.R'))
@@ -23,8 +24,9 @@ filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
   }
   
   if(!exists('mbaseDT')) {
-    mbaseDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-      tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+    mbaseDT <- data.frame(Date = index(LAD), coredata(LAD)) %>% tbl_df %>% arrange(Date)
+    #'@ mbaseDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
+    #'@   tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
     # %>% mutate(LAD.Volume = formattable::digits(
     #       LAD.Volume, 0, format = 'd', big.mark = ','))
   }
@@ -43,8 +45,9 @@ filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
     suppressAll(getSymbols('LAD', from = startDate, to = endDate))
     
     mbase <- LAD; rm(LAD)
-    mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-      tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+    mbaseDT <- data.frame(Date = index(LAD), coredata(LAD)) %>% tbl_df %>% arrange(Date)
+    #'@ mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
+    #'@   tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
     # %>% mutate(LAD.Volume = formattable::digits(
     #       LAD.Volume, 0, format = 'd', big.mark = ','))
     dateRange <- range(mbaseDT$Date)
@@ -58,8 +61,9 @@ filterLAD <- memoise(function(startDate = NULL, endDate = NULL) {
   ## ==================== Data Filtering ===================================
   mbase <- mbase[paste0(startDate, '/', endDate)]
   
-  mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-    tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+  mbaseDT <- data.frame(Date = index(LAD), coredata(LAD)) %>% tbl_df %>% arrange(Date)
+  #'@ mbaseDT <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
+  #'@   tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
   # %>% mutate(LAD.Volume = formattable::digits(
   #       LAD.Volume, 0, format = 'd', big.mark = ','))
   

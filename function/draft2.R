@@ -679,6 +679,27 @@ wt <- ldply(files, function(x) {
   y %>% data.frame(Date = x, .) %>% tbl_df %>% filter(mse == min(mse))
 }) %>% tbl_df
 
+## =============================== Models Comparison =========================================
+## Comparison of models.
+
+## list.files('./data/20150102', pattern = '^wt.pnorm.fitgaum[0-9]{1,}.rds$')
+m.pnorm <- list.files('./data/20150102', pattern = '^wt.pnorm.fitgaum[0-9]{1,}.rds$')
+m.phalfnorm <- list.files('./data/20150102', pattern = '^wt.phalfnorm.fitgaum[0-9]{1,}.rds$')
+
+m.pnorm <- list.files('./data/20150102', pattern = paste0('^wt.pnorm.fitgaum', 1:168, '.rds$'))
+m.phalfnorm <- list.files('./data/20150102', pattern = '^wt.phalfnorm.fitgaum[0-9]{1,}.rds$')
+
+
+## http://stackoverflow.com/questions/31409591/difference-between-forecast-and-predict-function-in-r?answertab=votes#tab-top
+
+## =========================== start reminder ============================================
+## Read through above link and might use forecast() after xts() the fit$yhat with date.
+## However the weighted function and values need to be consider. If the forecast() fit the 
+##   weighted effect or not in default.
+
+## ============================ end reminder =============================================
+
+
 
 
 ## ==================================== MCMC Model ===========================================

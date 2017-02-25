@@ -21,6 +21,7 @@ suppressAll(library("shiny"))
 suppressAll(library("shinyjs"))
 suppressAll(library('shinyBS'))
 suppressAll(library('DT'))
+suppressAll(library('xts'))
 suppressAll(library('quantmod'))
 suppressAll(library('formattable'))
 suppressAll(library('highcharter'))
@@ -35,8 +36,9 @@ suppressAll(source('./function/plotChart2.R'))
 #'@ getSymbols('LAD')
 #'@ saveRDS(LAD, file = './data/LAD_full.rds')
 LAD <- read_rds(path = './data/LAD_full.rds')
-LADDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-  tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+LADDT <- data.frame(Date = index(LAD), coredata(LAD)) %>% tbl_df %>% arrange(Date)
+#'@ LADDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
+#'@   tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
 #mutate(LAD.Volume = formattable::digits(
 #       LAD.Volume, 0, format = 'd', big.mark = ','))
 

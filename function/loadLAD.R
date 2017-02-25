@@ -9,6 +9,7 @@ loadLAD <- function(latestDate = NULL, dataSizeDay = 365) {
   suppressAll(library('tidyr'))
   suppressAll(library('readr'))
   suppressAll(library('tidyverse')) #load c(dplyr, tidyr, stringr, readr) due to system doesn't work.
+  suppressAll(library('xts'))
   suppressAll(library('quantmod'))
   #'@ suppressAll(library('tidyquant'))
   
@@ -49,8 +50,9 @@ loadLAD <- function(latestDate = NULL, dataSizeDay = 365) {
     LAD <- read_rds(path = './data/LAD.rds')
   }
   
-  LADDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-    tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+  LADDT <- data.frame(Date = index(LAD), coredata(LAD)) %>% tbl_df %>% arrange(Date)
+  #'@ LADDT <- LAD %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
+  #'@   tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
   #mutate(LAD.Volume = formattable::digits(
   #       LAD.Volume, 0, format = 'd', big.mark = ','))
   

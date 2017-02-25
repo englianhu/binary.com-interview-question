@@ -1,7 +1,10 @@
-simcompS <- function(mbase, family, weight.dist = 'none') {
+simcompS <- function(mbase, family, weight.dist = 'none', rm.sim = TRUE) {
   ## Draft simulate the function while I added-on some-more criterias and selections.
   ## Simulate 365 days dataset with Markov Chain.
   ##   using moving 365 days dataset and rerun the compStocks.
+  
+  ## rm.sim = TRUE will remove the files once calculated and saved.
+  
   suppressPackageStartupMessages(library("BBmisc"))
   suppressAll(library('devtools'))
   suppressAll(library('lubridate'))
@@ -12,12 +15,14 @@ simcompS <- function(mbase, family, weight.dist = 'none') {
   suppressAll(library('tidyr'))
   suppressAll(library('readr'))
   suppressAll(library('tidyverse')) #load c(dplyr, tidyr, stringr, readr) due to system doesn't work.
+  suppressAll(library('xts'))
   suppressAll(library('quantmod'))
   suppressAll(source('./function/compStocks.R'))
   
   if(is.xts(mbase)) {
-    mbase <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
-      tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
+    mbase <- data.frame(Date = index(mbase), coredata(mbase)) %>% tbl_df %>% arrange(Date)
+    #'@ mbase <- mbase %>% data.frame %>% data.frame(Date = rownames(.), .) %>% 
+    #'@   tbl_df %>% mutate(Date = ymd(Date)) %>% arrange(Date)
     #mutate(LAD.Volume = formattable::digits(
     #       LAD.Volume, 0, format = 'd', big.mark = ','))
   }
@@ -98,7 +103,7 @@ simcompS <- function(mbase, family, weight.dist = 'none') {
       wt.pnorm.fitgaum.form = wt.pnorm.fitgaum$formula1[str_replace_all(
         name514gs, 'wt.pnorm.fitgaum', '') %>% as.numeric]
       saveRDS(wt.pnorm.fitgaum.form, file = paste0(pth, '/wt.pnorm.fitgaum.form.rds'))
-      rm(fld, fitnum, fl, wtdt, wtpc, wt.pnorm.fitgaum, wt.pnorm.fitgaum.mse1, wt.pnorm.fitgaum.best, wt.pnorm.fitgaum.sum, wt.pnorm.fitgaum.form)
+      if(rm.sim == TRUE) rm(fld, fitnum, fl, wtdt, wtpc, wt.pnorm.fitgaum, wt.pnorm.fitgaum.mse1, wt.pnorm.fitgaum.best, wt.pnorm.fitgaum.sum, wt.pnorm.fitgaum.form)
 
     } else if(weight.dist == 'phalfnorm') {
       
@@ -153,7 +158,7 @@ simcompS <- function(mbase, family, weight.dist = 'none') {
       wt.phalfnorm.fitgaum.form = wt.phalfnorm.fitgaum$formula1[str_replace_all(
         name514gs, 'wt.phalfnorm.fitgaum', '') %>% as.numeric]
       saveRDS(wt.phalfnorm.fitgaum.form, file = paste0(pth, '/wt.phalfnorm.fitgaum.form.rds'))
-      rm(fld, fitnum, fl, wtdt, wtpc, wt.phalfnorm.fitgaum, wt.phalfnorm.fitgaum.mse1, wt.phalfnorm.fitgaum.best, wt.phalfnorm.fitgaum.sum, wt.phalfnorm.fitgaum.form)
+      if(rm.sim == TRUE) rm(fld, fitnum, fl, wtdt, wtpc, wt.phalfnorm.fitgaum, wt.phalfnorm.fitgaum.mse1, wt.phalfnorm.fitgaum.best, wt.phalfnorm.fitgaum.sum, wt.phalfnorm.fitgaum.form)
 
     } else if(weight.dist == 'none') {
       
@@ -180,7 +185,7 @@ simcompS <- function(mbase, family, weight.dist = 'none') {
       ## saved best model's formula.
       fitgaum.form = fitgaum$formula1[str_replace_all(name514gs, 'fitgaum', '') %>% as.numeric]
       saveRDS(fitgaum.form, file = paste0(pth, '/fitgaum.form.rds'))
-      rm(fld, fitnum, fl, wtdt, wtpc, fitgaum, fitgaum.mse1, fitgaum.best, fitgaum.sum, fitgaum.form)
+      if(rm.sim == TRUE) rm(fld, fitnum, fl, wtdt, wtpc, fitgaum, fitgaum.mse1, fitgaum.best, fitgaum.sum, fitgaum.form)
 
     } else {
       stop('Kindly select weight.dist = "pnorm" or weight.dist = "phalfnorm" or weight.dist = "none".')
