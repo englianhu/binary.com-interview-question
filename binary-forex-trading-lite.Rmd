@@ -1,0 +1,376 @@
+---
+title: "Binary.com Forex Trading"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question (lite version answer)"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>白戸則道®"
+date: "`r Sys.Date()`"
+output:
+  tint::tintHtml: 
+     self_contained: TRUE
+bibliography: skeleton.bib
+link-citations: yes
+---
+
+```{r setup, include = FALSE}
+suppressPackageStartupMessages(library('BBmisc'))
+suppressAll(library('tint'))
+suppressAll(library('devtools'))
+suppressAll(library('lubridate'))
+suppressAll(library('plyr'))
+suppressAll(library('stringr'))
+suppressAll(library('magrittr'))
+suppressAll(library('dplyr'))
+suppressAll(library('tidyr'))
+suppressAll(library('readr'))
+suppressAll(library('tidyverse')) #load c(dplyr, tidyr, stringr, readr) due to system doesn't work.
+suppressAll(library('DT'))
+suppressAll(library('quantmod'))
+suppressAll(library('tidyquant'))
+suppressAll(library('formattable'))
+suppressAll(library('highcharter'))
+suppressAll(library('forecast'))
+suppressAll(library('MCMCpack'))
+suppressAll(library('PerformanceAnalytics'))
+suppressAll(library('broom'))
+#'@ suppressAll(source('./function/.R', local = TRUE))
+
+# invalidate cache when the package version changes
+knitr::opts_chunk$set(tidy = FALSE, cache.extra = packageVersion('tint'))
+options(htmltools.dir.version = FALSE)
+```
+
+# 1. Introduction
+
+  Below are the questionaire. Here I created this file to apply `MCMCpack` and `forecast` to compelete the questions prior to completed the `Ridge`, `ElasticNet` and `LASSO` regression (quite alot of models for comparison).
+  
+  <iframe src=\"https://raw.githubusercontent.com/englianhu/binary.com-interview-question/ff20ee95aa60ef5cca3cf797066089103eb62acf/reference/quant-analyst-skills-test.pdf" width=\"900\" height=\"600\"></iframe>
+
+# 2. Content
+
+## 2.1 Question 1
+
+```{r read-data, eval = FALSE}
+## 
+## Do not execute...
+## 
+
+## get currency dataset online.
+getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20')
+USDJPY <- xts(USDJPY[, -1], order.by = USDJPY$Date)
+
+## dateID
+dateID <- index(USDJPY)
+dateID0 <- ymd('2015-01-01')
+dateID <- dateID[dateID > dateID0]
+obs.data <- USDJPY[index(USDJPY) > dateID0]
+
+## Now we try to use the daily mean value which is (Hi + Lo) / 2.
+pred.data <- ldply(dateID, function(dt) {
+  smp = USDJPY
+  dtr = last(index(smp[index(smp) < dt]))
+  smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
+  frd = as.numeric(difftime(dt, dtr), units = 'days')
+  fit = ets(smp)
+  data.frame(Date = dt, forecast(fit, h = frd)) %>% tbl_df
+  }, .parallel = FALSE) %>% tbl_df
+
+cmp.data <- xts(pred.data[, -1], order.by = pred.data$Date)
+cmp.data <- cbind(cmp.data, obs.data)
+rm(obs.data, pred.data)
+
+# Test the models
+lm(Point.Forecast~ USD.JPY, data = cmp.data)
+MCMCregress(Point.Forecast~ USD.JPY, data = cmp.data)
+
+
+plot(forecast(fit))
+forecast(fit, h = 4)
+```
+
+```{r read-data2}
+## get currency dataset online.
+## http://stackoverflow.com/questions/24219694/get-symbols-quantmod-ohlc-currency-data
+#'@ getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20')
+
+## getFX() doesn't shows Op, Hi, Lo, Cl price but only price. Therefore no idea to place bets.
+#'@ USDJPY <- getSymbols('JPY=X', src = 'yahoo', from = '2014-01-01', 
+#'@                      to = '2017-01-20', auto.assign = FALSE)
+#'@ names(USDJPY) <- str_replace_all(names(USDJPY), 'JPY=X', 'USDJPY')
+#'@ USDJPY <- xts(USDJPY[, -1], order.by = USDJPY$Date)
+
+#'@ saveRDS(USDJPY, './data/USDJPY.rds')
+USDJPY <- read_rds(path = './data/USDJPY.rds')
+```
+
+```{r modelling2}
+## Now we try to use the daily mean value which is (Hi + Lo) / 2.
+## Hi for predict daily highest price. (selling daytrade)
+## Lo for predict daily lowest price. (buying daytrade)
+simPrice <- function(mbase, prCat = 'Mn', baseDate = ymd('2015-01-01'), .parallel = FALSE) {
+  
+  if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
+  
+  ## dateID
+  dateID <- index(mbase)
+  if(!is.Date(baseDate)) {
+    dateID0 <- ymd(baseDate); rm(baseDate)
+  } else {
+    dateID0 <- baseDate; rm(baseDate)
+  }
+  dateID <- dateID[dateID >= dateID0]
+  
+  ## Set as our daily settlement price.
+  obs.data <- mbase[index(mbase) > dateID0]
+  price.category <- c('Op', 'Hi', 'Md', 'Lo', 'Cl')
+  
+  if(prCat %in% price.category) {
+    if(prCat == 'Op') {
+      obs.data2 <- Op(mbase)
+      
+    } else if(prCat == 'Hi') {
+      obs.data2 <- Hi(mbase)
+      
+    } else if(prCat == 'Mn') { #mean of highest and lowest
+      obs.data2 <- cbind(Hi(mbase), Lo(mbase), USDJPY.Md = rowMeans(cbind(Hi(mbase), Lo(mbase))))[,-c(1:2)]
+      
+    } else if(prCat == 'Lo') {
+      obs.data2 <- Lo(mbase)
+      
+    } else if(prCat == 'Cl') {
+      obs.data2 <- Cl(mbase)
+      
+    } else {
+      stop('Kindly choose prCat = "Op", prCat = "Hi", prCat = "Mn", prCat = "Lo" or prCat = "Cl".')
+    }
+  } else {
+    stop('Kindly choose prCat = "Op", prCat = "Hi", prCat = "Mn", prCat = "Lo" or prCat = "Cl".')
+  }
+  
+  pred.data <- ldply(dateID, function(dt) {
+      smp = obs.data2
+      dtr = last(index(smp[index(smp) < dt]))
+      smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
+      frd = as.numeric(difftime(dt, dtr), units = 'days')
+      fit = ets(smp)
+      if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+      data.frame(Date = dt, forecast(fit, h = frd)) %>% tbl_df
+    }, .parallel = .parallel) %>% tbl_df
+
+  cmp.data <- xts(pred.data[, -1], order.by = pred.data$Date)
+  cmp.data <- cbind(cmp.data, Cl(obs.data))
+  rm(obs.data, pred.data)
+  
+  return(cmp.data)
+  }
+```
+
+```{r build-fits}
+## Modelling
+fit.op <- simPrice(USDJPY, prCat = 'Op') #will take a minute
+fit.hi <- simPrice(USDJPY, prCat = 'Hi') #will take a minute
+fit.mn <- simPrice(USDJPY, prCat = 'Mn') #will take a minute
+fit.lo <- simPrice(USDJPY, prCat = 'Lo') #will take a minute
+fit.cl <- simPrice(USDJPY, prCat = 'Cl') #will take a minute
+```
+
+```{r testModels}
+## Need to test and read through the MCMCregress... after few months later (when free)... Start working as a servant at Bah-Kut-Teh restorant tommorrow 01-Mar-2017.
+
+## Test the models
+## opened price fit data
+summary(lm(Point.Forecast~ USDJPY.Close, data = fit.op))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.op))
+
+## highest price fit data
+summary(lm(Point.Forecast~ USDJPY.Close, data = fit.hi))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.hi))
+
+## mean price fit data (mean price of daily highest and lowest price)
+summary(lm(Point.Forecast~ USDJPY.Close, data = fit.mn))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.mn))
+
+## lowest price fit data
+summary(lm(Point.Forecast~ USDJPY.Close, data = fit.lo))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.lo))
+
+## closed price fit data
+summary(lm(Point.Forecast~ USDJPY.Close, data = fit.cl))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.cl))
+```
+
+```{r plots}
+## Plot the models
+## opened price fit data
+plot(forecast(fit.op))
+forecast(fit.op, h = 4)
+
+## highest price fit data
+plot(forecast(fit.hi))
+forecast(fit.hi, h = 4)
+
+## mean price fit data (mean price of daily highest and lowest price)
+plot(forecast(fit.mn))
+forecast(fit.mn, h = 4)
+
+## lowest price fit data
+plot(forecast(fit.lo))
+forecast(fit.lo, h = 4)
+
+## opened price fit data
+plot(forecast(fit.cl))
+forecast(fit.cl, h = 4)
+
+```
+
+```{r stakingModels}
+simStakes <- function(mbase, prCat = 'Op', baseDate = ymd('2015-01-01'), .parallel = FALSE, setPrice = 'Cl') {
+  #'@ source('./function/simPrice.R')
+  
+  ## forecast staking price.
+  fit1 <- simPrice(mbase, prCat = prCat, baseDate = baseDate, .parallel = .parallel)
+  fit1 <- data.frame(Date = index(fit1), coredata(fit1)) %>% tbl_df
+  fit1 <- na.omit(fit1)
+  
+  ## forecast settlement price.
+  fit2 <- simPrice(mbase, prCat = setPrice, baseDate = baseDate, .parallel = .parallel)
+  fit2 <- data.frame(Date = index(fit2), coredata(fit2)) %>% tbl_df
+  fit2 <- na.omit(fit2)
+  
+  ## merge dataset
+  fitm <- cbind(fit1, forClose = fit2$Point.Forecast) %>% tbl_df
+  
+  ## convert to probability.
+  fitm %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+  
+  ## staking model and bankroll management.
+  ## need to refer to Niko Martinen's fund management formula to maximise the stakes and profit base on Kelly models.
+  ## https://github.com/scibrokes/betting-strategy-and-model-validation/blob/master/references/Creating%20a%20Profitable%20Betting%20Strategy%20for%20Football%20by%20Using%20Statistical%20Modelling.pdf
+  #....
+  
+  
+  return(fitm)
+  }
+```
+
+```{r convertion}
+
+## Will need to mofify above function, fit the data convertion and also staking from all below `chunks` into the function simStakes() above.
+df.op <- data.frame(Date = index(fit.op), coredata(fit.op)) %>% tbl_df
+df.hi <- data.frame(Date = index(fit.hi), coredata(fit.hi)) %>% tbl_df
+df.mn <- data.frame(Date = index(fit.mn), coredata(fit.mn)) %>% tbl_df
+df.lo <- data.frame(Date = index(fit.lo), coredata(fit.lo)) %>% tbl_df
+df.cl <- data.frame(Date = index(fit.cl), coredata(fit.cl)) %>% tbl_df
+
+df.op <- na.omit(df.op)
+df.hi <- na.omit(df.hi)
+df.mn <- na.omit(df.mn)
+df.lo <- na.omit(df.lo)
+df.cl <- na.omit(df.cl)
+```
+
+```{r weight-function}
+## Set the forecast closed price as our staking criteria.
+df.op <- cbind(df.op, forClose = df.cl$Point.Forecast) %>% tbl_df
+df.hi <- cbind(df.hi, forClose = df.cl$Point.Forecast) %>% tbl_df
+df.mn <- cbind(df.mn, forClose = df.cl$Point.Forecast) %>% tbl_df
+df.lo <- cbind(df.lo, forClose = df.cl$Point.Forecast) %>% tbl_df
+df.cl <- cbind(df.cl, forClose = df.cl$Point.Forecast) %>% tbl_df
+```
+
+```{r prob-convertion}
+## convert all forecast price into probability.
+
+## forecast the opened price.
+df.op %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+
+## forecast the highest price.
+df.hi %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+
+## forecast the mean price.
+df.mn %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+
+## forecast the lowest price.
+df.lo %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+
+## forecast the closed price.
+df.cl %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+```
+
+
+```{r staking}
+## Kelly staking models.
+
+
+```
+
+
+## 2.2 Question 2
+
+  When I .
+
+
+
+
+# 2.3 Question 3
+
+
+
+
+# 3. Conclusion
+
+
+
+
+
+# 4. Appendix
+
+## 4.1 Documenting File Creation 
+
+  It's useful to record some information about how your file was created.
+
+  - File creation date: 2015-07-22
+  - File latest updated date: `r Sys.Date()`
+  - `r R.version.string`
+  - R version (short form): `r getRversion()`
+  - [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+  - [**tufte** package](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
+  - File version: 1.0.1
+  - Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
+  - GitHub: [Source Code](https://github.com/scibrokes/betting-strategy-and-model-validation)
+  - Additional session information
+  
+```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+
+lubridate::now()
+sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+sys1 %>% formattable %>% as.htmlwidget
+
+data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(Category = Category, Sys.info =  Sys.info..) %>% formattable %>% as.htmlwidget
+
+rm(sys1)
+```
+
+## 4.2 Reference
+
+  01. [Stock Market Forecasting Using LASSO Linear Regression Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
+  02. [Using LASSO from lars (or glmnet) package in R for variable selection](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
+  03. [Difference between glmnet() and cv.glmnet() in R?](Difference between glmnet() and cv.glmnet() in R?)
+  04. [Testing Kelly Criterion and Optimal f in R](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) <img src='www/hot.jpg' width='20'>
+  05. [Portfolio Optimization and Monte Carlo Simulation](https://github.com/scibrokes/kelly-criterion/blob/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf) <img src='www/hot.jpg' width='20'>
+  06. [Glmnet Vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
+  07. [lasso怎么用算法实现？](http://cos.name/cn/topic/101533/#post-418215)
+  08. [The Sparse Matrix and {glmnet}](http://amunategui.github.io/sparse-matrix-glmnet/)
+  09. [Regularization and Variable Selection via the Elastic Net](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Regularization%20and%20Variable%20Selection%20via%20the%20Elastic%20Net.pdf)
+  10. [LASSO, Ridge, and Elastic Net](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) <img src='www/hot.jpg' width='20'>
+  11. [热门数据挖掘模型应用入门（一）: LASSO回归](http://cos.name/2016/10/data-mining-1-lasso/)
+  12. [The Lasso Page](http://statweb.stanford.edu/~tibs/lasso.html)
+  13. [Call_Valuation.R](https://api.rpubs.com/Mariano/call)
+  14. [Lecture 6 – Stochastic Processes and Monte Carlo](http://zorro-trader.com/manual/en/Lecture%206.htm)
+  15. [The `caret` Package](http://topepo.github.io/caret/index.html) <img src='www/hot.jpg' width='20'>
+  16. [Time Series Cross Validation](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
+  17. [Character-Code.com](http://character-code.com/)
+  18. [Size Matters – Kelly Optimization](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
+
+**Powered by - Copyright® Intellectual Property Rights of <img src='figure/oda-army.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**

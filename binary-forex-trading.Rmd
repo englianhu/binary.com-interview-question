@@ -26,6 +26,8 @@ suppressAll(library('DT'))
 suppressAll(library('quantmod'))
 suppressAll(library('formattable'))
 suppressAll(library('highcharter'))
+suppressAll(library('forecast'))
+suppressAll(library('MCMCpack'))
 suppressAll(library('PerformanceAnalytics'))
 #'@ suppressAll(source('./function/.R', local = TRUE))
 
@@ -37,6 +39,14 @@ options(htmltools.dir.version = FALSE)
 # 1. Introduction
 
 ```{r read-data, cache = TRUE, echo = FALSE}
+
+
+
+
+
+```
+
+```{r read-data, echo = FALSE, eval = FALSE}
 #'@ m.pnorm <- list.files(path = './data/20150102', pattern = paste0('^wt.pnorm.fitgaum', 1:168, '.rds$'))
 #'@ m.phalfnorm <- list.files(path = './data/20150102', pattern = '^wt.phalfnorm.fitgaum[0-9]{1,}.rds$')
 fld <- list.files(path = './data', pattern = '^[0-9]{8}$')
@@ -50,13 +60,13 @@ llply(fld[1], function(x) {
 
 ```
 
-  I used to built the model and keen on the sportsbook trading. There is a good challenge for me to learn about the **Forex Trading** [binary.com Interview Qestion](https://github.com/englianhu/binary.com-interview-question). Here I try to apply the **Ridge**, **LASSO** and **Elasticnet Regularization** regression model as refer to [*Stock Market Forecasting Using LASSO Linear Regression Model*](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)^[1st paper in [Reference]].
+  <s>I used to built the model and keen on the sportsbook trading. There is a good challenge for me to learn about the **Forex Trading** [binary.com Interview Qestion](https://github.com/englianhu/binary.com-interview-question). Here I try to apply the **Ridge**, **LASSO** and **Elasticnet Regularization** regression model as refer to [*Stock Market Forecasting Using LASSO Linear Regression Model*](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)^[1st paper in [Reference]].</s>
 
 # 2. Content
 
 ## 2.1 Modelling
 
-  I try to test 224 models and every single model has 11 sub models which adjusted with *alpha* value from *0, 0.1, 0.2... 1.0*. Due to the heavily loading of the data and will slow down the apps, here I try to create this Rmd file for models comparison purpose. You are feel free to browse over the [Webbase Application](https://beta.rstudioconnect.com/content/2367/).
+  <s>I try to test 224 models and every single model has 11 sub models which adjusted with *alpha* value from *0, 0.1, 0.2... 1.0*. Due to the heavily loading of the data and will slow down the apps, here I try to create this Rmd file for models comparison purpose. You are feel free to browse over the [Webbase Application](https://beta.rstudioconnect.com/content/2367/).</s>
 
 ## 2.2 Comparison
 
@@ -66,8 +76,38 @@ llply(fld[1], function(x) {
 # 3. Conclusion
 
 
+# 4. Appendix
 
-## Reference
+## 4.1 Documenting File Creation 
+
+  It's useful to record some information about how your file was created.
+
+  - File creation date: 2015-07-22
+  - File latest updated date: `r Sys.Date()`
+  - `r R.version.string`
+  - R version (short form): `r getRversion()`
+  - [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+  - [**tufte** package](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
+  - File version: 1.0.1
+  - Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
+  - GitHub: [Source Code](https://github.com/scibrokes/betting-strategy-and-model-validation)
+  - Additional session information
+  
+```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+
+lubridate::now()
+sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+sys1 %>% formattable %>% as.htmlwidget
+
+data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(Category = Category, Sys.info =  Sys.info..) %>% formattable %>% as.htmlwidget
+
+rm(sys1)
+```
+
+## 4.2 Reference
 
   01. [Stock Market Forecasting Using LASSO Linear Regression Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
   02. [Using LASSO from lars (or glmnet) package in R for variable selection](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
