@@ -77,7 +77,7 @@ placeStakes <- function(newx, fit = NULL, choose = c('Back', 'Lay'), prob, stake
   
   ## Lets assume that the bets will be only valid until Closed market, therefore 
   ##   Close price as daily settlement price as default.
-  res <- dfm[c('Date', 'HL.Mean', 'betPrice', 'settledPrice')] %>%  mutate(
+  res <- dfm[c('Date', 'HL.Mean', 'betPrice', 'settledPrice')] %>% mutate(
       Diff = round(betPrice - settledPrice, 2), 
       Back = ifelse(betPrice > settledPrice, 1, 0), 
       Lay = ifelse(betPrice < settledPrice, 1, 0)) %>% 

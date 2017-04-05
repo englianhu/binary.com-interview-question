@@ -28,10 +28,11 @@ suppressAll(library('tidyquant'))
 suppressAll(library('formattable'))
 suppressAll(library('highcharter'))
 suppressAll(library('forecast'))
+suppressAll(library('bsts'))
 suppressAll(library('MCMCpack'))
 suppressAll(library('PerformanceAnalytics'))
 suppressAll(library('broom'))
-#'@ suppressAll(source('./function/.R', local = TRUE))
+suppressAll(source('./function/plotChart2.R', local = TRUE))
 
 # invalidate cache when the package version changes
 knitr::opts_chunk$set(tidy = FALSE, cache.extra = packageVersion('tint'))
@@ -69,7 +70,7 @@ pred.data <- ldply(dateID, function(dt) {
   dtr = last(index(smp[index(smp) < dt]))
   smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
   frd = as.numeric(difftime(dt, dtr), units = 'days')
-  fit = ets(smp)
+  fit = ets(smp) #https://www.otexts.org/fpp/7/7
   data.frame(Date = dt, forecast(fit, h = frd)) %>% tbl_df
   }, .parallel = FALSE) %>% tbl_df
 
@@ -101,6 +102,10 @@ forecast(fit, h = 4)
 USDJPY <- read_rds(path = './data/USDJPY.rds')
 ```
 
+ - [Recent Advances in Robust Statistics: Theory and Applications](https://books.google.com.my/books?id=ntR5DQAAQBAJ&pg=PA174&lpg=PA174&dq=exponential+smoothing+mcmc&source=bl&ots=QANf4o9oFh&sig=JWov-64qeFTcOScG2pYj9OVCl2k&hl=ja&sa=X&redir_esc=y#v=onepage&q=exponential%20smoothing%20mcmc&f=false)
+ - [Error, trend, seasonality - ets and its forecast model friends](http://ellisp.github.io/blog/2016/11/27/ets-friends)
+ - [A study of outliers in the exponential smoothing approach to forecasting](https://www.statindex.org/articles/258660)
+
 ```{r modelling2}
 ## Now we try to use the daily mean value which is (Hi + Lo) / 2.
 ## Hi for predict daily highest price. (selling daytrade)
@@ -120,7 +125,7 @@ simPrice <- function(mbase, prCat = 'Mn', baseDate = ymd('2015-01-01'), .paralle
   
   ## Set as our daily settlement price.
   obs.data <- mbase[index(mbase) > dateID0]
-  price.category <- c('Op', 'Hi', 'Md', 'Lo', 'Cl')
+  price.category <- c('Op', 'Hi', 'Mn', 'Lo', 'Cl')
   
   if(prCat %in% price.category) {
     if(prCat == 'Op') {
@@ -163,6 +168,17 @@ simPrice <- function(mbase, prCat = 'Mn', baseDate = ymd('2015-01-01'), .paralle
   }
 ```
 
+```{r bsts}
+## Sorry ARIMA, but I’m Going Bayesian
+## http://multithreaded.stitchfix.com/blog/2016/04/21/forget-arima/
+#'@ library('bsts')
+
+## Need to testing and compare the models (packages : MCMCPack and bsts).
+
+
+
+```
+
 ```{r build-fits}
 ## Modelling
 fit.op <- simPrice(USDJPY, prCat = 'Op') #will take a minute
@@ -171,6 +187,12 @@ fit.mn <- simPrice(USDJPY, prCat = 'Mn') #will take a minute
 fit.lo <- simPrice(USDJPY, prCat = 'Lo') #will take a minute
 fit.cl <- simPrice(USDJPY, prCat = 'Cl') #will take a minute
 ```
+
+  Need to refer to MCMC since I am using exponential smoothing models...
+
+  - [Markov Chain Monte Carlo Method](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_introbayes_sect007.htm)
+  - [Burn-In is Unnecessary](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
+  - [**Nice R Code** *Punning code better since 2013*](https://nicercode.github.io/guides/mcmc/)
 
 ```{r testModels}
 ## Need to test and read through the MCMCregress... after few months later (when free)... Start working as a servant at Bah-Kut-Teh restorant tommorrow 01-Mar-2017.
@@ -197,29 +219,36 @@ summary(lm(Point.Forecast~ USDJPY.Close, data = fit.cl))
 summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.cl))
 ```
 
+  Plot graph.
+
 ```{r plots}
 ## Plot the models
 ## opened price fit data
-plot(forecast(fit.op))
-forecast(fit.op, h = 4)
+plot(forecast(ets(fit.op$Point.Forecast)))
+forecast(ets(fit.op$Point.Forecast), h = 4)
 
 ## highest price fit data
-plot(forecast(fit.hi))
-forecast(fit.hi, h = 4)
+plot(forecast(ets(fit.hi$Point.Forecast)))
+forecast(ets(fit.hi$Point.Forecast), h = 4)
 
 ## mean price fit data (mean price of daily highest and lowest price)
-plot(forecast(fit.mn))
-forecast(fit.mn, h = 4)
+plot(forecast(ets(fit.mn$Point.Forecast)))
+forecast(ets(fit.mn$Point.Forecast), h = 4)
 
 ## lowest price fit data
-plot(forecast(fit.lo))
-forecast(fit.lo, h = 4)
+plot(forecast(ets(fit.lo$Point.Forecast)))
+forecast(ets(fit.lo$Point.Forecast), h = 4)
 
 ## opened price fit data
-plot(forecast(fit.cl))
-forecast(fit.cl, h = 4)
+plot(forecast(ets(fit.cl$Point.Forecast)))
+forecast(ets(fit.cl$Point.Forecast), h = 4)
 
+fcdata <- do.call(cbind, list(USDJPY.FPOP = fit.op$Point.Forecast, USDJPY.FPHI = fit.hi$Point.Forecast, USDJPY.FPMN = fit.mn$Point.Forecast, USDJPY.FPLO = fit.lo$Point.Forecast, USDJPY.FPCL = fit.cl$Point.Forecast, USDJPY.Close = fit.op$USDJPY.Close))
+fcdata <- na.omit(fcdata)
+names(fcdata) <- c('USDJPY.FPOP', 'USDJPY.FPHI', 'USDJPY.FPMN', 'USDJPY.FPLO', 'USDJPY.FPCL', 'USDJPY.Close')
 ```
+
+  Staking function.
 
 ```{r stakingModels}
 simStakes <- function(mbase, prCat = 'Op', baseDate = ymd('2015-01-01'), .parallel = FALSE, setPrice = 'Cl') {
@@ -269,39 +298,101 @@ df.cl <- na.omit(df.cl)
 
 ```{r weight-function}
 ## Set the forecast closed price as our staking criteria.
-df.op <- cbind(df.op, forClose = df.cl$Point.Forecast) %>% tbl_df
-df.hi <- cbind(df.hi, forClose = df.cl$Point.Forecast) %>% tbl_df
-df.mn <- cbind(df.mn, forClose = df.cl$Point.Forecast) %>% tbl_df
-df.lo <- cbind(df.lo, forClose = df.cl$Point.Forecast) %>% tbl_df
+df.op <- cbind(df.op, forClose = df.op$Point.Forecast) %>% tbl_df
+df.hi <- cbind(df.hi, forClose = df.hi$Point.Forecast) %>% tbl_df
+df.mn <- cbind(df.mn, forClose = df.mn$Point.Forecast) %>% tbl_df
+df.lo <- cbind(df.lo, forClose = df.lo$Point.Forecast) %>% tbl_df
 df.cl <- cbind(df.cl, forClose = df.cl$Point.Forecast) %>% tbl_df
 ```
+
+  Convert the probability based on closing price as the settled price. Here I try to set USD1 as the criteria (baseline) of daily sakes for every single match.
 
 ```{r prob-convertion}
 ## convert all forecast price into probability.
 
 ## forecast the opened price.
-df.op %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+df.op %<>% mutate(Prob = pnorm(forClose, mean = USDJPY.Close, sd = sd(USDJPY.Close)), 
+                  stakes = 1)
 
 ## forecast the highest price.
-df.hi %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+df.hi %<>% mutate(Prob = pnorm(forClose, mean = USDJPY.Close, sd = sd(USDJPY.Close)), 
+                  stakes = 1)
 
 ## forecast the mean price.
-df.mn %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+df.mn %<>% mutate(Prob = pnorm(forClose, mean = USDJPY.Close, sd = sd(USDJPY.Close)), 
+                  stakes = 1)
 
 ## forecast the lowest price.
-df.lo %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+df.lo %<>% mutate(Prob = pnorm(forClose, mean = USDJPY.Close, sd = sd(USDJPY.Close)), 
+                  stakes = 1)
 
 ## forecast the closed price.
-df.cl %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+df.cl %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)), 
+                  stakes = 1)
 ```
-
 
 ```{r staking}
 ## Kelly staking models.
 
+## placed orders on the opened price.
+df.op %<>% mutate(
+      Diff = round(forClose - USDJPY.Close, 2), 
+      Back = ifelse(forClose > USDJPY.Close, 1, 0), 
+      Lay = ifelse(forClose < USDJPY.Close, 1, 0)) %>% 
+    mutate(Return.Back = ifelse(Prob > 0.5, Diff * Back * stakes, 0), 
+           Return.Lay = ifelse(Prob < 0.5, -Diff * Lay * stakes, 0))
+
+## placed orders on  the highest price.
+df.hi %<>% mutate(
+      Diff = round(forClose - USDJPY.Close, 2), 
+      Back = ifelse(forClose > USDJPY.Close, 1, 0), 
+      Lay = ifelse(forClose < USDJPY.Close, 1, 0)) %>% 
+    mutate(Return.Back = ifelse(Prob > 0.5, Diff * Back * stakes, 0), 
+           Return.Lay = ifelse(Prob < 0.5, -Diff * Lay * stakes, 0))
+
+## placed orders on  the mean price.
+df.mn %<>% mutate(
+      Diff = round(forClose - USDJPY.Close, 2), 
+      Back = ifelse(forClose > USDJPY.Close, 1, 0), 
+      Lay = ifelse(forClose < USDJPY.Close, 1, 0)) %>% 
+    mutate(Return.Back = ifelse(Prob > 0.5, Diff * Back * stakes, 0), 
+           Return.Lay = ifelse(Prob < 0.5, -Diff * Lay * stakes, 0))
+
+## placed orders on  the lowest price.
+df.lo %<>% mutate(
+      Diff = round(forClose - USDJPY.Close, 2), 
+      Back = ifelse(forClose > USDJPY.Close, 1, 0), 
+      Lay = ifelse(forClose < USDJPY.Close, 1, 0)) %>% 
+    mutate(Return.Back = ifelse(Prob > 0.5, Diff * Back * stakes, 0), 
+           Return.Lay = ifelse(Prob < 0.5, -Diff * Lay * stakes, 0))
+
+## placed orders on  the closed price.
+df.cl %<>% mutate(
+      Diff = round(forClose - USDJPY.Close, 2), 
+      Back = ifelse(forClose > USDJPY.Close, 1, 0), 
+      Lay = ifelse(forClose < USDJPY.Close, 1, 0)) %>% 
+    mutate(Return.Back = ifelse(Prob > 0.5, Diff * Back * stakes, 0), 
+           Return.Lay = ifelse(Prob < 0.5, -Diff * Lay * stakes, 0))
 
 ```
 
+  Profit and Loss
+
+```{r}
+## Profit and Loss.
+bind_cols(
+  df.op %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+  df.hi %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+  df.mn %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+  df.lo %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+  df.cl %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame)
+```
+
+```{r optStaking}
+## optimise the stakes.
+#'@ log(balance + portion Kelly edge ratio)
+
+```
 
 ## 2.2 Question 2
 
@@ -372,5 +463,6 @@ rm(sys1)
   16. [Time Series Cross Validation](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
   17. [Character-Code.com](http://character-code.com/)
   18. [Size Matters – Kelly Optimization](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
+  19. []()
 
-**Powered by - Copyright® Intellectual Property Rights of <img src='figure/oda-army.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
+**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
