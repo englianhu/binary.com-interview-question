@@ -1,16 +1,21 @@
 plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL, 
-                       chart.type = NULL, chart.type2 = FALSE, 
-                       chart.theme = 'hc_theme_economist()', stacked = FALSE) {
+                       initialName = 'Op', chart.type = NULL, chart.type2 = FALSE, 
+                       chart.theme = 'hc_theme_economist()', stacked = FALSE, 
+                       graph.title = 'Financial Market Counter') {
   ## http://jkunst.com/highcharter/highstock.html
   ## type = 'single' or type = 'multiple'. Plot comparison graph or single fund details.
-  ## chart.type = 'Op', chart.type = 'Hi', chart.type = 'Lo', chart.type = 'Cl'. Use 
-  ##   what kind of fund size to plot for multiple funds comparison.
+  ## chart.type = 'Op', chart.type = 'Hi', chart.type = 'Lo', chart.type = 'Cl' or 
+  ##   chart.type = 'FP'. Use what kind of fund size to plot for multiple funds comparison.
+  ## 
   ## --------------------- Load packages ------------------------------------------
   suppressMessages(library('formattable'))
   suppressMessages(library('quantmod'))
   suppressMessages(library('highcharter'))
   suppressMessages(library('xts'))
   suppressMessages(library('tidyverse'))
+  suppressMessages(library('stringr'))
+  suppressMessages(library('plyr'))
+  suppressMessages(library('dplyr'))
   
   ## --------------------- Data validation ------------------------------------------
   
@@ -55,6 +60,12 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     stacked <- stacked
   }
   
+  if(is.character(graph.title)){
+    graph.title <- graph.title
+  } else {
+    stop('Kindly insert a title for the graph.')
+  }
+  
   if(type == 'single') {
     ## --------------------- Plot single fund or sub funds ------------------------
     ## single model details, volume, moving average and daily open, high, low, close.
@@ -66,11 +77,16 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     FUND.RSI.SellLevel <- xts(rep(70, NROW(Fund)), index(Fund))
     FUND.RSI.BuyLevel  <- xts(rep(30, NROW(Fund)), index(Fund))
     
-    initial <- Op(Fund)[1, ] %>% unique %>% currency
-    fname <- names(Op(Fund)) %>% str_replace_all('.Open', '')
+    if(initialName == 'Op') {
+      initial <- Op(Fund)[1, ] %>% unique %>% currency
+      fname <- names(Op(Fund)) %>% str_replace_all('.Open', '')
+    } else {
+      initial <- Fund[1, ] %>% unique %>% currency #need to modify
+      fname <- names(Fund)
+    }
     
     plotc <- plotch %>% 
-      hc_title(text = "Lithia Auto Stores") %>% 
+      hc_title(text = graph.title) %>% 
       hc_subtitle(text = paste0("Candle stick chart with initial stock price : ", 
                                 paste0(initial, collapse = ', '))) %>% 
       hc_yAxis_multiples(
@@ -83,19 +99,19 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
         series = list(showInLegend = TRUE)) %>% 
       # series :D
       hc_add_series_ohlc(Fund, yAxis = 0, name = fname) %>% 
-      hc_add_series_xts(FUND.SMA.10,  yAxis = 0, name = 'Fast MA') %>% 
-      hc_add_series_xts(FUND.SMA.200, yAxis = 0, name = 'Slow MA') %>% 
-      hc_add_series_xts(Fund[,names(Vo(Fund))], color = 'gray', yAxis = 1, name = 'Volume', 
+      hc_add_series(FUND.SMA.10,  yAxis = 0, name = 'Fast MA') %>% 
+      hc_add_series(FUND.SMA.200, yAxis = 0, name = 'Slow MA') %>% 
+      hc_add_series(Fund[,names(Vo(Fund))], color = 'gray', yAxis = 1, name = 'Volume', 
                         type = 'column') %>% 
-      hc_add_series_xts(FUND.HLMEAN, yAxis = 2, colot = hex_to_rgba('orange', 0.7), 
+      hc_add_series(FUND.HLMEAN, yAxis = 2, colot = hex_to_rgba('orange', 0.7), 
                         name = 'High-Low Mean Price') %>% 
-      hc_add_series_xts(FUND.PRED, yAxis = 2, colot = hex_to_rgba('#B8860B', 0.7), 
+      hc_add_series(FUND.PRED, yAxis = 2, colot = hex_to_rgba('#B8860B', 0.7), 
                         name = 'Predicted Price') %>% 
-      hc_add_series_xts(FUND.RSI.14, yAxis = 2, colot = hex_to_rgba('green', 0.7), 
+      hc_add_series(FUND.RSI.14, yAxis = 2, colot = hex_to_rgba('green', 0.7), 
                         name = 'Osciallator') %>% 
-      hc_add_series_xts(FUND.RSI.SellLevel, color = hex_to_rgba('red', 0.7), yAxis = 2, 
+      hc_add_series(FUND.RSI.SellLevel, color = hex_to_rgba('red', 0.7), yAxis = 2, 
                         name = 'Sell level') %>% 
-      hc_add_series_xts(FUND.RSI.BuyLevel, color = hex_to_rgba('blue', 0.7), yAxis = 2, 
+      hc_add_series(FUND.RSI.BuyLevel, color = hex_to_rgba('blue', 0.7), yAxis = 2, 
                         name = 'Buy level')#, enableMouseTracking = FALSE)
     
     # I <3 themes
@@ -114,11 +130,20 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     # label the reason and event to cause a hight volatility.
     
     chart.type <- ifelse(is.null(chart.type), 'Cl', chart.type)
-    initial <- Op(Fund)[1, ] %>% unique %>% currency
     
-    fname <- grep('.Open', names(Op(Fund)), value = TRUE) %>% 
-      str_split('\\.') %>% llply(., function(x) 
-        paste0(str_replace_all(x, 'Open', '')[1:2], collapse = '.')) %>% unlist
+    if(initialName == 'Op') {
+      initial <- Op(Fund)[1, ] %>% unique %>% currency
+      fname <- names(Op(Fund)) %>% str_replace_all('.Open', '')
+      
+      fname <- grep('.Open', names(Op(Fund)), value = TRUE) %>% 
+        str_split('\\.') %>% llply(., function(x) 
+          paste0(str_replace_all(x, 'Open', '')[1:2], collapse = '.')) %>% unlist
+      
+    } else {
+      initial <- Fund[1, ] %>% unique %>% currency #need to modify
+      fname <- names(Fund)
+      
+    }
     
     ## comparison of fund size and growth of various Kelly models
     #'@ event <- c('netEMEdge', 'PropHKPriceEdge', 'PropnetProbBEdge', 'KProbHKPrice',
@@ -153,23 +178,47 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
       stop('The vector length of event must be same with vector length of event.dates.')
     }
     
+    ## --------------- sub function ---------------------------------
+    has.Mn <- function (x, which = FALSE) 
+    {
+      colAttr <- attr(x, 'Mn')
+      if (!is.null(colAttr)) 
+        return(if (which) colAttr else TRUE)
+      loc <- grep('Mean', colnames(x), ignore.case = TRUE)
+      if (!identical(loc, integer(0))) {
+        return(if (which) loc else TRUE)
+      }
+      else FALSE
+    }
+    
+    Mn <- function(x) {
+      if(has.Mn(x)) 
+        return(x[, grep('Mean', colnames(x), ignore.case = TRUE)])
+      stop('subscript out of bounds: no column name containing \"Mean\"')
+    }
+    
+    ## --------------------------------------------------------------
     if(chart.type == 'Op') {
       Fund <- Op(Fund)
     } else if(chart.type == 'Hi') {
       Fund <- Hi(Fund)
+    } else if(chart.type == 'Mn') {
+      Fund <- Mn(Fund)
     } else if(chart.type == 'Lo') {
       Fund <- Lo(Fund)
     } else if(chart.type == 'Cl') {
       Fund <- Cl(Fund)
+    } else if(chart.type == 'FP') {
+      Fund <- Fund
     } else {
-      stop('Kindly choose chart.type = "Op", chart.type = "Hi", chart.type = "Lo", chart.type = "Cl".')
+      stop('Kindly choose chart.type = "Op", chart.type = "Hi", chart.type = "Mn", chart.type = "Lo", chart.type = "Cl".')
     }
     
     plotc <- paste0(
       'highchart(type = \'stock\') %>% ', 
-      'hc_title(text = \'Lithia Auto Stores\') %>% ', 
+      'hc_title(text = \'', graph.title, '\') %>% ', 
       'hc_subtitle(text = paste0(\'Multiple funds trend chart initial stock price : \', paste0(initial, collapse = \', \'))) %>% ', 
-      paste0('hc_add_series_xts(Fund[,', seq(fname), '], name = \'', fname,'\', id = \'', fname, '\')', collapse = ' %>% '), 
+      paste0('hc_add_series(Fund[,', seq(fname), '], name = \'', fname,'\', id = \'', fname, '\')', collapse = ' %>% '), 
       ' %>% hc_add_series_flags(event.dates, title = paste0(\'E\', event), text = paste(\'Event : High volatility \', event), id = id) %>% hc_add_theme(hc_theme_flat());')
     
     return(eval(parse(text = plotc)))

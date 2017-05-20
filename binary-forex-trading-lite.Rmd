@@ -28,6 +28,7 @@ suppressAll(library('tidyquant'))
 suppressAll(library('formattable'))
 suppressAll(library('highcharter'))
 suppressAll(library('forecast'))
+suppressAll(library('Mcomp'))
 suppressAll(library('bsts'))
 suppressAll(library('MCMCpack'))
 suppressAll(library('PerformanceAnalytics'))
@@ -44,6 +45,8 @@ options(htmltools.dir.version = FALSE)
   Below are the questionaire. Here I created this file to apply `MCMCpack` and `forecast` to compelete the questions prior to completed the `Ridge`, `ElasticNet` and `LASSO` regression (quite alot of models for comparison).
   
   <iframe src=\"https://raw.githubusercontent.com/englianhu/binary.com-interview-question/ff20ee95aa60ef5cca3cf797066089103eb62acf/reference/quant-analyst-skills-test.pdf" width=\"900\" height=\"600\"></iframe>
+  
+  **Remarks :** *Here I try to predict the sell/buy price and also settled price. However just noticed the question asking about prediction of the variance^[The profit is made based on the range of variance Hi-Lo price but not the accuracy of the highest, lowest or closing price.] based on mean price. Will conduct another study and answer for the variance.*
 
 # 2. Content
 
@@ -55,6 +58,8 @@ options(htmltools.dir.version = FALSE)
 ## 
 ## Do not execute...
 ## 
+## Remove all objects include hidden objects.
+rm(list = ls(all.names = TRUE))
 
 ## get currency dataset online.
 getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20')
@@ -87,6 +92,27 @@ MCMCregress(Point.Forecast~ USD.JPY, data = cmp.data)
 
 plot(forecast(fit))
 forecast(fit, h = 4)
+```
+
+```{r Mn-function}
+## Mn(Fund) to retrieve the Mean column.
+has.Mn <- function (x, which = FALSE) {
+  colAttr <- attr(x, 'Mn')
+  if(!is.null(colAttr)) 
+    return(if (which) colAttr else TRUE)
+  loc <- grep('Mean', colnames(x), ignore.case = TRUE)
+  
+  if(!identical(loc, integer(0))) {
+    return(if (which) loc else TRUE)
+  } else FALSE 
+  }
+  
+Mn <- function(x) {
+  if(has.Mn(x)) 
+    return(x[, grep("Mean", colnames(x), ignore.case = TRUE)])
+  stop("subscript out of bounds: no column name containing \"Mean\"")
+  }
+
 ```
 
 ```{r read-data2}
@@ -139,16 +165,16 @@ USDJPY <- read_rds(path = './data/USDJPY.rds')
 ## Now we try to use the daily mean value which is (Hi + Lo) / 2.
 ## Hi for predict daily highest price. (selling daytrade)
 ## Lo for predict daily lowest price. (buying daytrade)
-simPrice <- function(mbase, prCat = 'Mn', baseDate = ymd('2015-01-01'), .parallel = FALSE) {
+simPrice <- function(mbase, .prCat = 'Mn', .baseDate = ymd('2015-01-01'), .parallel = FALSE, .model = 'ZZZ') {
   
   if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
   
   ## dateID
   dateID <- index(mbase)
-  if(!is.Date(baseDate)) {
-    dateID0 <- ymd(baseDate); rm(baseDate)
+  if(!is.Date(.baseDate)) {
+    dateID0 <- ymd(.baseDate); rm(.baseDate)
   } else {
-    dateID0 <- baseDate; rm(baseDate)
+    dateID0 <- .baseDate; rm(.baseDate)
   }
   dateID <- dateID[dateID >= dateID0]
   
@@ -156,27 +182,27 @@ simPrice <- function(mbase, prCat = 'Mn', baseDate = ymd('2015-01-01'), .paralle
   obs.data <- mbase[index(mbase) > dateID0]
   price.category <- c('Op', 'Hi', 'Mn', 'Lo', 'Cl')
   
-  if(prCat %in% price.category) {
-    if(prCat == 'Op') {
+  if(.prCat %in% price.category) {
+    if(.prCat == 'Op') {
       obs.data2 <- Op(mbase)
       
-    } else if(prCat == 'Hi') {
+    } else if(.prCat == 'Hi') {
       obs.data2 <- Hi(mbase)
       
-    } else if(prCat == 'Mn') { #mean of highest and lowest
+    } else if(.prCat == 'Mn') { #mean of highest and lowest
       obs.data2 <- cbind(Hi(mbase), Lo(mbase), USDJPY.Md = rowMeans(cbind(Hi(mbase), Lo(mbase))))[,-c(1:2)]
       
-    } else if(prCat == 'Lo') {
+    } else if(.prCat == 'Lo') {
       obs.data2 <- Lo(mbase)
       
-    } else if(prCat == 'Cl') {
+    } else if(.prCat == 'Cl') {
       obs.data2 <- Cl(mbase)
       
     } else {
-      stop('Kindly choose prCat = "Op", prCat = "Hi", prCat = "Mn", prCat = "Lo" or prCat = "Cl".')
+      stop('Kindly choose .prCat = "Op", .prCat = "Hi", .prCat = "Mn", .prCat = "Lo" or .prCat = "Cl".')
     }
   } else {
-    stop('Kindly choose prCat = "Op", prCat = "Hi", prCat = "Mn", prCat = "Lo" or prCat = "Cl".')
+    stop('Kindly choose .prCat = "Op", .prCat = "Hi", .prCat = "Mn", .prCat = "Lo" or .prCat = "Cl".')
   }
   
   pred.data <- ldply(dateID, function(dt) {
@@ -184,13 +210,13 @@ simPrice <- function(mbase, prCat = 'Mn', baseDate = ymd('2015-01-01'), .paralle
       dtr = last(index(smp[index(smp) < dt]))
       smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
       frd = as.numeric(difftime(dt, dtr), units = 'days')
-      fit = ets(smp) #exponential smoothing model.
+      fit = ets(smp, model = .model) #exponential smoothing model.
       if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
       data.frame(Date = dt, forecast(fit, h = frd)) %>% tbl_df
     }, .parallel = .parallel) %>% tbl_df
 
   cmp.data <- xts(pred.data[, -1], order.by = pred.data$Date)
-  cmp.data <- cbind(cmp.data, Cl(obs.data))
+  cmp.data <- cbind(cmp.data, obs.data)
   rm(obs.data, pred.data)
   
   return(cmp.data)
@@ -210,11 +236,11 @@ simPrice <- function(mbase, prCat = 'Mn', baseDate = ymd('2015-01-01'), .paralle
 
 ```{r build-fits}
 ## Modelling
-fit.op <- simPrice(USDJPY, prCat = 'Op') #will take a minute
-fit.hi <- simPrice(USDJPY, prCat = 'Hi') #will take a minute
-fit.mn <- simPrice(USDJPY, prCat = 'Mn') #will take a minute
-fit.lo <- simPrice(USDJPY, prCat = 'Lo') #will take a minute
-fit.cl <- simPrice(USDJPY, prCat = 'Cl') #will take a minute
+fit.op <- simPrice(USDJPY, .prCat = 'Op') #will take a minute
+fit.hi <- simPrice(USDJPY, .prCat = 'Hi') #will take a minute
+fit.mn <- simPrice(USDJPY, .prCat = 'Mn') #will take a minute
+fit.lo <- simPrice(USDJPY, .prCat = 'Lo') #will take a minute
+fit.cl <- simPrice(USDJPY, .prCat = 'Cl') #will take a minute
 ```
 
 ### 2.1.3 MCMC
@@ -250,52 +276,103 @@ summary(lm(Point.Forecast~ USDJPY.Close, data = fit.cl))
 summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.cl))
 ```
 
+**Mean Squared Error**
+
+```{r combine-data}
+fcdata <- do.call(cbind, list(USDJPY.FPOP.Open = fit.op$Point.Forecast, 
+                              USDJPY.FPHI.High = fit.hi$Point.Forecast, 
+                              USDJPY.FPMN.Mean = fit.mn$Point.Forecast, 
+                              USDJPY.FPLO.Low = fit.lo$Point.Forecast, 
+                              USDJPY.FPCL.Close = fit.cl$Point.Forecast, 
+                              USDJPY.Open = fit.op$USDJPY.Open, 
+                              USDJPY.High = fit.op$USDJPY.High, 
+                              USDJPY.Low = fit.op$USDJPY.Low, 
+                              USDJPY.Close = fit.op$USDJPY.Close))
+fcdata <- na.omit(fcdata)
+names(fcdata) <- c('USDJPY.FPOP.Open', 'USDJPY.FPHI.High', 'USDJPY.FPMN.Mean', 
+                   'USDJPY.FPLO.Low', 'USDJPY.FPCL.Close', 'USDJPY.Open', 
+                   'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')
+
+## Mean Squared Error : comparison of accuracy
+paste('Open = ', mean((fcdata$USDJPY.FPOP.Open - fcdata$USDJPY.Open)^2))
+paste('High = ', mean((fcdata$USDJPY.FPHI.High - fcdata$USDJPY.High)^2))
+paste('Mean = ', mean((fcdata$USDJPY.FPMN.Mean - (fcdata$USDJPY.High + fcdata$USDJPY.Low)/2)^2))
+paste('Low = ', mean((fcdata$USDJPY.FPLO.Low - fcdata$USDJPY.Low)^2))
+paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
+```
+
 ### 2.1.4 Data Visualization
 
   Plot graph.
 
-```{r plots}
+```{r plot1}
 ## Plot the models
 ## opened price fit data
-plot(forecast(ets(fit.op$Point.Forecast)))
-forecast(ets(fit.op$Point.Forecast), h = 4)
+autoplot(forecast(ets(fit.op$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color='#ffcccc', show.legend=FALSE) + labs(x = 'Day', y = 'Forex Price', "Forecasts from ETS model")
+
+#'@ ggplot(data = pd, aes(x = date, y = observed)) + geom_line(color = 'red') + geom_line(aes(y = fitted), color = "blue") + geom_line(aes(y = forecast)) + geom_ribbon(aes(ymin = lo95, ymax = hi95), alpha = .25) + scale_x_date(name = "Time in Decades") + scale_y_continuous(name = "GDP per capita (current US$)") + theme(axis.text.x = element_text(size = 10), legend.justification=c(0,1), legend.position=c(0,1)) + ggtitle("Arima(0,1,1) Fit and Forecast of GDP per capita for Brazil (1960-2013)") + scale_color_manual(values = c("Blue", "Red"), breaks = c("Fitted", "Data", "Forecast")) + ggsave((filename = "gdp_forecast_ggplot.pdf"), width=330, height=180, units=c("mm"), dpi = 300, limitsize = TRUE)
 
 ## highest price fit data
-plot(forecast(ets(fit.hi$Point.Forecast)))
-forecast(ets(fit.hi$Point.Forecast), h = 4)
+autoplot(forecast(ets(fit.hi$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
 
 ## mean price fit data (mean price of daily highest and lowest price)
-plot(forecast(ets(fit.mn$Point.Forecast)))
-forecast(ets(fit.mn$Point.Forecast), h = 4)
+autoplot(forecast(ets(fit.mn$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
 
 ## lowest price fit data
-plot(forecast(ets(fit.lo$Point.Forecast)))
-forecast(ets(fit.lo$Point.Forecast), h = 4)
+autoplot(forecast(ets(fit.lo$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
 
 ## opened price fit data
-plot(forecast(ets(fit.cl$Point.Forecast)))
-forecast(ets(fit.cl$Point.Forecast), h = 4)
+autoplot(forecast(ets(fit.cl$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
+```
 
-fcdata <- do.call(cbind, list(USDJPY.FPOP = fit.op$Point.Forecast, USDJPY.FPHI = fit.hi$Point.Forecast, USDJPY.FPMN = fit.mn$Point.Forecast, USDJPY.FPLO = fit.lo$Point.Forecast, USDJPY.FPCL = fit.cl$Point.Forecast, USDJPY.Close = fit.op$USDJPY.Close))
-fcdata <- na.omit(fcdata)
-names(fcdata) <- c('USDJPY.FPOP', 'USDJPY.FPHI', 'USDJPY.FPMN', 'USDJPY.FPLO', 'USDJPY.FPCL', 'USDJPY.Close')
+```{r plot2}
+source('./function/plotChart2.R', local = TRUE)
+suppressAll(rm(fit.op, fit.hi, fit.mn, fit.lo, fit.cl))
+
+plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'USDJPY')
 ```
 
 ### 2.1.5 Staking Model
 
-  Staking function. Here I apply Kelly criterion as the betting strategy.
+  Staking function. Here I apply Kelly criterion as the betting strategy. I don't pretend to know the order of price flutuation flow from the Hi-Lo price range, therefore I just using Closing price for settlement while the staking price restricted within the variance (Hi-Lo) to made the transaction stand. The settled price can only be closing price unless staking price is opening price which sellable within the Hi-Lo range.
+  
+  Due to we cannot know the forecasted sell/buy price and also forecasted closing price which is coming first solely from Hi-Lo data, therefore the Profit&Loss will slidely different (sell/buy price = forecasted sell/buy price).
+  
+  - Forecasted profit = edge based on forecasted sell/buy price - forecasted settled price.
+  - If the forecasted sell/buy price doesn't exist within the Hi-Lo price, then the transaction is not stand.
+  - If the forecasted settled price does not exist within the Hi-Lo price, then the settled price will be the real closing price.
 
 ```{r stakingModels}
-simStakes <- function(mbase, prCat = 'Op', baseDate = ymd('2015-01-01'), .parallel = FALSE, setPrice = 'Cl') {
-  #'@ source('./function/simPrice.R')
+simStakes <- function(mbase, .prCat = 'Op', .baseDate = ymd('2015-01-01'), .parallel = FALSE, .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = TRUE, .filterBets = FALSE) {
+  ## .setPrice need to set by refer to closing price, otherwise the P%L will be wrong due to we unable 
+  ##   know the price flow based on Hi-Lo price.
+  ## Here I set .setPrice to options as : .setPrice = 'Op', .setPrice = 'Hi', .setPrice = 'Mn', .setPrice = 'Lo', .setPrice = 'Cl', .setPrice = 'FPOP', .setPrice = 'FPHI', .setPrice = 'FPMN', .setPrice = 'FPLO', .setPrice = 'FPCL'.
+  
+  #'@ source('./function/simPrice.R', local = TRUE)
+  
+  if(!is.numeric(.initialFundSize) & length(.initialFundSize) != 1 & .initialFundSize <= 0) {
+    stop('Kindly insert a numeric number as initial fund size.')
+  }
+  
+  if(.fundLeverageLog == TRUE) .initialFundSize = log(.initialFundSize)
+  
+  .setPriceList <- c('Op', 'Hi', 'Mn', 'Lo', 'Cl', 'FPOP', 'FPHI', 'FPMN', 'FPLO', 'FPCL')
+  if(.setPrice %in% .setPriceList) {
+    .setPrice <- .setPrice
+  } else {
+    stop("Kindly set .setPrice among c('Op', 'Hi', 'Mn', 'Lo', 'Cl', 'FPOP', 'FPHI', 'FPMN', 'FPLO', 'FPCL')")
+  }
+  
+  nm <- str_extract_all(names(mbase), '^(.*?)+\\.') %>% unlist %>% unique
+  names(mbase) <- str_replace_all(names(mbase), '^(.*?)+\\.', 'USDJPY.')
   
   ## forecast staking price.
-  fit1 <- simPrice(mbase, prCat = prCat, baseDate = baseDate, .parallel = .parallel)
+  fit1 <- simPrice(mbase, .prCat = .prCat, .baseDate = .baseDate, .parallel = .parallel)
   fit1 <- data.frame(Date = index(fit1), coredata(fit1)) %>% tbl_df
   fit1 <- na.omit(fit1)
   
   ## forecast settlement price.
-  fit2 <- simPrice(mbase, prCat = setPrice, baseDate = baseDate, .parallel = .parallel)
+  fit2 <- simPrice(mbase, .prCat = .setPrice, .baseDate = .baseDate, .parallel = .parallel)
   fit2 <- data.frame(Date = index(fit2), coredata(fit2)) %>% tbl_df
   fit2 <- na.omit(fit2)
   
@@ -303,20 +380,73 @@ simStakes <- function(mbase, prCat = 'Op', baseDate = ymd('2015-01-01'), .parall
   fitm <- cbind(fit1, forClose = fit2$Point.Forecast) %>% tbl_df
   
   ## convert to probability.
-  fitm %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)))
+  fitm %<>% mutate(ProbB = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)), ProbS = 1 - ProbB) #ProbS = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose), lower.tail = FALSE)
   
   ## staking model and bankroll management.
   ## need to refer to Niko Martinen's fund management formula to maximise the stakes and profit base on Kelly models.
   ## https://github.com/scibrokes/betting-strategy-and-model-validation/blob/master/references/Creating%20a%20Profitable%20Betting%20Strategy%20for%20Football%20by%20Using%20Statistical%20Modelling.pdf
-  #....
+  #.... dynamic staking model need to adjusted based on updated bankroll but not portion of fixed USD100 per bet.
+  fitm %<>% mutate(BR = .initialFundSize) %>% 
+    #'@ mutate(Return.Back = ifelse(Prob > 0.5, Diff * Back * stakes, 0), 
+    #'@        Return.Lay = ifelse(Prob < 0.5, -Diff * Lay * stakes, 0))
+    mutate(fB = 2 * ProbB - 1, fS = 2 * ProbS - 1, 
+           EUB = ProbB * log(BR * (1 + fB)) + (1 - ProbB) * log(BR * (1 - fB)), 
+           EUS = ProbS * log(BR * (1 + fS)) + (1 - ProbS) * log(BR * (1 - fS)), 
+           #'@ Edge = ifelse(f > 0, EUB, EUS), #For f > 0 need to buy and f <= 0 need to sell.
+           #need to study on the risk management on "predicted profit" and "real profit".
+           Edge = ifelse(fB > 0, EUB, ifelse(fS > 0, EUS, 0)), 
+           PF = ifelse(Point.Forecast >= USDJPY.Low & 
+                         Point.Forecast <= USDJPY.High, 
+                       Point.Forecast, 0), #if forecasted place-bet price doesn't existing within Hi-Lo price, then the buying action is not stand. Assume there has no web bandwith delay.
+           FC = ifelse(forClose >= USDJPY.Low & forClose <= USDJPY.High, 
+                       forClose, USDJPY.Close), #if forecasted settle price doesn't existing within Hi-Lo price, then the closing action at closing price. Assume there has no web bandwith delay.
+           #'@ Diff = round(forClose - USDJPY.Close, 2),
+           ##forecasted closed price minus real close price.
+           
+           Buy = ifelse(PF > 0 & FC > PF, 1, 0), ##buy action
+           Sell = ifelse(PF > 0 & FC < PF, 1, 0), ##sell action
+           BuyS = Edge * Buy * (forClose - PF), 
+           SellS = Edge * Sell * (PF - forClose), 
+           Profit = BuyS + SellS, Bal = BR + Profit)
+    
+  #'@ fitm %>% dplyr::select(Point.Forecast, forClose, Prob, BR, f, EU, Edge, PF, FC, Buy, Sell, SP, Bal)
+  #'@ fitm %>% dplyr::select(ProbB, ProbS, BR, fB, fS, EUB, EUS, Edge, PF, USDJPY.Open, FC, Buy, Sell, BuyS, SellS, Profit, Bal) %>% filter(PF > 0, FC > 0)
   
+  for(i in seq(2, nrow(fitm))) {
+    fitm$BR[i] = fitm$Bal[i - 1]
+    fitm$fB[i] = 2 * fitm$ProbB[i] - 1
+    fitm$fS[i] = 2 * fitm$ProbS[i] - 1
+    fitm$EUB[i] = fitm$ProbB[i] * log(fitm$BR[i] * (1 + fitm$fB[i])) + 
+        (1 - fitm$ProbB[i]) * log(fitm$BR[i] * (1 - fitm$fB[i]))
+    fitm$EUS[i] = fitm$ProbS[i] * log(fitm$BR[i] * (1 + fitm$fS[i])) + 
+        (1 - fitm$ProbS[i]) * log(fitm$BR[i] * (1 - fitm$fS[i]))
+    fitm$Edge[i] = ifelse(fitm$fB[i] > 0, fitm$EUB[i], 
+                   ifelse(fitm$fS[i] > 0, fitm$EUS[i], 0)) #For f > 0 need to buy and f <= 0 need to sell.
+        #need to study on the risk management on "predicted profit" and "real profit".
+    
+    fitm$BuyS[i] = fitm$Edge[i] * fitm$Buy[i] * (fitm$forClose[i] - fitm$PF[i])
+    fitm$SellS[i] = fitm$Edge[i] * fitm$Sell[i] * (fitm$PF[i] - fitm$forClose[i])
+    fitm$Profit[i] = fitm$BuyS[i] + fitm$SellS[i]
+    fitm$Bal[i] = fitm$BR[i] + fitm$Profit[i]
+    }; rm(i)
+  
+  names(mbase) <- str_replace_all(names(mbase), '^(.*?)+\\.', nm)
+  
+  if(.filterBets == TRUE) {
+    fitm %<>% filter(PF > 0, FC > 0)
+  }
+  
+  fitm %<>% mutate(RR = Bal/BR)
+  
+  ## convert the log leverage value of fund size and profit into normal digital figure with exp().
+  if(.fundLeverageLog == TRUE) fitm %<>% mutate(BR = exp(BR), BuyS = exp(BuyS), SellS = exp(SellS), Profit = exp(Profit), Bal = exp(Profit))
   
   return(fitm)
   }
 ```
 
-```{r convertion}
-
+```{r convertion, eval = FALSE}
+##============================ EVAL = FALSE ================================
 ## Will need to mofify above function, fit the data convertion and also staking from all below `chunks` into the function simStakes() above.
 df.op <- data.frame(Date = index(fit.op), coredata(fit.op)) %>% tbl_df
 df.hi <- data.frame(Date = index(fit.hi), coredata(fit.hi)) %>% tbl_df
@@ -331,7 +461,8 @@ df.lo <- na.omit(df.lo)
 df.cl <- na.omit(df.cl)
 ```
 
-```{r weight-function}
+```{r weight-function, eval = FALSE}
+##============================ EVAL = FALSE ================================
 ## Set the forecast closed price as our staking criteria.
 df.op <- cbind(df.op, forClose = df.op$Point.Forecast) %>% tbl_df
 df.hi <- cbind(df.hi, forClose = df.hi$Point.Forecast) %>% tbl_df
@@ -342,7 +473,8 @@ df.cl <- cbind(df.cl, forClose = df.cl$Point.Forecast) %>% tbl_df
 
   Convert the probability based on closing price as the settled price. Here I try to set USD1 as the criteria (baseline) of daily sakes for every single match.
 
-```{r prob-convertion}
+```{r prob-convertion, eval = FALSE}
+##============================ EVAL = FALSE ================================
 ## convert all forecast price into probability.
 
 ## forecast the opened price.
@@ -366,7 +498,8 @@ df.cl %<>% mutate(Prob = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose
                   stakes = 1)
 ```
 
-```{r staking}
+```{r staking, eval = FALSE}
+##============================ EVAL = FALSE ================================
 ## Kelly staking models.
 
 ## placed orders on the opened price.
@@ -411,18 +544,174 @@ df.cl %<>% mutate(
 
 ```
 
+```{r simStaking-without-log}
+##============================ EVAL = FALSE ================================
+## Placed orders - Fund size with log
+fundOPHI <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = 1000)
+fundHIHI <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = 1000)
+fundMNHI <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = 1000)
+fundLOHI <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = 1000)
+fundCLHI <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = 1000)
+
+fundOPMN <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = 1000)
+fundHIMN <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = 1000)
+fundMNMN <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = 1000)
+fundLOMN <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = 1000)
+fundCLMN <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = 1000)
+
+fundOPLO <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = 1000)
+fundHILO <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = 1000)
+fundMNLO <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = 1000)
+fundLOLO <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = 1000)
+fundCLLO <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = 1000)
+
+fundOPCL <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = 1000)
+fundHICL <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = 1000)
+fundMNCL <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = 1000)
+fundLOCL <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = 1000)
+fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = 1000)
+
+
+## Placed orders - Fund size without log
+#'@ fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, fundLOHI = fundLOHI, fundCLHI = fundCLHI, 
+#'@                  fundOPMN = fundOPMN, fundHIMN = fundHIMN, fundMNMN = fundMNMN, fundLOMN = fundLOMN, fundCLMN = fundCLMN, 
+#'@                  fundOPLO = fundOPLO, fundHILO = fundHILO, fundMNLO = fundMNLO, fundLOLO = fundLOLO, fundCLLO = fundCLLO, 
+#'@                  fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
+#'@ 
+#'@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+## A tibble: 20 × 5
+#        .id    InitFund    Profit      LastFund       RR
+#      <chr> <dbl>     <dbl>    <dbl>    <dbl>
+#1  fundOPHI  1000 326.83685 1326.837 1.326837
+#2  fundHIHI  1000   0.00000 1000.000 1.000000
+#3  fundMNHI  1000 152.30210 1152.302 1.152302
+#4  fundLOHI  1000 816.63808 1816.638 1.816638
+#5  fundCLHI  1000 323.18564 1323.186 1.323186
+#6  fundOPMN  1000 246.68001 1246.680 1.246680
+#7  fundHIMN  1000 384.90915 1384.909 1.384909
+#8  fundMNMN  1000   0.00000 1000.000 1.000000
+#9  fundLOMN  1000 529.34170 1529.342 1.529342
+#10 fundCLMN  1000 221.03926 1221.039 1.221039
+#11 fundOPLO  1000 268.31155 1268.312 1.268312
+#12 fundHILO  1000 649.35074 1649.351 1.649351
+#13 fundMNLO  1000 298.28509 1298.285 1.298285
+#14 fundLOLO  1000   0.00000 1000.000 1.000000
+#15 fundCLLO  1000 208.85690 1208.857 1.208857
+#16 fundOPCL  1000  30.55969 1030.560 1.030560
+#17 fundHICL  1000 400.59057 1400.591 1.400591
+#18 fundMNCL  1000 117.96808 1117.968 1.117968
+#19 fundLOCL  1000 530.68975 1530.690 1.530690
+#20 fundCLCL  1000   0.00000 1000.000 1.000000
+## A tibble: 20 × 7
+#        .id  StartDate LatestDate InitFund LatestFund    Profit        RR
+#      <chr>     <date>     <date>    <dbl>      <dbl>     <dbl>     <dbl>
+#1  fundOPHI 2015-01-02 2017-01-20 1000 201.699419 194.79166 29.198982
+#2  fundHIHI 2015-01-02 2017-01-20 1000   6.907755   0.00000  1.000000
+#3  fundMNHI 2015-01-02 2017-01-20 1000  75.593102  68.68535 10.943222
+#4  fundLOHI 2015-01-02 2017-01-20 1000 592.614380 585.70662 85.789718
+#5  fundCLHI 2015-01-02 2017-01-20 1000 199.023237 192.11548 28.811565
+#6  fundOPMN 2015-01-02 2017-01-20 1000 145.334081 138.42633 21.039263
+#7  fundHIMN 2015-01-02 2017-01-20 1000 245.812470 238.90472 35.585000
+#8  fundMNMN 2015-01-02 2017-01-20 1000   6.907755   0.00000  1.000000
+#9  fundLOMN 2015-01-02 2017-01-20 1000 359.728088 352.82033 52.075975
+#10 fundCLMN 2015-01-02 2017-01-20 1000 127.528193 120.62044 18.461597
+#11 fundOPLO 2015-01-02 2017-01-20 1000 159.124291 152.21654 23.035600
+#12 fundHILO 2015-01-02 2017-01-20 1000 452.725480 445.81772 65.538726
+#13 fundMNLO 2015-01-02 2017-01-20 1000 180.580704 173.67295 26.141734
+#14 fundLOLO 2015-01-02 2017-01-20 1000   6.907755   0.00000  1.000000
+#15 fundCLLO 2015-01-02 2017-01-20 1000 117.219609 110.31185 16.969276
+#16 fundOPCL 2015-01-02 2017-01-20 1000  17.669553  10.76180  2.557930
+#17 fundHICL 2015-01-02 2017-01-20 1000 256.110890 249.20313 37.075849
+#18 fundMNCL 2015-01-02 2017-01-20 1000  57.745913  50.83816  8.359577
+#19 fundLOCL 2015-01-02 2017-01-20 1000 357.560612 350.65286 51.762200
+#20 fundCLCL 2015-01-02 2017-01-20 1000   6.907755   0.00000  1.000000
+
+```
+
+```{r simStaking-with-log, eval = FALSE}
+##============================ EVAL = FALSE ================================
+## Placed orders - Fund size with log
+fundOPHI <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = log(1000))
+fundHIHI <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = log(1000))
+fundMNHI <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = log(1000))
+fundLOHI <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = log(1000))
+fundCLHI <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = log(1000))
+
+fundOPMN <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = log(1000))
+fundHIMN <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = log(1000))
+fundMNMN <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = log(1000))
+fundLOMN <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = log(1000))
+fundCLMN <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = log(1000))
+
+fundOPLO <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = log(1000))
+fundHILO <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = log(1000))
+fundMNLO <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = log(1000))
+fundLOLO <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = log(1000))
+fundCLLO <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = log(1000))
+
+fundOPCL <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = log(1000))
+fundHICL <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = log(1000))
+fundMNCL <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = log(1000))
+fundLOCL <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = log(1000))
+fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = log(1000))
+
+## Placed orders - Fund size with log
+#'@ fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, fundLOHI = fundLOHI, fundCLHI = fundCLHI, 
+#'@                  fundOPMN = fundOPMN, fundHIMN = fundHIMN, fundMNMN = fundMNMN, fundLOMN = fundLOMN, fundCLMN = fundCLMN, 
+#'@                  fundOPLO = fundOPLO, fundHILO = fundHILO, fundMNLO = fundMNLO, fundLOLO = fundLOLO, fundCLLO = fundCLLO, 
+#'@                  fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
+#'@ 
+#'@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+
+## A tibble: 20 × 7
+#        .id  StartDate LatestDate InitFund LatestFund    Profit        RR
+#      <chr>     <date>     <date>    <dbl>      <dbl>     <dbl>     <dbl>
+#1  fundOPHI 2015-01-02 2017-01-20 6.907755 201.699419 194.79166 29.198982
+#2  fundHIHI 2015-01-02 2017-01-20 6.907755   6.907755   0.00000  1.000000
+#3  fundMNHI 2015-01-02 2017-01-20 6.907755  75.593102  68.68535 10.943222
+#4  fundLOHI 2015-01-02 2017-01-20 6.907755 592.614380 585.70662 85.789718
+#5  fundCLHI 2015-01-02 2017-01-20 6.907755 199.023237 192.11548 28.811565
+#6  fundOPMN 2015-01-02 2017-01-20 6.907755 145.334081 138.42633 21.039263
+#7  fundHIMN 2015-01-02 2017-01-20 6.907755 245.812470 238.90472 35.585000
+#8  fundMNMN 2015-01-02 2017-01-20 6.907755   6.907755   0.00000  1.000000
+#9  fundLOMN 2015-01-02 2017-01-20 6.907755 359.728088 352.82033 52.075975
+#10 fundCLMN 2015-01-02 2017-01-20 6.907755 127.528193 120.62044 18.461597
+#11 fundOPLO 2015-01-02 2017-01-20 6.907755 159.124291 152.21654 23.035600
+#12 fundHILO 2015-01-02 2017-01-20 6.907755 452.725480 445.81772 65.538726
+#13 fundMNLO 2015-01-02 2017-01-20 6.907755 180.580704 173.67295 26.141734
+#14 fundLOLO 2015-01-02 2017-01-20 6.907755   6.907755   0.00000  1.000000
+#15 fundCLLO 2015-01-02 2017-01-20 6.907755 117.219609 110.31185 16.969276
+#16 fundOPCL 2015-01-02 2017-01-20 6.907755  17.669553  10.76180  2.557930
+#17 fundHICL 2015-01-02 2017-01-20 6.907755 256.110890 249.20313 37.075849
+#18 fundMNCL 2015-01-02 2017-01-20 6.907755  57.745913  50.83816  8.359577
+#19 fundLOCL 2015-01-02 2017-01-20 6.907755 357.560612 350.65286 51.762200
+#20 fundCLCL 2015-01-02 2017-01-20 6.907755   6.907755   0.00000  1.000000
+
+## Due to the log(.initialfundSize) generates extremely high return compare to normal figure, I added a new parameter ".fundLeverageLog" which convert the normal fund size value into log into calculation and finally convert back to normal fund size figure."
+
+```
+
 ### 2.1.6 Return of Investment
 
   Profit and Loss
 
-```{r}
+```{r ROI}
 ## Profit and Loss.
-cbind(
-  OP = df.op %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
-  HI = df.hi %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
-  MN = df.mn %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
-  LO = df.lo %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
-  CL = df.cl %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame)
+#'@ cbind(
+#'@   OP = df.op %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+#'@   HI = df.hi %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+#'@   MN = df.mn %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+#'@   LO = df.lo %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+#'@   CL = df.cl %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame)
+
+## Placed orders - Fund size with log
+fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, fundLOHI = fundLOHI, fundCLHI = fundCLHI, 
+                 fundOPMN = fundOPMN, fundHIMN = fundHIMN, fundMNMN = fundMNMN, fundLOMN = fundLOMN, fundCLMN = fundCLMN, 
+                 fundOPLO = fundOPLO, fundHILO = fundHILO, fundMNLO = fundMNLO, fundLOLO = fundLOLO, fundCLLO = fundCLLO, 
+                 fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
+
+ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+
 ```
 
 ### 2.1.7 Return of Investment Optimization
