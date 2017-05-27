@@ -15,6 +15,7 @@ suppressPackageStartupMessages(library('BBmisc'))
 pkgs <- c('tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'readr', 'tidyverse', 'DT', 'quantmod', 'tidyquant', 'formattable', 'highcharter', 'forecast', 'Mcomp', 'bsts', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel')
 
 suppressAll(lib(pkgs))
+#'@ install.packages(pkgs, lib = 'C:/Program Files/R/R-3.4.0/library')
 suppressAll(source('./function/plotChart2.R', local = TRUE))
 
 ## R: llply fully reproducible results in parallel
@@ -50,7 +51,8 @@ options(htmltools.dir.version = FALSE)
 rm(list = ls(all.names = TRUE))
 
 ## get currency dataset online.
-getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20')
+getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20') #oanda only provides 180 days data. getSymbols()
+#'@ USDJPY <- readRDS('./data/USDJPY.rds')
 USDJPY <- xts(USDJPY[, -1], order.by = USDJPY$Date)
 
 ## dateID
@@ -76,7 +78,6 @@ rm(obs.data, pred.data)
 # Test the models
 lm(Point.Forecast~ USD.JPY, data = cmp.data)
 MCMCregress(Point.Forecast~ USD.JPY, data = cmp.data)
-
 
 plot(forecast(fit))
 forecast(fit, h = 4)
@@ -118,7 +119,9 @@ Mn <- function(x) {
 USDJPY <- read_rds(path = './data/USDJPY.rds')
 ```
 
-### 2.1.2 ARIMA vs ETS
+### 2.1.2 Statistical Modelling
+
+#### 2.1.2.1 ARIMA vs ETS
 
   Below are some articles with regards exponential smoothing.
   
@@ -126,6 +129,7 @@ USDJPY <- read_rds(path = './data/USDJPY.rds')
  - [Error, trend, seasonality - ets and its forecast model friends](http://ellisp.github.io/blog/2016/11/27/ets-friends)
  - [A study of outliers in the exponential smoothing approach to forecasting](https://www.statindex.org/articles/258660)
  - [8.10 ARIMA vs ETS](https://www.otexts.org/fpp/8/10)
+ - [Introduction to ARIMA : nonseasonal models](http://people.duke.edu/~rnau/411arim.htm#les)
 
   It is a common myth that ARIMA models are more general than exponential smoothing. While linear exponential smoothing models are all special cases of ARIMA models, the non-linear exponential smoothing models have no equivalent ARIMA counterparts. There are also many ARIMA models that have no exponential smoothing counterparts. In particular, every ETS model^[[**forecast::ets()**](https://www.rdocumentation.org/packages/forecast/versions/7.3/topics/ets) : Usually a three-character string identifying method using the framework terminology of Hyndman et al. (2002) and Hyndman et al. (2008). The first letter denotes the error type ("A", "M" or "Z"); the second letter denotes the trend type ("N","A","M" or "Z"); and the third letter denotes the season type ("N","A","M" or "Z"). In all cases, "N"=none, "A"=additive, "M"=multiplicative and "Z"=automatically selected. So, for example, "ANN" is simple exponential smoothing with additive errors, "MAM" is multiplicative Holt-Winters' method with multiplicative errors, and so on.
 It is also possible for the model to be of class "ets", and equal to the output from a previous call to ets. In this case, the same model is fitted to y without re-estimating any smoothing parameters. See also the use.initial.values argument.] is non-stationary, while ARIMA models can be stationary.
@@ -240,17 +244,6 @@ simPrice <- function(mbase, .model = 'ZZZ', .prCat = 'Mn', .baseDate = ymd('2015
   }
 ```
 
-```{r bsts}
-## Sorry ARIMA, but I’m Going Bayesian
-## http://multithreaded.stitchfix.com/blog/2016/04/21/forget-arima/
-#'@ library('bsts')
-
-## Need to testing and compare the models (packages : MCMCPack and bsts).
-
-
-
-```
-
 ```{r build-fits}
 ## Modelling
 fit.op <- simPrice(USDJPY, .prCat = 'Op') #will take a minute
@@ -260,7 +253,24 @@ fit.lo <- simPrice(USDJPY, .prCat = 'Lo') #will take a minute
 fit.cl <- simPrice(USDJPY, .prCat = 'Cl') #will take a minute
 ```
 
-### 2.1.3 MCMC
+#### 2.1.2.2 Garch vs eGarch
+
+  - [How to fit ARMA+GARCH Model In R?](https://quant.stackexchange.com/questions/4948/how-to-fit-armagarch-model-in-r?answertab=votes#tab-top)
+  - [A short introduction to the rugarch package](http://unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/)
+  - [A practical introduction to garch modeling](https://www.r-bloggers.com/a-practical-introduction-to-garch-modeling/)
+  - [ARCH-GARCH Example with R](http://yunus.hacettepe.edu.tr/~iozkan/eco665/archgarch.html)
+  - [Financial Econometrics Practical *Practical 6: Univariate Volatility Modelling*](http://curiousquant.com/ClassNotes/FinMetrics/Practicals/Practical_6/Practical_6.html)
+  - [Multivariate GARCH(1,1) in R](https://stackoverflow.com/questions/35035857/multivariate-garch1-1-in-r?answertab=votes#tab-top)
+  - [R - Modelling Multivariate GARCH (rugarch and ccgarch)](https://stackoverflow.com/questions/16874375/r-modelling-multivariate-garch-rugarch-and-ccgarch?answertab=votes#tab-top)
+  - [Introduction to some R package](./reference/IntroPackages.pdf)
+  - [Introduction to the ruGarch package](./reference/Introduction_to_the_rugarch_package.pdf)
+  - [The rmgarch models: Background and properties. - R Project](./reference/The_rmgarch_models.pdf)
+  - [rmgarch - How to Multivariate GARCH Models in R | R-How.com](https://r-how.com/packages/rmgarch)
+
+
+
+
+#### 2.1.2.3 MCMC vs Bayesian Time Series
 
   Need to refer to MCMC since I am using exponential smoothing models...
 
@@ -316,6 +326,18 @@ paste('High = ', mean((fcdata$USDJPY.FPHI.High - fcdata$USDJPY.High)^2))
 paste('Mean = ', mean((fcdata$USDJPY.FPMN.Mean - (fcdata$USDJPY.High + fcdata$USDJPY.Low)/2)^2))
 paste('Low = ', mean((fcdata$USDJPY.FPLO.Low - fcdata$USDJPY.Low)^2))
 paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
+```
+
+
+```{r bsts}
+## Sorry ARIMA, but I’m Going Bayesian
+## http://multithreaded.stitchfix.com/blog/2016/04/21/forget-arima/
+#'@ library('bsts')
+
+## Need to testing and compare the models (packages : MCMCPack and bsts).
+
+
+
 ```
 
 ### 2.1.4 Data Visualization
@@ -860,16 +882,44 @@ pp <- expand.grid(c('Op', 'Hi', 'Mn', 'Lo', 'Cl'), c('Op', 'Hi', 'Mn', 'Lo', 'Cl
 #Unit: seconds
 #                                                 expr
 #llply(ets.m[1:2], function(x) {     simStakes(mbase, .model = x, .prCat = pp[[1]][1], .setPrice = pp[[1]][2],          .initialFundSize = 1000) }, .progress = "text")
-      min       lq     mean   median       uq      max neval
+#      min       lq     mean   median       uq      max neval
 # 46.81515 47.33999 48.20982 47.98835 49.01683 51.46196   100
+
+## .parallel and .progress parameters do not work.
+## 
+#'@ microbenchmark(res <- llply(ets.m, function(x) {
+#'@     llply(pp, function(y) {
+#'@         z = simStakes(mbase, .model = x, .prCat = y[1], .setPrice = y[2], .initialFundSize = 1000, .simulate = TRUE, .bootstrap = TRUE)
+#'@         txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.', y[1], y[2], '.rds\'); rm(z)')
+#'@         eval(parse(text = txt1))
+#'@         cat(paste0(txt1, ' done!', '\n'))
+#'@     }, .parallel = TRUE)
+#'@   cat(paste(x, 'done', '\n'))
+#'@ }, .parallel = TRUE))
+## 
 
 microbenchmark(res <- llply(ets.m, function(x) {
     llply(pp, function(y) {
-        simStakes(mbase, .model = x, .prCat = y[1], .setPrice = y[2], .initialFundSize = 1000, .simulate = TRUE, .bootstrap = TRUE)
-      cat(paste(x, ' with ', y, 'done', '\n'))
-    }, .parallel = TRUE)
-  cat(paste(x, 'done', '\n'))
-}, .parallel = TRUE))
+        z = simStakes(mbase, .model = x, .prCat = y[1], .setPrice = y[2], .initialFundSize = 1000, .simulate = TRUE, .bootstrap = TRUE)
+        txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.', y[1], y[2], '.rds\'); rm(z)')
+        eval(parse(text = txt1))
+        cat(paste0(txt1, ' done!', '\n'))
+    })
+    cat(paste(x, 'done', '\n'))
+}))
+
+#ZAN  with  Cl done 
+# ZAN  with  Lo done 
+#ZAN done 
+#Error in ets(smp, model = .model) : Forbidden model combination
+#ZAN  with  Cl done 
+# ZAN  with  Mn done 
+#ZAN done 
+#Error in ets(smp, model = .model) : Forbidden model combination
+#ZAN  with  Cl done 
+# ZAN  with  Cl done 
+#ZAN done 
+#Error in ets(smp, model = .model) : Forbidden model combination
 
 ```
 
