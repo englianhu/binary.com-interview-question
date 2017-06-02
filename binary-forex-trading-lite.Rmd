@@ -12,7 +12,7 @@ link-citations: yes
 
 ```{r setup, include = FALSE}
 suppressPackageStartupMessages(library('BBmisc'))
-pkgs <- c('tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'readr', 'tidyverse', 'DT', 'quantmod', 'tidyquant', 'formattable', 'highcharter', 'forecast', 'Mcomp', 'bsts', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel')
+pkgs <- c('tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'readr', 'tidyverse', 'quantmod', 'tidyquant', 'htmltools', 'highcharter', 'formattable', 'DT', 'forecast', 'Mcomp', 'bsts', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel')
 
 suppressAll(lib(pkgs))
 #'@ install.packages(pkgs, lib = 'C:/Program Files/R/R-3.4.0/library')
@@ -362,9 +362,11 @@ paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
 
 ```
 
-### 2.1.4 Data Visualization
+### 2.1.3 Data Visualization
 
   Plot graph.
+
+#### 2.1.3.1 ARIMA vs ETS
 
 ```{r plot1}
 ## Plot the models
@@ -393,7 +395,18 @@ suppressAll(rm(fit.op, fit.hi, fit.mn, fit.lo, fit.cl))
 plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'USDJPY')
 ```
 
-### 2.1.5 Staking Model
+#### 2.1.3.2 Garch vs eGarch
+
+
+
+#### 2.1.3.3 MCMC vs Bayesian Time Series
+
+
+
+
+### 2.1.4 Staking Model
+
+#### 2.1.4.1 ARIMA vs ETS
 
   Staking function. Here I apply Kelly criterion as the betting strategy. I don't pretend to know the order of price flutuation flow from the Hi-Lo price range, therefore I just using Closing price for settlement while the staking price restricted within the variance (Hi-Lo) to made the transaction stand. The settled price can only be closing price unless staking price is opening price which sellable within the Hi-Lo range.
   
@@ -484,7 +497,7 @@ simStakes <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FA
   fit1 <- na.omit(fit1)
   
   ## forecast settlement price.
-  fit2 <- simPrice(mbase, .model = .model, damped = .damped, additive.only = .additive.only, .prCat = .setPrice, .baseDate = .baseDate, .parallel = .parallel, .simulate = .simulate, .bootstrap = .bootstrap, .npaths = .npaths)
+  fit2 <- simPrice(mbase, .model = .model, .damped = .damped, .additive.only = .additive.only, .prCat = .setPrice, .baseDate = .baseDate, .parallel = .parallel, .simulate = .simulate, .bootstrap = .bootstrap, .npaths = .npaths)
   fit2 <- data.frame(Date = index(fit2), coredata(fit2)) %>% tbl_df
   fit2 <- na.omit(fit2)
   
@@ -558,10 +571,20 @@ simStakes <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FA
   }
 ```
 
-### 2.1.6 Return of Investment
+
+#### 2.1.4.2 Garch vs eGarch
+
+
+
+#### 2.1.4.3 MCMC vs Bayesian Time Series
+
+
+
+### 2.1.5 Return of Investment
+
+#### 2.1.5.1 ARIMA vs ETS
 
   Profit and Loss of default `ZZZ` ets models.
-
 
 ```{r simStaking-woutLog}
 ##============================ EVAL = FALSE ================================
@@ -878,24 +901,26 @@ fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize =
 # 20 fundCLCL 2015-01-02 2017-01-20 6.907755 2.718282e+00 5.350000e+02 3.935116e-01
 ```
 
-  From above table summary we can know that `model 1 without any leverage` will be growth stable.
+  From above table summary we can know that `model 1 without any leverage` will be growth with a stable pace where LoHi and LoHi generates highest return rates. fundLOHI indicates investment **fund** buy at **LO**west price and sell at **HI**ghest price and vice verse.
 
 ```  
 #4  fundLOHI 2015-01-02 2017-01-20      1000  816.63808   1816.638  1.816638
-#5  fundCLHI 2015-01-02 2017-01-20      1000  323.18564   1323.186  1.323186
-#6  fundOPMN 2015-01-02 2017-01-20      1000  246.68001   1246.680  1.246680
-#7  fundHIMN 2015-01-02 2017-01-20      1000  384.90915   1384.909  1.384909
-#8  fundMNMN 2015-01-02 2017-01-20      1000    0.00000   1000.000  1.000000
-#9  fundLOMN 2015-01-02 2017-01-20      1000  529.34170   1529.342  1.529342
-#10 fundCLMN 2015-01-02 2017-01-20      1000  221.03926   1221.039  1.221039
-#11 fundOPLO 2015-01-02 2017-01-20      1000  268.31155   1268.312  1.268312
 #12 fundHILO 2015-01-02 2017-01-20      1000  649.35074   1649.351  1.649351
 ```
 
-### 2.1.7 Return of Investment Optimization
+#### 2.1.5.2 Garch vs eGarch
 
 
-  Now we testing the bootstrap onto the simulation of the forecasting.
+
+#### 2.1.5.3 MCMC vs Bayesian Time Series
+
+
+
+### 2.1.6 Return of Investment Optimization
+
+#### 2.1.6.1 ARIMA vs ETS
+
+  Now we apply the bootstrap onto the simulation of the forecasting.
 
 ```{r test-etsBoostrap, eval = FALSE}
 ##============================ EVAL = FALSE ================================
@@ -1017,13 +1042,14 @@ pp <- expand.grid(c('Op', 'Hi', 'Mn', 'Lo', 'Cl'), c('Op', 'Hi', 'Mn', 'Lo', 'Cl
 
 microbenchmark(res <- llply(ets.m, function(x) {
     llply(pp, function(y) {
-        z = simStakes(mbase, .model = x, .prCat = y[1], .setPrice = y[2], .initialFundSize = 1000, .simulate = TRUE, .bootstrap = TRUE)
+        z = simStakes(mbase, .model = x, .prCat = y[1], .setPrice = y[2], 
+                      .initialFundSize = 1000, .simulate = TRUE, .bootstrap = TRUE)
         txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.', y[1], y[2], '.rds\'); rm(z)')
         eval(parse(text = txt1))
         cat(paste0(txt1, ' done!', '\n'))
     })
     cat(paste(x, 'done', '\n'))
-}))
+    }))
 
 #'@ sapply(ets.m, function(x) { 
 #'@     dir('data', pattern = x) %>% length
@@ -1082,8 +1108,82 @@ fundList <- llply(fls, function(dt) {
 names(fundList) <- sapply(fundList, function(x) first(x$Model))
 
 ## Summary of ROI
-ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+ets.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ```
+
+```{r roi-ets, eval = FALSE}
+## plot html table
+##============================ EVAL = FALSE ================================
+tagList(
+  tags$div(align = "center", 
+           class = "bg-info", 
+           tags$h3(class = "bg-primary", "Profit and Loss of Investment (2015-Jan-02 2017-Jan-20)"), 
+           tags$h5(align = "center", class = "text-muted", 
+                   "Error-Trend-Seasonal or ExponenTial Smoothing Models")), 
+  as.htmlwidget(ets.tbl %>% formattable(list(
+    
+    LatestFund = formatter('span', style = x ~ formattable::style(color = ifelse(rank(-x) <= 3, 'blue', 'grey')), x ~ paste0(round(x, 2), ' (rank: ', sprintf('%02f', rank(-x)), ')')), 
+    
+    Profit = formatter('span', style = x ~ formattable::style(color = ifelse(rank(-x) <= 3, 'blue', 'grey')), x ~ paste0(round(x, 2), ' (rank: ', sprintf('%02f', rank(-x)), ')')), 
+    
+    RR = formatter('span', style = x ~ formattable::style(color = ifelse(rank(-x) <= 3, 'blue', 'grey')), x ~ sprintf('%1.2f%% (rank: %.0f)', 100 * x, rank(-x)))))))
+```
+
+```{r plot-ets2}
+## plot interactive table
+ets.tbl %>% datatable(
+    caption = "Table 2.1.7.1 : Summary of ROI (2015-Jan-01 to 2017-Jan-20)", 
+    escape = FALSE, filter = 'top', rownames = FALSE, 
+    extensions = list('ColReorder' = NULL, 'RowReorder' = NULL, 
+                      'Buttons' = NULL, 'Responsive' = NULL), 
+    options = list(dom = 'BRrltpi', autoWidth = TRUE,  scrollX = TRUE, 
+                   lengthMenu = list(c(10, 50, 100, -1), c('10', '50', '100', 'All')), 
+                   ColReorder = TRUE, rowReorder = TRUE, 
+                   buttons = list('copy', 'print', 
+                                  list(extend = 'collection', 
+                                       buttons = c('csv', 'excel', 'pdf'), 
+                                       text = 'Download'), I('colvis'))))
+```
+
+```{r concludes1}
+ets.tbl %>% filter(RR == max(RR))
+# A tibble: 2 x 7
+#       .id  StartDate LatestDate InitFund LatestFund  Profit       RR
+#     <chr>     <date>     <date>    <dbl>      <dbl>   <dbl>    <dbl>
+#1 AZN.LoHi 2015-01-02 2017-01-20     1000   1834.058 834.058 1.834058
+#2 AZZ.LoHi 2015-01-02 2017-01-20     1000   1834.058 834.058 1.834058
+
+llply(c('LoHi', 'HiLo'), function(ppr) {
+  ets.tbl %>% filter(.id %in% grep(ppr, ets.tbl$.id, value = TRUE)) %>% filter(RR == max(RR))
+  })
+#[[1]]
+# A tibble: 2 x 7
+#       .id  StartDate LatestDate InitFund LatestFund  Profit       RR
+#     <chr>     <date>     <date>    <dbl>      <dbl>   <dbl>    <dbl>
+#1 AZN.LoHi 2015-01-02 2017-01-20     1000   1834.058 834.058 1.834058
+#2 AZZ.LoHi 2015-01-02 2017-01-20     1000   1834.058 834.058 1.834058
+#
+#[[2]]
+# A tibble: 2 x 7
+#       .id  StartDate LatestDate InitFund LatestFund   Profit       RR
+#     <chr>     <date>     <date>    <dbl>      <dbl>    <dbl>    <dbl>
+#1 AZN.HiLo 2015-01-02 2017-01-20     1000   1666.752 666.7518 1.666752
+#2 AZZ.HiLo 2015-01-02 2017-01-20     1000   1666.752 666.7518 1.666752
+```
+
+  From above table, we find the ets model `AZN` and `AZZ` generates highest return compare to rest of 21 ets models.
+
+
+
+#### 2.1.6.2 Garch vs eGarch
+
+
+
+#### 2.1.6.3 MCMC vs Bayesian Time Series
+
+
+### 2.1.7 Conclusion
+
 
 
 ## 2.2 Question 2
