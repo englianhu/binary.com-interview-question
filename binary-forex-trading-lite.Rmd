@@ -302,6 +302,7 @@ fit.cl <- simPrice(USDJPY, .prCat = 'Cl') #will take a minute
 
 ```{r testModels}
 ## Need to test and read through the MCMCregress... after few months later (when free)... Start working as a servant at Bah-Kut-Teh restorant tommorrow 01-Mar-2017.
+## Here I test the accuracy of forecasting of ets ZZZ model 1.
 
 ## Test the models
 ## opened price fit data
@@ -571,6 +572,7 @@ simStakes <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FA
   }
 ```
 
+  Here I set an application of leverage while it is very risky (the variance of ROI is very high) as we can know from later comparison.
 
 #### 2.1.4.2 Garch vs eGarch
 
@@ -1001,7 +1003,7 @@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate =
 #20 fundCLCL 2015-01-02 2017-01-20     1000   1000.000   0.00000 1.000000
 ```
 
-```{r multi-ets}
+```{r multi-etsM}
 ## set all models provided by ets function.
 ets.m1 <- c('A', 'M', 'Z')
 ets.m2 <- c('N', 'A', 'M', 'Z')
