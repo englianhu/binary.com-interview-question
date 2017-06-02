@@ -158,7 +158,29 @@ It is also possible for the model to be of class "ets", and equal to the output 
 ## Now we try to use the daily mean value which is (Hi + Lo) / 2.
 ## Hi for predict daily highest price. (selling daytrade)
 ## Lo for predict daily lowest price. (buying daytrade)
-simPrice <- function(mbase, .model = 'ZZZ', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), .parallel = FALSE, .simulate = FALSE, .bootstrap = FALSE, .npaths = 5000) {
+simPrice <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE, .prCat = 'Mn', .baseDate = ymd('2015-01-01'), .parallel = FALSE, .simulate = FALSE, .bootstrap = FALSE, .npaths = 5000) {
+  #' Exponential smoothing state space model
+  #' 
+  #' Returns ets model applied to \code{y}.
+  #' 
+  #' Based on the classification of methods as described in Hyndman et al (2008).
+  #' 
+  #' The methodology is fully automatic. The only required argument for ets is
+  #' the time series. The model is chosen automatically if not specified. This
+  #' methodology performed extremely well on the M3-competition data. (See
+  #' Hyndman, et al, 2002, below.)
+  #' 
+  #'@ aliases print.ets summary.ets as.character.ets coef.ets tsdiag.ets
+  #' 
+  #'@ param y a numeric vector or time series of class \code{ts}
+  #'@ param model Usually a three-character string identifying method using the
+  #' framework terminology of Hyndman et al. (2002) and Hyndman et al. (2008).
+  #' The first letter denotes the error type ("A", "M" or "Z"); the second letter
+  #' denotes the trend type ("N","A","M" or "Z"); and the third letter denotes
+  #' the season type ("N","A","M" or "Z"). In all cases, "N"=none, "A"=additive,
+  #' "M"=multiplicative and "Z"=automatically selected. So, for example, "ANN" is
+  #' simple exponential smoothing with additive errors, "MAM" is multiplicative
+  #' Holt-Winters' method with multiplicative errors, and so on.
   
   if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
   
@@ -230,7 +252,7 @@ simPrice <- function(mbase, .model = 'ZZZ', .prCat = 'Mn', .baseDate = ymd('2015
       dtr = last(index(smp[index(smp) < dt]))
       smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
       frd = as.numeric(difftime(dt, dtr), units = 'days')
-      fit = ets(smp, model = .model) #exponential smoothing model.
+      fit = ets(smp, model = .model, damped = .damped, additive.only = .additive.only) #exponential smoothing model.
       if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
       data.frame(Date = dt, forecast(fit, h = frd, simulate = .simulate, 
                                      bootstrap = .bootstrap, npaths = .npaths)) %>% tbl_df
@@ -382,7 +404,30 @@ plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'USDJPY'
   - If the forecasted settled price does not exist within the Hi-Lo price, then the settled price will be the real closing price.
 
 ```{r simStakes}
-simStakes <- function(mbase, .model = 'ZZZ', .prCat = 'Op', .baseDate = ymd('2015-01-01'), .parallel = FALSE, .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = FALSE, .filterBets = FALSE, .simulate = FALSE, .bootstrap = FALSE, .npaths = 5000) {
+simStakes <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE, .prCat = 'Op', .baseDate = ymd('2015-01-01'), .parallel = FALSE, .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = FALSE, .filterBets = FALSE, .simulate = FALSE, .bootstrap = FALSE, .npaths = 5000) {
+  #' Exponential smoothing state space model
+  #' 
+  #' Returns ets model applied to \code{y}.
+  #' 
+  #' Based on the classification of methods as described in Hyndman et al (2008).
+  #' 
+  #' The methodology is fully automatic. The only required argument for ets is
+  #' the time series. The model is chosen automatically if not specified. This
+  #' methodology performed extremely well on the M3-competition data. (See
+  #' Hyndman, et al, 2002, below.)
+  #' 
+  #'@ aliases print.ets summary.ets as.character.ets coef.ets tsdiag.ets
+  #' 
+  #'@ param y a numeric vector or time series of class \code{ts}
+  #'@ param model Usually a three-character string identifying method using the
+  #' framework terminology of Hyndman et al. (2002) and Hyndman et al. (2008).
+  #' The first letter denotes the error type ("A", "M" or "Z"); the second letter
+  #' denotes the trend type ("N","A","M" or "Z"); and the third letter denotes
+  #' the season type ("N","A","M" or "Z"). In all cases, "N"=none, "A"=additive,
+  #' "M"=multiplicative and "Z"=automatically selected. So, for example, "ANN" is
+  #' simple exponential smoothing with additive errors, "MAM" is multiplicative
+  #' Holt-Winters' method with multiplicative errors, and so on.
+  
   ## .setPrice need to set by refer to closing price, otherwise the P%L will be wrong due to we unable 
   ##   know the price flow based on Hi-Lo price.
   ## Here I set .setPrice to options as : .setPrice = 'Op', .setPrice = 'Hi', .setPrice = 'Mn', .setPrice = 'Lo', .setPrice = 'Cl', .setPrice = 'FPOP', .setPrice = 'FPHI', .setPrice = 'FPMN', .setPrice = 'FPLO', .setPrice = 'FPCL'.
@@ -434,12 +479,12 @@ simStakes <- function(mbase, .model = 'ZZZ', .prCat = 'Op', .baseDate = ymd('201
   names(mbase) <- str_replace_all(names(mbase), '^(.*?)+\\.', 'USDJPY.')
   
   ## forecast staking price.
-  fit1 <- simPrice(mbase, .model = .model, .prCat = .prCat, .baseDate = .baseDate, .parallel = .parallel, .simulate = .simulate, .bootstrap = .bootstrap, .npaths = .npaths)
+  fit1 <- simPrice(mbase, .model = .model, .damped = .damped, .additive.only = .additive.only, .prCat = .prCat, .baseDate = .baseDate, .parallel = .parallel, .simulate = .simulate, .bootstrap = .bootstrap, .npaths = .npaths)
   fit1 <- data.frame(Date = index(fit1), coredata(fit1)) %>% tbl_df
   fit1 <- na.omit(fit1)
   
   ## forecast settlement price.
-  fit2 <- simPrice(mbase, .model = .model, .prCat = .setPrice, .baseDate = .baseDate, .parallel = .parallel, .simulate = .simulate, .bootstrap = .bootstrap, .npaths = .npaths)
+  fit2 <- simPrice(mbase, .model = .model, damped = .damped, additive.only = .additive.only, .prCat = .setPrice, .baseDate = .baseDate, .parallel = .parallel, .simulate = .simulate, .bootstrap = .bootstrap, .npaths = .npaths)
   fit2 <- data.frame(Date = index(fit2), coredata(fit2)) %>% tbl_df
   fit2 <- na.omit(fit2)
   
@@ -495,6 +540,7 @@ simStakes <- function(mbase, .model = 'ZZZ', .prCat = 'Op', .baseDate = ymd('201
     fitm$SellS[i] = fitm$Edge[i] * fitm$Sell[i] * (fitm$PF[i] - fitm$forClose[i])
     fitm$Profit[i] = fitm$BuyS[i] + fitm$SellS[i]
     fitm$Bal[i] = fitm$BR[i] + fitm$Profit[i]
+    if(fitm$Bal[i] <= 0) stop('All invested fund ruined!')
     }; rm(i)
   
   names(mbase) <- str_replace_all(names(mbase), '^(.*?)+\\.', nm)
@@ -511,6 +557,11 @@ simStakes <- function(mbase, .model = 'ZZZ', .prCat = 'Op', .baseDate = ymd('201
   return(fitm)
   }
 ```
+
+### 2.1.6 Return of Investment
+
+  Profit and Loss of default `ZZZ` ets models.
+
 
 ```{r simStaking-woutLog}
 ##============================ EVAL = FALSE ================================
@@ -697,6 +748,49 @@ fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize =
 # 19 fundLOCL 2015-01-02 2017-01-20     1000 2.718282e+00 2.407137e+08 2.718282e-03
 # 20 fundCLCL 2015-01-02 2017-01-20     1000 2.718282e+00 5.350000e+02 2.718282e-03
 
+##============================ EVAL = FALSE ================================
+## Profit and Loss of single model (write in list format).
+#'@ cbind(
+#'@   OP = df.op %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+#'@   HI = df.hi %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+#'@   MN = df.mn %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+#'@   LO = df.lo %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
+#'@   CL = df.cl %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame)
+
+## Placed orders - Fund size with log
+fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, fundLOHI = fundLOHI, fundCLHI = fundCLHI, 
+                 fundOPMN = fundOPMN, fundHIMN = fundHIMN, fundMNMN = fundMNMN, fundLOMN = fundLOMN, fundCLMN = fundCLMN, 
+                 fundOPLO = fundOPLO, fundHILO = fundHILO, fundMNLO = fundMNLO, fundLOLO = fundLOLO, fundCLLO = fundCLLO, 
+                 fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
+
+## Summary of ROI
+ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+## A tibble: 20 × 7
+#        .id  StartDate LatestDate InitFund   LatestFund       Profit           RR
+#       <chr>     <date>     <date>    <dbl>        <dbl>        <dbl>        <dbl>
+# 1  fundOPHI 2015-01-02 2017-01-20     1000 2.096972e+27 7.701648e+03 2.096972e+24
+# 2  fundHIHI 2015-01-02 2017-01-20     1000 2.718282e+00 5.350000e+02 2.718282e-03
+# 3  fundMNHI 2015-01-02 2017-01-20     1000 3.900327e+04 1.064366e+03 3.900327e+01
+# 4  fundLOHI 2015-01-02 2017-01-20     1000 2.718282e+00 9.620574e+09 2.718282e-03
+# 5  fundCLHI 2015-01-02 2017-01-20     1000 6.689430e+23 6.611671e+03 6.689430e+20
+# 6  fundOPMN 2015-01-02 2017-01-20     1000 2.454335e+01 1.027528e+03 2.454335e-02
+# 7  fundHIMN 2015-01-02 2017-01-20     1000 2.718282e+00 2.628152e+03 2.718282e-03
+# 8  fundMNMN 2015-01-02 2017-01-20     1000 2.718282e+00 5.350000e+02 2.718282e-03
+# 9  fundLOMN 2015-01-02 2017-01-20     1000 2.718282e+00 3.916608e+04 2.718282e-03
+# 10 fundCLMN 2015-01-02 2017-01-20     1000 1.585667e+01 9.900735e+02 1.585667e-02
+# 11 fundOPLO 2015-01-02 2017-01-20     1000 1.152381e+00 3.455387e+03 1.152381e-03
+# 12 fundHILO 2015-01-02 2017-01-20     1000 2.718282e+00 1.541190e+06 2.718282e-03
+# 13 fundMNLO 2015-01-02 2017-01-20     1000 1.040560e+00 3.434093e+03 1.040560e-03
+# 14 fundLOLO 2015-01-02 2017-01-20     1000 2.718282e+00 5.350000e+02 2.718282e-03
+# 15 fundCLLO 2015-01-02 2017-01-20     1000 1.152544e+00 2.646148e+03 1.152544e-03
+# 16 fundOPCL 2015-01-02 2017-01-20     1000 2.919029e+00 5.465890e+02 2.919029e-03
+# 17 fundHICL 2015-01-02 2017-01-20     1000 2.718282e+00 2.278748e+05 2.718282e-03
+# 18 fundMNCL 2015-01-02 2017-01-20     1000 1.034658e+01 9.680842e+02 1.034658e-02
+# 19 fundLOCL 2015-01-02 2017-01-20     1000 2.718282e+00 2.407137e+08 2.718282e-03
+# 20 fundCLCL 2015-01-02 2017-01-20     1000 2.718282e+00 5.350000e+02 2.718282e-03
+
+## Details of ROI
+llply(fundList, function(x) x[c('BR', 'fB', 'fS', 'EUB', 'EUS', 'Edge', 'PF', 'FC', 'Buy', 'Sell', 'BuyS', 'SellS', 'Profit', 'Bal', 'RR')] %>% filter(PF >0 | FC > 0))
 ```
 
 ```{r simStaking-withLogLeverage, eval = FALSE}
@@ -784,9 +878,27 @@ fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize =
 # 20 fundCLCL 2015-01-02 2017-01-20 6.907755 2.718282e+00 5.350000e+02 3.935116e-01
 ```
 
+  From above table summary we can know that `model 1 without any leverage` will be growth stable.
+
+```  
+#4  fundLOHI 2015-01-02 2017-01-20      1000  816.63808   1816.638  1.816638
+#5  fundCLHI 2015-01-02 2017-01-20      1000  323.18564   1323.186  1.323186
+#6  fundOPMN 2015-01-02 2017-01-20      1000  246.68001   1246.680  1.246680
+#7  fundHIMN 2015-01-02 2017-01-20      1000  384.90915   1384.909  1.384909
+#8  fundMNMN 2015-01-02 2017-01-20      1000    0.00000   1000.000  1.000000
+#9  fundLOMN 2015-01-02 2017-01-20      1000  529.34170   1529.342  1.529342
+#10 fundCLMN 2015-01-02 2017-01-20      1000  221.03926   1221.039  1.221039
+#11 fundOPLO 2015-01-02 2017-01-20      1000  268.31155   1268.312  1.268312
+#12 fundHILO 2015-01-02 2017-01-20      1000  649.35074   1649.351  1.649351
+```
+
+### 2.1.7 Return of Investment Optimization
+
+
   Now we testing the bootstrap onto the simulation of the forecasting.
 
 ```{r test-etsBoostrap, eval = FALSE}
+##============================ EVAL = FALSE ================================
 ## bootstraping simulation.
 fundOPHI <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
@@ -865,6 +977,7 @@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate =
 ```
 
 ```{r multi-ets}
+## set all models provided by ets function.
 ets.m1 <- c('A', 'M', 'Z')
 ets.m2 <- c('N', 'A', 'M', 'Z')
 ets.m3 <- c('N', 'A', 'M', 'Z')
@@ -872,7 +985,11 @@ ets.m <- do.call(paste0, expand.grid(ets.m1, ets.m2, ets.m3))
 rm(ets.m1, ets.m2, ets.m3)
 
 pp <- expand.grid(c('Op', 'Hi', 'Mn', 'Lo', 'Cl'), c('Op', 'Hi', 'Mn', 'Lo', 'Cl')) %>% mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ')
+```
 
+```{r multi-ets, eval = FALSE}
+## pre-run and saved models.
+##============================ EVAL = FALSE ================================
 #Unit: seconds
 #                                                 expr
 #llply(ets.m[1:2], function(x) {     simStakes(mbase, .model = x, .prCat = pp[[1]][1], .setPrice = pp[[1]][2],          .initialFundSize = 1000) }, .progress = "text")
@@ -908,75 +1025,66 @@ microbenchmark(res <- llply(ets.m, function(x) {
     cat(paste(x, 'done', '\n'))
 }))
 
-#ZAN  with  Cl done 
-# ZAN  with  Lo done 
-#ZAN done 
-#Error in ets(smp, model = .model) : Forbidden model combination
-#ZAN  with  Cl done 
-# ZAN  with  Mn done 
-#ZAN done 
-#Error in ets(smp, model = .model) : Forbidden model combination
-#ZAN  with  Cl done 
-# ZAN  with  Cl done 
-#ZAN done 
-#Error in ets(smp, model = .model) : Forbidden model combination
+#'@ sapply(ets.m, function(x) { 
+#'@     dir('data', pattern = x) %>% length
+#'@    }, USE.NAMES = TRUE)
+#ANN MNN ZNN AAN MAN ZAN AMN MMN ZMN AZN MZN ZZN ANA MNA ZNA AAA MAA ZAA AMA MMA ZMA AZA MZA ZZA ANM MNM ZNM AAM 
+# 25  25  25  25  25  25   0  25  25  25  25  25   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0   0 
+#MAM ZAM AMM MMM ZMM AZM MZM ZZM ANZ MNZ ZNZ AAZ MAZ ZAZ AMZ MMZ ZMZ AZZ MZZ ZZZ 
+#  0   0   0   0   0   0   0   0  25  25  25  25  25  25   0  25  25  25  25  25
+
+## http://r.789695.n4.nabble.com/Re-R-code-queries-td4674160.html
+#'@ Error in ets(smp, model = .model) : Forbidden model combination
+# ets7 <- ets(zz, model="AMN") 
+# Error in ets(zz, model = "AMN") : Forbidden model combination 
 
 ```
 
-### 2.1.6 Return of Investment
+  In order to trace the errors, here I check the source codes of the function but also test the coding as you can know via [Error : Forbidden model combination #554](https://github.com/robjhyndman/forecast/issues/554). Here I only take 22 models among 48 models.
 
-  Profit and Loss
+```{r valid.etsModels, eval = FALSE}
+## filtered valid models.
+##============================ EVAL = FALSE ================================
+> ets.m
+ [1] "ANN" "MNN" "ZNN" "AAN" "MAN" "ZAN" "AMN" "MMN" "ZMN" "AZN" "MZN" "ZZN" "ANA" "MNA" "ZNA" "AAA" "MAA" "ZAA"
+[19] "AMA" "MMA" "ZMA" "AZA" "MZA" "ZZA" "ANM" "MNM" "ZNM" "AAM" "MAM" "ZAM" "AMM" "MMM" "ZMM" "AZM" "MZM" "ZZM"
+[37] "ANZ" "MNZ" "ZNZ" "AAZ" "MAZ" "ZAZ" "AMZ" "MMZ" "ZMZ" "AZZ" "MZZ" "ZZZ"
+> sapply(ets.m, function(x) { 
++      dir('data', pattern = x) %>% length
++   }, USE.NAMES = TRUE) %>% .[. > 0]
+ANN MNN ZNN AAN MAN ZAN MMN ZMN AZN MZN ZZN ANZ MNZ ZNZ AAZ MAZ ZAZ MMZ ZMZ AZZ MZZ ZZZ 
+ 25  25  25  25  25  25  25  25  25  25  25  25  25  25  25  25  25  25  25  25  25  25 
+> sapply(ets.m, function(x) { 
++      dir('data', pattern = x) %>% length
++   }, USE.NAMES = TRUE) %>% .[. > 0] %>% length
+[1] 22]
+```
 
-```{r ROI}
-## Profit and Loss.
-#'@ cbind(
-#'@   OP = df.op %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
-#'@   HI = df.hi %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
-#'@   MN = df.mn %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
-#'@   LO = df.lo %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame, 
-#'@   CL = df.cl %>% dplyr::select(Return.Back, Return.Lay) %>% colSums %>% data.frame)
+```{r ROI-multimodels}
+## load the pre-run and saved models.
+## Profit and Loss of multi-ets models. 22 models.
 
-## Placed orders - Fund size with log
-fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, fundLOHI = fundLOHI, fundCLHI = fundCLHI, 
-                 fundOPMN = fundOPMN, fundHIMN = fundHIMN, fundMNMN = fundMNMN, fundLOMN = fundLOMN, fundCLMN = fundCLMN, 
-                 fundOPLO = fundOPLO, fundHILO = fundHILO, fundMNLO = fundMNLO, fundLOLO = fundLOLO, fundCLLO = fundCLLO, 
-                 fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
+nms <- sapply(ets.m, function(x) { 
+    dir('data', pattern = x) %>% length
+  }, USE.NAMES = TRUE) %>% .[. > 0] %>% names
 
+fls <- sapply(nms, function(x) {
+    sapply(pp, function(y) { 
+        dir('data', pattern = paste0(x, '.', y[1], y[2]))
+    })
+  })
+
+## From 22 ets models with 25 hilo, opcl, mnmn, opop etc different price data. There will be 550 models.
+fundList <- llply(fls, function(dt) {
+    cbind(Model = str_replace_all(dt, '.rds', ''), 
+          readRDS(file = paste0('./data/', dt)))
+  })
+names(fundList) <- sapply(fundList, function(x) first(x$Model))
+
+## Summary of ROI
 ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
-## A tibble: 20 × 7
-#        .id  StartDate LatestDate InitFund   LatestFund       Profit           RR
-#       <chr>     <date>     <date>    <dbl>        <dbl>        <dbl>        <dbl>
-# 1  fundOPHI 2015-01-02 2017-01-20     1000 2.096972e+27 7.701648e+03 2.096972e+24
-# 2  fundHIHI 2015-01-02 2017-01-20     1000 2.718282e+00 5.350000e+02 2.718282e-03
-# 3  fundMNHI 2015-01-02 2017-01-20     1000 3.900327e+04 1.064366e+03 3.900327e+01
-# 4  fundLOHI 2015-01-02 2017-01-20     1000 2.718282e+00 9.620574e+09 2.718282e-03
-# 5  fundCLHI 2015-01-02 2017-01-20     1000 6.689430e+23 6.611671e+03 6.689430e+20
-# 6  fundOPMN 2015-01-02 2017-01-20     1000 2.454335e+01 1.027528e+03 2.454335e-02
-# 7  fundHIMN 2015-01-02 2017-01-20     1000 2.718282e+00 2.628152e+03 2.718282e-03
-# 8  fundMNMN 2015-01-02 2017-01-20     1000 2.718282e+00 5.350000e+02 2.718282e-03
-# 9  fundLOMN 2015-01-02 2017-01-20     1000 2.718282e+00 3.916608e+04 2.718282e-03
-# 10 fundCLMN 2015-01-02 2017-01-20     1000 1.585667e+01 9.900735e+02 1.585667e-02
-# 11 fundOPLO 2015-01-02 2017-01-20     1000 1.152381e+00 3.455387e+03 1.152381e-03
-# 12 fundHILO 2015-01-02 2017-01-20     1000 2.718282e+00 1.541190e+06 2.718282e-03
-# 13 fundMNLO 2015-01-02 2017-01-20     1000 1.040560e+00 3.434093e+03 1.040560e-03
-# 14 fundLOLO 2015-01-02 2017-01-20     1000 2.718282e+00 5.350000e+02 2.718282e-03
-# 15 fundCLLO 2015-01-02 2017-01-20     1000 1.152544e+00 2.646148e+03 1.152544e-03
-# 16 fundOPCL 2015-01-02 2017-01-20     1000 2.919029e+00 5.465890e+02 2.919029e-03
-# 17 fundHICL 2015-01-02 2017-01-20     1000 2.718282e+00 2.278748e+05 2.718282e-03
-# 18 fundMNCL 2015-01-02 2017-01-20     1000 1.034658e+01 9.680842e+02 1.034658e-02
-# 19 fundLOCL 2015-01-02 2017-01-20     1000 2.718282e+00 2.407137e+08 2.718282e-03
-# 20 fundCLCL 2015-01-02 2017-01-20     1000 2.718282e+00 5.350000e+02 2.718282e-03
-
-llply(fundList, function(x) x[c('BR', 'fB', 'fS', 'EUB', 'EUS', 'Edge', 'PF', 'FC', 'Buy', 'Sell', 'BuyS', 'SellS', 'Profit', 'Bal', 'RR')] %>% filter(PF >0 | FC > 0))
 ```
 
-### 2.1.7 Return of Investment Optimization
-
-```{r optStaking}
-## optimise the stakes.
-#'@ log(balance + portion Kelly edge ratio)
-
-```
 
 ## 2.2 Question 2
 
