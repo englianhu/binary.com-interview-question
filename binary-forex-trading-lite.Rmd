@@ -4,9 +4,14 @@ subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-questi
 author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>白戸則道®"
 date: "`r Sys.Date()`"
 output:
-  tint::tintHtml: 
-     self_contained: TRUE
-bibliography: skeleton.bib
+  tufte::tufte_html:
+    toc: yes
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
 link-citations: yes
 ---
 
@@ -31,7 +36,7 @@ options(htmltools.dir.version = FALSE)
 
 # 1. Introduction
 
-  Below are the questionaire. Here I created this file to apply `MCMCpack` and `forecast` to compelete the questions prior to completed the `Ridge`, `ElasticNet` and `LASSO` regression (quite alot of models for comparison).
+  Below are the questionaire. Here I created this file to apply `MCMCpack` and `forecast` to compelete the questions prior to completed the `Ridge`, `ElasticNet` and `LASSO` regression (quite alot of models for comparison)^[].
   
   <iframe src=\"https://raw.githubusercontent.com/englianhu/binary.com-interview-question/ff20ee95aa60ef5cca3cf797066089103eb62acf/reference/quant-analyst-skills-test.pdf" width=\"900\" height=\"600\"></iframe>
   
@@ -275,24 +280,7 @@ fit.lo <- simPrice(USDJPY, .prCat = 'Lo') #will take a minute
 fit.cl <- simPrice(USDJPY, .prCat = 'Cl') #will take a minute
 ```
 
-#### 2.1.2.2 Garch vs eGarch
-
-  - [How to fit ARMA+GARCH Model In R?](https://quant.stackexchange.com/questions/4948/how-to-fit-armagarch-model-in-r?answertab=votes#tab-top)
-  - [A short introduction to the rugarch package](http://unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/)
-  - [A practical introduction to garch modeling](https://www.r-bloggers.com/a-practical-introduction-to-garch-modeling/)
-  - [ARCH-GARCH Example with R](http://yunus.hacettepe.edu.tr/~iozkan/eco665/archgarch.html)
-  - [Financial Econometrics Practical *Practical 6: Univariate Volatility Modelling*](http://curiousquant.com/ClassNotes/FinMetrics/Practicals/Practical_6/Practical_6.html)
-  - [Multivariate GARCH(1,1) in R](https://stackoverflow.com/questions/35035857/multivariate-garch1-1-in-r?answertab=votes#tab-top)
-  - [R - Modelling Multivariate GARCH (rugarch and ccgarch)](https://stackoverflow.com/questions/16874375/r-modelling-multivariate-garch-rugarch-and-ccgarch?answertab=votes#tab-top)
-  - [Introduction to some R package](./reference/IntroPackages.pdf)
-  - [Introduction to the ruGarch package](./reference/Introduction_to_the_rugarch_package.pdf)
-  - [The rmgarch models: Background and properties. - R Project](./reference/The_rmgarch_models.pdf)
-  - [rmgarch - How to Multivariate GARCH Models in R | R-How.com](https://r-how.com/packages/rmgarch)
-
-
-
-
-#### 2.1.2.3 MCMC vs Bayesian Time Series
+**Application of MCMC**
 
   Need to refer to MCMC since I am using exponential smoothing models...
 
@@ -362,6 +350,28 @@ paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
 
 
 ```
+
+#### 2.1.2.2 Garch vs eGarch
+
+  Now we look at Garch model, *Figlewski (2004)*^[*Paper 19th*] applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. The author applid Garch on SAP200, 10-years-bond and 20-years-bond and concludes that the Garch model is better than eGarch but implied volatility model better than Garch and eGarch, and the monthly Hi-Lo data is better accurate than daily Hi-Lo for long term investment.
+
+  - [How to fit ARMA+GARCH Model In R?](https://quant.stackexchange.com/questions/4948/how-to-fit-armagarch-model-in-r?answertab=votes#tab-top)
+  - [A short introduction to the rugarch package](http://unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/)
+  - [A practical introduction to garch modeling](https://www.r-bloggers.com/a-practical-introduction-to-garch-modeling/)
+  - [ARCH-GARCH Example with R](http://yunus.hacettepe.edu.tr/~iozkan/eco665/archgarch.html)
+  - [Financial Econometrics Practical *Practical 6: Univariate Volatility Modelling*](http://curiousquant.com/ClassNotes/FinMetrics/Practicals/Practical_6/Practical_6.html)
+  - [Multivariate GARCH(1,1) in R](https://stackoverflow.com/questions/35035857/multivariate-garch1-1-in-r?answertab=votes#tab-top)
+  - [R - Modelling Multivariate GARCH (rugarch and ccgarch)](https://stackoverflow.com/questions/16874375/r-modelling-multivariate-garch-rugarch-and-ccgarch?answertab=votes#tab-top)
+  - [Introduction to some R package](./reference/IntroPackages.pdf)
+  - [Introduction to the ruGarch package](./reference/Introduction_to_the_rugarch_package.pdf)
+  - [The rmgarch models: Background and properties. - R Project](./reference/The_rmgarch_models.pdf)
+  - [rmgarch - How to Multivariate GARCH Models in R | R-How.com](https://r-how.com/packages/rmgarch)
+
+
+
+
+#### 2.1.2.3 MCMC vs Bayesian Time Series
+
 
 ### 2.1.3 Data Visualization
 
@@ -1175,9 +1185,11 @@ llply(c('LoHi', 'HiLo'), function(ppr) {
 
   From above table, we find the ets model `AZN` and `AZZ` generates highest return compare to rest of 21 ets models.
 
-
+  *Figlewski (2004)* applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. Since I only predict 2 years investment therefore a further research works on the data sizing and longer prediction terms need (for example: 1 month, 3 months, 6 months data to predict coming price, 2ndly comparison of the ROI from 7 years or upper).
 
 #### 2.1.6.2 Garch vs eGarch
+
+  ...
 
 
 
@@ -1259,6 +1271,9 @@ rm(sys1)
   16. [Time Series Cross Validation](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
   17. [Character-Code.com](http://character-code.com/)
   18. [Size Matters – Kelly Optimization](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
-  19. []()
+  19. [**Forecasting Volatility** *- (2004)by Stephen Figlewski*]()
+  20. []()
+  21. []()
+
 
 **Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
