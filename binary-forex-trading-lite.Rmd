@@ -1,7 +1,7 @@
 ---
 title: "Binary.com Forex Trading"
-subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question (lite version answer)"
-author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>白戸則道®"
+subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question (lite version answer)"
+author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>白戸則道®"
 date: "`r Sys.Date()`"
 output:
   tufte::tufte_html:
@@ -17,7 +17,7 @@ link-citations: yes
 
 ```{r setup, include = FALSE}
 suppressPackageStartupMessages(library('BBmisc'))
-pkgs <- c('tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'readr', 'tidyverse', 'quantmod', 'tidyquant', 'htmltools', 'highcharter', 'formattable', 'DT', 'forecast', 'Mcomp', 'bsts', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel')
+pkgs <- c('tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'readr', 'tidyverse', 'quantmod', 'tidyquant', 'htmltools', 'highcharter', 'formattable', 'DT', 'forecast', 'Mcomp', 'bsts', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'rugarch', 'parma', 'rmgarch', 'MASS', 'mvtnorm', 'tmvtnorm')
 
 suppressAll(lib(pkgs))
 #'@ install.packages(pkgs, lib = 'C:/Program Files/R/R-3.4.0/library')
@@ -36,11 +36,9 @@ options(htmltools.dir.version = FALSE)
 
 # 1. Introduction
 
-  Below are the questionaire. Here I created this file to apply `MCMCpack` and `forecast` to compelete the questions prior to completed the `Ridge`, `ElasticNet` and `LASSO` regression (quite alot of models for comparison)^[].
-  
-  <iframe src=\"https://raw.githubusercontent.com/englianhu/binary.com-interview-question/ff20ee95aa60ef5cca3cf797066089103eb62acf/reference/quant-analyst-skills-test.pdf" width=\"900\" height=\"600\"></iframe>
-  
-  **Remarks :** *Here I try to predict the sell/buy price and also settled price. However just noticed the question asking about prediction of the variance^[The profit is made based on the range of variance Hi-Lo price but not the accuracy of the highest, lowest or closing price.] based on mean price. Will conduct another study and answer for the variance.*
+  Below are the questionaire. Here I created this file to apply `MCMCpack` and `forecast` to compelete the questions prior to completed the `Ridge`, `ElasticNet` and `LASSO` regression (quite alot of models for comparison)^[We can use `cv.glmnet()` in `glmnet` package or `caret` package for cross validation models. You can refer to [<span style='color:blue'>Algorithmic Trading</span>](https://robotwealth.com/caterory/algorithmic-trading/page/4/) and [<span style='color:blue'>Successful Algorithmic Trading</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/fcad2844d7f10c486f3601af9932f49973548e4b/reference/Successful%20Algorithmic%20Trading.pdf) which applied cross-validation in focasting in financial market. You can buy the ebook with full Python coding of [<span style='color:blue'>Successful Algorithmic Trading</span>](https://www.quantstart.com/successful-algorithmic-trading-ebook) as well.].
+
+<center><iframe src="https://raw.githubusercontent.com/englianhu/binary.com-interview-question/ff20ee95aa60ef5cca3cf797066089103eb62acf/reference/quant-analyst-skills-test.pdf" width="auto" height="auto"></iframe></center>
 
 # 2. Content
 
@@ -69,7 +67,7 @@ obs.data <- USDJPY[index(USDJPY) > dateID0]
 ## Now we try to use the daily mean value which is (Hi + Lo) / 2.
 pred.data <- ldply(dateID, function(dt) {
   smp = USDJPY
-  dtr = last(index(smp[index(smp) < dt]))
+  dtr = xts::last(index(smp[index(smp) < dt]))
   smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
   frd = as.numeric(difftime(dt, dtr), units = 'days')
   fit = ets(smp) #https://www.otexts.org/fpp/7/7
@@ -106,7 +104,6 @@ Mn <- function(x) {
     return(x[, grep("Mean", colnames(x), ignore.case = TRUE)])
   stop("subscript out of bounds: no column name containing \"Mean\"")
   }
-
 ```
 
 ```{r read-data2}
@@ -127,16 +124,18 @@ USDJPY <- read_rds(path = './data/USDJPY.rds')
 ### 2.1.2 Statistical Modelling
 
 #### 2.1.2.1 ARIMA vs ETS
+  
+  <span style='color:red'>**Remarks :** *Here I try to predict the sell/buy price and also settled price. However just noticed the question asking about prediction of the variance^[The profit is made based on the range of variance Hi-Lo price but not the accuracy of the highest, lowest or closing price.] based on mean price. I can also use the focasted highest and forecasted lowest price for variance prediction as well. However I will conduct another study and answer for the variance with Garch models.*</span>
 
   Below are some articles with regards exponential smoothing.
   
- - [Recent Advances in Robust Statistics: Theory and Applications](https://books.google.com.my/books?id=ntR5DQAAQBAJ&pg=PA174&lpg=PA174&dq=exponential+smoothing+mcmc&source=bl&ots=QANf4o9oFh&sig=JWov-64qeFTcOScG2pYj9OVCl2k&hl=ja&sa=X&redir_esc=y#v=onepage&q=exponential%20smoothing%20mcmc&f=false)
- - [Error, trend, seasonality - ets and its forecast model friends](http://ellisp.github.io/blog/2016/11/27/ets-friends)
- - [A study of outliers in the exponential smoothing approach to forecasting](https://www.statindex.org/articles/258660)
- - [8.10 ARIMA vs ETS](https://www.otexts.org/fpp/8/10)
- - [Introduction to ARIMA : nonseasonal models](http://people.duke.edu/~rnau/411arim.htm#les)
+ - [<span style='color:blue'>Recent Advances in Robust Statistics: Theory and Applications</span>](https://books.google.com.my/books?id=ntR5DQAAQBAJ&pg=PA174&lpg=PA174&dq=exponential+smoothing+mcmc&source=bl&ots=QANf4o9oFh&sig=JWov-64qeFTcOScG2pYj9OVCl2k&hl=ja&sa=X&redir_esc=y#v=onepage&q=exponential%20smoothing%20mcmc&f=false)
+ - [<span style='color:blue'>Error, trend, seasonality - ets and its forecast model friends</span>](http://ellisp.github.io/blog/2016/11/27/ets-friends)
+ - [<span style='color:blue'>A study of outliers in the exponential smoothing approach to forecasting</span>](https://www.statindex.org/articles/258660)
+ - [<span style='color:blue'>8.10 ARIMA vs ETS</span>](https://www.otexts.org/fpp/8/10)
+ - [<span style='color:blue'>Introduction to ARIMA : nonseasonal models</span>](http://people.duke.edu/~rnau/411arim.htm#les)
 
-  It is a common myth that ARIMA models are more general than exponential smoothing. While linear exponential smoothing models are all special cases of ARIMA models, the non-linear exponential smoothing models have no equivalent ARIMA counterparts. There are also many ARIMA models that have no exponential smoothing counterparts. In particular, every ETS model^[[**forecast::ets()**](https://www.rdocumentation.org/packages/forecast/versions/7.3/topics/ets) : Usually a three-character string identifying method using the framework terminology of Hyndman et al. (2002) and Hyndman et al. (2008). The first letter denotes the error type ("A", "M" or "Z"); the second letter denotes the trend type ("N","A","M" or "Z"); and the third letter denotes the season type ("N","A","M" or "Z"). In all cases, "N"=none, "A"=additive, "M"=multiplicative and "Z"=automatically selected. So, for example, "ANN" is simple exponential smoothing with additive errors, "MAM" is multiplicative Holt-Winters' method with multiplicative errors, and so on.
+  It is a common myth that ARIMA models are more general than exponential smoothing. While linear exponential smoothing models are all special cases of ARIMA models, the non-linear exponential smoothing models have no equivalent ARIMA counterparts. There are also many ARIMA models that have no exponential smoothing counterparts. In particular, every ETS model^[[<span style='color:blue'>**forecast::ets()**</span>](https://www.rdocumentation.org/packages/forecast/versions/7.3/topics/ets) : Usually a three-character string identifying method using the framework terminology of Hyndman et al. (2002) and Hyndman et al. (2008). The first letter denotes the error type ("A", "M" or "Z"); the second letter denotes the trend type ("N","A","M" or "Z"); and the third letter denotes the season type ("N","A","M" or "Z"). In all cases, "N"=none, "A"=additive, "M"=multiplicative and "Z"=automatically selected. So, for example, "ANN" is simple exponential smoothing with additive errors, "MAM" is multiplicative Holt-Winters' method with multiplicative errors, and so on.
 It is also possible for the model to be of class "ets", and equal to the output from a previous call to ets. In this case, the same model is fitted to y without re-estimating any smoothing parameters. See also the use.initial.values argument.] is non-stationary, while ARIMA models can be stationary.
 
   The ETS models with seasonality or non-damped trend or both have two unit roots (i.e., they need two levels of differencing to make them stationary). All other ETS models have one unit root (they need one level of differencing to make them stationary).
@@ -157,7 +156,7 @@ It is also possible for the model to be of class "ets", and equal to the output 
 
   For the seasonal models, there are a large number of restrictions on the ARIMA parameters.
 
-  Kindly refer to [*8.10 ARIMA vs ETS*](https://www.otexts.org/fpp/8/10) for further details.
+  Kindly refer to [<span style='color:blue'>*8.10 ARIMA vs ETS*</span>](https://www.otexts.org/fpp/8/10) for further details.
 
 ```{r simPrice}
 ## Now we try to use the daily mean value which is (Hi + Lo) / 2.
@@ -254,7 +253,7 @@ simPrice <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FAL
     
   pred.data <- ldply(dateID, function(dt) {
       smp = obs.data2
-      dtr = last(index(smp[index(smp) < dt]))
+      dtr = xts::last(index(smp[index(smp) < dt]))
       smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
       frd = as.numeric(difftime(dt, dtr), units = 'days')
       fit = ets(smp, model = .model, damped = .damped, additive.only = .additive.only) #exponential smoothing model.
@@ -284,9 +283,9 @@ fit.cl <- simPrice(USDJPY, .prCat = 'Cl') #will take a minute
 
   Need to refer to MCMC since I am using exponential smoothing models...
 
-  - [Markov Chain Monte Carlo Method](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_introbayes_sect007.htm)
-  - [Burn-In is Unnecessary](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
-  - [**Nice R Code** *Punning code better since 2013*](https://nicercode.github.io/guides/mcmc/)
+  - [<span style='color:blue'>Markov Chain Monte Carlo Method</span>](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_introbayes_sect007.htm)
+  - [<span style='color:blue'>Burn-In is Unnecessary</span>](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
+  - [<span style='color:blue'>**Nice R Code** *Punning code better since 2013*</span>](https://nicercode.github.io/guides/mcmc/)
 
 ```{r testModels}
 ## Need to test and read through the MCMCregress... after few months later (when free)... Start working as a servant at Bah-Kut-Teh restorant tommorrow 01-Mar-2017.
@@ -340,6 +339,84 @@ paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
 ```
 
 
+#### 2.1.2.2 Garch vs EWMA
+
+  Now we look at Garch model, *Figlewski (2004)*^[*Paper 19th*] applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. The author applid Garch on SAP200, 10-years-bond and 20-years-bond and concludes that the Garch model is better than eGarch but implied volatility model better than Garch and eGarch, and the monthly Hi-Lo data is better accurate than daily Hi-Lo for long term investment.
+
+  - [<span style='color:blue'>Volatility Forecasting Using GARCH(1,1)</span>](https://quantumfinancier.wordpress.com/2010/08/26/volatility-forecasting-using-garch11/)
+  - [<span style='color:blue'>Regime Switching System Using Volatility Forecast</span>](https://quantumfinancier.wordpress.com/2010/08/27/regime-switching-system-using-volatility-forecast/)
+  - [<span style='color:blue'>Normalized Price Spread Strategy</span>](https://quantumfinancier.wordpress.com/2010/06/17/normalized-price-spread-strategy/)
+  - [<span style='color:blue'>Volatility Autocorrelation in Different Markets</span>](https://quantumfinancier.wordpress.com/2010/05/27/volatility-autocorrelation-in-different-markets/)
+  - [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (part 1)</span>](https://quantumfinancier.wordpress.com/2010/09/12/381/)
+  - [Basic Introduction to GARCH and EGARCH (part 2)](https://quantumfinancier.wordpress.com/2010/09/14/basic-introduction-to-garch-and-egarch-part-2/)
+  - [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (Part 3)</span>](http://quantumfinancier.wordpress.com/2010/09/23/basic-introduction-to-garch-and-egarch-part-3/amp)^[Using this EGARCH model, we can epect a better estimate the volatility for assets returns due to how the EGARCH counteracts the limitations on the classic GARCH model.]
+  - [<span style='color:blue'>Analysis List</span>](https://vlab.stern.nyu.edu/doc?topic=mdls)
+  
+    - Volatility Analysis
+    
+      + [<span style='color:blue'>AGARCH](https://vlab.stern.nyu.edu/doc/6?topic=mdls</span>)
+      + [<span style='color:blue'>APARCH</span>](https://vlab.stern.nyu.edu/doc/5?topic=mdls)
+      + [<span style='color:blue'>Asy. MEM</span>](https://vlab.stern.nyu.edu/doc/10?topic=mdls)
+      + [<span style='color:blue'>Asy. Power MEM</span>](https://vlab.stern.nyu.edu/doc/11?topic=mdls)
+      + [<span style='color:blue'>CDS-GARCH</span>](https://vlab.stern.nyu.edu/doc/25?topic=mdls)
+      + [<span style='color:blue'>CDS-GARCH-DYN</span>](https://vlab.stern.nyu.edu/doc/26?topic=mdls)
+      + [<span style='color:blue'>EGARCH</span>](https://vlab.stern.nyu.edu/doc/4?topic=mdls)
+      + [<span style='color:blue'>GARCH</span>](https://vlab.stern.nyu.edu/doc/2?topic=mdls)
+      + [<span style='color:blue'>GAS-GARCH Student T</span>](https://vlab.stern.nyu.edu/doc/23?topic=mdls)
+      + [<span style='color:blue'>GJR-GARCH</span>](https://vlab.stern.nyu.edu/doc/3?topic=mdls)
+      + [<span style='color:blue'>MEM</span>](https://vlab.stern.nyu.edu/doc/9?topic=mdls)
+      + [<span style='color:blue'>Spline-GARCH</span>](https://vlab.stern.nyu.edu/doc/7?topic=mdls)
+      + [<span style='color:blue'>Zero Slope Spline-GARCH</span>](https://vlab.stern.nyu.edu/doc/8?topic=mdls)
+      
+    - Correlation Analysis
+    
+      + [<span style='color:blue'>EWMA Covariance</span>](https://vlab.stern.nyu.edu/doc/12?topic=mdls)
+      + [<span style='color:blue'>GARCH-DCC</span>](https://vlab.stern.nyu.edu/doc/13?topic=mdls)
+      + [<span style='color:blue'>GARCH-DECO</span>](https://vlab.stern.nyu.edu/doc/20?topic=mdls)
+      + [<span style='color:blue'>GJR-DCC</span>](https://vlab.stern.nyu.edu/doc/14?topic=mdls)
+      + [<span style='color:blue'>GJR-DECO</span>](https://vlab.stern.nyu.edu/doc/21?topic=mdls)
+      
+    - Systemic Risk Analysis
+    
+      + [<span style='color:blue'>Domestic MES</span>](https://vlab.stern.nyu.edu/doc/40?topic=mdls)
+      + [<span style='color:blue'>Dynamic MES</span>](https://vlab.stern.nyu.edu/doc/16?topic=mdls)
+      + [<span style='color:blue'>Dynamic MES with Simulation</span>](https://vlab.stern.nyu.edu/doc/22?topic=mdls)
+      + [<span style='color:blue'>Global Dynamic MES</span>](https://vlab.stern.nyu.edu/doc/17?topic=mdls)
+      
+    - Long Run Value at Risk
+    
+      + [<span style='color:blue'>Long Term GJR-GARCH Forecast</span>](https://vlab.stern.nyu.edu/doc/18?topic=mdls)
+      + [<span style='color:blue'>Long Term GJR-GARCH Forecast with Options</span>](https://vlab.stern.nyu.edu/doc/19?topic=mdls)
+      
+    - Liquidity Analysis
+    
+      + [<span style='color:blue'>Asymmetric ILLIQ</span>](https://vlab.stern.nyu.edu/doc/28?topic=mdls)
+      + [<span style='color:blue'>Historical ILLIQ</span>](https://vlab.stern.nyu.edu/doc/29?topic=mdls)
+      + [<span style='color:blue'>Spline ILLIQ</span>](https://vlab.stern.nyu.edu/doc/27?topic=mdls)
+      
+    - Fixed Income Analysis
+    
+      + [<span style='color:blue'>ESR Interest Rate Forecast</span>](https://vlab.stern.nyu.edu/doc/39?topic=mdls)
+
+  - [<span style='color:blue'>Extensions of the GARCH Model</span>](http://sfb649.wiwi.hu-berlin.de/fedc_homepage/xplore/tutorials/sfehtmlnode67.html)^[Comparison among the GARCH, TGARCH (Threshold GARCH) and EGARCH (Exponential GARCH) models.]
+  - [<span style='color:blue'>How to fit ARMA+GARCH Model In R?</span>](https://quant.stackexchange.com/questions/4948/how-to-fit-armagarch-model-in-r?answertab=votes#tab-top)
+  - [<span style='color:blue'>A short introduction to the rugarch package</span>](http://unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/)
+  - [<span style='color:blue'>A practical introduction to garch modeling</span>](https://www.r-bloggers.com/a-practical-introduction-to-garch-modeling/)
+  - [<span style='color:blue'>ARCH-GARCH Example with R</span>](http://yunus.hacettepe.edu.tr/~iozkan/eco665/archgarch.html)
+  - [<span style='color:blue'>Financial Econometrics Practical *Practical 6: Univariate Volatility Modelling*</span>](http://curiousquant.com/ClassNotes/FinMetrics/Practicals/Practical_6/Practical_6.html)
+  - [<span style='color:blue'>Multivariate GARCH(1,1) in R</span>](https://stackoverflow.com/questions/35035857/multivariate-garch1-1-in-r?answertab=votes#tab-top)
+  - [<span style='color:blue'>R - Modelling Multivariate GARCH (rugarch and ccgarch)</span>](https://stackoverflow.com/questions/16874375/r-modelling-multivariate-garch-rugarch-and-ccgarch?answertab=votes#tab-top)
+  - [<span style='color:blue'>Introduction to some R package</span>](./reference/IntroPackages.pdf)
+  - [<span style='color:blue'>Introduction to the ruGarch package</span>](./reference/Introduction_to_the_rugarch_package.pdf)
+  - [<span style='color:blue'>The rmgarch models: Background and properties. - R Project</span>](./reference/The_rmgarch_models.pdf)
+  - [<span style='color:blue'>rmgarch - How to Multivariate GARCH Models in R | R-How.com</span>](https://r-how.com/packages/rmgarch)
+
+
+
+
+#### 2.1.2.3 MCMC vs Bayesian Time Series
+
+
 ```{r bsts}
 ## Sorry ARIMA, but I’m Going Bayesian
 ## http://multithreaded.stitchfix.com/blog/2016/04/21/forget-arima/
@@ -350,28 +427,6 @@ paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
 
 
 ```
-
-#### 2.1.2.2 Garch vs eGarch
-
-  Now we look at Garch model, *Figlewski (2004)*^[*Paper 19th*] applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. The author applid Garch on SAP200, 10-years-bond and 20-years-bond and concludes that the Garch model is better than eGarch but implied volatility model better than Garch and eGarch, and the monthly Hi-Lo data is better accurate than daily Hi-Lo for long term investment.
-
-  - [How to fit ARMA+GARCH Model In R?](https://quant.stackexchange.com/questions/4948/how-to-fit-armagarch-model-in-r?answertab=votes#tab-top)
-  - [A short introduction to the rugarch package](http://unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/)
-  - [A practical introduction to garch modeling](https://www.r-bloggers.com/a-practical-introduction-to-garch-modeling/)
-  - [ARCH-GARCH Example with R](http://yunus.hacettepe.edu.tr/~iozkan/eco665/archgarch.html)
-  - [Financial Econometrics Practical *Practical 6: Univariate Volatility Modelling*](http://curiousquant.com/ClassNotes/FinMetrics/Practicals/Practical_6/Practical_6.html)
-  - [Multivariate GARCH(1,1) in R](https://stackoverflow.com/questions/35035857/multivariate-garch1-1-in-r?answertab=votes#tab-top)
-  - [R - Modelling Multivariate GARCH (rugarch and ccgarch)](https://stackoverflow.com/questions/16874375/r-modelling-multivariate-garch-rugarch-and-ccgarch?answertab=votes#tab-top)
-  - [Introduction to some R package](./reference/IntroPackages.pdf)
-  - [Introduction to the ruGarch package](./reference/Introduction_to_the_rugarch_package.pdf)
-  - [The rmgarch models: Background and properties. - R Project](./reference/The_rmgarch_models.pdf)
-  - [rmgarch - How to Multivariate GARCH Models in R | R-How.com](https://r-how.com/packages/rmgarch)
-
-
-
-
-#### 2.1.2.3 MCMC vs Bayesian Time Series
-
 
 ### 2.1.3 Data Visualization
 
@@ -406,7 +461,7 @@ suppressAll(rm(fit.op, fit.hi, fit.mn, fit.lo, fit.cl))
 plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'USDJPY')
 ```
 
-#### 2.1.3.2 Garch vs eGarch
+#### 2.1.3.2 Garch vs EWMA
 
 
 
@@ -584,7 +639,7 @@ simStakes <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FA
 
   Here I set an application of leverage while it is very risky (the variance of ROI is very high) as we can know from later comparison.
 
-#### 2.1.4.2 Garch vs eGarch
+#### 2.1.4.2 Garch vs EWMA
 
 
 
@@ -799,7 +854,7 @@ fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, 
                  fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
 
 ## Summary of ROI
-ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = xts::last(Date), InitFund = xts::first(BR), LatestFund = xts::last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ## A tibble: 20 × 7
 #        .id  StartDate LatestDate InitFund   LatestFund       Profit           RR
 #       <chr>     <date>     <date>    <dbl>        <dbl>        <dbl>        <dbl>
@@ -920,7 +975,51 @@ fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize =
 #12 fundHILO 2015-01-02 2017-01-20      1000  649.35074   1649.351  1.649351
 ```
 
-#### 2.1.5.2 Garch vs eGarch
+**Variance/Volatility Analsis**
+
+  Hereby, I try to place bets on the variance which is requested by the assessment.
+
+```{r variance-staking}
+## focast the variance and convert to probability.
+varHL <- fundList[grep('HiHi|LoLo', names(fundList))]
+varHL1 <- suppressMessages(llply(varHL, function(dtx) {
+  mm = tbl_df(dtx) %>% dplyr::select(Date, Point.Forecast, USDJPY.High, USDJPY.Low)
+  names(mm)[2] = as.character(dtx$Model[1])
+  names(mm) = str_replace_all(names(mm), 'HiHi', 'High')
+  names(mm) = str_replace_all(names(mm), 'LoLo', 'Low')
+  ntm = str_replace_all(names(mm), '.High|.Low', '') %>% unique %>% sort
+  mm[ntm %in% names(mm),]
+  }) %>% join_all) %>% tbl_df
+
+ntm = str_replace_all(names(varHL1), '.High|.Low', '')[-1]
+varHL2 <- suppressMessages(llply(ntm, function(nm) {
+    mld = varHL1[grep(nm, names(varHL1))]
+    mld[,3] = mld[,1] - mld[,2]
+    names(mld)[3] = paste0(nm, '.Rng')
+    mld = mld[colSums(!is.na(mld)) > 0]
+    data.frame(Date = varHL1['Date'], mld) %>% tbl_df
+    }) %>% unique %>% join_all %>% tbl_df)
+
+## Application of MASS::mvrnorm() or mvtnorm::rmvnorm()
+
+
+
+varHL1 %>% gather(Model, Price, ANN.High:ZZZ.Low)
+
+ %>% mutate(ProbBVar = pnorm(Point.Forecast, mean = (USDJPY.High + USDJPY.Low)/2, sd = sd((USDJPY.High + USDJPY.Low)/2)), ProbSVar = 1 - ProbBVar)
+
+## Betting strategy 1 - Normal betting
+
+
+
+
+
+## Betting strategy 2 - Kelly Criterion
+
+
+```
+
+#### 2.1.5.2 Garch vs EWMA
 
 
 
@@ -987,7 +1086,7 @@ fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, 
                  fundOPLO = fundOPLO, fundHILO = fundHILO, fundMNLO = fundMNLO, fundLOLO = fundLOLO, fundCLLO = fundCLLO, 
                  fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
 
-ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = xts::last(Date), InitFund = xts::first(BR), LatestFund = xts::last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ## A tibble: 20 x 7
 #        .id  StartDate LatestDate InitFund LatestFund    Profit       RR
 #      <chr>     <date>     <date>    <dbl>      <dbl>     <dbl>    <dbl>
@@ -1078,7 +1177,7 @@ microbenchmark(res <- llply(ets.m, function(x) {
 
 ```
 
-  In order to trace the errors, here I check the source codes of the function but also test the coding as you can know via [Error : Forbidden model combination #554](https://github.com/robjhyndman/forecast/issues/554). Here I only take 22 models among 48 models.
+  In order to trace the errors, here I check the source codes of the function but also test the coding as you can know via [<span style='color:blue'>Error : Forbidden model combination #554</span>](https://github.com/robjhyndman/forecast/issues/554). Here I only take 22 models among 48 models.
 
 ```{r valid.etsModels, eval = FALSE}
 ## filtered valid models.
@@ -1117,10 +1216,10 @@ fundList <- llply(fls, function(dt) {
     cbind(Model = str_replace_all(dt, '.rds', ''), 
           readRDS(file = paste0('./data/', dt)))
   })
-names(fundList) <- sapply(fundList, function(x) first(x$Model))
+names(fundList) <- sapply(fundList, function(x) xts::first(x$Model))
 
 ## Summary of ROI
-ets.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+ets.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = xts::last(Date), InitFund = xts::first(BR), LatestFund = xts::last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ```
 
 ```{r roi-ets, eval = FALSE}
@@ -1187,7 +1286,27 @@ llply(c('LoHi', 'HiLo'), function(ppr) {
 
   *Figlewski (2004)* applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. Since I only predict 2 years investment therefore a further research works on the data sizing and longer prediction terms need (for example: 1 month, 3 months, 6 months data to predict coming price, 2ndly comparison of the ROI from 7 years or upper).
 
-#### 2.1.6.2 Garch vs eGarch
+**Variance/Volatility Analsis**
+
+  Hereby, I try to place bets on the variance which is requested by the assessment.
+
+```{r variance-returns}
+## focast the variance and convert to probability.
+varB <- llply(fundList, function(dtx) mutate(dtx, ProbBVar = pnorm(Point.Forecast, mean = (USDJPY.High + USDJPY.Low)/2, sd = sd((USDJPY.High + USDJPY.Low)/2)), ProbSVar = 1 - ProbBVar) %>% tbl_df)
+
+## Betting strategy 1 - Normal betting
+
+
+
+
+
+## Betting strategy 2 - Kelly Criterion
+
+
+```
+
+
+#### 2.1.6.2 Garch vs EWMA
 
   ...
 
@@ -1230,11 +1349,11 @@ stopCluster(cl)
   - File latest updated date: `r Sys.Date()`
   - `r R.version.string`
   - R version (short form): `r getRversion()`
-  - [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
-  - [**tufte** package](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
+  - [<span style='color:blue'>**rmarkdown** package</span>](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+  - [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
   - File version: 1.0.1
-  - Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
-  - GitHub: [Source Code](https://github.com/scibrokes/betting-strategy-and-model-validation)
+  - Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
+  - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/scibrokes/betting-strategy-and-model-validation)
   - Additional session information
   
 ```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
@@ -1253,27 +1372,27 @@ rm(sys1)
 
 ## 4.2 Reference
 
-  01. [Stock Market Forecasting Using LASSO Linear Regression Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
-  02. [Using LASSO from lars (or glmnet) package in R for variable selection](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
-  03. [Difference between glmnet() and cv.glmnet() in R?](Difference between glmnet() and cv.glmnet() in R?)
-  04. [Testing Kelly Criterion and Optimal f in R](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) <img src='www/hot.jpg' width='20'>
-  05. [Portfolio Optimization and Monte Carlo Simulation](https://github.com/scibrokes/kelly-criterion/blob/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf) <img src='www/hot.jpg' width='20'>
-  06. [Glmnet Vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
-  07. [lasso怎么用算法实现？](http://cos.name/cn/topic/101533/#post-418215)
-  08. [The Sparse Matrix and {glmnet}](http://amunategui.github.io/sparse-matrix-glmnet/)
-  09. [Regularization and Variable Selection via the Elastic Net](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Regularization%20and%20Variable%20Selection%20via%20the%20Elastic%20Net.pdf)
-  10. [LASSO, Ridge, and Elastic Net](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) <img src='www/hot.jpg' width='20'>
-  11. [热门数据挖掘模型应用入门（一）: LASSO回归](http://cos.name/2016/10/data-mining-1-lasso/)
-  12. [The Lasso Page](http://statweb.stanford.edu/~tibs/lasso.html)
-  13. [Call_Valuation.R](https://api.rpubs.com/Mariano/call)
-  14. [Lecture 6 – Stochastic Processes and Monte Carlo](http://zorro-trader.com/manual/en/Lecture%206.htm)
-  15. [The `caret` Package](http://topepo.github.io/caret/index.html) <img src='www/hot.jpg' width='20'>
-  16. [Time Series Cross Validation](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
-  17. [Character-Code.com](http://character-code.com/)
-  18. [Size Matters – Kelly Optimization](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
-  19. [**Forecasting Volatility** *- (2004)by Stephen Figlewski*]()
-  20. []()
-  21. []()
+  01. [<span style='color:blue'>Stock Market Forecasting Using LASSO Linear Regression Model</span>](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
+  02. [<span style='color:blue'>Using LASSO from lars (or glmnet) package in R for variable selection</span>](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
+  03. [<span style='color:blue'>Difference between glmnet() and cv.glmnet() in R?</span>](https://stackoverflow.com/questions/29311323/difference-between-glmnet-and-cv-glmnet-in-r?answertab=votes#tab-top)
+  04. [<span style='color:blue'>Testing Kelly Criterion and Optimal f in R</span>](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) <img src='www/hot.jpg' width='20'>
+  05. [<span style='color:blue'>Portfolio Optimization and Monte Carlo Simulation</span>](https://github.com/scibrokes/kelly-criterion/blob/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf) <img src='www/hot.jpg' width='20'>
+  06. [<span style='color:blue'>Glmnet Vignette</span>](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
+  07. [<span style='color:blue'>lasso怎么用算法实现？</span>](http://cos.name/cn/topic/101533/#post-418215)
+  08. [<span style='color:blue'>The Sparse Matrix and {glmnet}</span>](http://amunategui.github.io/sparse-matrix-glmnet/)
+  09. [<span style='color:blue'>Regularization and Variable Selection via the Elastic Net</span>](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Regularization%20and%20Variable%20Selection%20via%20the%20Elastic%20Net.pdf)
+  10. [<span style='color:blue'>LASSO, Ridge, and Elastic Net</span>](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) <img src='www/hot.jpg' width='20'>
+  11. [<span style='color:blue'>热门数据挖掘模型应用入门（一）: LASSO回归</span>](http://cos.name/2016/10/data-mining-1-lasso/)
+  12. [<span style='color:blue'>The Lasso Page</span>](http://statweb.stanford.edu/~tibs/lasso.html)
+  13. [<span style='color:blue'>Call_Valuation.R</span>](https://api.rpubs.com/Mariano/call)
+  14. [<span style='color:blue'>Lecture 6 – Stochastic Processes and Monte Carlo</span>](http://zorro-trader.com/manual/en/Lecture%206.htm)
+  15. [<span style='color:blue'>The `caret` Package</span>](http://topepo.github.io/caret/index.html) <img src='www/hot.jpg' width='20'>
+  16. [<span style='color:blue'>Time Series Cross Validation</span>](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
+  17. [<span style='color:blue'>Character-Code.com</span>](http://character-code.com/)
+  18. [<span style='color:blue'>Size Matters – Kelly Optimization</span>](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
+  19. [<span style='color:blue'>**Forecasting Volatility** *- (2004)by Stephen Figlewski*</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/fcad2844d7f10c486f3601af9932f49973548e4b/reference/Focasting%20Volatility.pdf)
+  20. [<span style='color:blue'>**Successful Algorithmic Trading** *by Michael Halls Moore (2015)*</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/fcad2844d7f10c486f3601af9932f49973548e4b/reference/Successful%20Algorithmic%20Trading.pdf)
+  21. [<span style='color:blue'></span>]()
 
 
-**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
+**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army.jpg' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**
