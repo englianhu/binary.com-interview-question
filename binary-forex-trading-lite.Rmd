@@ -17,11 +17,17 @@ link-citations: yes
 
 ```{r setup, include = FALSE}
 suppressPackageStartupMessages(library('BBmisc'))
-pkgs <- c('tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'readr', 'tidyverse', 'quantmod', 'tidyquant', 'htmltools', 'highcharter', 'formattable', 'DT', 'forecast', 'Mcomp', 'bsts', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'rugarch', 'parma', 'rmgarch', 'MASS', 'mvtnorm', 'tmvtnorm')
+pkgs <- c('tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'turner', 'readr', 'tidyverse', 'quantmod', 'tidyquant', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'forecast', 'Mcomp', 'bsts', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'rugarch', 'parma', 'rmgarch', 'MASS', 'mvtnorm', 'tmvtnorm')
 
 suppressAll(lib(pkgs))
 #'@ install.packages(pkgs, lib = 'C:/Program Files/R/R-3.4.0/library')
 suppressAll(source('./function/plotChart2.R', local = TRUE))
+
+
+## Set option to below if you want to plot an independent webpage with graph 
+#'@ op <- options(gvis.plot.tag=NULL)
+op <- options(gvis.plot.tag='chart')
+#'@ options(rpubs.upload.method = 'internal')
 
 ## R: llply fully reproducible results in parallel
 ## https://stackoverflow.com/questions/34946177/r-llply-fully-reproducible-results-in-parallel
@@ -348,8 +354,8 @@ paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
   - [<span style='color:blue'>Normalized Price Spread Strategy</span>](https://quantumfinancier.wordpress.com/2010/06/17/normalized-price-spread-strategy/)
   - [<span style='color:blue'>Volatility Autocorrelation in Different Markets</span>](https://quantumfinancier.wordpress.com/2010/05/27/volatility-autocorrelation-in-different-markets/)
   - [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (part 1)</span>](https://quantumfinancier.wordpress.com/2010/09/12/381/)
-  - [Basic Introduction to GARCH and EGARCH (part 2)](https://quantumfinancier.wordpress.com/2010/09/14/basic-introduction-to-garch-and-egarch-part-2/)
-  - [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (Part 3)</span>](http://quantumfinancier.wordpress.com/2010/09/23/basic-introduction-to-garch-and-egarch-part-3/amp)^[Using this EGARCH model, we can epect a better estimate the volatility for assets returns due to how the EGARCH counteracts the limitations on the classic GARCH model.]
+  - [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (part 2)</span>](https://quantumfinancier.wordpress.com/2010/09/14/basic-introduction-to-garch-and-egarch-part-2/)
+  - [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (Part 3)</span>](http://quantumfinancier.wordpress.com/2010/09/23/basic-introduction-to-garch-and-egarch-part-3/amp)^[Using this EGARCH model, we can epect a better estimate the volatility for assets returns due to how the EGARCH counteracts the limitations on the classic GARCH model.Here is the final part of the series of posts on the volatility modelling where I will briefly talk about one of the many variant of the GARCH model: the exponential GARCH (abbreviated EGARCH). I chose this variant because it improves the GARCH model and better model some market mechanics. In the GARCH post, I didn’t mention any of the limitation of the model as I kept them for today’s post. First of all, the GARCH model assume that only the magnitude of unanticipated excess returns determines $\sigma^2_t$. Intuitively, we can question this assumption; I, for one, would argue that not only the magnitude but also the direction of the returns affects volatility.]
   - [<span style='color:blue'>Analysis List</span>](https://vlab.stern.nyu.edu/doc?topic=mdls)
   
     - Volatility Analysis
@@ -481,6 +487,8 @@ plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'USDJPY'
   - Forecasted profit = edge based on forecasted sell/buy price - forecasted settled price.
   - If the forecasted sell/buy price doesn't exist within the Hi-Lo price, then the transaction is not stand.
   - If the forecasted settled price does not exist within the Hi-Lo price, then the settled price will be the real closing price.
+
+  Kindly refer to [<span style='color:blue'>**Quintuitive** ARMA Models for Trading</span>](http://www.quintutive.com2012/08/22/arma-models-for-trading) to know how to determine PULL or CALL with ARMA models^[The author compare the ROI between **Buy-and-Hold** with **GARCH** model.].
 
 ```{r simStakes}
 simStakes <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE, .prCat = 'Op', .baseDate = ymd('2015-01-01'), .parallel = FALSE, .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = FALSE, .filterBets = FALSE, .simulate = FALSE, .bootstrap = FALSE, .npaths = 5000) {
@@ -638,6 +646,113 @@ simStakes <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FA
 ```
 
   Here I set an application of leverage while it is very risky (the variance of ROI is very high) as we can know from later comparison.
+
+**Variance/Volatility Analsis**
+
+  Hereby, I try to place bets on the variance which is requested by the assessment.
+
+```{r variance-staking}
+## Focast the variance and convert to probability.
+varHL <- fundList[grep('HiLo|LoHi', names(fundList))]
+ntm <- c(names((varHL)[names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')]), names((varHL)[!names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')])) %>% str_replace('.HiLo|.LoHi', '') %>% unique %>% sort
+
+varHL1 <- suppressMessages(llply(varHL, function(dtx) {
+  mm = tbl_df(dtx) %>% dplyr::select(Date, USDJPY.High, USDJPY.Low, USDJPY.Close, Point.Forecast)
+  names(mm)[5] = as.character(dtx$Model[1])
+  names(mm) = str_replace_all(names(mm), 'HiLo', 'High')
+  names(mm) = str_replace_all(names(mm), 'LoHi', 'Low')
+  mm
+  }) %>% join_all) %>% tbl_df
+
+varHL2 <- suppressMessages(llply(ntm, function(nm) {
+    mld = varHL1[grep(nm, names(varHL1))]
+    mld[,3] = abs(mld[,1] - mld[,2])
+    names(mld)[3] = paste0(nm, '.Rng')
+    mld = mld[colSums(!is.na(mld)) > 0]
+    data.frame(varHL1[c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')], USDJPY.Rng = abs(varHL1$USDJPY.High - varHL1$USDJPY.Low), mld) %>% tbl_df
+    }) %>% unique %>% join_all %>% tbl_df)
+```
+
+```{r variance-staking1}
+## Application of MASS::mvrnorm() or mvtnorm::rmvnorm() ##nope
+#'@ varHL2 <- xts(varHL2[, -1], as.Date(varHL2$Date))
+
+## Betting strategy 1 - Normal range betting
+varB1 <- varHL2[,c('Date', names(varHL2)[str_detect(names(varHL2), '.Rng')])]
+
+varB1 <- suppressMessages(llply(ntm, function(nm) {
+    dtx = bind_cols(varB1[c('USDJPY.Rng')], varB1[grep(nm, names(varB1))]) %>% mutate_if(is.numeric, funs(ifelse(USDJPY.Rng >= ., ., -100)))
+    dtx2 = dtx[, 2] %>% mutate_if(is.numeric, funs(ifelse(. >= 0, 100, -100)))
+    dtx3 = dtx2 %>% mutate_if(is.numeric, funs(cumsum(.) + 1000))
+    dtx4 = dtx2 %>% mutate_if(is.numeric, funs(lag(1000 + cumsum(.))))
+    dtx4[1,1] = 1000
+    dtx5 = bind_cols(varB1['Date'], dtx4, dtx2, dtx3)
+    names(dtx5) = names(dtx5) %>% str_replace_all('Rng2', 'Bal')
+    names(dtx5) = names(dtx5) %>% str_replace_all('Rng1', 'PL')
+    names(dtx5) = names(dtx5) %>% str_replace_all('Rng', 'BR')
+    dtx5
+}) %>% join_all %>% tbl_df)
+
+## shows the last 6 balance (ROI)
+tail(data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))]))
+#        Date AAN.Bal AAZ.Bal ANN.Bal ANZ.Bal AZN.Bal AZZ.Bal MAN.Bal MAZ.Bal MMN.Bal MMZ.Bal MNN.Bal
+#530 2017-01-13    2800    2800    -200    -200    -200    -200    3600    3600    3000    3000     200
+#531 2017-01-16    2700    2700    -300    -300    -300    -300    3500    3500    2900    2900     100
+#532 2017-01-17    2800    2800    -200    -200    -200    -200    3600    3600    3000    3000     200
+#533 2017-01-18    2700    2700    -300    -300    -300    -300    3500    3500    2900    2900     100
+#534 2017-01-19    2800    2800    -200    -200    -200    -200    3600    3600    3000    3000     200
+#535 2017-01-20    2700    2700    -300    -300    -300    -300    3500    3500    2900    2900     100
+#    MNZ.Bal MZN.Bal MZZ.Bal ZAN.Bal ZAZ.Bal ZMN.Bal ZMZ.Bal ZNN.Bal ZNZ.Bal ZZN.Bal ZZZ.Bal
+#530     200    2000    2000    3200    3200    3000    3000    -200    -200    1200    1200
+#531     100    1900    1900    3100    3100    2900    2900    -300    -300    1100    1100
+#532     200    2000    2000    3200    3200    3000    3000    -200    -200    1200    1200
+#533     100    1900    1900    3100    3100    2900    2900    -300    -300    1100    1100
+#534     200    2000    2000    3200    3200    3000    3000    -200    -200    1200    1200
+#535     100    1900    1900    3100    3100    2900    2900    -300    -300    1100    1100
+```
+
+  From above coding and below graph, we can know my *first staking method*^[The variance range is solely based on forecasted figures irrespect the volatility of real time effect, only made settlement after closed market. After that use the daily Hi-Lo variance compare to initial forecasted variance. Even though there has no such highest price nor lowest price will not affect the predicted transaction.] which is **NOT EXCEED** the daily Hi-Lo range will generates profit or ruined depends on the statistical models.
+
+```{r plot-var1A}
+## Betting strategy 1 - Normal range betting
+## Plot the ROI of investment fund.
+plot1 <- data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])
+Line1 <-  gvisLineChart(plot1, 'Date', names(plot1)[-1],
+                        options = list(gvis.editor = 'Edit me!'))
+plot(Line1)
+```
+
+  The 2nd staking method is based on real-time volativity which is the transaction will only stand if the highest or lowest price happenned within hte variance, same with the initial Kelly staking model.
+
+```{r variance-staking2}
+## Betting strategy 2 - Real range betting
+HiLo <- function(txt) {
+  eval(parse(text = paste0('ifelse(varHL2$USDJPY.High - varHL2$', txt, ' < 0, varHL2$USDJPY.Close - varHL2$', txt, ', varHL2$USDJPY.High - Hi(varHL2))')))
+  }
+
+varHi <- ifelse(varHL2$USDJPY.High - Hi(varHL2) < 0, 
+                varHL2$USDJPY.Close - Hi(varHL2), 
+                varHL2$USDJPY.High - Hi(varHL2))
+                
+varLo <- ifelse(Lo(varHL2) - varHL2$USDJPY.Low < 0, 
+                Lo(varHL2) - varHL2$USDJPY.Close, 
+                Lo(varHL2) - varHL2$USDJPY.Low)
+
+varS <- ifelse(varHi >= 0, 1, 0)
+varB <- ifelse(varLo >= 0, 1, 0)
+
+varHi <- varHi * varS
+varLo <- varLo * varB
+
+varHi <- ifelse((varHi >= 0 & varLo == 0)|(varHi == 0 & varLo >= 0), 
+                varHL2$USDJPY.High, 0)
+varLo <- ifelse((varHi >= 0 & varLo == 0)|(varHi == 0 & varLo >= 0), 
+                varHL2$USDJPY.Low, 0)
+
+## Betting strategy 2 - Kelly Criterion
+
+
+```
 
 #### 2.1.4.2 Garch vs EWMA
 
@@ -975,50 +1090,6 @@ fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize =
 #12 fundHILO 2015-01-02 2017-01-20      1000  649.35074   1649.351  1.649351
 ```
 
-**Variance/Volatility Analsis**
-
-  Hereby, I try to place bets on the variance which is requested by the assessment.
-
-```{r variance-staking}
-## focast the variance and convert to probability.
-varHL <- fundList[grep('HiHi|LoLo', names(fundList))]
-varHL1 <- suppressMessages(llply(varHL, function(dtx) {
-  mm = tbl_df(dtx) %>% dplyr::select(Date, Point.Forecast, USDJPY.High, USDJPY.Low)
-  names(mm)[2] = as.character(dtx$Model[1])
-  names(mm) = str_replace_all(names(mm), 'HiHi', 'High')
-  names(mm) = str_replace_all(names(mm), 'LoLo', 'Low')
-  ntm = str_replace_all(names(mm), '.High|.Low', '') %>% unique %>% sort
-  mm[ntm %in% names(mm),]
-  }) %>% join_all) %>% tbl_df
-
-ntm = str_replace_all(names(varHL1), '.High|.Low', '')[-1]
-varHL2 <- suppressMessages(llply(ntm, function(nm) {
-    mld = varHL1[grep(nm, names(varHL1))]
-    mld[,3] = mld[,1] - mld[,2]
-    names(mld)[3] = paste0(nm, '.Rng')
-    mld = mld[colSums(!is.na(mld)) > 0]
-    data.frame(Date = varHL1['Date'], mld) %>% tbl_df
-    }) %>% unique %>% join_all %>% tbl_df)
-
-## Application of MASS::mvrnorm() or mvtnorm::rmvnorm()
-
-
-
-varHL1 %>% gather(Model, Price, ANN.High:ZZZ.Low)
-
- %>% mutate(ProbBVar = pnorm(Point.Forecast, mean = (USDJPY.High + USDJPY.Low)/2, sd = sd((USDJPY.High + USDJPY.Low)/2)), ProbSVar = 1 - ProbBVar)
-
-## Betting strategy 1 - Normal betting
-
-
-
-
-
-## Betting strategy 2 - Kelly Criterion
-
-
-```
-
 #### 2.1.5.2 Garch vs EWMA
 
 
@@ -1336,6 +1407,9 @@ varB <- llply(fundList, function(dtx) mutate(dtx, ProbBVar = pnorm(Point.Forecas
 
 
 ```{r stopPar}
+## Set options back to original options
+options(op)
+
 stopCluster(cl)
 ```
 
