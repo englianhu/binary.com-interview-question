@@ -12,7 +12,7 @@
 
 **Under Construction...**
 
-
+<http://rpubs.com/englianhu/binary-forex-trading-lite>
 
 ## Reference
 
