@@ -77,8 +77,6 @@ getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20') #oanda only provides 18
 #'@ USDJPY <- readRDS('./data/USDJPY.rds')
 USDJPY <- xts(USDJPY[, -1], order.by = USDJPY$Date)
 
-## dateID
-dateID <- index(USDJPY)
 dateID0 <- ymd('2015-01-01')
 dateID <- dateID[dateID > dateID0]
 obs.data <- USDJPY[index(USDJPY) > dateID0]
@@ -139,6 +137,9 @@ Mn <- function(x) {
 #'@ saveRDS(USDJPY, './data/USDJPY.rds')
 USDJPY <- read_rds(path = './data/USDJPY.rds')
 mbase <- USDJPY
+
+dateID0 <- ymd('2015-01-01')
+dateID <- dateID[dateID > dateID0]
 
 ## load fund files which is from chunk `r simStaking-woutLog`.
 fundOPHI <- readRDS('./data/fundOPHI.rds')
@@ -280,6 +281,8 @@ paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
 
   Now we look at Garch model, *Figlewski (2004)*^[*Paper 19th*] applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. The author applid Garch on SAP200, 10-years-bond and 20-years-bond and concludes that the Garch model is better than eGarch but implied volatility model better than Garch and eGarch, and the monthly Hi-Lo data is better accurate than daily Hi-Lo for long term investment.
 
+$$h_{t} = {\omega} + \sum_{i=1}^q{{\alpha}_{i} {\epsilon}_{t-i}^2} + \sum_{j=1}^p{{\gamma}_{j} h_{t-j}}\ \dots equation\ 2.1.2.2.1$$
+
   - [<span style='color:blue'>Volatility Forecasting Using GARCH(1,1)</span>](https://quantumfinancier.wordpress.com/2010/08/26/volatility-forecasting-using-garch11/)
   - [<span style='color:blue'>Regime Switching System Using Volatility Forecast</span>](https://quantumfinancier.wordpress.com/2010/08/27/regime-switching-system-using-volatility-forecast/)
   - [<span style='color:blue'>Normalized Price Spread Strategy</span>](https://quantumfinancier.wordpress.com/2010/06/17/normalized-price-spread-strategy/)
@@ -370,6 +373,8 @@ spec = ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(2, 1)),
 
 .garchOrder <- expand.grid(1:5, 1:5, KEEP.OUT.ATTRS = FALSE) %>% mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ')
 
+.solver <- c('nlminb', 'solnp', 'lbfgs', 'gosolnp', 'nloptr', 'hybrid')
+
 .sub.fGarch <- c('GARCH', 'TGARCH', 'AVGARCH', 'NGARCH', 'NAGARCH', 'APARCH', 'GJRGARCH', 'ALLGARCH')
 
 .dist.model <- c('norm', 'snorm', 'std', 'sstd', 'ged', 'sged', 'nig', 'ghyp', 'jsu')
@@ -392,19 +397,51 @@ ugarchsim(fit, n.sim = 10000)
 ## http://www.unstarched.net/2014/01/02/the-realized-garch-model/
 ## https://eranraviv.com/volatility-forecast-evaluation-in-r/
 ## https://eranraviv.com/univariate-volatility-forecast-evaluation/
-garch.m <- llply(.variance.model, function(vm) {
-  llply(.garchOrder, function(gO) {
-    ft = ugarchspec(variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2]))), distribution = 'std')
-    if(vm == 'fGARCH'){
-      llply(.sub.fGarch, function(sub.vm){
-        ft = ugarchspec(variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2]))), submodel = sub.vm, distribution = 'std')
-      })
-    }
-  })
-  })
+garch.m <- suppressAll(llply(dateID, function(dt) {
+  llply(.variance.model, function(vm) {
+    llply(.garchOrder, function(gO) {
+      llply(.solver, function(sv) {
+        llply(.dist.model, function(dst) {
+          if(vm == 'fGARCH'){
+            llply(.sub.fGarch, function(sub.vm) {
+              spec = ugarchspec(variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2])), submodel = sub.vm), distribution.model = dst)
+              smp = USDJPY
+              dtr = xts::last(index(smp[index(smp) < dt]))
+              smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
+              frd = as.numeric(difftime(dt, dtr), units = 'days')
+              fit = ugarchfit(spec, smp, solver = sv)
+              if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+              data.frame(Date = dt, ugarchforecast(fit, n.ahead = frd))
+              }, .progress = 'text')
+            } else {
+              spec = ugarchspec(variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2])), submodel = NULL), distribution.model = dst)
+              smp = USDJPY
+              dtr = xts::last(index(smp[index(smp) < dt]))
+              smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
+              frd = as.numeric(difftime(dt, dtr), units = 'days')
+              fit = ugarchfit(spec, smp, solver = sv)
+              if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+              data.frame(Date = dt, ugarchforecast(fit, n.ahead = frd))
+              }
+          }, .progress = 'text')
+        }, .progress = 'text')
+      }, .progress = 'text')
+    }, .progress = 'text')
+  }, .progress = 'text'))
 
+```
 
-
+```{r}
+suppressAll(llply(dateID, function(dt) {
+    spec = ugarchspec(variance.model = list(model = .variance.model[2], garchOrder = c(as.numeric(.garchOrder[[1]][1]), as.numeric(.garchOrder[[1]][2])), submodel = .sub.fGarch[7]), distribution.model = .dist.model[1])
+    smp = mbase
+    dtr = xts::last(index(mbase[index(mbase) < dateID[1]]))
+    smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
+    frd = as.numeric(difftime(dt, dtr), units = 'days')
+    fit = ugarchfit(spec, smp, solver = .solver[1])
+    if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+    data.frame(Date = dt, ugarchforecast(fit, n.ahead = frd)) ## need to modify this row
+}))
 ```
 
 #### 2.1.2.3 MCMC vs Bayesian Time Series
