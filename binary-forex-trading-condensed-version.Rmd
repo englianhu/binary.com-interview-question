@@ -21,14 +21,13 @@ pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'strin
 
 suppressAll(lib(pkgs))
 #'@ install.packages(pkgs, lib = 'C:/Program Files/R/R-3.4.0/library')
-suppressAll(source('./function/plotChart2.R', local = TRUE))
 
-suppressAll(l_ply(c('simPrice.R', 'simStakes.R'), function(pkg) source(paste0('./function/', pkg))))
+suppressAll(l_ply(c('last.R', 'has.Mn.R', 'simETS.R', 'simStakesETS.R', 'plotChart2.R', 'simGarch.R', 'simStakesGarch.R'), function(pkg) source(paste0('./function/', pkg))))
 
 ## Directly install the developing packages.
 #'@ require(devtools)
-#'@ install_bitbucket("rmgarch","alexiosg")
 #'@ install_bitbucket("rugarch","alexiosg")
+#'@ install_bitbucket("rmgarch","alexiosg")
 #'@ install_bitbucket("racd","alexiosg")
 #'@ install_bitbucket("twinkle","alexiosg")
 #'@ install_bitbucket("spd","alexiosg")
@@ -37,6 +36,7 @@ suppressAll(l_ply(c('simPrice.R', 'simStakes.R'), function(pkg) source(paste0('.
 ## Set option to below if you want to plot an independent webpage with graph 
 #'@ op <- options(gvis.plot.tag=NULL)
 op <- options(gvis.plot.tag='chart', warn = -1)
+options(gvis.plot.tag='chart', warn = -1)
 #'@ options(rpubs.upload.method = 'internal')
 
 ## R: llply fully reproducible results in parallel
@@ -56,6 +56,8 @@ rm(pkgs)
 # 1. Introduction
 
   Below are the questionaire. Here I created this file to apply `MCMCpack` and `forecast` to compelete the questions prior to completed the `Ridge`, `ElasticNet` and `LASSO` regression (quite alot of models for comparison)^[We can use `cv.glmnet()` in `glmnet` package or `caret` package for cross validation models. You can refer to [<span style='color:blue'>Algorithmic Trading</span>](https://robotwealth.com/caterory/algorithmic-trading/page/4/) and [<span style='color:blue'>Successful Algorithmic Trading</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/fcad2844d7f10c486f3601af9932f49973548e4b/reference/Successful%20Algorithmic%20Trading.pdf) which applied cross-validation in focasting in financial market. You can buy the ebook with full Python coding of [<span style='color:blue'>Successful Algorithmic Trading</span>](https://www.quantstart.com/successful-algorithmic-trading-ebook) as well.].
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/Aw77aMLj9uM" frameborder="0" allowfullscreen></iframe>
 
 <center><iframe src="https://raw.githubusercontent.com/englianhu/binary.com-interview-question/ff20ee95aa60ef5cca3cf797066089103eb62acf/reference/quant-analyst-skills-test.pdf" width="600" height="900"></iframe></center>
 
@@ -77,6 +79,8 @@ getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20') #oanda only provides 18
 #'@ USDJPY <- readRDS('./data/USDJPY.rds')
 USDJPY <- xts(USDJPY[, -1], order.by = USDJPY$Date)
 
+## dateID
+dateID <- index(mbase)
 dateID0 <- ymd('2015-01-01')
 dateID <- dateID[dateID > dateID0]
 obs.data <- USDJPY[index(USDJPY) > dateID0]
@@ -84,7 +88,7 @@ obs.data <- USDJPY[index(USDJPY) > dateID0]
 ## Now we try to use the daily mean value which is (Hi + Lo) / 2.
 pred.data <- ldply(dateID, function(dt) {
   smp = USDJPY
-  dtr = xts::last(index(smp[index(smp) < dt]))
+  dtr = last(index(smp[index(smp) < dt]))
   smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
   frd = as.numeric(difftime(dt, dtr), units = 'days')
   fit = ets(smp) #https://www.otexts.org/fpp/7/7
@@ -103,26 +107,6 @@ plot(forecast(fit))
 forecast(fit, h = 4)
 ```
 
-```{r Mn-function, include = FALSE}
-## Mn(Fund) to retrieve the Mean column.
-has.Mn <- function (x, which = FALSE) {
-  colAttr <- attr(x, 'Mn')
-  if(!is.null(colAttr)) 
-    return(if (which) colAttr else TRUE)
-  loc <- grep('Mean', colnames(x), ignore.case = TRUE)
-  
-  if(!identical(loc, integer(0))) {
-    return(if (which) loc else TRUE)
-  } else FALSE 
-  }
-  
-Mn <- function(x) {
-  if(has.Mn(x)) 
-    return(x[, grep("Mean", colnames(x), ignore.case = TRUE)])
-  stop("subscript out of bounds: no column name containing \"Mean\"")
-  }
-```
-
 ```{r read-data2}
 ## get currency dataset online.
 ## http://stackoverflow.com/questions/24219694/get-symbols-quantmod-ohlc-currency-data
@@ -138,6 +122,8 @@ Mn <- function(x) {
 USDJPY <- read_rds(path = './data/USDJPY.rds')
 mbase <- USDJPY
 
+## dateID
+dateID <- index(mbase)
 dateID0 <- ymd('2015-01-01')
 dateID <- dateID[dateID > dateID0]
 
@@ -209,12 +195,12 @@ It is also possible for the model to be of class "ets", and equal to the output 
   Kindly refer to [<span style='color:blue'>*8.10 ARIMA vs ETS*</span>](https://www.otexts.org/fpp/8/10) for further details.
 
 ```{r build-fits}
-## Modelling
-fit.op <- suppressAll(simPrice(USDJPY, .prCat = 'Op')) #will take a minute
-fit.hi <- suppressAll(simPrice(USDJPY, .prCat = 'Hi')) #will take a minute
-fit.mn <- suppressAll(simPrice(USDJPY, .prCat = 'Mn')) #will take a minute
-fit.lo <- suppressAll(simPrice(USDJPY, .prCat = 'Lo')) #will take a minute
-fit.cl <- suppressAll(simPrice(USDJPY, .prCat = 'Cl')) #will take a minute
+## Modelling ETS focasting data.
+fitETS.op <- suppressAll(simETS(USDJPY, .prCat = 'Op')) #will take a minute
+fitETS.hi <- suppressAll(simETS(USDJPY, .prCat = 'Hi')) #will take a minute
+fitETS.mn <- suppressAll(simETS(USDJPY, .prCat = 'Mn')) #will take a minute
+fitETS.lo <- suppressAll(simETS(USDJPY, .prCat = 'Lo')) #will take a minute
+fitETS.cl <- suppressAll(simETS(USDJPY, .prCat = 'Cl')) #will take a minute
 ```
 
 **Application of MCMC**
@@ -231,38 +217,38 @@ fit.cl <- suppressAll(simPrice(USDJPY, .prCat = 'Cl')) #will take a minute
 
 ## Test the models
 ## opened price fit data
-summary(lm(Point.Forecast~ USDJPY.Close, data = fit.op))
-summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.op))
+summary(lm(Point.Forecast~ USDJPY.Close, data = fitETS.op))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.op))
 
 ## highest price fit data
-summary(lm(Point.Forecast~ USDJPY.Close, data = fit.hi))
-summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.hi))
+summary(lm(Point.Forecast~ USDJPY.Close, data = fitETS.hi))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.hi))
 
 ## mean price fit data (mean price of daily highest and lowest price)
-summary(lm(Point.Forecast~ USDJPY.Close, data = fit.mn))
-summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.mn))
+summary(lm(Point.Forecast~ USDJPY.Close, data = fitETS.mn))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.mn))
 
 ## lowest price fit data
-summary(lm(Point.Forecast~ USDJPY.Close, data = fit.lo))
-summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.lo))
+summary(lm(Point.Forecast~ USDJPY.Close, data = fitETS.lo))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.lo))
 
 ## closed price fit data
-summary(lm(Point.Forecast~ USDJPY.Close, data = fit.cl))
-summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fit.cl))
+summary(lm(Point.Forecast~ USDJPY.Close, data = fitETS.cl))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.cl))
 ```
 
 **Mean Squared Error**
 
 ```{r combine-data}
-fcdata <- do.call(cbind, list(USDJPY.FPOP.Open = fit.op$Point.Forecast, 
-                              USDJPY.FPHI.High = fit.hi$Point.Forecast, 
-                              USDJPY.FPMN.Mean = fit.mn$Point.Forecast, 
-                              USDJPY.FPLO.Low = fit.lo$Point.Forecast, 
-                              USDJPY.FPCL.Close = fit.cl$Point.Forecast, 
-                              USDJPY.Open = fit.op$USDJPY.Open, 
-                              USDJPY.High = fit.op$USDJPY.High, 
-                              USDJPY.Low = fit.op$USDJPY.Low, 
-                              USDJPY.Close = fit.op$USDJPY.Close))
+fcdata <- do.call(cbind, list(USDJPY.FPOP.Open = fitETS.op$Point.Forecast, 
+                              USDJPY.FPHI.High = fitETS.hi$Point.Forecast, 
+                              USDJPY.FPMN.Mean = fitETS.mn$Point.Forecast, 
+                              USDJPY.FPLO.Low = fitETS.lo$Point.Forecast, 
+                              USDJPY.FPCL.Close = fitETS.cl$Point.Forecast, 
+                              USDJPY.Open = fitETS.op$USDJPY.Open, 
+                              USDJPY.High = fitETS.op$USDJPY.High, 
+                              USDJPY.Low = fitETS.op$USDJPY.Low, 
+                              USDJPY.Close = fitETS.op$USDJPY.Close))
 fcdata <- na.omit(fcdata)
 names(fcdata) <- c('USDJPY.FPOP.Open', 'USDJPY.FPHI.High', 'USDJPY.FPMN.Mean', 
                    'USDJPY.FPLO.Low', 'USDJPY.FPCL.Close', 'USDJPY.Open', 
@@ -276,10 +262,11 @@ paste('Low = ', mean((fcdata$USDJPY.FPLO.Low - fcdata$USDJPY.Low)^2))
 paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
 ```
 
-
 #### 2.1.2.2 Garch vs EWMA
 
   Now we look at Garch model, *Figlewski (2004)*^[*Paper 19th*] applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. The author applid Garch on SAP200, 10-years-bond and 20-years-bond and concludes that the Garch model is better than eGarch but implied volatility model better than Garch and eGarch, and the monthly Hi-Lo data is better accurate than daily Hi-Lo for long term investment.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/wsYXKh_xmSs" frameborder="0" allowfullscreen></iframe>
 
 $$h_{t} = {\omega} + \sum_{i=1}^q{{\alpha}_{i} {\epsilon}_{t-i}^2} + \sum_{j=1}^p{{\gamma}_{j} h_{t-j}}\ \dots equation\ 2.1.2.2.1$$
 
@@ -367,6 +354,10 @@ spec = ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(2, 1)),
 
   There will be `r nrow(expand.grid(GARCH = 1:14, VEX = 0:1, VT = 0:1, Mean = 0:1, ARCHM = 0:2, ARFIMA = 0:1, MEX = 0:1, DISTR = 1:10))` possible combination Garch models. Here I tried to filter few among them.
 
+  Now we try to build some Garch models to get the best fit.
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/0q3gSJKJUs8" frameborder="0" allowfullscreen></iframe>
+
 ```{r multi-garchM}
 ## Multiple Garch models inside `rugarch` package.
 .variance.model <- c('sGARCH', 'fGARCH', 'eGARCH', 'gjrGARCH', 'apARCH', 'iGARCH', 'sGARCH', 'realGARCH')
@@ -380,68 +371,72 @@ spec = ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(2, 1)),
 .dist.model <- c('norm', 'snorm', 'std', 'sstd', 'ged', 'sged', 'nig', 'ghyp', 'jsu')
 ```
 
-```{r}
-## sample
-spec = ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(2, 1)), distribution = 'std')
-
-fit = ugarchfit(spec, coredata(mbase['2015-12-31/']), solver = 'hybrid')
-
-forc1 = ugarchforecast(fit, n.ahead = 500)
-f1 = as.data.frame(attributes(forc1)[[1]])
-U = uncvariance(fit)^0.5
-ugarchsim(fit, n.sim = 10000)
+```{r build-fits2}
+## Modelling Garch focasting data.
+fitGM.op <- suppressAll(simGarch(USDJPY, .prCat = 'Op')) #will take a minute
+fitGM.hi <- suppressAll(simGarch(USDJPY, .prCat = 'Hi')) #will take a minute
+fitGM.mn <- suppressAll(simGarch(USDJPY, .prCat = 'Mn')) #will take a minute
+fitGM.lo <- suppressAll(simGarch(USDJPY, .prCat = 'Lo')) #will take a minute
+fitGM.cl <- suppressAll(simGarch(USDJPY, .prCat = 'Cl')) #will take a minute
 ```
 
-```{r rugarch-models, eval = FALSE}
-## =========================== Eval = FALSE ===========================
-## http://www.unstarched.net/2014/01/02/the-realized-garch-model/
-## https://eranraviv.com/volatility-forecast-evaluation-in-r/
-## https://eranraviv.com/univariate-volatility-forecast-evaluation/
-garch.m <- suppressAll(llply(dateID, function(dt) {
-  llply(.variance.model, function(vm) {
-    llply(.garchOrder, function(gO) {
-      llply(.solver, function(sv) {
-        llply(.dist.model, function(dst) {
-          if(vm == 'fGARCH'){
-            llply(.sub.fGarch, function(sub.vm) {
-              spec = ugarchspec(variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2])), submodel = sub.vm), distribution.model = dst)
-              smp = USDJPY
-              dtr = xts::last(index(smp[index(smp) < dt]))
-              smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-              frd = as.numeric(difftime(dt, dtr), units = 'days')
-              fit = ugarchfit(spec, smp, solver = sv)
-              if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
-              data.frame(Date = dt, ugarchforecast(fit, n.ahead = frd))
-              }, .progress = 'text')
-            } else {
-              spec = ugarchspec(variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2])), submodel = NULL), distribution.model = dst)
-              smp = USDJPY
-              dtr = xts::last(index(smp[index(smp) < dt]))
-              smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-              frd = as.numeric(difftime(dt, dtr), units = 'days')
-              fit = ugarchfit(spec, smp, solver = sv)
-              if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
-              data.frame(Date = dt, ugarchforecast(fit, n.ahead = frd))
-              }
-          }, .progress = 'text')
-        }, .progress = 'text')
-      }, .progress = 'text')
-    }, .progress = 'text')
-  }, .progress = 'text'))
+**Application of MCMC**
 
+  Need to refer to MCMC since I am using Garch models...
+
+  - [<span style='color:blue'>Markov Chain Monte Carlo Method</span>](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_introbayes_sect007.htm)
+  - [<span style='color:blue'>Burn-In is Unnecessary</span>](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
+  - [<span style='color:blue'>**Nice R Code** *Punning code better since 2013*</span>](https://nicercode.github.io/guides/mcmc/)
+
+```{r testModels2}
+## Need to test and read through the MCMCregress... after few months later (when free)... Start working as a servant at Bah-Kut-Teh restorant tommorrow 01-Mar-2017.
+## Here I test the accuracy of forecasting of ets ZZZ model 1.
+
+## Test the models
+## opened price fit data
+summary(lm(Point.Forecast~ USDJPY.Close, data = fitGM.op))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitGM.op))
+
+## highest price fit data
+summary(lm(Point.Forecast~ USDJPY.Close, data = fitGM.hi))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitGM.hi))
+
+## mean price fit data (mean price of daily highest and lowest price)
+summary(lm(Point.Forecast~ USDJPY.Close, data = fitGM.mn))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitGM.mn))
+
+## lowest price fit data
+summary(lm(Point.Forecast~ USDJPY.Close, data = fitGM.lo))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitGM.lo))
+
+## closed price fit data
+summary(lm(Point.Forecast~ USDJPY.Close, data = fitGM.cl))
+summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitGM.cl))
 ```
 
-```{r}
-suppressAll(llply(dateID, function(dt) {
-    spec = ugarchspec(variance.model = list(model = .variance.model[2], garchOrder = c(as.numeric(.garchOrder[[1]][1]), as.numeric(.garchOrder[[1]][2])), submodel = .sub.fGarch[7]), distribution.model = .dist.model[1])
-    smp = mbase
-    dtr = xts::last(index(mbase[index(mbase) < dateID[1]]))
-    smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-    frd = as.numeric(difftime(dt, dtr), units = 'days')
-    fit = ugarchfit(spec, smp, solver = .solver[1])
-    if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
-    data.frame(Date = dt, ugarchforecast(fit, n.ahead = frd)) ## need to modify this row
-}))
+**Mean Squared Error**
+
+```{r combine-data2}
+fcdataGM <- do.call(cbind, list(USDJPY.FPOP.Open = fitGM.op$Point.Forecast, 
+                              USDJPY.FPHI.High = fitGM.hi$Point.Forecast, 
+                              USDJPY.FPMN.Mean = fitGM.mn$Point.Forecast, 
+                              USDJPY.FPLO.Low = fitGM.lo$Point.Forecast, 
+                              USDJPY.FPCL.Close = fitGM.cl$Point.Forecast, 
+                              USDJPY.Open = fitGM.op$USDJPY.Open, 
+                              USDJPY.High = fitGM.op$USDJPY.High, 
+                              USDJPY.Low = fitGM.op$USDJPY.Low, 
+                              USDJPY.Close = fitGM.op$USDJPY.Close))
+fcdataGM <- na.omit(fcdataGM)
+names(fcdataGM) <- c('USDJPY.FPOP.Open', 'USDJPY.FPHI.High', 'USDJPY.FPMN.Mean', 
+                   'USDJPY.FPLO.Low', 'USDJPY.FPCL.Close', 'USDJPY.Open', 
+                   'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')
+
+## Mean Squared Error : comparison of accuracy
+paste('Open = ', mean((fcdataGM$USDJPY.FPOP.Open - fcdataGM$USDJPY.Open)^2))
+paste('High = ', mean((fcdataGM$USDJPY.FPHI.High - fcdataGM$USDJPY.High)^2))
+paste('Mean = ', mean((fcdataGM$USDJPY.FPMN.Mean - (fcdataGM$USDJPY.High + fcdataGM$USDJPY.Low)/2)^2))
+paste('Low = ', mean((fcdataGM$USDJPY.FPLO.Low - fcdataGM$USDJPY.Low)^2))
+paste('Close = ', mean((fcdataGM$USDJPY.FPCL.Close - fcdataGM$USDJPY.Close)^2))
 ```
 
 #### 2.1.2.3 MCMC vs Bayesian Time Series
@@ -466,36 +461,41 @@ suppressAll(llply(dateID, function(dt) {
 
 #### 2.1.3.1 ARIMA vs ETS
 
-```{r plot1}
+```{r plotETS-1}
 ## Plot the models
 ## opened price fit data
-autoplot(forecast(ets(fit.op$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#ffcccc', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', "Forecasts from ETS model")
+autoplot(forecast(ets(fitETS.op$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#ffcccc', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', "Forecasts from ETS model")
 
 #'@ ggplot(data = pd, aes(x = date, y = observed)) + geom_line(color = 'red') + geom_line(aes(y = fitted), color = "blue") + geom_line(aes(y = forecast)) + geom_ribbon(aes(ymin = lo95, ymax = hi95), alpha = .25) + scale_x_date(name = "Time in Decades") + scale_y_continuous(name = "GDP per capita (current US$)") + theme(axis.text.x = element_text(size = 10), legend.justification=c(0,1), legend.position=c(0,1)) + ggtitle("Arima(0,1,1) Fit and Forecast of GDP per capita for Brazil (1960-2013)") + scale_color_manual(values = c("Blue", "Red"), breaks = c("Fitted", "Data", "Forecast")) + ggsave((filename = "gdp_forecast_ggplot.pdf"), width=330, height=180, units=c("mm"), dpi = 300, limitsize = TRUE)
 
 ## highest price fit data
-autoplot(forecast(ets(fit.hi$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
+autoplot(forecast(ets(fitETS.hi$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
 
 ## mean price fit data (mean price of daily highest and lowest price)
-autoplot(forecast(ets(fit.mn$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
+autoplot(forecast(ets(fitETS.mn$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
 
 ## lowest price fit data
-autoplot(forecast(ets(fit.lo$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
+autoplot(forecast(ets(fitETS.lo$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
 
 ## opened price fit data
-autoplot(forecast(ets(fit.cl$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
+autoplot(forecast(ets(fitETS.cl$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', 'Forecasts from ETS model')
 ```
 
-```{r plot2}
-source('./function/plotChart2.R', local = TRUE)
-suppressAll(rm(fit.op, fit.hi, fit.mn, fit.lo, fit.cl))
+```{r plotETS-2}
+#'@ source('./function/plotChart2.R', local = TRUE)
+suppressAll(rm(fitETS.op, fitETS.hi, fitETS.mn, fitETS.lo, fitETS.cl))
 
-plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'USDJPY')
+plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'ETS Model : USDJPY')
 ```
 
 #### 2.1.3.2 Garch vs EWMA
 
+```{r plotGM-1}
+#'@ source('./function/plotChart2.R', local = TRUE)
+suppressAll(rm(fitGM.op, fitGM.hi, fitGM.mn, fitGM.lo, fitGM.cl))
 
+plotChart2(fcdataGM, initialName = 'FP', chart.type = 'FP', graph.title = 'Garch Model : USDJPY')
+```
 
 #### 2.1.3.3 MCMC vs Bayesian Time Series
 
@@ -520,9 +520,15 @@ plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'USDJPY'
 
   Here I set an application of leverage while it is very risky (the variance of ROI is very high) as we can know from later comparison.
 
+**Staking Model**
+
+  For Buy-Low-Sell-High tactic, I placed two limit order for tomorrow now, which are buy and sell. The transaction will be standed once the price hit in tomorrow. If the buy price doesn't met, there will be no transaction made, while sell price doesn't occur will use closing price for settlement.^[Using Kelly criterion staking model]
+
+  For variance betting, I used both focasted highest minus the forecasted lowest price to get the range. After that placed two limit orders as well. If one among the buy or sell price doesn't appear will use closing price as final settlement.^[Place $100 for every single bet.]
+
 #### 2.1.4.2 Garch vs EWMA
 
-
+  The staking models same with what I applied onto ETS modelled dataset.
 
 #### 2.1.4.3 MCMC vs Bayesian Time Series
 
@@ -545,29 +551,72 @@ plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'USDJPY'
 
 #'@ mbase <- USDJPY
 
-fundOPHI <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = 1000); saveRDS(fundOPHI, file = './data/fundOPHI.rds')
-fundHIHI <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = 1000); saveRDS(fundHIHI, file = './data/fundHIHI.rds')
-fundMNHI <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = 1000); saveRDS(fundMNHI, file = './data/fundMNHI.rds')
-fundLOHI <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = 1000); saveRDS(fundLOHI, file = './data/fundLOHI.rds')
-fundCLHI <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = 1000); saveRDS(fundCLHI, file = './data/fundCLHI.rds')
+## settled with highest price.
+fundOPHI <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundOPHI, file = './data/fundOPHI.rds')
 
-fundOPMN <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = 1000); saveRDS(fundOPMN, file = './data/fundOPMN.rds')
-fundHIMN <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = 1000); saveRDS(fundHIMN, file = './data/fundHIMN.rds')
-fundMNMN <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = 1000); saveRDS(fundMNMN, file = './data/fundMNMN.rds')
-fundLOMN <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = 1000); saveRDS(fundLOMN, file = './data/fundLOMN.rds')
-fundCLMN <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = 1000); saveRDS(fundCLMN, file = './data/fundCLMN.rds')
+fundHIHI <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundHIHI, file = './data/fundHIHI.rds')
 
-fundOPLO <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = 1000); saveRDS(fundOPLO, file = './data/fundOPLO.rds')
-fundHILO <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = 1000); saveRDS(fundHILO, file = './data/fundHILO.rds')
-fundMNLO <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = 1000); saveRDS(fundMNLO, file = './data/fundMNLO.rds')
-fundLOLO <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = 1000); saveRDS(fundLOLO, file = './data/fundLOLO.rds')
-fundCLLO <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = 1000); saveRDS(fundCLLO, file = './data/fundCLLO.rds')
+fundMNHI <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundMNHI, file = './data/fundMNHI.rds')
 
-fundOPCL <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = 1000); saveRDS(fundOPCL, file = './data/fundOPCL.rds')
-fundHICL <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = 1000); saveRDS(fundHICL, file = './data/fundHICL.rds')
-fundMNCL <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = 1000); saveRDS(fundMNCL, file = './data/fundMNCL.rds')
-fundLOCL <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = 1000); saveRDS(fundLOCL, file = './data/fundLOCL.rds')
-fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = 1000); saveRDS(fundCLCL, file = './data/fundCLCL.rds')
+fundLOHI <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundLOHI, file = './data/fundLOHI.rds')
+
+fundCLHI <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundCLHI, file = './data/fundCLHI.rds')
+
+
+## settled with mean price.
+fundOPMN <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundOPMN, file = './data/fundOPMN.rds')
+
+fundHIMN <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundHIMN, file = './data/fundHIMN.rds')
+
+fundMNMN <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundMNMN, file = './data/fundMNMN.rds')
+
+fundLOMN <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundLOMN, file = './data/fundLOMN.rds')
+
+fundCLMN <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundCLMN, file = './data/fundCLMN.rds')
+
+
+## settled with opening price.
+fundOPLO <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundOPLO, file = './data/fundOPLO.rds')
+
+fundHILO <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundHILO, file = './data/fundHILO.rds')
+
+fundMNLO <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundMNLO, file = './data/fundMNLO.rds')
+
+fundLOLO <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundLOLO, file = './data/fundLOLO.rds')
+
+fundCLLO <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundCLLO, file = './data/fundCLLO.rds')
+
+
+## settled with closing price.
+fundOPCL <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundOPCL, file = './data/fundOPCL.rds')
+
+fundHICL <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundHICL, file = './data/fundHICL.rds')
+
+fundMNCL <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundMNCL, file = './data/fundMNCL.rds')
+
+fundLOCL <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundLOCL, file = './data/fundLOCL.rds')
+
+fundCLCL <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundCLCL, file = './data/fundCLCL.rds')
 
 ## Placed orders - Fund size without log
 fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, fundLOHI = fundLOHI, fundCLHI = fundCLHI, 
@@ -575,7 +624,7 @@ fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, 
                 fundOPLO = fundOPLO, fundHILO = fundHILO, fundMNLO = fundMNLO, fundLOLO = fundLOLO, fundCLLO = fundCLLO, 
                 fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
 
-ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = xts::last(Date), InitFund = first(BR), LatestFund = xts::last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ## A tibble: 20 × 5
 #        .id  StartDate LatestDate  InitFund LatestFund     Profit        RR
 #      <chr>     <date>     <date>     <dbl>      <dbl>      <dbl>     <dbl>
@@ -608,29 +657,29 @@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate =
 ## Leveraged model 2
 ## 
 ## Placed orders - Fund size with log
-fundOPHI <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = log(1000))
-fundHIHI <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = log(1000))
-fundMNHI <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = log(1000))
-fundLOHI <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = log(1000))
-fundCLHI <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = log(1000))
+fundOPHI <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = log(1000))
+fundHIHI <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = log(1000))
+fundMNHI <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = log(1000))
+fundLOHI <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = log(1000))
+fundCLHI <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = log(1000))
 
-fundOPMN <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = log(1000))
-fundHIMN <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = log(1000))
-fundMNMN <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = log(1000))
-fundLOMN <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = log(1000))
-fundCLMN <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = log(1000))
+fundOPMN <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = log(1000))
+fundHIMN <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = log(1000))
+fundMNMN <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = log(1000))
+fundLOMN <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = log(1000))
+fundCLMN <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = log(1000))
 
-fundOPLO <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = log(1000))
-fundHILO <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = log(1000))
-fundMNLO <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = log(1000))
-fundLOLO <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = log(1000))
-fundCLLO <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = log(1000))
+fundOPLO <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = log(1000))
+fundHILO <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = log(1000))
+fundMNLO <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = log(1000))
+fundLOLO <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = log(1000))
+fundCLLO <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = log(1000))
 
-fundOPCL <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = log(1000))
-fundHICL <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = log(1000))
-fundMNCL <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = log(1000))
-fundLOCL <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = log(1000))
-fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = log(1000))
+fundOPCL <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = log(1000))
+fundHICL <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = log(1000))
+fundMNCL <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = log(1000))
+fundLOCL <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = log(1000))
+fundCLCL <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = log(1000))
 
 ## Placed orders - Fund size with log
 #'@ fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, fundLOHI = fundLOHI, fundCLHI = fundCLHI, 
@@ -638,7 +687,7 @@ fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize =
 #'@                  fundOPLO = fundOPLO, fundHILO = fundHILO, fundMNLO = fundMNLO, fundLOLO = fundLOLO, fundCLLO = fundCLLO, 
 #'@                  fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
 #'@ 
-#'@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = xts::last(Date), InitFund = first(BR), LatestFund = xts::last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+#'@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 
 ## A tibble: 20 × 7
 #        .id  StartDate LatestDate InitFund LatestFund    Profit        RR
@@ -673,29 +722,29 @@ fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize =
 ## Due to the log(.initialfundSize) generates extremely high return compare to normal figure, I added a new parameter ".fundLeverageLog" which convert the normal fund size value into log into calculation and finally convert back to normal fund size figure."
 
 ## Placed orders - Fund size without log but exp() Leveraged.
-#'@ fundOPHI <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundHIHI <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundMNHI <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundLOHI <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundCLHI <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundOPHI <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundHIHI <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundMNHI <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundLOHI <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundCLHI <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = 1000, .fundLeverageLog = TRUE)
 
-#'@ fundOPMN <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundHIMN <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundMNMN <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundLOMN <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundCLMN <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundOPMN <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundHIMN <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundMNMN <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundLOMN <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundCLMN <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = 1000, .fundLeverageLog = TRUE)
 
-#'@ fundOPLO <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundHILO <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundMNLO <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundLOLO <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundCLLO <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundOPLO <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundHILO <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundMNLO <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundLOLO <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundCLLO <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = 1000, .fundLeverageLog = TRUE)
 
-#'@ fundOPCL <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundHICL <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundMNCL <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundLOCL <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = TRUE)
-#'@ fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundOPCL <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundHICL <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundMNCL <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundLOCL <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = TRUE)
+#'@ fundCLCL <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = 1000, .fundLeverageLog = TRUE)
 
 ## A tibble: 20 × 7
 #        .id  StartDate LatestDate InitFund   LatestFund       Profit           RR
@@ -737,7 +786,7 @@ fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, 
                  fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
 
 ## Summary of ROI
-ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = xts::last(Date), InitFund = xts::first(BR), LatestFund = xts::last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ## A tibble: 20 × 7
 #        .id  StartDate LatestDate InitFund   LatestFund       Profit           RR
 #       <chr>     <date>     <date>    <dbl>        <dbl>        <dbl>        <dbl>
@@ -767,55 +816,53 @@ llply(fundList, function(x) x[c('BR', 'fB', 'fS', 'EUB', 'EUS', 'Edge', 'PF', 'F
 ```
 
 ```{r simStaking-withLogLeverage, eval = FALSE, include = FALSE}
-
-```{r simStaking-with-log, eval = FALSE}
 ##============================ EVAL = FALSE ================================
 ## 
 ## Leveraged model 4
 ## 
 ## Placed orders - Fund size with log and revert back exp() after calculation.
-fundOPHI <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = log(1000), 
+fundOPHI <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundHIHI <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = log(1000), 
+fundHIHI <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundMNHI <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = log(1000), 
+fundMNHI <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundLOHI <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = log(1000), 
+fundLOHI <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundCLHI <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = log(1000), 
-                      .fundLeverageLog = TRUE)
-
-fundOPMN <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = log(1000), 
-                      .fundLeverageLog = TRUE)
-fundHIMN <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = log(1000), 
-                      .fundLeverageLog = TRUE)
-fundMNMN <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = log(1000), 
-                      .fundLeverageLog = TRUE)
-fundLOMN <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = log(1000), 
-                      .fundLeverageLog = TRUE)
-fundCLMN <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = log(1000), 
+fundCLHI <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
 
-fundOPLO <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = log(1000), 
+fundOPMN <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundHILO <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = log(1000), 
+fundHIMN <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundMNLO <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = log(1000), 
+fundMNMN <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundLOLO <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = log(1000), 
+fundLOMN <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundCLLO <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = log(1000), 
+fundCLMN <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
 
-fundOPCL <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = log(1000), 
+fundOPLO <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundHICL <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = log(1000), 
+fundHILO <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundMNCL <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = log(1000), 
+fundMNLO <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundLOCL <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = log(1000), 
+fundLOLO <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
-fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = log(1000), 
+fundCLLO <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = log(1000), 
+                      .fundLeverageLog = TRUE)
+
+fundOPCL <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = log(1000), 
+                      .fundLeverageLog = TRUE)
+fundHICL <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = log(1000), 
+                      .fundLeverageLog = TRUE)
+fundMNCL <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = log(1000), 
+                      .fundLeverageLog = TRUE)
+fundLOCL <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = log(1000), 
+                      .fundLeverageLog = TRUE)
+fundCLCL <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = log(1000), 
                       .fundLeverageLog = TRUE)
 
 ## Placed orders - Fund size with log
@@ -824,8 +871,8 @@ fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize =
 #'@                  fundOPLO = fundOPLO, fundHILO = fundHILO, fundMNLO = fundMNLO, fundLOLO = fundLOLO, fundCLLO = fundCLLO, 
 #'@                  fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
 #'@ 
-#'@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = xts::last(Date), InitFund = first(BR), LatestFund = xts::last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
-# ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = xts::last(Date), InitFund = first(BR), LatestFund = xts::last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+#'@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+# ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 # A tibble: 20 × 7
 #         .id  StartDate LatestDate InitFund   LatestFund       Profit           RR
 #       <chr>     <date>     <date>    <dbl>        <dbl>        <dbl>        <dbl>
@@ -854,14 +901,125 @@ fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize =
   From above table summary we can know that `model 1 without any leverage` will be growth with a stable pace where LoHi and LoHi generates highest return rates. fundLOHI indicates investment **fund** buy at **LO**west price and sell at **HI**ghest price and vice verse.
 
 ```  
-#4  fundLOHI 2015-01-02 2017-01-20      1000  816.63808   1816.638  1.816638
-#12 fundHILO 2015-01-02 2017-01-20      1000  649.35074   1649.351  1.649351
+# 4  fundLOHI 2015-01-02 2017-01-20      1000  816.63808   1816.638  1.816638
+#12  fundHILO 2015-01-02 2017-01-20      1000  649.35074   1649.351  1.649351
 ```
 
 #### 2.1.5.2 Garch vs EWMA
 
+```{r simStakingG-woutLog, eval = FALSE, include = FALSE}
+##============================ EVAL = FALSE ================================
+## 
+## Garch Model 1 without leverage.
+## 
+## Placed orders - Fund size with log
+
+#'@ mbase <- USDJPY
+
+## settled with highest price.
+fundGMOPHI <- simStakesGarch(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundGMOPHI, file = './data/fundGMOPHI.rds')
+
+fundGMHIHI <- simStakesGarch(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundGMHIHI, file = './data/fundGMHIHI.rds')
+
+fundGMMNHI <- simStakesGarch(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundGMMNHI, file = './data/fundGMMNHI.rds')
+
+fundGMLOHI <- simStakesGarch(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundGMLOHI, file = './data/fundGMLOHI.rds')
+
+fundGMCLHI <- simStakesGarch(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundGMCLHI, file = './data/fundGMCLHI.rds')
 
 
+## settled with mean price.
+fundGMOPMN <- simStakesGarch(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundGMOPMN, file = './data/fundGMOPMN.rds')
+
+fundGMHIMN <- simStakesGarch(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundGMHIMN, file = './data/fundGMHIMN.rds')
+
+fundGMMNMN <- simStakesGarch(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundGMMNMN, file = './data/fundGMMNMN.rds')
+
+fundGMLOMN <- simStakesGarch(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundGMLOMN, file = './data/fundGMLOMN.rds')
+
+fundGMCLMN <- simStakesGarch(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = 1000); saveRDS(fundGMCLMN, file = './data/fundGMCLMN.rds')
+
+
+## settled with lowest price.
+fundGMOPLO <- simStakesGarch(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundGMOPLO, file = './data/fundGMOPLO.rds')
+
+fundGMHILO <- simStakesGarch(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundGMHILO, file = './data/fundGMHILO.rds')
+
+fundGMMNLO <- simStakesGarch(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundGMMNLO, file = './data/fundGMMNLO.rds')
+
+fundGMLOLO <- simStakesGarch(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundGMLOLO, file = './data/fundGMLOLO.rds')
+
+
+## settled with closing price.
+fundGMCLLO <- simStakesGarch(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundGMCLLO, file = './data/fundGMCLLO.rds')
+
+fundGMOPCL <- simStakesGarch(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundGMOPCL, file = './data/fundGMOPCL.rds')
+
+fundGMHICL <- simStakesGarch(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundGMHICL, file = './data/fundGMHICL.rds')
+
+fundGMMNCL <- simStakesGarch(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundGMMNCL, file = './data/fundGMMNCL.rds')
+
+fundGMLOCL <- simStakesGarch(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundGMLOCL, file = './data/fundGMLOCL.rds')
+
+fundGMCLCL <- simStakesGarch(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundGMCLCL, file = './data/fundGMCLCL.rds')
+
+## Placed orders - Fund size without log
+fundGMList <- list(fundOPHI = fundGMOPHI, fundHIHI = fundGMHIHI, fundMNHI = fundGMMNHI, fundLOHI = fundGMLOHI, fundCLHI = fundGMCLHI, 
+                fundOPMN = fundGMOPMN, fundHIMN = fundGMHIMN, fundGMMNMN = fundGMMNMN, fundLOMN = fundGMLOMN, fundCLMN = fundGMCLMN, 
+                fundOPLO = fundGMOPLO, fundHILO = fundGMHILO, fundMNLO = fundGMMNLO, fundLOLO = fundGMLOLO, fundCLLO = fundGMCLLO, 
+                fundOPCL = fundGMOPCL, fundHICL = fundGMHICL, fundMNCL = fundGMMNCL, fundLOCL = fundGMLOCL, fundCLCL = fundGMCLCL)
+
+ldply(fundGMList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+## # A tibble: 20 x 7
+#          .id  StartDate LatestDate InitFund LatestFund       Profit       RR
+#        <chr>     <date>     <date>    <dbl>      <dbl>        <dbl>    <dbl>
+# 1   fundOPHI 2015-01-02 2017-01-20     1000   1344.257 3.442572e+02 1.344257
+# 2   fundHIHI 2015-01-02 2017-01-20     1000   1000.006 5.815563e-03 1.000006
+# 3   fundMNHI 2015-01-02 2017-01-20     1000   1185.847 1.858470e+02 1.185847
+# 4   fundLOHI 2015-01-02 2017-01-20     1000   1770.291 7.702907e+02 1.770291
+# 5   fundCLHI 2015-01-02 2017-01-20     1000   1362.749 3.627491e+02 1.362749
+# 6   fundOPMN 2015-01-02 2017-01-20     1000   1266.433 2.664327e+02 1.266433
+# 7   fundHIMN 2015-01-02 2017-01-20     1000   1392.315 3.923148e+02 1.392315
+# 8 fundGMMNMN 2015-01-02 2017-01-20     1000   1000.000 3.088960e-06 1.000000
+# 9   fundLOMN 2015-01-02 2017-01-20     1000   1443.834 4.438342e+02 1.443834
+#10   fundCLMN 2015-01-02 2017-01-20     1000   1266.810 2.668104e+02 1.266810
+#11   fundOPLO 2015-01-02 2017-01-20     1000   1298.491 2.984907e+02 1.298491
+#12   fundHILO 2015-01-02 2017-01-20     1000   1713.915 7.139146e+02 1.713915
+#13   fundMNLO 2015-01-02 2017-01-20     1000   1245.405 2.454050e+02 1.245405
+#14   fundLOLO 2015-01-02 2017-01-20     1000   1000.000 0.000000e+00 1.000000
+#15   fundCLLO 2015-01-02 2017-01-20     1000   1258.850 2.588497e+02 1.258850
+#16   fundOPCL 2015-01-02 2017-01-20     1000   1031.448 3.144812e+01 1.031448
+#17   fundHICL 2015-01-02 2017-01-20     1000   1453.842 4.538417e+02 1.453842
+#18   fundMNCL 2015-01-02 2017-01-20     1000   1090.863 9.086251e+01 1.090863
+#19   fundLOCL 2015-01-02 2017-01-20     1000   1507.365 5.073648e+02 1.507365
+#20   fundCLCL 2015-01-02 2017-01-20     1000   1000.000 1.020225e-06 1.000000
+```
+
+  From above table summary we can know that `model 1 without any leverage` will be growth with a stable pace where LoHi and LoHi generates highest return rates. fundLOHI indicates investment **fund** buy at **LO**west price and sell at **HI**ghest price and vice verse.
+
+```  
+# 4   fundLOHI 2015-01-02 2017-01-20     1000   1770.291 7.702907e+02 1.770291
+#12   fundHILO 2015-01-02 2017-01-20     1000   1713.915 7.139146e+02 1.713915
+```
 #### 2.1.5.3 MCMC vs Bayesian Time Series
 
 
@@ -877,48 +1035,48 @@ fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize =
 ```{r test-etsBoostrap, echo = FALSE, eval = FALSE}
 ##============================ EVAL = FALSE ================================
 ## bootstraping simulation.
-fundOPHI <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = 1000, 
+fundOPHI <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundHIHI <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = 1000, 
+fundHIHI <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundMNHI <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = 1000, 
+fundMNHI <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundLOHI <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = 1000, 
+fundLOHI <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundCLHI <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = 1000, 
-                      .simulate = TRUE, .bootstrap = TRUE)
-
-fundOPMN <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = 1000, 
-                      .simulate = TRUE, .bootstrap = TRUE)
-fundHIMN <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = 1000, 
-                      .simulate = TRUE, .bootstrap = TRUE)
-fundMNMN <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = 1000, 
-                      .simulate = TRUE, .bootstrap = TRUE)
-fundLOMN <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = 1000, 
-                      .simulate = TRUE, .bootstrap = TRUE)
-fundCLMN <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = 1000, 
+fundCLHI <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
 
-fundOPLO <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = 1000, 
+fundOPMN <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundHILO <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = 1000, 
+fundHIMN <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundMNLO <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = 1000, 
+fundMNMN <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundLOLO <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = 1000, 
+fundLOMN <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundCLLO <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = 1000, 
+fundCLMN <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
 
-fundOPCL <- simStakes(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = 1000, 
+fundOPLO <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundHICL <- simStakes(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = 1000, 
+fundHILO <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundMNCL <- simStakes(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = 1000, 
+fundMNLO <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundLOCL <- simStakes(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = 1000, 
+fundLOLO <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
-fundCLCL <- simStakes(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = 1000, 
+fundCLLO <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = 1000, 
+                      .simulate = TRUE, .bootstrap = TRUE)
+
+fundOPCL <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = 1000, 
+                      .simulate = TRUE, .bootstrap = TRUE)
+fundHICL <- simStakesETS(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = 1000, 
+                      .simulate = TRUE, .bootstrap = TRUE)
+fundMNCL <- simStakesETS(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = 1000, 
+                      .simulate = TRUE, .bootstrap = TRUE)
+fundLOCL <- simStakesETS(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = 1000, 
+                      .simulate = TRUE, .bootstrap = TRUE)
+fundCLCL <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
 
 ## Placed orders - Fund size with log
@@ -927,7 +1085,7 @@ fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, 
                  fundOPLO = fundOPLO, fundHILO = fundHILO, fundMNLO = fundMNLO, fundLOLO = fundLOLO, fundCLLO = fundCLLO, 
                  fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
 
-ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = xts::last(Date), InitFund = xts::first(BR), LatestFund = xts::last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ## A tibble: 20 x 7
 #        .id  StartDate LatestDate InitFund LatestFund    Profit       RR
 #      <chr>     <date>     <date>    <dbl>      <dbl>     <dbl>    <dbl>
@@ -969,13 +1127,13 @@ pp <- expand.grid(c('Op', 'Hi', 'Mn', 'Lo', 'Cl'), c('Op', 'Hi', 'Mn', 'Lo', 'Cl
 ##============================ EVAL = FALSE ================================
 #Unit: seconds
 #                                                 expr
-#llply(ets.m[1:2], function(x) {     simStakes(mbase, .model = x, .prCat = pp[[1]][1], .setPrice = pp[[1]][2],          .initialFundSize = 1000) }, .progress = "text")
+#llply(ets.m[1:2], function(x) {     simStakesETS(mbase, .model = x, .prCat = pp[[1]][1], .setPrice = pp[[1]][2],          .initialFundSize = 1000) }, .progress = "text")
 #     min       lq     mean   median       uq     max neval
 # 46.7458 49.80663 51.08373 50.88039 52.53208 59.5116   100
  
 #Unit: seconds
 #                                                 expr
-#llply(ets.m[1:2], function(x) {     simStakes(mbase, .model = x, .prCat = pp[[1]][1], .setPrice = pp[[1]][2],          .initialFundSize = 1000) }, .progress = "text")
+#llply(ets.m[1:2], function(x) {     simStakesETS(mbase, .model = x, .prCat = pp[[1]][1], .setPrice = pp[[1]][2],          .initialFundSize = 1000) }, .progress = "text")
 #      min       lq     mean   median       uq      max neval
 # 46.81515 47.33999 48.20982 47.98835 49.01683 51.46196   100
 
@@ -983,7 +1141,7 @@ pp <- expand.grid(c('Op', 'Hi', 'Mn', 'Lo', 'Cl'), c('Op', 'Hi', 'Mn', 'Lo', 'Cl
 ## 
 #'@ microbenchmark(res <- llply(ets.m, function(x) {
 #'@     llply(pp, function(y) {
-#'@         z = simStakes(mbase, .model = x, .prCat = y[1], .setPrice = y[2], .initialFundSize = 1000, .simulate = TRUE, .bootstrap = TRUE)
+#'@         z = simStakesETS(mbase, .model = x, .prCat = y[1], .setPrice = y[2], .initialFundSize = 1000, .simulate = TRUE, .bootstrap = TRUE)
 #'@         txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.', y[1], y[2], '.rds\'); rm(z)')
 #'@         eval(parse(text = txt1))
 #'@         cat(paste0(txt1, ' done!', '\n'))
@@ -994,7 +1152,7 @@ pp <- expand.grid(c('Op', 'Hi', 'Mn', 'Lo', 'Cl'), c('Op', 'Hi', 'Mn', 'Lo', 'Cl
 
 microbenchmark(res <- llply(ets.m, function(x) {
     llply(pp, function(y) {
-        z = simStakes(mbase, .model = x, .prCat = y[1], .setPrice = y[2], 
+        z = simStakesETS(mbase, .model = x, .prCat = y[1], .setPrice = y[2], 
                       .initialFundSize = 1000, .simulate = TRUE, .bootstrap = TRUE)
         txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.', y[1], y[2], '.rds\'); rm(z)')
         eval(parse(text = txt1))
@@ -1072,7 +1230,7 @@ fundList <- llply(fls, function(dt) {
 names(fundList) <- sapply(fundList, function(x) xts::first(x$Model))
 
 ## Summary of ROI
-ets.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = xts::last(Date), InitFund = xts::first(BR), LatestFund = xts::last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+ets.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ```
 
 ```{r roi-ets, echo = FALSE, eval = FALSE}
@@ -1266,14 +1424,132 @@ suppressMessages(llply(ntm, function(nm) {
 ## Do not execute...
 ## 
 ## Betting strategy 2 - Kelly Criterion (default)
-##   kindly refer to simStakes(...)
+##   kindly refer to simStakesETS(...)
 
 ```
 
 #### 2.1.6.2 Garch vs EWMA
 
-  ...
+```{r rugarch-models, eval = FALSE}
+## =========================== Eval = FALSE ===========================
+## http://www.unstarched.net/2014/01/02/the-realized-garch-model/
+## https://eranraviv.com/volatility-forecast-evaluation-in-r/
+## https://eranraviv.com/univariate-volatility-forecast-evaluation/
+garch.m <- suppressAll(llply(dateID, function(dt) {
+  llply(.variance.model, function(vm) {
+    llply(.garchOrder, function(gO) {
+      llply(.solver, function(sv) {
+        llply(.dist.model, function(dst) {
+          if(vm == 'fGARCH'){
+            llply(.sub.fGarch, function(sub.vm) {
+              spec = ugarchspec(variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2])), submodel = sub.vm), distribution.model = dst)
+              smp = USDJPY
+              dtr = last(index(smp[index(smp) < dt]))
+              smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
+              frd = as.numeric(difftime(dt, dtr), units = 'days')
+              fit = ugarchfit(spec, smp, solver = sv)
+              if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+              gfocast = ugarchforecast(fit, n.ahead = frd)
+              data.frame(Date = dt, fSeries = attributes(gfocast)[1]$forecast$seriesFor[frd]) %>% tbl_df
+              }, .progress = 'text')
+            } else {
+              spec = ugarchspec(variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2])), submodel = NULL), distribution.model = dst)
+              smp = USDJPY
+              dtr = last(index(smp[index(smp) < dt]))
+              smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
+              frd = as.numeric(difftime(dt, dtr), units = 'days')
+              fit = ugarchfit(spec, smp, solver = sv)
+              if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+              gfocast = ugarchforecast(fit, n.ahead = frd)
+              data.frame(Date = dt, fSeries = attributes(gfocast)[1]$forecast$seriesFor[frd]) %>% tbl_df
+              }
+          }, .progress = 'text')
+        }, .progress = 'text')
+      }, .progress = 'text')
+    }, .progress = 'text')
+  }, .progress = 'text'))
 
+
+
+## Forecast simulation on the Garch models.
+  llply(.variance.models, function(vm) {
+    llply(.garchOrders, function(gO) {
+      llply(.solvers, function(sv) {
+        llply(.dist.models, function(dst) {
+          
+          if(vm == 'fGARCH'){
+            llply(.sub.fGarchs, function(sub.vm) {
+              spec = ugarchspec(
+                variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2])), 
+                                      submodel = sub.vm, external.regressors = NULL, 
+                                      variance.targeting = FALSE), 
+                mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, 
+                                  archm = FALSE, archpow = 1, arfima = FALSE, 
+                                  external.regressors = NULL, archex = FALSE), 
+                distribution.model = dst, start.pars = list(), fixed.pars = list())
+              fit = ugarchfit(spec, mbase, solver = sv)
+            }, .progress = .progress)
+            
+          } else {
+            spec = ugarchspec(
+              variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2])), 
+                                    submodel = NULL, external.regressors = NULL, 
+                                    variance.targeting = FALSE), 
+              mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, 
+                                archm = FALSE, archpow = 1, arfima = FALSE, 
+                                external.regressors = NULL, archex = FALSE), 
+              distribution.model = dst, start.pars = list(), fixed.pars = list())
+            fit = ugarchfit(spec, mbase, solver = sv)
+          }
+        }, .progress = .progress)
+      }, .progress = .progress)
+    }, .progress = .progress)
+  }, .progress = .progress)
+```
+
+```{r test2, eval = FALSE}
+test <- suppressAll(llply(dateID, function(dt) {
+    spec = ugarchspec(variance.model = list(model = .variance.model[2], garchOrder = c(as.numeric(.garchOrder[[1]][1]), as.numeric(.garchOrder[[1]][2])), submodel = .sub.fGarch[7]), distribution.model = .dist.model[1])
+    smp = mbase
+    dtr = last(index(mbase[index(mbase) < dateID[1]]))
+    smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
+    frd = as.numeric(difftime(dt, dtr), units = 'days')
+    fit = ugarchfit(spec, smp, solver = .solver[1])
+    if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+    data.frame(Date = dt, ugarchforecast(fit, n.ahead = frd)) ## need to modify this row
+}))
+
+garch.m <- llply(.variance.model, function(vm) {
+    llply(.garchOrder, function(gO) {
+        llply(.solver, function(sv) {
+            llply(.dist.model, function(dst) {
+                if(vm == 'fGARCH'){
+                    llply(.sub.fGarch, function(sub.vm) {
+                        spec = ugarchspec(variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2])), submodel = sub.vm), distribution.model = dst)
+                        fit = ugarchfit(spec, mbase, solver = sv)
+                    }, .progress = 'text')
+                } else {
+                    spec = ugarchspec(variance.model = list(model = vm, garchOrder = c(as.numeric(gO[1]), as.numeric(gO[2])), submodel = NULL), distribution.model = dst)
+                    fit = ugarchfit(spec, mbase, solver = sv)
+                }
+            }, .progress = 'text')
+        }, .progress = 'text')
+    }, .progress = 'text')
+}, .progress = 'text')
+
+
+## Tested model - parameters
+mbase = USDJPY; .solver = 'solnp'; .prCat = 'Mn'; .baseDate = ymd('2015-01-01'); 
+.parallel = FALSE; .progress = 'text'; 
+.variance.model = list(model = 'sGARCH', garchOrder = c(1, 1), 
+                       submodel = NULL, external.regressors = NULL, 
+                       variance.targeting = FALSE);
+.mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, archm = FALSE, 
+                   archpow = 1, arfima = FALSE, external.regressors = NULL, 
+                   archex = FALSE);
+.dist.model = 'norm'; start.pars = list(); fixed.pars = list()
+
+```
 
 
 #### 2.1.6.3 MCMC vs Bayesian Time Series
