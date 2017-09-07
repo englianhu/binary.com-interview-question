@@ -1,5 +1,5 @@
 simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
-                               .parallel = FALSE, .progress = 'none', .setPrice = 'Cl', 
+                               .parallel = FALSE, .progress = 'none', .setPrice = 'Cl', .pq.value = TRUE, 
                                .initialFundSize = 1000, .fundLeverageLog = FALSE, .filterBets = FALSE, 
                                .variance.model = list(model = 'sGARCH', garchOrder = c(1, 1), 
                                                       submodel = NULL, external.regressors = NULL, 
@@ -26,10 +26,11 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate =
   
   ## Multiple Garch models inside `rugarch` package.
   .variance.models <- c('sGARCH', 'fGARCH', 'eGARCH', 'gjrGARCH', 
-                        'apARCH', 'iGARCH', 'sGARCH', 'realGARCH')
+                        'apARCH', 'iGARCH', 'csGARCH', 'realGARCH')
   
-  .garchOrders <- expand.grid(1:5, 1:5, KEEP.OUT.ATTRS = FALSE) %>% 
-    mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ') %>% llply(as.numeric)
+  ## do not execute since use `acf()` and `pacf()` can get the best fit p and q values.`
+  #'@ .garchOrders <- expand.grid(0:5, 0:5, KEEP.OUT.ATTRS = FALSE) %>% 
+  #'@   mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ') %>% llply(as.numeric)
   
   .solvers <- c('hybrid', 'solnp', 'nlminb', 'gosolnp', 'nloptr', 'lbfgs')
   
@@ -86,7 +87,7 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate =
   ## forecast staking price.
   fit1 <- simGarch(mbase, .solver = .solver, .prCat = .prCat, .baseDate = .baseDate, 
                    .parallel = .parallel, .progress = .progress, 
-                   .variance.model = .variance.model, 
+                   .variance.model = .variance.model, .pq.value = .pq.value, 
                    .mean.model = .mean.model, .dist.model = .dist.model, 
                    start.pars = start.pars, fixed.pars = fixed.pars)
   fit1 <- data.frame(Date = index(fit1), coredata(fit1)) %>% tbl_df
@@ -95,7 +96,7 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate =
   ## forecast settlement price.
   fit2 <- simGarch(mbase, .solver = .solver, .prCat = .setPrice, .baseDate = .baseDate, 
                    .parallel = .parallel, .progress = .progress, 
-                   .variance.model = .variance.model, 
+                   .variance.model = .variance.model, .pq.value = .pq.value, 
                    .mean.model = .mean.model, .dist.model = .dist.model, 
                    start.pars = start.pars, fixed.pars = fixed.pars)
   fit2 <- data.frame(Date = index(fit2), coredata(fit2)) %>% tbl_df
@@ -156,7 +157,7 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate =
     fitm$SellS[i] = fitm$Edge[i] * fitm$Sell[i] * (fitm$PF[i] - fitm$forClose[i])
     fitm$Profit[i] = fitm$BuyS[i] + fitm$SellS[i]
     fitm$Bal[i] = fitm$BR[i] + fitm$Profit[i]
-    if(fitm$Bal[i] <= 0) stop('All invested fund ruined!')
+    #'@ if(fitm$Bal[i] <= 0) stop('All invested fund ruined!')
   }; rm(i)
   
   names(mbase) <- str_replace_all(names(mbase), '^(.*?)+\\.', nm)
@@ -168,7 +169,9 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate =
   fitm %<>% mutate(RR = Bal/BR)
   
   ## convert the log leverage value of fund size and profit into normal digital figure with exp().
-  if(.fundLeverageLog == TRUE) fitm %<>% mutate(BR = exp(BR), BuyS = exp(BuyS), SellS = exp(SellS), Profit = exp(Profit), Bal = exp(Profit))
+  if(.fundLeverageLog == TRUE) fitm %<>% 
+    mutate(BR = exp(BR), BuyS = exp(BuyS), SellS = exp(SellS), 
+           Profit = exp(Profit), Bal = exp(Profit))
   
   return(fitm)
 }

@@ -154,7 +154,6 @@ fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, 
                  fundOPMN = fundOPMN, fundHIMN = fundHIMN, fundMNMN = fundMNMN, fundLOMN = fundLOMN, fundCLMN = fundCLMN, 
                 fundOPLO = fundOPLO, fundHILO = fundHILO, fundMNLO = fundMNLO, fundLOLO = fundLOLO, fundCLLO = fundCLLO, 
                 fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
-
 ```
 
 ### 2.1.2 Statistical Modelling
@@ -354,22 +353,9 @@ spec = ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(2, 1)),
 
   There will be `r nrow(expand.grid(GARCH = 1:14, VEX = 0:1, VT = 0:1, Mean = 0:1, ARCHM = 0:2, ARFIMA = 0:1, MEX = 0:1, DISTR = 1:10))` possible combination Garch models. Here I tried to filter few among them.
 
-  Now we try to build some Garch models to get the best fit.
+  Now we try to build a Garch model and will build some Garch models to get the best fit in later section.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/0q3gSJKJUs8" frameborder="0" allowfullscreen></iframe>
-
-```{r multi-garchM}
-## Multiple Garch models inside `rugarch` package.
-.variance.model <- c('sGARCH', 'fGARCH', 'eGARCH', 'gjrGARCH', 'apARCH', 'iGARCH', 'sGARCH', 'realGARCH')
-
-.garchOrder <- expand.grid(1:5, 1:5, KEEP.OUT.ATTRS = FALSE) %>% mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ')
-
-.solver <- c('nlminb', 'solnp', 'lbfgs', 'gosolnp', 'nloptr', 'hybrid')
-
-.sub.fGarch <- c('GARCH', 'TGARCH', 'AVGARCH', 'NGARCH', 'NAGARCH', 'APARCH', 'GJRGARCH', 'ALLGARCH')
-
-.dist.model <- c('norm', 'snorm', 'std', 'sstd', 'ged', 'sged', 'nig', 'ghyp', 'jsu')
-```
 
 ```{r build-fits2}
 ## Modelling Garch focasting data.
@@ -1017,9 +1003,10 @@ ldply(fundGMList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate
   From above table summary we can know that `model 1 without any leverage` will be growth with a stable pace where LoHi and LoHi generates highest return rates. fundLOHI indicates investment **fund** buy at **LO**west price and sell at **HI**ghest price and vice verse.
 
 ```  
-# 4   fundLOHI 2015-01-02 2017-01-20     1000   1770.291 7.702907e+02 1.770291
-#12   fundHILO 2015-01-02 2017-01-20     1000   1713.915 7.139146e+02 1.713915
+# 4  fundLOHI 2015-01-02 2017-01-20     1000   1770.291 7.702907e+02 1.770291
+#12  fundHILO 2015-01-02 2017-01-20     1000   1713.915 7.139146e+02 1.713915
 ```
+
 #### 2.1.5.3 MCMC vs Bayesian Time Series
 
 
@@ -1429,6 +1416,130 @@ suppressMessages(llply(ntm, function(nm) {
 ```
 
 #### 2.1.6.2 Garch vs EWMA
+
+  As I mentioned in first section which is the combination models will be more than 10,000, therefore I try to apply `acf()` and `pacf()` to determine the best fit value `p` and `q` for Garch model. You can refer to [Arima预测模型（R语言）](http://blog.csdn.net/desilting/article/details/39013825) and [时间序列分析---(ARIMA模型)](http://zhoulili1987619126.lofter.com/post/1cc8f7a3_74e7f10) for more information.
+  
+  - [Identifying the numbers of AR or MA terms in an ARIMA model](http://people.duke.edu/~rnau/411arim3.htm)
+  - [8.7 ARIMA modelling in R](https://www.otexts.org/fpp/8/7)^[(a) The best model (with smallest AICc) is selected from the following four:] ^[ARIMA(2,d,2),] ^[ARIMA(0,d,0),] ^[ARIMA(1,d,0),] ^[ARIMA(0,d,1).]
+  - [2.2 Partial Autocorrelation Function (PACF)](https://onlinecourses.science.psu.edu/stat510/node/62)
+
+```{r multi-garchM}
+## Multiple Garch models inside `rugarch` package.
+.variance.model.par <- c('sGARCH', 'fGARCH', 'eGARCH', 'gjrGARCH', 'apARCH', 'iGARCH', 'csGARCH', 'realGARCH')
+
+## http://blog.csdn.net/desilting/article/details/39013825
+## 接下来需要选择合适的ARIMA模型，即确定ARIMA(p,d,q)中合适的 p、q 值，我们通过R中的“acf()”和“pacf”函数来做判断。
+#'@ .garchOrder.par <- expand.grid(0:2, 0:2, KEEP.OUT.ATTRS = FALSE) %>% mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ') %>% llply(as.numeric)
+
+.solver.par <- c('hybrid', 'solnp', 'nlminb', 'gosolnp', 'nloptr', 'lbfgs')
+
+.sub.fGarch.par <- c('GARCH', 'TGARCH', 'AVGARCH', 'NGARCH', 'NAGARCH', 'APARCH', 'GJRGARCH', 'ALLGARCH')
+
+.dist.model.par <- c('norm', 'snorm', 'std', 'sstd', 'ged', 'sged', 'nig', 'ghyp', 'jsu')
+
+pp <- expand.grid(c('Op', 'Hi', 'Mn', 'Lo', 'Cl'), c('Op', 'Hi', 'Mn', 'Lo', 'Cl')) %>% mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ')
+pp <- llply(pp, function(x) x[x[1]!=x[2]][!is.null(x)])
+pp <- pp[!is.na(pp)]
+```
+
+```{r pq-value, echo = FALSE}
+pq.op <- diff(as.vector(Op(mbase)), difference = 1)
+pq.hi <- diff(as.vector(Hi(mbase)), difference = 1)
+pq.mn <- diff(as.vector((Hi(mbase) + Lo(mbase)) / 2), difference = 1)
+pq.lo <- diff(as.vector(Lo(mbase)), difference = 1)
+pq.cl <- diff(as.vector(Cl(mbase)), difference = 1)
+
+## determine the p value in Arima, Garch models.
+pacf(pq.op, lag.max = 100)
+pacf(pq.hi, lag.max = 100)
+pacf(pq.mn, lag.max = 100)
+pacf(pq.lo, lag.max = 100)
+pacf(pq.cl, lag.max = 100)
+
+## determine the q value in Arima, Garch models.
+acf(pq.op, lag.max = 100)
+acf(pq.hi, lag.max = 100)
+acf(pq.mn, lag.max = 100)
+acf(pq.lo, lag.max = 100)
+acf(pq.cl, lag.max = 100)
+```
+
+```{r multi-garch}
+garch.m <- suppressAll(llply(.variance.model.par, function(vm) {
+  llply(pp, function(y) {
+    llply(.garchOrder.par, function(gO) {
+      llply(.solver.par[1], function(sv) { #only use 'hybrid' solver.
+        llply(.dist.model.par, function(dst) {
+          if(vm == 'fGARCH'){
+            llply(.sub.fGarch.par, function(sub.vm) {
+              z = simStakesGarch(mbase, .solver = sv, .prCat = y[1], 
+                             .baseDate = ymd('2015-01-01'), 
+                             .parallel = FALSE, .progress = 'text', 
+                             .setPrice = y[2], .initialFundSize = 1000, 
+                             .fundLeverageLog = FALSE, .filterBets = FALSE, 
+                             .variance.model = list(model = vm, garchOrder = c(gO[1], gO[2]), submodel = sub.vm, external.regressors = NULL, variance.targeting = FALSE), 
+                             .mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, archm = FALSE, archpow = 1, arfima = FALSE, external.regressors = NULL, archex = FALSE), 
+                             .dist.model = dst, start.pars = list(), fixed.pars = list())
+              
+              txt1 <- paste0('saveRDS(z', ', file = \'./data/', vm, '.', y, '.', gO[1], '.', gO[2], '.', dst, '.', sv, '.', sub.vm, '.', y[1], y[2], '.rds\')')
+        eval(parse(text = txt1))
+        cat(paste0(txt1, ' done!', '\n'))
+        rm(z)
+        
+              }, .progress = 'text')
+            } else {
+              z = simStakesGarch(mbase, .solver = sv, .prCat = y[1], 
+                             .baseDate = ymd('2015-01-01'), 
+                             .parallel = FALSE, .progress = 'text', 
+                             .setPrice = y[2], .initialFundSize = 1000, 
+                             .fundLeverageLog = FALSE, .filterBets = FALSE, 
+                             .variance.model = list(model = vm, garchOrder = c(gO[1], gO[2]), submodel = NULL, external.regressors = NULL, variance.targeting = FALSE), 
+                             .mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, archm = FALSE, archpow = 1, arfima = FALSE, external.regressors = NULL, archex = FALSE), 
+                             .dist.model = dst, start.pars = list(), fixed.pars = list())
+              
+              txt1 <- paste0('saveRDS(z', ', file = \'./data/', vm, '.', y, '.', gO[1], '.', gO[2], '.', dst, '.', sv, '.', y[1], y[2], '.rds\')')
+        eval(parse(text = txt1))
+        cat(paste0(txt1, ' done!', '\n'))
+        rm(z)
+              
+              }
+          }, .progress = 'text')
+        }, .progress = 'text')
+      }, .progress = 'text')
+    }, .progress = 'text')
+  cat(paste(vm, 'done', '\n'))
+  }, .progress = 'text'))
+
+```
+
+```
+garch.m <- llply(.variance.model.par, function(vm) {
+    llply(pp, function(y) {
+        llply(.garchOrder.par, function(gO) {
+            llply(.solver.par[1], function(sv) { #only use 'hybrid' solver.
+                llply(.dist.model.par, function(dst) {
+                    if(vm == 'fGARCH'){
+                        llply(.sub.fGarch.par, function(sub.vm) {
+                            txt2 = paste0("z = simStakesGarch(mbase, .solver = sv, .prCat = y[1], .baseDate = ymd('2015-01-01'), .parallel = FALSE, .progress = 'text', .setPrice = y[2], .initialFundSize = 1000, .fundLeverageLog = FALSE, .filterBets = FALSE, .variance.model = list(model = vm, garchOrder = c(gO[1], gO[2]), submodel = sub.vm, external.regressors = NULL, variance.targeting = FALSE), .mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, archm = FALSE, archpow = 1, arfima = FALSE, external.regressors = NULL, archex = FALSE), .dist.model = dst, start.pars = list(), fixed.pars = list()); saveRDS(z, file = paste0('./data/', vm, '.', dst, '.', sv, '.', sub.vm, '.', y[1], y[2], '.rds')); rm(z)")
+                            eval(parse(text = txt2))
+                            cat(paste0(txt2, ' done!', '\n'))
+                            
+                        }, .progress = 'text')
+                    } else {
+                        txt2 = paste0("z = simStakesGarch(mbase, .solver = sv, .prCat = y[1], .baseDate = ymd('2015-01-01'), .parallel = FALSE, .progress = 'text', .setPrice = y[2], .initialFundSize = 1000, .fundLeverageLog = FALSE, .filterBets = FALSE, .variance.model = list(model = vm, garchOrder = c(gO[1], gO[2]), submodel = NULL, external.regressors = NULL, variance.targeting = FALSE), .mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, archm = FALSE, archpow = 1, arfima = FALSE, external.regressors = NULL, archex = FALSE), .dist.model = dst, start.pars = list(), fixed.pars = list()); saveRDS(z, file = paste0('./data/', vm, '.', dst, '.', sv, '.', y[1], y[2], '.rds')); rm(z)")
+                            eval(parse(text = txt2))
+                            cat(paste0(txt2, ' done!', '\n'))
+                            
+                        
+                    }
+                }, .progress = 'text')
+            }, .progress = 'text')
+        }, .progress = 'text')
+    }, .progress = 'text')
+    cat(paste(vm, 'done', '\n'))
+}, .progress = 'text')
+
+```
 
 ```{r rugarch-models, eval = FALSE}
 ## =========================== Eval = FALSE ===========================

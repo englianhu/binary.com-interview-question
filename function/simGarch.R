@@ -1,5 +1,5 @@
 simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
-                     .parallel = FALSE, .progress = 'none', 
+                     .parallel = FALSE, .progress = 'none', .pq.value = TRUE, 
                      .variance.model = list(model = 'sGARCH', garchOrder = c(1, 1), 
                                             submodel = NULL, external.regressors = NULL, 
                                             variance.targeting = FALSE), 
@@ -26,19 +26,24 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
   if(.prCat %in% price.category) {
     if(.prCat == 'Op') {
       obs.data2 <- Op(mbase)
+      pq.op <- diff(as.vector(obs.data2), difference = 1)
       
     } else if(.prCat == 'Hi') {
       obs.data2 <- Hi(mbase)
+      pq.hi <- diff(as.vector(obs.data2), difference = 1)
       
     } else if(.prCat == 'Mn') { #mean of highest and lowest
       obs.data2 <- cbind(Hi(mbase), Lo(mbase), 
                          USDJPY.Mn = rowMeans(cbind(Hi(mbase), Lo(mbase))))[,-c(1:2)]
+      pq.mn <- diff(as.vector(obs.data2), difference = 1)
       
     } else if(.prCat == 'Lo') {
       obs.data2 <- Lo(mbase)
+      pq.lo <- diff(as.vector(obs.data2), difference = 1)
       
     } else if(.prCat == 'Cl') {
       obs.data2 <- Cl(mbase)
+      pq.cl <- diff(as.vector(obs.data2), difference = 1)
       
     } else {
       stop('Kindly choose .prCat = "Op", .prCat = "Hi", .prCat = "Mn", .prCat = "Lo" or .prCat = "Cl".')
@@ -49,10 +54,11 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
   
   ## Multiple Garch models inside `rugarch` package.
   .variance.models <- c('sGARCH', 'fGARCH', 'eGARCH', 'gjrGARCH', 
-                       'apARCH', 'iGARCH', 'sGARCH', 'realGARCH')
+                       'apARCH', 'iGARCH', 'csGARCH', 'realGARCH')
   
-  .garchOrders <- expand.grid(1:5, 1:5, KEEP.OUT.ATTRS = FALSE) %>% 
-    mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ') %>% llply(as.numeric)
+  ## do not execute since use `acf()` and `pacf()` can get the best fit p and q values.`
+  #'@ .garchOrders <- expand.grid(0:5, 0:5, KEEP.OUT.ATTRS = FALSE) %>% 
+  #'@   mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ') %>% llply(as.numeric)
   
   .solvers <- c('hybrid', 'solnp', 'nlminb', 'gosolnp', 'nloptr', 'lbfgs')
   
@@ -86,6 +92,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
   ## 
   ## The “hybrid” strategy solver first tries the “solnp” solver, in failing to converge 
   ##   then tries then “nlminb”, the “gosolnp” and finally the “nloptr” solvers.
+  ## https://quant.stackexchange.com/questions/7260/r-arma-garch-rugarch-package-doesnt-always-converge?answertab=votes#tab-top
   if(!.solver %in% .solvers) 
     stop(paste0('kindly choose .solver among ', 
                 paste0('\'', .solvers, '\'', collapse = ','), '.'))

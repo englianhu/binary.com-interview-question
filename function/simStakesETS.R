@@ -160,7 +160,9 @@ simStakesETS <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only =
   fitm %<>% mutate(RR = Bal/BR)
   
   ## convert the log leverage value of fund size and profit into normal digital figure with exp().
-  if(.fundLeverageLog == TRUE) fitm %<>% mutate(BR = exp(BR), BuyS = exp(BuyS), SellS = exp(SellS), Profit = exp(Profit), Bal = exp(Profit))
+  if(.fundLeverageLog == TRUE) fitm %<>% 
+    mutate(BR = exp(BR), BuyS = exp(BuyS), SellS = exp(SellS), 
+           Profit = exp(Profit), Bal = exp(Profit))
   
   return(fitm)
 }
