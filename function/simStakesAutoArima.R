@@ -1,14 +1,8 @@
-simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
-                               .parallel = FALSE, .progress = 'none', .setPrice = 'Cl', .pq.value = TRUE, 
-                               .initialFundSize = 1000, .fundLeverageLog = FALSE, .filterBets = FALSE, 
-                               .variance.model = list(model = 'sGARCH', garchOrder = c(1, 1), 
-                                                      submodel = NULL, external.regressors = NULL, 
-                                                      variance.targeting = FALSE), 
-                               .mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, archm = FALSE, 
-                                                  archpow = 1, arfima = FALSE, external.regressors = NULL, 
-                                                  archex = FALSE), 
-                               .dist.model = 'norm', start.pars = list(), fixed.pars = list()) {
-  ## Garch model
+simStakesAutoArima <- function(mbase, .prCat = 'Op', .baseDate = ymd('2015-01-01'), 
+                               .parallel = FALSE, .setPrice = 'Cl', .initialFundSize = 1000, 
+                               .fundLeverageLog = FALSE, .filterBets = FALSE) {
+  #' Auto Arima model
+  
   ## .setPrice need to set by refer to closing price, otherwise the P%L will be wrong due to we unable 
   ##   know the price flow based on Hi-Lo price.
   ## Here I set .setPrice to options as : .setPrice = 'Op', .setPrice = 'Hi', .setPrice = 'Mn', 
@@ -16,62 +10,12 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate =
   ##            .setPrice = 'FPMN', .setPrice = 'FPLO', .setPrice = 'FPCL'.
   ## Kindly set .initialFundSize = 1000 but not .initialFundSize = log(1000) for risk management, 
   ##            .fundLeverageLog = FALSE just do not exp() the log() fund size.
-  ## .pq.value = TRUE will auto search best `p` and `q` value for AR and MA.
   
-  #'@ source('./function/simGarch.R', local = TRUE)
-  source('./function/simGarch.R')
+  #'@ source('./function/simAutoArima.R', local = TRUE)
   
   if(!is.numeric(.initialFundSize) & length(.initialFundSize) != 1 & .initialFundSize <= 0) {
     stop('Kindly insert a numeric number as initial fund size.')
   }
-  
-  ## Multiple Garch models inside `rugarch` package.
-  .variance.models <- c('sGARCH', 'fGARCH', 'eGARCH', 'gjrGARCH', 
-                        'apARCH', 'iGARCH', 'csGARCH', 'realGARCH')
-  
-  ## do not execute since use `acf()` and `pacf()` can get the best fit p and q values.`
-  #'@ .garchOrders <- expand.grid(0:5, 0:5, KEEP.OUT.ATTRS = FALSE) %>% 
-  #'@   mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ') %>% llply(as.numeric)
-  
-  .solvers <- c('hybrid', 'solnp', 'nlminb', 'gosolnp', 'nloptr', 'lbfgs')
-  
-  .sub.fGarchs <- c('GARCH', 'TGARCH', 'AVGARCH', 'NGARCH', 'NAGARCH', 
-                    'APARCH', 'GJRGARCH', 'ALLGARCH')
-  
-  .dist.models <- c('norm', 'snorm', 'std', 'sstd', 'ged', 'sged', 'nig', 'ghyp', 'jsu')
-  
-  if(!.variance.model$model %in% .variance.models) {
-    stop(paste0('kindly choose .variance.model$model among ', 
-                paste0('\'', .variance.models, '\'', collapse = ','), '.'))
-  } else {
-    
-    if(.variance.model$model == 'fGARCH') {
-      if(length(.variance.model$submodel) == 0)
-        stop(paste0('kindly choose .variance.model$submodel among ', 
-                    paste0('\'', .sub.fGarchs, '\'', collapse = ','), '.'))
-    } else {
-      if(length(.variance.model$submodel) > 0)
-        stop('kindly choose .variance.model$submodel = NULL.')
-    }
-  }
-  
-  ## Error
-  #'@ if(!all(.variance.model$garchOrder %in% .garchOrders)) 
-  #'@   stop(paste0('kindly choose .variance.model$garchOrder among ', 
-  #'@               paste0('\'', .garchOrders, '\'', collapse = ','), '.'))
-  
-  ## 
-  ## Wrong solver will cause error!!!
-  ## 
-  ## The “hybrid” strategy solver first tries the “solnp” solver, in failing to converge 
-  ##   then tries then “nlminb”, the “gosolnp” and finally the “nloptr” solvers.
-  if(!.solver %in% .solvers) 
-    stop(paste0('kindly choose .solver among ', 
-                paste0('\'', .solvers, '\'', collapse = ','), '.'))
-  
-  if(!.dist.model %in% .dist.models) 
-    stop(paste0('kindly choose .dist.model among ', 
-                paste0('\'', .dist.models, '\'', collapse = ','), '.'))
   
   if(.fundLeverageLog == TRUE) .initialFundSize = log(.initialFundSize)
   
@@ -86,20 +30,12 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate =
   names(mbase) <- str_replace_all(names(mbase), '^(.*?)+\\.', 'USDJPY.')
   
   ## forecast staking price.
-  fit1 <- simGarch(mbase, .solver = .solver, .prCat = .prCat, .baseDate = .baseDate, 
-                   .parallel = .parallel, .progress = .progress, 
-                   .variance.model = .variance.model, .pq.value = .pq.value, 
-                   .mean.model = .mean.model, .dist.model = .dist.model, 
-                   start.pars = start.pars, fixed.pars = fixed.pars)
+  fit1 <- simAutoArima(mbase, .prCat = .prCat, .baseDate = .baseDate, .parallel = .parallel)
   fit1 <- data.frame(Date = index(fit1), coredata(fit1)) %>% tbl_df
   fit1 <- na.omit(fit1)
   
   ## forecast settlement price.
-  fit2 <- simGarch(mbase, .solver = .solver, .prCat = .setPrice, .baseDate = .baseDate, 
-                   .parallel = .parallel, .progress = .progress, 
-                   .variance.model = .variance.model, .pq.value = .pq.value, 
-                   .mean.model = .mean.model, .dist.model = .dist.model, 
-                   start.pars = start.pars, fixed.pars = fixed.pars)
+  fit2 <- simAutoArima(mbase, .prCat = .setPrice, .baseDate = .baseDate, .parallel = .parallel)
   fit2 <- data.frame(Date = index(fit2), coredata(fit2)) %>% tbl_df
   fit2 <- na.omit(fit2)
   
@@ -110,7 +46,7 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate =
   fitm %<>% mutate(ProbB = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose)), 
                    ProbS = 1 - ProbB) #ProbS = pnorm(Point.Forecast, mean = forClose, sd = sd(forClose), lower.tail = FALSE)
   
-  ## The garch staking models (Kelly criterion) P&L column.
+  ## The ets staking models (Kelly criterion) P&L column.
   ## staking model and bankroll management.
   ## need to refer to Niko Martinen's fund management formula to maximise the stakes and profit base on Kelly models.
   ## https://github.com/scibrokes/betting-strategy-and-model-validation/blob/master/references/Creating%20a%20Profitable%20Betting%20Strategy%20for%20Football%20by%20Using%20Statistical%20Modelling.pdf
@@ -141,7 +77,7 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate =
   #'@ fitm %>% dplyr::select(Point.Forecast, forClose, Prob, BR, f, EU, Edge, PF, FC, Buy, Sell, SP, Bal)
   #'@ fitm %>% dplyr::select(ProbB, ProbS, BR, fB, fS, EUB, EUS, Edge, PF, USDJPY.Open, FC, Buy, Sell, BuyS, SellS, Profit, Bal) %>% filter(PF > 0, FC > 0)
   
-  ## The garch staking models (Kelly criterion) Adjusted Banl-roll and Balance column.
+  ## The ets staking models (Kelly criterion) Adjusted Banl-roll and Balance column.
   for(i in seq(2, nrow(fitm))) {
     fitm$BR[i] = fitm$Bal[i - 1]
     fitm$fB[i] = 2 * fitm$ProbB[i] - 1
@@ -158,7 +94,7 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate =
     fitm$SellS[i] = fitm$Edge[i] * fitm$Sell[i] * (fitm$PF[i] - fitm$forClose[i])
     fitm$Profit[i] = fitm$BuyS[i] + fitm$SellS[i]
     fitm$Bal[i] = fitm$BR[i] + fitm$Profit[i]
-    #'@ if(fitm$Bal[i] <= 0) stop('All invested fund ruined!')
+    if(fitm$Bal[i] <= 0) stop('All invested fund ruined!')
   }; rm(i)
   
   names(mbase) <- str_replace_all(names(mbase), '^(.*?)+\\.', nm)

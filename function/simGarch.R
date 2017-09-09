@@ -8,6 +8,10 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
                                        archex = FALSE), 
                      .dist.model = 'norm', start.pars = list(), fixed.pars = list()){
   
+  ## .pq.value = TRUE will auto search best `p` and `q` value for AR and MA.
+  #'@ source('./function/armaSearch.R', local = TRUE)
+  source('./function/armaSearch.R')
+  
   if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
   
   ## dateID
@@ -26,24 +30,29 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
   if(.prCat %in% price.category) {
     if(.prCat == 'Op') {
       obs.data2 <- Op(mbase)
-      pq.op <- diff(as.vector(obs.data2), difference = 1)
+      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2))
+      .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
       
     } else if(.prCat == 'Hi') {
       obs.data2 <- Hi(mbase)
-      pq.hi <- diff(as.vector(obs.data2), difference = 1)
+      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2))
+      .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
       
     } else if(.prCat == 'Mn') { #mean of highest and lowest
       obs.data2 <- cbind(Hi(mbase), Lo(mbase), 
                          USDJPY.Mn = rowMeans(cbind(Hi(mbase), Lo(mbase))))[,-c(1:2)]
-      pq.mn <- diff(as.vector(obs.data2), difference = 1)
+      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2))
+      .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
       
     } else if(.prCat == 'Lo') {
       obs.data2 <- Lo(mbase)
-      pq.lo <- diff(as.vector(obs.data2), difference = 1)
+      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2))
+      .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
       
     } else if(.prCat == 'Cl') {
       obs.data2 <- Cl(mbase)
-      pq.cl <- diff(as.vector(obs.data2), difference = 1)
+      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2))
+      .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
       
     } else {
       stop('Kindly choose .prCat = "Op", .prCat = "Hi", .prCat = "Mn", .prCat = "Lo" or .prCat = "Cl".')

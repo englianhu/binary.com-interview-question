@@ -22,7 +22,7 @@ pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'strin
 suppressAll(lib(pkgs))
 #'@ install.packages(pkgs, lib = 'C:/Program Files/R/R-3.4.0/library')
 
-suppressAll(l_ply(c('last.R', 'has.Mn.R', 'simETS.R', 'simStakesETS.R', 'plotChart2.R', 'simGarch.R', 'simStakesGarch.R'), function(pkg) source(paste0('./function/', pkg))))
+suppressAll(l_ply(c('last.R', 'Mn.R', 'has.Mn.R', 'simAutoArima.R', 'simStakesAutoArima.R', 'simETS.R', 'simStakesETS.R', 'plotChart2.R', 'armaSearch.R', 'simGarch.R', 'simStakesGarch.R'), function(pkg) source(paste0('./function/', pkg))))
 
 ## Directly install the developing packages.
 #'@ require(devtools)
@@ -193,7 +193,16 @@ It is also possible for the model to be of class "ets", and equal to the output 
 
   Kindly refer to [<span style='color:blue'>*8.10 ARIMA vs ETS*</span>](https://www.otexts.org/fpp/8/10) for further details.
 
-```{r build-fits}
+```{r build-AutoArima}
+## Modelling Auto Arima focasting data.
+fitAutoArima.op <- suppressAll(simAutoArima(USDJPY, .prCat = 'Op')) #will take a minute
+fitAutoArima.hi <- suppressAll(simAutoArima(USDJPY, .prCat = 'Hi')) #will take a minute
+fitAutoArima.mn <- suppressAll(simAutoArima(USDJPY, .prCat = 'Mn')) #will take a minute
+fitAutoArima.lo <- suppressAll(simAutoArima(USDJPY, .prCat = 'Lo')) #will take a minute
+fitAutoArima.cl <- suppressAll(simAutoArima(USDJPY, .prCat = 'Cl')) #will take a minute
+```
+
+```{r build-ETS}
 ## Modelling ETS focasting data.
 fitETS.op <- suppressAll(simETS(USDJPY, .prCat = 'Op')) #will take a minute
 fitETS.hi <- suppressAll(simETS(USDJPY, .prCat = 'Hi')) #will take a minute
@@ -357,7 +366,7 @@ spec = ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(2, 1)),
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/0q3gSJKJUs8" frameborder="0" allowfullscreen></iframe>
 
-```{r build-fits2}
+```{r build-Garch}
 ## Modelling Garch focasting data.
 fitGM.op <- suppressAll(simGarch(USDJPY, .prCat = 'Op')) #will take a minute
 fitGM.hi <- suppressAll(simGarch(USDJPY, .prCat = 'Hi')) #will take a minute
@@ -525,6 +534,138 @@ plotChart2(fcdataGM, initialName = 'FP', chart.type = 'FP', graph.title = 'Garch
 ### 2.1.5 Return of Investment
 
 #### 2.1.5.1 ARIMA vs ETS
+
+```{r simStaking-AutoArima, eval = FALSE, include = FALSE}
+##============================ EVAL = FALSE ================================
+## 
+## Model 1 without leverage.
+## 
+## Placed orders - Fund size with log
+
+#'@ mbase <- USDJPY
+
+## settled with highest price.
+fundAutoArimaOPHI <- simStakesAutoArima(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundAutoArimaOPHI, file = './data/fundAutoArimaOPHI.rds')
+
+fundAutoArimaHIHI <- simStakesAutoArima(mbase, .prCat = 'Hi', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundAutoArimaHIHI, file = './data/fundAutoArimaHIHI.rds')
+
+fundAutoArimaMNHI <- simStakesAutoArima(mbase, .prCat = 'Mn', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundAutoArimaMNHI, file = './data/fundAutoArimaMNHI.rds')
+
+fundAutoArimaLOHI <- simStakesAutoArima(mbase, .prCat = 'Lo', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundAutoArimaLOHI, file = './data/fundAutoArimaLOHI.rds')
+
+fundAutoArimaCLHI <- simStakesAutoArima(mbase, .prCat = 'Cl', .setPrice = 'Hi', .initialFundSize = 1000)
+saveRDS(fundAutoArimaCLHI, file = './data/fundAutoArimaCLHI.rds')
+
+
+## settled with mean price.
+fundAutoArimaOPMN <- simStakesAutoArima(mbase, .prCat = 'Op', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundAutoArimaOPMN, file = './data/fundAutoArimaOPMN.rds')
+
+fundAutoArimaHIMN <- simStakesAutoArima(mbase, .prCat = 'Hi', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundAutoArimaHIMN, file = './data/fundAutoArimaHIMN.rds')
+
+fundAutoArimaMNMN <- simStakesAutoArima(mbase, .prCat = 'Mn', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundAutoArimaMNMN, file = './data/fundAutoArimaMNMN.rds')
+
+fundAutoArimaLOMN <- simStakesAutoArima(mbase, .prCat = 'Lo', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundAutoArimaLOMN, file = './data/fundAutoArimaLOMN.rds')
+
+fundAutoArimaCLMN <- simStakesAutoArima(mbase, .prCat = 'Cl', .setPrice = 'Mn', .initialFundSize = 1000)
+saveRDS(fundAutoArimaCLMN, file = './data/fundAutoArimaCLMN.rds')
+
+
+## settled with opening price.
+fundAutoArimaOPLO <- simStakesAutoArima(mbase, .prCat = 'Op', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundAutoArimaOPLO, file = './data/fundAutoArimaOPLO.rds')
+
+fundAutoArimaHILO <- simStakesAutoArima(mbase, .prCat = 'Hi', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundAutoArimaHILO, file = './data/fundAutoArimaHILO.rds')
+
+fundAutoArimaMNLO <- simStakesAutoArima(mbase, .prCat = 'Mn', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundAutoArimaMNLO, file = './data/fundAutoArimaMNLO.rds')
+
+fundAutoArimaLOLO <- simStakesAutoArima(mbase, .prCat = 'Lo', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundAutoArimaLOLO, file = './data/fundAutoArimaLOLO.rds')
+
+fundAutoArimaCLLO <- simStakesAutoArima(mbase, .prCat = 'Cl', .setPrice = 'Lo', .initialFundSize = 1000)
+saveRDS(fundAutoArimaCLLO, file = './data/fundAutoArimaCLLO.rds')
+
+
+## settled with closing price.
+fundAutoArimaOPCL <- simStakesAutoArima(mbase, .prCat = 'Op', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundAutoArimaOPCL, file = './data/fundAutoArimaOPCL.rds')
+
+fundAutoArimaHICL <- simStakesAutoArima(mbase, .prCat = 'Hi', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundAutoArimaHICL, file = './data/fundAutoArimaHICL.rds')
+
+fundAutoArimaMNCL <- simStakesAutoArima(mbase, .prCat = 'Mn', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundAutoArimaMNCL, file = './data/fundAutoArimaMNCL.rds')
+
+fundAutoArimaLOCL <- simStakesAutoArima(mbase, .prCat = 'Lo', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundAutoArimaLOCL, file = './data/fundAutoArimaLOCL.rds')
+
+fundAutoArimaCLCL <- simStakesAutoArima(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSize = 1000)
+saveRDS(fundAutoArimaCLCL, file = './data/fundAutoArimaCLCL.rds')
+
+## Placed orders - Fund size without log
+fundList <- list(fundOPHI = fundAutoArimaOPHI, fundHIHI = fundAutoArimaHIHI, fundMNHI = fundAutoArimaMNHI, fundLOHI = fundAutoArimaLOHI, fundCLHI = fundAutoArimaCLHI, 
+                fundOPMN = fundAutoArimaOPMN, fundHIMN = fundAutoArimaHIMN, fundMNMN = fundAutoArimaMNMN, fundLOMN = fundAutoArimaLOMN, fundCLMN = fundAutoArimaCLMN, 
+                fundOPLO = fundAutoArimaOPLO, fundHILO = fundAutoArimaHILO, fundMNLO = fundAutoArimaMNLO, fundLOLO = fundAutoArimaLOLO, fundCLLO = fundAutoArimaCLLO, 
+                fundOPCL = fundAutoArimaOPCL, fundHICL = fundAutoArimaHICL, fundMNCL = fundAutoArimaMNCL, fundLOCL = fundAutoArimaLOCL, fundCLCL = fundAutoArimaCLCL)
+
+ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate = last(Date), InitFund = first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+# A tibble: 20 x 7
+#         .id  StartDate LatestDate InitFund LatestFund    Profit       RR
+#       <chr>     <date>     <date>    <dbl>      <dbl>     <dbl>    <dbl>
+#  1 fundOPHI 2015-01-02 2017-01-20     1000   1325.983 325.98313 1.325983
+#  2 fundHIHI 2015-01-02 2017-01-20     1000   1000.000   0.00000 1.000000
+#  3 fundMNHI 2015-01-02 2017-01-20     1000   1236.199 236.19900 1.236199
+#  4 fundLOHI 2015-01-02 2017-01-20     1000   1716.985 716.98492 1.716985
+#  5 fundCLHI 2015-01-02 2017-01-20     1000   1323.688 323.68809 1.323688
+#  6 fundOPMN 2015-01-02 2017-01-20     1000   1304.819 304.81916 1.304819
+#  7 fundHIMN 2015-01-02 2017-01-20     1000   1363.714 363.71443 1.363714
+#  8 fundMNMN 2015-01-02 2017-01-20     1000   1000.000   0.00000 1.000000
+#  9 fundLOMN 2015-01-02 2017-01-20     1000   1440.170 440.16965 1.440170
+# 10 fundCLMN 2015-01-02 2017-01-20     1000   1292.947 292.94694 1.292947
+# 11 fundOPLO 2015-01-02 2017-01-20     1000   1307.610 307.60951 1.307610
+# 12 fundHILO 2015-01-02 2017-01-20     1000   1637.251 637.25113 1.637251
+# 13 fundMNLO 2015-01-02 2017-01-20     1000   1250.375 250.37547 1.250375
+# 14 fundLOLO 2015-01-02 2017-01-20     1000   1000.000   0.00000 1.000000
+# 15 fundCLLO 2015-01-02 2017-01-20     1000   1261.157 261.15684 1.261157
+# 16 fundOPCL 2015-01-02 2017-01-20     1000   1047.563  47.56281 1.047563
+# 17 fundHICL 2015-01-02 2017-01-20     1000   1401.694 401.69378 1.401694
+# 18 fundMNCL 2015-01-02 2017-01-20     1000   1158.790 158.79028 1.158790
+# 19 fundLOCL 2015-01-02 2017-01-20     1000   1499.818 499.81773 1.499818
+# 20 fundCLCL 2015-01-02 2017-01-20     1000   1000.000   0.00000 1.000000
+```
+
+```{r ROI-AutoArima}
+## load the pre-run and saved models.
+## Profit and Loss of Arima models.
+
+fls <- dir('./data', pattern = 'fundAutoArima')
+
+## From 22 ets models with 25 hilo, opcl, mnmn, opop etc different price data. There will be 550 models.
+fundList <- llply(fls, function(dt) {
+    cbind(Model = str_replace_all(dt, '.rds', ''), 
+          readRDS(file = paste0('./data/', dt))) %>% tbl_df
+  })
+names(fundList) <- sapply(fundList, function(x) xts::first(x$Model))
+
+## Summary of ROI
+ets.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+```
+
+  The return of investment from best fitted Auto Arima model.
+
+```
+ 7 fundAutoArimaHILO 2015-01-02 2017-01-20     1000   1637.251 637.25113 1.637251
+10 fundAutoArimaLOHI 2015-01-02 2017-01-20     1000   1716.985 716.98492 1.716985
+```
 
   Profit and Loss of default `ZZZ` ets models.
 
@@ -1417,13 +1558,23 @@ suppressMessages(llply(ntm, function(nm) {
 
 #### 2.1.6.2 Garch vs EWMA
 
-  As I mentioned in first section which is the combination models will be more than 10,000, therefore I try to apply `acf()` and `pacf()` to determine the best fit value `p` and `q` for Garch model. You can refer to [Arima预测模型（R语言）](http://blog.csdn.net/desilting/article/details/39013825) and [时间序列分析---(ARIMA模型)](http://zhoulili1987619126.lofter.com/post/1cc8f7a3_74e7f10) for more information.
+  As I mentioned in first section which is the combination models will be more than 10,000, therefore I try to refer to `acf()` and `pacf()` to determine the best fit value `p` and `q` for Garch model. You can refer to below articles for more information.
   
-  - [Identifying the numbers of AR or MA terms in an ARIMA model](http://people.duke.edu/~rnau/411arim3.htm)
-  - [8.7 ARIMA modelling in R](https://www.otexts.org/fpp/8/7)^[(a) The best model (with smallest AICc) is selected from the following four:] ^[ARIMA(2,d,2),] ^[ARIMA(0,d,0),] ^[ARIMA(1,d,0),] ^[ARIMA(0,d,1).]
-  - [2.2 Partial Autocorrelation Function (PACF)](https://onlinecourses.science.psu.edu/stat510/node/62)
+  - [<span style='color:blue'>时间序列ARMA中p，q选择</span>](http://blog.csdn.net/xiaodongxiexie/article/details/54633272?locationNum=2&fps=1)
+  - [<span style='color:blue'>时间序列分析之ARIMA模型预测__R篇</span>](http://www.cnblogs.com/bicoffee/p/3838049.html)^[Due to this article compare the combination models with `acf` and `pacf` and eventually get that `acf` and `pacf` produce a better fit model.]
+  - [<span style='color:blue'>Time Series Analysis of Apple Stock Prices Using GARCH models</span>](https://rstudio-pubs-static.s3.amazonaws.com/258811_b43d4c7bb2c74851b5b95f29a09c5b30.html)
+  - [<span style='color:blue'>时间序列建模问题，如何准确的建立时间序列模型？</span>](https://www.zhihu.com/question/31833683/answer/116155144)
+  - [<span style='color:blue'>Arima预测模型（R语言）</span>](http://blog.csdn.net/desilting/article/details/39013825)
+  - [<span style='color:blue'>时间序列分析---(ARIMA模型)](http://zhoulili1987619126.lofter.com/post/1cc8f7a3_74e7f10)
+  - [<span style='color:blue'>Identifying the numbers of AR or MA terms in an ARIMA model</span>](http://people.duke.edu/~rnau/411arim3.htm)
+  - [<span style='color:blue'>8.7 ARIMA modelling in R</span>](https://www.otexts.org/fpp/8/7)^[(a) The best model (with smallest AICc) is selected from the following four:] ^[ARIMA(2,d,2),] ^[ARIMA(0,d,0),] ^[ARIMA(1,d,0),] ^[ARIMA(0,d,1).]
+  - [<span style='color:blue'>2.2 Partial Autocorrelation Function (PACF)</span>](https://onlinecourses.science.psu.edu/stat510/node/62)
+  - [<span style='color:blue'>Forecasting Time Series</span>](http://ptrckprry.com/course/forecasting/lecture/archfit.html)
+  - [<span style='color:blue'>Lecture 4: Modelling Volatility of S&P returns</span>](https://klein.uk/teaching/quant2/docs/Lec4.html)
+  - [<span style='color:blue'>Course Files :: MPO1 & MPO1A</span>](https://github.com/mfrmn/qrm/blob/master/MPO1A/L2E2Ascript.r)
+  - [<span style='color:blue'>第二章平稳时间序列模型——ACF和PACF和样本ACF/PACF</span>](http://www.cnblogs.com/xuanlvshu/p/5410721.html)
 
-```{r multi-garchM}
+```{r multi-garchM, message = FALSE, warning = FALSE}
 ## Multiple Garch models inside `rugarch` package.
 .variance.model.par <- c('sGARCH', 'fGARCH', 'eGARCH', 'gjrGARCH', 'apARCH', 'iGARCH', 'csGARCH', 'realGARCH')
 
@@ -1442,7 +1593,7 @@ pp <- llply(pp, function(x) x[x[1]!=x[2]][!is.null(x)])
 pp <- pp[!is.na(pp)]
 ```
 
-```{r pq-value, echo = FALSE}
+```{r acf-pacf, echo = FALSE}
 pq.op <- diff(as.vector(Op(mbase)), difference = 1)
 pq.hi <- diff(as.vector(Hi(mbase)), difference = 1)
 pq.mn <- diff(as.vector((Hi(mbase) + Lo(mbase)) / 2), difference = 1)
@@ -1450,18 +1601,212 @@ pq.lo <- diff(as.vector(Lo(mbase)), difference = 1)
 pq.cl <- diff(as.vector(Cl(mbase)), difference = 1)
 
 ## determine the p value in Arima, Garch models.
-pacf(pq.op, lag.max = 100)
-pacf(pq.hi, lag.max = 100)
-pacf(pq.mn, lag.max = 100)
-pacf(pq.lo, lag.max = 100)
-pacf(pq.cl, lag.max = 100)
+pacf(pq.op, lag.max = 100, main = 'PACF of Opening Price')
+pacf(pq.hi, lag.max = 100, main = 'PACF of Highest Price')
+pacf(pq.mn, lag.max = 100, main = 'PACF of Mean Price')
+pacf(pq.lo, lag.max = 100, main = 'PACF of Lowest Price')
+pacf(pq.cl, lag.max = 100, main = 'PACF of Closing Price')
 
 ## determine the q value in Arima, Garch models.
-acf(pq.op, lag.max = 100)
-acf(pq.hi, lag.max = 100)
-acf(pq.mn, lag.max = 100)
-acf(pq.lo, lag.max = 100)
-acf(pq.cl, lag.max = 100)
+acf(pq.op, lag.max = 100, main = 'ACF of Opening Price')
+acf(pq.hi, lag.max = 100, main = 'ACF of Highest Price')
+acf(pq.mn, lag.max = 100, main = 'ACF of Mean Price')
+acf(pq.lo, lag.max = 100, main = 'ACF of Lowest Price')
+acf(pq.cl, lag.max = 100, main = 'ACF of Closing Price')
+```
+
+  Here I use a function to find the optimal value of `p` and `q` from (0,0) to (5,5) by refer to [<span style='color:blue'>R-ARMA(p,q)如何选找最小AIC的p,q值</span>](http://blog.csdn.net/u012543538/article/details/38663715).
+
+```{r pq-value}
+pq.op <- suppressWarnings(armaSearch(Op(mbase)))
+pq.hi <- suppressWarnings(armaSearch(Hi(mbase)))
+USDJPY.Mean = (Hi(mbase) + Lo(mbase)) / 2
+names(USDJPY.Mean) <- 'USDJPY.Mean'
+pq.mn <- suppressWarnings(armaSearch(USDJPY.Mean, .method = 'ML')) #force to choose 'ML' since 'CSS-ML' error.
+pq.lo <- suppressWarnings(armaSearch(Lo(mbase), .method = 'ML')) #force to choose 'ML' since 'CSS-ML' error.
+pq.cl <- suppressWarnings(armaSearch(Cl(mbase)))
+
+## From below comparison, we know that the 'CSS-ML' is better than 'ML'.
+## 
+#'@ > suppressWarnings(armaSearch(Cl(mbase), .method = 'ML'))
+# the min AIC = 1635.718 , p = 2 , q = 4 
+# p q      AIC
+# 1  0 0 1641.616
+# 2  0 1 1643.616
+# 3  0 2 1645.062
+# 4  0 3 1647.036
+# 5  0 4 1645.792
+# 6  0 5 1639.704
+# 7  1 0 1643.616
+# 8  1 1 1645.616
+# 9  1 2 1640.169
+# 10 1 3 1640.896
+# 11 1 4 1636.914
+# 12 1 5 1636.216
+# 13 2 0 1644.991
+# 14 2 1 1640.297
+# 15 2 2 1642.826
+# 16 2 3 1644.150
+# 17 2 4 1635.718
+# 18 2 5 1637.614
+# 19 3 0 1646.901
+# 20 3 1 1641.620
+# 21 3 2 1643.541
+# 22 3 3 1646.957
+# 23 3 4 1636.964
+# 24 3 5 1639.715
+# 25 4 0 1645.485
+# 26 4 1 1639.150
+# 27 4 2 1635.929
+# 28 4 3 1636.975
+# 29 4 4 1638.584
+# 30 4 5 1640.505
+# 31 5 0 1640.214
+# 32 5 1 1638.289
+# 33 5 2 1637.855
+# 34 5 3 1639.926
+# 35 5 4 1638.875
+# 36 5 5 1641.102
+#'@ > suppressWarnings(armaSearch(Cl(mbase), .method = 'CSS-ML'))
+# the min AIC = 1634.782 , p = 3 , q = 3 
+# p q      AIC
+# 1  0 0 1641.616
+# 2  0 1 1643.616
+# 3  0 2 1645.062
+# 4  0 3 1647.036
+# 5  0 4 1645.792
+# 6  0 5 1639.704
+# 7  1 0 1643.616
+# 8  1 1 1645.616
+# 9  1 2 1640.168
+# 10 1 3 1640.896
+# 11 1 4 1636.914
+# 12 1 5 1636.216
+# 13 2 0 1644.991
+# 14 2 1 1640.297
+# 15 2 2 1642.734
+# 16 2 3 1643.207
+# 17 2 4 1635.717
+# 18 2 5 1636.222
+# 19 3 0 1646.901
+# 20 3 1 1641.620
+# 21 3 2 1644.290
+# 22 3 3 1634.782
+# 23 3 4 1636.240
+# 24 3 5 1638.113
+# 25 4 0 1645.485
+# 26 4 1 1639.150
+# 27 4 2 1635.929
+# 28 4 3 1636.975
+# 29 4 4 1638.584
+# 30 4 5 1640.505
+# 31 5 0 1640.214
+# 32 5 1 1638.289
+# 33 5 2 1637.855
+# 34 5 3 1639.926
+# 35 5 4 1636.145
+# 36 5 5 1641.102
+
+#'@ > suppressWarnings(armaSearch(Mn(USDJPY.Mean), .method = 'ML'))
+# the min AIC = 1369.503 , p = 3 , q = 2 
+#    p q      AIC
+# 1  0 0 1408.854
+# 2  0 1 1379.128
+# 3  0 2 1380.864
+# 4  0 3 1382.213
+# 5  0 4 1383.223
+# 6  0 5 1377.906
+# 7  1 0 1378.869
+# 8  1 1 1380.755
+# 9  1 2 1382.479
+# 10 1 3 1384.072
+# 11 1 4 1379.514
+# 12 1 5 1378.089
+# 13 2 0 1380.792
+# 14 2 1 1382.634
+# 15 2 2 1384.310
+# 16 2 3 1384.559
+# 17 2 4 1375.647
+# 18 2 5 1377.609
+# 19 3 0 1381.965
+# 20 3 1 1383.946
+# 21 3 2 1369.503
+# 22 3 3 1376.475
+# 23 3 4 1377.613
+# 24 3 5 1379.641
+# 25 4 0 1383.859
+# 26 4 1 1385.411
+# 27 4 2 1375.856
+# 28 4 3 1373.091
+# 29 4 4 1378.873
+# 30 4 5 1380.859
+# 31 5 0 1382.015
+# 32 5 1 1379.627
+# 33 5 2 1377.687
+# 34 5 3 1379.462
+# 35 5 4 1380.859
+# 36 5 5 1382.397
+# 
+#'@ > suppressWarnings(armaSearch(Mn(USDJPY.Mean), .method = 'CSS-ML'))
+#  Show Traceback
+#  
+#  Rerun with Debug
+#  Error in arima(data, order = c(p, 1, q), method = .method) : 
+#   non-stationary AR part from CSS
+# 
+#'@ > suppressWarnings(armaSearch(Mn(USDJPY.Mean), .method = 'CSS'))
+# the min AIC =  , p =  , q =  
+#    p q AIC
+# 1  0 0  NA
+# 2  0 1  NA
+# 3  0 2  NA
+# 4  0 3  NA
+# 5  0 4  NA
+# 6  0 5  NA
+# 7  1 0  NA
+# 8  1 1  NA
+# 9  1 2  NA
+# 10 1 3  NA
+# 11 1 4  NA
+# 12 1 5  NA
+# 13 2 0  NA
+# 14 2 1  NA
+# 15 2 2  NA
+# 16 2 3  NA
+# 17 2 4  NA
+# 18 2 5  NA
+# 19 3 0  NA
+# 20 3 1  NA
+# 21 3 2  NA
+# 22 3 3  NA
+# 23 3 4  NA
+# 24 3 5  NA
+# 25 4 0  NA
+# 26 4 1  NA
+# 27 4 2  NA
+# 28 4 3  NA
+# 29 4 4  NA
+# 30 4 5  NA
+# 31 5 0  NA
+# 32 5 1  NA
+# 33 5 2  NA
+# 34 5 3  NA
+# 35 5 4  NA
+# 36 5 5  NA
+
+
+#'@ > pq.op <- suppressWarnings(armaSearch(Op(mbase)))
+# the min AIC = 1623.453 , p = 4 , q = 4 
+#'@ > pq.hi <- suppressWarnings(armaSearch(Hi(mbase)))
+# the min AIC = 1490.073 , p = 4 , q = 3 
+#'@ > USDJPY.Mean = (Hi(mbase) + Lo(mbase)) / 2
+#'@ > names(USDJPY.Mean) <- 'USDJPY.Mean'
+#'@ > pq.mn <- suppressWarnings(armaSearch(USDJPY.Mean, .method = 'ML'))
+# the min AIC = 1369.503 , p = 3 , q = 2 
+#'@ > pq.lo <- suppressWarnings(armaSearch(Lo(mbase), .method = 'ML'))
+# the min AIC = 1711.913 , p = 3 , q = 2 
+#'@ > pq.cl <- suppressWarnings(armaSearch(Cl(mbase)))
+# the min AIC = 1634.782 , p = 3 , q = 3
 ```
 
 ```{r multi-garch}
@@ -1509,6 +1854,52 @@ garch.m <- suppressAll(llply(.variance.model.par, function(vm) {
     }, .progress = 'text')
   cat(paste(vm, 'done', '\n'))
   }, .progress = 'text'))
+
+```
+
+```{r latest}
+garch.m <- suppressAll(llply(.variance.model.par, function(vm) {
+    llply(pp, function(y) {
+            llply(.solver.par[1], function(sv) { #only use 'hybrid' solver.
+                llply(.dist.model.par, function(dst) {
+                    if(vm == 'fGARCH'){
+                        llply(.sub.fGarch.par, function(sub.vm) {
+                            z = simStakesGarch(mbase, .solver = sv, .prCat = y[1], 
+                                               .baseDate = ymd('2015-01-01'), 
+                                               .parallel = FALSE, .progress = 'text', 
+                                               .setPrice = y[2], .initialFundSize = 1000, 
+                                               .fundLeverageLog = FALSE, .filterBets = FALSE, 
+                                               .variance.model = list(model = vm, garchOrder = c(1, 1), submodel = sub.vm, external.regressors = NULL, variance.targeting = FALSE), 
+                                               .mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, archm = FALSE, archpow = 1, arfima = FALSE, external.regressors = NULL, archex = FALSE), 
+                                               .dist.model = dst, start.pars = list(), fixed.pars = list())
+                            
+                            txt1 <- paste0('saveRDS(z', ', file = \'./data/', vm, '.', y, '.', dst, '.', sv, '.', sub.vm, '.', y[1], y[2], '.rds\')')
+                            eval(parse(text = txt1))
+                            cat(paste0(txt1, ' done!', '\n'))
+                            rm(z)
+                            
+                        }, .progress = 'text')
+                    } else {
+                        z = simStakesGarch(mbase, .solver = sv, .prCat = y[1], 
+                                           .baseDate = ymd('2015-01-01'), 
+                                           .parallel = FALSE, .progress = 'text', 
+                                           .setPrice = y[2], .initialFundSize = 1000, 
+                                           .fundLeverageLog = FALSE, .filterBets = FALSE, 
+                                           .variance.model = list(model = vm, garchOrder = c(1, 1), submodel = NULL, external.regressors = NULL, variance.targeting = FALSE), 
+                                           .mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, archm = FALSE, archpow = 1, arfima = FALSE, external.regressors = NULL, archex = FALSE), 
+                                           .dist.model = dst, start.pars = list(), fixed.pars = list())
+                        
+                        txt1 <- paste0('saveRDS(z', ', file = \'./data/', vm, '.', y, '.', dst, '.', sv, '.', y[1], y[2], '.rds\')')
+                        eval(parse(text = txt1))
+                        cat(paste0(txt1, ' done!', '\n'))
+                        rm(z)
+                        
+                    }
+                }, .progress = 'text')
+            }, .progress = 'text')
+    }, .progress = 'text')
+    cat(paste(vm, 'done', '\n'))
+}, .progress = 'text'))
 
 ```
 
