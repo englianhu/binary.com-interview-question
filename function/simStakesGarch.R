@@ -1,13 +1,16 @@
-simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
-                               .parallel = FALSE, .progress = 'none', .setPrice = 'Cl', .pq.value = TRUE, 
-                               .initialFundSize = 1000, .fundLeverageLog = FALSE, .filterBets = FALSE, 
-                               .variance.model = list(model = 'sGARCH', garchOrder = c(1, 1), 
-                                                      submodel = NULL, external.regressors = NULL, 
-                                                      variance.targeting = FALSE), 
-                               .mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, archm = FALSE, 
-                                                  archpow = 1, arfima = FALSE, external.regressors = NULL, 
-                                                  archex = FALSE), 
-                               .dist.model = 'norm', start.pars = list(), fixed.pars = list()) {
+simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .prCat.method = 'CSS-ML', 
+                           .baseDate = ymd('2015-01-01'), .parallel = FALSE, .progress = 'none', 
+                           .setPrice = 'Cl', .setPrice.method = 'CSS-ML', 
+                           .initialFundSize = 1000, .fundLeverageLog = FALSE, 
+                           .filterBets = FALSE, .variance.model = list(model = 'sGARCH', 
+                                                                       garchOrder = c(1, 1), 
+                                                                       submodel = NULL, 
+                                                                       external.regressors = NULL, 
+                                                                       variance.targeting = FALSE), 
+                           .mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, archm = FALSE, 
+                                              archpow = 1, arfima = FALSE, external.regressors = NULL, 
+                                              archex = FALSE), .dist.model = 'norm', 
+                           start.pars = list(), fixed.pars = list()) {
   ## Garch model
   ## .setPrice need to set by refer to closing price, otherwise the P%L will be wrong due to we unable 
   ##   know the price flow based on Hi-Lo price.
@@ -86,18 +89,18 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate =
   names(mbase) <- str_replace_all(names(mbase), '^(.*?)+\\.', 'USDJPY.')
   
   ## forecast staking price.
-  fit1 <- simGarch(mbase, .solver = .solver, .prCat = .prCat, .baseDate = .baseDate, 
-                   .parallel = .parallel, .progress = .progress, 
-                   .variance.model = .variance.model, .pq.value = .pq.value, 
+  fit1 <- simGarch(mbase, .solver = .solver, .prCat = .prCat, .method = .prCat.method, 
+                   .baseDate = .baseDate, .parallel = .parallel, .progress = .progress, 
+                   .variance.model = .variance.model, 
                    .mean.model = .mean.model, .dist.model = .dist.model, 
                    start.pars = start.pars, fixed.pars = fixed.pars)
   fit1 <- data.frame(Date = index(fit1), coredata(fit1)) %>% tbl_df
   fit1 <- na.omit(fit1)
   
   ## forecast settlement price.
-  fit2 <- simGarch(mbase, .solver = .solver, .prCat = .setPrice, .baseDate = .baseDate, 
-                   .parallel = .parallel, .progress = .progress, 
-                   .variance.model = .variance.model, .pq.value = .pq.value, 
+  fit2 <- simGarch(mbase, .solver = .solver, .prCat = .setPrice, 
+                   .baseDate = .baseDate, .parallel = .parallel, .progress = .progress, 
+                   .variance.model = .variance.model, .method = .setPrice.method, 
                    .mean.model = .mean.model, .dist.model = .dist.model, 
                    start.pars = start.pars, fixed.pars = fixed.pars)
   fit2 <- data.frame(Date = index(fit2), coredata(fit2)) %>% tbl_df

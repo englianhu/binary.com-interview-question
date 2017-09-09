@@ -1,5 +1,5 @@
 simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
-                     .parallel = FALSE, .progress = 'none', .pq.value = TRUE, 
+                     .parallel = FALSE, .progress = 'none', .method = 'CSS-ML', 
                      .variance.model = list(model = 'sGARCH', garchOrder = c(1, 1), 
                                             submodel = NULL, external.regressors = NULL, 
                                             variance.targeting = FALSE), 
@@ -8,7 +8,6 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
                                        archex = FALSE), 
                      .dist.model = 'norm', start.pars = list(), fixed.pars = list()){
   
-  ## .pq.value = TRUE will auto search best `p` and `q` value for AR and MA.
   #'@ source('./function/armaSearch.R', local = TRUE)
   source('./function/armaSearch.R')
   
@@ -30,28 +29,28 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
   if(.prCat %in% price.category) {
     if(.prCat == 'Op') {
       obs.data2 <- Op(mbase)
-      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2))
+      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2, .method = .method))
       .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
       
     } else if(.prCat == 'Hi') {
       obs.data2 <- Hi(mbase)
-      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2))
+      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2, .method = .method))
       .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
       
     } else if(.prCat == 'Mn') { #mean of highest and lowest
       obs.data2 <- cbind(Hi(mbase), Lo(mbase), 
                          USDJPY.Mn = rowMeans(cbind(Hi(mbase), Lo(mbase))))[,-c(1:2)]
-      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2))
+      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2, .method = .method))
       .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
       
     } else if(.prCat == 'Lo') {
       obs.data2 <- Lo(mbase)
-      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2))
+      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2, .method = .method))
       .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
       
     } else if(.prCat == 'Cl') {
       obs.data2 <- Cl(mbase)
-      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2))
+      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2, .method = .method))
       .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
       
     } else {

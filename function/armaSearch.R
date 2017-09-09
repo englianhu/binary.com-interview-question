@@ -3,7 +3,7 @@ armaSearch <- suppressWarnings(function(data, .method = 'CSS-ML'){
   
   .methods = c('CSS-ML', 'ML', 'CSS')
   
-  if(!.method %in% .methods) stop('Kindly choose .method among ', .methods, '!')
+  if(!.method %in% .methods) stop(paste('Kindly choose .method among ', paste0(.methods, collapse = ', '), '!'))
   
   armacoef <- data.frame()
   for (p in 0:5){
