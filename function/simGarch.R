@@ -1,5 +1,5 @@
 simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
-                     .parallel = FALSE, .progress = 'none', .method = 'CSS-ML', 
+                     .parallel = FALSE, .progress = 'none', .method = 'CSS-ML', .realizedVol = Ad(mbase), 
                      .variance.model = list(model = 'sGARCH', garchOrder = c(1, 1), 
                                             submodel = NULL, external.regressors = NULL, 
                                             variance.targeting = FALSE), 
@@ -111,17 +111,36 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
   
   ## Forecast simulation on the Garch models.
   pred.data <- suppressAll(ldply(dateID, function(dt) {
-    spec = ugarchspec(variance.model = .variance.model, 
-                      mean.model = .mean.model, 
-                      distribution.model = .dist.model)
-    smp = obs.data2
-    dtr = last(index(smp[index(smp) < dt]))
-    smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-    frd = as.numeric(difftime(dt, dtr), units = 'days')
-    fit = ugarchfit(spec, smp, solver = .solver[1])
-    if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
-    fc = ugarchforecast(fit, n.ahead = frd)
-    data.frame(Date = dt, Point.Forecast = attributes(fc)[[1]]$seriesFor[1])
+    if(.variance.model$model == 'realGARCH') {
+      smp = obs.data2
+      dtr = last(index(smp[index(smp) < dt]))
+      smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
+      frd = as.numeric(difftime(dt, dtr), units = 'days')
+      .realizedVol = Ad(mbase[paste0(dtr %m-% years(1), '/', dtr)])
+      
+      spec = ugarchspec(variance.model = .variance.model, 
+                        mean.model = .mean.model, #realizedVol = .realizedVol, 
+                        distribution.model = .dist.model)
+      fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = .realizedVol)
+      if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+      fc = ugarchforecast(fit, n.ahead = frd, realizedVol = .realizedVol)
+      
+    } else {
+      
+      smp = obs.data2
+      dtr = last(index(smp[index(smp) < dt]))
+      smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
+      frd = as.numeric(difftime(dt, dtr), units = 'days')
+      
+      spec = ugarchspec(variance.model = .variance.model, 
+                        mean.model = .mean.model, 
+                        distribution.model = .dist.model)
+      fit = ugarchfit(spec, smp, solver = .solver[1])
+      if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+      fc = ugarchforecast(fit, n.ahead = frd)
+    }
+    
+    data.frame(Date = dt, Point.Forecast = attributes(fc)[[1]][['seriesFor']][1])
   }, .parallel = .parallel, .progress = .progress)) %>% tbl_df
   
   cmp.data <- xts(pred.data[, -1], order.by = pred.data$Date)
