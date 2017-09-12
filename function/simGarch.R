@@ -9,6 +9,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
                      .dist.model = 'norm', start.pars = list(), fixed.pars = list()){
   
   #'@ source('./function/armaSearch.R', local = TRUE)
+  library('zoo')
   source('./function/armaSearch.R')
   
   if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)

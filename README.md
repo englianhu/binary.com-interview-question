@@ -10,14 +10,21 @@
 ![](www/20170113_104005.gif)
 *Kindly click* [**Here**](https://beta.rstudioconnect.com/content/2367/) *to access the shiny app*
 
-**Under Construction...**
+<span style='color:red'>**Under Construction...**</span>
 
-<http://rpubs.com/englianhu/binary-forex-trading-condensed-version>(<http://rpubs.com/englianhu/302665>)
-<http://rpubs.com/englianhu/304134>
+### Question I
+
+  - <http://rpubs.com/englianhu/binary-forex-trading-condensed-version>(<http://rpubs.com/englianhu/302665>)
+  - <http://rpubs.com/englianhu/304134>
+
+### Question II
+
+### Question III
+
 
 ## Reference
 
-### Question 1
+### Question I
 
   01. [Stock Market Forecasting Using LASSO Linear Regression Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
   02. [Using LASSO from lars (or glmnet) package in R for variable selection](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
@@ -38,12 +45,12 @@
   17. [Character-Code.com](http://character-code.com/)
   18. [Size Matters – Kelly Optimization](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
 
-### Question 2
+### Question II
 
   1. 
   2. 
 
-### Question 3
+### Question III
 
   01. [Data APIs/feeds available as packages in R](http://stats.stackexchange.com/questions/12670/data-apis-feeds-available-as-packages-in-r)
   02. 
