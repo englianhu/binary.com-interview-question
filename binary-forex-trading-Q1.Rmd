@@ -1957,6 +1957,23 @@ pq.cl <- suppressWarnings(armaSearch(Cl(mbase)))
 # the min AIC = 1634.782 , p = 3 , q = 3
 ```
 
+  Paper [<span style='color:blue'>Multivariate DCC-GARCH Model
+-With Various Error Distributions</span>]() applied few error distribuions onto dcc-garch model (dcc model will will modelled later):-
+
+  - multivariate
+Gaussian
+  - Student's t
+  - skew Student's t
+
+  Below are the conclusion from the paper.
+
+  *In this thesis we have studied the DCC-GARCH model with Gaussian, Student’s t and skew Student’s t-distributed errors. For a basic understanding of the GARCH model, the univariate GARCH and multivariate GARCH models in general were discussed before the DCC-GARCH model was considered...*
+  
+  *After precenting the theory, DCC-GARCH models were fit to a portfolio consisting of European, American and Japanese stocks assuming three different error distributions; multivariate Gaussian, Student’s t and skew Student’s t. The European, American and Japanese series seemed to have a bit different marginal distributions.* **The DCC-GARCH model with skew Student’s t-distributed errors performed best.** *But even the DCC-GARCH with skew Student’s t-distributed errors did explain all of the asymmetry in the asset series. Hence even better models may be considered. Comparing the DCC-GARCH model with the CCC-GARCH model using the Kupiec test showed that the first model gave a better fit to the data.*
+  
+  *There are several possible directions for future work. It might be better to use other marginal models such as the EGARCH, QGARCH and GJR GARCH, that capture the asymmetry in the conditional variances. If the univariate GARCH models are more correct, the DCC-GARCH model might yield better results. Other error distributions, such as a Normal Inverse Gaussian (NIG) might also give a better fit. When we fitted the Gaussian, Student’s t- and skew Student’s t-distibutions to the data, we assumed all the distributions to be the same for the three series. This might be a too restrictive criteria. A model where the marginal distributions is allowed to be different for each of the asset series might give a better fit. One then might use a Copula to link the marginals together.*
+```
+
 ```{r dst, eval = FALSE, include = FALSE}
 dstGarch <- llply(.dist.model.par, function(dst) {
   simStakesGarch(mbase, .solver = 'hybrid', .prCat = 'Mn', .prCat.method = 'CSS-ML', 
@@ -1992,7 +2009,7 @@ dstGarch <- llply(.dist.model.par, function(dst) {
 #the min AIC = 1369.503 , p = 3 , q = 2 
 #the min AIC = 1634.782 , p = 3 , q = 3 
 names(dstGarch) <- .dist.model.par
-saveRDS(dstGarch, './data/dstGarch.Mn.Cl.rds')
+saveRDS(dstGarch, './data/dstsGarch.Mn.Cl.rds')
 
 ## Overwrite above function with LoHi.
 dstGarch <- llply(.dist.model.par, function(dst) {
@@ -2001,8 +2018,8 @@ dstGarch <- llply(.dist.model.par, function(dst) {
                  .progress = 'none', .setPrice = 'Hi', .setPrice.method = 'CSS-ML', 
                  .initialFundSize = 1000, .fundLeverageLog = FALSE, 
                  .filterBets = FALSE, .variance.model = 
-                   list(model = 'sGARCH', garchOrder = c(1, 1), 
-                        submodel = NULL, external.regressors = NULL, 
+                   list(model = 'fGARCH', garchOrder = c(1, 1), 
+                        submodel = 'GJRGARCH', external.regressors = NULL, 
                         variance.targeting = FALSE), 
                  .mean.model = list(armaOrder = c(1, 1), 
                                     include.mean = TRUE, archm = FALSE, 
@@ -2011,7 +2028,7 @@ dstGarch <- llply(.dist.model.par, function(dst) {
                                     archex = FALSE), .dist.model = dst, 
                  start.pars = list(), fixed.pars = list())})
 names(dstGarch) <- .dist.model.par
-saveRDS(dstGarch, './data/dstGarch.Lo.Hi.rds')
+saveRDS(dstGarch, './data/dstGJRGARCH.Lo.Hi.rds')
 ```
 
 ```{r read-dst}
