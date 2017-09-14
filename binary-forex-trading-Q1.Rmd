@@ -4,14 +4,15 @@ subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/engli
 author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>白戸則道®"
 date: "`r Sys.Date()`"
 output:
+  tufte::tufte_html:
+    toc: yes
+    toc_depth: 4
   tufte::tufte_book:
     citation_package: natbib
     latex_engine: xelatex
   tufte::tufte_handout:
     citation_package: natbib
     latex_engine: xelatex
-  tufte::tufte_html:
-    toc: yes
 link-citations: yes
 ---
 
@@ -35,7 +36,7 @@ suppressAll(l_ply(c('last.R', 'Mn.R', 'has.Mn.R', 'simAutoArima.R', 'simStakesAu
 
 ## Set option to below if you want to plot an independent webpage with graph 
 #'@ op <- options(gvis.plot.tag=NULL)
-op <- options(gvis.plot.tag = 'chart', warn = -1)
+op <- options(gvis.plot.tag = 'chart')
 options(gvis.plot.tag = 'chart', warn = -1)
 #'@ options(rpubs.upload.method = 'internal')
 
@@ -228,8 +229,7 @@ fitETS.cl <- readRDS('./data/fitETS.cl.rds')
   - [<span style='color:blue'>Burn-In is Unnecessary</span>](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
   - [<span style='color:blue'>**Nice R Code** *Punning code better since 2013*</span>](https://nicercode.github.io/guides/mcmc/)
 
-```{r testModels}
-## Need to test and read through the MCMCregress... after few months later (when free)... Start working as a servant at Bah-Kut-Teh restorant tommorrow 01-Mar-2017.
+```{r lm-ETS}
 ## Here I test the accuracy of forecasting of ets ZZZ model 1.
 
 ## Test the models
@@ -256,7 +256,30 @@ summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.cl))
 
 **Mean Squared Error**
 
-```{r combine-data}
+```{r combine-dataAutoArima}
+fcdataAA <- do.call(cbind, list(USDJPY.FPOP.Open = fitAutoArima.op$Point.Forecast, 
+                              USDJPY.FPHI.High = fitAutoArima.hi$Point.Forecast, 
+                              USDJPY.FPMN.Mean = fitAutoArima.mn$Point.Forecast, 
+                              USDJPY.FPLO.Low = fitAutoArima.lo$Point.Forecast, 
+                              USDJPY.FPCL.Close = fitAutoArima.cl$Point.Forecast, 
+                              USDJPY.Open = fitAutoArima.op$USDJPY.Open, 
+                              USDJPY.High = fitAutoArima.op$USDJPY.High, 
+                              USDJPY.Low = fitAutoArima.op$USDJPY.Low, 
+                              USDJPY.Close = fitAutoArima.op$USDJPY.Close))
+fcdataAA <- na.omit(fcdataAA)
+names(fcdataAA) <- c('USDJPY.FPOP.Open', 'USDJPY.FPHI.High', 'USDJPY.FPMN.Mean', 
+                   'USDJPY.FPLO.Low', 'USDJPY.FPCL.Close', 'USDJPY.Open', 
+                   'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')
+
+## Mean Squared Error : comparison of accuracy
+paste('Open = ', mean((fcdataAA$USDJPY.FPOP.Open - fcdataAA$USDJPY.Open)^2))
+paste('High = ', mean((fcdataAA$USDJPY.FPHI.High - fcdataAA$USDJPY.High)^2))
+paste('Mean = ', mean((fcdataAA$USDJPY.FPMN.Mean - (fcdataAA$USDJPY.High + fcdataAA$USDJPY.Low)/2)^2))
+paste('Low = ', mean((fcdataAA$USDJPY.FPLO.Low - fcdataAA$USDJPY.Low)^2))
+paste('Close = ', mean((fcdataAA$USDJPY.FPCL.Close - fcdataAA$USDJPY.Close)^2))
+```
+
+```{r combine-dataETS}
 fcdata <- do.call(cbind, list(USDJPY.FPOP.Open = fitETS.op$Point.Forecast, 
                               USDJPY.FPHI.High = fitETS.hi$Point.Forecast, 
                               USDJPY.FPMN.Mean = fitETS.mn$Point.Forecast, 
@@ -376,7 +399,7 @@ spec = ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(2, 1)),
 <iframe width="560" height="315" src="https://www.youtube.com/embed/0q3gSJKJUs8" frameborder="0" allowfullscreen></iframe>
 
 ```{r build-Garch}
-## Modelling Garch focasting data.
+## Modelling Garch ('sGarch' model) focasting data.
 #'@ fitGM.op <- suppressAll(simGarch(USDJPY, .prCat = 'Op')) #will take a minute
 #'@ saveRDS(fitGM.op, './data/fitGM.op.rds')
 
@@ -407,9 +430,8 @@ fitGM.cl <- readRDS('./data/fitGM.cl.rds')
   - [<span style='color:blue'>Burn-In is Unnecessary</span>](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
   - [<span style='color:blue'>**Nice R Code** *Punning code better since 2013*</span>](https://nicercode.github.io/guides/mcmc/)
 
-```{r testModels2}
-## Need to test and read through the MCMCregress... after few months later (when free)... Start working as a servant at Bah-Kut-Teh restorant tommorrow 01-Mar-2017.
-## Here I test the accuracy of forecasting of ets ZZZ model 1.
+```{r lm-Garch}
+## Here I test the accuracy of forecasting of univariate Garch ('sGarch' model) models.
 
 ## Test the models
 ## opened price fit data
@@ -435,7 +457,8 @@ summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitGM.cl))
 
 **Mean Squared Error**
 
-```{r combine-data2}
+```{r combine-dataGM}
+## Univariate Garch models.
 fcdataGM <- do.call(cbind, list(USDJPY.FPOP.Open = fitGM.op$Point.Forecast, 
                               USDJPY.FPHI.High = fitGM.hi$Point.Forecast, 
                               USDJPY.FPMN.Mean = fitGM.mn$Point.Forecast, 
@@ -1207,10 +1230,12 @@ ldply(fundGMList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate
 
 #### 2.1.6.1 ARIMA vs ETS
 
-  Now we apply the bootstrap onto the simulation of the forecasting.
+  Now we apply the bootstrap (Application of Monte Carlo method to simulate 10000 times) onto the simulation of the forecasting.
 
 ```{r test-etsBoostrap, echo = FALSE, eval = FALSE}
 ##============================ EVAL = FALSE ================================
+## Application of Monte Carlo method to simulate 10000 times.
+## 
 ## bootstraping simulation.
 fundOPHI <- simStakesETS(mbase, .prCat = 'Op', .setPrice = 'Hi', .initialFundSize = 1000, 
                       .simulate = TRUE, .bootstrap = TRUE)
@@ -1300,6 +1325,8 @@ pp <- expand.grid(c('Op', 'Hi', 'Mn', 'Lo', 'Cl'), c('Op', 'Hi', 'Mn', 'Lo', 'Cl
 ```
 
 ```{r multi-ets, echo = FALSE, eval = FALSE}
+## Application of Monte Carlo method to simulate 10000 times.
+## 
 ## pre-run and saved models.
 ##============================ EVAL = FALSE ================================
 #Unit: seconds
@@ -1965,7 +1992,26 @@ dstGarch <- llply(.dist.model.par, function(dst) {
 #the min AIC = 1369.503 , p = 3 , q = 2 
 #the min AIC = 1634.782 , p = 3 , q = 3 
 names(dstGarch) <- .dist.model.par
-saveRDS(dstGarch, './data/dstGarch.rds')
+saveRDS(dstGarch, './data/dstGarch.Mn.Cl.rds')
+
+## Overwrite above function with LoHi.
+dstGarch <- llply(.dist.model.par, function(dst) {
+  simStakesGarch(mbase, .solver = 'hybrid', .prCat = 'Lo', .prCat.method = 'CSS-ML', 
+                 .baseDate = ymd('2015-01-01'), .parallel = FALSE, 
+                 .progress = 'none', .setPrice = 'Hi', .setPrice.method = 'CSS-ML', 
+                 .initialFundSize = 1000, .fundLeverageLog = FALSE, 
+                 .filterBets = FALSE, .variance.model = 
+                   list(model = 'sGARCH', garchOrder = c(1, 1), 
+                        submodel = NULL, external.regressors = NULL, 
+                        variance.targeting = FALSE), 
+                 .mean.model = list(armaOrder = c(1, 1), 
+                                    include.mean = TRUE, archm = FALSE, 
+                                    archpow = 1, arfima = FALSE, 
+                                    external.regressors = NULL, 
+                                    archex = FALSE), .dist.model = dst, 
+                 start.pars = list(), fixed.pars = list())})
+names(dstGarch) <- .dist.model.par
+saveRDS(dstGarch, './data/dstGarch.Lo.Hi.rds')
 ```
 
 ```{r read-dst}
@@ -1982,7 +2028,7 @@ dst.m <- ldply(dstGarch, function(x) x %>% dplyr::select(BR, Profit, Bal, RR) %>
 #8  ghyp 1000 137.0740 1137.074 1.137074
 #9   jsu 1000 178.7324 1178.732 1.178732
 
-dst.m
+dst.m %>% kable(width = 'auto')
 ```
 
   From above comparison of distribution used, we know that ``r dst.m %>% dplyr::filter(RR == max(RR)) %>% .$.id`` distribution generates most return. Now we know the best `p` and `q`, solver using `hybrid`, and best fitted distribution. Now we try to compare the Garch models.
@@ -2352,7 +2398,7 @@ names(fundList) <- flsGarchM %>% str_replace_all('.Mn.Cl.snorm.hybrid.rds', '')
 fundList[sapply(fundList, is.null)] <- NULL
 
 ## Summary of ROI
-gm2.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+gm.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ## The rest omitted due to error.
 # A tibble: 9 x 7
 #              .id  StartDate LatestDate InitFund LatestFund   Profit       RR
@@ -2367,12 +2413,14 @@ gm2.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Dat
 #8          iGARCH 2015-01-02 2017-01-20     1000   1191.571 191.5711 1.191571
 #9          sGARCH 2015-01-02 2017-01-20     1000   1196.402 196.4022 1.196402
 
-gm2.tbl %>% kable(width = 'auto')
+gm.tbl %>% kable(width = 'auto')
 ```
 
-  We know from above table that model ``r gm2.tbl %>% dplyr::filter(RR == max(RR, na.rm = TRUE)) %>% .$.id`` generates most return. Here I do combine the components/parameters of Garch models to get the best among them.
+  We know from above table that model ``r gm.tbl %>% dplyr::filter(RR == max(RR, na.rm = TRUE)) %>% .$.id`` generates most return. Here I do combine the components/parameters of Garch models to get the best among them.
 
 ```{r gjrGarch, eval = FALSE, include = FALSE}
+## Wrongly... 'fGARCH.GJRGARCH' model is the best but not 'gjrGARCH' model.
+## 
 ### 4 gjrGARCH ===========================================================
 ## Now I try to build ohlc price for best mode - gjrGarch.
 
@@ -2403,7 +2451,8 @@ gjrGarch <- llply(pp, function(y) {
 ## load the pre-run and saved models.
 ## Profit and Loss of Arima models.
 
-flsGarchM <- dir('./data', pattern = '^gjrGARCH+.+.snorm.hybrid')
+#'@ flsGarchM <- dir('./data', pattern = '^fGARCH.GJRGARCH+.+.hybrid')
+flsGarchM <- dir('./data', pattern = '.hybrid')
 
 fundList <- llply(flsGarchM, function(dt) {
   fl = paste0('./data/', dt)
@@ -2417,7 +2466,7 @@ names(fundList) <- flsGarchM %>% str_replace_all('.Mn.Cl.snorm.hybrid.rds', '')
 fundList[sapply(fundList, is.null)] <- NULL
 
 ## Summary of ROI
-gm3.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+gm.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ## A tibble: 20 x 7
 #                               .id  StartDate LatestDate InitFund LatestFund   Profit       RR
 #                             <chr>     <date>     <date>    <dbl>      <dbl>    #<dbl>    <dbl>
@@ -2442,10 +2491,10 @@ gm3.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Dat
 #19 gjrGARCH.Op.Lo.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1302.291 302.2906 1.302291
 #20 gjrGARCH.Op.Mn.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1324.539 324.5393 1.324539
 
-gm3.tbl %>% kable
+gm.tbl %>% kable(width = 'auto')
 ```
 
-  From above table, we concludes below ROI.
+  From above table, due to HiLo and LoHi price of ``r gm.tbl %>% dplyr::filter(RR == max(RR, na.rm = TRUE)) %>% .$.id`` model produced an error here I list below model which can generates highest ROI.
 
 ```
 # 6 gjrGARCH.Hi.Lo.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1684.614 684.6141 1.684614
@@ -2454,13 +2503,11 @@ gm3.tbl %>% kable
 
 **Volatility Staking**
 
-```{r ROI-GarchA}
-## ----------------- Alternate ----------------------
-## 
+```{r ROI-Garch}
 ## load the pre-run and saved models.
 ## Profit and Loss of Arima models.
 
-flsGarchM <- dir('./data', pattern = '^gjrGARCH+.+.snorm.hybrid')
+flsGarchM <- dir('./data', pattern = '.snorm.hybrid')
 
 fundList <- llply(flsGarchM, function(dt) {
   fl = paste0('./data/', dt)
@@ -2470,73 +2517,8 @@ fundList <- llply(flsGarchM, function(dt) {
   }})
 
 #'@ names(fundList) <- sapply(fundList, function(x) xts::first(x$Model))
-names(fundList) <- flsGarchM %>% str_replace_all('.Mn.Cl.snorm.hybrid.rds', '')
+names(fundList) <- flsGarchM %>% str_replace_all('.snorm.hybrid.rds', '')
 fundList[sapply(fundList, is.null)] <- NULL
-
-## Focast the variance and convert to probability.
-varHL <- fundList[grep('Hi.Lo|Lo.Hi', names(fundList))]
-ntm <- c(names((varHL)[names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')]), names((varHL)[!names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')])) %>% str_replace('.Hi.Lo.snorm.hybrid.rds|.Lo.Hi.snorm.hybrid.rds', '') %>% unique %>% sort
-
-varHL1 <- suppressMessages(llply(varHL, function(dtx) {
-  mm = tbl_df(dtx) %>% dplyr::select(Date, USDJPY.High, USDJPY.Low, USDJPY.Close, Point.Forecast)
-  names(mm)[5] = as.character(dtx$Model[1])
-  names(mm) = str_replace_all(names(mm), 'Hi.Lo.snorm.hybrid', 'High')
-  names(mm) = str_replace_all(names(mm), 'Lo.Hi.snorm.hybrid', 'Low')
-  mm
-  }) %>% join_all) %>% tbl_df
-
-varHL2 <- suppressMessages(llply(ntm, function(nm) {
-    mld = varHL1[grep(nm, names(varHL1))]
-    mld[,3] = abs(mld[,1] - mld[,2])
-    names(mld)[3] = paste0(nm, '.Rng')
-    mld = mld[colSums(!is.na(mld)) > 0]
-    data.frame(varHL1[c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')], USDJPY.Rng = abs(varHL1$USDJPY.High - varHL1$USDJPY.Low), mld) %>% tbl_df
-    }) %>% unique %>% join_all %>% tbl_df)
-
-## Application of MASS::mvrnorm() or mvtnorm::rmvnorm() ##nope
-#'@ varHL2 <- xts(varHL2[, -1], as.Date(varHL2$Date))
-
-## Betting strategy 1 - Normal range betting
-varB1 <- varHL2[,c('Date', names(varHL2)[str_detect(names(varHL2), '.Rng')])]
-
-varB1 <- suppressMessages(llply(ntm, function(nm) {
-    dtx = bind_cols(varB1[c('USDJPY.Rng')], varB1[grep(nm, names(varB1))]) %>% mutate_if(is.numeric, funs(ifelse(USDJPY.Rng >= ., ., -100)))
-    dtx2 = dtx[, 2] %>% mutate_if(is.numeric, funs(ifelse(. >= 0, 100, -100)))
-    dtx3 = dtx2 %>% mutate_if(is.numeric, funs(cumsum(.) + 1000))
-    dtx4 = dtx2 %>% mutate_if(is.numeric, funs(lag(1000 + cumsum(.))))
-    dtx4[1,1] = 1000
-    dtx5 = bind_cols(varB1['Date'], dtx4, dtx2, dtx3)
-    names(dtx5) = names(dtx5) %>% str_replace_all('Rng2', 'Bal')
-    names(dtx5) = names(dtx5) %>% str_replace_all('Rng1', 'PL')
-    names(dtx5) = names(dtx5) %>% str_replace_all('Rng', 'BR')
-    dtx5
-}) %>% join_all %>% tbl_df)
-
-## shows the last 6 balance (ROI)
-tail(data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])) %>% kable(width = 'auto')
-
-## Betting strategy 1 - Normal range betting
-## Plot the ROI of investment fund.
-plotGarch <- data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])
-LineGarch <-  gvisLineChart(plotGarch, 'Date', names(plotGarch)[-1],
-                        options = list(title = 'Garch Models', 
-                                       gvis.editor = 'Edit me!'))
-plot(LineGarch)
-
-```
-
-
-```{r ROI-Garch}
-## load the pre-run and saved models.
-## Profit and Loss of Arima models.
-
-flsGarch <- dir('./data', pattern = 'fundGM')
-
-fundList <- llply(flsGarch, function(dt) {
-    cbind(Model = str_replace_all(dt, '.rds', ''), 
-          readRDS(file = paste0('./data/', dt))) %>% tbl_df
-  })
-names(fundList) <- sapply(fundList, function(x) xts::first(x$Model))
 
 ## Summary of ROI
 gm.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
@@ -2544,14 +2526,14 @@ gm.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date
 
 ```{r varStaking-varGarch}
 ## Focast the variance and convert to probability.
-varHL <- fundList[grep('HILO|LOHI', names(fundList))]
-ntm <- c(names((varHL)[names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')]), names((varHL)[!names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')])) %>% str_replace('.HILO|.LOHI', '') %>% unique %>% sort
+varHL <- fundList[grep('Hi.Lo|Lo.Hi', names(fundList))]
+ntm <- c(names((varHL)[names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')]), names((varHL)[!names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')])) %>% str_replace('.Hi.Lo|.Lo.Hi', '') %>% unique %>% sort
 
 varHL1 <- suppressMessages(llply(varHL, function(dtx) {
   mm = tbl_df(dtx) %>% dplyr::select(Date, USDJPY.High, USDJPY.Low, USDJPY.Close, Point.Forecast)
   names(mm)[5] = as.character(dtx$Model[1])
-  names(mm) = str_replace_all(names(mm), 'HiLo', 'High')
-  names(mm) = str_replace_all(names(mm), 'LoHi', 'Low')
+  names(mm) = str_replace_all(names(mm), 'Hi.Lo.snorm.hybrid', 'High')
+  names(mm) = str_replace_all(names(mm), 'Lo.Hi.snorm.hybrid', 'Low')
   mm
   }) %>% join_all) %>% tbl_df
 
@@ -2597,7 +2579,6 @@ LineGarch <-  gvisLineChart(plotGarch, 'Date', names(plotGarch)[-1],
                                        gvis.editor = 'Edit me!'))
 plot(LineGarch)
 ```
-
 
 #### 2.1.6.3 MCMC vs Bayesian Time Series
 

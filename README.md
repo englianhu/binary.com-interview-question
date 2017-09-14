@@ -14,6 +14,20 @@
 
 ### Question I
 
+	I use daily OHLCV USDJPY data (from 2014-01-01 to 2017-01-20) and application of some models to forecast the highest and lowest price :
+	
+	- Auto Arima
+	- Exponential Time Series
+	- Garch
+	- Exponential Weighted Moving Average
+	- Monte Carlo Markov Chain
+	- Bayesian Time Series
+	- Midas
+
+	For the staking model, I simply forecast the highest and lowest price, and then : 
+	
+	- **Kelly criterion** and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
+	- **place $100** an each of the forecasted variance value and do the settlement based on the real variance value. 
   - <http://rpubs.com/englianhu/binary-forex-trading-condensed-version>(<http://rpubs.com/englianhu/302665>)
   - <http://rpubs.com/englianhu/304134>
 
