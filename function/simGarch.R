@@ -1,5 +1,5 @@
 simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
-                     .parallel = FALSE, .progress = 'none', .method = 'CSS-ML', .realizedVol = Ad(mbase), 
+                     .parallel = FALSE, .progress = 'none', .method = 'CSS-ML', .realizedVol = 'Ad', 
                      .variance.model = list(model = 'sGARCH', garchOrder = c(1, 1), 
                                             submodel = NULL, external.regressors = NULL, 
                                             variance.targeting = FALSE), 
@@ -10,7 +10,10 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
   
   #'@ source('./function/armaSearch.R', local = TRUE)
   library('zoo')
+  library('quantmod')
   source('./function/armaSearch.R')
+  source('./function/Mn.R')
+  source('./function/has.Mn.R')
   
   if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
   
@@ -25,7 +28,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
   
   ## Set as our daily settlement price.
   obs.data <- mbase[index(mbase) > dateID0]
-  price.category <- c('Op', 'Hi', 'Mn', 'Lo', 'Cl')
+  price.category <- c('Op', 'Hi', 'Mn', 'Lo', 'Cl', 'Ad')
   
   if(.prCat %in% price.category) {
     if(.prCat == 'Op') {
@@ -54,11 +57,20 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
       .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2, .method = .method))
       .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
       
+    } else if(.prCat == 'Ad') {
+      obs.data2 <- Ad(mbase)
+      .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2, .method = .method))
+      .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
+    
     } else {
-      stop('Kindly choose .prCat = "Op", .prCat = "Hi", .prCat = "Mn", .prCat = "Lo" or .prCat = "Cl".')
+      stop('Kindly choose .prCat = "Op", .prCat = "Hi", .prCat = "Mn", .prCat = "Lo", .prCat = "Cl" or .prCat = "Ad".')
     }
   } else {
-    stop('Kindly choose .prCat = "Op", .prCat = "Hi", .prCat = "Mn", .prCat = "Lo" or .prCat = "Cl".')
+    stop('Kindly choose .prCat = "Op", .prCat = "Hi", .prCat = "Mn", .prCat = "Lo", .prCat = "Cl" or .prCat = "Ad".')
+  }
+  
+  if(!.realizedVol %in% c('Op', 'Hi', 'Mn', 'Lo', 'Cl', 'Ad', 'Vo')) {
+    stop('Kindly choose .realizedVol = "Op", "Hi", "Mn", "Lo", "Cl", "Ad" or "Vo".')
   }
   
   ## Multiple Garch models inside `rugarch` package.
@@ -117,14 +129,70 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
       dtr = last(index(smp[index(smp) < dt]))
       smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
       frd = as.numeric(difftime(dt, dtr), units = 'days')
-      .realizedVol = Ad(mbase[paste0(dtr %m-% years(1), '/', dtr)])
       
       spec = ugarchspec(variance.model = .variance.model, 
-                        mean.model = .mean.model, #realizedVol = .realizedVol, 
+                        mean.model = .mean.model, #realizedVol = .rVol, 
                         distribution.model = .dist.model)
-      fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = .realizedVol)
-      if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
-      fc = ugarchforecast(fit, n.ahead = frd, realizedVol = .realizedVol)
+      if(.realizedVol == 'Op') {
+        rVol = Delt(Op(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        rVol[1] = 1
+        names(rVol) = names(Op(mbase)) %>% str_replace_all('.Open', '') %>% paste0(., '.Ret')
+        fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        
+      } else if(.realizedVol == 'Hi') {
+        rVol = Delt(Hi(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        rVol[1] = 1
+        names(rVol) = names(Hi(mbase)) %>% str_replace_all('.High', '') %>% paste0(., '.Ret')
+        fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        
+      } else if(.realizedVol == 'Mn') {
+        rVol = Delt(Mn(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        rVol[1] = 1
+        names(rVol) = names(Mn(mbase)) %>% str_replace_all('.Mean', '') %>% paste0(., '.Ret')
+        fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        
+      } else if(.realizedVol == 'Lo') {
+        rVol = Delt(Lo(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        rVol[1] = 1
+        names(rVol) = names(Lo(mbase)) %>% str_replace_all('.Low', '') %>% paste0(., '.Ret')
+        fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        
+      } else if(.realizedVol == 'Cl') {
+        rVol = Delt(Cl(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        rVol[1] = 1
+        names(rVol) = names(Cl(mbase)) %>% str_replace_all('.Close', '') %>% paste0(., '.Ret')
+        fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        
+      } else if(.realizedVol == 'Ad') {
+        rVol = Delt(Ad(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        rVol[1] = 1
+        names(rVol) = names(Ad(mbase)) %>% str_replace_all('.Adjusted', '') %>% paste0(., '.Ret')
+        fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        
+      } else if(.realizedVol == 'Vo') {
+        rVol = Delt(Vo(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        rVol[1] = 1
+        names(rVol) = names(Vo(mbase)) %>% str_replace_all('.Volume', '') %>% paste0(., '.Ret')
+        fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        
+      } else {
+        stop('Kindly choose .realizedVol = "Op", "Hi", "Mn", "Lo", "Cl", "Ad" or "Vo".')
+      }
+      
       
     } else {
       

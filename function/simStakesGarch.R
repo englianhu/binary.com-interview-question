@@ -1,6 +1,6 @@
 simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .prCat.method = 'CSS-ML', 
                            .baseDate = ymd('2015-01-01'), .parallel = FALSE, .progress = 'none', 
-                           .setPrice = 'Cl', .setPrice.method = 'CSS-ML', .realizedVol = Ad(mbase), 
+                           .setPrice = 'Cl', .setPrice.method = 'CSS-ML', .realizedVol = 'Ad', 
                            .initialFundSize = 1000, .fundLeverageLog = FALSE, 
                            .filterBets = FALSE, .variance.model = list(model = 'sGARCH', 
                                                                        garchOrder = c(1, 1), 
@@ -78,15 +78,19 @@ simStakesGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .prCat.meth
   
   if(.fundLeverageLog == TRUE) .initialFundSize = log(.initialFundSize)
   
-  .setPriceList <- c('Op', 'Hi', 'Mn', 'Lo', 'Cl', 'FPOP', 'FPHI', 'FPMN', 'FPLO', 'FPCL')
+  .setPriceList <- c('Op', 'Hi', 'Mn', 'Lo', 'Cl', 'Ad', 'Vo', 'FPOP', 'FPHI', 'FPMN', 'FPLO', 'FPCL')
   if(.setPrice %in% .setPriceList) {
     .setPrice <- .setPrice
   } else {
-    stop("Kindly set .setPrice among c('Op', 'Hi', 'Mn', 'Lo', 'Cl', 'FPOP', 'FPHI', 'FPMN', 'FPLO', 'FPCL')")
+    stop("Kindly set .setPrice among c('Op', 'Hi', 'Mn', 'Lo', 'Cl', 'Ad', 'Vo', 'FPOP', 'FPHI', 'FPMN', 'FPLO', 'FPCL')")
   }
   
   nm <- str_extract_all(names(mbase), '^(.*?)+\\.') %>% unlist %>% unique
   names(mbase) <- str_replace_all(names(mbase), '^(.*?)+\\.', 'USDJPY.')
+  
+  if(!.realizedVol %in% c('Op', 'Hi', 'Mn', 'Lo', 'Cl', 'Ad', 'Vo')) {
+    stop('Kindly choose .realizedVol = "Op", "Hi", "Mn", "Lo", "Cl", "Ad" or "Vo".')
+  }
   
   ## forecast staking price.
   fit1 <- simGarch(mbase, .solver = .solver, .prCat = .prCat, .method = .prCat.method, 

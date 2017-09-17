@@ -7,6 +7,7 @@ output:
   tufte::tufte_html:
     toc: yes
     toc_depth: 4
+    self_contained: no
   tufte::tufte_book:
     citation_package: natbib
     latex_engine: xelatex
@@ -133,7 +134,7 @@ dateID <- dateID[dateID > dateID0]
 
 ```{r data-summary}
 dim(mbase)
-summary(mbase)
+summary(mbase) %>% kable(width = 'auto')
 ```
 
 ### 2.1.2 Statistical Modelling
@@ -229,7 +230,7 @@ fitETS.cl <- readRDS('./data/fitETS.cl.rds')
   - [<span style='color:blue'>Burn-In is Unnecessary</span>](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
   - [<span style='color:blue'>**Nice R Code** *Punning code better since 2013*</span>](https://nicercode.github.io/guides/mcmc/)
 
-```{r lm-ETS}
+```{r lm-ETS, warning = FALSE}
 ## Here I test the accuracy of forecasting of ets ZZZ model 1.
 
 ## Test the models
@@ -304,6 +305,8 @@ paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
 
 #### 2.1.2.2 Garch vs EWMA
 
+  Basically for volatility analyzing, we can using RSY Volatility mesure, kindly refer to *Analyzing Financial Data and Implementing Financial Models using R*^[paper 22] for more information. Well, Garch model is designate for forecast volatility.
+
   Now we look at Garch model, *Figlewski (2004)*^[*Paper 19th*] applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. The author applid Garch on SAP200, 10-years-bond and 20-years-bond and concludes that the Garch model is better than eGarch but implied volatility model better than Garch and eGarch, and the monthly Hi-Lo data is better accurate than daily Hi-Lo for long term investment.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/wsYXKh_xmSs" frameborder="0" allowfullscreen></iframe>
@@ -377,8 +380,9 @@ $$h_{t} = {\omega} + \sum_{i=1}^q{{\alpha}_{i} {\epsilon}_{t-i}^2} + \sum_{j=1}^
   - [<span style='color:blue'>Introduction to the ruGarch package</span>](./reference/Introduction to the rugarch package.pdf)
   - [<span style='color:blue'>The rmgarch models: Background and properties. - R Project</span>](./reference/The rmgarch models - Background and Properties.pdf)
   - [<span style='color:blue'>rmgarch - How to Multivariate GARCH Models in R | R-How.com</span>](https://r-how.com/packages/rmgarch)
+  - [<span style='color:blue'>Volatility forecast evaluation in R</span>](https://eranraviv.com/volatility-forecast-evaluation-in-r/)
 
-  Firstly we use `rugarch` and then `rmgarch` to compare the result.
+  Firstly we use `rugarch` <s>and then `rmgarch`</s>^[Due to file loading heavily, here I leave the multivariate Garch models for future works.] to compare the result.
 
 ```{r intro-Garch}
 ## http://www.unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/
@@ -420,6 +424,96 @@ fitGM.hi <- readRDS('./data/fitGM.hi.rds')
 fitGM.mn <- readRDS('./data/fitGM.mn.rds')
 fitGM.lo <- readRDS('./data/fitGM.lo.rds')
 fitGM.cl <- readRDS('./data/fitGM.cl.rds')
+```
+
+```{r intro-EWMA, warning = FALSE}
+## ======================== eval = FALSE ==============================
+
+## Exponential Weighted Moving Average model - EWMA fixed parameters
+#'@ ewma.spec.fixed <- llply(pp, function(y) {
+#'@   z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = y[1], 
+#'@                      .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
+#'@                      .parallel = FALSE, .progress = 'text', 
+#'@                      .setPrice = y[2], .setPrice.method = 'CSS-ML', 
+#'@                      .initialFundSize = 1000, .fundLeverageLog = FALSE, 
+#'@                      .filterBets = FALSE, .variance.model = list(
+#'@                        model = .variance.model.par[6], garchOrder = c(1, 1), 
+#'@                        submodel = NULL, external.regressors = NULL, 
+#'@                        variance.targeting = FALSE), 
+#'@                      .mean.model = list(armaOrder = c(1, 1), 
+#'@                                         include.mean = TRUE, 
+#'@                                         archm = FALSE, archpow = 1, 
+#'@                                         arfima = FALSE, 
+#'@                                         external.regressors = NULL, 
+#'@                                         archex = FALSE), 
+#'@                      .dist.model = .dist.model.par[1], start.pars = list(), 
+#'@                      fixed.pars = list(alpha1 = 1 - 0.94, omega = 0))
+#'@   
+#'@   txt1 <- paste0('saveRDS(z', ', file = \'./data/', 
+#'@                  .variance.model.par[6], '.EWMA.fixed.', 
+#'@                  y[1], '.', y[2], '.', .dist.model.par[1], '.', 
+#'@                  .solver.par[1], '.rds\')')
+#'@   eval(parse(text = txt1))
+#'@   cat(paste0(txt1, ' done!', '\n'))
+#'@   rm(z)
+#'@ })
+
+## Exponential Weighted Moving Average model - EWMA estimated parameters
+#'@ ewma.spec.est <- llply(pp, function(y) {
+#'@   z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = y[1], 
+#'@                      .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
+#'@                      .parallel = FALSE, .progress = 'text', 
+#'@                      .setPrice = y[2], .setPrice.method = 'CSS-ML', 
+#'@                      .initialFundSize = 1000, .fundLeverageLog = FALSE, 
+#'@                      .filterBets = FALSE, .variance.model = list(
+#'@                        model = .variance.model.par[6], garchOrder = c(1, 1), 
+#'@                        submodel = NULL, external.regressors = NULL, 
+#'@                        variance.targeting = FALSE), 
+#'@                      .mean.model = list(armaOrder = c(1, 1), 
+#'@                                         include.mean = TRUE, 
+#'@                                         archm = FALSE, archpow = 1, 
+#'@                                         arfima = FALSE, 
+#'@                                         external.regressors = NULL, 
+#'@                                         archex = FALSE), 
+#'@                      .dist.model = .dist.model.par[1], start.pars = list(), 
+#'@                      fixed.pars = list(omega = 0))
+#'@   
+#'@   txt1 <- paste0('saveRDS(z', ', file = \'./data/', 
+#'@                  .variance.model.par[6], '.EWMA.est.', 
+#'@                  y[1], '.', y[2], '.', .dist.model.par[1], '.', 
+#'@                  .solver.par[1], '.rds\')')
+#'@   eval(parse(text = txt1))
+#'@   cat(paste0(txt1, ' done!', '\n'))
+#'@   rm(z)
+#'@ })
+
+## itegration Garch model - iGarch
+#'@ igarch.spec <- llply(pp, function(y) {
+#'@   z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = y[1], 
+#'@                      .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
+#'@                      .parallel = FALSE, .progress = 'text', 
+#'@                      .setPrice = y[2], .setPrice.method = 'CSS-ML', 
+#'@                      .initialFundSize = 1000, .fundLeverageLog = FALSE, 
+#'@                      .filterBets = FALSE, .variance.model = list(
+#'@                        model = .variance.model.par[6], garchOrder = c(1, 1), 
+#'@                        submodel = NULL, external.regressors = NULL, 
+#'@                        variance.targeting = FALSE), 
+#'@                      .mean.model = list(armaOrder = c(1, 1), 
+#'@                                         include.mean = TRUE, 
+#'@                                         archm = FALSE, archpow = 1, 
+#'@                                         arfima = FALSE, 
+#'@                                         external.regressors = NULL, 
+#'@                                         archex = FALSE), 
+#'@                      .dist.model = .dist.model.par[1], start.pars = list(), 
+#'@                      fixed.pars = list())
+#'@   
+#'@   txt1 <- paste0('saveRDS(z', ', file = \'./data/', 
+#'@                  .variance.model.par[6], '.', y[1], '.', y[2], '.', 
+#'@                  .dist.model.par[1], '.', .solver.par[1], '.rds\')')
+#'@   eval(parse(text = txt1))
+#'@   cat(paste0(txt1, ' done!', '\n'))
+#'@   rm(z)
+#'@ })
 ```
 
 **Application of MCMC**
@@ -483,13 +577,15 @@ paste('Close = ', mean((fcdataGM$USDJPY.FPCL.Close - fcdataGM$USDJPY.Close)^2))
 
 #### 2.1.2.3 MCMC vs Bayesian Time Series
 
+  Generally, we can write a Bayesian structural model like this:
+
+$$Y_{t} = \mu_{t}+x_{t}\beta + S_{t}+e_{t}\ ,\ e_{t}∼N(0,\sigma_{e}_{2})$$
+$$\mu_{t} + 1 = \mu_{t} + \nu_{t}\ ,\ \nu_{t}∼N(0,\sigma_{\nu}_{2})$$
 
 ```{r bsts}
-## Sorry ARIMA, but I’m Going Bayesian
+## Sorry ARIMA, but I’m Going Bayesian (packages : bsts, arm)
 ## http://multithreaded.stitchfix.com/blog/2016/04/21/forget-arima/
-#'@ library('bsts')
 
-## Need to testing and compare the models (packages : MCMCPack and bsts).
 
 
 
@@ -690,7 +786,7 @@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate =
 # 20 fundCLCL 2015-01-02 2017-01-20     1000   1000.000   0.00000 1.000000
 ```
 
-```{r ROI-AutoArima}
+```{r ROI-AutoArima, echo = FALSE}
 ## load the pre-run and saved models.
 ## Profit and Loss of Arima models.
 
@@ -704,6 +800,8 @@ names(fundList) <- sapply(fundList, function(x) xts::first(x$Model))
 
 ## Summary of ROI
 aa.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+
+aa.tbl %>% kable(width = 'auto')
 ```
 
   The return of investment from best fitted Auto Arima model.
@@ -1377,7 +1475,6 @@ microbenchmark(res <- llply(ets.m, function(x) {
 #'@ Error in ets(smp, model = .model) : Forbidden model combination
 # ets7 <- ets(zz, model="AMN") 
 # Error in ets(zz, model = "AMN") : Forbidden model combination 
-
 ```
 
   In order to trace the errors, here I check the source codes of the function but also test the coding as you can know via [<span style='color:blue'>Error : Forbidden model combination #554</span>](https://github.com/robjhyndman/forecast/issues/554). Here I only take 22 models among 48 models.
@@ -1765,13 +1862,13 @@ autoplot(acf(pq.cl, lag.max = 100, main = 'ACF of Closing Price'))
 
   Kindly refer to [<span style='color:blue'>What is the difference between GARCH and ARMA?</span>](https://stats.stackexchange.com/questions/41509/what-is-the-difference-between-garch-and-arma) for more information.
 
-```{r pq-value}
+```{r pq-value, warning = FALSE}
 pq.op <- suppressWarnings(armaSearch(Op(mbase)))
 pq.hi <- suppressWarnings(armaSearch(Hi(mbase)))
 USDJPY.Mean = (Hi(mbase) + Lo(mbase)) / 2
 names(USDJPY.Mean) <- 'USDJPY.Mean'
-pq.mn <- suppressWarnings(armaSearch(USDJPY.Mean)) #force to choose 'ML' since 'CSS-ML' error.
-pq.lo <- suppressWarnings(armaSearch(Lo(mbase))) #force to choose 'ML' since 'CSS-ML' error.
+pq.mn <- suppressWarnings(armaSearch(USDJPY.Mean))
+pq.lo <- suppressWarnings(armaSearch(Lo(mbase)))
 pq.cl <- suppressWarnings(armaSearch(Cl(mbase)))
 
 ## From below comparison, we know that the 'CSS-ML' is better than 'ML'.
@@ -1958,7 +2055,7 @@ pq.cl <- suppressWarnings(armaSearch(Cl(mbase)))
 ```
 
   Paper [<span style='color:blue'>Multivariate DCC-GARCH Model
--With Various Error Distributions</span>]() applied few error distribuions onto dcc-garch model (dcc model will will modelled later):-
+-With Various Error Distributions</span>](https://github.com/englianhu/binary.com-interview-question/blob/8eefcd3a1615918d032eca2ccc560f7548215c99/reference/Multivariate%20DCC-GARCH%20Model.pdf) applied few error distribuions onto dcc-garch model (I leave the multivariate Garch for future works):-
 
   - multivariate
 Gaussian
@@ -1972,9 +2069,8 @@ Gaussian
   *After precenting the theory, DCC-GARCH models were fit to a portfolio consisting of European, American and Japanese stocks assuming three different error distributions; multivariate Gaussian, Student’s t and skew Student’s t. The European, American and Japanese series seemed to have a bit different marginal distributions.* **The DCC-GARCH model with skew Student’s t-distributed errors performed best.** *But even the DCC-GARCH with skew Student’s t-distributed errors did explain all of the asymmetry in the asset series. Hence even better models may be considered. Comparing the DCC-GARCH model with the CCC-GARCH model using the Kupiec test showed that the first model gave a better fit to the data.*
   
   *There are several possible directions for future work. It might be better to use other marginal models such as the EGARCH, QGARCH and GJR GARCH, that capture the asymmetry in the conditional variances. If the univariate GARCH models are more correct, the DCC-GARCH model might yield better results. Other error distributions, such as a Normal Inverse Gaussian (NIG) might also give a better fit. When we fitted the Gaussian, Student’s t- and skew Student’s t-distibutions to the data, we assumed all the distributions to be the same for the three series. This might be a too restrictive criteria. A model where the marginal distributions is allowed to be different for each of the asset series might give a better fit. One then might use a Copula to link the marginals together.*
-```
 
-```{r dst, eval = FALSE, include = FALSE}
+```{r dstSS, eval = FALSE, include = FALSE}
 dstGarch <- llply(.dist.model.par, function(dst) {
   simStakesGarch(mbase, .solver = 'hybrid', .prCat = 'Mn', .prCat.method = 'CSS-ML', 
                  .baseDate = ymd('2015-01-01'), .parallel = FALSE, 
@@ -2012,27 +2108,30 @@ names(dstGarch) <- .dist.model.par
 saveRDS(dstGarch, './data/dstsGarch.Mn.Cl.rds')
 
 ## Overwrite above function with LoHi.
-dstGarch <- llply(.dist.model.par, function(dst) {
-  simStakesGarch(mbase, .solver = 'hybrid', .prCat = 'Lo', .prCat.method = 'CSS-ML', 
-                 .baseDate = ymd('2015-01-01'), .parallel = FALSE, 
-                 .progress = 'none', .setPrice = 'Hi', .setPrice.method = 'CSS-ML', 
-                 .initialFundSize = 1000, .fundLeverageLog = FALSE, 
-                 .filterBets = FALSE, .variance.model = 
-                   list(model = 'fGARCH', garchOrder = c(1, 1), 
-                        submodel = 'GJRGARCH', external.regressors = NULL, 
-                        variance.targeting = FALSE), 
-                 .mean.model = list(armaOrder = c(1, 1), 
-                                    include.mean = TRUE, archm = FALSE, 
-                                    archpow = 1, arfima = FALSE, 
-                                    external.regressors = NULL, 
-                                    archex = FALSE), .dist.model = dst, 
-                 start.pars = list(), fixed.pars = list())})
-names(dstGarch) <- .dist.model.par
-saveRDS(dstGarch, './data/dstGJRGARCH.Lo.Hi.rds')
+#'@ dstGarch <- llply(.dist.model.par, function(dst) {
+#'@   simStakesGarch(mbase, .solver = 'hybrid', .prCat = 'Lo', .prCat.method = 'CSS-ML', 
+#'@                  .baseDate = ymd('2015-01-01'), .parallel = FALSE, 
+#'@                  .progress = 'none', .setPrice = 'Hi', .setPrice.method = 'CSS-ML', 
+#'@                  .initialFundSize = 1000, .fundLeverageLog = FALSE, 
+#'@                  .filterBets = FALSE, .variance.model = 
+#'@                    list(model = 'fGARCH', garchOrder = c(1, 1), 
+#'@                         submodel = 'GJRGARCH', external.regressors = NULL, 
+#'@                         variance.targeting = FALSE), 
+#'@                  .mean.model = list(armaOrder = c(1, 1), 
+#'@                                     include.mean = TRUE, archm = FALSE, 
+#'@                                     archpow = 1, arfima = FALSE, 
+#'@                                     external.regressors = NULL, 
+#'@                                     archex = FALSE), .dist.model = dst, 
+#'@                  start.pars = list(), fixed.pars = list())})
+#'@ names(dstGarch) <- .dist.model.par
+#'@ saveRDS(dstGarch, './data/dstGJRGARCH.Lo.Hi.rds')
+#method = 'CSS-ML', the min AIC = 1710.3744852797, p = 2, q = 2
+#method = 'CSS-ML', the min AIC = 1490.07263872323, p = 4, q = 3
+#Error in diag(fit$robust.cvar) : invalid 'nrow' value (too large or NA)
 ```
 
 ```{r read-dst}
-dstGarch <- readRDS('./data/dstGarch.rds')
+dstGarch <- readRDS('./data/dstsGarch.Mn.Cl.rds')
 dst.m <- ldply(dstGarch, function(x) x %>% dplyr::select(BR, Profit, Bal, RR) %>% tail(1)) %>% mutate(BR = 1000, Profit = Bal - BR, RR = Bal / BR)
 #    .id   BR   Profit      Bal       RR
 #1  norm 1000 182.7446 1182.745 1.182745
@@ -2048,10 +2147,10 @@ dst.m <- ldply(dstGarch, function(x) x %>% dplyr::select(BR, Profit, Bal, RR) %>
 dst.m %>% kable(width = 'auto')
 ```
 
-  From above comparison of distribution used, we know that ``r dst.m %>% dplyr::filter(RR == max(RR)) %>% .$.id`` distribution generates most return. Now we know the best `p` and `q`, solver using `hybrid`, and best fitted distribution. Now we try to compare the Garch models.
+  From above comparison of distribution used, we know that ``r dst.m %>% dplyr::filter(RR == max(RR)) %>% .$.id`` distribution generates most return (notes : I should use LoHi instead of MnCl since it will generates highest ROI, however most of LoHi Garch models facing large data size or large NA values error. Here I skip the LoHi data for comparison). Now we know the best `p` and `q`, solver using `hybrid`, and best fitted distribution. Now we try to compare the Garch models.
 
 ```{r garch-M, eval = FALSE, include = FALSE}
-### 1) sGARCH ========================================================================
+### 1) sGARCH =================================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2072,7 +2171,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 2.1 fGARCH - GARCH ==============================================================
+### 2.1 fGARCH - GARCH =========================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2093,7 +2192,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 2.2 fGARCH - TGARCH ===========================================================
+### 2.2 fGARCH - TGARCH ========================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2114,7 +2213,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 2.3 fGARCH - AVGARCH ===========================================================
+### 2.3 fGARCH - AVGARCH =======================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2135,7 +2234,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 2.4 fGARCH - NGARCH =============================================================
+### 2.4 fGARCH - NGARCH ========================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2156,7 +2255,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 2.5 fGARCH - NAGARCH ===========================================================
+### 2.5 fGARCH - NAGARCH ======================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2177,7 +2276,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 2.6 fGARCH - APARCH ============================================================
+### 2.6 fGARCH - APARCH =======================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2198,7 +2297,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 2.7 fGARCH - GJRGARCH =========================================================
+### 2.7 fGARCH - GJRGARCH =====================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2219,7 +2318,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 2.8 fGARCH - ALLGARCH ==========================================================
+### 2.8 fGARCH - ALLGARCH =====================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2240,7 +2339,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 3 eGARCH ========================================================================
+### 3 eGARCH ==================================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2261,7 +2360,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 4 gjrGARCH ========================================================================
+### 4 gjrGARCH =================================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2282,7 +2381,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 5 apARCH ========================================================================
+### 5 apARCH ==================================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2303,7 +2402,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 6 iGARCH ========================================================================
+### 6 iGARCH =================================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2324,7 +2423,7 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 7 csGARCH ========================================================================
+### 7 csGARCH ================================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
                    .parallel = FALSE, .progress = 'text', 
@@ -2345,12 +2444,12 @@ eval(parse(text = txt1))
 cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 
-### 8 realGARCH ========================================================================
+### 8 realGARCH ===============================================================
 ## http://www.unstarched.net/2014/01/02/the-realized-garch-model/
 ## Omitted due to error.
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
-                   .parallel = FALSE, .progress = 'text', .realizedVol = Ad(mbase), 
+                   .parallel = FALSE, .progress = 'text', .realizedVol = 'Ad', 
                    .setPrice = pp[[19]][2], .setPrice.method = 'CSS-ML', 
                    .initialFundSize = 1000, .fundLeverageLog = FALSE, 
                    .filterBets = FALSE, .variance.model = list(
@@ -2369,7 +2468,7 @@ cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 ```
 
-```{r multi-garch, eval = FALSE}
+```{r multi-garch, eval = FALSE, include = FALSE}
 ## ---------- eval = FALSE -------------------
 ## http://www.unstarched.net/2014/01/02/the-realized-garch-model/
 ## https://eranraviv.com/volatility-forecast-evaluation-in-r/
@@ -2397,7 +2496,7 @@ garch.m <- suppressAll(llply(.variance.model.par[-2], function(vm) {
   }, .progress = 'text'))
 ```
 
-```{r multi-garch2}
+```{r multi-garch2, eval = FALSE, include = FALSE}
 ## load the pre-run and saved models.
 ## Profit and Loss of Arima models.
 
@@ -2417,23 +2516,28 @@ fundList[sapply(fundList, is.null)] <- NULL
 ## Summary of ROI
 gm.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ## The rest omitted due to error.
-# A tibble: 9 x 7
-#              .id  StartDate LatestDate InitFund LatestFund   Profit       RR
-#            <chr>     <date>     <date>    <dbl>      <dbl>    <dbl>    <dbl>
-#1          apARCH 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
-#2         csGARCH 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
-#3          eGARCH 1970-01-02 1971-06-20     1000   1182.745 182.7446 1.182745
-#4   fGARCH.APARCH 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
-#5    fGARCH.GARCH 2015-01-02 2017-01-20     1000   1177.530 177.5298 1.177530
-#6 fGARCH.GJRGARCH 2015-01-02 2017-01-20     1000   1204.554 204.5541 1.204554
-#7        gjrGARCH 2015-01-02 2017-01-20     1000   1189.793 189.7935 1.189793
-#8          iGARCH 2015-01-02 2017-01-20     1000   1191.571 191.5711 1.191571
-#9          sGARCH 2015-01-02 2017-01-20     1000   1196.402 196.4022 1.196402
+# A tibble: 16 x 7
+#                          .id  StartDate LatestDate InitFund LatestFund   Profit       RR
+#                        <chr>     <date>     <date>    <dbl>      <dbl>    <dbl>  #  <dbl>
+# 1                     apARCH 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
+# 2                    csGARCH 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
+# 3                     eGARCH 1970-01-02 1971-06-20     1000   1182.745 182.7446 1.182745
+# 4              fGARCH.APARCH 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
+# 5               fGARCH.GARCH 2015-01-02 2017-01-20     1000   1177.530 177.5298 1.177530
+# 6   fGARCH.GJRGARCH.EWMA.est 2015-01-02 2017-01-20     1000   1203.857 203.8566 1.203857
+# 7 fGARCH.GJRGARCH.EWMA.fixed 2015-01-02 2017-01-20     1000   1204.554 204.5540 1.204554
+# 8            fGARCH.GJRGARCH 2015-01-02 2017-01-20     1000   1204.554 204.5538 1.204554
+# 9          gjrGARCH.EWMA.est 2015-01-02 2017-01-20     1000   1190.555 190.5551 1.190555
+#10        gjrGARCH.EWMA.fixed 2015-01-02 2017-01-20     1000   1189.793 189.7935 1.189793
+#11                   gjrGARCH 2015-01-02 2017-01-20     1000   1189.793 189.7935 1.189793
+#12            iGARCH.EWMA.est 2015-01-02 2017-01-20     1000   1191.571 191.5711 1.191571
+#13          iGARCH.EWMA.fixed 2015-01-02 2017-01-20     1000   1191.571 191.5711 1.191571
+#14                     iGARCH 2015-01-02 2017-01-20     1000   1191.571 191.5711 1.191571
+#15                  realGARCH 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
+#16                     sGARCH 2015-01-02 2017-01-20     1000   1196.402 196.4022 1.196402
 
 gm.tbl %>% kable(width = 'auto')
 ```
-
-  We know from above table that model ``r gm.tbl %>% dplyr::filter(RR == max(RR, na.rm = TRUE)) %>% .$.id`` generates most return. Here I do combine the components/parameters of Garch models to get the best among them.
 
 ```{r gjrGarch, eval = FALSE, include = FALSE}
 ## Wrongly... 'fGARCH.GJRGARCH' model is the best but not 'gjrGARCH' model.
@@ -2464,14 +2568,20 @@ gjrGarch <- llply(pp, function(y) {
  })
 ```
 
-```{r ROI-GarchHiLo}
-## load the pre-run and saved models.
-## Profit and Loss of Arima models.
+  For dcc-Garch models which are multivariate Garch models will be future works : 
+  
+  - [<span style='color:blue'>Multivariate GARCH(1,1) in R</span>](https://stackoverflow.com/questions/35035857/multivariate-garch1-1-in-r)
+  - [<span style='color:blue'>Multivariate volatility forecasting (1)</span>](https://eranraviv.com/multivariate-volatility-forecasting-1/)
+  - [<span style='color:blue'>Multivariate volatility forecasting, part 2 – equicorrelation</span>](https://eranraviv.com/multivariate-volatility-forecasting-2/)
+  - [<span style='color:blue'>The GARCH-DCC Model and 2-stage DCC(MVT) estimation</span>](http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/)
 
-#'@ flsGarchM <- dir('./data', pattern = '^fGARCH.GJRGARCH+.+.hybrid')
-flsGarchM <- dir('./data', pattern = '.hybrid')
+  Below is the summary of ROI of Garch and EWMA by Kelly models.
 
-fundList <- llply(flsGarchM, function(dt) {
+```{r Garch-EWMA, echo = FALSE}
+## norm distribution generates highest ROI compare to snorm.
+flsEWMA <- dir('./data', pattern = '.hybrid')
+
+fundList <- llply(flsEWMA, function(dt) {
   fl = paste0('./data/', dt)
   if(file.size(fl) > 100) {
     cbind(Model = str_replace_all(dt, '.rds', ''), 
@@ -2479,52 +2589,37 @@ fundList <- llply(flsGarchM, function(dt) {
   }})
 
 #'@ names(fundList) <- sapply(fundList, function(x) xts::first(x$Model))
-names(fundList) <- flsGarchM %>% str_replace_all('.Mn.Cl.snorm.hybrid.rds', '')
+names(fundList) <- flsEWMA %>% str_replace_all('.rds', '')
 fundList[sapply(fundList, is.null)] <- NULL
 
 ## Summary of ROI
 gm.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
-## A tibble: 20 x 7
-#                               .id  StartDate LatestDate InitFund LatestFund   Profit       RR
-#                             <chr>     <date>     <date>    <dbl>      <dbl>    #<dbl>    <dbl>
-# 1 gjrGARCH.Cl.Hi.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1320.381 320.3809 1.320381
-# 2 gjrGARCH.Cl.Lo.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1342.644 342.6443 1.342644
-# 3 gjrGARCH.Cl.Mn.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1293.483 293.4827 1.293483
-# 4 gjrGARCH.Cl.Op.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1128.494 128.4942 1.128494
-# 5 gjrGARCH.Hi.Cl.snorm.hybrid.rds 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
-# 6 gjrGARCH.Hi.Lo.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1684.614 684.6141 1.684614
-# 7 gjrGARCH.Hi.Mn.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1398.689 398.6890 1.398689
-# 8 gjrGARCH.Hi.Op.snorm.hybrid.rds 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
-# 9 gjrGARCH.Lo.Cl.snorm.hybrid.rds 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
-#10 gjrGARCH.Lo.Hi.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1730.533 730.5325 1.730533
-#11 gjrGARCH.Lo.Mn.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1394.744 394.7443 1.394744
-#12 gjrGARCH.Lo.Op.snorm.hybrid.rds 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
-#13                        gjrGARCH 2015-01-02 2017-01-20     1000   1189.829 189.8295 1.189829
-#14 gjrGARCH.Mn.Hi.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1280.016 280.0165 1.280016
-#15 gjrGARCH.Mn.Lo.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1213.700 213.6997 1.213700
-#16 gjrGARCH.Mn.Op.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1177.741 177.7413 1.177741
-#17 gjrGARCH.Op.Cl.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1180.072 180.0717 1.180072
-#18 gjrGARCH.Op.Hi.snorm.hybrid.rds 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
-#19 gjrGARCH.Op.Lo.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1302.291 302.2906 1.302291
-#20 gjrGARCH.Op.Mn.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1324.539 324.5393 1.324539
 
-gm.tbl %>% kable(width = 'auto')
-```
-
-  From above table, due to HiLo and LoHi price of ``r gm.tbl %>% dplyr::filter(RR == max(RR, na.rm = TRUE)) %>% .$.id`` model produced an error here I list below model which can generates highest ROI.
-
-```
-# 6 gjrGARCH.Hi.Lo.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1684.614 684.6141 1.684614
-#10 gjrGARCH.Lo.Hi.snorm.hybrid.rds 2015-01-02 2017-01-20     1000   1730.533 730.5325 1.730533
+tagList(
+  tags$div(align = "center", 
+           class = "bg-info", 
+           tags$h3(class = "bg-primary", "Profit and Loss of Investment"), 
+           tags$h5(align = "center", class = "text-muted", 
+                   "Annual Stakes and Profit and Loss of Firm A at Agency A (2011-2015) ($0,000)")), 
+  as.htmlwidget(gm.tbl %>% formattable(list(
+    
+    .id = color_tile('white', 'darkgoldenrod'), 
+    
+    LatestFund = formatter('span', style = x ~ formattable::style(color = ifelse(rank(-x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 2), ' (rank: ', sprintf('%02d', rank(-x)), ')')), 
+    
+    Profit = color_tile('white', '#9B870C'), 
+    
+    RR = formatter('span', style = x ~ formattable::style(
+	      color = ifelse(rank(-x) <= 3, 'green', 'gray')), x ~ sprintf('%1.2f%% (rank: %02d)', 100 * x, rank(-x)))))))
 ```
 
 **Volatility Staking**
 
-```{r ROI-Garch}
+```{r ROI-Garch, echo = FALSE}
 ## load the pre-run and saved models.
 ## Profit and Loss of Arima models.
 
-flsGarchM <- dir('./data', pattern = '.snorm.hybrid')
+flsGarchM <- dir('./data', pattern = 'Hi.Lo+.snorm.hybrid|Lo.Hi+.snorm.hybrid')
 
 fundList <- llply(flsGarchM, function(dt) {
   fl = paste0('./data/', dt)
@@ -2538,10 +2633,10 @@ names(fundList) <- flsGarchM %>% str_replace_all('.snorm.hybrid.rds', '')
 fundList[sapply(fundList, is.null)] <- NULL
 
 ## Summary of ROI
-gm.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
+#'@ gm.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ```
 
-```{r varStaking-varGarch}
+```{r varStaking-varGarch, echo = FALSE}
 ## Focast the variance and convert to probability.
 varHL <- fundList[grep('Hi.Lo|Lo.Hi', names(fundList))]
 ntm <- c(names((varHL)[names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')]), names((varHL)[!names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')])) %>% str_replace('.Hi.Lo|.Lo.Hi', '') %>% unique %>% sort
@@ -2555,7 +2650,7 @@ varHL1 <- suppressMessages(llply(varHL, function(dtx) {
   }) %>% join_all) %>% tbl_df
 
 varHL2 <- suppressMessages(llply(ntm, function(nm) {
-    mld = varHL1[grep(nm, names(varHL1))]
+    mld = varHL1[grep(paste0('^', nm, '+', '.High|^', nm, '+', '.Low'), names(varHL1))]
     mld[,3] = abs(mld[,1] - mld[,2])
     names(mld)[3] = paste0(nm, '.Rng')
     mld = mld[colSums(!is.na(mld)) > 0]
@@ -2563,7 +2658,7 @@ varHL2 <- suppressMessages(llply(ntm, function(nm) {
     }) %>% unique %>% join_all %>% tbl_df)
 ```
 
-```{r varStaking-2varGarch, results = 'asis'}
+```{r varStaking-2varGarch, echo = FALSE, results = 'asis'}
 ## Application of MASS::mvrnorm() or mvtnorm::rmvnorm() ##nope
 #'@ varHL2 <- xts(varHL2[, -1], as.Date(varHL2$Date))
 
