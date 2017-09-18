@@ -1,0 +1,185 @@
+---
+title: "<img src='www/binary-logo.jpg' width='240'>"
+subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question I (Extention)"
+author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>白戸則道®"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_html:
+    toc: yes
+    toc_depth: 4
+    self_contained: no
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+link-citations: yes
+---
+
+```{r setup, include = FALSE}
+rm(list = ls(all = TRUE))
+
+suppressPackageStartupMessages(library('BBmisc'))
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'tidyquant', 'turner', 'readr', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'Mcomp', 'bsts', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
+ 
+suppressAll(lib(pkgs))
+#'@ install.packages(pkgs, lib = 'C:/Program Files/R/R-3.4.0/library')
+
+source('./function/quantitative-finance.R')
+
+## Set option to below if you want to plot an independent webpage with graph 
+#'@ op <- options(gvis.plot.tag=NULL)
+op <- options(gvis.plot.tag = 'chart')
+options(gvis.plot.tag = 'chart', warn = -1)
+#'@ options(rpubs.upload.method = 'internal')
+
+## R: llply fully reproducible results in parallel
+## https://stackoverflow.com/questions/34946177/r-llply-fully-reproducible-results-in-parallel
+cl <- makeCluster(detectCores())
+registerDoParallel(cl)
+
+# Create a cluster object to be used for rugarcgh and rmgarch models.
+cluster = makePSOCKcluster(15)
+
+# invalidate cache when the package version changes
+rm(pkgs)
+```
+
+# 1. Introduction
+
+  By refer to *Ryo Eng Lian Hu (2017)*^[reference paper 1], I tried to compare few models for financial trading. Today I am using 1 minutes, 3 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, 1 hour and daily data instead of only daily data. By the way, I try to compare the accuracy of forecasting instead of invesmnent.
+
+# 2. Data
+
+<http://thebonnotgang.com/tbg/historical-data/>
+
+```{r read-data, wanrning = FALSE}
+
+curr <- c('USDJPY', 'USDEUR', 'USDGBP', 'USDAUD', 'USDCAD', 'USDCHF')
+prd <- paste0(1:1500, 'd')
+
+curr.minute <- llply(curr[], function(cr) {
+  llply(prd, function(dy) {
+    f.get.google.intraday(cr, 60, dy)
+  }) %>% do.call(rbind, .)
+  curr.minute$High <- curr.minute$Open
+  curr.minute$Low <- curr.minute$Open
+  curr.minute$Close <- curr.minute$Open
+})
+names(curr.minute) <- curr
+
+saveRDS(curr.minute, './data/USDJPY.Minute.rds')
+USDJPY.Minute3 <- to.minutes3(USDJPY.Minute)
+```
+
+```{python}
+#!/usr/bin/env python 
+"""
+Retrieve intraday stock data from Google Finance.
+"""
+# https://gist.github.com/lebedov/f09030b865c4cb142af1
+
+import csv
+import datetime
+import re
+
+import pandas as pd
+import requests
+
+def get_google_finance_intraday(ticker, period=60, days=1):
+    """
+    Retrieve intraday stock data from Google Finance.
+    Parameters
+    ----------
+    ticker : str
+        Company ticker symbol.
+    period : int
+        Interval between stock values in seconds.
+    days : int
+        Number of days of data to retrieve.
+    Returns
+    -------
+    df : pandas.DataFrame
+        DataFrame containing the opening price, high price, low price,
+        closing price, and volume. The index contains the times associated with
+        the retrieved price values.
+    """
+
+    uri = 'http://www.google.com/finance/getprices' \
+          '?i={period}&p={days}d&f=d,o,h,l,c,v&df=cpct&q={ticker}'.format(ticker=ticker,
+                                                                          period=period,
+                                                                          days=days)
+    page = requests.get(uri)
+    reader = csv.reader(page.content.splitlines())
+    columns = ['Open', 'High', 'Low', 'Close', 'Volume']
+    rows = []
+    times = []
+    for row in reader:
+        if re.match('^[a\d]', row[0]):
+            if row[0].startswith('a'):
+                start = datetime.datetime.fromtimestamp(int(row[0][1:]))
+                times.append(start)
+            else:
+                times.append(start+datetime.timedelta(seconds=period*int(row[0])))
+            rows.append(map(float, row[1:]))
+    if len(rows):
+        return pd.DataFrame(rows, index=pd.DatetimeIndex(times, name='Date'),
+                            columns=columns)
+    else:
+        return pd.DataFrame(rows, index=pd.DatetimeIndex(times, name='Date'))
+```
+
+```{python}
+x = get_google_finance_intraday('USDJPY', period=60, days=1)
+print('x')
+```
+
+```{r sum-data}
+summary(USDJPY.Minute)
+```
+
+# 3. Conclusion
+
+
+```{r stopPar, echo = FALSE}
+## Set options back to original options
+options(op)
+options(warn = 0)
+stopCluster(cl)
+```
+
+# 4. Appendix
+
+## 4.1 Documenting File Creation 
+
+  It's useful to record some information about how your file was created.
+
+  - File creation date: 2015-07-22
+  - File latest updated date: `r Sys.Date()`
+  - `r R.version.string`
+  - R version (short form): `r getRversion()`
+  - [<span style='color:blue'>**rmarkdown** package</span>](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+  - [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
+  - File version: 1.0.1
+  - Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
+  - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/scibrokes/betting-strategy-and-model-validation)
+  - Additional session information
+  
+```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+
+lubridate::now()
+sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+sys1 %>% formattable %>% as.htmlwidget
+
+data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(Category = Category, Sys.info =  Sys.info..) %>% formattable %>% as.htmlwidget
+
+rm(sys1)
+```
+
+## 4.2 Reference
+
+  01. [<span style='color:blue'>Binary.com Interview Q1</span>](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html)([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))

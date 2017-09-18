@@ -1,7 +1,7 @@
 ---
-title: "<img src='www/binary-logo.jpg' width='240'>"
+title: "<img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/757b27e1e93132368b0898152078be4961b05a28/www/binary-logo-resize.jpg' width='240'>"
 subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question I"
-author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>白戸則道®"
+author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/ENG.jpg' width='24'> <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/RYO.jpg?raw=true' width='24'>白戸則道®"
 date: "`r Sys.Date()`"
 output:
   tufte::tufte_html:
@@ -582,16 +582,17 @@ paste('Close = ', mean((fcdataGM$USDJPY.FPCL.Close - fcdataGM$USDJPY.Close)^2))
 $$Y_{t} = \mu_{t}+x_{t}\beta + S_{t}+e_{t}\ ,\ e_{t}∼N(0,\sigma_{e}_{2})$$
 $$\mu_{t} + 1 = \mu_{t} + \nu_{t}\ ,\ \nu_{t}∼N(0,\sigma_{\nu}_{2})$$
 
+  For bayesian and MCMC, I leave it for future works.
+
 ```{r bsts}
 ## Sorry ARIMA, but I’m Going Bayesian (packages : bsts, arm)
 ## http://multithreaded.stitchfix.com/blog/2016/04/21/forget-arima/
-
-
-
-
+## https://stackoverflow.com/questions/11839886/r-predict-glm-equivalent-for-mcmcpackmcmclogit
 ```
 
 #### 2.1.2.4 MIDAS
+
+  For Midas, I also leave it for future works. Kindly refer to [<span style='color:blue'>Mixed Frequency Data Sampling Regression Models - The R Package midasr</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/757b27e1e93132368b0898152078be4961b05a28/reference/Mixed%20Frequency%20Data%20Sampling%20Regression%20Models%20-%20The%20R%20Package%20midasr.pdf) for more information about Midas.
 
 ### 2.1.3 Data Visualization
 
@@ -2751,28 +2752,28 @@ rm(sys1)
 
 ## 4.2 Reference
 
-  01. [<span style='color:blue'>Stock Market Forecasting Using LASSO Linear Regression Model</span>](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
+  01. [<span style='color:blue'>Stock Market Forecasting Using LASSO Linear Regression Model</span>](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
   02. [<span style='color:blue'>Using LASSO from lars (or glmnet) package in R for variable selection</span>](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
   03. [<span style='color:blue'>Difference between glmnet() and cv.glmnet() in R?</span>](https://stackoverflow.com/questions/29311323/difference-between-glmnet-and-cv-glmnet-in-r?answertab=votes#tab-top)
-  04. [<span style='color:blue'>Testing Kelly Criterion and Optimal f in R</span>](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) <img src='www/hot.jpg' width='20'>
-  05. [<span style='color:blue'>Portfolio Optimization and Monte Carlo Simulation</span>](https://github.com/scibrokes/kelly-criterion/blob/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf) <img src='www/hot.jpg' width='20'>
+  04. [<span style='color:blue'>Testing Kelly Criterion and Optimal f in R</span>](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
+  05. [<span style='color:blue'>Portfolio Optimization and Monte Carlo Simulation</span>](https://github.com/scibrokes/kelly-criterion/blob/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
   06. [<span style='color:blue'>Glmnet Vignette</span>](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
   07. [<span style='color:blue'>lasso怎么用算法实现？</span>](http://cos.name/cn/topic/101533/#post-418215)
   08. [<span style='color:blue'>The Sparse Matrix and {glmnet}</span>](http://amunategui.github.io/sparse-matrix-glmnet/)
   09. [<span style='color:blue'>Regularization and Variable Selection via the Elastic Net</span>](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Regularization%20and%20Variable%20Selection%20via%20the%20Elastic%20Net.pdf)
-  10. [<span style='color:blue'>LASSO, Ridge, and Elastic Net</span>](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) <img src='www/hot.jpg' width='20'>
+  10. [<span style='color:blue'>LASSO, Ridge, and Elastic Net</span>](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
   11. [<span style='color:blue'>热门数据挖掘模型应用入门（一）: LASSO回归</span>](http://cos.name/2016/10/data-mining-1-lasso/)
   12. [<span style='color:blue'>The Lasso Page</span>](http://statweb.stanford.edu/~tibs/lasso.html)
   13. [<span style='color:blue'>Call_Valuation.R</span>](https://api.rpubs.com/Mariano/call)
   14. [<span style='color:blue'>Lecture 6 – Stochastic Processes and Monte Carlo</span>](http://zorro-trader.com/manual/en/Lecture%206.htm)
-  15. [<span style='color:blue'>The `caret` Package</span>](http://topepo.github.io/caret/index.html) <img src='www/hot.jpg' width='20'>
-  16. [<span style='color:blue'>Time Series Cross Validation</span>](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
+  15. [<span style='color:blue'>The `caret` Package</span>](http://topepo.github.io/caret/index.html) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
+  16. [<span style='color:blue'>Time Series Cross Validation</span>](https://rpubs.com/crossxwill/time-series-cv) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
   17. [<span style='color:blue'>Character-Code.com</span>](http://character-code.com/)
-  18. [<span style='color:blue'>Size Matters – Kelly Optimization</span>](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
+  18. [<span style='color:blue'>Size Matters – Kelly Optimization</span>](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
   19. [<span style='color:blue'>**Forecasting Volatility** *- (2004)by Stephen Figlewski*</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/fcad2844d7f10c486f3601af9932f49973548e4b/reference/Focasting%20Volatility.pdf)
   20. [<span style='color:blue'>**Successful Algorithmic Trading** *by Michael Halls Moore (2015)*</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/fcad2844d7f10c486f3601af9932f49973548e4b/reference/Successful%20Algorithmic%20Trading.pdf)
-  21. [<span style='color:blue'>Financial Risk Modelling and Portfolio Optimization with R (2nd Edt)</span>](https://github.com/englianhu/binary.com-interview-question/blob/eec3bbe99c61b4e2e2f4a2b1c47e7a2fca6106c4/reference/Financial%20Risk%20Modelling%20and%20Portfolio%20Optimization%20with%20R%20(2nd%20Edt).pdf) <img src='www/hot.jpg' width='20'>
-  22. [<span style='color:blue'>Analyzing Financial Data and Implementing Financial Models using R</span>](https://github.com/englianhu/binary.com-interview-question/blob/eec3bbe99c61b4e2e2f4a2b1c47e7a2fca6106c4/reference/Analyzing%20Financial%20Data%20and%20Implementing%20Financial%20Models%20using%20R.pdf) <img src='www/hot.jpg' width='20'>
+  21. [<span style='color:blue'>Financial Risk Modelling and Portfolio Optimization with R (2nd Edt)</span>](https://github.com/englianhu/binary.com-interview-question/blob/eec3bbe99c61b4e2e2f4a2b1c47e7a2fca6106c4/reference/Financial%20Risk%20Modelling%20and%20Portfolio%20Optimization%20with%20R%20(2nd%20Edt).pdf) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
+  22. [<span style='color:blue'>Analyzing Financial Data and Implementing Financial Models using R</span>](https://github.com/englianhu/binary.com-interview-question/blob/eec3bbe99c61b4e2e2f4a2b1c47e7a2fca6106c4/reference/Analyzing%20Financial%20Data%20and%20Implementing%20Financial%20Models%20using%20R.pdf) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
   23. [<span style='color:blue'></span>]()
 
-**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**
+**Powered by - Copyright® Intellectual Property Rights of <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/oda-army2.jpg?raw=true' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**

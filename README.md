@@ -28,8 +28,10 @@
 	
 	- Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
 	- Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
-  - <http://rpubs.com/englianhu/binary-forex-trading-condensed-version>(<http://rpubs.com/englianhu/302665>)
-  - <http://rpubs.com/englianhu/304134>
+
+  Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html)([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
+
+  Here I wrote another extention page for Q1 which is analyse the data from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/binary-forex-trading-Q1E).
 
 ### Question II
 

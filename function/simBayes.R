@@ -2,9 +2,9 @@ simBayes <- function(mbase, .method = 'bayesglm', .family = 'gaussian', .form = 
                      .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
                      .parallel = FALSE, .progress = 'none'){
   
-  #'@ source('./function/armaSearch.R', local = TRUE)
   require('arm', quietly  = TRUE)
   require('MCMCpack', quietly  = TRUE)
+  require('quantmod', quietly  = TRUE)
   source('./function/Mn.R')
   source('./function/has.Mn.R')
   
@@ -69,7 +69,7 @@ simBayes <- function(mbase, .method = 'bayesglm', .family = 'gaussian', .form = 
 	    stop('Kindly choose .form = 1, 2 or 3.')
 	  }
       if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
-        data.frame(Date = dt, predict(fit, n.ahead = frd)) %>% tbl_df
+        data.frame(Date = dt, predict(fit, h = frd)) %>% tbl_df
 	
 	} else if(.form == 'MCMCregress') {
 	  
@@ -86,7 +86,7 @@ simBayes <- function(mbase, .method = 'bayesglm', .family = 'gaussian', .form = 
 	    stop('Kindly choose .form = 1, 2 or 3.')
 	  }
       if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
-        data.frame(Date = dt, predict(fit, n.ahead = frd)) %>% tbl_df
+        data.frame(Date = dt, predict(fit, h = frd)) %>% tbl_df
 	}
   }, .parallel = .parallel, .progress = .progress)) %>% tbl_df
   
