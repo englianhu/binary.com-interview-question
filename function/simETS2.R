@@ -1,8 +1,9 @@
 ## Now we try to use the daily mean value which is (Hi + Lo) / 2.
 ## Hi for predict daily highest price. (selling daytrade)
 ## Lo for predict daily lowest price. (buying daytrade)
-simETS <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE, 
-                   .prCat = 'Mn', .baseDate = ymd('2015-01-01'), .parallel = FALSE, 
+simETS2 <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE, 
+                   .prCat = 'Mn', .baseDate = ymd('2015-01-01'), .maPeriod = 'years', 
+                   .unit = 1, .difftime = 'days', .verbose = FALSE, .parallel = FALSE, 
                    .simulate = FALSE, .bootstrap = FALSE, .npaths = 5000) {
   #' Exponential smoothing state space model
   #' 
@@ -41,6 +42,15 @@ simETS <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE
   ## Set as our daily settlement price.
   obs.data <- mbase[index(mbase) > dateID0]
   price.category <- c('Op', 'Hi', 'Mn', 'Lo', 'Cl')
+  maPeriods <- c('mins', 'hours', 'days', 'weeks', 'months', 'years')
+  
+  if(!is.numeric(.unit)) stop('.unit is a numeric parameter.')
+  
+  if(!.maPeriod %in% maPeriods) stop(paste0('Kindly choose .maPeriod among c(\'', 
+                                            paste(maPeriods, collapse = ', '), '\').'))
+  
+  if(!.difftime %in% maPeriods) stop(paste0('Kindly choose .maPeriod among c(\'', 
+                                            paste(maPeriods, collapse = ', '), '\').'))
   
   if(.prCat %in% price.category) {
     if(.prCat == 'Op') {
@@ -97,11 +107,80 @@ simETS <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE
   pred.data <- ldply(dateID, function(dt) {
     smp = obs.data2
     dtr = last(index(smp[index(smp) < dt]))
-    smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-    frd = as.numeric(difftime(dt, dtr), units = 'days')
-    fit = ets(smp, model = .model, 
-              damped = .damped, additive.only = .additive.only) #exponential smoothing model.
-    if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+    
+    if(.maPeriod == 'mins') {
+      if(.difftime == 'mins') {
+        smp = smp[paste0(dtr %m-% minutes(.unit), '/', dtr)]
+        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        fit = ets(smp, model = .model, 
+                  damped = .damped, additive.only = .additive.only) #exponential smoothing model.
+        if(frd > 1) dt = seq(dt - minutes(frd), dt, by = .difftime)[-1]
+        if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
+      }
+      
+    } else if(.maPeriod == 'hours') {
+      if(.difftime == 'mins') {
+        smp = smp[paste0(dtr %m-% hours(.unit), '/', dtr)]
+        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        fit = ets(smp, model = .model, 
+                  damped = .damped, additive.only = .additive.only) #exponential smoothing model.
+        if(frd > 1) dt = seq(dt - minutes(frd), dt, by = .difftime)[-1]
+        if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
+      }
+      
+    } else if(.maPeriod == 'days') {
+      if(.difftime == 'mins') {
+        smp = smp[paste0(dtr %m-% days(.unit), '/', dtr)]
+        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        fit = ets(smp, model = .model, 
+                  damped = .damped, additive.only = .additive.only) #exponential smoothing model.
+        if(frd > 1) dt = seq(dt - minutes(frd), dt, by = .difftime)[-1]
+        if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
+      }
+      
+    } else if(.maPeriod == 'weeks') {
+      if(.difftime == 'hours') {
+        smp = smp[paste0(dtr %m-% weeks(.unit), '/', dtr)]
+        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        fit = ets(smp, model = .model, 
+                  damped = .damped, additive.only = .additive.only) #exponential smoothing model.
+        if(frd > 1) dt = seq(dt - hours(frd), dt, by = .difftime)[-1]
+        if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
+      }
+      
+    } else if(.maPeriod == 'months') {
+      if(.difftime == 'days') {
+        smp = smp[paste0(dtr %m-% months(.unit), '/', dtr)]
+        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        fit = ets(smp, model = .model, 
+                  damped = .damped, additive.only = .additive.only) #exponential smoothing model.
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
+        if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
+      }
+      
+      if(.difftime == 'hours') {
+        smp = smp[paste0(dtr %m-% weeks(.unit), '/', dtr)]
+        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        fit = ets(smp, model = .model, 
+                  damped = .damped, additive.only = .additive.only) #exponential smoothing model.
+        if(frd > 1) dt = seq(dt - hours(frd), dt, by = .difftime)[-1]
+        if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
+      }
+      
+    } else if(.maPeriod == 'years') {
+      if(.difftime == 'days') {
+        smp = smp[paste0(dtr %m-% years(.unit), '/', dtr)]
+        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        fit = ets(smp, model = .model, 
+                  damped = .damped, additive.only = .additive.only) #exponential smoothing model.
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
+        if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
+      }
+      
+    } else {
+      stop('Kindly choose .maPeriod and .difftime among c("mins", "hours", "days", "weeks", "months", "years").')
+    }
+    
     data.frame(Date = dt, forecast(fit, h = frd, simulate = .simulate, 
                                    bootstrap = .bootstrap, npaths = .npaths)) %>% tbl_df
   }, .parallel = .parallel) %>% tbl_df
@@ -110,5 +189,6 @@ simETS <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE
   cmp.data <- cbind(cmp.data, obs.data)
   rm(obs.data, pred.data)
   
-  return(cmp.data)
+  return(na.omit(cmp.data))
 }
+

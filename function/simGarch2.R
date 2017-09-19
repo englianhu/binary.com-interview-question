@@ -1,11 +1,12 @@
-simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
-                     .parallel = FALSE, .progress = 'none', .method = 'CSS-ML', .realizedVol = 'Ad', 
+simGarch2 <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
+                      .maPeriod = 'years', .unit = 1, .difftime = 'days', .verbose = FALSE, 
+                      .parallel = FALSE, .progress = 'none', .method = 'CSS-ML', .realizedVol = 'Ad', 
                      .variance.model = list(model = 'sGARCH', garchOrder = c(1, 1), 
                                             submodel = NULL, external.regressors = NULL, 
                                             variance.targeting = FALSE), 
                      .mean.model = list(armaOrder = c(1, 1), include.mean = TRUE, archm = FALSE, 
-                                        archpow = 1, arfima = FALSE, external.regressors = NULL, 
-                                        archex = FALSE), 
+                                       archpow = 1, arfima = FALSE, external.regressors = NULL, 
+                                       archex = FALSE), 
                      .dist.model = 'norm', start.pars = list(), fixed.pars = list()){
   
   #'@ source('./function/armaSearch.R', local = TRUE)
@@ -29,6 +30,15 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
   ## Set as our daily settlement price.
   obs.data <- mbase[index(mbase) > dateID0]
   price.category <- c('Op', 'Hi', 'Mn', 'Lo', 'Cl', 'Ad')
+  maPeriods <- c('mins', 'hours', 'days', 'weeks', 'months', 'years')
+  
+  if(!is.numeric(.unit)) stop('.unit is a numeric parameter.')
+  
+  if(!.maPeriod %in% maPeriods) stop(paste0('Kindly choose .maPeriod among c(\'', 
+                                            paste(maPeriods, collapse = ', '), '\').'))
+  
+  if(!.difftime %in% maPeriods) stop(paste0('Kindly choose .maPeriod among c(\'', 
+                                            paste(maPeriods, collapse = ', '), '\').'))
   
   if(.prCat %in% price.category) {
     if(.prCat == 'Op') {
@@ -61,7 +71,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
       obs.data2 <- Ad(mbase)
       .mean.model$armaOrder <- suppressWarnings(armaSearch(obs.data2, .method = .method))
       .mean.model$armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
-      
+    
     } else {
       stop('Kindly choose .prCat = "Op", .prCat = "Hi", .prCat = "Mn", .prCat = "Lo", .prCat = "Cl" or .prCat = "Ad".')
     }
@@ -75,7 +85,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
   
   ## Multiple Garch models inside `rugarch` package.
   .variance.models <- c('sGARCH', 'fGARCH', 'eGARCH', 'gjrGARCH', 
-                        'apARCH', 'iGARCH', 'csGARCH', 'realGARCH')
+                       'apARCH', 'iGARCH', 'csGARCH', 'realGARCH')
   
   ## do not execute since use `acf()` and `pacf()` can get the best fit p and q values.`
   #'@ .garchOrders <- expand.grid(0:5, 0:5, KEEP.OUT.ATTRS = FALSE) %>% 
@@ -84,7 +94,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
   .solvers <- c('hybrid', 'solnp', 'nlminb', 'gosolnp', 'nloptr', 'lbfgs')
   
   .sub.fGarchs <- c('GARCH', 'TGARCH', 'AVGARCH', 'NGARCH', 'NAGARCH', 
-                    'APARCH', 'GJRGARCH', 'ALLGARCH')
+                   'APARCH', 'GJRGARCH', 'ALLGARCH')
   
   .dist.models <- c('norm', 'snorm', 'std', 'sstd', 'ged', 'sged', 'nig', 'ghyp', 'jsu')
   
@@ -95,8 +105,8 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
     
     if(.variance.model$model == 'fGARCH') {
       if(length(.variance.model$submodel) == 0)
-        stop(paste0('kindly choose .variance.model$submodel among ', 
-                    paste0('\'', .sub.fGarchs, '\'', collapse = ','), '.'))
+      stop(paste0('kindly choose .variance.model$submodel among ', 
+                  paste0('\'', .sub.fGarchs, '\'', collapse = ','), '.'))
     } else {
       if(length(.variance.model$submodel) > 0)
         stop('kindly choose .variance.model$submodel = NULL.')
@@ -128,7 +138,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
       smp = obs.data2
       dtr = last(index(smp[index(smp) < dt]))
       smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-      frd = as.numeric(difftime(dt, dtr), units = 'days')
+      frd = as.numeric(difftime(dt, dtr), units = .difftime)
       
       spec = ugarchspec(variance.model = .variance.model, 
                         mean.model = .mean.model, #realizedVol = .rVol, 
@@ -138,7 +148,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         rVol[1] = 1
         names(rVol) = names(Op(mbase)) %>% str_replace_all('.Open', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
-        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Hi') {
@@ -146,7 +156,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         rVol[1] = 1
         names(rVol) = names(Hi(mbase)) %>% str_replace_all('.High', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
-        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Mn') {
@@ -154,7 +164,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         rVol[1] = 1
         names(rVol) = names(Mn(mbase)) %>% str_replace_all('.Mean', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
-        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Lo') {
@@ -162,7 +172,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         rVol[1] = 1
         names(rVol) = names(Lo(mbase)) %>% str_replace_all('.Low', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
-        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Cl') {
@@ -170,7 +180,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         rVol[1] = 1
         names(rVol) = names(Cl(mbase)) %>% str_replace_all('.Close', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
-        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Ad') {
@@ -178,7 +188,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         rVol[1] = 1
         names(rVol) = names(Ad(mbase)) %>% str_replace_all('.Adjusted', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
-        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Vo') {
@@ -186,7 +196,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         rVol[1] = 1
         names(rVol) = names(Vo(mbase)) %>% str_replace_all('.Volume', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
-        if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+        if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else {

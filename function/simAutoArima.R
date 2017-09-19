@@ -61,4 +61,3 @@ simAutoArima <- function(mbase, .prCat = 'Mn', .baseDate = ymd('2015-01-01'), .p
   
   return(cmp.data)
 }
-
