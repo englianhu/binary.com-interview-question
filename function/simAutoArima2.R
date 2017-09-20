@@ -2,7 +2,7 @@
 ## Hi for predict daily highest price. (selling daytrade)
 ## Lo for predict daily lowest price. (buying daytrade)
 simAutoArima2 <- function(mbase, .prCat = 'Mn', 
-                          .baseDate = as.POSIXct(strptime('2015-01-01', "%Y-%m-%d %H:%M:%S")), 
+                          .baseDate = as.POSIXct(strptime('2015-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')), 
                          .maPeriod = 'years', .unit = 1, .difftime = 'days', 
                          .verbose = FALSE, .parallel = FALSE) {
   #' Auto Arima model
@@ -12,13 +12,13 @@ simAutoArima2 <- function(mbase, .prCat = 'Mn',
   
   ## dateID
   dateID <- index(mbase)
-  dateID <- as.POSIXct(strptime(dateID, "%Y-%m-%d %H:%M:%S")) %>% sort
+  dateID <- as.POSIXct(strptime(dateID, '%Y-%m-%d %H:%M:%S')) %>% sort
   
-  if(!is.Date(.baseDate)) {
+  if(!is.POSIXct(.baseDate)) {
     #'@ dateID0 <- ymd(.baseDate); rm(.baseDate)
-    dateID0 <- as.POSIXct(strptime(.baseDate, "%Y-%m-%d %H:%M:%S")); rm(.baseDate)
+    dateID0 <- as.POSIXct(strptime(.baseDate, '%Y-%m-%d %H:%M:%S')); rm(.baseDate)
   } else {
-    dateID0 <- as.POSIXct(strptime(.baseDate, "%Y-%m-%d %H:%M:%S")); rm(.baseDate)
+    dateID0 <- .baseDate; rm(.baseDate)
   }
   dateID <- dateID[dateID >= dateID0]
   
@@ -62,7 +62,8 @@ simAutoArima2 <- function(mbase, .prCat = 'Mn',
   ## Forecast simulation on the ets models.
   pred.data <- ldply(dateID, function(dt) {
     smp = obs.data2
-    dtr = last(index(smp[index(smp) < dt]))
+    dtr = last(as.POSIXct(strptime(index(
+      smp[as.POSIXct(strptime(index(smp), '%Y-%m-%d %H:%M:%S')) < dt]), '%Y-%m-%d %H:%M:%S')))
     
     if(.maPeriod == 'mins') {
       if(.difftime == 'mins') {

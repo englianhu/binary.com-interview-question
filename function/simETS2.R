@@ -32,8 +32,11 @@ simETS2 <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALS
   
   ## dateID
   dateID <- index(mbase)
-  if(!is.Date(.baseDate)) {
-    dateID0 <- ymd(.baseDate); rm(.baseDate)
+  dateID <- as.POSIXct(strptime(dateID, '%Y-%m-%d %H:%M:%S')) %>% sort
+  
+  if(!is.POSIXct(.baseDate)) {
+    #'@ dateID0 <- ymd(.baseDate); rm(.baseDate)
+    dateID0 <- as.POSIXct(strptime(.baseDate, '%Y-%m-%d %H:%M:%S')); rm(.baseDate)
   } else {
     dateID0 <- .baseDate; rm(.baseDate)
   }
@@ -42,7 +45,7 @@ simETS2 <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALS
   ## Set as our daily settlement price.
   obs.data <- mbase[index(mbase) > dateID0]
   price.category <- c('Op', 'Hi', 'Mn', 'Lo', 'Cl')
-  maPeriods <- c('mins', 'hours', 'days', 'weeks', 'months', 'years')
+  maPeriods <- c('secs', 'mins', 'hours', 'days', 'weeks', 'months', 'years')
   
   if(!is.numeric(.unit)) stop('.unit is a numeric parameter.')
   
@@ -106,7 +109,8 @@ simETS2 <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALS
   ## Forecast simulation on the ets models.
   pred.data <- ldply(dateID, function(dt) {
     smp = obs.data2
-    dtr = last(index(smp[index(smp) < dt]))
+    dtr = last(as.POSIXct(strptime(index(
+      smp[as.POSIXct(strptime(index(smp), '%Y-%m-%d %H:%M:%S')) < dt]), '%Y-%m-%d %H:%M:%S')))
     
     if(.maPeriod == 'mins') {
       if(.difftime == 'mins') {

@@ -18,7 +18,7 @@ link-citations: yes
 ---
 
 ```{r setup, include = FALSE}
-rm(list = ls(all = TRUE))
+#'@ rm(list = ls(all = TRUE))
 
 suppressPackageStartupMessages(library('BBmisc'))
 pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'ff', 'ffbase', 'tidyquant', 'sparklyr', 'readr', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'Mcomp', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
@@ -52,7 +52,7 @@ rm(pkgs)
 
 # 1. Introduction
 
-  By refer to *Ryo Eng Lian Hu (2017)*^[reference paper 1], I tried to compare few models for financial trading. Today I am using <s>3 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, 1 hour and also daily data instead of</s>^[Due to the time duration in the dataset is messy, sometimes scraped within same minute sometimes more than 30 minutes has no price. Here I forced to skip it.] only daily data. By the way, I try to compare the accuracy of forecasting instead of invesmnent.
+  By refer to *Ryo Eng Lian Hu (2017)*^[reference paper 1], I tried to compare few models for financial trading. Today I am using <s>1 minute, 3 minutes, 5 minutes, 10 minutes, 15 minutes, 30 minutes, 1 hour and also daily data instead of</s>^[Since the datasets contain few observation within a minute and also some data time period empty more than 30 minutes. Test all time period but eventually error...] only daily data. By the way, I try to compare the accuracy of forecasting instead of invesmnent.
   
   Besides, this paper will modelling multivariate Garch compare to previous paper which applied univariate Garch models.
 
@@ -85,54 +85,7 @@ Retrieve intraday stock data from Google Finance.
 """
 # https://gist.github.com/lebedov/f09030b865c4cb142af1
 
-import csv
-import datetime
-import re
-
-import pandas as pd
-import requests
-
-def get_google_finance_intraday(ticker, period=60, days=1):
-    """
-    Retrieve intraday stock data from Google Finance.
-    Parameters
-    ----------
-    ticker : str
-        Company ticker symbol.
-    period : int
-        Interval between stock values in seconds.
-    days : int
-        Number of days of data to retrieve.
-    Returns
-    -------
-    df : pandas.DataFrame
-        DataFrame containing the opening price, high price, low price,
-        closing price, and volume. The index contains the times associated with
-        the retrieved price values.
-    """
-
-    uri = 'http://www.google.com/finance/getprices' \
-          '?i={period}&p={days}d&f=d,o,h,l,c,v&df=cpct&q={ticker}'.format(ticker=ticker,
-                                                                          period=period,
-                                                                          days=days)
-    page = requests.get(uri)
-    reader = csv.reader(page.content.splitlines())
-    columns = ['Open', 'High', 'Low', 'Close', 'Volume']
-    rows = []
-    times = []
-    for row in reader:
-        if re.match('^[a\d]', row[0]):
-            if row[0].startswith('a'):
-                start = datetime.datetime.fromtimestamp(int(row[0][1:]))
-                times.append(start)
-            else:
-                times.append(start+datetime.timedelta(seconds=period*int(row[0])))
-            rows.append(map(float, row[1:]))
-    if len(rows):
-        return pd.DataFrame(rows, index=pd.DatetimeIndex(times, name='Date'),
-                            columns=columns)
-    else:
-        return pd.DataFrame(rows, index=pd.DatetimeIndex(times, name='Date'))
+import './function/get_google_finance_intraday.py'
 ```
 
 ```{r read-data2, warning = FALSE, eval = FALSE, include = FALSE}
@@ -143,19 +96,26 @@ mbase <- llply(fls, function(dt) {
   z = data.table::fread(paste0('./data/', dt, '_1m.csv')) %>% dplyr::tbl_df %>% dplyr::select(symbol, timestamp, close) %>% 
     mutate(Symbol = factor(symbol), 
       #'@ Date = lubridate::ymd_hms(timestamp), 
-      Date = as.POSIXct(strptime(timestamp, "%Y-%m-%d %H:%M:%S")), 
+      #'@ Date = as.POSIXct(strptime(timestamp, "%Y-%m-%d %H:%M:%S")), #filter as minute as the smallest unit
+      Date = as.POSIXct(strptime(timestamp, "%Y-%m-%d %H:%M")), 
       Close = as.numeric(stringr::str_replace_all(close, ',', '.')))
   z$symbol = NULL
   z$timestamp = NULL
   z$close = NULL
-  names(z) = c('Symbol' , 'Date', paste0(dt, c('.Close')))
+  names(z) = c('Symbol' , 'Date', paste0(dt, c('.Close'))) #only get closing price
   z$Symbol = NULL
   #'@ z$Date = z$Date %>% stringr::str_replace_all(':[0-9]{2}$', '') %>% 
   #'@   lubridate::ymd_hm
   z %<>% unique
-  z = xts(z[, -1], order.by = z$Date)
+  z = xts(z[, -1], order.by = z$Date) %>% to.minutes
   #'@ indexTZ(z) <- 'America/Chicago'
-  z
+  
+  ## Create a column which contain the "first date 00:00:00" until the "last date time".
+  tmp = xts(, seq.POSIXt(
+    from = as.POSIXct(strptime(index(mbase[[1]])[1], "%Y-%m-%d")), 
+    to = as.POSIXct(strptime(last(index(mbase[[1]])), "%Y-%m-%d %H:%M")), by = 'mins'))
+  res = cbind(tmp, z) #cbind() will be faster than merge()
+  na.locf(res)
  })#, .parallel = TRUE)
 
 names(mbase) <- fls %>% str_replace_all('_1m.csv', '')
@@ -170,71 +130,75 @@ names(mbase) <- fls %>% str_replace_all('_1m.csv', '')
 #'@ dateID <- llply(mbase, function(x) index(x) %>% as.character) %>% 
 #'@   unlist %>% unique %>% lubridate::ymd_hms %>% sort
 dateID <- llply(mbase, function(x) index(x) %>% as.character) %>% unlist %>% unique
-dateID <- as.POSIXct(strptime(dateID, "%Y-%m-%d %H:%M:%S")) %>% sort
+dateID <- as.POSIXct(strptime(dateID, "%Y-%m-%d %H:%M")) %>% sort
 dateID0 <- ymd('2014-01-01')
 dateID <- dateID[dateID > dateID0]
 ```
 
 ```{r data-summ, warning = FALSE, echo = FALSE}
 ##  1 minute
-mbase_min1 <- llply(mbase, function(x) {
-    z = to.minutes(x)
-    nn = names(x) %>% str_replace_all('.Close', '')
-    names(z) = names(z) %>% str_replace_all('x', nn)
-    z})
+mbase_min1 <- mbase
+#'@ mbase_min1 <- llply(mbase, function(x) {
+#'@   z = to.minutes(x)
+#'@   nn = names(x) %>% str_replace_all('.Close', '')
+#'@   names(z) = names(z) %>% str_replace_all('x', nn)
+#'@   z})
 
 ##  3 minutes
 mbase_min3 <- llply(mbase, function(x) {
-    z = to.minutes3(x)
-    nn = names(x) %>% str_replace_all('.Close', '')
-    names(z) = names(z) %>% str_replace_all('x', nn)
-    z})
+  z = to.minutes3(x)
+  nn = names(x) %>% str_replace_all('.Close', '')
+  names(z) = names(z) %>% str_replace_all('x', nn)
+  z})
 
 ##  5 minutes
 mbase_min5 <- llply(mbase, function(x) {
-    z = to.minutes5(x)
-    nn = names(x) %>% str_replace_all('.Close', '')
-    names(z) = names(z) %>% str_replace_all('x', nn)
-    z})
+  z = to.minutes5(x)
+  nn = names(x) %>% str_replace_all('.Close', '')
+  names(z) = names(z) %>% str_replace_all('x', nn)
+  z})
 
 ##  10 minutes
 mbase_min10 <- llply(mbase, function(x) {
-    z = to.minutes10(x)
-    nn = names(x) %>% str_replace_all('.Close', '')
-    names(z) = names(z) %>% str_replace_all('x', nn)
-    z})
+  z = to.minutes10(x)
+  nn = names(x) %>% str_replace_all('.Close', '')
+  names(z) = names(z) %>% str_replace_all('x', nn)
+  z})
 
 ##  15 minutes
 mbase_min15 <- llply(mbase, function(x) {
-    z = to.minutes15(x)
-    nn = names(x) %>% str_replace_all('.Close', '')
-    names(z) = names(z) %>% str_replace_all('x', nn)
-    z})
+  z = to.minutes15(x)
+  nn = names(x) %>% str_replace_all('.Close', '')
+  names(z) = names(z) %>% str_replace_all('x', nn)
+  z})
 
 ##  30 minutes
 mbase_min30 <- llply(mbase, function(x) {
-    z = to.minutes30(x)
-    nn = names(x) %>% str_replace_all('.Close', '')
-    names(z) = names(z) %>% str_replace_all('x', nn)
-    z})
+  z = to.minutes30(x)
+  nn = names(x) %>% str_replace_all('.Close', '')
+  names(z) = names(z) %>% str_replace_all('x', nn)
+  z})
 
 ##  1 hour
 mbase_hrs1 <- llply(mbase, function(x) {
-    z = to.hourly(x)
-    nn = names(x) %>% str_replace_all('.Close', '')
-    names(z) = names(z) %>% str_replace_all('x', nn)
-    z})
+  z = to.hourly(x)
+  nn = names(x) %>% str_replace_all('.Close', '')
+  names(z) = names(z) %>% str_replace_all('x', nn)
+  z})
 
 ##  1 day
 mbase_day1 <- llply(mbase, function(x) {
-    z = to.daily(x)
-    nn = names(x) %>% str_replace_all('.Close', '')
-    names(z) = names(z) %>% str_replace_all('x', nn)
-    z})
+  #'@ z %<>% mutate(Date = as.POSIXct(strptime(Date, "%Y-%m-%d %H")))
+  z = to.daily(x)
+  nn = names(x) %>% str_replace_all('.Close', '')
+  names(z) = names(z) %>% str_replace_all('x', nn)
+  z})
 
-fx <- ldply(mbase, dim)
-names(fx) <- c('Currency', 'Rows.all', 'Cols.all')
-fx_1m <- ldply(mbase_min1, dim)
+#'@ fx <- ldply(mbase, dim)
+#'@ names(fx) <- c('Currency', 'Rows.all', 'Cols.all')
+#'@ fx_1m <- ldply(mbase_min1, dim)
+#'@ names(fx_1m) <- c('Currency', 'Rows.1m', 'Cols.1m')
+fx_1m <- ldply(mbase, dim)
 names(fx_1m) <- c('Currency', 'Rows.1m', 'Cols.1m')
 fx_3m <- ldply(mbase_min3, dim)
 names(fx_3m) <- c('Currency', 'Rows.3m', 'Cols.3m')
@@ -251,350 +215,257 @@ names(fx_1h) <- c('Currency', 'Rows.1h', 'Cols.1h')
 fx_1d <- ldply(mbase_day1, dim)
 names(fx_1d) <- c('Currency', 'Rows.1d', 'Cols.1d')
 
-join_all(list(fx, fx_1m, fx_3m, fx_5m, fx_10m, fx_15m, fx_30m, fx_1h, fx_1d)) %>% kable(width = 'auto')
+do.call(cbind, list(fx_1m, fx_3m, fx_5m, fx_10m, fx_15m, fx_30m, fx_1h, fx_1d)) %>% kable(width = 'auto')
 ```
 
 # 3. Statiscal Modelling
 
 ## 3.1 Auto Arima Models
 
+```{r minute1-AutoArima, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/AutoArima.min1.R')
+AUDUSD.AutoArima.min1 <- readRDS('./data/AUDUSD.AutoArima.min1.rds')
+EURUSD.AutoArima.min1 <- readRDS('./data/EURUSD.AutoArima.min1.rds')
+GBPUSD.AutoArima.min1 <- readRDS('./data/GBPUSD.AutoArima.min1.rds')
+USDCAD.AutoArima.min1 <- readRDS('./data/USDCAD.AutoArima.min1.rds')
+USDCHF.AutoArima.min1 <- readRDS('./data/USDCHF.AutoArima.min1.rds')
+USDCNY.AutoArima.min1 <- readRDS('./data/USDCNY.AutoArima.min1.rds')
+USDJPY.AutoArima.min1 <- readRDS('./data/USDJPY.AutoArima.min1.rds')
+```
+
 ```{r minute3-AutoArima, warning = FALSE}
 ## Using closing price to forecast.
-.baseDate = '2014-01-01 00:00:00'
-
-AUDUSD.AutoArima.min3 <- simAutoArima2(mbase_min3[[1]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'hours', .unit = 12, 
-                                       .verbose = FALSE, .difftime = 'mins')
-
-EURUSD.AutoArima.min3 <- simAutoArima2(mbase_min3[[2]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'hours', .unit = 12, 
-                                       .verbose = FALSE, .difftime = 'mins')
-
-GBPUSD.AutoArima.min3 <- simAutoArima2(mbase_min3[[3]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'hours', .unit = 12, 
-                                       .verbose = FALSE, .difftime = 'mins')
-
-USDCAD.AutoArima.min3 <- simAutoArima2(mbase_min3[[4]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'hours', .unit = 12, 
-                                       .verbose = FALSE, .difftime = 'mins')
-
-USDCHF.AutoArima.min3 <- simAutoArima2(mbase_min3[[5]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'hours', .unit = 12, 
-                                       .verbose = FALSE, .difftime = 'mins')
-
-USDCNY.AutoArima.min3 <- simAutoArima2(mbase_min3[[6]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'hours', .unit = 12, 
-                                       .verbose = FALSE, .difftime = 'mins')
-
-USDJPY.AutoArima.min3 <- simAutoArima2(mbase_min3[[7]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'hours', .unit = 12, 
-                                       .verbose = FALSE, .difftime = 'mins')
+#'@ source('./function/AutoArima.min3.R')
+AUDUSD.AutoArima.min3 <- readRDS('./data/AUDUSD.AutoArima.min3.rds')
+EURUSD.AutoArima.min3 <- readRDS('./data/EURUSD.AutoArima.min3.rds')
+GBPUSD.AutoArima.min3 <- readRDS('./data/GBPUSD.AutoArima.min3.rds')
+USDCAD.AutoArima.min3 <- readRDS('./data/USDCAD.AutoArima.min3.rds')
+USDCHF.AutoArima.min3 <- readRDS('./data/USDCHF.AutoArima.min3.rds')
+USDCNY.AutoArima.min3 <- readRDS('./data/USDCNY.AutoArima.min3.rds')
+USDJPY.AutoArima.min3 <- readRDS('./data/USDJPY.AutoArima.min3.rds')
 ```
 
 ```{r minute5-AutoArima, warning = FALSE}
 ## Using closing price to forecast.
-.baseDate = '2014-01-01 00:00:00'
-
-AUDUSD.AutoArima.min5 <- simAutoArima2(mbase_min5[[1]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-EURUSD.AutoArima.min5 <- simAutoArima2(mbase_min5[[2]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-GBPUSD.AutoArima.min5 <- simAutoArima2(mbase_min5[[3]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCAD.AutoArima.min5 <- simAutoArima2(mbase_min5[[4]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCHF.AutoArima.min5 <- simAutoArima2(mbase_min5[[5]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCNY.AutoArima.min5 <- simAutoArima2(mbase_min5[[6]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDJPY.AutoArima.min5 <- simAutoArima2(mbase_min5[[7]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
+#'@ source('./function/AutoArima.min5.R')
+AUDUSD.AutoArima.min5 <- readRDS('./data/AUDUSD.AutoArima.min5.rds')
+EURUSD.AutoArima.min5 <- readRDS('./data/EURUSD.AutoArima.min5.rds')
+GBPUSD.AutoArima.min5 <- readRDS('./data/GBPUSD.AutoArima.min5.rds')
+USDCAD.AutoArima.min5 <- readRDS('./data/USDCAD.AutoArima.min5.rds')
+USDCHF.AutoArima.min5 <- readRDS('./data/USDCHF.AutoArima.min5.rds')
+USDCNY.AutoArima.min5 <- readRDS('./data/USDCNY.AutoArima.min5.rds')
+USDJPY.AutoArima.min5 <- readRDS('./data/USDJPY.AutoArima.min5.rds')
 ```
 
 ```{r minute10-AutoArima, warning = FALSE}
 ## Using closing price to forecast.
-.baseDate = '2014-01-01 00:00:00'
-
-AUDUSD.AutoArima.min10 <- simAutoArima2(mbase_min10[[1]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-EURUSD.AutoArima.min10 <- simAutoArima2(mbase_min10[[2]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-GBPUSD.AutoArima.min10 <- simAutoArima2(mbase_min10[[3]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCAD.AutoArima.min10 <- simAutoArima2(mbase_min10[[4]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCHF.AutoArima.min10 <- simAutoArima2(mbase_min10[[5]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCNY.AutoArima.min10 <- simAutoArima2(mbase_min10[[6]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDJPY.AutoArima.min10 <- simAutoArima2(mbase_min10[[7]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 1, 
-                                       .verbose = TRUE, .difftime = 'mins')
+#'@ source('./function/AutoArima.min10.R')
+AUDUSD.AutoArima.min10 <- readRDS('./data/AUDUSD.AutoArima.min10.rds')
+EURUSD.AutoArima.min10 <- readRDS('./data/EURUSD.AutoArima.min10.rds')
+GBPUSD.AutoArima.min10 <- readRDS('./data/GBPUSD.AutoArima.min10.rds')
+USDCAD.AutoArima.min10 <- readRDS('./data/USDCAD.AutoArima.min10.rds')
+USDCHF.AutoArima.min10 <- readRDS('./data/USDCHF.AutoArima.min10.rds')
+USDCNY.AutoArima.min10 <- readRDS('./data/USDCNY.AutoArima.min10.rds')
+USDJPY.AutoArima.min10 <- readRDS('./data/USDJPY.AutoArima.min10.rds')
 ```
 
 ```{r minute15-AutoArima, warning = FALSE}
 ## Using closing price to forecast.
-.baseDate = '2014-01-01 00:00:00'
-
-AUDUSD.AutoArima.min15 <- simAutoArima2(mbase_min15[[1]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 3, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-EURUSD.AutoArima.min15 <- simAutoArima2(mbase_min15[[2]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 3, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-GBPUSD.AutoArima.min15 <- simAutoArima2(mbase_min15[[3]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 3, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCAD.AutoArima.min15 <- simAutoArima2(mbase_min15[[4]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 3, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCHF.AutoArima.min15 <- simAutoArima2(mbase_min15[[5]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 3, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCNY.AutoArima.min15 <- simAutoArima2(mbase_min15[[6]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 3, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDJPY.AutoArima.min15 <- simAutoArima2(mbase_min15[[7]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 3, 
-                                       .verbose = TRUE, .difftime = 'mins')
+#'@ source('./function/AutoArima.min15.R')
+AUDUSD.AutoArima.min15 <- readRDS('./data/AUDUSD.AutoArima.min15.rds')
+EURUSD.AutoArima.min15 <- readRDS('./data/EURUSD.AutoArima.min15.rds')
+GBPUSD.AutoArima.min15 <- readRDS('./data/GBPUSD.AutoArima.min15.rds')
+USDCAD.AutoArima.min15 <- readRDS('./data/USDCAD.AutoArima.min15.rds')
+USDCHF.AutoArima.min15 <- readRDS('./data/USDCHF.AutoArima.min15.rds')
+USDCNY.AutoArima.min15 <- readRDS('./data/USDCNY.AutoArima.min15.rds')
+USDJPY.AutoArima.min15 <- readRDS('./data/USDJPY.AutoArima.min15.rds')
 ```
 
 ```{r minute30-AutoArima, warning = FALSE}
 ## Using closing price to forecast.
-.baseDate = '2014-01-01 00:00:00'
-
-AUDUSD.AutoArima.min30 <- simAutoArima2(mbase_min30[[1]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 7, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-EURUSD.AutoArima.min30 <- simAutoArima2(mbase_min30[[2]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 7, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-GBPUSD.AutoArima.min30 <- simAutoArima2(mbase_min30[[3]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 7, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCAD.AutoArima.min30 <- simAutoArima2(mbase_min30[[4]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 7, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCHF.AutoArima.min30 <- simAutoArima2(mbase_min30[[5]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 7, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDCNY.AutoArima.min30 <- simAutoArima2(mbase_min30[[6]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 7, 
-                                       .verbose = TRUE, .difftime = 'mins')
-
-USDJPY.AutoArima.min30 <- simAutoArima2(mbase_min30[[7]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'days', .unit = 7, 
-                                       .verbose = TRUE, .difftime = 'mins')
+#'@ source('./function/AutoArima.min30.R')
+AUDUSD.AutoArima.min30 <- readRDS('./data/AUDUSD.AutoArima.min30.rds')
+EURUSD.AutoArima.min30 <- readRDS('./data/EURUSD.AutoArima.min30.rds')
+GBPUSD.AutoArima.min30 <- readRDS('./data/GBPUSD.AutoArima.min30.rds')
+USDCAD.AutoArima.min30 <- readRDS('./data/USDCAD.AutoArima.min30.rds')
+USDCHF.AutoArima.min30 <- readRDS('./data/USDCHF.AutoArima.min30.rds')
+USDCNY.AutoArima.min30 <- readRDS('./data/USDCNY.AutoArima.min30.rds')
+USDJPY.AutoArima.min30 <- readRDS('./data/USDJPY.AutoArima.min30.rds')
 ```
 
 ```{r hour1-AutoArima, warning = FALSE}
 ## Using closing price to forecast.
-.baseDate = '2014-01-01 00:00:00'
-
-AUDUSD.AutoArima.h1 <- simAutoArima2(mbase_hrs1[[1]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'weeks', .unit = 2, 
-                                       .verbose = TRUE, .difftime = 'hours')
-
-EURUSD.AutoArima.h1 <- simAutoArima2(mbase_hrs1[[2]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'weeks', .unit = 2, 
-                                       .verbose = TRUE, .difftime = 'hours')
-
-GBPUSD.AutoArima.h1 <- simAutoArima2(mbase_hrs1[[3]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'weeks', .unit = 2, 
-                                       .verbose = TRUE, .difftime = 'hours')
-
-USDCAD.AutoArima.h1 <- simAutoArima2(mbase_hrs1[[4]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'weeks', .unit = 2, 
-                                       .verbose = TRUE, .difftime = 'hours')
-
-USDCHF.AutoArima.h1 <- simAutoArima2(mbase_hrs1[[5]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'weeks', .unit = 2, 
-                                       .verbose = TRUE, .difftime = 'hours')
-
-USDCNY.AutoArima.h1 <- simAutoArima2(mbase_hrs1[[6]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'weeks', .unit = 2, 
-                                       .verbose = TRUE, .difftime = 'hours')
-
-USDJPY.AutoArima.h1 <- simAutoArima2(mbase_hrs1[[7]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'weeks', .unit = 2, 
-                                       .verbose = TRUE, .difftime = 'hours')
+#'@ source('./function/AutoArima.h1.R')
+AUDUSD.AutoArima.h1 <- readRDS('./data/AUDUSD.AutoArima.h1.rds')
+EURUSD.AutoArima.h1 <- readRDS('./data/EURUSD.AutoArima.h1.rds')
+GBPUSD.AutoArima.h1 <- readRDS('./data/GBPUSD.AutoArima.h1.rds')
+USDCAD.AutoArima.h1 <- readRDS('./data/USDCAD.AutoArima.h1.rds')
+USDCHF.AutoArima.h1 <- readRDS('./data/USDCHF.AutoArima.h1.rds')
+USDCNY.AutoArima.h1 <- readRDS('./data/USDCNY.AutoArima.h1.rds')
+USDJPY.AutoArima.h1 <- readRDS('./data/USDJPY.AutoArima.h1.rds')
 ```
 
-```{r day1-AutoArima, warning = FALSE}
+```{r day6m-AutoArima, warning = FALSE}
 ## Using closing price to forecast.
-.baseDate = '2014-01-01 00:00:00'
-
-AUDUSD.AutoArima.d6m <- simAutoArima2(mbase_day1[[1]], .prCat = 'Cl', 
-                                       .baseDate = ymd_hms('2014-01-01 00:00:00'), 
-                                       .maPeriod = 'months', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(AUDUSD.AutoArima.d6m, './data/AUDUSD.AutoArima.d6m.rds')
-
-EURUSD.AutoArima.d6m <- simAutoArima2(mbase_day1[[2]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'months', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(EURUSD.AutoArima.d6m, './data/EURUSD.AutoArima.d6m.rds')
-
-GBPUSD.AutoArima.d6m <- simAutoArima2(mbase_day1[[3]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'months', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(GBPUSD.AutoArima.d6m, './data/GBPUSD.AutoArima.d6m.rds')
-
-USDCAD.AutoArima.d6m <- simAutoArima2(mbase_day1[[4]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'months', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(USDCAD.AutoArima.d6m, './data/USDCAD.AutoArima.d6m.rds')
-
-USDCHF.AutoArima.d6m <- simAutoArima2(mbase_day1[[5]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'months', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(USDCHF.AutoArima.d6m, './data/USDCHF.AutoArima.d6m.rds')
-
-USDCNY.AutoArima.d6m <- simAutoArima2(mbase_day1[[6]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'months', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(USDCNY.AutoArima.d6m, './data/USDCNY.AutoArima.d6m.rds')
-
-USDJPY.AutoArima.d6m <- simAutoArima2(mbase_day1[[7]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'months', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(USDJPY.AutoArima.d6m, './data/USDJPY.AutoArima.d6m.rds')
+#'@ source('./function/AutoArima.d6m.R')
+AUDUSD.AutoArima.d6m <- readRDS('./data/AUDUSD.AutoArima.d6m.rds')
+EURUSD.AutoArima.d6m <- readRDS('./data/EURUSD.AutoArima.d6m.rds')
+GBPUSD.AutoArima.d6m <- readRDS('./data/GBPUSD.AutoArima.d6m.rds')
+USDCAD.AutoArima.d6m <- readRDS('./data/USDCAD.AutoArima.d6m.rds')
+USDCHF.AutoArima.d6m <- readRDS('./data/USDCHF.AutoArima.d6m.rds')
+USDCNY.AutoArima.d6m <- readRDS('./data/USDCNY.AutoArima.d6m.rds')
+USDJPY.AutoArima.d6m <- readRDS('./data/USDJPY.AutoArima.d6m.rds')
 ```
 
-```{r day1b-AutoArima, warning = FALSE}
+```{r day1y-AutoArima, warning = FALSE}
 ## Using closing price to forecast.
-.baseDate = '2014-01-01 00:00:00'
-
-AUDUSD.AutoArima.d1y <- simAutoArima2(mbase_day1[[1]], .prCat = 'Cl', 
-                                       .baseDate = ymd_hms('2014-01-01 00:00:00'), 
-                                       .maPeriod = 'years', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(AUDUSD.AutoArima.d1y, './data/AUDUSD.AutoArima.d1y.rds')
-
-EURUSD.AutoArima.d1y <- simAutoArima2(mbase_day1[[2]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'years', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(EURUSD.AutoArima.d1y, './data/EURUSD.AutoArima.d1y.rds')
-
-GBPUSD.AutoArima.d1y <- simAutoArima2(mbase_day1[[3]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'years', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(GBPUSD.AutoArima.d1y, './data/GBPUSD.AutoArima.d1y.rds')
-
-USDCAD.AutoArima.d1y <- simAutoArima2(mbase_day1[[4]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'years', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(USDCAD.AutoArima.d1y, './data/USDCAD.AutoArima.d1y.rds')
-
-USDCHF.AutoArima.d1y <- simAutoArima2(mbase_day1[[5]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'years', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(USDCHF.AutoArima.d1y, './data/USDCHF.AutoArima.d1y.rds')
-
-USDCNY.AutoArima.d1y <- simAutoArima2(mbase_day1[[6]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'years', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(USDCNY.AutoArima.d1y, './data/USDCNY.AutoArima.d1y.rds')
-
-USDJPY.AutoArima.d1y <- simAutoArima2(mbase_day1[[7]], .prCat = 'Cl', 
-                                       .baseDate = .baseDate, 
-                                       .maPeriod = 'years', .unit = 6, 
-                                       .verbose = FALSE, .difftime = 'days')
-saveRDS(USDJPY.AutoArima.d1y, './data/USDJPY.AutoArima.d1y.rds')
+#'@ source('./function/AutoArima.d1y.R')
+AUDUSD.AutoArima.d1y <- readRDS('./data/AUDUSD.AutoArima.d1y.rds')
+EURUSD.AutoArima.d1y <- readRDS('./data/EURUSD.AutoArima.d1y.rds')
+GBPUSD.AutoArima.d1y <- readRDS('./data/GBPUSD.AutoArima.d1y.rds')
+USDCAD.AutoArima.d1y <- readRDS('./data/USDCAD.AutoArima.d1y.rds')
+USDCHF.AutoArima.d1y <- readRDS('./data/USDCHF.AutoArima.d1y.rds')
+USDCNY.AutoArima.d1y <- readRDS('./data/USDCNY.AutoArima.d1y.rds')
+USDJPY.AutoArima.d1y <- readRDS('./data/USDJPY.AutoArima.d1y.rds')
 ```
-
 
 ## 3.2 Exponential Smoothing Models
 
+```{r multi-etsM}
+## set all models provided by ets function.
+ets.m1 <- c('A', 'M', 'Z')
+ets.m2 <- c('N', 'A', 'M', 'Z')
+ets.m3 <- c('N', 'A', 'M', 'Z')
+ets.m <- do.call(paste0, expand.grid(ets.m1, ets.m2, ets.m3))
+rm(ets.m1, ets.m2, ets.m3)
+
+pp <- expand.grid(c('Op', 'Hi', 'Mn', 'Lo', 'Cl'), c('Op', 'Hi', 'Mn', 'Lo', 'Cl')) %>% mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ')
+```
+
+```{r multi-ets, echo = FALSE, eval = FALSE}
+## Application of Monte Carlo method to simulate 10000 times.
+.baseDate = '2014-01-01 00:00:00'
+
+res <- llply(ets.m, function(x) {
+    llply(mbase_min1, function(y) {
+        z = simETS2(y, .model = x, .prCat = 'Cl', .baseDate = .baseDate, 
+                    .maPeriod = 'months', .unit = 6, .difftime = 'days')
+        txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.Cl.d6m.rds\'); rm(z)')
+        eval(parse(text = txt1))
+        cat(paste0(txt1, ' done!', '\n'))
+    })
+    cat(paste(x, 'done', '\n'))
+    })
+```
+
+```{r minute1-ETS, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/ETS.min1.R')
+AUDUSD.ETS.min1 <- readRDS('./data/AUDUSD.ETS.min1.rds')
+EURUSD.ETS.min1 <- readRDS('./data/EURUSD.ETS.min1.rds')
+GBPUSD.ETS.min1 <- readRDS('./data/GBPUSD.ETS.min1.rds')
+USDCAD.ETS.min1 <- readRDS('./data/USDCAD.ETS.min1.rds')
+USDCHF.ETS.min1 <- readRDS('./data/USDCHF.ETS.min1.rds')
+USDCNY.ETS.min1 <- readRDS('./data/USDCNY.ETS.min1.rds')
+USDJPY.ETS.min1 <- readRDS('./data/USDJPY.ETS.min1.rds')
+```
+
+```{r minute3-ETS, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/ETS.min3.R')
+AUDUSD.ETS.min3 <- readRDS('./data/AUDUSD.ETS.min3.rds')
+EURUSD.ETS.min3 <- readRDS('./data/EURUSD.ETS.min3.rds')
+GBPUSD.ETS.min3 <- readRDS('./data/GBPUSD.ETS.min3.rds')
+USDCAD.ETS.min3 <- readRDS('./data/USDCAD.ETS.min3.rds')
+USDCHF.ETS.min3 <- readRDS('./data/USDCHF.ETS.min3.rds')
+USDCNY.ETS.min3 <- readRDS('./data/USDCNY.ETS.min3.rds')
+USDJPY.ETS.min3 <- readRDS('./data/USDJPY.ETS.min3.rds')
+```
+
+```{r minute5-ETS, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/ETS.min5.R')
+AUDUSD.ETS.min5 <- readRDS('./data/AUDUSD.ETS.min5.rds')
+EURUSD.ETS.min5 <- readRDS('./data/EURUSD.ETS.min5.rds')
+GBPUSD.ETS.min5 <- readRDS('./data/GBPUSD.ETS.min5.rds')
+USDCAD.ETS.min5 <- readRDS('./data/USDCAD.ETS.min5.rds')
+USDCHF.ETS.min5 <- readRDS('./data/USDCHF.ETS.min5.rds')
+USDCNY.ETS.min5 <- readRDS('./data/USDCNY.ETS.min5.rds')
+USDJPY.ETS.min5 <- readRDS('./data/USDJPY.ETS.min5.rds')
+```
+
+```{r minute10-ETS, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/ETS.min10.R')
+AUDUSD.ETS.min10 <- readRDS('./data/AUDUSD.ETS.min10.rds')
+EURUSD.ETS.min10 <- readRDS('./data/EURUSD.ETS.min10.rds')
+GBPUSD.ETS.min10 <- readRDS('./data/GBPUSD.ETS.min10.rds')
+USDCAD.ETS.min10 <- readRDS('./data/USDCAD.ETS.min10.rds')
+USDCHF.ETS.min10 <- readRDS('./data/USDCHF.ETS.min10.rds')
+USDCNY.ETS.min10 <- readRDS('./data/USDCNY.ETS.min10.rds')
+USDJPY.ETS.min10 <- readRDS('./data/USDJPY.ETS.min10.rds')
+```
+
+```{r minute15-ETS, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/ETS.min15.R')
+AUDUSD.ETS.min15 <- readRDS('./data/AUDUSD.ETS.min15.rds')
+EURUSD.ETS.min15 <- readRDS('./data/EURUSD.ETS.min15.rds')
+GBPUSD.ETS.min15 <- readRDS('./data/GBPUSD.ETS.min15.rds')
+USDCAD.ETS.min15 <- readRDS('./data/USDCAD.ETS.min15.rds')
+USDCHF.ETS.min15 <- readRDS('./data/USDCHF.ETS.min15.rds')
+USDCNY.ETS.min15 <- readRDS('./data/USDCNY.ETS.min15.rds')
+USDJPY.ETS.min15 <- readRDS('./data/USDJPY.ETS.min15.rds')
+```
+
+```{r minute30-ETS, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/ETS.min30.R')
+AUDUSD.ETS.min30 <- readRDS('./data/AUDUSD.ETS.min30.rds')
+EURUSD.ETS.min30 <- readRDS('./data/EURUSD.ETS.min30.rds')
+GBPUSD.ETS.min30 <- readRDS('./data/GBPUSD.ETS.min30.rds')
+USDCAD.ETS.min30 <- readRDS('./data/USDCAD.ETS.min30.rds')
+USDCHF.ETS.min30 <- readRDS('./data/USDCHF.ETS.min30.rds')
+USDCNY.ETS.min30 <- readRDS('./data/USDCNY.ETS.min30.rds')
+USDJPY.ETS.min30 <- readRDS('./data/USDJPY.ETS.min30.rds')
+```
+
+```{r hour1-ETS, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/ETS.h1.R')
+AUDUSD.ETS.h1 <- readRDS('./data/AUDUSD.ETS.h1.rds')
+EURUSD.ETS.h1 <- readRDS('./data/EURUSD.ETS.h1.rds')
+GBPUSD.ETS.h1 <- readRDS('./data/GBPUSD.ETS.h1.rds')
+USDCAD.ETS.h1 <- readRDS('./data/USDCAD.ETS.h1.rds')
+USDCHF.ETS.h1 <- readRDS('./data/USDCHF.ETS.h1.rds')
+USDCNY.ETS.h1 <- readRDS('./data/USDCNY.ETS.h1.rds')
+USDJPY.ETS.h1 <- readRDS('./data/USDJPY.ETS.h1.rds')
+```
+
+```{r day6m-ETS, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/ETS.d6m.R')
+AUDUSD.ETS.d6m <- readRDS('./data/AUDUSD.ETS.d6m.rds')
+EURUSD.ETS.d6m <- readRDS('./data/EURUSD.ETS.d6m.rds')
+GBPUSD.ETS.d6m <- readRDS('./data/GBPUSD.ETS.d6m.rds')
+USDCAD.ETS.d6m <- readRDS('./data/USDCAD.ETS.d6m.rds')
+USDCHF.ETS.d6m <- readRDS('./data/USDCHF.ETS.d6m.rds')
+USDCNY.ETS.d6m <- readRDS('./data/USDCNY.ETS.d6m.rds')
+USDJPY.ETS.d6m <- readRDS('./data/USDJPY.ETS.d6m.rds')
+```
+
+```{r day1y-ETS, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/ETS.d1y.R')
+AUDUSD.ETS.d1y <- readRDS('./data/AUDUSD.ETS.d1y.rds')
+EURUSD.ETS.d1y <- readRDS('./data/EURUSD.ETS.d1y.rds')
+GBPUSD.ETS.d1y <- readRDS('./data/GBPUSD.ETS.d1y.rds')
+USDCAD.ETS.d1y <- readRDS('./data/USDCAD.ETS.d1y.rds')
+USDCHF.ETS.d1y <- readRDS('./data/USDCHF.ETS.d1y.rds')
+USDCNY.ETS.d1y <- readRDS('./data/USDCNY.ETS.d1y.rds')
+USDJPY.ETS.d1y <- readRDS('./data/USDJPY.ETS.d1y.rds')
+```
 
 
 ## 3.3 Univariate Garch Models
@@ -602,7 +473,7 @@ saveRDS(USDJPY.AutoArima.d1y, './data/USDJPY.AutoArima.d1y.rds')
 
 ## 3.4 Multivariate Garch Models
 
-# 4. Residuals
+# 4. Mean Squared Error (MSE)
 
 ## 4.1 Auto Arima Models
 
