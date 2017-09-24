@@ -2,8 +2,9 @@
 ## Hi for predict daily highest price. (selling daytrade)
 ## Lo for predict daily lowest price. (buying daytrade)
 simETS2 <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE, 
-                   .prCat = 'Mn', .baseDate = ymd('2015-01-01'), .maPeriod = 'years', 
-                   .unit = 1, .difftime = 'days', .verbose = FALSE, .parallel = FALSE, 
+                   .prCat = 'Mn', .maPeriod = 'years', .unit = 1, .difftime = 'days', 
+                   .baseDate = as.POSIXct(strptime('2015-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')), 
+                   .verbose = FALSE, .parallel = FALSE, 
                    .simulate = FALSE, .bootstrap = FALSE, .npaths = 5000) {
   #' Exponential smoothing state space model
   #' 
@@ -32,7 +33,11 @@ simETS2 <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALS
   
   ## dateID
   dateID <- index(mbase)
-  dateID <- as.POSIXct(strptime(dateID, '%Y-%m-%d %H:%M:%S')) %>% sort
+  if(is.Date(dateID)) {
+    dateID <- dateID
+  } else {
+    dateID <- as.POSIXct(strptime(dateID, '%Y-%m-%d %H:%M:%S')) %>% sort
+  }
   
   if(!is.POSIXct(.baseDate)) {
     #'@ dateID0 <- ymd(.baseDate); rm(.baseDate)
@@ -109,8 +114,14 @@ simETS2 <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALS
   ## Forecast simulation on the ets models.
   pred.data <- ldply(dateID, function(dt) {
     smp = obs.data2
-    dtr = last(as.POSIXct(strptime(index(
-      smp[as.POSIXct(strptime(index(smp), '%Y-%m-%d %H:%M:%S')) < dt]), '%Y-%m-%d %H:%M:%S')))
+    
+    if(is.Date(dt)) {
+      dtr <- last(index(smp[index(smp) < dt]))
+    } else {
+      dtr = last(as.POSIXct(strptime(index(
+        smp[as.POSIXct(strptime(index(smp), '%Y-%m-%d %H:%M:%S')) < dt]), 
+        '%Y-%m-%d %H:%M:%S')))
+    }
     
     if(.maPeriod == 'mins') {
       if(.difftime == 'mins') {
@@ -182,7 +193,7 @@ simETS2 <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALS
       }
       
     } else {
-      stop('Kindly choose .maPeriod and .difftime among c("mins", "hours", "days", "weeks", "months", "years").')
+      stop('Kindly choose .maPeriod and .difftime among c("secs", mins", "hours", "days", "weeks", "months", "years").')
     }
     
     data.frame(Date = dt, forecast(fit, h = frd, simulate = .simulate, 

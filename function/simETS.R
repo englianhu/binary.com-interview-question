@@ -2,7 +2,8 @@
 ## Hi for predict daily highest price. (selling daytrade)
 ## Lo for predict daily lowest price. (buying daytrade)
 simETS <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE, 
-                   .prCat = 'Mn', .baseDate = ymd('2015-01-01'), .parallel = FALSE, 
+                   .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
+                   .maPeriod = 'years', .unit = 1, .verbose = FALSE, .parallel = FALSE, 
                    .simulate = FALSE, .bootstrap = FALSE, .npaths = 5000) {
   #' Exponential smoothing state space model
   #' 
@@ -97,11 +98,18 @@ simETS <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE
   pred.data <- ldply(dateID, function(dt) {
     smp = obs.data2
     dtr = last(index(smp[index(smp) < dt]))
-    smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-    frd = as.numeric(difftime(dt, dtr), units = 'days')
+    
+    if(.maPeriod == 'months') {
+      smp = smp[paste0(dtr %m-% months(.unit), '/', dtr)]
+    }
+    if(.maPeriod == 'years') {
+      smp = smp[paste0(dtr %m-% years(.unit), '/', dtr)]
+    }
+    frd = as.numeric(difftime(dt, dtr, units = 'days'))
     fit = ets(smp, model = .model, 
               damped = .damped, additive.only = .additive.only) #exponential smoothing model.
     if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+    if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
     data.frame(Date = dt, forecast(fit, h = frd, simulate = .simulate, 
                                    bootstrap = .bootstrap, npaths = .npaths)) %>% tbl_df
   }, .parallel = .parallel) %>% tbl_df

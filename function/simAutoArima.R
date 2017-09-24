@@ -1,7 +1,8 @@
 ## Now we try to use the daily mean value which is (Hi + Lo) / 2.
 ## Hi for predict daily highest price. (selling daytrade)
 ## Lo for predict daily lowest price. (buying daytrade)
-simAutoArima <- function(mbase, .prCat = 'Mn', .baseDate = ymd('2015-01-01'), .parallel = FALSE) {
+simAutoArima <- function(mbase, .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
+                         .maPeriod = 'years', .unit = 1, .verbose = FALSE, .parallel = FALSE) {
   #' Auto Arima model
   #' 
   
@@ -48,10 +49,17 @@ simAutoArima <- function(mbase, .prCat = 'Mn', .baseDate = ymd('2015-01-01'), .p
   pred.data <- ldply(dateID, function(dt) {
     smp = obs.data2
     dtr = last(index(smp[index(smp) < dt]))
-    smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-    frd = as.numeric(difftime(dt, dtr), units = 'days')
+    
+    if(.maPeriod == 'months') {
+      smp = smp[paste0(dtr %m-% months(.unit), '/', dtr)]
+    }
+    if(.maPeriod == 'years') {
+      smp = smp[paste0(dtr %m-% years(.unit), '/', dtr)]
+    }
+    frd = as.numeric(difftime(dt, dtr, units = 'days'))
     fit = auto.arima(smp) #exponential smoothing model.
     if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+    if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
     data.frame(Date = dt, forecast(fit, h = frd)) %>% tbl_df
   }, .parallel = .parallel) %>% tbl_df
   

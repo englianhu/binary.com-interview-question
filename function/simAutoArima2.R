@@ -1,10 +1,9 @@
 ## Now we try to use the daily mean value which is (Hi + Lo) / 2.
 ## Hi for predict daily highest price. (selling daytrade)
 ## Lo for predict daily lowest price. (buying daytrade)
-simAutoArima2 <- function(mbase, .prCat = 'Mn', 
-                          .baseDate = as.POSIXct(strptime('2015-01-01 00:00:00', '%Y-%m-%d %H:%M:%S')), 
-                         .maPeriod = 'years', .unit = 1, .difftime = 'days', 
-                         .verbose = FALSE, .parallel = FALSE) {
+simAutoArima2 <- function(mbase, .prCat = 'Mn', .baseDate = '2015-01-01 00:00:00', 
+                          .maPeriod = 'years', .unit = 1, .difftime = 'days', 
+                          .verbose = FALSE, .parallel = FALSE) {
   #' Auto Arima model
   #' 
   
@@ -12,14 +11,14 @@ simAutoArima2 <- function(mbase, .prCat = 'Mn',
   
   ## dateID
   dateID <- index(mbase)
-  dateID <- as.POSIXct(strptime(dateID, '%Y-%m-%d %H:%M:%S')) %>% sort
-  
-  if(!is.POSIXct(.baseDate)) {
-    #'@ dateID0 <- ymd(.baseDate); rm(.baseDate)
-    dateID0 <- as.POSIXct(strptime(.baseDate, '%Y-%m-%d %H:%M:%S')); rm(.baseDate)
+  if(is.Date(dateID)) {
+    dateID <- dateID
+    dateID0 <- as.Date(.baseDate); rm(.baseDate)
   } else {
-    dateID0 <- .baseDate; rm(.baseDate)
+    dateID <- as.POSIXct(strptime(dateID, '%Y-%m-%d %H:%M:%S')) %>% sort
+    dateID0 <- as.POSIXct(strptime(.baseDate, '%Y-%m-%d %H:%M:%S')); rm(.baseDate)
   }
+  
   dateID <- dateID[dateID >= dateID0]
   
   ## Set as our daily settlement price.
@@ -62,13 +61,19 @@ simAutoArima2 <- function(mbase, .prCat = 'Mn',
   ## Forecast simulation on the ets models.
   pred.data <- ldply(dateID, function(dt) {
     smp = obs.data2
-    dtr = last(as.POSIXct(strptime(index(
-      smp[as.POSIXct(strptime(index(smp), '%Y-%m-%d %H:%M:%S')) < dt]), '%Y-%m-%d %H:%M:%S')))
+    
+    if(is.Date(dt)) {
+      dtr <- last(index(smp[index(smp) < dt]))
+    } else {
+      dtr = last(as.POSIXct(strptime(index(
+        smp[as.POSIXct(strptime(index(smp), '%Y-%m-%d %H:%M:%S')) < dt]), 
+        '%Y-%m-%d %H:%M:%S')))
+    }
     
     if(.maPeriod == 'mins') {
       if(.difftime == 'mins') {
         smp = smp[paste0(dtr %m-% minutes(.unit), '/', dtr)]
-        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        frd = as.numeric(difftime(dt, dtr, units = .difftime))
         fit = auto.arima(smp) #Auto Arima model.
         if(frd > 1) dt = seq(dt - minutes(frd), dt, by = .difftime)[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
@@ -77,7 +82,7 @@ simAutoArima2 <- function(mbase, .prCat = 'Mn',
     } else if(.maPeriod == 'hours') {
       if(.difftime == 'mins') {
         smp = smp[paste0(dtr %m-% hours(.unit), '/', dtr)]
-        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        frd = as.numeric(difftime(dt, dtr, units = .difftime))
         fit = auto.arima(smp) #Auto Arima model.
         if(frd > 1) dt = seq(dt - minutes(frd), dt, by = .difftime)[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
@@ -86,7 +91,7 @@ simAutoArima2 <- function(mbase, .prCat = 'Mn',
     } else if(.maPeriod == 'days') {
       if(.difftime == 'mins') {
         smp = smp[paste0(dtr %m-% days(.unit), '/', dtr)]
-        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        frd = as.numeric(difftime(dt, dtr, units = .difftime))
         fit = auto.arima(smp) #Auto Arima model.
         if(frd > 1) dt = seq(dt - minutes(frd), dt, by = .difftime)[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
@@ -95,7 +100,7 @@ simAutoArima2 <- function(mbase, .prCat = 'Mn',
     } else if(.maPeriod == 'weeks') {
       if(.difftime == 'hours') {
         smp = smp[paste0(dtr %m-% weeks(.unit), '/', dtr)]
-        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        frd = as.numeric(difftime(dt, dtr, units = .difftime))
         fit = auto.arima(smp) #Auto Arima model.
         if(frd > 1) dt = seq(dt - hours(frd), dt, by = .difftime)[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
@@ -104,7 +109,7 @@ simAutoArima2 <- function(mbase, .prCat = 'Mn',
     } else if(.maPeriod == 'months') {
       if(.difftime == 'days') {
         smp = smp[paste0(dtr %m-% months(.unit), '/', dtr)]
-        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        frd = as.numeric(difftime(dt, dtr, units = .difftime))
         fit = auto.arima(smp) #Auto Arima model.
         if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
@@ -112,7 +117,7 @@ simAutoArima2 <- function(mbase, .prCat = 'Mn',
       
       if(.difftime == 'hours') {
         smp = smp[paste0(dtr %m-% weeks(.unit), '/', dtr)]
-        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        frd = as.numeric(difftime(dt, dtr, units = .difftime))
         fit = auto.arima(smp) #Auto Arima model.
         if(frd > 1) dt = seq(dt - hours(frd), dt, by = .difftime)[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
@@ -121,14 +126,14 @@ simAutoArima2 <- function(mbase, .prCat = 'Mn',
     } else if(.maPeriod == 'years') {
       if(.difftime == 'days') {
         smp = smp[paste0(dtr %m-% years(.unit), '/', dtr)]
-        frd = as.numeric(difftime(dt, dtr), units = .difftime)
+        frd = as.numeric(difftime(dt, dtr, units = .difftime))
         fit = auto.arima(smp) #Auto Arima model.
         if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
       }
       
     } else {
-      stop('Kindly choose .maPeriod and .difftime among c("mins", "hours", "days", "weeks", "months", "years").')
+      stop('Kindly choose .maPeriod and .difftime among c("secs", "mins", "hours", "days", "weeks", "months", "years").')
     }
     
     data.frame(Date = dt, forecast(fit, h = frd)) %>% tbl_df

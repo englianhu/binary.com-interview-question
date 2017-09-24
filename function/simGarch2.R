@@ -138,7 +138,7 @@ simGarch2 <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd(
       smp = obs.data2
       dtr = last(index(smp[index(smp) < dt]))
       smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-      frd = as.numeric(difftime(dt, dtr), units = .difftime)
+      frd = as.numeric(difftime(dt, dtr, units = .difftime))
       
       spec = ugarchspec(variance.model = .variance.model, 
                         mean.model = .mean.model, #realizedVol = .rVol, 
@@ -209,13 +209,13 @@ simGarch2 <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd(
       smp = obs.data2
       dtr = last(index(smp[index(smp) < dt]))
       smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-      frd = as.numeric(difftime(dt, dtr), units = 'days')
+      frd = as.numeric(difftime(dt, dtr, units = .difftime))
       
       spec = ugarchspec(variance.model = .variance.model, 
                         mean.model = .mean.model, 
                         distribution.model = .dist.model)
       fit = ugarchfit(spec, smp, solver = .solver[1])
-      if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+      if(frd > 1) dt = seq(dt - days(frd), dt, by = .difftime)[-1]
       fc = ugarchforecast(fit, n.ahead = frd)
     }
     
