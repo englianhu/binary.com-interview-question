@@ -1,5 +1,6 @@
 simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
-                     .maPeriod = 'years', .unit = 1, .verbose = FALSE, 
+                     .maPeriod = 'years', .unit = 1, .verbose = FALSE, .bootstrap = FALSE, 
+                     .boot.method = 'Partial', .n.bootfit = 10000, .n.bootpred = 10000, 
                      .parallel = FALSE, .progress = 'none', .method = 'CSS-ML', .realizedVol = 'Ad', 
                      .variance.model = list(model = 'sGARCH', garchOrder = c(1, 1), 
                                             submodel = NULL, external.regressors = NULL, 
@@ -141,7 +142,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
                         mean.model = .mean.model, #realizedVol = .rVol, 
                         distribution.model = .dist.model)
       if(.realizedVol == 'Op') {
-        rVol = Delt(Op(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        if(.maPeriod == 'months') {
+          rVol = Delt(Op(mbase))[paste0(dtr %m-% months(.unit), '/', dtr)]
+        }
+        if(.maPeriod == 'years') {
+          rVol = Delt(Op(mbase))[paste0(dtr %m-% years(.unit), '/', dtr)]
+        }
         rVol[1] = 1
         names(rVol) = names(Op(mbase)) %>% str_replace_all('.Open', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
@@ -150,7 +156,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Hi') {
-        rVol = Delt(Hi(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        if(.maPeriod == 'months') {
+          rVol = Delt(Hi(mbase))[paste0(dtr %m-% months(.unit), '/', dtr)]
+        }
+        if(.maPeriod == 'years') {
+          rVol = Delt(Hi(mbase))[paste0(dtr %m-% years(.unit), '/', dtr)]
+        }
         rVol[1] = 1
         names(rVol) = names(Hi(mbase)) %>% str_replace_all('.High', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
@@ -159,7 +170,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Mn') {
-        rVol = Delt(Mn(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        if(.maPeriod == 'months') {
+          rVol = Delt(Mn(mbase))[paste0(dtr %m-% months(.unit), '/', dtr)]
+        }
+        if(.maPeriod == 'years') {
+          rVol = Delt(Mn(mbase))[paste0(dtr %m-% years(.unit), '/', dtr)]
+        }
         rVol[1] = 1
         names(rVol) = names(Mn(mbase)) %>% str_replace_all('.Mean', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
@@ -168,7 +184,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Lo') {
-        rVol = Delt(Lo(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        if(.maPeriod == 'months') {
+          rVol = Delt(Lo(mbase))[paste0(dtr %m-% months(.unit), '/', dtr)]
+        }
+        if(.maPeriod == 'years') {
+          rVol = Delt(Lo(mbase))[paste0(dtr %m-% years(.unit), '/', dtr)]
+        }
         rVol[1] = 1
         names(rVol) = names(Lo(mbase)) %>% str_replace_all('.Low', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
@@ -177,7 +198,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Cl') {
-        rVol = Delt(Cl(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        if(.maPeriod == 'months') {
+          rVol = Delt(Cl(mbase))[paste0(dtr %m-% months(.unit), '/', dtr)]
+        }
+        if(.maPeriod == 'years') {
+          rVol = Delt(Cl(mbase))[paste0(dtr %m-% years(.unit), '/', dtr)]
+        }
         rVol[1] = 1
         names(rVol) = names(Cl(mbase)) %>% str_replace_all('.Close', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
@@ -186,7 +212,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Ad') {
-        rVol = Delt(Ad(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        if(.maPeriod == 'months') {
+          rVol = Delt(Ad(mbase))[paste0(dtr %m-% months(.unit), '/', dtr)]
+        }
+        if(.maPeriod == 'years') {
+          rVol = Delt(Ad(mbase))[paste0(dtr %m-% years(.unit), '/', dtr)]
+        }
         rVol[1] = 1
         names(rVol) = names(Ad(mbase)) %>% str_replace_all('.Adjusted', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
@@ -195,7 +226,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
         
       } else if(.realizedVol == 'Vo') {
-        rVol = Delt(Vo(mbase))[paste0(dtr %m-% years(1), '/', dtr)]
+        if(.maPeriod == 'months') {
+          rVol = Delt(Vo(mbase))[paste0(dtr %m-% months(.unit), '/', dtr)]
+        }
+        if(.maPeriod == 'years') {
+          rVol = Delt(Vo(mbase))[paste0(dtr %m-% years(.unit), '/', dtr)]
+        }
         rVol[1] = 1
         names(rVol) = names(Vo(mbase)) %>% str_replace_all('.Volume', '') %>% paste0(., '.Ret')
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)

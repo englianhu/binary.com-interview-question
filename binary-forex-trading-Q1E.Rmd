@@ -131,7 +131,7 @@ names(mbase) <- fls %>% str_replace_all('_1m.csv', '')
 ```
 
 ```{r read-data3, eval = FALSE, include = FALSE}
-## Due to minutes nor hours dataset not completed and always happans error, here only read daily data but not minutes, hours etc.
+## Due to minutes nor hours dataset not completed and always happen error, here only read daily data but not minutes, hours etc.
 fls <- dir('./data', pattern = 'USD+.+.csv') %>% str_replace_all('_1m.csv', '')
 
 mbase <- llply(fls, function(fl) {
@@ -452,7 +452,7 @@ res <- llply(ets.m, function(x) {
     z = simETS(y, .model = x, .prCat = 'Cl', .baseDate = .baseDate, 
                 .maPeriod = 'years', .unit = 1, .verbose = TRUE, 
                 .simulate = TRUE, .bootstrap = TRUE)
-    txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.Cl.d6m.rds\'); rm(z)')
+    txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.Cl.d1y.rds\'); rm(z)')
     eval(parse(text = txt1))
     cat(paste0(txt1, ' done!', '\n'))
   })
@@ -506,11 +506,13 @@ USDJPY.ETS.d1y <- readRDS('./data/USDJPY.ETS.d1y.rds')
 
 ## 4.1 Auto Arima Models
 
-```{r res-AutoArima, warning = FALSE}
+  Now we look at the accuracy of prediction.
+
+```{r res-AutoArima, warning = FALSE, echo = FALSE}
 ## 3 months data for daily price.
 AutoArima.day.3m <- dir('./data/', pattern = 'AutoArima.d3m.rds$') %>% str_replace_all('.rds', '')
-d6m <- ldply(AutoArima.day.6m, function(x) {
-  z = readRDS(paste0('./data/', x, '.rds'))
+d3m <- ldply(AutoArima.day.3m, function(x) {
+  z = readRDS(paste0('./data/', x, '.rds')) %>% na.omit
   #data.frame(x$Point.Forecast, Cl(x))
   mse = mean((z$Point.Forecast - Cl(z))^2)
   data.frame(Currency = str_replace_all(x, '.d3m', ''), MSE.3M = mse)
@@ -520,7 +522,7 @@ d6m <- ldply(AutoArima.day.6m, function(x) {
 ## 6 months data for daily price.
 AutoArima.day.6m <- dir('./data/', pattern = 'AutoArima.d6m.rds$') %>% str_replace_all('.rds', '')
 d6m <- ldply(AutoArima.day.6m, function(x) {
-  z = readRDS(paste0('./data/', x, '.rds'))
+  z = readRDS(paste0('./data/', x, '.rds')) %>% na.omit
   #data.frame(x$Point.Forecast, Cl(x))
   mse = mean((z$Point.Forecast - Cl(z))^2)
   data.frame(Currency = str_replace_all(x, '.d6m', ''), MSE.6M = mse)
@@ -530,26 +532,201 @@ d6m <- ldply(AutoArima.day.6m, function(x) {
 ## 1 year data for daily price.
 AutoArima.day.1y <- dir('./data/', pattern = 'd1y.rds$') %>% str_replace_all('.rds', '')
 d1y <- ldply(AutoArima.day.1y, function(x) {
-  z = readRDS(paste0('./data/', x, '.rds'))
+  z = readRDS(paste0('./data/', x, '.rds')) %>% na.omit
   #data.frame(x$Point.Forecast, Cl(x))
   mse = mean((z$Point.Forecast - Cl(z))^2)
   data.frame(Currency = str_replace_all(x, '.d1y', ''), MSE.1Y = mse)
   })
 
-mse.arima <- suppressAll(join(d6m, d1y))
+mse.arima <- suppressAll(join_all(list(d3m, d6m, d1y)))
 mse.arima <- suppressAll(rbind(mse.arima, c('Mean = ', colMeans(mse.arima[-1]))))
 mse.arima %<>% tbl_df %>% mutate(
   Currency = as.character(Currency), 
+  MSE.3M = as.numeric(MSE.3M), 
   MSE.6M = as.numeric(MSE.6M), 
   MSE.1Y = as.numeric(MSE.1Y))
 mse.arima$Currency[length(mse.arima$Currency)] <- 'Mean = '
 
 mse.arima %>% kable(width = 'auto')
+#|Currency         |    MSE.3M|    MSE.6M|    MSE.1Y|
+#|:----------------|---------:|---------:|---------:|
+#|AUDUSD.AutoArima | 0.0000252| 0.0000245| 0.0000243|
+#|EURUSD.AutoArima | 0.0000390| 0.0000393| 0.0000385|
+#|GBPUSD.AutoArima | 0.0000722| 0.0000689| 0.0000676|
+#|USDCAD.AutoArima | 0.0000434| 0.0000423| 0.0000416|
+#|USDCHF.AutoArima | 0.0000589| 0.0000586| 0.0000564|
+#|USDCNY.AutoArima | 0.0002294| 0.0002117| 0.0002072|
+#|USDJPY.AutoArima | 0.4468217| 0.4273710| 0.4172619|
+#|Mean =           | 0.0638985| 0.0611166| 0.0596711|
 ```
 
 ## 4.2 Exponential Smoothing Models
 
+  Similar with univariate `auto.arima` model, here we try to compare the the accuracy of prediction of univariate `ets` models among the portfolios where each portfolio contains USD exchanged with other currencies.
+
+```{r res-ETS, warning = FALSE, echo = FALSE}
+## 3 months data for daily price.
+ETS.day.3m <- dir('./data/', pattern = '.Cl.d3m.rds$') %>% str_replace_all('.rds', '')
+d3m <- ldply(ETS.day.3m, function(x) {
+  z = readRDS(paste0('./data/', x, '.rds')) %>% na.omit
+  #data.frame(x$Point.Forecast, Cl(x))
+  mse = mean((z$Point.Forecast - Cl(z))^2)
+  data.frame(Currency = str_replace_all(x, '.Cl.d3m', ''), MSE.3M = mse)
+  })
+
+
+## 6 months data for daily price.
+ETS.day.6m <- dir('./data/', pattern = '.Cl.d6m.rds$') %>% str_replace_all('.rds', '')
+d6m <- ldply(ETS.day.6m, function(x) {
+  z = readRDS(paste0('./data/', x, '.rds')) %>% na.omit
+  #data.frame(x$Point.Forecast, Cl(x))
+  mse = mean((z$Point.Forecast - Cl(z))^2)
+  data.frame(Currency = str_replace_all(x, '.Cl.d6m', ''), MSE.6M = mse)
+  })
+
+
+## 1 year data for daily price.
+ETS.day.1y <- dir('./data/', pattern = '.Cl.d1y.rds$') %>% str_replace_all('.rds', '')
+d1y <- ldply(ETS.day.1y, function(x) {
+  z = readRDS(paste0('./data/', x, '.rds')) %>% na.omit
+  #data.frame(x$Point.Forecast, Cl(x))
+  mse = mean((z$Point.Forecast - Cl(z))^2)
+  data.frame(Currency = str_replace_all(x, '.Cl.d1y', ''), MSE.1Y = mse)
+  })
+
+mse.ETS <- suppressAll(join_all(list(d3m, d6m, d1y)))
+mse.ETS %<>% tbl_df %>% mutate(
+  Currency = as.character(Currency), 
+  MSE.3M = as.numeric(MSE.3M), 
+  MSE.6M = as.numeric(MSE.6M), 
+  MSE.1Y = as.numeric(MSE.1Y))
+
+mse.ETS %<>% separate(Currency, c('Currency', 'Model'))
+mse.ETS %<>% ddply(.(Model), summarise, MSE.3M = mean(MSE.3M), 
+                                        MSE.6M = mean(MSE.6M), 
+										MSE.1Y = mean(MSE.1Y))
+mse.ETS %>% kable(width = 'auto')
+#|Model |    MSE.3M|    MSE.6M|    MSE.1Y|
+#|:-----|---------:|---------:|---------:|
+#|AAN   | 0.0638216| 0.0602470| 0.0596556|
+#|AAZ   | 0.0638216| 0.0602470| 0.0596556|
+#|ANN   | 0.0580867| 0.0577726| 0.0577719|
+#|ANZ   | 0.0580867| 0.0577726| 0.0577719|
+#|AZN   | 0.0620494| 0.0589684| 0.0585482|
+#|AZZ   | 0.0620494| 0.0589684| 0.0585482|
+#|MAN   | 0.0641544| 0.0604866| 0.0598502|
+#|MAZ   | 0.0641544| 0.0604866| 0.0598502|
+#|MMN   | 0.0646267| 0.0602590| 0.0591698|
+#|MMZ   | 0.0646267| 0.0602590| 0.0591698|
+#|MNN   | 0.0580857| 0.0577605| 0.0577702|
+#|MNZ   | 0.0580857| 0.0577605| 0.0577702|
+#|MZN   | 0.0622906| 0.0589968| 0.0586481|
+#|MZZ   | 0.0622906| 0.0589968| 0.0586481|
+#|ZAN   | 0.0640052| 0.0603903| 0.0597147|
+#|ZAZ   | 0.0640052| 0.0603903| 0.0597147|
+#|ZMN   | 0.0646267| 0.0602590| 0.0591698|
+#|ZMZ   | 0.0646267| 0.0602590| 0.0591698|
+#|ZNN   | 0.0580782| 0.0577591| 0.0577670|
+#|ZNZ   | 0.0580782| 0.0577591| 0.0577670|
+#|ZZN   | 0.0622681| 0.0590432| 0.0586071|
+#|ZZZ   | 0.0622681| 0.0590432| 0.0586071|
+```
+
 ## 4.3 Univariate Garch Models
+
+```{r multi-garchM}
+## set all models provided by Garch function.
+.solver.par <- c('hybrid', 'solnp', 'nlminb', 'gosolnp', 'nloptr', 'lbfgs')
+
+.sub.fGarch.par <- c('GARCH', 'TGARCH', 'AVGARCH', 'NGARCH', 'NAGARCH', 'APARCH', 'GJRGARCH', 'ALLGARCH')
+
+.dist.model.par <- c('norm', 'snorm', 'std', 'sstd', 'ged', 'sged', 'nig', 'ghyp', 'jsu')
+
+```
+
+```{r multi-Garch}
+## ----- Due to error, here I use simAutoArima -----------------------------
+## Using closing price to forecast.
+## 3 months
+.baseDate = '2014-01-01 00:00:00'
+.baseDate = ymd(ymd_hms(.baseDate))
+
+res <- llply(Garch.m, function(x) {
+  llply(mbase_day1, function(y) {
+    z = simGarch(y, .model = x, .prCat = 'Cl', .baseDate = .baseDate, 
+               .maPeriod = 'months', .unit = 3, .verbose = TRUE, 
+               .simulate = TRUE, .bootstrap = TRUE)
+    txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.Cl.d3m.rds\'); rm(z)')
+    eval(parse(text = txt1))
+    cat(paste0(txt1, ' done!', '\n'))
+  })
+  cat(paste(x, 'done', '\n'))
+})
+
+
+## 6 months
+res <- llply(Garch.m, function(x) {
+  llply(mbase_day1, function(y) {
+    z = simGarch(y, .model = x, .prCat = 'Cl', .baseDate = .baseDate, 
+                .maPeriod = 'months', .unit = 6, .verbose = TRUE, 
+                .simulate = TRUE, .bootstrap = TRUE)
+    txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.Cl.d6m.rds\'); rm(z)')
+    eval(parse(text = txt1))
+    cat(paste0(txt1, ' done!', '\n'))
+  })
+  cat(paste(x, 'done', '\n'))
+})
+
+
+## 1 years
+res <- llply(Garch.m, function(x) {
+  llply(mbase_day1, function(y) {
+    z = simGarch(y, .model = x, .prCat = 'Cl', .baseDate = .baseDate, 
+                .maPeriod = 'years', .unit = 1, .verbose = TRUE, 
+                .simulate = TRUE, .bootstrap = TRUE)
+    txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.Cl.d1y.rds\'); rm(z)')
+    eval(parse(text = txt1))
+    cat(paste0(txt1, ' done!', '\n'))
+  })
+  cat(paste(x, 'done', '\n'))
+})
+```
+
+```{r day3m-Garch, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/Garch.d3m.R')
+AUDUSD.Garch.d3m <- readRDS('./data/AUDUSD.Garch.d3m.rds')
+EURUSD.Garch.d3m <- readRDS('./data/EURUSD.Garch.d3m.rds')
+GBPUSD.Garch.d3m <- readRDS('./data/GBPUSD.Garch.d3m.rds')
+USDCAD.Garch.d3m <- readRDS('./data/USDCAD.Garch.d3m.rds')
+USDCHF.Garch.d3m <- readRDS('./data/USDCHF.Garch.d3m.rds')
+USDCNY.Garch.d3m <- readRDS('./data/USDCNY.Garch.d3m.rds')
+USDJPY.Garch.d3m <- readRDS('./data/USDJPY.Garch.d3m.rds')
+```
+
+```{r day6m-Garch, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/Garch.d6m.R')
+AUDUSD.Garch.d6m <- readRDS('./data/AUDUSD.Garch.d6m.rds')
+EURUSD.Garch.d6m <- readRDS('./data/EURUSD.Garch.d6m.rds')
+GBPUSD.Garch.d6m <- readRDS('./data/GBPUSD.Garch.d6m.rds')
+USDCAD.Garch.d6m <- readRDS('./data/USDCAD.Garch.d6m.rds')
+USDCHF.Garch.d6m <- readRDS('./data/USDCHF.Garch.d6m.rds')
+USDCNY.Garch.d6m <- readRDS('./data/USDCNY.Garch.d6m.rds')
+USDJPY.Garch.d6m <- readRDS('./data/USDJPY.Garch.d6m.rds')
+```
+
+```{r day1y-Garch, warning = FALSE}
+## Using closing price to forecast.
+#'@ source('./function/Garch.d1y.R')
+AUDUSD.Garch.d1y <- readRDS('./data/AUDUSD.Garch.d1y.rds')
+EURUSD.Garch.d1y <- readRDS('./data/EURUSD.Garch.d1y.rds')
+GBPUSD.Garch.d1y <- readRDS('./data/GBPUSD.Garch.d1y.rds')
+USDCAD.Garch.d1y <- readRDS('./data/USDCAD.Garch.d1y.rds')
+USDCHF.Garch.d1y <- readRDS('./data/USDCHF.Garch.d1y.rds')
+USDCNY.Garch.d1y <- readRDS('./data/USDCNY.Garch.d1y.rds')
+USDJPY.Garch.d1y <- readRDS('./data/USDJPY.Garch.d1y.rds')
+```
 
 ## 4.4 Multivariate Garch Models
 

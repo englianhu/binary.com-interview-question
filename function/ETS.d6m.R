@@ -55,12 +55,14 @@ saveRDS(USDJPY.ETS.d6m, './data/USDJPY.ETS.d6m.rds')
 .baseDate = '2014-01-01 00:00:00'
 .baseDate = ymd(ymd_hms(.baseDate))
 
+## 6 months
 res <- llply(ets.m, function(x) {
   llply(mbase_day1, function(y) {
     z = simETS(y, .model = x, .prCat = 'Cl', .baseDate = .baseDate, 
                .maPeriod = 'months', .unit = 6, .verbose = TRUE, 
                .simulate = TRUE, .bootstrap = TRUE)
-    txt1 <- paste0('saveRDS(z', ', file = \'./data/', x, '.Cl.d6m.rds\'); rm(z)')
+    nm = names(Cl(z)) %>% str_replace_all('.Close', '')
+    txt1 = paste0('saveRDS(z', ', file = \'./data/', nm, '.', x, '.Cl.d6m.rds\'); rm(z)')
     eval(parse(text = txt1))
     cat(paste0(txt1, ' done!', '\n'))
   })
