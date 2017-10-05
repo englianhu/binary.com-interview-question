@@ -97,7 +97,7 @@ simETS <- function(mbase, .model = 'ZZZ', .damped = NULL, .additive.only = FALSE
   ## Forecast simulation on the ets models.
   pred.data <- ldply(dateID, function(dt) {
     smp = obs.data2
-    dtr = last(index(smp[index(smp) < dt]))
+    dtr = xts::last(index(smp[index(smp) < dt]))
     
     if(.maPeriod == 'months') {
       smp = smp[paste0(dtr %m-% months(.unit), '/', dtr)]

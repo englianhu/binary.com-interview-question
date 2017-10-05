@@ -1,6 +1,6 @@
 simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
                      .maPeriod = 'years', .unit = 1, .verbose = FALSE, .bootstrap = FALSE, 
-                     .boot.method = 'Partial', .n.bootfit = 10000, .n.bootpred = 10000, 
+                     .boot.method = 'Partial', .boot.solver = 'solnp', .n.bootfit = 10000, .n.bootpred = 10000, 
                      .parallel = FALSE, .progress = 'none', .method = 'CSS-ML', .realizedVol = 'Ad', 
                      .variance.model = list(model = 'sGARCH', garchOrder = c(1, 1), 
                                             submodel = NULL, external.regressors = NULL, 
@@ -125,10 +125,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
                 paste0('\'', .dist.models, '\'', collapse = ','), '.'))
   
   ## Forecast simulation on the Garch models.
-  pred.data <- suppressAll(ldply(dateID, function(dt) {
+  pred.data <- suppressAll(
+    ldply(dateID, function(dt) {
+    #tryCatch({
     if(.variance.model$model == 'realGARCH') {
       smp = obs.data2
-      dtr = last(index(smp[index(smp) < dt]))
+      dtr = xts::last(index(smp[index(smp) < dt]))
       
       if(.maPeriod == 'months') {
         smp = smp[paste0(dtr %m-% months(.unit), '/', dtr)]
@@ -153,7 +155,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
         if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
-        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        if(.bootstrap == TRUE) {
+          fc = ugarchboot(fit, n.ahead = frd, method = .boot.method, solver = .boot.solver, 
+                          n.bootfit = .n.bootfit, n.bootpred = .n.bootpred, realizedVol = rVol)
+        } else {
+          fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        }
         
       } else if(.realizedVol == 'Hi') {
         if(.maPeriod == 'months') {
@@ -167,7 +174,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
         if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
-        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        if(.bootstrap == TRUE) {
+          fc = ugarchboot(fit, n.ahead = frd, method = .boot.method, solver = .boot.solver, 
+                          n.bootfit = .n.bootfit, n.bootpred = .n.bootpred, realizedVol = rVol)
+        } else {
+          fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        }
         
       } else if(.realizedVol == 'Mn') {
         if(.maPeriod == 'months') {
@@ -181,7 +193,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
         if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
-        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        if(.bootstrap == TRUE) {
+          fc = ugarchboot(fit, n.ahead = frd, method = .boot.method, solver = .boot.solver, 
+                          n.bootfit = .n.bootfit, n.bootpred = .n.bootpred, realizedVol = rVol)
+        } else {
+          fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        }
         
       } else if(.realizedVol == 'Lo') {
         if(.maPeriod == 'months') {
@@ -195,7 +212,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
         if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
-        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        if(.bootstrap == TRUE) {
+          fc = ugarchboot(fit, n.ahead = frd, method = .boot.method, solver = .boot.solver, 
+                          n.bootfit = .n.bootfit, n.bootpred = .n.bootpred, realizedVol = rVol)
+        } else {
+          fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        }
         
       } else if(.realizedVol == 'Cl') {
         if(.maPeriod == 'months') {
@@ -209,7 +231,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
         if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
-        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        if(.bootstrap == TRUE) {
+          fc = ugarchboot(fit, n.ahead = frd, method = .boot.method, solver = .boot.solver, 
+                          n.bootfit = .n.bootfit, n.bootpred = .n.bootpred, realizedVol = rVol)
+        } else {
+          fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        }
         
       } else if(.realizedVol == 'Ad') {
         if(.maPeriod == 'months') {
@@ -223,7 +250,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
         if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
-        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        if(.bootstrap == TRUE) {
+          fc = ugarchboot(fit, n.ahead = frd, method = .boot.method, solver = .boot.solver, 
+                          n.bootfit = .n.bootfit, n.bootpred = .n.bootpred, realizedVol = rVol)
+        } else {
+          fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        }
         
       } else if(.realizedVol == 'Vo') {
         if(.maPeriod == 'months') {
@@ -237,7 +269,12 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
         fit = ugarchfit(spec, smp, solver = .solver[1], realizedVol = rVol)
         if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
         if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
-        fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        if(.bootstrap == TRUE) {
+          fc = ugarchboot(fit, n.ahead = frd, method = .boot.method, solver = .boot.solver, 
+                          n.bootfit = .n.bootfit, n.bootpred = .n.bootpred, realizedVol = rVol)
+        } else {
+          fc = ugarchforecast(fit, n.ahead = frd, realizedVol = rVol)
+        }
         
       } else {
         stop('Kindly choose .realizedVol = "Op", "Hi", "Mn", "Lo", "Cl", "Ad" or "Vo".')
@@ -247,19 +284,42 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
     } else {
       
       smp = obs.data2
-      dtr = last(index(smp[index(smp) < dt]))
-      smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-      frd = as.numeric(difftime(dt, dtr, units = 'days'))
+      dtr = xts::last(index(smp[index(smp) < dt]))
+	  	  
+      if(.maPeriod == 'months') {
+        smp = smp[paste0(dtr %m-% months(.unit), '/', dtr)]
+      }
+      if(.maPeriod == 'years') {
+        smp = smp[paste0(dtr %m-% years(.unit), '/', dtr)]
+      }
       
+      frd = as.numeric(difftime(dt, dtr, units = 'days'))      
       spec = ugarchspec(variance.model = .variance.model, 
                         mean.model = .mean.model, 
                         distribution.model = .dist.model)
       fit = ugarchfit(spec, smp, solver = .solver[1])
       if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
-      fc = ugarchforecast(fit, n.ahead = frd)
-    }
+      if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
+      if(.bootstrap == TRUE) {
+          fc = ugarchboot(fit, n.ahead = frd, method = .boot.method, solver = .boot.solver, 
+                          n.bootfit = .n.bootfit, n.bootpred = .n.bootpred)
+        } else {
+          fc = ugarchforecast(fit, n.ahead = frd)
+      }
+    }#}, error = function(e) {
+	 # if(is.error())
+	 # fc = list(forecast = list(seriesFor = NA))
+	#})
     
-    data.frame(Date = dt, Point.Forecast = attributes(fc)[[1]][['seriesFor']][1])
+	if(is.null(attributes(fc)$forecast$seriesFor)) {
+	  fcc = 0
+	} else {
+	  fcc = attributes(fc)$forecast$seriesFor
+	}
+	
+    yy = data.frame(Date = dt, Point.Forecast = fcc)	
+	names(yy) = c('Date', 'Point.Forecast')
+	yy
   }, .parallel = .parallel, .progress = .progress)) %>% tbl_df
   
   cmp.data <- xts(pred.data[, -1], order.by = pred.data$Date)

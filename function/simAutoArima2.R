@@ -63,9 +63,9 @@ simAutoArima2 <- function(mbase, .prCat = 'Mn', .baseDate = '2015-01-01 00:00:00
     smp = obs.data2
     
     if(is.Date(dt)) {
-      dtr <- last(index(smp[index(smp) < dt]))
+      dtr <- xts::last(index(smp[index(smp) < dt]))
     } else {
-      dtr = last(as.POSIXct(strptime(index(
+      dtr = xts::last(as.POSIXct(strptime(index(
         smp[as.POSIXct(strptime(index(smp), '%Y-%m-%d %H:%M:%S')) < dt]), 
         '%Y-%m-%d %H:%M:%S')))
     }

@@ -1,10 +1,11 @@
 ## Now we try to use the daily mean value which is (Hi + Lo) / 2.
 ## Hi for predict daily highest price. (selling daytrade)
 ## Lo for predict daily lowest price. (buying daytrade)
-simAutoArima <- function(mbase, .prCat = 'Mn', .baseDate = ymd('2015-01-01'), 
+simAutoArima <- function(mbase, .prCat = 'Mn', .baseDate = ymd('2015-01-01'), armaOrder = FALSE, 
                          .maPeriod = 'years', .unit = 1, .verbose = FALSE, .parallel = FALSE) {
-  #' Auto Arima model
-  #' 
+  ## Auto Arima model will auto choose optimal p and q among ARIMA(0,0) to ARIMA(5,5), therefore 
+  ##   no need to set value p and value q.
+  ## https://stackoverflow.com/questions/19483952/how-to-extract-integration-order-d-from-auto-arima
   
   if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
   
@@ -24,7 +25,7 @@ simAutoArima <- function(mbase, .prCat = 'Mn', .baseDate = ymd('2015-01-01'),
   if(.prCat %in% price.category) {
     if(.prCat == 'Op') {
       obs.data2 <- Op(mbase)
-      
+	  
     } else if(.prCat == 'Hi') {
       obs.data2 <- Hi(mbase)
       
@@ -48,7 +49,7 @@ simAutoArima <- function(mbase, .prCat = 'Mn', .baseDate = ymd('2015-01-01'),
   ## Forecast simulation on the ets models.
   pred.data <- ldply(dateID, function(dt) {
     smp = obs.data2
-    dtr = last(index(smp[index(smp) < dt]))
+    dtr = xts::last(index(smp[index(smp) < dt]))
     
     if(.maPeriod == 'months') {
       smp = smp[paste0(dtr %m-% months(.unit), '/', dtr)]
@@ -57,8 +58,8 @@ simAutoArima <- function(mbase, .prCat = 'Mn', .baseDate = ymd('2015-01-01'),
       smp = smp[paste0(dtr %m-% years(.unit), '/', dtr)]
     }
     frd = as.numeric(difftime(dt, dtr, units = 'days'))
-    fit = auto.arima(smp) #exponential smoothing model.
-    if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
+	fit = auto.arima(smp) #exponential smoothing model.
+	if(frd > 1) dt = seq(dt - days(frd), dt, by = 'days')[-1]
     if(.verbose == TRUE) cat(paste('frd=', frd, ';dt=', dt, '\n'))
     data.frame(Date = dt, forecast(fit, h = frd)) %>% tbl_df
   }, .parallel = .parallel) %>% tbl_df

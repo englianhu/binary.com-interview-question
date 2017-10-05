@@ -136,7 +136,7 @@ simGarch2 <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd(
   pred.data <- suppressAll(ldply(dateID, function(dt) {
     if(.variance.model$model == 'realGARCH') {
       smp = obs.data2
-      dtr = last(index(smp[index(smp) < dt]))
+      dtr = xts::last(index(smp[index(smp) < dt]))
       smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
       frd = as.numeric(difftime(dt, dtr, units = .difftime))
       
@@ -207,7 +207,7 @@ simGarch2 <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd(
     } else {
       
       smp = obs.data2
-      dtr = last(index(smp[index(smp) < dt]))
+      dtr = xts::last(index(smp[index(smp) < dt]))
       smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
       frd = as.numeric(difftime(dt, dtr, units = .difftime))
       
