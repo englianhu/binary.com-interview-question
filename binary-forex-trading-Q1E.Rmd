@@ -896,6 +896,8 @@ mse.arima %>% kable(width = 'auto')
 #|Mean =           | 0.0638985| 0.0611166| 0.0596711|
 ```
 
+  Below is the summary of Yahoo data.
+
 ```{r res-yahooAutoArima, warning = FALSE, echo = FALSE}
 ## 3 months data for daily price.
 yahooAutoArima.day.3m <- dir('./data/', pattern = '^[A-Z]{6}.yahooAutoArima.d3m.rds$') %>% str_replace_all('.rds', '')
@@ -1125,12 +1127,17 @@ mse.ETS %>% kable(width = 'auto')
 
 ## 4.3 Univariate Garch Models and EWMA
 
+  Few forecasted data price had bias standard error to cause the result not accutate.
 
-```{r res-Garch, eval = FALSE, warning = FALSE, echo = FALSE}
+```{r res-Garch, warning = FALSE, echo = FALSE}
 ## 3 months data for daily price.
 Garch.day.3m <- dir('./data/', pattern = '^[A-Z]{6}.+GARCH+.Cl.snorm.hybrid.d3m.rds$') %>% str_replace_all('.rds', '')
 d3m <- ldply(Garch.day.3m, function(x) {
   z = readRDS(paste0('./data/', x, '.rds')) %>% na.omit
+  
+  z$Point.Forecast = ifelse((z$Point.Forecast >= (Cl(z) * 1.5)|
+                             z$Point.Forecast <= (Cl(z) * 1.5)), 
+                             0, z$Point.Forecast)
   
   #data.frame(x$Point.Forecast, Cl(x))
   mse = mean((z$Point.Forecast - Cl(z))^2)
@@ -1142,6 +1149,11 @@ d3m <- ldply(Garch.day.3m, function(x) {
 Garch.day.6m <- dir('./data/', pattern = '^[A-Z]{6}.+GARCH+.Cl.snorm.hybrid.d6m.rds$') %>% str_replace_all('.rds', '')
 d6m <- ldply(Garch.day.6m, function(x) {
   z = readRDS(paste0('./data/', x, '.rds')) %>% na.omit
+  
+  z$Point.Forecast = ifelse((z$Point.Forecast >= (Cl(z) * 1.5)|
+                             z$Point.Forecast <= (Cl(z) * 1.5)), 
+                             0, z$Point.Forecast)
+  
   #data.frame(x$Point.Forecast, Cl(x))
   mse = mean((z$Point.Forecast - Cl(z))^2)
   data.frame(Currency = str_replace_all(x, '.Cl+.+.d6m', ''), MSE.6M = mse)
@@ -1152,6 +1164,11 @@ d6m <- ldply(Garch.day.6m, function(x) {
 Garch.day.1y <- dir('./data/', pattern = '^[A-Z]{6}.+GARCH+.Cl.snorm.hybrid.d1y.rds$') %>% str_replace_all('.rds', '')
 d1y <- ldply(Garch.day.1y, function(x) {
   z = readRDS(paste0('./data/', x, '.rds')) %>% na.omit
+  
+  z$Point.Forecast = ifelse((z$Point.Forecast >= (Cl(z) * 1.5)|
+                             z$Point.Forecast <= (Cl(z) * 1.5)), 
+                             0, z$Point.Forecast)
+  
   #data.frame(x$Point.Forecast, Cl(x))
   mse = mean((z$Point.Forecast - Cl(z))^2)
   data.frame(Currency = str_replace_all(x, '.Cl+.+.d1y', ''), MSE.1Y = mse)
@@ -1209,7 +1226,7 @@ stopCluster(cl)
   - [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
   - File version: 1.0.1
   - Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
-  - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/scibrokes/betting-strategy-and-model-validation)
+  - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
   - Additional session information
   
 ```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
@@ -1230,6 +1247,7 @@ rm(sys1)
 
   01. [<span style='color:blue'>Binary.com Interview Q1</span>](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html)(<span style='color:blue'>[Alternate link</span>](http://rpubs.com/englianhu/binary-forex-trading-Q1)) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
   02. [<span style='color:blue'>Time Series Analysis with Applications in R (2nd Edt) (CN)</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Time%20Series%20Analysis%20with%20Applications%20in%20R%20(2nd%20Edt)%20(CN).pdf)
-  03. [<span style='color:blue'></span>]()
+  03. [<span style='color:blue'>ARMA and GARCH models for silver, nickel and copper price returns</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/ARMA%20and%20GARCH%20models%20for%20silver%2C%20nickel%20and%20copper%20price%20returns.pdf)
+  04. [<span style='color:blue'>Forecasting the Volatility in Financial Assets using Conditional Variance Models</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Forecasting%20the%20Volatility%20in%20Financial%20Assets%20using%20Conditional%20Variance%20Models.pdf)
 
 **Powered by - Copyright® Intellectual Property Rights of <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/oda-army2.jpg?raw=true' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**

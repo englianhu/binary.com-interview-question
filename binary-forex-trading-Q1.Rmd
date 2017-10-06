@@ -2733,7 +2733,7 @@ stopCluster(cl)
   - [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
   - File version: 1.0.1
   - Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
-  - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/scibrokes/betting-strategy-and-model-validation)
+  - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
   - Additional session information
   
 ```{r info, echo = FALSE, warning = FALSE, results = 'asis'}

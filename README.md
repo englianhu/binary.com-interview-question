@@ -14,24 +14,26 @@
 
 ### Question I
 
-	I use daily OHLCV USDJPY data (from 2014-01-01 to 2017-01-20) and application of some models to forecast the highest and lowest price :
-	
-	- Auto Arima models
-	- Exponential Time Series
-	- Univariate Garch models
-	- Exponential Weighted Moving Average
-	- Monte Carlo Markov Chain
-	- Bayesian Time Series
-	- Midas
-
-	For the staking model, I simply forecast the highest and lowest price, and then : 
-	
-	- Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
-	- Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
+  I use daily OHLCV USDJPY data (from 2014-01-01 to 2017-01-20) and application of some models to forecast the highest and lowest price :
+  
+  - Auto Arima models
+  - Exponential Time Series
+  - Univariate Garch models
+  - Exponential Weighted Moving Average
+  - <s>Monte Carlo Markov Chain</s>
+  - <s>Bayesian Time Series</s>
+  - <s>Midas</s>
+  
+  For the staking model, I simply forecast the highest and lowest price, and then : 
+  
+  - Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
+  - Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
 
   Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html)([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
 
-  Here I wrote another extention page for Q1 which is analyse the data from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/binary-forex-trading-Q1E).
+  **Blooper**
+
+  Here I wrote another extention page for Q1 which is analyse the data from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/315263).
 
 ### Question II
 
