@@ -2,6 +2,7 @@
 library('shiny')
 library('memoise')
 library('magrittr')
+library('queuecomputer')
 
 # === Data =========================================================
 dtm <<- data.frame(Category = c('Service time distribution', 
@@ -180,7 +181,8 @@ calC <- memoise(function(rRatio, sRatio, mCusts, time,
 # === Shiny UI =====================================================
 ui <- fluidPage(
    
-   titlePanel(tags$a(href='http://www.binary.com', target='_blank', 
+   titlePanel(
+     tags$a(href='http://www.binary.com', target='_blank', 
                      tags$img(height = '80px', alt='binary', #align='right', 
                               src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/binary-logo-resize.jpg'))), 
    
@@ -337,7 +339,19 @@ ui <- fluidPage(
                               p('09. ', HTML("<a href='http://www.supositorio.com/rcalc'>Queueing Theory Calculator</a>"), 
                                 tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
                                        tags$img(height = '20px', alt='hot', #align='right', 
-                                                src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg')))), 
+                                                src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg'))), 
+                              p('10. ', HTML("<a href='http://perfdynamics.blogspot.my/2010/05/simulating-queue-in-r.html?m=1'>**The Pith of Performance** *by Neil Gunther (2010)*</a>"), 
+                                tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                       tags$img(height = '20px', alt='hot', #align='right', 
+                                                src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg'))), 
+                              p('11. ', HTML("<a href='Computationally Efficient Simulation of Queues - The R Package queuecomputer'>Computationally Efficient Simulation of Queues - The R Package queuecomputer</a>"), 
+                                tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                       tags$img(height = '20px', alt='hot', #align='right', 
+                                                src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg'))), 
+                              p('12. ', HTML("<a href='Waiting-Line Models'>Waiting-Line Models</a>")), 
+                              p('13. ', HTML("<a href='https://www.r-bloggers.com/implementing-a-queue-as-a-reference-class/'>Implementing a Queue as a Reference Class</a>"))
+                              
+                              ), 
                      tabPanel('Author', 
                               h3('Author'), 
                               tags$iframe(src = 'https://englianhu.github.io/2016/12/ryo-eng.html', height = 800, width = '100%', frameborder = 0))))))), 
