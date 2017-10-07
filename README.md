@@ -37,6 +37,8 @@
 
 ### Question II
 
+  For question 2, I simply write an app, kindly use [Queue models](https://beta.rstudioconnect.com/content/3069/).
+
 ### Question III
 
 
@@ -44,29 +46,41 @@
 
 ### Question I
 
-  01. [Stock Market Forecasting Using LASSO Linear Regression Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
-  02. [Using LASSO from lars (or glmnet) package in R for variable selection](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
-  03. [Difference between glmnet() and cv.glmnet() in R?](Difference between glmnet() and cv.glmnet() in R?)
-  04. [Testing Kelly Criterion and Optimal f in R](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) <img src='www/hot.jpg' width='20'>
-  05. [Portfolio Optimization and Monte Carlo Simulation](https://github.com/scibrokes/kelly-criterion/blob/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf) <img src='www/hot.jpg' width='20'>
-  06. [Glmnet Vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
-  07. [lasso怎么用算法实现？](http://cos.name/cn/topic/101533/#post-418215)
-  08. [The Sparse Matrix and {glmnet}](http://amunategui.github.io/sparse-matrix-glmnet/)
-  09. [Regularization and Variable Selection via the Elastic Net](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Regularization%20and%20Variable%20Selection%20via%20the%20Elastic%20Net.pdf)
+  01. [**Stock Market Forecasting Using LASSO Linear Regression Model** *by Sanjiban Sekhar Roy, Dishant Mital, Avik Basu, Ajith Abraham (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
+  02. [**Using LASSO from lars (or glmnet) package in R for variable selection** *by Juancentro (2014)*](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
+  03. [**Difference between glmnet() and cv.glmnet() in R?** *by Amrita Sawant (2015)*](https://stackoverflow.com/questions/29311323/difference-between-glmnet-and-cv-glmnet-in-r?answertab=votes#tab-top)
+  04. [**Testing Kelly Criterion and Optimal f in R** *by Roy Wei (2012)*](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) <img src='www/hot.jpg' width='20'>
+  05. [**Portfolio Optimization and Monte Carlo Simulation** *by Magnus Erik Hvass Pedersen (2014)*](https://raw.githubusercontent.com/scibrokes/kelly-criterion/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf) <img src='www/hot.jpg' width='20'>
+  06. [**Glmnet Vignette** *by Trevor Hastie and Junyang Qian (2014)*](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
+  07. [**lasso怎么用算法实现？** *by shuaihuang (2010)*](https://d.cosx.org/d/101533-101533/5)
+  08. [**The Sparse Matrix and {glmnet}** *by Manuel Amunategui (2014)*](http://amunategui.github.io/sparse-matrix-glmnet/)
+  09. [**Regularization and Variable Selection via the Elastic Net** *by Hui Zou and Trevor Hastie*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Regularization%20and%20Variable%20Selection%20via%20the%20Elastic%20Net.pdf)
   10. [LASSO, Ridge, and Elastic Net](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) <img src='www/hot.jpg' width='20'>
-  11. [热门数据挖掘模型应用入门（一）: LASSO回归](http://cos.name/2016/10/data-mining-1-lasso/)
+  11. [**热门数据挖掘模型应用入门（一）: LASSO回归** *by 侯澄钧 (2016)*](https://cosx.org/2016/10/data-mining-1-lasso)
   12. [The Lasso Page](http://statweb.stanford.edu/~tibs/lasso.html)
-  13. [Call_Valuation.R](https://api.rpubs.com/Mariano/call)
-  14. [Lecture 6 – Stochastic Processes and Monte Carlo](http://zorro-trader.com/manual/en/Lecture%206.htm)
-  15. [The `caret` Package](http://topepo.github.io/caret/index.html) <img src='www/hot.jpg' width='20'>
+  13. [**Call_Valuation.R** *by Mariano (2016)*](https://api.rpubs.com/Mariano/call)
+  14. [Lecture 6 – Stochastic Processes and Monte Carlo](http://zorro-trader.com/manual/en/Lecture%206.htm) ([<span style='color:blue'>http://zorro-trader.com/manual</span>](http://zorro-trader.com/manual)) <img src='www/hot.jpg' width='20'> <img src='www/hot.jpg' width='20'>
+  15. [**The `caret` Package** *by Max Kuhn (2017)*](http://topepo.github.io/caret/index.html) <img src='www/hot.jpg' width='20'>
   16. [Time Series Cross Validation](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
   17. [Character-Code.com](http://character-code.com/)
-  18. [Size Matters – Kelly Optimization](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
+  18. [**Size Matters – Kelly Optimization** *by Roy Wei (2012)*](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
+  19. [**Time Series Cross Validation** *by William Chiu (2015)*](https://rpubs.com/crossxwill/time-series-cv) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
+  20. [**Forecasting Volatility** *by Stephen Figlewski (2004)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/fcad2844d7f10c486f3601af9932f49973548e4b/reference/Focasting%20Volatility.pdf)
+  21. [**Successful Algorithmic Trading** *by Michael Halls Moore (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/fcad2844d7f10c486f3601af9932f49973548e4b/reference/Successful%20Algorithmic%20Trading.pdf) <img src='www/hot.jpg' width='20'> <img src='www/hot.jpg' width='20'>
+  22. [**Financial Risk Modelling and Portfolio Optimization with R (2nd Edt)** *by Bernhard Praff (2016)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Financial%20Risk%20Modelling%20and%20Portfolio%20Optimization%20with%20R%20(2nd%20Edt).pdf) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
+  23. [**Analyzing Financial Data and Implementing Financial Models using R** *by Clifford S.Ang (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/eec3bbe99c61b4e2e2f4a2b1c47e7a2fca6106c4/reference/Analyzing%20Financial%20Data%20and%20Implementing%20Financial%20Models%20using%20R.pdf) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
 
 ### Question II
 
-  1. 
-  2. 
+  01. [Queueing model 534 in Excel](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Queue-534.xls) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
+  02. [Queueing model macro in Excel](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/QueueMacros.xls) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
+  03. [Queueing up in R, (continued)](https://www.r-bloggers.com/queueing-up-in-r-continued)
+  04. [Waiting in line, waiting on R](https://www.r-bloggers.com/waiting-in-line-waiting-on-r)
+  05. [Simulating a Queue in R](https://www.r-bloggers.com/simulating-a-queue-in-r/)
+  06. [What is the queue data structure in R?](https://www.researchgate.net/post/What_is_the_queue_data_structure_in_R#59d5b01b404854fdc9168902)
+  07. [Implementing a Queue as a Reference Class](https://www.r-bloggers.com/implementing-a-queue-as-a-reference-class/)
+  08. [queue implementation?](http://r.789695.n4.nabble.com/queue-implementation-td2529272.html)
+  09. [Queueing Theory Calculator](http://www.supositorio.com/rcalc) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
 
 ### Question III
 
