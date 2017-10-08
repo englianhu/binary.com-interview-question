@@ -5,10 +5,7 @@
 
 ## Interview Sample Question
 
-  The sample question for Interview a job in Binary options. Here I created a shiny app for the job application.
-
-![](www/20170113_104005.gif)
-*Kindly click* [**Here**](https://beta.rstudioconnect.com/content/2367/) *to access the shiny app*
+  The sample question for Interview a job in Binary options.
 
 <span style='color:red'>**Under Construction...**</span>
 
@@ -29,9 +26,11 @@
   - Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
   - Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
 
-  Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html)([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
+  Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) ([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
 
   **Blooper**
+
+  Initially, I wrote a shiny app but it is heavily budden for loading. Kindly browse over [Q1 ShinyApp](https://beta.rstudioconnect.com/content/2367/).
 
   Here I wrote another extention page for Q1 which is analyse the data from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/315263).
 
@@ -81,6 +80,10 @@
   07. [Implementing a Queue as a Reference Class](https://www.r-bloggers.com/implementing-a-queue-as-a-reference-class/)
   08. [queue implementation?](http://r.789695.n4.nabble.com/queue-implementation-td2529272.html)
   09. [Queueing Theory Calculator](http://www.supositorio.com/rcalc) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
+  10. [ **The Pith of Performance** *by Neil Gunther (2010)*](http://perfdynamics.blogspot.my/2010/05/simulating-queue-in-r.html?m=1)
+  11. [Computationally Efficient Simulation of Queues - The R Package queuecomputer](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Computationally%20Efficient%20Simulation%20of%20Queues%20-%20The%20R%20Package%20queuecomputer.pdf)
+  12. [Waiting-Line Models](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Waiting-Line%20Models.pdf)
+  13. [Queues with Breakdowns and Customer Discouragement](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Queues%20with%20Breakdowns%20and%20Customer%20Discouragement.pdf)
 
 ### Question III
 

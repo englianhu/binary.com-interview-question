@@ -1,11 +1,13 @@
 name: binary-question
 title: binary-question
+username: englianhu
 account: englianhu
 server: beta.rstudioconnect.com
+hostUrl: https://beta.rstudioconnect.com/__api__
 appId: 2367
-bundleId: 5227
+bundleId: 6631
 url: https://beta.rstudioconnect.com/content/2367/
-when: 1485952401.29612
+when: 1507428546.9964
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: data/AAPL.rds|data/alfit.rds|data/bnfit.rds|data/cxfit.rds|data/fitgaum1410.rds|data/fitgaum193.rds|data/gsfit.rds|data/mgfit.rds|data/mnfit.rds|data/psfit.rds|function/opt.glmPrice.R
+ignoredFiles: .RData|binary-forex-trading-Q1.html|binary-forex-trading-Q1.log|binary-forex-trading-Q1.pdf|binary-forex-trading-Q1.Rmd|binary-forex-trading-Q1.tex|binary-forex-trading-Q1E.html|binary-forex-trading-Q1E.Rmd|binary-forex-trading.html|binary-forex-trading.Rmd|draft.Garch.R|draft.Garch2.R|draft.Garch3.R|draft.simETS2.R|draft.simGarch2.R|draft.simGarch2A.R|LICENSE|Q1E-read-data3.RData|Q1E.RData|README.html|README.md|skeleton.bib|binary-forex-trading-Q1_files|binary-forex-trading-Q1E_files|binary-forex-trading_files|data|function
