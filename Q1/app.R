@@ -3,7 +3,6 @@ library('shiny')
 library('memoise')
 library('magrittr')
 library('httr')
-library('TrueFX')
 library('TFX')
 library('quantmod')
 library('rugarch')
@@ -248,9 +247,6 @@ ui <- shinyUI(fluidPage(
   # https://groups.google.com/d/msg/shiny-discuss/NE-LqDAVqQQ/kNdrtC4WxGAJ
   # https://gist.github.com/4044364
   #-------------------------------------------------------------------------------
-if (!require(TFX) && !require(TrueFX)) {
-  stop("TFX must be installed; run 'install.packages(\"TFX\")'.\n")
-}
 server <- shinyServer(function(input, output, session) {
   
   output$currentTime <- renderText({
@@ -270,7 +266,7 @@ server <- shinyServer(function(input, output, session) {
   
   output$fxdata <- renderTable({
     fetchData()
-  }, digits=5, row.names=FALSE)
+  }, digits = 5, row.names = FALSE)
   
   
   terms <- reactive({

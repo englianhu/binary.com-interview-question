@@ -34,7 +34,7 @@
 
   Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/316133).
   
-  Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3071/).
+  Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3072/).
 
 ### Question II
 
