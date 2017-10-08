@@ -2,7 +2,7 @@
 library('shiny')
 library('memoise')
 library('magrittr')
-library('httr')
+library('stringr')
 library('TFX')
 library('quantmod')
 library('rugarch')
