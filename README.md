@@ -7,8 +7,6 @@
 
   The sample question for Interview a job in Binary options.
 
-<span style='color:red'>**Under Construction...**</span>
-
 ### Question I
 
   I use daily OHLCV USDJPY data (from 2014-01-01 to 2017-01-20) and application of some models to forecast the highest and lowest price :
@@ -30,13 +28,15 @@
 
   **Blooper**
 
-  Initially, I wrote a shiny app but it is heavily budden for loading. Kindly browse over [Q1 ShinyApp](https://beta.rstudioconnect.com/content/2367/).
+  Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [Q1 ShinyApp](https://beta.rstudioconnect.com/content/2367/).
 
-  Here I wrote another extention page for Q1 which is analyse the data from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/315263).
+  ![<span style='color:red'>**error...**</span>](www/20170113_104005.gif)
+
+  Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/316133).
 
 ### Question II
 
-  For question 2, I simply write an app, kindly use [Queue models](https://beta.rstudioconnect.com/content/3069/).
+  For question 2, I simply write an app (while the leave rate doesn't function), kindly use [Queue models](https://beta.rstudioconnect.com/content/3069/).
 
 ### Question III
 

@@ -1192,15 +1192,155 @@ mse.Garch %>% kable(width = 'auto')
 ## 4.4 Multivariate Garch Models
 
 
-# 5. 
+# 5. Model Comparison
 
-## 5.1 Auto Arima Models
+```{r variables}
+## set all models provided by ets function.
+ets.m <- c('AAN', 'AAZ', 'ANN', 'ANZ', 'AZN', 'AZZ', 'MAN', 'MAZ', 'MMN', 
+            'MMZ', 'MNN', 'MNZ', 'MZN', 'MZZ', 'ZAN', 'ZAZ', 'ZMN', 'ZMZ', 
+            'ZNN', 'ZNZ', 'ZZN', 'ZZZ')
 
-## 5.2 Exponential Smoothing Models
+## Multiple Garch models inside `rugarch` package.
+garch.m <- c('sGARCH', 'fGARCH', 'eGARCH', 'gjrGARCH', 'apARCH', 'iGARCH', 'csGARCH', 'realGARCH')
+garch.m <- garch.m[-length(garch.m)] #skip `realGARCH`
 
-## 5.3 Univariate Garch Models and EWMA
+solver <- c('hybrid', 'solnp', 'nlminb', 'gosolnp', 'nloptr', 'lbfgs')
 
-## 5.4 Multivariate Garch Models
+sub.garch.m <<- c('GARCH', 'TGARCH', 'AVGARCH', 'NGARCH', 'NAGARCH', 'APARCH', 'GJRGARCH', 'ALLGARCH')
+
+dist.model <- c('norm', 'snorm', 'std', 'sstd', 'ged', 'sged', 'nig', 'ghyp', 'jsu')
+```
+
+```{r comp, eval = FALSE}
+getSymbols('JPY=X', from = Sys.Date() %m-% years(1), to = Sys.Date())
+USDJPY <- `JPY=X` %>% Cl %>% na.omit; rm(`JPY=X`)
+names(USDJPY) %<>% str_replace_all('JPY=X', 'USDJPY')
+
+## Auto Arima
+pre1 <- auto.arima(USDJPY)
+saveRDS(pre1, './data/pre1.rds')
+
+## ETS
+pre2 <- llply(ets.m, function(x) ets(USDJPY, model = x))
+names(pre2) = ets.m
+saveRDS(pre2, './data/pre2.rds')
+
+## Garch
+#'@ pre3 <- llply(garch.m, function(x){
+#'@   gm = llply(dist.model, function(y){
+#'@       if(x == 'fGARCH') {
+#'@         sgm = llply(sub.garch.m, function(z) {
+#'@           spec = ugarchspec(variance.model = list(
+#'@             model = x, garchOrder = c(1, 1), 
+#'@             submodel = z, external.regressors = NULL, 
+#'@             variance.targeting = FALSE), distribution.model = y)
+#'@           fit = ugarchfit(spec, USDJPY, solver = 'hybrid')
+#'@             })
+#'@         names(sgm) = sub.garch.m; sgm
+#'@           } else {
+#'@             spec = ugarchspec(variance.model = list(
+#'@               model = x, garchOrder = c(1, 1), 
+#'@               submodel = NULL, external.regressors = NULL, 
+#'@               variance.targeting = FALSE), distribution.model = y)
+#'@             fit = ugarchfit(spec, USDJPY, solver = 'hybrid')
+#'@           }
+#'@       })
+#'@   names(gm) = dist.model; gm
+#'@   })
+#'@ names(pre3) = garch.m
+
+## Garch models
+pre3b <- llply(garch.m, function(x){
+  armaOrder = armaSearch(USDJPY)
+  armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
+  spec = ugarchspec(
+    variance.model = list(
+      model = x, garchOrder = c(1, 1), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder, 
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = FALSE, 
+      external.regressors = NULL, 
+      archex = FALSE), 
+    distribution.model = 'snorm')
+        fit = ugarchfit(spec, USDJPY, solver = 'hybrid')
+      }
+  })
+saveRDS(pre3b, './data/pre3b.rds')
+
+## gjrGARCH model's distributions...
+pre3c <- llply(dist.model, function(x){
+  armaOrder = armaSearch(USDJPY)
+  armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
+  spec = ugarchspec(
+    variance.model = list(
+      model = 'gjrGARCH', garchOrder = c(3, 3), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder, 
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = FALSE, 
+      external.regressors = NULL, 
+      archex = FALSE), 
+    distribution.model = x)
+  fit = ugarchfit(spec, USDJPY, solver = 'hybrid')
+  })
+saveRDS(pre3c, './data/pre3c.rds')
+
+## gjrGARCH model's distributions...
+pre3d <- llply(solver, function(x){
+  armaOrder = armaSearch(USDJPY)
+  armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
+  spec = ugarchspec(
+    variance.model = list(
+      model = 'gjrGARCH', garchOrder = c(3, 3), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder, 
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = FALSE, 
+      external.regressors = NULL, 
+      archex = FALSE), 
+    distribution.model = 'snorm')
+  fit = ugarchfit(spec, USDJPY, solver = x)
+  })
+saveRDS(pre3d, './data/pre3d.rds')
+```
+
+```{r read-pre}
+pre1 <- readRDS('./data/pre1.rds')
+pre2 <- readRDS('./data/pre2.rds')
+pre3 <- readRDS('./data/pre3.rds') %>% unlist
+pre3b <- readRDS('./data/pre3b.rds') %>% unlist
+names(pre3b) = paste0(names(pre3b),'.optimalArmaPQ')
+pre3c <- readRDS('./data/pre3c.rds') %>% unlist
+names(pre3c) = paste0('gjrGARCH.', dist.model)
+pre3d <- readRDS('./data/pre3d.rds') %>% unlist
+names(pre3d) = paste0('gjrGARCH.', solver)
+```
+
+```{r AIC, warning = FALSE}
+aic1 <- data.frame(.id = 'Auto.Arima', V1 = AIC(pre1))
+aic2 <- ldply(pre2, AIC)
+aic3 <- ldply(pre3, function(x) infocriteria(x)[1])
+aic3b <- ldply(pre3b, function(x) infocriteria(x)[1])
+aic3c <- ldply(pre3c, function(x) infocriteria(x)[1])
+aic3d <- ldply(pre3d, function(x) tryCatch(infocriteria(x), error = function(e) NA)[1]) %>% na.omit
+
+aic.s <- bind_rows(aic1, aic2, aic3, aic3b, aic3c, aic3d)
+names(aic.s) <- c('.id', 'AIC')
+
+aic.s %>% formattable(list(
+    
+    .id = color_tile('white', 'darkgoldenrod'), 
+    
+    AIC = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) >= 3, 'gray', 'green')), x ~ paste0(round(x, 6), ' (rank: ', sprintf('%02d', rank(x)), ')'))))
+```
+
 
 # 6. Conclusion
 
@@ -1246,8 +1386,9 @@ rm(sys1)
 ## 7.2 Reference
 
   01. [<span style='color:blue'>Binary.com Interview Q1</span>](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html)(<span style='color:blue'>[Alternate link</span>](http://rpubs.com/englianhu/binary-forex-trading-Q1)) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
-  02. [<span style='color:blue'>Time Series Analysis with Applications in R (2nd Edt) (CN)</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Time%20Series%20Analysis%20with%20Applications%20in%20R%20(2nd%20Edt)%20(CN).pdf)
-  03. [<span style='color:blue'>ARMA and GARCH models for silver, nickel and copper price returns</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/ARMA%20and%20GARCH%20models%20for%20silver%2C%20nickel%20and%20copper%20price%20returns.pdf)
-  04. [<span style='color:blue'>Forecasting the Volatility in Financial Assets using Conditional Variance Models</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Forecasting%20the%20Volatility%20in%20Financial%20Assets%20using%20Conditional%20Variance%20Models.pdf)
+  02. [<span style='color:blue'>...</span>](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)
+  03. [<span style='color:blue'>...</span>](...)
+  04. [<span style='color:blue'>...</span>](...)
+  05. [<span style='color:blue'>...</span>](...)
 
 **Powered by - Copyright® Intellectual Property Rights of <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/oda-army2.jpg?raw=true' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**

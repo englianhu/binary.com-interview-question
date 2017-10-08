@@ -12,7 +12,7 @@
 
 <meta name="author" content="®γσ, Lian Hu  白戸則道®" />
 
-<meta name="date" content="2017-10-05" />
+<meta name="date" content="2017-10-08" />
 
 <title></title>
 
@@ -51,7 +51,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <h1 class="title toc-ignore"><img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/757b27e1e93132368b0898152078be4961b05a28/www/binary-logo-resize.jpg' width='240'></h1>
 <h3 class="subtitle"><em><a href="https://github.com/englianhu/binary.com-interview-question"><span style="color:blue">binary.com</span></a> Interview Question I (Extention)</em></h3>
 <h4 class="author"><em><a href="https://englianhu.github.io/"><span style="color:blue">®γσ, Lian Hu</span></a> <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/ENG.jpg' width='24'> <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/RYO.jpg?raw=true' width='24'>白戸則道®</em></h4>
-<h4 class="date"><em>2017-10-05</em></h4>
+<h4 class="date"><em>2017-10-08</em></h4>
 
 
 <div id="TOC">
@@ -70,12 +70,7 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
 <li><a href="#univariate-garch-models-and-ewma-1">4.3 Univariate Garch Models and EWMA</a></li>
 <li><a href="#multivariate-garch-models-1">4.4 Multivariate Garch Models</a></li>
 </ul></li>
-<li><a href="#section">5.</a><ul>
-<li><a href="#auto-arima-models-2">5.1 Auto Arima Models</a></li>
-<li><a href="#exponential-smoothing-models-2">5.2 Exponential Smoothing Models</a></li>
-<li><a href="#univariate-garch-models-and-ewma-2">5.3 Univariate Garch Models and EWMA</a></li>
-<li><a href="#multivariate-garch-models-2">5.4 Multivariate Garch Models</a></li>
-</ul></li>
+<li><a href="#model-comparison">5. Model Comparison</a></li>
 <li><a href="#conclusion">6. Conclusion</a></li>
 <li><a href="#appendix">7. Appendix</a><ul>
 <li><a href="#documenting-file-creation">7.1 Documenting File Creation</a></li>
@@ -1044,20 +1039,669 @@ USDJPY.Garch.d1y &lt;- readRDS(&#39;./data/USDJPY.Garch.d1y.rds&#39;)</code></pr
 <h2>4.4 Multivariate Garch Models</h2>
 </div>
 </div>
-<div id="section" class="section level1">
-<h1>5.</h1>
-<div id="auto-arima-models-2" class="section level2">
-<h2>5.1 Auto Arima Models</h2>
-</div>
-<div id="exponential-smoothing-models-2" class="section level2">
-<h2>5.2 Exponential Smoothing Models</h2>
-</div>
-<div id="univariate-garch-models-and-ewma-2" class="section level2">
-<h2>5.3 Univariate Garch Models and EWMA</h2>
-</div>
-<div id="multivariate-garch-models-2" class="section level2">
-<h2>5.4 Multivariate Garch Models</h2>
-</div>
+<div id="model-comparison" class="section level1">
+<h1>5. Model Comparison</h1>
+<pre class="r"><code>## set all models provided by ets function.
+ets.m &lt;- c(&#39;AAN&#39;, &#39;AAZ&#39;, &#39;ANN&#39;, &#39;ANZ&#39;, &#39;AZN&#39;, &#39;AZZ&#39;, &#39;MAN&#39;, &#39;MAZ&#39;, &#39;MMN&#39;, 
+            &#39;MMZ&#39;, &#39;MNN&#39;, &#39;MNZ&#39;, &#39;MZN&#39;, &#39;MZZ&#39;, &#39;ZAN&#39;, &#39;ZAZ&#39;, &#39;ZMN&#39;, &#39;ZMZ&#39;, 
+            &#39;ZNN&#39;, &#39;ZNZ&#39;, &#39;ZZN&#39;, &#39;ZZZ&#39;)
+
+## Multiple Garch models inside `rugarch` package.
+garch.m &lt;- c(&#39;sGARCH&#39;, &#39;fGARCH&#39;, &#39;eGARCH&#39;, &#39;gjrGARCH&#39;, &#39;apARCH&#39;, &#39;iGARCH&#39;, &#39;csGARCH&#39;, &#39;realGARCH&#39;)
+garch.m &lt;- garch.m[-length(garch.m)] #skip `realGARCH`
+
+solver &lt;- c(&#39;hybrid&#39;, &#39;solnp&#39;, &#39;nlminb&#39;, &#39;gosolnp&#39;, &#39;nloptr&#39;, &#39;lbfgs&#39;)
+
+sub.garch.m &lt;&lt;- c(&#39;GARCH&#39;, &#39;TGARCH&#39;, &#39;AVGARCH&#39;, &#39;NGARCH&#39;, &#39;NAGARCH&#39;, &#39;APARCH&#39;, &#39;GJRGARCH&#39;, &#39;ALLGARCH&#39;)
+
+dist.model &lt;- c(&#39;norm&#39;, &#39;snorm&#39;, &#39;std&#39;, &#39;sstd&#39;, &#39;ged&#39;, &#39;sged&#39;, &#39;nig&#39;, &#39;ghyp&#39;, &#39;jsu&#39;)</code></pre>
+<pre class="r"><code>getSymbols(&#39;JPY=X&#39;, from = Sys.Date() %m-% years(1), to = Sys.Date())
+USDJPY &lt;- `JPY=X` %&gt;% Cl %&gt;% na.omit; rm(`JPY=X`)
+names(USDJPY) %&lt;&gt;% str_replace_all(&#39;JPY=X&#39;, &#39;USDJPY&#39;)
+
+## Auto Arima
+pre1 &lt;- auto.arima(USDJPY)
+saveRDS(pre1, &#39;./data/pre1.rds&#39;)
+
+## ETS
+pre2 &lt;- llply(ets.m, function(x) ets(USDJPY, model = x))
+names(pre2) = ets.m
+saveRDS(pre2, &#39;./data/pre2.rds&#39;)
+
+## Garch
+#&#39;@ pre3 &lt;- llply(garch.m, function(x){
+#&#39;@   gm = llply(dist.model, function(y){
+#&#39;@       if(x == &#39;fGARCH&#39;) {
+#&#39;@         sgm = llply(sub.garch.m, function(z) {
+#&#39;@           spec = ugarchspec(variance.model = list(
+#&#39;@             model = x, garchOrder = c(1, 1), 
+#&#39;@             submodel = z, external.regressors = NULL, 
+#&#39;@             variance.targeting = FALSE), distribution.model = y)
+#&#39;@           fit = ugarchfit(spec, USDJPY, solver = &#39;hybrid&#39;)
+#&#39;@             })
+#&#39;@         names(sgm) = sub.garch.m; sgm
+#&#39;@           } else {
+#&#39;@             spec = ugarchspec(variance.model = list(
+#&#39;@               model = x, garchOrder = c(1, 1), 
+#&#39;@               submodel = NULL, external.regressors = NULL, 
+#&#39;@               variance.targeting = FALSE), distribution.model = y)
+#&#39;@             fit = ugarchfit(spec, USDJPY, solver = &#39;hybrid&#39;)
+#&#39;@           }
+#&#39;@       })
+#&#39;@   names(gm) = dist.model; gm
+#&#39;@   })
+#&#39;@ names(pre3) = garch.m
+
+## Garch models
+pre3b &lt;- llply(garch.m, function(x){
+  armaOrder = armaSearch(USDJPY)
+  armaOrder %&lt;&gt;% dplyr::filter(AIC==min(AIC)) %&gt;% .[c(&#39;p&#39;, &#39;q&#39;)] %&gt;% unlist
+  spec = ugarchspec(
+    variance.model = list(
+      model = x, garchOrder = c(1, 1), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder, 
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = FALSE, 
+      external.regressors = NULL, 
+      archex = FALSE), 
+    distribution.model = &#39;snorm&#39;)
+        fit = ugarchfit(spec, USDJPY, solver = &#39;hybrid&#39;)
+      }
+  })
+saveRDS(pre3b, &#39;./data/pre3b.rds&#39;)
+
+## gjrGARCH model&#39;s distributions...
+pre3c &lt;- llply(dist.model, function(x){
+  armaOrder = armaSearch(USDJPY)
+  armaOrder %&lt;&gt;% dplyr::filter(AIC==min(AIC)) %&gt;% .[c(&#39;p&#39;, &#39;q&#39;)] %&gt;% unlist
+  spec = ugarchspec(
+    variance.model = list(
+      model = &#39;gjrGARCH&#39;, garchOrder = c(3, 3), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder, 
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = FALSE, 
+      external.regressors = NULL, 
+      archex = FALSE), 
+    distribution.model = x)
+  fit = ugarchfit(spec, USDJPY, solver = &#39;hybrid&#39;)
+  })
+saveRDS(pre3c, &#39;./data/pre3c.rds&#39;)
+
+## gjrGARCH model&#39;s distributions...
+pre3d &lt;- llply(solver, function(x){
+  armaOrder = armaSearch(USDJPY)
+  armaOrder %&lt;&gt;% dplyr::filter(AIC==min(AIC)) %&gt;% .[c(&#39;p&#39;, &#39;q&#39;)] %&gt;% unlist
+  spec = ugarchspec(
+    variance.model = list(
+      model = &#39;gjrGARCH&#39;, garchOrder = c(3, 3), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder, 
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = FALSE, 
+      external.regressors = NULL, 
+      archex = FALSE), 
+    distribution.model = &#39;snorm&#39;)
+  fit = ugarchfit(spec, USDJPY, solver = x)
+  })
+saveRDS(pre3d, &#39;./data/pre3d.rds&#39;)</code></pre>
+<pre class="r"><code>pre1 &lt;- readRDS(&#39;./data/pre1.rds&#39;)
+pre2 &lt;- readRDS(&#39;./data/pre2.rds&#39;)
+pre3 &lt;- readRDS(&#39;./data/pre3.rds&#39;) %&gt;% unlist
+pre3b &lt;- readRDS(&#39;./data/pre3b.rds&#39;) %&gt;% unlist
+names(pre3b) = paste0(names(pre3b),&#39;.optimalArmaPQ&#39;)
+pre3c &lt;- readRDS(&#39;./data/pre3c.rds&#39;) %&gt;% unlist
+names(pre3c) = paste0(&#39;gjrGARCH.&#39;, dist.model)
+pre3d &lt;- readRDS(&#39;./data/pre3d.rds&#39;) %&gt;% unlist
+names(pre3d) = paste0(&#39;gjrGARCH.&#39;, solver)</code></pre>
+<pre class="r"><code>aic1 &lt;- data.frame(.id = &#39;Auto.Arima&#39;, V1 = AIC(pre1))
+aic2 &lt;- ldply(pre2, AIC)
+aic3 &lt;- ldply(pre3, function(x) infocriteria(x)[1])
+aic3b &lt;- ldply(pre3b, function(x) infocriteria(x)[1])
+aic3c &lt;- ldply(pre3c, function(x) infocriteria(x)[1])
+aic3d &lt;- ldply(pre3d, function(x) tryCatch(infocriteria(x), error = function(e) NA)[1]) %&gt;% na.omit
+
+aic.s &lt;- bind_rows(aic1, aic2, aic3, aic3b, aic3c, aic3d)
+names(aic.s) &lt;- c(&#39;.id&#39;, &#39;AIC&#39;)
+
+aic.s %&gt;% formattable(list(
+    
+    .id = color_tile(&#39;white&#39;, &#39;darkgoldenrod&#39;), 
+    
+    AIC = formatter(&#39;span&#39;, style = x ~ formattable::style(color = ifelse(rank(x) &gt;= 3, &#39;gray&#39;, &#39;green&#39;)), x ~ paste0(round(x, 6), &#39; (rank: &#39;, sprintf(&#39;%02d&#39;, rank(x)), &#39;)&#39;))))</code></pre>
+<table class="table table-condensed">
+<thead>
+<tr>
+<th style="text-align:right;">
+.id
+</th>
+<th style="text-align:right;">
+AIC
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">Auto.Arima </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">530.718477 (rank: 42)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">AAN </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1240.940439 (rank: 63)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">AAZ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1240.940439 (rank: 63)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">ANN </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1238.362466 (rank: 56)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">ANZ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1238.362466 (rank: 56)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">AZN </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1238.362466 (rank: 56)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">AZZ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1238.362466 (rank: 56)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">MAN </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1238.414089 (rank: 60)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">MAZ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1238.414089 (rank: 60)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">MMN </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.532891 (rank: 52)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">MMZ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.532891 (rank: 52)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">MNN </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.141959 (rank: 46)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">MNZ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.141959 (rank: 46)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">MZN </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.141959 (rank: 46)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">MZZ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.141959 (rank: 46)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">ZAN </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1238.414089 (rank: 60)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">ZAZ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1238.414089 (rank: 60)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">ZMN </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.532891 (rank: 52)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">ZMZ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.532891 (rank: 52)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">ZNN </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.141959 (rank: 46)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">ZNZ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.141959 (rank: 46)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">ZZN </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.141959 (rank: 46)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">ZZZ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1237.141959 (rank: 46)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">sGARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.056182 (rank: 29)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.GARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.056182 (rank: 30)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.TGARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.055787 (rank: 27)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.AVGARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.063331 (rank: 36)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.NGARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.052349 (rank: 25)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.NAGARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.050824 (rank: 24)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.APARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.058716 (rank: 32)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.GJRGARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.057462 (rank: 31)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.ALLGARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.062901 (rank: 35)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">eGARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.066497 (rank: 37)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.037765 (rank: 19)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">apARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.058972 (rank: 33)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">iGARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.055883 (rank: 28)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">csGARCH </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.073589 (rank: 38)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">sGARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1.975899 (rank: 09)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.GARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1.975546 (rank: 08)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.TGARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1.945521 (rank: 03)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.AVGARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1.958105 (rank: 04)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.NGARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: green">1.941874 (rank: 02)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.NAGARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1.983257 (rank: 11)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.APARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.010005 (rank: 15)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.GJRGARCH.optimalArmaPQ</span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1.96448 (rank: 06)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">fGARCH.ALLGARCH.optimalArmaPQ</span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.042566 (rank: 22)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">eGARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1.973064 (rank: 07)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: green">1.931967 (rank: 01)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">apARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.062426 (rank: 34)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">iGARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1.95882 (rank: 05)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">csGARCH.optimalArmaPQ </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">1.980004 (rank: 10)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.norm </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.040296 (rank: 21)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.snorm </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.00356 (rank: 13)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.std </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.054888 (rank: 26)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.sstd </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.085194 (rank: 39)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.ged </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.043311 (rank: 23)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.sged </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.032038 (rank: 18)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.nig </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.040235 (rank: 20)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.ghyp </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.02168 (rank: 16)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.jsu </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.117652 (rank: 41)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.hybrid </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.00356 (rank: 13)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.solnp </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.00356 (rank: 13)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.gosolnp </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.029092 (rank: 17)</span>
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+<span style="display: block; padding: 0 4px; border-radius: 4px; background-color: #ffffff">gjrGARCH.nloptr </span>
+</td>
+<td style="text-align:right;">
+<span style="color: gray">2.088449 (rank: 40)</span>
+</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div id="conclusion" class="section level1">
 <h1>6. Conclusion</h1>
@@ -1069,27 +1713,28 @@ USDJPY.Garch.d1y &lt;- readRDS(&#39;./data/USDJPY.Garch.d1y.rds&#39;)</code></pr
 <p>It’s useful to record some information about how your file was created.</p>
 <ul>
 <li>File creation date: 2015-07-22</li>
-<li>File latest updated date: 2017-10-05</li>
+<li>File latest updated date: 2017-10-08</li>
 <li>R version 3.4.2 (2017-09-28)</li>
 <li>R version (short form): 3.4.2</li>
-<li><a href="https://github.com/rstudio/rmarkdown"><span style="color:blue"><strong>rmarkdown</strong> package</span></a> version: 1.6</li>
+<li><a href="https://github.com/rstudio/rmarkdown"><span style="color:blue"><strong>rmarkdown</strong> package</span></a> version: 1.6.0.9004</li>
 <li><a href="https://github.com/rstudio/tufte"><span style="color:blue"><strong>tufte</strong> package</span></a> version: 0.2</li>
 <li>File version: 1.0.1</li>
 <li>Author Profile: <a href="https://beta.rstudioconnect.com/englianhu/ryo-eng/"><span style="color:blue">®γσ, Eng Lian Hu</span></a></li>
 <li>GitHub: <a href="https://github.com/englianhu/binary.com-interview-question"><span style="color:blue">Source Code</span></a></li>
 <li>Additional session information</li>
 </ul>
-<p>[1] “2017-10-05 12:00:34 JST” <div id="htmlwidget-a95b1dab4a971bacfe94" class="formattable_widget html-widget" style="width:100%;height:480px;" width="100%" height="480"></div>
-<script type="application/json" data-for="htmlwidget-a95b1dab4a971bacfe94">{"x":{"html":"<table class=\"table table-condensed\">\n <thead>\n  <tr>\n   <th style=\"text-align:right;\"> Category <\/th>\n   <th style=\"text-align:right;\"> session_info <\/th>\n  <\/tr>\n <\/thead>\n<tbody>\n  <tr>\n   <td style=\"text-align:right;\"> version <\/td>\n   <td style=\"text-align:right;\"> R version 3.4.2 (2017-09-28) <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> os <\/td>\n   <td style=\"text-align:right;\"> Windows 10 x64 <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> system <\/td>\n   <td style=\"text-align:right;\"> x86_64, mingw32 <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> ui <\/td>\n   <td style=\"text-align:right;\"> RTerm <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> language <\/td>\n   <td style=\"text-align:right;\"> en <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> collate <\/td>\n   <td style=\"text-align:right;\"> Japanese_Japan.932 <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> tz <\/td>\n   <td style=\"text-align:right;\"> Asia/Tokyo <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> date <\/td>\n   <td style=\"text-align:right;\"> 2017-10-05 <\/td>\n  <\/tr>\n<\/tbody>\n<\/table>"},"evals":[],"jsHooks":[]}</script><div id="htmlwidget-ecdb413f67a9cda5a94d" class="formattable_widget html-widget" style="width:100%;height:480px;" width="100%" height="480"></div>
+<p>[1] “2017-10-08 15:51:39 JST” <div id="htmlwidget-a95b1dab4a971bacfe94" class="formattable_widget html-widget" style="width:100%;height:480px;" width="100%" height="480"></div>
+<script type="application/json" data-for="htmlwidget-a95b1dab4a971bacfe94">{"x":{"html":"<table class=\"table table-condensed\">\n <thead>\n  <tr>\n   <th style=\"text-align:right;\"> Category <\/th>\n   <th style=\"text-align:right;\"> session_info <\/th>\n  <\/tr>\n <\/thead>\n<tbody>\n  <tr>\n   <td style=\"text-align:right;\"> version <\/td>\n   <td style=\"text-align:right;\"> R version 3.4.2 (2017-09-28) <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> os <\/td>\n   <td style=\"text-align:right;\"> Windows 10 x64 <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> system <\/td>\n   <td style=\"text-align:right;\"> x86_64, mingw32 <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> ui <\/td>\n   <td style=\"text-align:right;\"> RTerm <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> language <\/td>\n   <td style=\"text-align:right;\"> en <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> collate <\/td>\n   <td style=\"text-align:right;\"> Japanese_Japan.932 <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> tz <\/td>\n   <td style=\"text-align:right;\"> Asia/Tokyo <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> date <\/td>\n   <td style=\"text-align:right;\"> 2017-10-08 <\/td>\n  <\/tr>\n<\/tbody>\n<\/table>"},"evals":[],"jsHooks":[]}</script><div id="htmlwidget-ecdb413f67a9cda5a94d" class="formattable_widget html-widget" style="width:100%;height:480px;" width="100%" height="480"></div>
 <script type="application/json" data-for="htmlwidget-ecdb413f67a9cda5a94d">{"x":{"html":"<table class=\"table table-condensed\">\n <thead>\n  <tr>\n   <th style=\"text-align:right;\"> Category <\/th>\n   <th style=\"text-align:right;\"> Sys.info <\/th>\n  <\/tr>\n <\/thead>\n<tbody>\n  <tr>\n   <td style=\"text-align:right;\"> sysname <\/td>\n   <td style=\"text-align:right;\"> Windows <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> release <\/td>\n   <td style=\"text-align:right;\"> 10 x64 <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> version <\/td>\n   <td style=\"text-align:right;\"> build 14393 <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> nodename <\/td>\n   <td style=\"text-align:right;\"> RSTUDIO-SCIBROK <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> machine <\/td>\n   <td style=\"text-align:right;\"> x86-64 <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> login <\/td>\n   <td style=\"text-align:right;\"> scibr <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> user <\/td>\n   <td style=\"text-align:right;\"> scibr <\/td>\n  <\/tr>\n  <tr>\n   <td style=\"text-align:right;\"> effective_user <\/td>\n   <td style=\"text-align:right;\"> scibr <\/td>\n  <\/tr>\n<\/tbody>\n<\/table>"},"evals":[],"jsHooks":[]}</script></p>
 </div>
 <div id="reference" class="section level2">
 <h2>7.2 Reference</h2>
 <ol style="list-style-type: decimal">
 <li><a href="https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html"><span style="color:blue">Binary.com Interview Q1</span></a>(<span style='color:blue'><a href="http://rpubs.com/englianhu/binary-forex-trading-Q1">Alternate link</span></a>) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'></li>
-<li><a href="https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Time%20Series%20Analysis%20with%20Applications%20in%20R%20(2nd%20Edt)%20(CN).pdf"><span style="color:blue">Time Series Analysis with Applications in R (2nd Edt) (CN)</span></a></li>
-<li><a href="https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/ARMA%20and%20GARCH%20models%20for%20silver%2C%20nickel%20and%20copper%20price%20returns.pdf"><span style="color:blue">ARMA and GARCH models for silver, nickel and copper price returns</span></a></li>
-<li><a href="https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Forecasting%20the%20Volatility%20in%20Financial%20Assets%20using%20Conditional%20Variance%20Models.pdf"><span style="color:blue">Forecasting the Volatility in Financial Assets using Conditional Variance Models</span></a></li>
+<li><a href="https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers"><span style="color:blue">…</span></a></li>
+<li><a href="..."><span style="color:blue">…</span></a></li>
+<li><a href="..."><span style="color:blue">…</span></a></li>
+<li><a href="..."><span style="color:blue">…</span></a></li>
 </ol>
 <p><strong>Powered by - Copyright® Intellectual Property Rights of <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/oda-army2.jpg?raw=true' width='24'> <a href="http://www.scibrokes.com"><span style="color:blue">Scibrokes®</span></a>個人の経営企業</strong></p>
 </div>
