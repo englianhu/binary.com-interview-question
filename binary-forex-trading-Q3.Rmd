@@ -1,0 +1,115 @@
+---
+title: "<img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/757b27e1e93132368b0898152078be4961b05a28/www/binary-logo-resize.jpg' width='240'>"
+subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question III"
+author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/ENG.jpg' width='24'> <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/RYO.jpg?raw=true' width='24'>白戸則道®"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_html:
+    toc: yes
+    toc_depth: 4
+    self_contained: no
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+link-citations: yes
+---
+
+```{r setup, include = FALSE}
+#'@ rm(list = ls(all = TRUE))
+
+## load chunks `saveQ1E`.
+#'@ load('./Q1E.RData')
+load('./Q1E-read-data3.RData')
+
+suppressPackageStartupMessages(library('BBmisc'))
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'ff', 'ffbase', 'tidyquant', 'sparklyr', 'readr', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'Mcomp', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
+ 
+suppressAll(lib(pkgs))
+#'@ install.packages(pkgs, lib = 'C:/Program Files/R/R-3.4.0/library')
+
+suppressAll(l_ply(c('last.R', 'Mn.R', 'has.Mn.R', 'simAutoArima.R', 'simAutoArima2.R', 'simETS.R', 'simETS2.R', 'plotChart2.R', 'armaSearch.R', 'simGarch.R', 'simGarch2.R', 'quantitative-finance.R'), function(pkg) source(paste0('./function/', pkg))))
+
+## Set option to below if you want to plot an independent webpage with graph 
+#'@ op <- options(gvis.plot.tag=NULL)
+op <- options(gvis.plot.tag = 'chart')
+options(gvis.plot.tag = 'chart', warn = -1)
+#'@ options(rpubs.upload.method = 'internal')
+
+## R: llply fully reproducible results in parallel
+## https://stackoverflow.com/questions/34946177/r-llply-fully-reproducible-results-in-parallel
+cl <- makeCluster(detectCores())
+registerDoParallel(cl)
+
+## Create a cluster object to be used for rugarcgh and rmgarch models.
+cluster = makePSOCKcluster(15)
+
+## Connect to Spark.
+#'@ spark_install()
+#'@ sc <- spark_connect(master = 'local')
+
+rm(pkgs)
+```
+
+# 1. Introduction
+
+# 2. Data
+
+# 3. Statiscal Modelling
+
+# 4. Betting Strategy
+
+# 5. Return of Investment
+
+# 6. Conclusion
+
+
+```{r stopPar, echo = FALSE}
+## Set options back to original options
+options(op)
+options(warn = 0)
+stopCluster(cl)
+```
+
+# 7. Appendix
+
+## 7.1 Documenting File Creation 
+
+  It's useful to record some information about how your file was created.
+
+  - File creation date: 2015-10-08
+  - File latest updated date: `r Sys.Date()`
+  - `r R.version.string`
+  - R version (short form): `r getRversion()`
+  - [<span style='color:blue'>**rmarkdown** package</span>](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+  - [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
+  - File version: 1.0.1
+  - Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
+  - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
+  - Additional session information
+  
+```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+
+lubridate::now()
+sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+sys1 %>% formattable %>% as.htmlwidget
+
+data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(Category = Category, Sys.info =  Sys.info..) %>% formattable %>% as.htmlwidget
+
+rm(sys1)
+```
+
+## 7.2 Reference
+
+  01. [<span style='color:blue'>Binary.com Interview Q1</span>](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) (<span style='color:blue'>[Alternate link</span>](http://rpubs.com/englianhu/binary-forex-trading-Q1))
+  02. [<span style='color:blue'>Odds Modelling and Testing Inefficiency of Sports Bookmakers</span>](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)
+  03. [<span style='color:blue'>Apply Kelly-Criterion on English Soccer 2011/12 to 2012/13</span>](https://github.com/scibrokes/kelly-criterion)
+  04. [<span style='color:blue'>Betting Strategy and Model Validation</span>](https://github.com/scibrokes/betting-strategy-and-model-validation)
+  05. [<span style='color:blue'>...</span>](...)
+
+**Powered by - Copyright® Intellectual Property Rights of <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/oda-army2.jpg?raw=true' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**

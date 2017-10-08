@@ -1,0 +1,82 @@
+---
+title: "<img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/757b27e1e93132368b0898152078be4961b05a28/www/binary-logo-resize.jpg' width='240'>"
+subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question II"
+author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/ENG.jpg' width='24'> <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/RYO.jpg?raw=true' width='24'>白戸則道®"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_html:
+    toc: yes
+    toc_depth: 4
+    self_contained: no
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+link-citations: yes
+---
+
+```{r setup, include = FALSE}
+#'@ rm(list = ls(all = TRUE))
+
+suppressPackageStartupMessages(library('BBmisc'))
+pkgs <- c('knitr', 'kableExtra', 'devtools', 'lubridate', 'data.table', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'queuecomputer')
+ 
+suppressAll(lib(pkgs))
+#'@ install.packages(pkgs, lib = 'C:/Program Files/R/R-3.4.0/library')
+
+rm(pkgs)
+```
+
+# 1. Introduction
+
+# 2. Data
+
+# 3. Statiscal Modelling
+
+# 4. Betting Strategy
+
+# 5. Return of Investment
+
+# 6. Conclusion
+
+# 7. Appendix
+
+## 7.1 Documenting File Creation 
+
+  It's useful to record some information about how your file was created.
+
+  - File creation date: 2015-10-08
+  - File latest updated date: `r Sys.Date()`
+  - `r R.version.string`
+  - R version (short form): `r getRversion()`
+  - [<span style='color:blue'>**rmarkdown** package</span>](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+  - [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
+  - File version: 1.0.1
+  - Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
+  - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
+  - Additional session information
+  
+```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+
+lubridate::now()
+sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+sys1 %>% formattable %>% as.htmlwidget
+
+data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(Category = Category, Sys.info =  Sys.info..) %>% formattable %>% as.htmlwidget
+
+rm(sys1)
+```
+
+## 7.2 Reference
+
+  01. [<span style='color:blue'>queuecomputer</span>](https://github.com/AnthonyEbert/queuecomputer)
+  02. [<span style='color:blue'>Using the queuecomputer package</span>](https://cran.r-project.org/web/packages/queuecomputer/vignettes/Howto.html)
+  03. [<span style='color:blue'>M/M/k queues</span>](https://cran.r-project.org/web/packages/queuecomputer/vignettes/MMk_queues.html)
+  04. [<span style='color:blue'>Queue models</span>](https://beta.rstudioconnect.com/content/3069/)
+
+**Powered by - Copyright® Intellectual Property Rights of <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/oda-army2.jpg?raw=true' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**
