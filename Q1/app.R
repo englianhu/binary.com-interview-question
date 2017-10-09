@@ -129,6 +129,7 @@ getFOREX <- memoise(function(currency) {
 calC <- memoise(function(currency, ahead) {
   
   mbase = getFOREX(currency)
+  
   armaOrder = armaSearch(mbase)
   armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
   
