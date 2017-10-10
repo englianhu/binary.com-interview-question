@@ -1,8 +1,14 @@
 # === Setting ======================================================
 library('shiny')
+library('shinyBS')
 library('memoise')
 library('magrittr')
+library('plyr')
+library('dplyr')
+library('stringr')
+library('tidyr')
 library('queuecomputer')
+library('lubridate')
 
 # === Data =========================================================
 dtm <<- data.frame(Category = c('Service time distribution', 
@@ -178,6 +184,7 @@ calC <- memoise(function(rRatio, sRatio, mCusts, time,
   return(tmp)
   })
 
+                                                      
 # === Shiny UI =====================================================
 ui <- fluidPage(
    
@@ -188,60 +195,102 @@ ui <- fluidPage(
    
    sidebarLayout(
       sidebarPanel(
-        selectInput('timeUnit', 'Units of Time :',
-                    choices = c('Year' = 'year', 
-                                'Month' = 'month', 
-                                'Week' = 'week', 
-                                'Day' = 'day', 
-                                'Hour' = 'hour', 
-                                'Minute' = 'minute', 
-                                'Second' = 'second'), 
-                    selected = 'minute'), 
-        br(), 
-        h3('Customers'), 
-        numericInput('arrRate', HTML('Arrival rate (&lambda; from 0.0001 to 50) :'), 
-                     min = 0, max = 50, step = 0.0001, value = 1.666667), 
-        numericInput('lvRate', 
-                     p('Reneging ', 
-                       tags$a(href='https://people.emich.edu/aross15/q/brr.html', target='_blank', 
-                              tags$img(height = '20px', alt='hot', #align='right', 
-                                       src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/q.jpg')), 
-                       ' rate (', HTML('&rho;'), ' from 0.0001 to 50) :'), 
-                     min = 0, max = 50, step = 0.0001, value = 20), 
-        sliderInput('numCst', HTML('Distribution of number of customers in post office (n) :'), 
-                    min = 0, max = 50, step = 1, value = 8), 
-        numericInput('timeT', HTML('Distribution of time in queue (t from 0.0001 to 50) :'), 
-                     min = 0, max = 50, step = 0.0001, value = 0.25), 
-        br(), 
-        h3('Clerks'), 
-        sliderInput('numSrv', HTML('Number of identical clerks (&zeta;) :'), 
-                    min = 0, max = 50, step = 1, value = 4), 
-        numericInput('srvRate', HTML('Service rate (&mu; from 0.0001 to 50) :'), 
-                    min = 0, max = 50, step = 0.0001, value = 4), 
-        numericInput('srvtSD', HTML('Service time standard deviation (&mu; from 0.0001 to 50) :'), 
-                     min = 0, max = 50, step = 0.0001, value = 0.3), 
-        sliderInput('roomSize', HTML('Waiting room size (&eta;) :'), 
-                    min = 0, max = 50, step = 1, value = 50)),
+        conditionalPanel(condition = "input.conditionedPanels == 'Basic Models'", 
+                         selectInput('timeUnit', 'Units of Time :',
+                                     choices = c('Year' = 'year', 
+                                                 'Month' = 'month', 
+                                                 'Week' = 'week', 
+                                                 'Day' = 'day', 
+                                                 'Hour' = 'hour', 
+                                                 'Minute' = 'minute', 
+                                                 'Second' = 'second'), 
+                                     selected = 'minute'), 
+                         br(), 
+                         bsCollapse(id = 'cstPanel1', open = 'CstArr1', 
+                                    bsCollapsePanel('Customer Adjustment', 
+                                                    h3('Customers'), 
+                                                    numericInput('arrRate1', HTML('Arrival rate (&lambda; from 0 to 50) :'), 
+                                                                 min = 0, max = 50, step = 0.0001, value = 1.666667), 
+                                                    sliderInput('numCst1', HTML('Distribution of number of customers in post office (n) :'), 
+                                                                min = 0, max = 50, step = 1, value = 8), 
+                                                    numericInput('timeT', HTML('Distribution of time in queue (t from 0 to 50) :'), 
+                                                                 min = 0, max = 50, step = 0.0001, value = 0.25), 
+                                                    br()), 
+                                    bsCollapsePanel('Clerk Adjustment', 
+                                                    h3('Clerks'), 
+                                                    sliderInput('numSrv1', HTML('Number of identical clerks (&zeta;) :'), 
+                                                                min = 0, max = 50, step = 1, value = 4), 
+                                                    numericInput('srvRate1', HTML('Service rate (&mu; from 0 to 50) :'), 
+                                                                 min = 0, max = 50, step = 0.0001, value = 4), 
+                                                    numericInput('srvtSD', HTML('Service time standard deviation (&mu; from 0 to 50) :'), 
+                                                                 min = 0, max = 50, step = 0.0001, value = 0.3), 
+                                                    sliderInput('roomSize', HTML('Waiting room size (&eta;) :'), 
+                                                                min = 0, max = 50, step = 1, value = 50)))), 
+        
+        conditionalPanel(condition = "input.conditionedPanels == 'Advanced Models'", 
+                         bsCollapse(id = 'cstPanel2', open = 'CstArr2', 
+                                    bsCollapsePanel('Customer Adjustment', 
+                                                    h3('Customers'), 
+                                                    numericInput('2', HTML('Arrival rate (&lambda; from 0 to 50) :'), 
+                                                                 min = 0, max = 50, step = 0.0001, value = 1.666667), 
+                                                    sliderInput('numCst2', HTML('Distribution of number of customers in post office (n) :'), 
+                                                                min = 0, max = 50, step = 1, value = 8), 
+                                                    sliderInput('bkRatio', 
+                                                                p('Balk', 
+                                                                  tags$a(href='https://people.emich.edu/aross15/q/brr.html', target='_blank', 
+                                                                         tags$img(height = '20px', alt='hot', #align='right', 
+                                                                                  src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/q.jpg')), 
+                                                                  ' if queue length is or exceeds (', HTML('&rho;'), ' from 0 to 9999) :'), 
+                                                                min = 0, max = 9999, step = 1, value = 20), 
+                                                    sliderInput('rnRatio', 
+                                                                p('Renege', 
+                                                                  tags$a(href='https://people.emich.edu/aross15/q/brr.html', target='_blank', 
+                                                                         tags$img(height = '20px', alt='hot', #align='right', 
+                                                                                  src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/q.jpg')), 
+                                                                  ' if waiting time exceeds (', HTML('&rho;'), ' from 0 to 9999) minute(s) :'), 
+                                                                min = 0, max = 9999, step = 1, value = 20), 
+                                                    br()), 
+                                    bsCollapsePanel('Clerk Adjustment', 
+                                                    h3('Clerks'), 
+                                                    sliderInput('bzTime', label = 'Business Hours',
+                                                                min = as.POSIXct('2017-08-30 00:00:00'),
+                                                                max = as.POSIXct('2017-08-31 00:00:00'),
+                                                                value = c(as.POSIXct('2017-08-30 00:00:00'),
+                                                                          as.POSIXct('2017-08-31 00:00:00'))), 
+                                                    sliderInput('numSrv2', HTML('Number of identical clerks (&zeta;) :'), 
+                                                                min = 0, max = 50, step = 1, value = 4), 
+                                                    numericInput('srvRate2', HTML('Service rate (&mu; from 0 to 50) :'), 
+                                                                 min = 0, max = 50, step = 0.0001, value = 4))))), 
       
       mainPanel(
         tabsetPanel(
           tabPanel('Introduction', 
                    h3('Question II'), 
                    HTML('<iframe src=\"https://raw.githubusercontent.com/englianhu/binary.com-interview-question/ff20ee95aa60ef5cca3cf797066089103eb62acf/reference/quant-analyst-skills-test.pdf" width=\"600\" height=\"600\"></iframe>'), 
-                   h3('How to Choose a Queueing Model?'), 
-                   p(paste('All models in this app are Poisson arrival, ', 
-                           'ininite population and FCFS. The models differ by : '), 
+                   br(), 
+                   h3('Queuing theory'), 
+                   p('Queuing theory deals with problems which involve queuing (or waiting). Typical examples might be : ', 
                      tags$ul(
-                       tags$li('the service time distribution (exponential, constant or general)'), 
-                       tags$li('the number of clerks (single clerk or multiple clerks)'), 
-                       tags$li('waiting room capacity (unlimited waiting room or limited waiting room buffer)'))
-                     ), 
-                   br(), 
-                   tableOutput('tbl1'), 
-                   br(), 
-                   p('The Erlang Loss model is a special case of M/M/s/b model where the waiting room capacity is zero.')), 
-          tabPanel('Queueing Models', 
+                       tags$li('banks/supermarkets - waiting for service'), 
+                       tags$li('computers - waiting for a response'), 
+                       tags$li('failure situations - waiting for a failure to occur e.g. in a piece of machinery'), 
+                       tags$li('public transport - waiting for a train or a bus')))), 
+          tabPanel('Basic Models', 
                    tabsetPanel(
+                     tabPanel('Instruction', 
+                              h3('How to Choose a Queueing Model?'), 
+                              p(paste('All models in this app are Poisson arrival, ', 
+                                      'ininite population and FCFS. The models differ by : '), 
+                                tags$ul(
+                                  tags$li('the service time distribution (exponential, constant or general)'), 
+                                  tags$li('the number of clerks (single clerk or multiple clerks)'), 
+                                  tags$li('waiting room capacity (unlimited waiting room or limited waiting room buffer)'))), 
+                              br(), 
+                              tableOutput('tbl1'), 
+                              br(), 
+                              p('The Erlang Loss model is a special case of M/M/s/b model where the waiting room capacity is zero.'), 
+                              p('The original file is getting from ', HTML("<a href='https://github.com/englianhu/binary.com-interview-question/blob/master/reference/QueueMacros.xls'>Queueing model macro in Excel</a>"), 
+                                ' while I rewrote in R programming language.')), 
                      tabPanel('M/M/1', 
                               h3('Output'), 
                               htmlOutput('txt1A'), 
@@ -323,11 +372,46 @@ ui <- fluidPage(
                               htmlOutput('summ5F'), 
                               htmlOutput('summ5G'), 
                               htmlOutput('summ5H')))), 
+          tabPanel('Advanced Models', 
+                   tabsetPanel(
+                     tabPanel('Instruction', 
+                              h3('Graphical Application Simulation of Queues'), 
+                              h4('Queueing Simulation Engines'), 
+                              br(), 
+                              h4('Background'), 
+                              p(paste('This queueing simulation engine was developed to simplify or eliminate the difficult programming required to simulate', 
+                                      'a queue in a web application. The user need only customize the queueing simulation engine with the appropriate data,', 
+                                      'and then perform simulation runs in the usual fashion. The original file is getting from'), 
+                                HTML("<a href='https://sites.ualberta.ca/~aingolfs/simulation/'>Graphical spreadsheet queueing simulation</a>"), 
+                                paste('but I rewrote in R programming language and modified from statically server to be dynamically server.')), 
+                              br(), 
+                              h4('Instructions for use...'), 
+                              p(paste('The basic idea is that you go to the comutations tab and insert the probability distributions of your choice for the', 
+                                      'interarrival time distribution and the service time distribution in the sidebar.')), 
+                              p(paste('Change the business hours, balking and reneging figures from sidebar as well. Then queue model will', 
+                                      'be updated automatically.')), 
+                              br(), 
+                              h4('Ackowledgements from the Spreadsheet'), 
+                              p(paste('Original programming of the spreadsheet queuing engines by Rebecca Tsang and Tom Grossman. The research was partially', 
+                                      'supported by Canadian Natural Sciences and Engineering Research Council Grant OGP0172794.')), 
+                              p(paste('Distribution of the software via the World Wide Web (but not the development of the software) was partially supported', 
+                                      'by the "Learning Enhancement Envelop" Program of the Province of Alberta, Canada.')), 
+                              p(paste('Larry Leblanc suggested improvements to the simulation of balking. Programming of the queueing graphs by Michael', 
+                                      'Thimas and Armann Ingolfsson. Research partially supported by Canadian Natural Sciences and Engineering Research', 
+                                      'Council Grant RGPIN203534')), 
+                              br(), 
+                              h4('References'), 
+                              p('1. Spreadsheet Modelling and Simulation Improves Understanding of Queues. by Thomas A. Grossman Jr. (1999)'), 
+                              p('2. Graphical Spreadsheet Simulation of Queues. by Armann Ingolfsson and Thomas A. Grossman Jr. (2001)')), 
+                     tabPanel('Data', 
+                              textOutput('bzTimeRange')), 
+                     tabPanel('Simulation'), 
+                     tabPanel('Computations'))), 
           tabPanel('Appendix', 
                    tabsetPanel(
                      tabPanel('Reference', 
                               h3('Miscellaneous'), 
-                              p('Queue models are applicable to hospitals, banks, investor fund, e-commerce etc. Kindly refer to reference or below links for further understanding.', 
+                              p('Below is a package which applied queue models. Kindly refer to reference or below links for further understanding.', 
                                 tags$ul(
                                   tags$li(HTML("<a href='https://github.com/AnthonyEbert/queuecomputer'>queuecomputer</a>")), 
                                   tags$li(HTML("<a href='https://cran.r-project.org/web/packages/queuecomputer/vignettes/MMk_queues.html'>M/M/k queues</a>")), 
@@ -365,11 +449,16 @@ ui <- fluidPage(
                               p('14. ', HTML("<a href='http://people.brunel.ac.uk/~mastjjb/jeb/or/queue.html'>Queueing theory</a>"), 
                                 tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
                                        tags$img(height = '20px', alt='hot', #align='right', 
+                                                src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg'))), 
+                              p('15. ', HTML("<a href='https://sites.ualberta.ca/~aingolfs/simulation/'>Graphical spreadsheet queueing simulation</a>"), 
+                                tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                       tags$img(height = '20px', alt='hot', #align='right', 
                                                 src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg')))), 
                    
                      tabPanel('Author', 
                               h3('Author'), 
-                              tags$iframe(src = 'https://englianhu.github.io/2016/12/ryo-eng.html', height = 800, width = '100%', frameborder = 0))))))), 
+                              tags$iframe(src = 'https://englianhu.github.io/2016/12/ryo-eng.html', height = 800, width = '100%', frameborder = 0)))), 
+        id = 'conditionedPanels'))), 
    br(), 
    p('Powered by - Copyright® Intellectual Property Rights of ', 
      tags$a(href='http://www.scibrokes.com', target='_blank', 
@@ -398,12 +487,12 @@ server <- function(input, output) {
     isolate({
       withProgress({
         setProgress(message = "Processing queue calculation...")
-        calC(rRatio = input$arrRate, 
-             sRatio = input$srvRate, 
-             mCusts = input$numCst, 
+        calC(rRatio = input$arrRate1, 
+             sRatio = input$srvRate1, 
+             mCusts = input$numCst1, 
              time = input$timeT, 
-             tSD = input$srvtSD, 
-             mServers = input$numSrv, 
+             tSD = input$srvtSD1, 
+             mServers = input$numSrv1, 
              nRoom = input$roomSize)
         })
     })
@@ -669,7 +758,20 @@ server <- function(input, output) {
     paste('Effective arrival rate :', 
           '<font color=\"#FF0000\"><b>', terms()$MMsb$summ5H, 
           '%</b></font> (Entering rate)')})
-}
+  
+  output$bzTimeRange <- renderText({
+    # make sure end date later than start date
+    validate(
+      need(input$bzTime[2] > input$bzTime[1], 'business end time is earlier than business start time'))
+    
+    # make sure less than 24 hours difference
+    validate(
+      need(difftime(input$bzTime[2], input$bzTime[1], units = 'hours') <= 24, 'time range more than 24 hours is not allowed.'))
+    
+    paste("The business hour of post office is", 
+          difftime(input$bzTime[2], input$bzTime[1], units = 'hours'), 'hours per day.')
+  })
+  }
 
 # Run the application 
 shinyApp(ui = ui, server = server)

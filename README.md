@@ -25,6 +25,8 @@
   - Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
 
   Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) ([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
+  
+  Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3073/).
 
   **Blooper**
 
@@ -33,12 +35,10 @@
   ![<span style='color:red'>**error...**</span>](www/20170113_104005.gif)
 
   Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/316133).
-  
-  Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3073/).
 
 ### Question II
 
-  For question 2, I simply write an app (while the leave rate doesn't function), kindly use [Queue models](https://beta.rstudioconnect.com/content/3069/).
+  For question 2, I simply write an app (while the leave rate doesn't function), kindly use [Q2App](https://beta.rstudioconnect.com/content/3069/).
 
 ### Question III
 
