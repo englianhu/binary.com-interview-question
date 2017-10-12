@@ -20,17 +20,11 @@ link-citations: yes
 ```{r setup, include = FALSE}
 #'@ rm(list = ls(all = TRUE))
 
-## load chunks `saveQ1E`.
-#'@ load('./Q1E.RData')
-load('./Q1E-read-data3.RData')
-
 suppressPackageStartupMessages(library('BBmisc'))
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'ff', 'ffbase', 'tidyquant', 'sparklyr', 'readr', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'Mcomp', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'tidyquant', 'sparklyr', 'readr', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'Mcomp', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'engsoccerdata', 'Rmodel')
  
 suppressAll(lib(pkgs))
 #'@ install.packages(pkgs, lib = 'C:/Program Files/R/R-3.4.0/library')
-
-suppressAll(l_ply(c('last.R', 'Mn.R', 'has.Mn.R', 'simAutoArima.R', 'simAutoArima2.R', 'simETS.R', 'simETS2.R', 'plotChart2.R', 'armaSearch.R', 'simGarch.R', 'simGarch2.R', 'quantitative-finance.R'), function(pkg) source(paste0('./function/', pkg))))
 
 ## Set option to below if you want to plot an independent webpage with graph 
 #'@ op <- options(gvis.plot.tag=NULL)
@@ -55,16 +49,63 @@ rm(pkgs)
 
 # 1. Introduction
 
+<center><iframe src="https://raw.githubusercontent.com/englianhu/binary.com-interview-question/ff20ee95aa60ef5cca3cf797066089103eb62acf/reference/quant-analyst-skills-test.pdf" width="600" height="900"></iframe></center>
+
+  For the question III, here I list down all possible scenario.
+  
+  - **Observation 1 :** The bets on the first six games, if each team wins three, must land you at wining/losing zero (I call this winnings of 00). If this is not the case, then no bet^[Or in token of place bet $1] on the last game achieves ±100.
+
+  - **Observation 2 :** The bets on the first five games, if one team wins three of them, must land you at ±50 (+50 if team 1 wins three, −50 if team 2 wins three). Then (and only then) you can bet $50 on team 1 in game six and be assured of either immediately getting the proper result, or reaching a 3-3 tie at 00 winnings.
+
+  - **Observation 3 :** The bets on the first four games, if each team wins two, must land you at 00 (and you bet $50 on team 1 in the next game).
+
+  - **Observation 4 :** The bets on the first four games, if one team team wins three, must land you at ±75. Then you can bet $25 on team 1 and either terminate in the proper winnings or arrive at 3-2 at the proper amount ahead or behind.
+
+  - **Observation 5 :** The bets on the first three games, if one team wins two, must land you at some value that allows you to reach either ±75 or 00 depending on the outcome of the fourth game. That implies that the wager in that situation must be $37.5 and that the bets on the first three games, if one team wins two, must land you at ±37.5.
+
+  - **Observation 6 :** The bets on the first three games, if one team wins all three, must land you at some value that allows your next result to be ±100 or ±75 (see observation 4, which says in a 3-1 situation you need to be up or down by $75). The value that allows this is ±87.5 and the wager, of course, is $12.5.
+
+  - **Observation 7 :** The bets on the first two games, if each team wins one, must land you even, and at that point you will bet $37.5 (see observation 5).
+
+  - **Observation 8 :** The bets on the first two games, if one team wins both, must land you at some value that allows your next result to be ±87.5 or ±37.5, depending on the winner of game 3. Therefore, the bets on the first two games, if one team wins both, must land you at ±62.5 and you will bet $25.
+
+  - **Observation 9 :** The bet on the first game must land you mid-way between even and ±62.5. Than means the first bet must be $31.25.
+
+So here is your strategy:
+
+  Bet $31.25 on team 1 in the first game. Then bet $31.25 on team 1 in the second game. At game three, if the teams are even, increase your bet for game three to $37.5. But if either team is up 2-0, decrease your bet to $25.
+
+  After three games, if one team has won all three you will be ahead or behind by $87.5 and you will bet $12.5 on the fourth game. But if either team is ahead 2-1, you will be ahead or behind by $37.5 and you will bet $37.5 on the fourth game.
+
+  After four games, if the series is not over, you will either be even and bet $50 on game five, or ahead or behind by $75, in which case you will bet on $25.
+
+  After five games either the series will be over, or you will be ahead or behind by $50, in which case you will bet $50 on game six.
+
+  And of course if the teams are tied after six games, then you are even as well, and you bet the full $100 on the final game.
+
+  Kindly refer to [Probability+Game Theory Problem [closed]](https://math.stackexchange.com/questions/1889792/probabilitygame-theory-problem?answertab=votes#tab-top) for further information.
+  
+  Due to the betting strategy for question III has indenpent probability 50% without any edge, now we look at the soccer scores modelling and Kelly criterion betting strategy which is the best strategy for professional gamblers. Here I do not repeat the same model applicable to the English soccer leagues.
+
 # 2. Data
+
+  Kindly refer to [Odds Modelling and Testing Inefficiency of Sports Bookmakers](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers) to know the English soccer dataset.
 
 # 3. Statiscal Modelling
 
+  Kindly refer to [Odds Modelling and Testing Inefficiency of Sports Bookmakers](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers) for statistical modelling.
+
 # 4. Betting Strategy
+
+  Kindly refer to [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion) to know the betting strategy applied to English soccer leagues over 2 years.
 
 # 5. Return of Investment
 
+  Kindly refer to [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion) to know the return of investment applied to English soccer leagues over 2 years.
+
 # 6. Conclusion
 
+  From the papers, we know that from my firstly betting strategy with $1 on every single match whith an edge of overcame the handicap, it might be win or loss depends the level of edge. In later paper I applied Kelly criterion method and get a confirmed ROI over 2 years.
 
 ```{r stopPar, echo = FALSE}
 ## Set options back to original options
@@ -110,6 +151,12 @@ rm(sys1)
   02. [<span style='color:blue'>Odds Modelling and Testing Inefficiency of Sports Bookmakers</span>](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)
   03. [<span style='color:blue'>Apply Kelly-Criterion on English Soccer 2011/12 to 2012/13</span>](https://github.com/scibrokes/kelly-criterion)
   04. [<span style='color:blue'>Betting Strategy and Model Validation</span>](https://github.com/scibrokes/betting-strategy-and-model-validation)
-  05. [<span style='color:blue'>...</span>](...)
+  05. [<span style='color:blue'>
+Betting Strategy</span>](http://mathforum.org/library/drmath/view/62870.html)
+  06. [<span style='color:blue'>Probability+Game Theory Problem [closed]</span>](https://math.stackexchange.com/questions/1889792/probabilitygame-theory-problem)
+  07. [<span style='color:blue'>...</span>](...)
+  08. [<span style='color:blue'>...</span>](...)
+  09. [<span style='color:blue'>...</span>](...)
+  10. [<span style='color:blue'>...</span>](...)
 
 **Powered by - Copyright® Intellectual Property Rights of <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/oda-army2.jpg?raw=true' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**
