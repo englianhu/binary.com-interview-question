@@ -38,7 +38,7 @@
 
 ### Question II
 
-  For question 2, I simply write an app (while the leave rate doesn't function), kindly use [Q2App](https://beta.rstudioconnect.com/content/3069/).
+  For question 2, I simply write an app, kindly use [Q2App](https://beta.rstudioconnect.com/content/3089/).
 
 ### Question III
 
