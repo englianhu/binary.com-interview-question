@@ -8,6 +8,8 @@ library('quantmod')
 library('rugarch')
 library('lubridate')
 library('formattable')
+library('plyr')
+library('dplyr')
 
 # === Data =====================================================
 Sys.setenv(TZ = 'Asia/Tokyo')
@@ -189,20 +191,49 @@ ui <- shinyUI(fluidPage(
                        textOutput('currentTime')
                      ),
                      p(strong('Latest FX Quotes:'),
-                       tableOutput('fxdata'),
+                       #'@ tableOutput('fxdata'), 
+                       formattableOutput('fxdata'), 
                        checkboxInput('pause', 'Pause updates', FALSE))
                  )), 
-        tabPanel('Trade', 
-                 h3('Latest Price'), 
-                 htmlOutput('lastPr'), 
-                 br(), 
-                 p('You can either buy or sell at the mentioned price.'), 
-                 formattableOutput('fcastPr')), 
-        tabPanel('Forecast', 
-                 h3('Forecast Trend'), 
-                 plotOutput('sim')), 
+        tabPanel('Punter', 
+                 tabsetPanel(
+                   tabPanel('Trading', 
+                            h3('Transaction'), 
+                            br(), 
+                            p('You can either buy or sell at the mentioned price.')
+                            ),                  
+                   tabPanel('Profit and Loss', 
+                            h3('Profit and Loss')
+                            ))), 
+        tabPanel('Banker', 
+                 tabsetPanel(
+                   tabPanel('Short Term Forecast', 
+                            h3('Latest Price'), 
+                            htmlOutput('lastPr'), 
+                            br(), 
+                            p('You can either buy or sell at the mentioned price.'), 
+                            formattableOutput('fcastPr')),                  
+                   tabPanel('Long Term Forecast', 
+                            h3('Forecast Trend'), 
+                            plotOutput('sim')))), 
         tabPanel('Appendix', 
                  tabsetPanel(
+                   tabPanel('Statistics', 
+                            h3('Statistical Modelling'), 
+                            p('As I tried to build couples of univariate models and concludes that ', 
+                              HTML("<a href='https://vlab.stern.nyu.edu/doc/3?topic=mdls'>GJR-GARCH Model</a>"), 
+                              'is the best fit model. You are feel free to browse over ', 
+                              HTML("<a href='http://rpubs.com/englianhu/316133'>binary.com Interview Question I (Extention)</a>"), 
+                              'for the research. Below is the equation for the model.', 
+                              withMathJax(
+                              helpText('$$\\delta_{t}^{2} = \\omega + (\\alpha + \\gamma I_{t-1}) \\varepsilon_{t-1}^{2} + \\beta \\sigma_{t-1}^{2}$$')), 
+                              'where', 
+							  withMathJax(
+                              helpText('$$I_{t-1}\\left\\{\\begin{matrix} 0 & if\\ r_{t-1}\\geq \\mu & \\\\ 1 & if\\ r_{t-1}< \\mu & \\end{matrix}\\right$$')), 
+                              tags$a(href='http://www.binary.com', target='_blank', 
+                                     tags$img(height = '80px', alt='binary', #align='right', 
+                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/equation.jpg'))
+                              )), 
                    tabPanel('Reference', 
                             h3('Future Works'), 
                             p('For the API and also real-time data visualization, I put it as future research...', 
@@ -225,7 +256,16 @@ ui <- shinyUI(fluidPage(
                             p('06. ', HTML("<a href='https://gist.github.com/gsee/4122626'>shiny TrueFX quotes</a>"), 
                               tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
                                      tags$img(height = '20px', alt='hot', #align='right', 
-                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg')))), 
+                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg'))), 
+                            p('07. ', HTML("<a href='http://matchodds.org/ords/f?p=101:1'>MatchOdds.org</a>"), 
+                              tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                     tags$img(height = '20px', alt='hot', #align='right', 
+                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg')), 
+                              tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                     tags$img(height = '20px', alt='hot', #align='right', 
+                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg')))
+                            
+                            ), 
                    
                    tabPanel('Author', 
                             h3('Author'), 
@@ -265,10 +305,29 @@ server <- shinyServer(function(input, output, session) {
     qtf[, c(6, 1:3, 5:4)]
   })
   
-  output$fxdata <- renderTable({
-    fetchData()
-  }, digits = 5, row.names = FALSE)
+  #'@ output$fxdata <- renderTable({
+  #'@  fetchData()
+  #'@ }, digits = 5, row.names = FALSE)
   
+  output$fxdata <- renderFormattable({
+    line <- fetchData()
+    line %>% formattable(list(
+      Symbol = formatter('span',
+        style = x ~ ifelse(x == 'Technology', 
+                           style(font.weight = 'bold'), NA)),
+      Bid.Price = formatter('span', 
+                            style = x ~ style(color = ifelse(x > (line$Low + line$High) / 2, 'red', 'green')), 
+                            x ~ icontext(ifelse(x > (line$Low + line$High) / 2, 'arrow-down', 'arrow-up'), x)), 
+      Ask.Price = formatter('span', 
+                            style = x ~ style(color = ifelse(x < (line$Low + line$High) / 2, 'red', 'green')),
+                            x ~ icontext(ifelse(x < (line$Low + line$High) / 2, 'arrow-down', 'arrow-up'), x)), 
+      Low = formatter('span', 
+                      style = x ~ style(color = ifelse(x > 0, 'red', 'green')), 
+                      x ~ icontext(ifelse(x > 0, 'arrow-down', 'arrow-up'), x)), 
+      High = formatter('span',
+                      style = x ~ style(color = ifelse(x < 0, 'red', 'green')),
+                      x ~ icontext(ifelse(x < 0, 'arrow-down', 'arrow-up'), x))
+      ))})
   
   terms <- reactive({
     ## Change when the "update" button is pressed...
