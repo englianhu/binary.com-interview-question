@@ -88,37 +88,128 @@ armaSearch <- suppressWarnings(function(data, .method = 'CSS-ML'){
   return(armacoef)
 })
 
-getFOREX <- memoise(function(currency) {
+getFOREX <- memoise(function(currency, price = 'Cl') {
   getSymbols(currency, from = Sys.Date() %m-% years(1), to = Sys.Date())
   if(currency == 'AUD=X') {
-    mbase <- `AUD=X` %>% Cl %>% na.omit; rm(`AUD=X`)
+    if(price == 'Op') {
+      mbase <- `AUD=X` %>% Op %>% na.omit; rm(`AUD=X`)
+    } else if(price == 'Hi') {
+      mbase <- `AUD=X` %>% Hi %>% na.omit; rm(`AUD=X`)
+    } else if(price == 'Lo') {
+      mbase <- `AUD=X` %>% Lo %>% na.omit; rm(`AUD=X`)
+    } else if(price == 'Cl') {
+      mbase <- `AUD=X` %>% Cl %>% na.omit; rm(`AUD=X`)
+    } else if(price == 'Ad') {
+      mbase <- `AUD=X` %>% Ad %>% na.omit; rm(`AUD=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    
     mbase <- 1/mbase
     names(mbase) %<>% str_replace_all('AUD=X.Close', 'AUD.USD')
     
   } else if(currency == 'EUR=X') {
-    mbase <- `EUR=X` %>% Cl %>% na.omit; rm(`EUR=X`)
+    if(price == 'Op') {
+      mbase <- `EUR=X` %>% Op %>% na.omit; rm(`EUR=X`)
+    } else if(price == 'Hi') {
+      mbase <- `EUR=X` %>% Hi %>% na.omit; rm(`EUR=X`)
+    } else if(price == 'Lo') {
+      mbase <- `EUR=X` %>% Lo %>% na.omit; rm(`EUR=X`)
+    } else if(price == 'Cl') {
+      mbase <- `EUR=X` %>% Cl %>% na.omit; rm(`EUR=X`)
+    } else if(price == 'Ad') {
+      mbase <- `EUR=X` %>% Ad %>% na.omit; rm(`EUR=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    
     mbase <- 1/mbase
     names(mbase) %<>% str_replace_all('EUR=X.Close', 'EUR.USD')
     
   } else if(currency == 'GBP=X') {
-    mbase <- `GBP=X` %>% Cl %>% na.omit; rm(`GBP=X`)
+    if(price == 'Op') {
+      mbase <- `GBP=X` %>% Op %>% na.omit; rm(`GBP=X`)
+    } else if(price == 'Hi') {
+      mbase <- `GBP=X` %>% Hi %>% na.omit; rm(`GBP=X`)
+    } else if(price == 'Lo') {
+      mbase <- `GBP=X` %>% Lo %>% na.omit; rm(`GBP=X`)
+    } else if(price == 'Cl') {
+      mbase <- `GBP=X` %>% Cl %>% na.omit; rm(`GBP=X`)
+    } else if(price == 'Ad') {
+      mbase <- `GBP=X` %>% Ad %>% na.omit; rm(`GBP=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    
     mbase <- 1/mbase
     names(mbase) %<>% str_replace_all('GBP=X.Close', 'GBP.USD')
     
   } else if(currency == 'CHF=X') {
-    mbase <- `CHF=X` %>% Cl %>% na.omit; rm(`CHF=X`)
+    if(price == 'Op') {
+      mbase <- `CHF=X` %>% Op %>% na.omit; rm(`CHF=X`)
+    } else if(price == 'Hi') {
+      mbase <- `CHF=X` %>% Hi %>% na.omit; rm(`CHF=X`)
+    } else if(price == 'Lo') {
+      mbase <- `CHF=X` %>% Lo %>% na.omit; rm(`CHF=X`)
+    } else if(price == 'Cl') {
+      mbase <- `CHF=X` %>% Cl %>% na.omit; rm(`CHF=X`)
+    } else if(price == 'Ad') {
+      mbase <- `CHF=X` %>% Ad %>% na.omit; rm(`CHF=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    
     names(mbase) %<>% str_replace_all('CHF=X.Close', 'USD.CHF')
     
   } else if(currency == 'CAD=X') {
-    mbase <- `CAD=X` %>% Cl %>% na.omit; rm(`CAD=X`)
+    if(price == 'Op') {
+      mbase <- `CAD=X` %>% Op %>% na.omit; rm(`CAD=X`)
+    } else if(price == 'Hi') {
+      mbase <- `CAD=X` %>% Hi %>% na.omit; rm(`CAD=X`)
+    } else if(price == 'Lo') {
+      mbase <- `CAD=X` %>% Lo %>% na.omit; rm(`CAD=X`)
+    } else if(price == 'Cl') {
+      mbase <- `CAD=X` %>% Cl %>% na.omit; rm(`CAD=X`)
+    } else if(price == 'Ad') {
+      mbase <- `CAD=X` %>% Ad %>% na.omit; rm(`CAD=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    
     names(mbase) %<>% str_replace_all('CAD=X.Close', 'USD.CAD')
     
   } else if(currency == 'CNY=X') {
-    mbase <- `CNY=X` %>% Cl %>% na.omit; rm(`CNY=X`)
+    if(price == 'Op') {
+      mbase <- `CNY=X` %>% Op %>% na.omit; rm(`CNY=X`)
+    } else if(price == 'Hi') {
+      mbase <- `CNY=X` %>% Hi %>% na.omit; rm(`CNY=X`)
+    } else if(price == 'Lo') {
+      mbase <- `CNY=X` %>% Lo %>% na.omit; rm(`CNY=X`)
+    } else if(price == 'Cl') {
+      mbase <- `CNY=X` %>% Cl %>% na.omit; rm(`CNY=X`)
+    } else if(price == 'Ad') {
+      mbase <- `CNY=X` %>% Ad %>% na.omit; rm(`CNY=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    
     names(mbase) %<>% str_replace_all('CNY=X.Close', 'USD.CNY')
     
   } else if(currency == 'JPY=X') {
-    mbase <- `JPY=X` %>% Cl %>% na.omit; rm(`JPY=X`)
+    if(price == 'Op') {
+      mbase <- `JPY=X` %>% Op %>% na.omit; rm(`JPY=X`)
+    } else if(price == 'Hi') {
+      mbase <- `JPY=X` %>% Hi %>% na.omit; rm(`JPY=X`)
+    } else if(price == 'Lo') {
+      mbase <- `JPY=X` %>% Lo %>% na.omit; rm(`JPY=X`)
+    } else if(price == 'Cl') {
+      mbase <- `JPY=X` %>% Cl %>% na.omit; rm(`JPY=X`)
+    } else if(price == 'Ad') {
+      mbase <- `JPY=X` %>% Ad %>% na.omit; rm(`JPY=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    
     names(mbase) %<>% str_replace_all('JPY=X.Close', 'USD.JPY')
     
   } else {
@@ -128,7 +219,39 @@ getFOREX <- memoise(function(currency) {
 })
 
 # Using "memoise" to automatically cache the results
-calC <- memoise(function(currency, ahead) {
+calC <- memoise(function(currency, ahead, price = 'Cl') {
+  
+  mbase = getFOREX(currency, price = price)
+  
+  armaOrder = armaSearch(mbase)
+  armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
+  
+  spec = ugarchspec(
+    variance.model = list(
+      model = 'gjrGARCH', garchOrder = c(1, 1), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder, 
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = FALSE, 
+      external.regressors = NULL, 
+      archex = FALSE), 
+    distribution.model = 'snorm')
+  fit = ugarchfit(spec, mbase, solver = 'hybrid')
+  fc = ugarchforecast(fit, n.ahead = ahead)
+  res = attributes(fc)$forecast$seriesFor
+  colnames(res) = names(mbase)
+  
+  sim = ugarchsim(fit, n.sim = 1000, m.sim = 25, rseed = 1:25)
+  
+  tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res, 
+             sim = sim)
+  return(tmp)
+})
+
+# Using "memoise" to automatically cache the results
+openBet <- memoise(function(currency, ahead) {
   
   mbase = getFOREX(currency)
   
@@ -158,7 +281,6 @@ calC <- memoise(function(currency, ahead) {
              sim = sim)
   return(tmp)
 })
-
 
 # === Shiny UI =====================================================
 ui <- shinyUI(fluidPage(
@@ -200,10 +322,15 @@ ui <- shinyUI(fluidPage(
                    tabPanel('Trading', 
                             h3('Transaction'), 
                             br(), 
-                            p('You can either buy or sell at the mentioned price.')
+                            p('Algorithmic measurement will auto place order at ', 
+                              'predicted price and also sell at predicted price ', 
+                              'within 1 day. System will using closing price as ', 
+                              'settlement price if the later predicted price was ', 
+                              'not occurred. Only value bet be placed.')
                             ),                  
                    tabPanel('Profit and Loss', 
-                            h3('Profit and Loss')
+                            h3('Profit and Loss'), 
+                            p('Below graph shows the return of investment.')
                             ))), 
         tabPanel('Banker', 
                  tabsetPanel(
@@ -228,10 +355,8 @@ ui <- shinyUI(fluidPage(
                               withMathJax(
                               helpText('$$\\delta_{t}^{2} = \\omega + (\\alpha + \\gamma I_{t-1}) \\varepsilon_{t-1}^{2} + \\beta \\sigma_{t-1}^{2}$$')), 
                               'where', 
-							  withMathJax(
-                              helpText('$$I_{t-1}\\left\\{\\begin{matrix} 0 & if\\ r_{t-1}\\geq \\mu & \\\\ 1 & if\\ r_{t-1}< \\mu & \\end{matrix}\\right$$')), 
                               tags$a(href='http://www.binary.com', target='_blank', 
-                                     tags$img(height = '80px', alt='binary', #align='right', 
+                                     tags$img(height = '40px', alt='binary', #align='right', 
                                               src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/equation.jpg'))
                               )), 
                    tabPanel('Reference', 
