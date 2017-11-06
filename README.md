@@ -26,7 +26,7 @@
 
   Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) ([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
   
-  Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3073/) where [Q1App2](https://beta.rstudioconnect.com/content/3134/) is another app for financial value betting.
+  Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3073/) where [Q1App2](https://beta.rstudioconnect.com/content/3138/) is another app for financial value betting.
 
   **Blooper**
 

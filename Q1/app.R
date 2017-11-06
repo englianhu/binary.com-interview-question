@@ -1,20 +1,16 @@
 # === Setting ======================================================
-library('shiny')
-library('memoise')
-library('magrittr')
-library('stringr')
-library('TFX')
-library('quantmod')
-library('rugarch')
-library('lubridate')
-library('formattable')
-library('plyr')
-library('dplyr')
-
-# === Data =====================================================
-Sys.setenv(TZ = 'Asia/Tokyo')
-zones <- attr(as.POSIXlt(Sys.time()), 'tzone')
-zone <- ifelse(zones[[1]] == '', paste(zones[-1], collapse = '/'), zones[[1]])
+require('shiny')
+require('memoise')
+require('magrittr')
+require('stringr')
+require('TFX')
+require('quantmod')
+require('rugarch')
+require('lubridate')
+require('formattable')
+require('plyr')
+require('dplyr')
+require('pryr')
 
 # === Function =====================================================
 #ARMA Modeling寻找AIC值最小的p,q
@@ -88,61 +84,54 @@ armaSearch <- suppressWarnings(function(data, .method = 'CSS-ML'){
   return(armacoef)
 })
 
-getFOREX <- memoise(function(currency, price = 'Cl') {
-  getSymbols(currency, from = Sys.Date() %m-% years(1), to = Sys.Date())
-  if(currency == 'AUD=X') {
+filterFX <- memoise(function(currency, price = 'Cl') {
+  if(currency == 'AUDUSD=X') {
     if(price == 'Op') {
-      mbase <- `AUD=X` %>% Op %>% na.omit; rm(`AUD=X`)
+      mbase <- `AUDUSD=X` %>% Op %>% na.omit; rm(`AUDUSD=X`)
     } else if(price == 'Hi') {
-      mbase <- `AUD=X` %>% Hi %>% na.omit; rm(`AUD=X`)
+      mbase <- `AUDUSD=X` %>% Hi %>% na.omit; rm(`AUDUSD=X`)
     } else if(price == 'Lo') {
-      mbase <- `AUD=X` %>% Lo %>% na.omit; rm(`AUD=X`)
+      mbase <- `AUDUSD=X` %>% Lo %>% na.omit; rm(`AUDUSD=X`)
     } else if(price == 'Cl') {
-      mbase <- `AUD=X` %>% Cl %>% na.omit; rm(`AUD=X`)
+      mbase <- `AUDUSD=X` %>% Cl %>% na.omit; rm(`AUDUSD=X`)
     } else if(price == 'Ad') {
-      mbase <- `AUD=X` %>% Ad %>% na.omit; rm(`AUD=X`)
+      mbase <- `AUDUSD=X` %>% Ad %>% na.omit; rm(`AUDUSD=X`)
     } else {
       stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
     }
+    names(mbase) %<>% str_replace_all('AUDUSD=X.Close', 'AUD.USD')
     
-    mbase <- 1/mbase
-    names(mbase) %<>% str_replace_all('AUD=X.Close', 'AUD.USD')
-    
-  } else if(currency == 'EUR=X') {
+  } else if(currency == 'EURUSD=X') {
     if(price == 'Op') {
-      mbase <- `EUR=X` %>% Op %>% na.omit; rm(`EUR=X`)
+      mbase <- `EURUSD=X` %>% Op %>% na.omit; rm(`EURUSD=X`)
     } else if(price == 'Hi') {
-      mbase <- `EUR=X` %>% Hi %>% na.omit; rm(`EUR=X`)
+      mbase <- `EURUSD=X` %>% Hi %>% na.omit; rm(`EURUSD=X`)
     } else if(price == 'Lo') {
-      mbase <- `EUR=X` %>% Lo %>% na.omit; rm(`EUR=X`)
+      mbase <- `EURUSD=X` %>% Lo %>% na.omit; rm(`EURUSD=X`)
     } else if(price == 'Cl') {
-      mbase <- `EUR=X` %>% Cl %>% na.omit; rm(`EUR=X`)
+      mbase <- `EURUSD=X` %>% Cl %>% na.omit; rm(`EURUSD=X`)
     } else if(price == 'Ad') {
-      mbase <- `EUR=X` %>% Ad %>% na.omit; rm(`EUR=X`)
+      mbase <- `EURUSD=X` %>% Ad %>% na.omit; rm(`EURUSD=X`)
     } else {
       stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
     }
+    names(mbase) %<>% str_replace_all('EURUSD=X.Close', 'EUR.USD')
     
-    mbase <- 1/mbase
-    names(mbase) %<>% str_replace_all('EUR=X.Close', 'EUR.USD')
-    
-  } else if(currency == 'GBP=X') {
+  } else if(currency == 'GBPUSD=X') {
     if(price == 'Op') {
-      mbase <- `GBP=X` %>% Op %>% na.omit; rm(`GBP=X`)
+      mbase <- `GBPUSD=X` %>% Op %>% na.omit; rm(`GBPUSD=X`)
     } else if(price == 'Hi') {
-      mbase <- `GBP=X` %>% Hi %>% na.omit; rm(`GBP=X`)
+      mbase <- `GBPUSD=X` %>% Hi %>% na.omit; rm(`GBPUSD=X`)
     } else if(price == 'Lo') {
-      mbase <- `GBP=X` %>% Lo %>% na.omit; rm(`GBP=X`)
+      mbase <- `GBPUSD=X` %>% Lo %>% na.omit; rm(`GBPUSD=X`)
     } else if(price == 'Cl') {
-      mbase <- `GBP=X` %>% Cl %>% na.omit; rm(`GBP=X`)
+      mbase <- `GBPUSD=X` %>% Cl %>% na.omit; rm(`GBPUSD=X`)
     } else if(price == 'Ad') {
-      mbase <- `GBP=X` %>% Ad %>% na.omit; rm(`GBP=X`)
+      mbase <- `GBPUSD=X` %>% Ad %>% na.omit; rm(`GBPUSD=X`)
     } else {
       stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
     }
-    
-    mbase <- 1/mbase
-    names(mbase) %<>% str_replace_all('GBP=X.Close', 'GBP.USD')
+    names(mbase) %<>% str_replace_all('GBPUSD=X.Close', 'GBP.USD')
     
   } else if(currency == 'CHF=X') {
     if(price == 'Op') {
@@ -158,7 +147,6 @@ getFOREX <- memoise(function(currency, price = 'Cl') {
     } else {
       stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
     }
-    
     names(mbase) %<>% str_replace_all('CHF=X.Close', 'USD.CHF')
     
   } else if(currency == 'CAD=X') {
@@ -175,7 +163,6 @@ getFOREX <- memoise(function(currency, price = 'Cl') {
     } else {
       stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
     }
-    
     names(mbase) %<>% str_replace_all('CAD=X.Close', 'USD.CAD')
     
   } else if(currency == 'CNY=X') {
@@ -192,7 +179,6 @@ getFOREX <- memoise(function(currency, price = 'Cl') {
     } else {
       stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
     }
-    
     names(mbase) %<>% str_replace_all('CNY=X.Close', 'USD.CNY')
     
   } else if(currency == 'JPY=X') {
@@ -209,7 +195,6 @@ getFOREX <- memoise(function(currency, price = 'Cl') {
     } else {
       stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
     }
-    
     names(mbase) %<>% str_replace_all('JPY=X.Close', 'USD.JPY')
     
   } else {
@@ -219,9 +204,9 @@ getFOREX <- memoise(function(currency, price = 'Cl') {
 })
 
 # Using "memoise" to automatically cache the results
-calC <- memoise(function(currency, ahead, price = 'Cl') {
+calC <- memoise(function(currency, ahead = 1, price = 'Cl') {
   
-  mbase = getFOREX(currency, price = price)
+  mbase = filterFX(currency, price = price)
   
   armaOrder = armaSearch(mbase)
   armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
@@ -243,44 +228,50 @@ calC <- memoise(function(currency, ahead, price = 'Cl') {
   res = attributes(fc)$forecast$seriesFor
   colnames(res) = names(mbase)
   
-  sim = ugarchsim(fit, n.sim = 1000, m.sim = 25, rseed = 1:25)
-  
-  tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res, 
-             sim = sim)
+  tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res)
   return(tmp)
 })
 
 # Using "memoise" to automatically cache the results
 openBet <- memoise(function(currency, ahead) {
   
-  mbase = getFOREX(currency)
+  hi <- calC(currency, ahead, price = 'Hi')
+  lo <- calC(currency, ahead, price = 'Lo')
   
-  armaOrder = armaSearch(mbase)
-  armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
-  
-  spec = ugarchspec(
-    variance.model = list(
-      model = 'gjrGARCH', garchOrder = c(1, 1), 
-      submodel = NULL, external.regressors = NULL, 
-      variance.targeting = FALSE), 
-    mean.model = list(
-      armaOrder = armaOrder, 
-      include.mean = TRUE, archm = FALSE, 
-      archpow = 1, arfima = FALSE, 
-      external.regressors = NULL, 
-      archex = FALSE), 
-    distribution.model = 'snorm')
-  fit = ugarchfit(spec, mbase, solver = 'hybrid')
-  fc = ugarchforecast(fit, n.ahead = ahead)
-  res = attributes(fc)$forecast$seriesFor
-  colnames(res) = names(mbase)
-  
-  sim = ugarchsim(fit, n.sim = 1000, m.sim = 25, rseed = 1:25)
-  
+  ## http://webrates.truefx.com/rates/connect.html
   tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res, 
              sim = sim)
   return(tmp)
 })
+
+# === Data =====================================================
+Sys.setenv(TZ = 'Asia/Tokyo')
+zones <- attr(as.POSIXlt(Sys.time()), 'tzone')
+zone <- ifelse(zones[[1]] == '', paste(zones[-1], collapse = '/'), zones[[1]])
+
+fx <<- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
+
+## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
+## Above link prove that https://finance.yahoo.com using GMT time zone.
+for(i in seq(fx)) getSymbols(fx[i], from = today('GMT') %m-% years(1), to = today('GMT'))
+rm(i)
+
+## Due to duplicated date but various price, here I forced to filter the dataset.
+`EURUSD=X` <<- `EURUSD=X`[index(`EURUSD=X`)==unique(index(`EURUSD=X`)), ]
+`JPY=X`    <<- `JPY=X`[index(`JPY=X`)==unique(index(`JPY=X`)), ]
+`GBPUSD=X` <<- `GBPUSD=X`[index(`GBPUSD=X`)==unique(index(`GBPUSD=X`)), ]
+`CHF=X`    <<- `CHF=X`[index(`CHF=X`)==unique(index(`CHF=X`)), ]
+`CAD=X`    <<- `CAD=X`[index(`CAD=X`)==unique(index(`CAD=X`)), ]
+`AUDUSD=X` <<- `AUDUSD=X`[index(`AUDUSD=X`)==unique(index(`AUDUSD=X`)), ]
+
+forC.EURUSD <<- calC('EURUSD=X')
+forC.USDJPY <<- calC('JPY=X')
+forC.GBPUSD <<- calC('GBPUSD=X')
+forC.USDCHF <<- calC('CHF=X')
+forC.USDCAD <<- calC('CAD=X')
+forC.AUDUSD <<- calC('AUDUSD=X')
+
+
 
 # === Shiny UI =====================================================
 ui <- shinyUI(fluidPage(
@@ -293,16 +284,19 @@ ui <- shinyUI(fluidPage(
   sidebarLayout(
     sidebarPanel(
       selectInput('curr', 'Currency :',
-                  choices = c('AUD/USD' = 'AUD=X', 
-                              'EUR/USD' = 'EUR=X', 
-                              'GBP/USD' = 'GBP=X', 
+                  choices = c('EUR/USD' = 'EURUSD=X', 
+                              'USD/JPY' = 'JPY=X', 
+                              'GBP/USD' = 'GBPUSD=X', 
+                              'EUR/GBP' = 'EURGBP=X', 
                               'USD/CHF' = 'CHF=X', 
+                              'EUR/JPY' = 'EURJPY=X', 
+                              'EUR/CHF' = 'EURCHF=X', 
                               'USD/CAD' = 'CAD=X', 
-                              'USD/CNY' = 'CNY=X', 
-                              'USD/JPY' = 'JPY=X'), 
+                              'AUD/USD' = 'AUDUSD=X', 
+                              'GBP/JPY' = 'GBPJPY=X'), 
                   selected = 'USD/JPY'), 
       sliderInput('ahead', HTML('Forecast ahead (&zeta; in day) :'), 
-                  min = 1, max = 7, step = 1, value = 7)),
+                  min = 1, max = 7, step = 1, value = 1)),
     
     mainPanel(
       tabsetPanel(
@@ -333,20 +327,23 @@ ui <- shinyUI(fluidPage(
                             p('Below graph shows the return of investment.')
                             ))), 
         tabPanel('Banker', 
-                 tabsetPanel(
-                   tabPanel('Short Term Forecast', 
-                            h3('Latest Price'), 
-                            htmlOutput('lastPr'), 
-                            br(), 
-                            p('You can either buy or sell at the mentioned price.'), 
-                            formattableOutput('fcastPr')),                  
-                   tabPanel('Long Term Forecast', 
-                            h3('Forecast Trend'), 
-                            plotOutput('sim')))), 
+                 h3('Latest Price'), 
+                 p('By refer to the idea from', 
+                   HTML("<a href='https://www.binary.com/en/trading.html?currency=USD&market=forex&underlying=frxAUDJPY&formname=risefall&date_start=now&duration_amount=1&duration_units=d&amount=10&amount_type=payout&expiry_type=duration'>binary.com,</a>"), 
+                   'I tried to create this', strong('Banker'), 'page. The daily data is getting from ', 
+                   HTML("<a href='https://finance.yahoo.com/'>Yahoo! finance.</a>")), 
+                 htmlOutput('lastPr'), 
+                 br(), 
+                 p('You can either buy or sell at the below forecast closing price for next trading day. Kindly refer ', 
+                   'to the web application ', 
+                   HTML("<a href='https://beta.rstudioconnect.com/content/3073/'>financial betting</a>"), 
+                   ' for more information.'), 
+                 formattableOutput('fcastPr')),  
         tabPanel('Appendix', 
                  tabsetPanel(
                    tabPanel('Statistics', 
                             h3('Statistical Modelling'), 
+                            htmlOutput('video'), 
                             p('As I tried to build couples of univariate models and concludes that ', 
                               HTML("<a href='https://vlab.stern.nyu.edu/doc/3?topic=mdls'>GJR-GARCH Model</a>"), 
                               'is the best fit model. You are feel free to browse over ', 
@@ -354,43 +351,37 @@ ui <- shinyUI(fluidPage(
                               'for the research. Below is the equation for the model.', 
                               withMathJax(
                               helpText('$$\\delta_{t}^{2} = \\omega + (\\alpha + \\gamma I_{t-1}) \\varepsilon_{t-1}^{2} + \\beta \\sigma_{t-1}^{2}$$')), 
-                              'where', 
-                              tags$a(href='http://www.binary.com', target='_blank', 
-                                     tags$img(height = '40px', alt='binary', #align='right', 
-                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/equation.jpg'))
-                              )), 
+                              'where'), 
+                            p('     ', tags$a(href='http://www.binary.com', target='_blank', 
+                                              tags$img(height = '40px', alt='binary', #align='right', 
+                                                       src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/equation.jpg'))), 
+                            p('The daily data for calculation is getting from ', 
+                              HTML("<a href='https://finance.yahoo.com/'>Yahoo! finance</a>"), 
+                              ' while the real-time price to staking and settlement is getting from ', 
+                              HTML("<a href='https://www.truefx.com/'>TrueFX.com.</a>"), 
+                              'Therefore there has no any guarantee of profit and also accuracy of price dataset.')), 
                    tabPanel('Reference', 
                             h3('Future Works'), 
-                            p('For the API and also real-time data visualization, I put it as future research...', 
+                            p('This application is an algorithmic trading in daily ', 
+                              'forex market. The orders will be placed everyday at ', 
+                              '12:00AM (GMT). The closed transaction orders will also ', 
+                              'falling on 12:00AM (GMT) everyday. For high frequency ', 
+                              'trading (which includes 1 minute, 5 minutes, 10 minutes, ', 
+                              '15 minutes etc.), I put it as future research...', 
                               tags$ul(
-                                tags$li(HTML("<a href='http://www.techrepublic.com/blog/five-apps/create-real-time-graphs-with-these-five-free-web-based-apps/'>Create real-time graphs with these five free web-based apps</a>")), 
-                                tags$li(HTML("<a href='https://www.slideshare.net/rorywinston/streaming-data-in-r'>Streaming Data in R</a>")), 
-                                tags$li(HTML("<a href='https://www.quora.com/How-I-can-manage-real-time-data-with-R-programming-and-Tableau'>How I can manage real time data with R programming and Tableau?</a>")), 
-                                tags$li(HTML("<a href='https://www.r-bloggers.com/real-time-predictive-analytics-with-big-data-and-r/'>Real-Time Predictive Analytics with Big Data, and R</a>")), 
-                                tags$li(HTML("<a href='https://stackoverflow.com/questions/37049634/streaming-data-visualization-in-r'>Streaming data visualization in R</a>")))), 
+                                tags$li(HTML("<a href='https://blog.testproject.io/2016/12/22/open-source-test-automation-tools-for-desktop-applications/'>8 Open Source Test Automation Tools for Desktop Applications</a>")), 
+                                tags$li(HTML("<a href='https://github.com/scibrokes/real-time-fxcm'>Real Time FXCM</a>")), 
+                                tags$li(HTML("<a href='https://www.fxcmapps.com/apps/basic-historical-data-downloader/'>Basic Historical Data Downloader</a>")))), 
                             br(), 
                             h3('Reference'), 
-                            p('01. ', HTML("<a href='https://www.r-bloggers.com/accessing-apis-from-r-and-a-little-r-programming/'>Accessing APIs from R (and a little R programming)</a>")), 
-                            p('02. ', HTML("<a href='https://developers.binary.com/'>Welcome to the Binary.com API</a>")), 
-                            p('03. ', HTML("<a href='https://stats.stackexchange.com/questions/6021/r-update-a-graph-dynamically?answertab=votes#tab-top'>R: update a graph dynamically</a>")), 
-                            p('04. ', HTML("<a href='https://www.r-bloggers.com/tfx-package/'>TFX Package</a>")), 
-                            p('05. ', HTML("<a href='http://rpubs.com/gsee/TFX'>TFX: An R Interface to the TrueFX™ Web API</a>"), 
+                            p('01. ', HTML("<a href='http://matchodds.org/ords/f?p=101:1'>MatchOdds.org</a>"), 
                               tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
                                      tags$img(height = '20px', alt='hot', #align='right', 
                                               src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg'))), 
-                            p('06. ', HTML("<a href='https://gist.github.com/gsee/4122626'>shiny TrueFX quotes</a>"), 
+                            p('02. ', HTML("<a href='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Successful%20Algorithmic%20Trading.pdf'>A Step-by-Step Guide to Quantitative Strategies - SUCCESSFUL ALGORITHMIC TRADING</a>"), 
                               tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
                                      tags$img(height = '20px', alt='hot', #align='right', 
-                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg'))), 
-                            p('07. ', HTML("<a href='http://matchodds.org/ords/f?p=101:1'>MatchOdds.org</a>"), 
-                              tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
-                                     tags$img(height = '20px', alt='hot', #align='right', 
-                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg')), 
-                              tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
-                                     tags$img(height = '20px', alt='hot', #align='right', 
-                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg')))
-                            
-                            ), 
+                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg')))), 
                    
                    tabPanel('Author', 
                             h3('Author'), 
@@ -409,10 +400,6 @@ ui <- shinyUI(fluidPage(
 
 
 # === Shiny Server ===============================================
-# Based on (more) code by Joe Cheng:
-  # https://groups.google.com/d/msg/shiny-discuss/NE-LqDAVqQQ/kNdrtC4WxGAJ
-  # https://gist.github.com/4044364
-  #-------------------------------------------------------------------------------
 server <- shinyServer(function(input, output, session) {
   
   output$currentTime <- renderText({
@@ -424,7 +411,7 @@ server <- shinyServer(function(input, output, session) {
   fetchData <- reactive({
     if (!input$pause)
       invalidateLater(750)
-    qtf <- QueryTrueFX()
+    qtf <- QueryTrueFX() ## http://webrates.truefx.com/rates/connect.html
     qtf$TimeStamp <- as.character(qtf$TimeStamp)
     names(qtf)[6] <- 'TimeStamp (GMT)'
     qtf[, c(6, 1:3, 5:4)]
@@ -471,28 +458,34 @@ server <- shinyServer(function(input, output, session) {
     tmp = terms()$latestPrice
     paste('The latest closing price of', '<font color=\"#FF0000\"><b>', 
           names(tmp), '</b></font>', 'on <font color=\"#FF0000\"><b>', 
-          index(tmp), '</b></font>', 'is', '<font color=\"#FF0000\"><b>', 
-          tmp, '</b></font>')
+          index(tmp), '</b></font>', '(GMT) is', '<font color=\"#FF0000\"><b>', 
+          tmp, '</b></font>.')
   })
   
   output$fcastPr <- renderFormattable({
-    tmp = terms()
-    data.frame(Buy = 'BUY', Price = tmp$forecastPrice, Sell = 'SELL') %>% 
+    fxdata = ldply(list(EURUSD = forC.EURUSD, 
+                        USDJPY = forC.USDJPY, 
+                        GBPUSD = forC.GBPUSD, 
+                        USDCHF = forC.USDCHF, 
+                        USDCAD = forC.USDCAD, 
+                        AUDUSD = forC.AUDUSD), function(x) 
+                          x$forecastPrice %>% round(5) %>% 
+                     unname) %>% 
+      tbl_df %>% rename('Price' = `1`)
+    
+    data.frame(fxdata, Buy = 'BUY', Sell = 'SELL') %>% 
       formattable(list(
         Buy = formatter('span', style = ~ style(color = ifelse(
           Buy == 'SELL', 'red', 'green')), 
           ~ icontext(ifelse(Buy == 'SELL', 'arrow-down', 'arrow-up'), Buy)), 
-        Price = color_tile('white', 'darkgolden'), 
         Sell = formatter('span', style = ~ style(color = ifelse(
           Sell == 'SELL', 'red', 'green')), 
           ~ icontext(ifelse(Sell == 'SELL', 'arrow-down', 'arrow-up'), Sell))))
   })
   
-  output$sim <- renderPlot({
-    tmp = terms()$sim
-    plot(tmp, which = 'all', m.sim = 24)
+  output$video <- renderUI({
+    tags$iframe(src = 'https://www.youtube.com/embed/VWAU1r6rPvg')
   })
-  
   
 })
 
