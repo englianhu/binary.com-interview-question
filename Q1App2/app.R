@@ -325,11 +325,13 @@ server <- shinyServer(function(input, output, session) {
   }
   
   # Initialize realData
-  realData <<- get_new_data() #ldply(1:60, get_new_data()) %>% tbl_df
+  #'@ realData <<- get_new_data() #ldply(1:60, get_new_data()) %>% tbl_df
+  realData <<- QueryTrueFX()[2,2] #Due to get_new_data() always error, here I use `Bid.Price` instead.
   
   # Function to update realData
   update_data <- function(){
-    realData <<- rbind(realData, get_new_data())
+    #'@ realData <<- rbind(realData, get_new_data())
+    realData <<- rbind(realData, QueryTrueFX()[2,2]) #Due to get_new_data() always error, here I use `Bid.Price` instead.
     
     if(nrow(realData) > 60) {
       realData <<- realData[((nrow(realData) - 59):nrow(realData)),]
