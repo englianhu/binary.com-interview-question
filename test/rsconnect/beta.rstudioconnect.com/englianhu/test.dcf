@@ -1,0 +1,13 @@
+name: test
+title: test
+username: englianhu
+account: englianhu
+server: beta.rstudioconnect.com
+hostUrl: https://beta.rstudioconnect.com/__api__
+appId: 3143
+bundleId: 6750
+url: https://beta.rstudioconnect.com/content/3143/
+when: 1510119275.81182
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: app2.R

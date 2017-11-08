@@ -1,0 +1,556 @@
+# === Setting ======================================================
+require('shiny')
+require('memoise')
+require('magrittr')
+require('stringr')
+require('TFX')
+require('quantmod')
+require('rugarch')
+require('lubridate')
+require('formattable')
+require('plyr')
+require('dplyr')
+require('pryr')
+
+# === Function =====================================================
+#ARMA Modeling寻找AIC值最小的p,q
+armaSearch <- suppressWarnings(function(data, .method = 'CSS-ML'){ 
+  ## I set .method = 'CSS-ML' as default method since the AIC value we got is 
+  ##  smaller than using method 'ML' while using method 'CSS' facing error.
+  ## 
+  ## https://stats.stackexchange.com/questions/209730/fitting-methods-in-arima
+  ## According to the documentation, this is how each method fits the model:
+  ##  - CSS minimises the sum of squared residuals.
+  ##  - ML maximises the log-likelihood function of the ARIMA model.
+  ##  - CSS-ML mixes both methods: first, CSS is run, the starting parameters 
+  ##    for the optimization algorithm are set to zeros or to the values given 
+  ##    in the optional argument init; then, ML is applied passing the CSS 
+  ##    parameter estimates as starting parameter values for the optimization algorithm.
+  
+  .methods = c('CSS-ML', 'ML', 'CSS')
+  
+  if(!.method %in% .methods) stop(paste('Kindly choose .method among ', 
+                                        paste0(.methods, collapse = ', '), '!'))
+  
+  armacoef <- data.frame()
+  for (p in 0:5){
+    for (q in 0:5) {
+      #data.arma = arima(diff(data), order = c(p, 0, q))
+      #'@ data.arma = arima(data, order = c(p, 1, q), method = .method)
+      if(.method == 'CSS-ML') {
+        data.arma = tryCatch({
+          arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
+          mth = 'CSS-ML'
+          list(arma, mth)
+        }, error = function(e) {
+          arma = arima(data, order = c(p, 1, q), method = 'ML')
+          mth = 'ML'
+          list(arma = arma, mth = mth)
+        })
+      } else if(.method == 'ML') {
+        data.arma = tryCatch({
+          arma = arima(data, order = c(p, 1, q), method = 'ML')
+          mth = 'ML'
+          list(arma = arma, mth = mth)
+        }, error = function(e) {
+          arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
+          mth = 'CSS-ML'
+          list(arma = arma, mth = mth)
+        })
+      } else if(.method == 'CSS') {
+        data.arma = tryCatch({
+          arma = arima(data, order = c(p, 1, q), method = 'CSS')
+          mth = 'CSS'
+          list(arma = arma, mth = mth)
+        }, error = function(e) {
+          arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
+          mth = 'CSS-ML'
+          list(arma = arma, mth = mth)
+        })
+      } else {
+        stop(paste('Kindly choose .method among ', paste0(.methods, collapse = ', '), '!'))
+      }
+      names(data.arma) <- c('arma', 'mth')
+      
+      #cat('p =', p, ', q =', q, 'AIC =', data.arma$arma$aic, '\n')
+      armacoef <- rbind(armacoef,c(p, q, data.arma$arma$aic))
+    }
+  }
+  
+  colnames(armacoef) <- c('p', 'q', 'AIC')
+  pos <- which(armacoef$AIC == min(armacoef$AIC))
+  cat(paste0('method = \'', data.arma$mth, '\', the min AIC = ', armacoef$AIC[pos], 
+             ', p = ', armacoef$p[pos], ', q = ', armacoef$q[pos], '\n'))
+  return(armacoef)
+})
+
+filterFX <- memoise(function(currency, price = 'Cl') {
+  if(currency == 'AUDUSD=X') {
+    if(price == 'Op') {
+      mbase <- `AUDUSD=X` %>% Op %>% na.omit; rm(`AUDUSD=X`)
+    } else if(price == 'Hi') {
+      mbase <- `AUDUSD=X` %>% Hi %>% na.omit; rm(`AUDUSD=X`)
+    } else if(price == 'Lo') {
+      mbase <- `AUDUSD=X` %>% Lo %>% na.omit; rm(`AUDUSD=X`)
+    } else if(price == 'Cl') {
+      mbase <- `AUDUSD=X` %>% Cl %>% na.omit; rm(`AUDUSD=X`)
+    } else if(price == 'Ad') {
+      mbase <- `AUDUSD=X` %>% Ad %>% na.omit; rm(`AUDUSD=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    names(mbase) %<>% str_replace_all('AUDUSD=X.Close', 'AUD.USD')
+    
+  } else if(currency == 'EURUSD=X') {
+    if(price == 'Op') {
+      mbase <- `EURUSD=X` %>% Op %>% na.omit; rm(`EURUSD=X`)
+    } else if(price == 'Hi') {
+      mbase <- `EURUSD=X` %>% Hi %>% na.omit; rm(`EURUSD=X`)
+    } else if(price == 'Lo') {
+      mbase <- `EURUSD=X` %>% Lo %>% na.omit; rm(`EURUSD=X`)
+    } else if(price == 'Cl') {
+      mbase <- `EURUSD=X` %>% Cl %>% na.omit; rm(`EURUSD=X`)
+    } else if(price == 'Ad') {
+      mbase <- `EURUSD=X` %>% Ad %>% na.omit; rm(`EURUSD=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    names(mbase) %<>% str_replace_all('EURUSD=X.Close', 'EUR.USD')
+    
+  } else if(currency == 'GBPUSD=X') {
+    if(price == 'Op') {
+      mbase <- `GBPUSD=X` %>% Op %>% na.omit; rm(`GBPUSD=X`)
+    } else if(price == 'Hi') {
+      mbase <- `GBPUSD=X` %>% Hi %>% na.omit; rm(`GBPUSD=X`)
+    } else if(price == 'Lo') {
+      mbase <- `GBPUSD=X` %>% Lo %>% na.omit; rm(`GBPUSD=X`)
+    } else if(price == 'Cl') {
+      mbase <- `GBPUSD=X` %>% Cl %>% na.omit; rm(`GBPUSD=X`)
+    } else if(price == 'Ad') {
+      mbase <- `GBPUSD=X` %>% Ad %>% na.omit; rm(`GBPUSD=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    names(mbase) %<>% str_replace_all('GBPUSD=X.Close', 'GBP.USD')
+    
+  } else if(currency == 'CHF=X') {
+    if(price == 'Op') {
+      mbase <- `CHF=X` %>% Op %>% na.omit; rm(`CHF=X`)
+    } else if(price == 'Hi') {
+      mbase <- `CHF=X` %>% Hi %>% na.omit; rm(`CHF=X`)
+    } else if(price == 'Lo') {
+      mbase <- `CHF=X` %>% Lo %>% na.omit; rm(`CHF=X`)
+    } else if(price == 'Cl') {
+      mbase <- `CHF=X` %>% Cl %>% na.omit; rm(`CHF=X`)
+    } else if(price == 'Ad') {
+      mbase <- `CHF=X` %>% Ad %>% na.omit; rm(`CHF=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    names(mbase) %<>% str_replace_all('CHF=X.Close', 'USD.CHF')
+    
+  } else if(currency == 'CAD=X') {
+    if(price == 'Op') {
+      mbase <- `CAD=X` %>% Op %>% na.omit; rm(`CAD=X`)
+    } else if(price == 'Hi') {
+      mbase <- `CAD=X` %>% Hi %>% na.omit; rm(`CAD=X`)
+    } else if(price == 'Lo') {
+      mbase <- `CAD=X` %>% Lo %>% na.omit; rm(`CAD=X`)
+    } else if(price == 'Cl') {
+      mbase <- `CAD=X` %>% Cl %>% na.omit; rm(`CAD=X`)
+    } else if(price == 'Ad') {
+      mbase <- `CAD=X` %>% Ad %>% na.omit; rm(`CAD=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    names(mbase) %<>% str_replace_all('CAD=X.Close', 'USD.CAD')
+    
+  } else if(currency == 'CNY=X') {
+    if(price == 'Op') {
+      mbase <- `CNY=X` %>% Op %>% na.omit; rm(`CNY=X`)
+    } else if(price == 'Hi') {
+      mbase <- `CNY=X` %>% Hi %>% na.omit; rm(`CNY=X`)
+    } else if(price == 'Lo') {
+      mbase <- `CNY=X` %>% Lo %>% na.omit; rm(`CNY=X`)
+    } else if(price == 'Cl') {
+      mbase <- `CNY=X` %>% Cl %>% na.omit; rm(`CNY=X`)
+    } else if(price == 'Ad') {
+      mbase <- `CNY=X` %>% Ad %>% na.omit; rm(`CNY=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    names(mbase) %<>% str_replace_all('CNY=X.Close', 'USD.CNY')
+    
+  } else if(currency == 'JPY=X') {
+    if(price == 'Op') {
+      mbase <- `JPY=X` %>% Op %>% na.omit; rm(`JPY=X`)
+    } else if(price == 'Hi') {
+      mbase <- `JPY=X` %>% Hi %>% na.omit; rm(`JPY=X`)
+    } else if(price == 'Lo') {
+      mbase <- `JPY=X` %>% Lo %>% na.omit; rm(`JPY=X`)
+    } else if(price == 'Cl') {
+      mbase <- `JPY=X` %>% Cl %>% na.omit; rm(`JPY=X`)
+    } else if(price == 'Ad') {
+      mbase <- `JPY=X` %>% Ad %>% na.omit; rm(`JPY=X`)
+    } else {
+      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+    }
+    names(mbase) %<>% str_replace_all('JPY=X.Close', 'USD.JPY')
+    
+  } else {
+    stop('Kindly choose common currencies exchange.')
+  }
+  return(mbase)
+})
+
+# Using "memoise" to automatically cache the results
+calC <- memoise(function(currency, ahead = 1, price = 'Cl') {
+  
+  mbase = filterFX(currency, price = price)
+  
+  armaOrder = armaSearch(mbase)
+  armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
+  
+  spec = ugarchspec(
+    variance.model = list(
+      model = 'gjrGARCH', garchOrder = c(1, 1), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder, 
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = FALSE, 
+      external.regressors = NULL, 
+      archex = FALSE), 
+    distribution.model = 'snorm')
+  fit = ugarchfit(spec, mbase, solver = 'hybrid')
+  fc = ugarchforecast(fit, n.ahead = ahead)
+  res = attributes(fc)$forecast$seriesFor
+  colnames(res) = names(mbase)
+  
+  tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res)
+  return(tmp)
+})
+
+# Using "memoise" to automatically cache the results
+openBet <- memoise(function(currency, realFX, ahead = 1) {
+  
+  hi <- calC(currency, ahead, price = 'Hi')
+  lo <- calC(currency, ahead, price = 'Lo')
+  
+  bid <- realFX %>% dplyr::select(Symbol, Bid.Price) %>% 
+    dplyr::filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 'USD/CAD', 'AUD/USD'))
+  ask <- realFX %>% dplyr::select(Symbol, Ask.Price) %>% 
+    dplyr::filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 'USD/CAD', 'AUD/USD'))
+  
+  ## http://webrates.truefx.com/rates/connect.html
+  tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res)
+  return(tmp)
+})
+
+# === Data =====================================================
+Sys.setenv(TZ = 'Asia/Tokyo')
+zones <- attr(as.POSIXlt(Sys.time()), 'tzone')
+zone <- ifelse(zones[[1]] == '', paste(zones[-1], collapse = '/'), zones[[1]])
+
+fx <<- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
+
+if(now('GMT') == today('GMT')) {
+  ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
+  ## Above link prove that https://finance.yahoo.com using GMT time zone.
+  for(i in seq(fx)) getSymbols(fx[i], from = (today('GMT') - 1) %m-% years(1), 
+                               to = (today('GMT') - 1))
+  rm(i)
+}
+
+## Due to duplicated date but various price, here I forced to filter the dataset.
+if(exists('EURUSD=X')) {
+  `EURUSD=X` <<- `EURUSD=X`[index(`EURUSD=X`)==unique(index(`EURUSD=X`)), ]
+  
+  forC.EURUSD <<- calC('EURUSD=X')               ## forecast closing price.
+  forH.EURUSD <<- calC('EURUSD=X', price = 'Hi') ## forecast highest price.
+  forL.EURUSD <<- calC('EURUSD=X', price = 'Lo') ## forecast lowest price.
+}
+
+if(exists('JPY=X')) {
+  `JPY=X`    <<- `JPY=X`[index(`JPY=X`)==unique(index(`JPY=X`)), ]
+  forC.USDJPY <<- calC('JPY=X')
+  forH.USDJPY <<- calC('JPY=X', price = 'Hi')
+  forL.USDJPY <<- calC('JPY=X', price = 'Lo')
+}
+
+if(exists('GBPUSD=X')) {
+  `GBPUSD=X` <<- `GBPUSD=X`[index(`GBPUSD=X`)==unique(index(`GBPUSD=X`)), ]
+  forC.GBPUSD <<- calC('GBPUSD=X')
+  forH.GBPUSD <<- calC('GBPUSD=X', price = 'Hi')
+  forL.GBPUSD <<- calC('GBPUSD=X', price = 'Lo')
+}
+
+if(exists('CHF=X')) {
+  `CHF=X`    <<- `CHF=X`[index(`CHF=X`)==unique(index(`CHF=X`)), ]
+  forC.USDCHF <<- calC('CHF=X')
+  forH.USDCHF <<- calC('CHF=X', price = 'Hi')
+  forL.USDCHF <<- calC('CHF=X', price = 'Lo')
+}
+
+if(exists('CAD=X')) {
+  `CAD=X`    <<- `CAD=X`[index(`CAD=X`)==unique(index(`CAD=X`)), ]
+  forC.USDCAD <<- calC('CAD=X')
+  forH.USDCAD <<- calC('CAD=X', price = 'Hi')
+  forL.USDCAD <<- calC('CAD=X', price = 'Lo')
+}
+
+if(exists('AUDUSD=X')) {
+  `AUDUSD=X` <<- `AUDUSD=X`[index(`AUDUSD=X`)==unique(index(`AUDUSD=X`)), ]
+  forC.AUDUSD <<- calC('AUDUSD=X')
+  forH.AUDUSD <<- calC('AUDUSD=X', price = 'Hi')
+  forL.AUDUSD <<- calC('AUDUSD=X', price = 'Lo')
+}
+
+if(all(exists('EURUSD=X'), exists('JPY=X'), exists('GBPUSD=X'), exists('CHF=X'), exists('CAD=X'), exists('AUDUSD=X'))) {
+  fxC <<- ldply(list(EURUSD = forC.EURUSD, 
+                     USDJPY = forC.USDJPY, 
+                     GBPUSD = forC.GBPUSD, 
+                     USDCHF = forC.USDCHF, 
+                     USDCAD = forC.USDCAD, 
+                     AUDUSD = forC.AUDUSD), function(x) 
+                       x$forecastPrice %>% round(5) %>% 
+                  unname) %>% tbl_df %>% rename('Price' = `1`)
+  
+  fxH <<- ldply(list(EURUSD = forH.EURUSD, 
+                     USDJPY = forH.USDJPY, 
+                     GBPUSD = forH.GBPUSD, 
+                     USDCHF = forH.USDCHF, 
+                     USDCAD = forH.USDCAD, 
+                     AUDUSD = forH.AUDUSD), function(x) 
+                       x$forecastPrice %>% round(5) %>% 
+                  unname) %>% tbl_df %>% rename('Price' = `1`)
+  
+  fxL <<- ldply(list(EURUSD = forL.EURUSD, 
+                     USDJPY = forL.USDJPY, 
+                     GBPUSD = forL.GBPUSD, 
+                     USDCHF = forL.USDCHF, 
+                     USDCAD = forL.USDCAD, 
+                     AUDUSD = forL.AUDUSD), function(x) 
+                       x$forecastPrice %>% round(5) %>% 
+                  unname) %>% tbl_df %>% rename('Price' = `1`)
+}
+
+# === Shiny UI =====================================================
+ui <- shinyUI(fluidPage(
+  
+  titlePanel(
+    tags$a(href='http://www.binary.com', target='_blank', 
+           tags$img(height = '80px', alt='binary', #align='right', 
+                    src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/binary-logo-resize.jpg'))), 
+  
+  sidebarLayout(
+    sidebarPanel(
+      selectInput('curr', 'Currency :',
+                  choices = c('EUR/USD' = 'EURUSD=X', 
+                              'USD/JPY' = 'JPY=X', 
+                              'GBP/USD' = 'GBPUSD=X', 
+                              'EUR/GBP' = 'EURGBP=X', 
+                              'USD/CHF' = 'CHF=X', 
+                              'EUR/JPY' = 'EURJPY=X', 
+                              'EUR/CHF' = 'EURCHF=X', 
+                              'USD/CAD' = 'CAD=X', 
+                              'AUD/USD' = 'AUDUSD=X', 
+                              'GBP/JPY' = 'GBPJPY=X'), 
+                  selected = 'USD/JPY'), 
+      sliderInput('ahead', HTML('Forecast ahead (&zeta; in day) :'), 
+                  min = 1, max = 7, step = 1, value = 1)),
+    
+    mainPanel(
+      tabsetPanel(
+        tabPanel('Board', 
+                 h3('Real Time Price'), 
+                 div(class='container',
+                     p(strong(paste0('Current time (', zone, '):')),
+                       textOutput('currentTime')
+                     ),
+                     p(strong('Latest FX Quotes:'),
+                       #'@ tableOutput('fxdata'), 
+                       formattableOutput('fxdata'), 
+                       checkboxInput('pause', 'Pause updates', FALSE))
+                 )), 
+        tabPanel('Punter', 
+                 tabsetPanel(
+                   tabPanel('Trading', 
+                            h3('Transaction'), 
+                            br(), 
+                            p('Algorithmic measurement will auto place order at ', 
+                              'predicted price and also sell at predicted price ', 
+                              'within 1 day. System will using closing price as ', 
+                              'settlement price if the later predicted price was ', 
+                              'not occurred. Only value bet be placed.')
+                            ),                  
+                   tabPanel('Profit and Loss', 
+                            h3('Profit and Loss'), 
+                            p('Below graph shows the return of investment.')
+                            ))), 
+        tabPanel('Banker', 
+                 h3('Latest Price'), 
+                 p('By refer to the idea from', 
+                   HTML("<a href='https://www.binary.com/en/trading.html?currency=USD&market=forex&underlying=frxAUDJPY&formname=risefall&date_start=now&duration_amount=1&duration_units=d&amount=10&amount_type=payout&expiry_type=duration'>binary.com,</a>"), 
+                   'I tried to create this', strong('Banker'), 'page. The daily data is getting from ', 
+                   HTML("<a href='https://finance.yahoo.com/'>Yahoo! finance.</a>")), 
+                 htmlOutput('lastPr'), 
+                 br(), 
+                 p('You can either buy or sell at the below forecast closing price for next trading day. Kindly refer ', 
+                   'to the web application ', 
+                   HTML("<a href='https://beta.rstudioconnect.com/content/3073/'>financial betting</a>"), 
+                   ' for more information.'), 
+                 formattableOutput('fcastPr')),  
+        tabPanel('Appendix', 
+                 tabsetPanel(
+                   tabPanel('Statistics', 
+                            h3('Statistical Modelling'), 
+                            htmlOutput('video'), 
+                            p('As I tried to build couples of univariate models and concludes that ', 
+                              HTML("<a href='https://vlab.stern.nyu.edu/doc/3?topic=mdls'>GJR-GARCH Model</a>"), 
+                              'is the best fit model. You are feel free to browse over ', 
+                              HTML("<a href='http://rpubs.com/englianhu/316133'>binary.com Interview Question I (Extention)</a>"), 
+                              'for the research. Below is the equation for the model.', 
+                              withMathJax(
+                              helpText('$$\\delta_{t}^{2} = \\omega + (\\alpha + \\gamma I_{t-1}) \\varepsilon_{t-1}^{2} + \\beta \\sigma_{t-1}^{2}$$')), 
+                              'where'), 
+                            p('     ', tags$a(href='http://www.binary.com', target='_blank', 
+                                              tags$img(height = '40px', alt='binary', #align='right', 
+                                                       src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/equation.jpg'))), 
+                            p('The daily data for calculation is getting from ', 
+                              HTML("<a href='https://finance.yahoo.com/'>Yahoo! finance</a>"), 
+                              ' while the real-time price to staking and settlement is getting from ', 
+                              HTML("<a href='https://www.truefx.com/'>TrueFX.com.</a>"), 
+                              'Therefore there has no any guarantee of profit and also accuracy of price dataset.')), 
+                   tabPanel('Reference', 
+                            h3('Future Works'), 
+                            p('This application is an algorithmic trading in daily ', 
+                              'forex market. The orders will be placed everyday at ', 
+                              '12:00AM (GMT). The closed transaction orders will also ', 
+                              'falling on 12:00AM (GMT) everyday. For high frequency ', 
+                              'trading (which includes 1 minute, 5 minutes, 10 minutes, ', 
+                              '15 minutes etc.), I put it as future research...', 
+                              tags$ul(
+                                tags$li(HTML("<a href='https://blog.testproject.io/2016/12/22/open-source-test-automation-tools-for-desktop-applications/'>8 Open Source Test Automation Tools for Desktop Applications</a>")), 
+                                tags$li(HTML("<a href='https://github.com/scibrokes/real-time-fxcm'>Real Time FXCM</a>")), 
+                                tags$li(HTML("<a href='https://www.fxcmapps.com/apps/basic-historical-data-downloader/'>Basic Historical Data Downloader</a>")))), 
+                            p('Kindly browse over', HTML("<a href='https://github.com/scibrokes/real-time-fxcm'>Real Time FXCM</a>"), 'for more information.'), 
+                            br(), 
+                            h3('Reference'), 
+                            p('01. ', HTML("<a href='http://matchodds.org/ords/f?p=101:1'>MatchOdds.org</a>"), 
+                              tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                     tags$img(height = '20px', alt='hot', #align='right', 
+                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg'))), 
+                            p('02. ', HTML("<a href='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Successful%20Algorithmic%20Trading.pdf'>A Step-by-Step Guide to Quantitative Strategies - SUCCESSFUL ALGORITHMIC TRADING</a>"), 
+                              tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                     tags$img(height = '20px', alt='hot', #align='right', 
+                                              src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg')))), 
+                   
+                   tabPanel('Author', 
+                            h3('Author'), 
+                            tags$iframe(src = 'https://englianhu.github.io/2016/12/ryo-eng.html', height = 800, width = '100%', frameborder = 0))))))), 
+  br(), 
+  p('Powered by - Copyright® Intellectual Property Rights of ', 
+    tags$a(href='http://www.scibrokes.com', target='_blank', 
+           tags$img(height = '20px', alt='scibrokes', #align='right', 
+                    src='https://raw.githubusercontent.com/scibrokes/betting-strategy-and-model-validation/master/regressionApps/oda-army.jpg')), 
+    HTML("<a href='http://www.scibrokes.com'>Scibrokes®</a>"))))
+  
+
+
+
+
+
+
+# === Shiny Server ===============================================
+server <- shinyServer(function(input, output, session) {
+  
+  output$currentTime <- renderText({
+    # Forces invalidation in 1000 milliseconds
+    invalidateLater(1000, session)
+    as.character(Sys.time())
+  })
+  
+  fetchData <- reactive({
+    if (!input$pause)
+      invalidateLater(750)
+    qtf <- QueryTrueFX() ## http://webrates.truefx.com/rates/connect.html
+    qtf$TimeStamp <- as.character(qtf$TimeStamp)
+    names(qtf)[6] <- 'TimeStamp (GMT)'
+    qtf[, c(6, 1:3, 5:4)]
+  })
+  
+  #'@ output$fxdata <- renderTable({
+  #'@  fetchData()
+  #'@ }, digits = 5, row.names = FALSE)
+  
+  output$fxdata <- renderFormattable({
+    line <- fetchData()
+    line %>% formattable(list(
+      Symbol = formatter('span',
+        style = x ~ ifelse(x == 'Technology', 
+                           style(font.weight = 'bold'), NA)),
+      Bid.Price = formatter('span', 
+                            style = x ~ style(color = ifelse(x > (line$Low + line$High) / 2, 'red', 'green')), 
+                            x ~ icontext(ifelse(x > (line$Low + line$High) / 2, 'arrow-down', 'arrow-up'), x)), 
+      Ask.Price = formatter('span', 
+                            style = x ~ style(color = ifelse(x < (line$Low + line$High) / 2, 'red', 'green')),
+                            x ~ icontext(ifelse(x < (line$Low + line$High) / 2, 'arrow-down', 'arrow-up'), x)), 
+      Low = formatter('span', 
+                      style = x ~ style(color = ifelse(x > 0, 'red', 'green')), 
+                      x ~ icontext(ifelse(x > 0, 'arrow-down', 'arrow-up'), x)), 
+      High = formatter('span',
+                      style = x ~ style(color = ifelse(x < 0, 'red', 'green')),
+                      x ~ icontext(ifelse(x < 0, 'arrow-down', 'arrow-up'), x))
+      ))})
+  
+  terms <- reactive({
+    ## Change when the "update" button is pressed...
+    input$curr
+    input$ahead
+    ## ...but not for anything else
+    isolate({
+      withProgress({
+        setProgress(message = "Processing algorithmic forecast...")
+        calC(input$curr, input$ahead)
+      })
+    })
+  })
+  
+  output$lastPr <- renderText({
+    tmp = terms()$latestPrice
+    paste('The latest closing price of', '<font color=\"#FF0000\"><b>', 
+          names(tmp), '</b></font>', 'on <font color=\"#FF0000\"><b>', 
+          index(tmp), '</b></font>', '(GMT) is', '<font color=\"#FF0000\"><b>', 
+          tmp, '</b></font>.')
+  })
+  
+  output$fcastPr <- renderFormattable({
+    
+    validate(
+      need(exist(fxC), 'Scrapping forex data error, kindly refresh the webpage.')
+    )
+    
+    data.frame(fxC, Buy = 'BUY', Sell = 'SELL') %>% 
+      formattable(list(
+        Buy = formatter('span', style = ~ style(color = ifelse(
+          Buy == 'SELL', 'red', 'green')), 
+          ~ icontext(ifelse(Buy == 'SELL', 'arrow-down', 'arrow-up'), Buy)), 
+        Sell = formatter('span', style = ~ style(color = ifelse(
+          Sell == 'SELL', 'red', 'green')), 
+          ~ icontext(ifelse(Sell == 'SELL', 'arrow-down', 'arrow-up'), Sell))))
+  })
+  
+  output$video <- renderUI({
+    tags$iframe(src = 'https://www.youtube.com/embed/VWAU1r6rPvg')
+  })
+  
+  ## Real-time graph in shiny.
+  ## https://stackoverflow.com/questions/42109370/invalidatelater-stopped-in-r-shiny-app
+  
+})
+
+# Run the application 
+shinyApp(ui = ui, server = server)
+#'@ shiny::runApp('Q2', display.mode = 'showcase')
