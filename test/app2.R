@@ -9,12 +9,13 @@ library('lubridate')
 
 t <- now('Asia/Tokyo')
 Sys.setenv(TZ="Asia/Tokyo")
-zones <- attr(as.POSIXlt(Sys.time()), 'tzone')
+zones <- attr(as.POSIXlt(now('Asia/Tokyo')), 'tzone')
 zone <- if (zones[[1]] == '') {
   paste(zones[-1], collapse = '/')
 } else zones[[1]]
 
-JPY <- getSymbols('JPY=X', from = (today('Asia/Tokyo') - days(1)) - years(1), auto.assign = FALSE)
+JPY <- getSymbols('JPY=X', from = (today('Asia/Tokyo') - days(1)) - years(1), 
+                  to = today('Asia/Tokyo') - days(1), auto.assign = FALSE)
 JPY <- na.omit(JPY)
 JPY <- adjustOHLC(JPY)
 n <- nrow(JPY) # some evaluation
@@ -25,12 +26,13 @@ n <- nrow(JPY) # some evaluation
 queryFX <- function(session) {
   session <- new.env()
   
-  JPY <- getSymbols('JPY=X', from = (today('Asia/Tokyo') - days(1)) - years(1), auto.assign = FALSE)
+  JPY <- getSymbols('JPY=X', from = (today('Asia/Tokyo') - days(1)) - years(1), 
+                    to = today('Asia/Tokyo') - days(1), auto.assign = FALSE)
   JPY <- na.omit(JPY)
   JPY <- adjustOHLC(JPY)
   n <- nrow(JPY) # some evaluation
   session$JPY <- JPY
-  session$last.used <- Sys.time()
+  session$last.used <- now('Asia/Tokyo')
   
   return(JPY)
 }
@@ -50,7 +52,7 @@ server<- shinyServer(function(input, output,session) {
   output$currentTime <- renderText({
     # Forces invalidation in 1000 milliseconds
     invalidateLater(1000, session)
-    as.character(Sys.time())
+    as.character(now('Asia/Tokyo'))
   })
   
   mydata <- reactive({
