@@ -127,24 +127,7 @@ ui <- shinyUI(fluidPage(
     tags$a(href='http://www.binary.com', target='_blank', 
            tags$img(height = '80px', alt='binary', #align='right', 
                     src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/binary-logo-resize.jpg'))), 
-  
-  sidebarLayout(
-    sidebarPanel(
-      selectInput('curr', 'Currency :',
-                  choices = c('EUR/USD' = 'EURUSD=X', 
-                              'USD/JPY' = 'JPY=X', 
-                              'GBP/USD' = 'GBPUSD=X', 
-                              'EUR/GBP' = 'EURGBP=X', 
-                              'USD/CHF' = 'CHF=X', 
-                              'EUR/JPY' = 'EURJPY=X', 
-                              'EUR/CHF' = 'EURCHF=X', 
-                              'USD/CAD' = 'CAD=X', 
-                              'AUD/USD' = 'AUDUSD=X', 
-                              'GBP/JPY' = 'GBPJPY=X'), 
-                  selected = 'USD/JPY'), 
-      sliderInput('ahead', HTML('Forecast ahead (&zeta; in day) :'), 
-                  min = 1, max = 7, step = 1, value = 1)),
-    
+  pageWithSidebar(
     mainPanel(
       tabsetPanel(
         tabPanel('Price', 
@@ -256,13 +239,13 @@ ui <- shinyUI(fluidPage(
                    
                    tabPanel('Author', 
                             h3('Author'), 
-                            tags$iframe(src = 'https://englianhu.github.io/2016/12/ryo-eng.html', height = 800, width = '100%', frameborder = 0))))))), 
+                            tags$iframe(src = 'https://beta.rstudioconnect.com/content/3091/ryo-eng.html', height = 800, width = '100%', frameborder = 0)))))), 
   br(), 
   p('Powered by - Copyright® Intellectual Property Rights of ', 
     tags$a(href='http://www.scibrokes.com', target='_blank', 
            tags$img(height = '20px', alt='scibrokes', #align='right', 
                     src='https://raw.githubusercontent.com/scibrokes/betting-strategy-and-model-validation/master/regressionApps/oda-army.jpg')), 
-    HTML("<a href='http://www.scibrokes.com'>Scibrokes®</a>"))))
+    HTML("<a href='http://www.scibrokes.com'>Scibrokes®</a>")))))
   
 
 
@@ -325,16 +308,20 @@ server <- shinyServer(function(input, output, session) {
   }
   
   # Initialize realData
-  #'@ realData <<- get_new_data() #ldply(1:60, get_new_data()) %>% tbl_df
-  realData <<- QueryTrueFX()[2,2] #Due to get_new_data() always error, here I use `Bid.Price` instead.
+  realData <<- get_new_data() #ldply(1:60, get_new_data()) %>% tbl_df
+  #'@ realData <<- QueryTrueFX()[2,2] #Due to get_new_data() always error, here I use `Bid.Price` instead.
+  #'@ realData <<- QueryTrueFX()[2, c(6, 2, 3)]
   
   # Function to update realData
   update_data <- function(){
-    #'@ realData <<- rbind(realData, get_new_data())
-    realData <<- rbind(realData, QueryTrueFX()[2,2]) #Due to get_new_data() always error, here I use `Bid.Price` instead.
+    realData <<- rbind(realData, get_new_data())
+    #'@ realData <<- c(realData, QueryTrueFX()[2,2]) #Due to get_new_data() always error, here I use `Bid.Price` instead.
+    #'@ realData <<- rbind(realData, QueryTrueFX()[2, c(6, 2, 3)])
     
     if(nrow(realData) > 60) {
+    #'@ if(length(realData) > 60) {
       realData <<- realData[((nrow(realData) - 59):nrow(realData)),]
+      #'@ realData <<- tail(realData, 60)
     } else {
       realData <<- realData
     }
@@ -349,6 +336,13 @@ server <- shinyServer(function(input, output, session) {
     
     ggplot() + geom_line(aes(x = index(realData), y = coredata(realData)), 
                          colour = 'blue') + xlab('Time [Seconds]') + ylab('USD / JPY')
+    #'@ ggplot() + geom_line(aes(x = 1:length(realData), y = realData), 
+    #'@                      colour = 'blue') + xlab('Time [Seconds]') + ylab('USD / JPY')
+    #'@ ggplot(realData, aes(TimeStamp)) + 
+    #'@   geom_line(aes(y = Bid.Price, colour = 'Bid.Price')) + 
+    #'@   geom_line(aes(y = Ask.Price, colour = 'Ask.Price')) + 
+    #'@   xlab('Time [Seconds]') + ylab('USD / JPY')
+    
   })
   ## ----------- End Tab Real Time Intraday Graph Server ----------------------
   
@@ -381,7 +375,7 @@ server <- shinyServer(function(input, output, session) {
       hc_add_series(JPY, yAxis = 0, name = 'JPY') %>% 
       hc_add_series(JPY.SMA.10, yAxis = 0, name = 'Fast MA') %>% 
       hc_add_series(JPY.SMA.200, yAxis = 0, name = 'Slow MA') %>% 
-      hc_add_series(JPY$`JPY=X.Volume`, color = 'gray', yAxis = 1, name = 'Volume', type = 'column') %>% 
+      #'@ hc_add_series(JPY$`JPY=X.Volume`, color = 'gray', yAxis = 1, name = 'Volume', type = 'column') %>% 
       hc_add_series(JPY.RSI.14, yAxis = 2, name = 'Osciallator', color = hex_to_rgba('green', 0.7)) %>%
       hc_add_series(JPY.RSI.SellLevel, color = hex_to_rgba('red', 0.7),
                     yAxis = 2, name = 'Sell level') %>% 
