@@ -1,7 +1,10 @@
-
 library('shiny')
 library('rdrop2')
 library('digest')
+library('magrittr')
+library('DT')
+library('TFX')
+library('ggplot2')
 
 #'@ drop_auth()
 ## email : scibrokes_demo@gmail.com
@@ -22,70 +25,68 @@ library('digest')
 #'@ token <- readRDS("droptoken.rds")
 # Then pass the token to each drop_ function
 #'@ drop_acc(dtoken = token)
-token <<- readRDS("droptoken.rds")
+#'@ token <<- readRDS("droptoken.rds")
 # Then pass the token to each drop_ function
-drop_acc(dtoken = token)
+#'@ drop_acc(dtoken = token)
 
-# Define the fields we want to save from the form
-fields <- c("name", "used_shiny", "r_num_years")
-outputDir <- "responses"
+ui <- shinyServer(fluidPage(
+  dataTableOutput('second_column'),
+  actionButton('refresh', 'Refresh'), 
+  tags$hr(),
+  plotOutput("first_column")
+))
 
-ui <- fluidPage(
-  titlePanel("Algorithmic Trading System"),
-  mainPanel(
-    DT::dataTableOutput("responses", width = 300), tags$hr(),
-    textInput("name", "Name", ""),
-    checkboxInput("used_shiny", "I've built a Shiny app in R before", FALSE),
-    sliderInput("r_num_years", "Number of years using R",
-                0, 25, 2, ticks = FALSE),
-    actionButton("submit", "Submit")
-  )
-)
-
-
-# Define server logic required to draw a histogram
-server <- function(input, output) {
-  
-  saveData <- function(data) {
-    data <- t(data)
-    # Create a unique file name
-    fileName <- sprintf("%s_%s.csv", as.integer(Sys.time()), digest::digest(data))
-    # Write the data to a temporary file locally
-    filePath <- file.path(tempdir(), fileName)
-    write.csv(data, filePath, row.names = FALSE, quote = TRUE)
-    # Upload the file to Dropbox
-    drop_upload(filePath, path = outputDir)
+server <- shinyServer(function(input, output, session){
+  # Function to get new observations
+  get_new_data <- function(){
+    data <- QueryTrueFX()[2, c(2, 3, 6)]
+    return(data)
   }
   
-  loadData <- function() {
-    # Read all the files into a list
-    filesInfo <- drop_dir(outputDir)
-    filePaths <- filesInfo$path_display
-    data <- lapply(filePaths, drop_read_csv, stringsAsFactors = FALSE)
-    # Concatenate all data together into one data.frame
-    data <- do.call(rbind, data)
-    data
+  # Initialize my_data
+  if(!file.exists('my_data.rds')) {
+    my_data <<- get_new_data()
+  } else {
+    my_data <<- readRDS('my_data.rds')
   }
   
-  # Whenever a field is filled, aggregate all form data
-  formData <- reactive({
-    data <- sapply(fields, function(x) input[[x]])
-    data
+  # Function to update my_data
+  update_data <- function(){
+    my_data <<- rbind(get_new_data(), my_data)
+    saveRDS(my_data, 'my_data.rds')
+    return(my_data)
+  }
+  
+  # Plot the 30 most recent values
+  output$first_column <- renderPlot({
+    #print("Render")
+    invalidateLater(1000, session)
+    update_data()
+    #print(my_data)
+    ggplot(head(my_data, 60), aes(TimeStamp)) + 
+      geom_line(aes(y = Bid.Price, colour = 'Bid.Price')) + 
+      geom_line(aes(y = Ask.Price, colour = 'Ask.Price'))
   })
   
-  # When the Submit button is clicked, save the form data
-  observeEvent(input$submit, {
-    saveData(formData())
+  terms <- reactive({
+    input$refresh
+    readRDS('my_data.rds')
   })
   
-  # Show the previous responses
-  # (update with current response when Submit is clicked)
-  output$responses <- DT::renderDataTable({
-    input$submit
-    loadData()
+  output$second_column <- renderDataTable({
+    terms() %>% datatable(
+      caption = "Table : USD/JPY", 
+      escape = FALSE, filter = "top", rownames = FALSE, 
+      extensions = list("ColReorder" = NULL, "RowReorder" = NULL, 
+                        "Buttons" = NULL, "Responsive" = NULL), 
+      options = list(dom = 'BRrltpi', autoWidth = TRUE, scrollX = TRUE, 
+                     lengthMenu = list(c(10, 50, 100, -1), c('10', '50', '100', 'All')), 
+                     ColReorder = TRUE, rowReorder = TRUE, 
+                     buttons = list('copy', 'print', 
+                                    list(extend = 'collection', 
+                                         buttons = c('csv', 'excel', 'pdf'), 
+                                         text = 'Download'), I('colvis'))))
   })
-}
+})
 
-# Run the application 
-shinyApp(ui = ui, server = server)
-
+shinyApp(ui=ui,server=server)
