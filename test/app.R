@@ -1,10 +1,12 @@
-library('shiny')
-library('rdrop2')
-library('digest')
-library('magrittr')
-library('DT')
-library('TFX')
-library('ggplot2')
+require('shiny')
+require('rdrop2')
+require('digest')
+require('magrittr')
+require('plyr')
+require('dplyr')
+require('DT')
+require('TFX')
+require('ggplot2')
 
 #'@ drop_auth()
 ## email : scibrokes_demo@gmail.com
@@ -52,7 +54,7 @@ server <- shinyServer(function(input, output, session){
   
   # Function to update my_data
   update_data <- function(){
-    my_data <<- rbind(get_new_data(), my_data)
+    my_data <<- rbind(get_new_data(), my_data) %>% unique
     saveRDS(my_data, 'my_data.rds')
     return(my_data)
   }
@@ -89,4 +91,4 @@ server <- shinyServer(function(input, output, session){
   })
 })
 
-shinyApp(ui=ui,server=server)
+shinyApp(ui, server)

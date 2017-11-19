@@ -28,11 +28,11 @@
   
   Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3073/) where [Q1App2](https://beta.rstudioconnect.com/content/3138/) is another app for financial value betting.
 
-  **Blooper**
+<span style='color:red'>**Blooper...**</span>
 
   Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [Q1 ShinyApp](https://beta.rstudioconnect.com/content/2367/).
 
-  ![<span style='color:red'>**error...**</span>](www/20170113_104005.gif)
+<img src='www/20170113_104005.gif' width='360'>
 
   Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/316133).
 

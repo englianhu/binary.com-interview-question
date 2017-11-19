@@ -179,7 +179,7 @@ ui <- shinyUI(fluidPage(
                  p('By refer to the idea from', 
                    HTML("<a href='https://www.binary.com/en/trading.html?currency=USD&market=forex&underlying=frxAUDJPY&formname=risefall&date_start=now&duration_amount=1&duration_units=d&amount=10&amount_type=payout&expiry_type=duration'>binary.com,</a>"), 
                    'I tried to create this', strong('Banker'), 'page. The daily data is getting from ', 
-                   HTML("<a href='https://finance.yahoo.com/'>Yahoo! finance.</a>")), 
+                   HTML("<a href='https://finance.yahoo.com/'>Yahoo! finance</a>")), 
                  htmlOutput('EURUSDlstPrice'), 
                  htmlOutput('USDJPYlstPrice'), 
                  htmlOutput('GBPUSDlstPrice'), 
@@ -224,6 +224,7 @@ ui <- shinyUI(fluidPage(
                               tags$ul(
                                 tags$li(HTML("<a href='https://blog.testproject.io/2016/12/22/open-source-test-automation-tools-for-desktop-applications/'>8 Open Source Test Automation Tools for Desktop Applications</a>")), 
                                 tags$li(HTML("<a href='https://github.com/scibrokes/real-time-fxcm'>Real Time FXCM</a>")), 
+                                tags$li(HTML("<a href='https://finance.yahoo.com/'>Yahoo! finance</a>")), 
                                 tags$li(HTML("<a href='https://www.fxcmapps.com/apps/basic-historical-data-downloader/'>Basic Historical Data Downloader</a>")))), 
                             p('Kindly browse over', HTML("<a href='https://github.com/scibrokes/real-time-fxcm'>Real Time FXCM</a>"), 'for more information.'), 
                             br(), 
@@ -246,7 +247,6 @@ ui <- shinyUI(fluidPage(
            tags$img(height = '20px', alt='scibrokes', #align='right', 
                     src='https://raw.githubusercontent.com/scibrokes/betting-strategy-and-model-validation/master/regressionApps/oda-army.jpg')), 
     HTML("<a href='http://www.scibrokes.com'>Scibrokes®</a>")))))
-  
 
 
 
