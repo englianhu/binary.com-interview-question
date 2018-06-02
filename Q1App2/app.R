@@ -1,19 +1,15 @@
 # === Setting ======================================================
-require('shiny')
-require('memoise')
-require('magrittr')
-require('stringr')
-require('TFX')
-require('quantmod')
-require('rugarch')
-require('lubridate')
-require('ggplot2')
-require('highcharter')
-require('formattable')
-require('plyr')
-require('dplyr')
-require('pryr')
+# options(repos = 'https://cran.rstudio.com')
 
+suppressWarnings(require('BBmisc'))
+pkgs <- c('shiny', 'memoise', 'stringr', 'xts', 'TFX', 'quantmod', 
+          'rugarch', 'lubridate', 'ggplot2', 'highcharter', 'formattable', 
+          'magrittr', 'plyr', 'dplyr', 'pryr', 'tidyr', 'purrr', 'cronR', 
+          'microbenchmark', 'proxy')
+suppressAll(requirePackages(pkgs))
+rm(pkgs)
+
+## https://beta.rstudioconnect.com/connect/#/apps/3768
 # === Function =====================================================
 
 # Using "memoise" to automatically cache the results
@@ -23,9 +19,11 @@ openBet <- memoise(function(currency, realFX, ahead = 1) {
   lo <- calC(currency, ahead, price = 'Lo')
   
   bid <- realFX %>% dplyr::select(Symbol, Bid.Price) %>% 
-    dplyr::filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 'USD/CAD', 'AUD/USD'))
+    dplyr::filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 
+                                'USD/CAD', 'AUD/USD'))
   ask <- realFX %>% dplyr::select(Symbol, Ask.Price) %>% 
-    dplyr::filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 'USD/CAD', 'AUD/USD'))
+    dplyr::filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 
+                                'USD/CAD', 'AUD/USD'))
   
   ## http://webrates.truefx.com/rates/connect.html
   tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res)
@@ -38,13 +36,18 @@ zones <- attr(as.POSIXlt(now('Asia/Tokyo')), 'tzone')
 zone <- ifelse(zones[[1]] == '', paste(zones[-1], collapse = '/'), zones[[1]])
 
 fx <<- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
+wd <<- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
 
 #'@ if(now('GMT') == today('GMT')) {
 ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
 ## Above link prove that https://finance.yahoo.com using GMT time zone.  
-for(i in seq(fx)) getSymbols(fx[i], from = (today('GMT') - 1) %m-% years(1), 
-                               to = (today('GMT') - 1))
-rm(i)
+if(weekdays(today('GMT'))%in% wd) {
+  for(i in seq(fx)) {
+    getSymbols(fx[i], from = (today('GMT') - 1) %m-% years(1), 
+               to = (today('GMT') - 1))
+  }
+  rm(i)
+}
 #'@ }
 
 ## Due to duplicated date but various price, here I forced to filter the dataset.
@@ -136,8 +139,7 @@ ui <- shinyUI(fluidPage(
                             h3('Real Time Price'), 
                             div(class='container',
                                 p(strong(paste0('Current time (', zone, '):')),
-                                  textOutput('currentTime')
-                                ),
+                                  textOutput('currentTime')),
                                 p(strong('Latest FX Quotes:'),
                                   formattableOutput('fxdata'), 
                                   checkboxInput('pause', 'Pause updates', FALSE))
@@ -168,8 +170,11 @@ ui <- shinyUI(fluidPage(
                               'predicted price and also sell at predicted price ', 
                               'within 1 day. System will using closing price as ', 
                               'settlement price if the later predicted price was ', 
-                              'not occurred. Only value bet be placed.')
-                            ),                  
+                              'not occurred. Only value bet be placed.'), 
+                            formattableOutput('fcastPPr'),
+                            br(), 
+                            p('Currently only 6 digits count from left-hand side for trading.'), 
+                            tableOutput('transc')), 
                    tabPanel('Profit and Loss', 
                             h3('Profit and Loss'), 
                             p('Below graph shows the return of investment.')
@@ -191,7 +196,7 @@ ui <- shinyUI(fluidPage(
                    'to the web application ', 
                    HTML("<a href='https://beta.rstudioconnect.com/content/3073/'>financial betting</a>"), 
                    ' for more information.'), 
-                 formattableOutput('fcastPr')),  
+                 formattableOutput('fcastBPr')),  
         tabPanel('Appendix', 
                  tabsetPanel(
                    tabPanel('Statistics', 
@@ -263,12 +268,41 @@ server <- shinyServer(function(input, output, session) {
   })
   
   fetchData <- reactive({
-    if (!input$pause)
+    if(!input$pause)
       invalidateLater(750)
     qtf <- QueryTrueFX() ## http://webrates.truefx.com/rates/connect.html
     qtf$TimeStamp <- as.character(qtf$TimeStamp)
     names(qtf)[6] <- 'TimeStamp (GMT)'
-    qtf[, c(6, 1:3, 5:4)]
+    qtf <<- qtf[, c(6, 1:3, 5:4)]
+    return(qtf)
+  })
+  
+  output$transc <- renderTable({
+    
+    invalidateLater(750)
+    rx <- qtf %>% filter(Symbol == 'USD/JPY') %>% 
+      dplyr::select(`TimeStamp (GMT)`, Bid.Price, Ask.Price)
+    
+    Hi <- tail(fxHL, 1)$Currency.Hi %>% round(3)
+    Lo <- tail(fxHL, 1)$Currency.Lo %>% round(3)
+    transc.buy <- data.frame()
+    transc.sell <- data.frame()
+    
+    # qtf %>% filter(Symbol == 'USD/JPY') %>% select(`TimeStamp (GMT)`, Bid.Price, Ask.Price)
+    # fxHL %>% filter(.id == 'USDJPY') %>% select(Currency.Hi) %>% unclass %>% .$Currency.Hi
+    if(Lo == rx$Bid.Price){
+      transc.buy <- tail(fxHL, 1) %>% dplyr::select(ForecastDate.GMT, Currency.Lo) %>% 
+        mutate(Currency.Lo = round(Currency.Lo, 3))
+      saveRDS(transc.buy, paste0('data/buy.', now('GMT'), '.rds'))
+    }
+    if(Hi == rx$Ask.Price){
+      transc.sell <- tail(fxHL, 1) %>% dplyr::select(ForecastDate.GMT, Currency.Hi) %>% 
+        mutate(Currency.Hi = round(Currency.Hi, 3))
+      saveRDS(transc.sell, paste0('data/sell.', now('GMT'), '.rds'))
+    }
+    
+    tmp <- list(buy.transc = transc.buy, sell.transc = transc.sell)
+    return(tmp)
   })
   
   output$fxdata <- renderFormattable({
@@ -300,10 +334,12 @@ server <- shinyServer(function(input, output, session) {
   
   # Function to get new observations
   get_new_data <- function(){
-    data <- getSymbols('JPY=X', from = today('Asia/Tokyo'), 
-                       auto.assign = FALSE) %>% Cl
-    names(data) <- 'USDJPY'
-    index(data) <- now('Asia/Tokyo')
+    if(!(weekdays(today('Asia/Tokyo'))) %in% c('Saturday', 'Sunday')) {
+      data <- getSymbols('JPY=X', from = today('Asia/Tokyo'), 
+                         src = 'yahoo', auto.assign = FALSE) %>% Cl
+      names(data) <- 'USDJPY'
+      index(data) <- now('Asia/Tokyo')
+    }
     return(data)
   }
   
@@ -440,19 +476,21 @@ server <- shinyServer(function(input, output, session) {
             list(arma = arma, mth = mth)
           })
         } else {
-          stop(paste('Kindly choose .method among ', paste0(.methods, collapse = ', '), '!'))
+          stop(paste('Kindly choose .method among ', 
+                     paste0(.methods, collapse = ', '), '!'))
         }
         names(data.arma) <- c('arma', 'mth')
         
         #cat('p =', p, ', q =', q, 'AIC =', data.arma$arma$aic, '\n')
-        armacoef <- rbind(armacoef,c(p, q, data.arma$arma$aic))
+        armacoef <- rbind(armacoef, c(p, q, data.arma$arma$aic))
       }
     }
     
     colnames(armacoef) <- c('p', 'q', 'AIC')
     pos <- which(armacoef$AIC == min(armacoef$AIC))
-    cat(paste0('method = \'', data.arma$mth, '\', the min AIC = ', armacoef$AIC[pos], 
-               ', p = ', armacoef$p[pos], ', q = ', armacoef$q[pos], '\n'))
+    cat(paste0('method = \'', data.arma$mth, '\', the min AIC = ', 
+               armacoef$AIC[pos], ', p = ', armacoef$p[pos], 
+               ', q = ', armacoef$q[pos], '\n'))
     return(armacoef)
   }
   
@@ -471,7 +509,8 @@ server <- shinyServer(function(input, output, session) {
       } else {
         stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
       }
-      names(mbase) %<>% str_replace_all('AUDUSD=X.Close', 'AUD.USD')
+      names(mbase) %<>% str_replace_all('AUDUSD=X', 'AUD.USD')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
       
     } else if(currency == 'EURUSD=X') {
       if(price == 'Op') {
@@ -487,7 +526,8 @@ server <- shinyServer(function(input, output, session) {
       } else {
         stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
       }
-      names(mbase) %<>% str_replace_all('EURUSD=X.Close', 'EUR.USD')
+      names(mbase) %<>% str_replace_all('EURUSD=X', 'EUR.USD')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
       
     } else if(currency == 'GBPUSD=X') {
       if(price == 'Op') {
@@ -503,7 +543,8 @@ server <- shinyServer(function(input, output, session) {
       } else {
         stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
       }
-      names(mbase) %<>% str_replace_all('GBPUSD=X.Close', 'GBP.USD')
+      names(mbase) %<>% str_replace_all('GBPUSD=X', 'GBP.USD')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
       
     } else if(currency == 'CHF=X') {
       if(price == 'Op') {
@@ -519,7 +560,8 @@ server <- shinyServer(function(input, output, session) {
       } else {
         stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
       }
-      names(mbase) %<>% str_replace_all('CHF=X.Close', 'USD.CHF')
+      names(mbase) %<>% str_replace_all('CHF=X', 'USD.CHF')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
       
     } else if(currency == 'CAD=X') {
       if(price == 'Op') {
@@ -535,7 +577,8 @@ server <- shinyServer(function(input, output, session) {
       } else {
         stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
       }
-      names(mbase) %<>% str_replace_all('CAD=X.Close', 'USD.CAD')
+      names(mbase) %<>% str_replace_all('CAD=X', 'USD.CAD')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
       
     } else if(currency == 'CNY=X') {
       if(price == 'Op') {
@@ -551,7 +594,8 @@ server <- shinyServer(function(input, output, session) {
       } else {
         stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
       }
-      names(mbase) %<>% str_replace_all('CNY=X.Close', 'USD.CNY')
+      names(mbase) %<>% str_replace_all('CNY=X', 'USD.CNY')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
       
     } else if(currency == 'JPY=X') {
       if(price == 'Op') {
@@ -567,7 +611,8 @@ server <- shinyServer(function(input, output, session) {
       } else {
         stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
       }
-      names(mbase) %<>% str_replace_all('JPY=X.Close', 'USD.JPY')
+      names(mbase) %<>% str_replace_all('JPY=X', 'USD.JPY')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
       
     } else {
       stop('Kindly choose common currencies exchange.')
@@ -581,7 +626,7 @@ server <- shinyServer(function(input, output, session) {
     mbase = filterFX(currency, price = price)
     
     armaOrder = armaSearch(mbase)
-    armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
+    armaOrder %<>% dplyr::filter(AIC == min(AIC)) %>% .[c('p', 'q')] %>% unlist
     
     spec = ugarchspec(
       variance.model = list(
@@ -599,18 +644,21 @@ server <- shinyServer(function(input, output, session) {
     fc = ugarchforecast(fit, n.ahead = ahead)
     res = attributes(fc)$forecast$seriesFor
     colnames(res) = names(mbase)
+    latestPrice = tail(mbase, 1)
+    forDate = latestPrice %>% index + days(1)
+    rownames(res) <- as.character(forDate)
     
-    tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res)
+    tmp = list(latestPrice = latestPrice, forecastPrice = res)
     return(tmp)
   })
   
-  getBanker <- function() {
-    forC.EURUSD <- calC('EURUSD=X')
-    forC.USDJPY <- calC('JPY=X')
-    forC.GBPUSD <- calC('GBPUSD=X')
-    forC.USDCHF <- calC('CHF=X')
-    forC.USDCAD <- calC('CAD=X')
-    forC.AUDUSD <- calC('AUDUSD=X')
+  forecastData <- function(price = 'Cl') {
+    forC.EURUSD <- calC('EURUSD=X', price = price)
+    forC.USDJPY <- calC('JPY=X', price = price)
+    forC.GBPUSD <- calC('GBPUSD=X', price = price)
+    forC.USDCHF <- calC('CHF=X', price = price)
+    forC.USDCAD <- calC('CAD=X', price = price)
+    forC.AUDUSD <- calC('AUDUSD=X', price = price)
     
     fxC <- ldply(list(EURUSD = forC.EURUSD, 
                       USDJPY = forC.USDJPY, 
@@ -618,13 +666,17 @@ server <- shinyServer(function(input, output, session) {
                       USDCHF = forC.USDCHF, 
                       USDCAD = forC.USDCAD, 
                       AUDUSD = forC.AUDUSD), function(x) 
-                        x$forecastPrice %>% round(5) %>% 
-                    unname) %>% tbl_df %>% rename('Price' = `1`)
+                        data.frame(ForecastDate.GMT = rownames(x$forecastPrice), 
+                                   x$forecastPrice)) %>% 
+      unite(., Currency, EUR.USD:AUD.USD) %>% 
+      mutate(.id = as.factor(.id), Currency = str_replace_all(Currency, 'NA', ''), 
+             Currency = str_replace_all(Currency, '_', ''))
+    fxC$Currency <- as.numeric(fxC$Currency)
     
     return(fxC)
   }
   
-  terms <- reactive({
+  fcstBankerData <- reactive({
     ## Change when the "update" button is pressed...
     #'@ input$curr
     
@@ -632,9 +684,38 @@ server <- shinyServer(function(input, output, session) {
     isolate({
       withProgress({
         setProgress(message = "Processing algorithmic forecast...")
-        getBanker()
+        fxCl <- forecastData()
+        names(fxCl) <- str_replace_all(names(fxCl), '\\.x$', '.Cl')
       })
     })
+    if(!dir.exists('data')) dir.create('data')
+    if(!file.exists(paste0('data/fcstBankerGMT', today('GMT'), '.rds'))){
+      saveRDS(fxCl, paste0('data/fcstBankerGMT', today('GMT'), '.rds'))
+    }
+    return(fxCl)
+  })
+  
+  fcstPunterData <- reactive({
+    ## Change when the "update" button is pressed...
+    #'@ input$curr
+    
+    ## ...but not for anything else
+    isolate({
+      withProgress({
+        setProgress(message = "Processing algorithmic forecast...")
+        fxLo <- forecastData(price = 'Lo') %>% rename(Currency.Lo = Currency)
+        fxHi <- forecastData(price = 'Hi') %>% rename(Currency.Hi = Currency)
+        fxHL <<- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
+        rm(fxHi, fxLo)
+        #'@ names(fxHL) <<- str_replace_all(names(fxHL), '\\.x$', '.Hi')
+        #'@ names(fxHL) <<- str_replace_all(names(fxHL), '\\.y$', '.Lo')
+      })
+      })
+    if(!dir.exists('data')) dir.create('data')
+    if(!file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))){
+      saveRDS(fxHL, paste0('data/fcstPunterGMT', today('GMT'), '.rds'))
+    }
+    return(fxHL)
   })
   
   output$EURUSDlstPrice <- renderText({
@@ -679,13 +760,14 @@ server <- shinyServer(function(input, output, session) {
           coredata(tail(Cl(`AUDUSD=X`), 1)), '</b></font>.')
   })
   
-  output$fcastPr <- renderFormattable({
+  output$fcastBPr <- renderFormattable({
     
     #'@ validate(
-    #'@   need(exists(terms()), 'Scrapping forex data error, kindly refresh the webpage.')
+    #'@   need(exists(fcstBankerData()), 'Scrapping forex data error, kindly refresh the webpage.')
     #'@ )
+    fxD <- fcstBankerData()
     
-    data.frame(terms(), Buy = 'BUY', Sell = 'SELL') %>% 
+    data.frame(fxD, Buy = 'BUY', Sell = 'SELL') %>% 
       formattable(list(
         Buy = formatter('span', style = ~ style(color = ifelse(
           Buy == 'SELL', 'red', 'green')), 
@@ -694,6 +776,23 @@ server <- shinyServer(function(input, output, session) {
           Sell == 'SELL', 'red', 'green')), 
           ~ icontext(ifelse(Sell == 'SELL', 'arrow-down', 'arrow-up'), Sell))))
   })
+  
+  output$fcastPPr <- renderFormattable({
+    
+    #'@ validate(
+    #'@   need(exists(fcstPunterData()), 'Scrapping forex data error, kindly refresh the webpage.')
+    #'@ )
+    fxD <- fcstPunterData()
+    
+    data.frame(fxD, Sell = 'BUY', Buy = 'SELL') %>% 
+      formattable(list(
+        Sell = formatter('span', style = ~ style(color = ifelse(
+          Sell == 'BUY', 'green', 'red')), 
+          ~ icontext(ifelse(Buy == 'SELL', 'arrow-down', 'arrow-up'), Buy)), 
+        Buy = formatter('span', style = ~ style(color = ifelse(
+          Buy == 'SELL', 'red', 'green')), 
+          ~ icontext(ifelse(Sell == 'SELL', 'arrow-down', 'arrow-up'), Sell))))
+    })
   
   output$video <- renderUI({
     tags$iframe(src = 'https://www.youtube.com/embed/VWAU1r6rPvg')

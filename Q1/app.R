@@ -75,7 +75,7 @@ armaSearch <- suppressWarnings(function(data, .method = 'CSS-ML'){
       names(data.arma) <- c('arma', 'mth')
       
       #cat('p =', p, ', q =', q, 'AIC =', data.arma$arma$aic, '\n')
-      armacoef <- rbind(armacoef,c(p, q, data.arma$arma$aic))
+      armacoef <- rbind(armacoef, c(p, q, data.arma$arma$aic))
     }
   }
   
@@ -87,7 +87,7 @@ armaSearch <- suppressWarnings(function(data, .method = 'CSS-ML'){
 })
 
 getFOREX <- memoise(function(currency) {
-  getSymbols(currency, from = Sys.Date() %m-% years(1), to = Sys.Date())
+  getSymbols(currency, from = today('Asia/Tokyo') %m-% years(1), to = today('Asia/Tokyo'))
   if(currency == 'AUD=X') {
     mbase <- `AUD=X` %>% Cl %>% na.omit; rm(`AUD=X`)
     mbase <- 1/mbase
