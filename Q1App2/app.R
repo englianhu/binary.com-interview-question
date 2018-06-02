@@ -2,14 +2,41 @@
 # options(repos = 'https://cran.rstudio.com')
 
 suppressWarnings(require('BBmisc'))
-pkgs <- c('shiny', 'memoise', 'stringr', 'xts', 'TFX', 'quantmod', 
-          'rugarch', 'lubridate', 'ggplot2', 'highcharter', 'formattable', 
-          'magrittr', 'plyr', 'dplyr', 'pryr', 'tidyr', 'purrr', 'cronR', 
-          'microbenchmark', 'proxy')
-suppressAll(requirePackages(pkgs))
-rm(pkgs)
+suppressWarnings(require('shiny'))
+suppressWarnings(require('httr'))
+
+options(rgl.useNULL=TRUE)
+set_config(use_proxy(url = '127.0.0.1', port = 0000))
+
+suppressWarnings(require('memoise'))
+suppressWarnings(require('stringr'))
+suppressWarnings(require('xts'))
+suppressWarnings(require('TFX'))
+suppressWarnings(require('quantmod'))
+suppressWarnings(require('rugarch'))
+suppressWarnings(require('lubridate'))
+suppressWarnings(require('ggplot2'))
+suppressWarnings(require('highcharter'))
+suppressWarnings(require('formattable'))
+suppressWarnings(require('magrittr'))
+suppressWarnings(require('plyr'))
+suppressWarnings(require('dplyr'))
+suppressWarnings(require('pryr'))
+suppressWarnings(require('tidyr'))
+suppressWarnings(require('purrr'))
+suppressWarnings(require('cronR'))
+suppressWarnings(require('microbenchmark'))
+
+#'@ pkgs <- c('shiny', 'memoise', 'stringr', 'xts', 'TFX', 'quantmod', 
+#'@           'rugarch', 'lubridate', 'ggplot2', 'highcharter', 'formattable', 
+#'@           'magrittr', 'plyr', 'dplyr', 'pryr', 'tidyr', 'purrr', 'cronR', 
+#'@           'microbenchmark')
+#'@ suppressAll(requirePackages(pkgs))
+#'@ plyr::l_ply(pkgs, require, quietly = TRUE, character.only = TRUE)
+#'@ rm(pkgs)
 
 ## https://beta.rstudioconnect.com/connect/#/apps/3768
+## https://beta.rstudioconnect.com/connect/#/apps/3770
 # === Function =====================================================
 
 # Using "memoise" to automatically cache the results
@@ -291,12 +318,14 @@ server <- shinyServer(function(input, output, session) {
     # qtf %>% filter(Symbol == 'USD/JPY') %>% select(`TimeStamp (GMT)`, Bid.Price, Ask.Price)
     # fxHL %>% filter(.id == 'USDJPY') %>% select(Currency.Hi) %>% unclass %>% .$Currency.Hi
     if(Lo == rx$Bid.Price){
-      transc.buy <- tail(fxHL, 1) %>% dplyr::select(ForecastDate.GMT, Currency.Lo) %>% 
+      transc.buy <- tail(fxHL, 1) %>% 
+        dplyr::select(ForecastDate.GMT, Currency.Lo) %>% 
         mutate(Currency.Lo = round(Currency.Lo, 3))
       saveRDS(transc.buy, paste0('data/buy.', now('GMT'), '.rds'))
     }
     if(Hi == rx$Ask.Price){
-      transc.sell <- tail(fxHL, 1) %>% dplyr::select(ForecastDate.GMT, Currency.Hi) %>% 
+      transc.sell <- tail(fxHL, 1) %>% 
+        dplyr::select(ForecastDate.GMT, Currency.Hi) %>% 
         mutate(Currency.Hi = round(Currency.Hi, 3))
       saveRDS(transc.sell, paste0('data/sell.', now('GMT'), '.rds'))
     }
@@ -669,9 +698,9 @@ server <- shinyServer(function(input, output, session) {
                         data.frame(ForecastDate.GMT = rownames(x$forecastPrice), 
                                    x$forecastPrice)) %>% 
       unite(., Currency, EUR.USD:AUD.USD) %>% 
-      mutate(.id = as.factor(.id), Currency = str_replace_all(Currency, 'NA', ''), 
-             Currency = str_replace_all(Currency, '_', ''))
-    fxC$Currency <- as.numeric(fxC$Currency)
+      mutate(Currency = as.numeric(str_replace_all(Currency, 'NA|_', '')))
+    if(price == 'Hi') names(fxC)[3] <- 'Currency.Hi'
+    if(price == 'Lo') names(fxC)[3] <- 'Currency.Lo'
     
     return(fxC)
   }
@@ -703,8 +732,8 @@ server <- shinyServer(function(input, output, session) {
     isolate({
       withProgress({
         setProgress(message = "Processing algorithmic forecast...")
-        fxLo <- forecastData(price = 'Lo') %>% rename(Currency.Lo = Currency)
-        fxHi <- forecastData(price = 'Hi') %>% rename(Currency.Hi = Currency)
+        fxLo <- forecastData(price = 'Lo')# %>% rename(Currency.Lo = Currency)
+        fxHi <- forecastData(price = 'Hi')# %>% rename(Currency.Hi = Currency)
         fxHL <<- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
         rm(fxHi, fxLo)
         #'@ names(fxHL) <<- str_replace_all(names(fxHL), '\\.x$', '.Hi')
