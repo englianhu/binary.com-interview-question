@@ -3,11 +3,6 @@
 
 suppressWarnings(require('BBmisc'))
 suppressWarnings(require('shiny'))
-suppressWarnings(require('httr'))
-
-options(rgl.useNULL=TRUE)
-set_config(use_proxy(url = '127.0.0.1', port = 0000))
-
 suppressWarnings(require('memoise'))
 suppressWarnings(require('stringr'))
 suppressWarnings(require('xts'))
@@ -35,8 +30,9 @@ suppressWarnings(require('microbenchmark'))
 #'@ plyr::l_ply(pkgs, require, quietly = TRUE, character.only = TRUE)
 #'@ rm(pkgs)
 
-## https://beta.rstudioconnect.com/connect/#/apps/3768
-## https://beta.rstudioconnect.com/connect/#/apps/3770
+## https://beta.rstudioconnect.com/connect/3768
+## https://beta.rstudioconnect.com/connect/3770
+## https://beta.rstudioconnect.com/content/3771
 # === Function =====================================================
 
 # Using "memoise" to automatically cache the results
@@ -63,18 +59,19 @@ zones <- attr(as.POSIXlt(now('Asia/Tokyo')), 'tzone')
 zone <- ifelse(zones[[1]] == '', paste(zones[-1], collapse = '/'), zones[[1]])
 
 fx <<- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
-wd <<- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+#'@ wd <<- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 
+#'@          'Sunday')
 
 #'@ if(now('GMT') == today('GMT')) {
 ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
 ## Above link prove that https://finance.yahoo.com using GMT time zone.  
-if(weekdays(today('GMT'))%in% wd) {
+#'@ if(weekdays(today('GMT'))%in% wd) {
   for(i in seq(fx)) {
     getSymbols(fx[i], from = (today('GMT') - 1) %m-% years(1), 
                to = (today('GMT') - 1))
   }
   rm(i)
-}
+#'@ }
 #'@ }
 
 ## Due to duplicated date but various price, here I forced to filter the dataset.
@@ -310,6 +307,7 @@ server <- shinyServer(function(input, output, session) {
     rx <- qtf %>% filter(Symbol == 'USD/JPY') %>% 
       dplyr::select(`TimeStamp (GMT)`, Bid.Price, Ask.Price)
     
+    fxHL <- fcstPunterData()
     Hi <- tail(fxHL, 1)$Currency.Hi %>% round(3)
     Lo <- tail(fxHL, 1)$Currency.Lo %>% round(3)
     transc.buy <- data.frame()
@@ -732,12 +730,10 @@ server <- shinyServer(function(input, output, session) {
     isolate({
       withProgress({
         setProgress(message = "Processing algorithmic forecast...")
-        fxLo <- forecastData(price = 'Lo')# %>% rename(Currency.Lo = Currency)
-        fxHi <- forecastData(price = 'Hi')# %>% rename(Currency.Hi = Currency)
-        fxHL <<- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
+        fxLo <- forecastData(price = 'Lo')
+        fxHi <- forecastData(price = 'Hi')
+        fxHL <- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
         rm(fxHi, fxLo)
-        #'@ names(fxHL) <<- str_replace_all(names(fxHL), '\\.x$', '.Hi')
-        #'@ names(fxHL) <<- str_replace_all(names(fxHL), '\\.y$', '.Lo')
       })
       })
     if(!dir.exists('data')) dir.create('data')
