@@ -1,8 +1,12 @@
 library('shiny')
+library('shinyjs')
 library('TFX')
 library('cronR')
 library('formattable')
 library('data.table')
+library('DT')
+
+#'@ jscode <- 'shinyjs.refresh = function() { history.go(0); }'
 
 
 # Define UI for application that draws a histogram
@@ -21,8 +25,11 @@ ui <- fluidPage(
         br(), 
         h4('Closed Transaction'), 
         p('Transactions done.'), 
-        downloadButton('downloadData', 'Download'), 
-        tableOutput('transc')))
+        #'@ useShinyjs(), 
+        #'@ downloadButton('downloadData', 'Download'), 
+        actionButton('refresh', 'Refresh Data', 
+                     icon = icon('refresh'), class = 'btn-primary'), 
+        DT::dataTableOutput('transc')))
     
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
@@ -311,8 +318,9 @@ server <- function(input, output, session) {
             mutate(
                 Bid.Price = round(Bid.Price, 3), 
                 Ask.Price = round(Ask.Price, 3), 
-                fc.High = round(quantile(c(High, Low))[4], 3), 
-                fc.Low = round(quantile(c(High, Low))[2], 3)) %>% 
+                #fc.High = round(quantile(c(High, Low))[4], 3), 
+                #fc.Low = round(quantile(c(High, Low))[2], 3)) %>%
+                fc.High = 110.180, fc.Low = 110.170) %>% 
             dplyr::select(`TimeStamp (GMT)`, Bid.Price, Ask.Price, 
                           fc.High, fc.Low)
         return(rx)
@@ -335,11 +343,12 @@ server <- function(input, output, session) {
                              x ~ icontext(ifelse(x < 0, 'arrow-down', 'arrow-up'), x))
         ))})
     
-    output$transc <- renderTable({
+    output$transc <- DT::renderDataTable({
         
-        #'@ rx <- refresh()
+        rx <- refresh()
+        input$refresh
         
-        invalidateLater(1000, session)
+        #'@ invalidateLater(1000, session)
         #'@ tr.buy <- data.frame()
         #'@ tr.sell <- data.frame()
         tr.buy <- ldply(dir('data', pattern = 'buy'), function(x){
@@ -363,27 +372,60 @@ server <- function(input, output, session) {
         trn <- bind_rows(tr.sell, tr.buy) %>% 
             mutate(`TimeStamp (GMT)` = ymd_hms(`TimeStamp (GMT)`), 
                    Transaction = factor(Transaction)) %>% 
-            arrange(`TimeStamp (GMT)`) %>% 
-            mutate(`TimeStamp (GMT)` = factor(`TimeStamp (GMT)`))
-        return(trn)
+            dplyr::arrange(desc(`TimeStamp (GMT)`)) %>% 
+            mutate(ID = rev(seq_len(nrow(.))), 
+                   `TimeStamp (GMT)` = factor(`TimeStamp (GMT)`))
+        
+        trn %>% DT::datatable(caption = "Transaction Table", 
+                              escape = FALSE, filter = 'top', rownames = FALSE, 
+                              extensions = list('ColReorder' = NULL, 'RowReorder' = NULL, 
+                                                'Buttons' = NULL, 'Responsive' = NULL), 
+                              options = list(dom = 'BRrltpi', scrollX = TRUE, #autoWidth = TRUE, 
+                                             lengthMenu = list(c(10, 50, 100, -1), c('10', '50', '100', 'All')), 
+                                             ColReorder = TRUE, rowReorder = TRUE, 
+                                             buttons = list('copy', 'print', 
+                                                            list(extend = 'collection', 
+                                                                 buttons = c('csv', 'excel', 'pdf'), 
+                                                                 text = 'Download'), I('colvis'))))
     })
     
+    #'@ observeEvent(input$refresh, {
+    #'@     js$refresh();
+    #'@ })
     
-    trnData <- reactive({
-        ldply(dir('data', pattern = 'sell|buy'), function(x){
-            readRDS(paste0('data/', x))}) %>% 
-            mutate(`TimeStamp (GMT)` = ymd_hms(`TimeStamp (GMT)`), 
-                   Transaction = factor(Transaction)) %>% 
-            arrange(`TimeStamp (GMT)`) %>% 
-            mutate(`TimeStamp (GMT)` = factor(`TimeStamp (GMT)`))
-    })
+    #'@ trnData <- reactive({
+    #'@     ldply(dir('data', pattern = 'sell|buy'), function(x){
+    #'@         readRDS(paste0('data/', x))}) %>% 
+    #'@         mutate(`TimeStamp (GMT)` = ymd_hms(`TimeStamp (GMT)`), 
+    #'@                Transaction = factor(Transaction)) %>% 
+    #'@         dplyr::arrange(desc(`TimeStamp (GMT)`)) %>% 
+    #'@         mutate(ID = rev(seq_len(nrow(.))), 
+    #'@                `TimeStamp (GMT)` = factor(`TimeStamp (GMT)`))
+    #'@ })
     
     ## https://stackoverflow.com/questions/44504759/shiny-r-download-the-result-of-a-table?utm_medium=organic&utm_source=google_rich_qa&utm_campaign=google_rich_qa
-    output$downloadData <- downloadHandler(
-        filename = function() {'transaction.csv'},
-        content = function(file) {
-            fwrite(trnData(), file)
-        })
+    #'@ output$downloadData <- downloadHandler(
+    #'@     filename = function() {'transaction.csv'},
+    #'@     content = function(file) {
+    #'@         fwrite(trnData(), file)
+    #'@     })
+    
+    ## https://rdrr.io/cran/DT/src/inst/examples/DT-reload/app.R
+    #'@ loopData = reactive({
+    #'@     input$refresh
+    #'@     trn <- trnData()
+    #'@     trn$ID <<- c(trn$ID[nrow(trn)], trn$ID[-nrow(trn)])
+    #'@     trn
+    #'@ })
+    
+    #'@ output$transc = DT::renderDataTable(isolate(loopData()))
+    #'@ 
+    #'@ proxy = dataTableProxy('transc')
+    #'@ 
+    #'@ observe({
+    #'@     replaceData(proxy, loopData(), resetPaging = FALSE)
+    #'@ })
+    
     }
 
 # Run the application 
