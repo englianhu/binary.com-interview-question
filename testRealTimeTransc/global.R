@@ -2,9 +2,13 @@ suppressWarnings(require('cronR'))
 suppressWarnings(require('xts'))
 suppressWarnings(require('quantmod'))
 suppressWarnings(require('lubridate'))
+suppressWarnings(require('plyr'))
+suppressWarnings(require('dplyr'))
+suppressWarnings(require('magrittr'))
 
 fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
-wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
+wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
+         'Saturday', 'Sunday')
 
 #'@ if(now('GMT') == today('GMT')) {
 ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
@@ -274,44 +278,8 @@ forecastData <- function(price = 'Cl') {
   return(fxC)
 }
 
-fcstBankerData <- reactive({
-  ## Change when the "update" button is pressed...
-  #'@ input$curr
-  
-  ## ...but not for anything else
-  isolate({
-    withProgress({
-      setProgress(message = "Processing algorithmic forecast...")
-      fxCl <- forecastData()
-      names(fxCl) <- str_replace_all(names(fxCl), '\\.x$', '.Cl')
-    })
-  })
-  if(!dir.exists('data')) dir.create('data')
-  if(!file.exists(paste0('data/fcstBankerGMT', today('GMT'), '.rds'))){
-    saveRDS(fxCl, paste0('data/fcstBankerGMT', today('GMT'), '.rds'))
-  }
-  return(fxCl)
-})
+## --------------------------------------------
+## https://shiny.rstudio.com/articles/persistent-data-storage.html
 
-fcstPunterData <- reactive({
-  ## Change when the "update" button is pressed...
-  #'@ input$curr
-  
-  ## ...but not for anything else
-  isolate({
-    withProgress({
-      setProgress(message = "Processing algorithmic forecast...")
-      fxLo <- forecastData(price = 'Lo')
-      fxHi <- forecastData(price = 'Hi')
-      fxHL <- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
-      rm(fxHi, fxLo)
-    })
-  })
-  if(!dir.exists('data')) dir.create('data')
-  if(!file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))){
-    saveRDS(fxHL, paste0('data/fcstPunterGMT', today('GMT'), '.rds'))
-  }
-  return(fxHL)
-})
 
-fxD <- fcstBankerData()
+
