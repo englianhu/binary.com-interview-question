@@ -1,26 +1,30 @@
-library('shiny')
-library('shinyjs')
-library('TFX')
-library('cronR')
-library('formattable')
-library('data.table')
-library('DT')
-library('plyr')
-library('dplyr')
-library('magrittr')
-library('lubridate')
+## ================== Declaration ========================================
+suppressWarnings(require('shiny'))
+suppressWarnings(require('shinyjs'))
+suppressWarnings(require('TFX'))
+suppressWarnings(require('formattable'))
+suppressWarnings(require('DT'))
+suppressWarnings(require('cronR'))
+suppressWarnings(require('xts'))
+suppressWarnings(require('lubridate'))
+suppressWarnings(require('plyr'))
+suppressWarnings(require('dplyr'))
+suppressWarnings(require('magrittr'))
 
-
+## ===================== UI ===========================================
 # Define UI for application that draws a histogram
 ui <- fluidPage(
     
     # Application title
-    titlePanel('Test the real-time closing transaction'),
+    titlePanel('Real Time Trading System (Testing Version)'),
     
     mainPanel(
         p('I created this app to test the real-time transaction matching... ', 
           'Once the bid/ask price match with forecasted price, a transaction ', 
           'will be done.'), 
+        p('Kindly refer to ', 
+          HTML("<a href='https://github.com/englianhu/binary.com-interview-question'>binary.com Interview Question</a>"), 
+          'for project details.'), 
         tags$hr(),
         h4('Real Time Data'), 
         p('Real Time bid/ask price and placed orders.'), 
@@ -36,7 +40,7 @@ ui <- fluidPage(
         br(), 
         DT::dataTableOutput('transc')))
 
-## ======================================================================
+## ================== Server ===========================================
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
     
@@ -71,7 +75,7 @@ server <- function(input, output, session) {
     refresh <- reactive({
         line <- fetchData()
         
-        if(file.exists(paste0('testRealTimeTransc/data/fcstPunterGMT', today('GMT'), '.rds'))) {
+        if(file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))) {
             fcPR <- ldply(dir('data', 
                       pattern = paste0('fcstPunterGMT', today('GMT'))), function(x){
                 readRDS(paste0('data/', x)) })
@@ -101,7 +105,7 @@ server <- function(input, output, session) {
                 dplyr::select(`TimeStamp (GMT)`, Price, Transaction)
             saveRDS(tr.buy, paste0('data/buy.', now('GMT'), '.rds'))
         }
-        if(rx$fc.Hi == rx$Ask.Price){
+        if(rx$fc.High == rx$Ask.Price){
             tr.sell <- rx %>% mutate(Price = fc.High, Transaction = 'Sell') %>% 
                 dplyr::select(`TimeStamp (GMT)`, Price, Transaction)
             saveRDS(tr.sell, paste0('data/sell.', now('GMT'), '.rds'))
@@ -111,7 +115,9 @@ server <- function(input, output, session) {
     })
     
     output$fxdata <- renderFormattable({
+        
         rx <- refresh()
+        
         rx %>% formattable(list(
             Bid.Price = formatter('span', 
                                   style = x ~ style(color = ifelse(x > (rx$fc.Low + rx$fc.High) / 2, 'red', 'green')), 
@@ -131,7 +137,7 @@ server <- function(input, output, session) {
         
         input$refresh
         
-        if(length(dir('data', pattern = 'sell|buy')) < 1) {
+        if(length(dir('data', pattern = 'sell|buy')) > 0) {
             trn <- ldply(dir('data', pattern = 'sell|buy'), function(x){
                 readRDS(paste0('data/', x)) }) %>% 
                 mutate(`TimeStamp (GMT)` = ymd_hms(`TimeStamp (GMT)`), 

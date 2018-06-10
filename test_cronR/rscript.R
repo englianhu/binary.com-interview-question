@@ -3,17 +3,22 @@ suppressWarnings(require('shiny'))
 suppressWarnings(require('cronR'))
 suppressWarnings(require('xts'))
 suppressWarnings(require('quantmod'))
+suppressWarnings(require('forecast'))
+suppressWarnings(require('stringr'))
+suppressWarnings(require('rugarch'))
 suppressWarnings(require('TFX'))
 suppressWarnings(require('lubridate'))
+suppressWarnings(require('DT'))
 suppressWarnings(require('plyr'))
 suppressWarnings(require('dplyr'))
 suppressWarnings(require('magrittr'))
+suppressWarnings(require('tidyr'))
 suppressWarnings(require('memoise'))
 
 Sys.setenv(TZ = 'GMT')
 fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
 wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
-         'Saturday', 'Sunday')
+        'Saturday', 'Sunday')
 
 #'@ if(now('GMT') == today('GMT')) {
 ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
@@ -292,4 +297,9 @@ forecastData <- function(price = 'Cl') {
 ## https://shiny.rstudio.com/articles/persistent-data-storage.html
 ## https://github.com/bnosac/cronR
 ## http://www.bnosac.be/index.php/blog/64-scheduling-r-scripts-and-processes-on-windows-and-unix-linux
+
+
+#trn <- forecastData()
+#trn
+
 
