@@ -22,6 +22,7 @@ ui <- fluidPage(
     tags$hr(),
     h4('Real Time Data'), 
     p('Real Time bid/ask price and placed orders.'), 
+    p(strong(paste0('Current time (', zone, '):')), textOutput('currentTime', inline = TRUE)),
     #'@ actionButton('calculate', 'Start Calculate', 
     #'@              icon = icon('calculator'), class = 'btn-primary'), 
     formattableOutput('fxdata'), 

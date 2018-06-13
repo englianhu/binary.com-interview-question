@@ -16,23 +16,29 @@ suppressWarnings(require('memoise'))
 # Define server logic required to draw a histogram
 server <- function(input, output, session) {
     
-    fcstPunterData <- reactive({
-        isolate({
-            withProgress({
-                setProgress(message = "Processing algorithmic forecast...")
-                fxLo <- forecastData(price = 'Lo')
-                fxHi <- forecastData(price = 'Hi')
-                fxHL <- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
-                rm(fxHi, fxLo)
-            })
-        })
-        
-        if(!dir.exists('data')) dir.create('data')
-        if(!file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))){
-            saveRDS(fxHL, paste0('data/fcstPunterGMT', today('GMT'), '.rds')) }
-        
-        return(fxHL)
+    output$currentTime <- renderText({
+        # Forces invalidation in 1000 milliseconds
+        invalidateLater(1000, session)
+        as.character(now('GMT'))
     })
+    
+    #'@ fcstPunterData <- reactive({
+    #'@     isolate({
+    #'@         withProgress({
+    #'@             setProgress(message = "Processing algorithmic forecast...")
+    #'@             fxLo <- forecastData(price = 'Lo')
+    #'@             fxHi <- forecastData(price = 'Hi')
+    #'@             fxHL <- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
+    #'@             rm(fxHi, fxLo)
+    #'@         })
+    #'@     })
+    #'@     
+    #'@     if(!dir.exists('data')) dir.create('data')
+    #'@     if(!file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))){
+    #'@         saveRDS(fxHL, paste0('data/fcstPunterGMT', today('GMT'), '.rds')) }
+    #'@     
+    #'@     return(fxHL)
+    #'@ })
     
     fetchData <- reactive({
         #if(!input$pause)
@@ -135,15 +141,6 @@ server <- function(input, output, session) {
                                                                  text = 'Download'), I('colvis'))))
     })
     
-    #'@ trnData <- reactive({
-    #'@     ldply(dir('data', pattern = 'sell|buy'), function(x){
-    #'@         readRDS(paste0('data/', x))}) %>% 
-    #'@         mutate(`TimeStamp (GMT)` = ymd_hms(`TimeStamp (GMT)`), 
-    #'@                Transaction = factor(Transaction)) %>% 
-    #'@         dplyr::arrange(desc(`TimeStamp (GMT)`)) %>% 
-    #'@         mutate(ID = rev(seq_len(nrow(.))), 
-    #'@                `TimeStamp (GMT)` = factor(`TimeStamp (GMT)`))
-    #'@ })
     }
 
 # Run the application 

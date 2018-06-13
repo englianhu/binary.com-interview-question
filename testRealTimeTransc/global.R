@@ -11,6 +11,9 @@ suppressWarnings(require('magrittr'))
 suppressWarnings(require('memoise'))
 
 Sys.setenv(TZ = 'GMT')
+zones <- attr(as.POSIXlt(now('GMT')), 'tzone')
+zone <- ifelse(zones[[1]] == '', paste(zones[-1], collapse = '/'), zones[[1]])
+
 fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
 wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
          'Saturday', 'Sunday')
