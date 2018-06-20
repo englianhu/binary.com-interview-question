@@ -21,6 +21,7 @@ suppressWarnings(require('tidyr'))
 suppressWarnings(require('purrr'))
 suppressWarnings(require('cronR'))
 suppressWarnings(require('microbenchmark'))
+suppressWarnings(require('stringr'))
 
 #'@ pkgs <- c('shiny', 'memoise', 'stringr', 'xts', 'TFX', 'quantmod', 
 #'@           'rugarch', 'lubridate', 'ggplot2', 'highcharter', 'formattable', 

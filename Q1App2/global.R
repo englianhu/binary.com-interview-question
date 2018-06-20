@@ -2,6 +2,7 @@ suppressWarnings(require('cronR'))
 suppressWarnings(require('xts'))
 suppressWarnings(require('quantmod'))
 suppressWarnings(require('lubridate'))
+suppressWarnings(require('stringr'))
 
 fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
 wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')

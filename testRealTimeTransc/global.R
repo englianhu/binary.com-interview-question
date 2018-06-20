@@ -9,10 +9,14 @@ suppressWarnings(require('plyr'))
 suppressWarnings(require('dplyr'))
 suppressWarnings(require('magrittr'))
 suppressWarnings(require('memoise'))
+suppressWarnings(require('stringr'))
+suppressWarnings(require('RCurl'))
 
 Sys.setenv(TZ = 'GMT')
 zones <- attr(as.POSIXlt(now('GMT')), 'tzone')
-zone <- ifelse(zones[[1]] == '', paste(zones[-1], collapse = '/'), zones[[1]])
+zone <- ifelse(zones[[1]] == '', paste(zones[-1], collapse = '/'), 
+               zones[[1]])
+timeR <- now('GMT')
 
 fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
 wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
@@ -28,7 +32,7 @@ if(weekdays(today('GMT')) %in% wd) {
   }
   rm(i)
 }
-
+## https://beta.rstudioconnect.com/connect/#/apps/3803/logs
 
 ## ================== Functions ========================================
 

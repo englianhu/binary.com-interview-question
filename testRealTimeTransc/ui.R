@@ -4,13 +4,19 @@ suppressWarnings(require('formattable'))
 suppressWarnings(require('DT'))
 suppressWarnings(require('memoise'))
 suppressWarnings(require('TFX'))
+suppressWarnings(require('stringr'))
+suppressWarnings(require('RCurl'))
 
 ## ===================== UI ===========================================
 # Define UI for application that draws a histogram
-ui <- fluidPage(
+shinyUI <- fluidPage(
   
   # Application title
-  titlePanel('Real Time Trading System (Testing Version)'),
+  titlePanel(div(
+    img(src = 'ENG.jpg', width = '40', align = 'right'), 
+    img(src = 'RYO.jpg', width = '20', align = 'right'), 
+    img(src = 'binary-logo-resize.jpg', width = '200'), 
+    'Real Time Trading System (Trial)')),
   
   mainPanel(
     p('I created this app to test the real-time transaction matching... ', 
@@ -22,7 +28,9 @@ ui <- fluidPage(
     tags$hr(),
     h4('Real Time Data'), 
     p('Real Time bid/ask price and placed orders.'), 
-    p(strong(paste0('Current time (', zone, '):')), textOutput('currentTime', inline = TRUE)),
+    p(strong(paste0('Current time (Asia/Tokyo):')), 
+    #'@ p(strong(paste0('Current time (', zone, '):')), 
+      textOutput('currentTime', inline = TRUE)),
     #'@ actionButton('calculate', 'Start Calculate', 
     #'@              icon = icon('calculator'), class = 'btn-primary'), 
     formattableOutput('fxdata'), 

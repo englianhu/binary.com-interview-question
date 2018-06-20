@@ -11,41 +11,79 @@ suppressWarnings(require('plyr'))
 suppressWarnings(require('dplyr'))
 suppressWarnings(require('magrittr'))
 suppressWarnings(require('memoise'))
+suppressWarnings(require('stringr'))
+suppressWarnings(require('RCurl'))
 
 ## ================== Server ===========================================
 # Define server logic required to draw a histogram
-server <- function(input, output, session) {
+shinyServer <- function(input, output, session) {
     
     output$currentTime <- renderText({
         # Forces invalidation in 1000 milliseconds
         invalidateLater(1000, session)
-        as.character(now('GMT'))
+        as.character(now('Asia/Tokyo')) #Japanese Timezone
     })
     
-    #'@ fcstPunterData <- reactive({
-    #'@     isolate({
-    #'@         withProgress({
-    #'@             setProgress(message = "Processing algorithmic forecast...")
-    #'@             fxLo <- forecastData(price = 'Lo')
-    #'@             fxHi <- forecastData(price = 'Hi')
-    #'@             fxHL <- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
-    #'@             rm(fxHi, fxLo)
-    #'@         })
-    #'@     })
+    fcstPunterData <- reactive({
+        isolate({
+            withProgress({
+                setProgress(message = "Processing algorithmic forecast...")
+                fxLo <- forecastData(price = 'Lo')
+                fxHi <- forecastData(price = 'Hi')
+                fxHL <- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
+                rm(fxHi, fxLo)
+            })
+        })
+        
+        if(!dir.exists('data')) dir.create('data')
+        if(!file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))){
+            saveRDS(fxHL, paste0('data/fcstPunterGMT', today('GMT'), '.rds')) }
+        
+        return(fxHL)
+    })
+    # ---------------------------------------------------------------
+    ## https://segmentfault.com/a/1190000009775258
+    ## seq(from = now('GMT'), length.out = 60 * 24, by = "mins") %>% range
+    #'@ observeEvent({
+    #'@     if(now('GMT') == timeR) {
+    #'@         timeR <- timeR + minutes(1)
+    #'@     } else {
+    #'@         fxLo <- forecastData(price = 'Lo')
+    #'@         fxHi <- forecastData(price = 'Hi')
+    #'@         fxHL <- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
+    #'@         rm(fxHi, fxLo)
+    #'@         fxHL %>% mutate(
+    #'@             Currency.Hi = rnorm(6, mean = (Currency.Hi + Currency.Lo) / 2, sd = 0.001), 
+    #'@             Currency.Lo = rnorm(6, mean = (Currency.Hi + Currency.Lo) / 2, sd = 0.001))
+    #'@     }
     #'@     
-    #'@     if(!dir.exists('data')) dir.create('data')
-    #'@     if(!file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))){
-    #'@         saveRDS(fxHL, paste0('data/fcstPunterGMT', today('GMT'), '.rds')) }
-    #'@     
-    #'@     return(fxHL)
+    #'@     output$fxdata <- renderFormattable({
+    #'@         
+    #'@         rx <- refresh()
+    #'@         
+    #'@         rx %>% formattable(list(
+    #'@             Bid.Price = formatter('span', 
+    #'@                                   style = x ~ style(color = ifelse(x > (rx$fc.Low + rx$fc.High) / 2, 'red', 'green')), 
+    #'@                                   x ~ icontext(ifelse(x > (rx$fc.Low + rx$fc.High) / 2, 'arrow-down', 'arrow-up'), x)), 
+    #'@             Ask.Price = formatter('span', 
+    #'@                                   style = x ~ style(color = ifelse(x < (rx$fc.Low + rx$fc.High) / 2, 'red', 'green')),
+    #'@                                   x ~ icontext(ifelse(x < (rx$fc.Low + rx$fc.High) / 2, 'arrow-down', 'arrow-up'), x)), 
+    #'@             fc.Low = formatter('span', 
+    #'@                                style = x ~ style(color = ifelse(x > 0, 'red', 'green')), 
+    #'@                                x ~ icontext(ifelse(x > 0, 'arrow-down', 'arrow-up'), x)), 
+    #'@             fc.High = formatter('span',
+    #'@                                 style = x ~ style(color = ifelse(x < 0, 'red', 'green')),
+    #'@                                 x ~ icontext(ifelse(x < 0, 'arrow-down', 'arrow-up'), x))
+    #'@         ))})
     #'@ })
+    # ---------------------------------------------------------------
     
     fetchData <- reactive({
         #if(!input$pause)
             invalidateLater(750)
-        qtf <- QueryTrueFX() ## http://webrates.truefx.com/rates/connect.html
-        qtf$TimeStamp <- as.character(qtf$TimeStamp)
-        names(qtf)[6] <- 'TimeStamp (GMT)'
+        ## http://webrates.truefx.com/rates/connect.html
+        qtf <- QueryTrueFX() %>% mutate(TimeStamp = as.character(TimeStamp)) %>% 
+            rename(`TimeStamp (GMT)` = TimeStamp)
         qtf <- qtf[, c(6, 1:3, 5:4)]
         return(qtf)
     })
@@ -63,7 +101,21 @@ server <- function(input, output, session) {
             fcPR %<>% filter(.id == 'USDJPY')
             
         } else {
-            fcPR <- fcstPunterData()
+            
+            repeat{
+                
+                #'@ startTime <- now('GMT')
+                startTime <- today('GMT')
+                
+                fcPR <- fcstPunterData()
+                #'@ print(as.character(now('GMT')))
+                #'@ print(fcPR)
+                
+                ## scheduled sleepTime as 24 hours to start next task
+                sleepTime <- startTime + 24*60*60 - startTime
+                if (sleepTime > 0)
+                    Sys.sleep(sleepTime)
+            }
             
             ## filter and only pick USDJPY
             fcPR %<>% filter(.id == 'USDJPY')
@@ -94,7 +146,7 @@ server <- function(input, output, session) {
     })
     
     output$fxdata <- renderFormattable({
-        
+    
         rx <- refresh()
         
         rx %>% formattable(list(
@@ -141,6 +193,9 @@ server <- function(input, output, session) {
                                                                  text = 'Download'), I('colvis'))))
     })
     
+    ## https://shiny.rstudio.com/articles/reconnecting.html
+    ## Set this to "force" instead of TRUE for testing locally (without Shiny Server)
+    session$allowReconnect(TRUE)
     }
 
 # Run the application 
