@@ -19,21 +19,9 @@ zone <- ifelse(zones[[1]] == '', paste(zones[-1], collapse = '/'),
 timeR <- now('GMT')
 
 fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
-wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 
-         'Saturday', 'Sunday')
-
-#'@ if(now('GMT') == today('GMT')) {
-## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
-## Above link prove that https://finance.yahoo.com using GMT time zone.  
-if(weekdays(today('GMT')) %in% wd) {
-  for(i in seq(fx)) {
-    getSymbols(fx[i], from = (today('GMT') - 1) %m-% years(1), 
-               to = (today('GMT') - 1))
-  }
-  rm(i)
-}
+wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
+wd %<>% factor(., levels = ., ordered = TRUE)
 ## https://beta.rstudioconnect.com/connect/#/apps/3803/logs
-
 ## ================== Functions ========================================
 
 ## Function to get new observations

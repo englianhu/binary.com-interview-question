@@ -107,6 +107,19 @@ shinyServer <- function(input, output, session) {
                 #'@ startTime <- now('GMT')
                 startTime <- today('GMT')
                 
+                #'@ if(now('GMT') == today('GMT')) {
+                ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
+                ## Above link prove that https://finance.yahoo.com using GMT time zone.  
+                if(weekdays(today('GMT')) %in% wd) {
+                    prd <- ifelse(weekdays(today('GMT')) == wd[5], 3, 1)
+                    
+                    for(i in seq(fx)) {
+                        getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
+                                   to = (today('GMT') - prd))
+                    }
+                    rm(i)
+                }
+                
                 fcPR <- fcstPunterData()
                 #'@ print(as.character(now('GMT')))
                 #'@ print(fcPR)

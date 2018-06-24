@@ -67,11 +67,11 @@ fx <<- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
 ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
 ## Above link prove that https://finance.yahoo.com using GMT time zone.  
 #'@ if(weekdays(today('GMT'))%in% wd) {
-  for(i in seq(fx)) {
-    getSymbols(fx[i], from = (today('GMT') - 1) %m-% years(1), 
-               to = (today('GMT') - 1))
-  }
-  rm(i)
+for(i in seq(fx)) {
+  getSymbols(fx[i], from = (today('GMT') - 1) %m-% years(1), 
+             to = (today('GMT') - 1))
+}
+rm(i)
 #'@ }
 #'@ }
 
@@ -83,79 +83,20 @@ fx <<- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
 `CAD=X`    <<- `CAD=X`[index(`CAD=X`)==unique(index(`CAD=X`)), ]
 `AUDUSD=X` <<- `AUDUSD=X`[index(`AUDUSD=X`)==unique(index(`AUDUSD=X`)), ]
 
-if(exists('EURUSD=X')) {
-  #'@ forC.EURUSD <<- calC('EURUSD=X')               ## forecast closing price.
-  #'@ forH.EURUSD <<- calC('EURUSD=X', price = 'Hi') ## forecast highest price.
-  #'@ forL.EURUSD <<- calC('EURUSD=X', price = 'Lo') ## forecast lowest price.
-}
-
-if(exists('JPY=X')) {
-  #'@ forC.USDJPY <<- calC('JPY=X')
-  #'@ forH.USDJPY <<- calC('JPY=X', price = 'Hi')
-  #'@ forL.USDJPY <<- calC('JPY=X', price = 'Lo')
-}
-
-if(exists('GBPUSD=X')) {
-  #'@ forC.GBPUSD <<- calC('GBPUSD=X')
-  #'@ forH.GBPUSD <<- calC('GBPUSD=X', price = 'Hi')
-  #'@ forL.GBPUSD <<- calC('GBPUSD=X', price = 'Lo')
-}
-
-if(exists('CHF=X')) {
-  #'@ forC.USDCHF <<- calC('CHF=X')
-  #'@ forH.USDCHF <<- calC('CHF=X', price = 'Hi')
-  #'@ forL.USDCHF <<- calC('CHF=X', price = 'Lo')
-}
-
-if(exists('CAD=X')) {
-  #'@ forC.USDCAD <<- calC('CAD=X')
-  #'@ forH.USDCAD <<- calC('CAD=X', price = 'Hi')
-  #'@ forL.USDCAD <<- calC('CAD=X', price = 'Lo')
-}
-
-if(exists('AUDUSD=X')) {
-  #'@ forC.AUDUSD <<- calC('AUDUSD=X')
-  #'@ forH.AUDUSD <<- calC('AUDUSD=X', price = 'Hi')
-  #'@ forL.AUDUSD <<- calC('AUDUSD=X', price = 'Lo')
-}
-
-if(all(exists('EURUSD=X'), exists('JPY=X'), exists('GBPUSD=X'), exists('CHF=X'), exists('CAD=X'), exists('AUDUSD=X'))) {
-  #'@ fxC <<- ldply(list(EURUSD = forC.EURUSD, 
-  #'@                    USDJPY = forC.USDJPY, 
-  #'@                    GBPUSD = forC.GBPUSD, 
-  #'@                    USDCHF = forC.USDCHF, 
-  #'@                    USDCAD = forC.USDCAD, 
-  #'@                    AUDUSD = forC.AUDUSD), function(x) 
-  #'@                      x$forecastPrice %>% round(5) %>% 
-  #'@                 unname) %>% tbl_df %>% rename('Price' = `1`)
-  
-  #'@ fxH <<- ldply(list(EURUSD = forH.EURUSD, 
-  #'@                    USDJPY = forH.USDJPY, 
-  #'@                    GBPUSD = forH.GBPUSD, 
-  #'@                    USDCHF = forH.USDCHF, 
-  #'@                    USDCAD = forH.USDCAD, 
-  #'@                    AUDUSD = forH.AUDUSD), function(x) 
-  #'@                      x$forecastPrice %>% round(5) %>% 
-  #'@                 unname) %>% tbl_df %>% rename('Price' = `1`)
-  
-  #'@ fxL <<- ldply(list(EURUSD = forL.EURUSD, 
-  #'@                    USDJPY = forL.USDJPY, 
-  #'@                    GBPUSD = forL.GBPUSD, 
-  #'@                    USDCHF = forL.USDCHF, 
-  #'@                    USDCAD = forL.USDCAD, 
-  #'@                    AUDUSD = forL.AUDUSD), function(x) 
-  #'@                      x$forecastPrice %>% round(5) %>% 
-  #'@                 unname) %>% tbl_df %>% rename('Price' = `1`)
-}
-
 # === Shiny UI =====================================================
 ui <- shinyUI(fluidPage(
   
   titlePanel(
-    tags$a(href='http://www.binary.com', target='_blank', 
-           tags$img(height = '80px', alt='binary', #align='right', 
-                    src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/binary-logo-resize.jpg'))), 
+    div(
+      tags$a(href='http://www.binary.com', target='_blank', 
+             tags$img(height = '80px', alt='binary', #align='right', 
+                      src='binary-logo-resize.jpg')), 
+      img(src = 'ENG.jpg', width = '40', align = 'right'), 
+      img(src = 'RYO.jpg', width = '20', align = 'right')
+      )),
+  
   pageWithSidebar(
+    sidebarPanel(), 
     mainPanel(
       tabsetPanel(
         tabPanel('Price', 
@@ -167,8 +108,7 @@ ui <- shinyUI(fluidPage(
                                   textOutput('currentTime')),
                                 p(strong('Latest FX Quotes:'),
                                   formattableOutput('fxdata'), 
-                                  checkboxInput('pause', 'Pause updates', FALSE))
-                            )), 
+                                  checkboxInput('pause', 'Pause updates', FALSE)))), 
                    tabPanel('Intraday Graph', 
                             h3('Real Time Price'), 
                             div(class='container',
@@ -185,7 +125,7 @@ ui <- shinyUI(fluidPage(
                                 br(), 
                                 p(strong('Daily Chart:'),
                                   highchartOutput('dailyPlot')))))), 
-                   
+        
         tabPanel('Punter', 
                  tabsetPanel(
                    tabPanel('Trading', 
@@ -203,7 +143,7 @@ ui <- shinyUI(fluidPage(
                    tabPanel('Profit and Loss', 
                             h3('Profit and Loss'), 
                             p('Below graph shows the return of investment.')
-                            ))), 
+                   ))), 
         tabPanel('Banker', 
                  h3('Latest Price'), 
                  p('By refer to the idea from', 
@@ -233,11 +173,14 @@ ui <- shinyUI(fluidPage(
                               HTML("<a href='http://rpubs.com/englianhu/316133'>binary.com Interview Question I (Extention)</a>"), 
                               'for the research. Below is the equation for the model.', 
                               withMathJax(
-                              helpText('$$\\delta_{t}^{2} = \\omega + (\\alpha + \\gamma I_{t-1}) \\varepsilon_{t-1}^{2} + \\beta \\sigma_{t-1}^{2}$$')), 
+                                helpText('$$\\delta_{t}^{2} = \\omega + (\\alpha + \\gamma I_{t-1}) \\varepsilon_{t-1}^{2} + \\beta \\sigma_{t-1}^{2}$$')), 
                               'where'), 
-                            p('     ', tags$a(href='http://www.binary.com', target='_blank', 
-                                              tags$img(height = '40px', alt='binary', #align='right', 
-                                                       src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/equation.jpg'))), 
+                            p(withMathJax(
+                              helpText('$$I_{t-1}=
+                                       \\begin{cases}
+                                       0& \\text{if } r_{t-1} \\leq \\mu\\\\
+                                       1& \\text{if } r_{t-1} > \\mu
+                                       \\end{cases}$$'))), 
                             p('The daily data for calculation is getting from ', 
                               HTML("<a href='https://finance.yahoo.com/'>Yahoo! finance</a>"), 
                               ' while the real-time price to staking and settlement is getting from ', 
@@ -270,13 +213,8 @@ ui <- shinyUI(fluidPage(
                    
                    tabPanel('Author', 
                             h3('Author'), 
-                            tags$iframe(src = 'https://beta.rstudioconnect.com/content/3091/ryo-eng.html', height = 800, width = '100%', frameborder = 0)))))), 
-  br(), 
-  p('Powered by - Copyright® Intellectual Property Rights of ', 
-    tags$a(href='http://www.scibrokes.com', target='_blank', 
-           tags$img(height = '20px', alt='scibrokes', #align='right', 
-                    src='https://raw.githubusercontent.com/scibrokes/betting-strategy-and-model-validation/master/regressionApps/oda-army.jpg')), 
-    HTML("<a href='http://www.scibrokes.com'>Scibrokes®</a>")))))
+                            tags$iframe(src = 'https://beta.rstudioconnect.com/content/3091/ryo-eng.html', height = 800, width = '100%', frameborder = 0))))))
+        )))
 
 
 
@@ -337,8 +275,8 @@ server <- shinyServer(function(input, output, session) {
     line <- fetchData()
     line %>% formattable(list(
       Symbol = formatter('span',
-        style = x ~ ifelse(x == 'Technology', 
-                           style(font.weight = 'bold'), NA)),
+                         style = x ~ ifelse(x == 'Technology', 
+                                            style(font.weight = 'bold'), NA)),
       Bid.Price = formatter('span', 
                             style = x ~ style(color = ifelse(x > (line$Low + line$High) / 2, 'red', 'green')), 
                             x ~ icontext(ifelse(x > (line$Low + line$High) / 2, 'arrow-down', 'arrow-up'), x)), 
@@ -349,9 +287,9 @@ server <- shinyServer(function(input, output, session) {
                       style = x ~ style(color = ifelse(x > 0, 'red', 'green')), 
                       x ~ icontext(ifelse(x > 0, 'arrow-down', 'arrow-up'), x)), 
       High = formatter('span',
-                      style = x ~ style(color = ifelse(x < 0, 'red', 'green')),
-                      x ~ icontext(ifelse(x < 0, 'arrow-down', 'arrow-up'), x))
-      ))})
+                       style = x ~ style(color = ifelse(x < 0, 'red', 'green')),
+                       x ~ icontext(ifelse(x < 0, 'arrow-down', 'arrow-up'), x))
+    ))})
   
   ## ----------- Start Tab Real Time Intraday Graph Server ----------------------
   output$currentTime2 <- renderText({
@@ -373,23 +311,20 @@ server <- shinyServer(function(input, output, session) {
   
   # Initialize realData
   realData <<- get_new_data() #ldply(1:60, get_new_data()) %>% tbl_df
-  #'@ realData <<- QueryTrueFX()[2,2] #Due to get_new_data() always error, here I use `Bid.Price` instead.
-  #'@ realData <<- QueryTrueFX()[2, c(6, 2, 3)]
+
   
   # Function to update realData
   update_data <- function(){
     realData <<- rbind(realData, get_new_data())
-    #'@ realData <<- c(realData, QueryTrueFX()[2,2]) #Due to get_new_data() always error, here I use `Bid.Price` instead.
-    #'@ realData <<- rbind(realData, QueryTrueFX()[2, c(6, 2, 3)])
-    
+
     if(nrow(realData) > 60) {
-    #'@ if(length(realData) > 60) {
+      #'@ if(length(realData) > 60) {
       realData <<- realData[((nrow(realData) - 59):nrow(realData)),]
       #'@ realData <<- tail(realData, 60)
-    } else {
-      realData <<- realData
+      } else {
+        realData <<- realData
+      }
     }
-  }
   
   # Plot the 60 most recent values
   output$realPlot <- renderPlot({
@@ -400,13 +335,6 @@ server <- shinyServer(function(input, output, session) {
     
     ggplot() + geom_line(aes(x = index(realData), y = coredata(realData)), 
                          colour = 'blue') + xlab('Time [Seconds]') + ylab('USD / JPY')
-    #'@ ggplot() + geom_line(aes(x = 1:length(realData), y = realData), 
-    #'@                      colour = 'blue') + xlab('Time [Seconds]') + ylab('USD / JPY')
-    #'@ ggplot(realData, aes(TimeStamp)) + 
-    #'@   geom_line(aes(y = Bid.Price, colour = 'Bid.Price')) + 
-    #'@   geom_line(aes(y = Ask.Price, colour = 'Ask.Price')) + 
-    #'@   xlab('Time [Seconds]') + ylab('USD / JPY')
-    
   })
   ## ----------- End Tab Real Time Intraday Graph Server ----------------------
   
@@ -736,7 +664,7 @@ server <- shinyServer(function(input, output, session) {
         fxHL <- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
         rm(fxHi, fxLo)
       })
-      })
+    })
     if(!dir.exists('data')) dir.create('data')
     if(!file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))){
       saveRDS(fxHL, paste0('data/fcstPunterGMT', today('GMT'), '.rds'))
@@ -818,7 +746,7 @@ server <- shinyServer(function(input, output, session) {
         Buy = formatter('span', style = ~ style(color = ifelse(
           Buy == 'SELL', 'red', 'green')), 
           ~ icontext(ifelse(Sell == 'SELL', 'arrow-down', 'arrow-up'), Sell))))
-    })
+  })
   
   output$video <- renderUI({
     tags$iframe(src = 'https://www.youtube.com/embed/VWAU1r6rPvg')
@@ -827,8 +755,9 @@ server <- shinyServer(function(input, output, session) {
   ## Real-time graph in shiny.
   ## https://stackoverflow.com/questions/42109370/invalidatelater-stopped-in-r-shiny-app
   
-})
+  })
 
 # Run the application 
 shinyApp(ui = ui, server = server)
 #'@ shiny::runApp('Q2', display.mode = 'showcase')
+
