@@ -107,6 +107,10 @@ shinyServer <- function(input, output, session) {
                 #'@ startTime <- now('GMT')
                 startTime <- today('GMT')
                 
+                validate(
+                    need(weekdays(today('GMT')) %in% wd, 'Today has no data.')
+                )
+                
                 #'@ if(now('GMT') == today('GMT')) {
                 ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
                 ## Above link prove that https://finance.yahoo.com using GMT time zone.  

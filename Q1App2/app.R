@@ -96,7 +96,7 @@ ui <- shinyUI(fluidPage(
       )),
   
   pageWithSidebar(
-    sidebarPanel(), 
+    #sidebarPanel(), 
     mainPanel(
       tabsetPanel(
         tabPanel('Price', 
@@ -213,8 +213,14 @@ ui <- shinyUI(fluidPage(
                    
                    tabPanel('Author', 
                             h3('Author'), 
-                            tags$iframe(src = 'https://beta.rstudioconnect.com/content/3091/ryo-eng.html', height = 800, width = '100%', frameborder = 0))))))
-        )))
+                            tags$iframe(src = 'https://beta.rstudioconnect.com/content/3091/ryo-eng.html', height = 800, width = '100%', frameborder = 0)))))), 
+    br(), 
+    p('Powered by - Copyright® Intellectual Property Rights of ', 
+      tags$a(href='http://www.scibrokes.com', target = '_blank', 
+             tags$img(height = '20px', alt = 'scibrokes', #align='right', 
+                      src='https://raw.githubusercontent.com/scibrokes/betting-strategy-and-model-validation/master/regressionApps/oda-army.jpg')), 
+      HTML("<a href='http://www.scibrokes.com'>Scibrokes®</a>"))
+    )))
 
 
 
@@ -757,7 +763,7 @@ server <- shinyServer(function(input, output, session) {
   
   })
 
-# Run the application 
+# Run the application
 shinyApp(ui = ui, server = server)
 #'@ shiny::runApp('Q2', display.mode = 'showcase')
 

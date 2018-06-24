@@ -87,12 +87,12 @@ fx <<- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
 ui <- shinyUI(fluidPage(
   
   titlePanel(
-    #'@ div(
+    div(
     tags$a(href='http://www.binary.com', target='_blank', 
            tags$img(height = '80px', alt='binary', #align='right', 
-                    src='binary-logo-resize.jpg'))#, 
-    #'@   img(src = 'ENG.jpg', width = '40', align = 'right'), 
-    #'@   img(src = 'RYO.jpg', width = '20', align = 'right'))
+                    src='binary-logo-resize.jpg')), 
+      img(src = 'ENG.jpg', width = '40', align = 'right'), 
+      img(src = 'RYO.jpg', width = '20', align = 'right'))
     ),
   
   pageWithSidebar(
