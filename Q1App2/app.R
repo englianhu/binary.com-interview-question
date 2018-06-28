@@ -34,25 +34,6 @@ suppressWarnings(require('stringr'))
 ## https://beta.rstudioconnect.com/connect/3768
 ## https://beta.rstudioconnect.com/connect/3770
 ## https://beta.rstudioconnect.com/content/3771
-# === Function =====================================================
-
-# Using "memoise" to automatically cache the results
-openBet <- memoise(function(currency, realFX, ahead = 1) {
-  
-  hi <- calC(currency, ahead, price = 'Hi')
-  lo <- calC(currency, ahead, price = 'Lo')
-  
-  bid <- realFX %>% dplyr::select(Symbol, Bid.Price) %>% 
-    dplyr::filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 
-                                'USD/CAD', 'AUD/USD'))
-  ask <- realFX %>% dplyr::select(Symbol, Ask.Price) %>% 
-    dplyr::filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 
-                                'USD/CAD', 'AUD/USD'))
-  
-  ## http://webrates.truefx.com/rates/connect.html
-  tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res)
-  return(tmp)
-})
 
 # === Data =====================================================
 Sys.setenv(TZ = 'Asia/Tokyo')
@@ -62,26 +43,8 @@ zone <- ifelse(zones[[1]] == '', paste(zones[-1], collapse = '/'), zones[[1]])
 fx <<- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
 #'@ wd <<- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 
 #'@          'Sunday')
-
-#'@ if(now('GMT') == today('GMT')) {
-## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
-## Above link prove that https://finance.yahoo.com using GMT time zone.  
-#'@ if(weekdays(today('GMT'))%in% wd) {
-for(i in seq(fx)) {
-  getSymbols(fx[i], from = (today('GMT') - 1) %m-% years(1), 
-             to = (today('GMT') - 1))
-}
-rm(i)
-#'@ }
-#'@ }
-
-## Due to duplicated date but various price, here I forced to filter the dataset.
-`EURUSD=X` <<- `EURUSD=X`[index(`EURUSD=X`)==unique(index(`EURUSD=X`)), ]
-`JPY=X`    <<- `JPY=X`[index(`JPY=X`)==unique(index(`JPY=X`)), ]
-`GBPUSD=X` <<- `GBPUSD=X`[index(`GBPUSD=X`)==unique(index(`GBPUSD=X`)), ]
-`CHF=X`    <<- `CHF=X`[index(`CHF=X`)==unique(index(`CHF=X`)), ]
-`CAD=X`    <<- `CAD=X`[index(`CAD=X`)==unique(index(`CAD=X`)), ]
-`AUDUSD=X` <<- `AUDUSD=X`[index(`AUDUSD=X`)==unique(index(`AUDUSD=X`)), ]
+cur <<- c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 'USD/CAD', 'AUD/USD')
+wd <<- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')#, 'Saturday', 'Sunday')
 
 # === Shiny UI =====================================================
 ui <- shinyUI(fluidPage(
@@ -92,8 +55,7 @@ ui <- shinyUI(fluidPage(
              tags$img(height = '80px', alt='binary', #align='right', 
                       src='binary-logo-resize.jpg')), 
       img(src = 'ENG.jpg', width = '40', align = 'right'), 
-      img(src = 'RYO.jpg', width = '20', align = 'right')
-      )),
+      img(src = 'RYO.jpg', width = '20', align = 'right'))),
   
   pageWithSidebar(
     #sidebarPanel(), 
@@ -136,6 +98,8 @@ ui <- shinyUI(fluidPage(
                               'within 1 day. System will using closing price as ', 
                               'settlement price if the later predicted price was ', 
                               'not occurred. Only value bet be placed.'), 
+                            tags$hr(), 
+                            h4('Forecasted Daily Price'), 
                             formattableOutput('fcastPPr'),
                             br(), 
                             p('Currently only 6 digits count from left-hand side for trading.'), 
@@ -161,6 +125,9 @@ ui <- shinyUI(fluidPage(
                    'to the web application ', 
                    HTML("<a href='https://beta.rstudioconnect.com/content/3073/'>financial betting</a>"), 
                    ' for more information.'), 
+                 tags$hr(), 
+                 h4('Forecasted Daily Price'), 
+                 p('Below forecasted price will be automatically calculcate 12AM every weekday.'), 
                  formattableOutput('fcastBPr')),  
         tabPanel('Appendix', 
                  tabsetPanel(
@@ -228,8 +195,9 @@ ui <- shinyUI(fluidPage(
 
 
 # === Shiny Server ===============================================
-server <- shinyServer(function(input, output, session) {
-  
+#server <- shinyServer(function(input, output, session) {
+server <- function(input, output, session) {
+    
   output$currentTime <- renderText({
     # Forces invalidation in 1000 milliseconds
     invalidateLater(1000, session)
@@ -239,9 +207,11 @@ server <- shinyServer(function(input, output, session) {
   fetchData <- reactive({
     if(!input$pause)
       invalidateLater(750)
-    qtf <- QueryTrueFX() ## http://webrates.truefx.com/rates/connect.html
-    qtf$TimeStamp <- as.character(qtf$TimeStamp)
-    names(qtf)[6] <- 'TimeStamp (GMT)'
+    qtf <- QueryTrueFX() %>% mutate(TimeStamp = as.character(TimeStamp)) %>% 
+      rename(`TimeStamp (GMT)` = TimeStamp) %>% 
+      filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 
+                           'USD/CAD', 'AUD/USD'))
+    ## http://webrates.truefx.com/rates/connect.html
     qtf <<- qtf[, c(6, 1:3, 5:4)]
     return(qtf)
   })
@@ -306,11 +276,29 @@ server <- shinyServer(function(input, output, session) {
   
   # Function to get new observations
   get_new_data <- function(){
-    if(!(weekdays(today('Asia/Tokyo'))) %in% c('Saturday', 'Sunday')) {
-      data <- getSymbols('JPY=X', from = today('Asia/Tokyo'), 
+    if(!(weekdays(today('GMT'))) %in% c('Saturday', 'Sunday')) {
+      
+      ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
+      ## Above link prove that https://finance.yahoo.com using GMT time zone.  
+      for(i in seq(fx)) {
+        assign(fx[i], suppressWarnings(
+          getSymbols(fx[i], from = (today('GMT') - 1) %m-% years(1), 
+                     to = (today('GMT') - 1), auto.assign = FALSE)))
+      }
+      rm(i)
+      
+      ## Due to duplicated date but various price, here I forced to filter the dataset.
+      `EURUSD=X` <<- `EURUSD=X`[index(`EURUSD=X`)==unique(index(`EURUSD=X`)), ]
+      `JPY=X`    <<- `JPY=X`[index(`JPY=X`)==unique(index(`JPY=X`)), ]
+      `GBPUSD=X` <<- `GBPUSD=X`[index(`GBPUSD=X`)==unique(index(`GBPUSD=X`)), ]
+      `CHF=X`    <<- `CHF=X`[index(`CHF=X`)==unique(index(`CHF=X`)), ]
+      `CAD=X`    <<- `CAD=X`[index(`CAD=X`)==unique(index(`CAD=X`)), ]
+      `AUDUSD=X` <<- `AUDUSD=X`[index(`AUDUSD=X`)==unique(index(`AUDUSD=X`)), ]
+      
+      data <- getSymbols('JPY=X', from = today('GMT'), 
                          src = 'yahoo', auto.assign = FALSE) %>% Cl
       names(data) <- 'USDJPY'
-      index(data) <- now('Asia/Tokyo')
+      index(data) <- now('GMT')
     }
     return(data)
   }
@@ -652,8 +640,8 @@ server <- shinyServer(function(input, output, session) {
     })
     if(!dir.exists('data')) dir.create('data')
     if(!file.exists(paste0('data/fcstBankerGMT', today('GMT'), '.rds'))){
-      saveRDS(fxCl, paste0('data/fcstBankerGMT', today('GMT'), '.rds'))
-    }
+      saveRDS(fxCl, paste0('data/fcstBankerGMT', today('GMT'), '.rds')) }
+    
     return(fxCl)
   })
   
@@ -725,7 +713,12 @@ server <- shinyServer(function(input, output, session) {
     #'@ validate(
     #'@   need(exists(fcstBankerData()), 'Scrapping forex data error, kindly refresh the webpage.')
     #'@ )
-    fxD <- fcstBankerData()
+    #fxD <- fcstBankerData() %>% mutate(
+    #  Currency = ifelse(.id == 'USDJPY', round(Currency, 3), round(Currency, 6)))
+    
+    fxD <- refreshBanker()
+    fxD %<>% mutate(
+      Currency = ifelse(Symbol == 'USD/JPY', round(Currency, 3), round(Currency, 6)))
     
     data.frame(fxD, Buy = 'BUY', Sell = 'SELL') %>% 
       formattable(list(
@@ -736,6 +729,117 @@ server <- shinyServer(function(input, output, session) {
           Sell == 'SELL', 'red', 'green')), 
           ~ icontext(ifelse(Sell == 'SELL', 'arrow-down', 'arrow-up'), Sell))))
   })
+  
+  # ----------------------- Transaction ---------------------------------
+  refreshPunter <- reactive({
+    
+    line <- fetchData()
+    
+    if(file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))) {
+      fcPR <- ldply(dir('data', 
+                        pattern = paste0('fcstPunterGMT', today('GMT'))), function(x){
+                          readRDS(paste0('data/', x)) })
+      
+      ## filter and only pick USDJPY
+      fcPR %<>% filter(.id == 'USDJPY')
+      
+    } else {
+      
+      repeat{
+        
+        #'@ startTime <- now('GMT')
+        startTime <- today('GMT')
+        
+        validate(need(weekdays(today('GMT')) %in% wd, 'Today has no data.'))
+        
+        ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
+        ## Above link prove that https://finance.yahoo.com using GMT time zone.  
+        if(weekdays(today('GMT')) %in% wd) {
+          prd <- ifelse(weekdays(today('GMT')) == wd[5], 3, 1)
+          
+          for(i in seq(fx)) {
+            assign(fx[i], suppressWarnings(
+              getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
+                         to = (today('GMT') - prd), auto.assign = FALSE))) }
+          rm(i) }
+        
+        fcPR <- fcstPunterData()
+        #'@ print(as.character(now('GMT')))
+        #'@ print(fcPR)
+        if(exists('fcPR')) break
+        
+        ## scheduled sleepTime as 24 hours to start next task
+        sleepTime <- startTime + 24*60*60 - startTime
+        if (sleepTime > 0)
+          Sys.sleep(sleepTime) }
+      
+      ## filter and only pick USDJPY
+      fcPR %<>% filter(.id == 'USDJPY')
+      }
+    
+    #'@ invalidateLater(1000, session)
+    rx <- line %>% filter(Symbol == 'USD/JPY') %>% 
+      mutate(
+        Bid.Price = round(Bid.Price, 3), 
+        Ask.Price = round(Ask.Price, 3), 
+        fc.High = round(fcPR$Currency.Hi, 3), 
+        fc.Low = round(fcPR$Currency.Lo, 3)) %>% 
+      dplyr::select(`TimeStamp (GMT)`, Bid.Price, Ask.Price, 
+                    fc.High, fc.Low)
+    
+    if(rx$fc.Low == rx$Bid.Price){
+      tr.buy <- rx %>% mutate(Price = fc.Low, Transaction = 'Buy') %>% 
+        dplyr::select(`TimeStamp (GMT)`, Price, Transaction)
+      saveRDS(tr.buy, paste0('data/buy.', now('GMT'), '.rds')) }
+    
+    if(rx$fc.High == rx$Ask.Price){
+      tr.sell <- rx %>% mutate(Price = fc.High, Transaction = 'Sell') %>% 
+        dplyr::select(`TimeStamp (GMT)`, Price, Transaction)
+      saveRDS(tr.sell, paste0('data/sell.', now('GMT'), '.rds')) }
+    
+    return(rx)
+    })
+  
+  refreshBanker <- reactive({
+    
+    line <- fetchData()
+    
+    if(file.exists(paste0('data/fcstBankerGMT', today('GMT'), '.rds'))) {
+      fcBR <- ldply(
+        dir('data', pattern = paste0('fcstBankerGMT', today('GMT'))), function(x){
+          readRDS(paste0('data/', x)) })
+      
+    } else {
+      
+      repeat{
+        ## startTime <- now('GMT')
+        startTime <- today('GMT')
+        validate(need(weekdays(today('GMT')) %in% wd, 'Today has no data.'))
+        
+        ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
+        ## Above link prove that https://finance.yahoo.com using GMT time zone.  
+        if(weekdays(today('GMT')) %in% wd) {
+          prd <- ifelse(weekdays(today('GMT')) == wd[5], 3, 1)
+          
+          for(i in seq(fx)) {
+            assign(fx[i], suppressWarnings(
+              getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
+                         to = (today('GMT') - prd), auto.assign = FALSE))) }
+          rm(i) }
+        
+        fcBR <- fcstBankerData()
+        ## print(as.character(now('GMT')))
+        ## print(fcBR)
+        if(exists('fcBR')) break
+        
+        ## scheduled sleepTime as 24 hours to start next task
+        sleepTime <- startTime + 24*60*60 - startTime
+        if(sleepTime > 0)
+          Sys.sleep(sleepTime) }}
+    
+    rx <- cbind(line, fcBR[-1])
+    return(rx)
+    })
   
   output$fcastPPr <- renderFormattable({
     
@@ -754,14 +858,16 @@ server <- shinyServer(function(input, output, session) {
           ~ icontext(ifelse(Sell == 'SELL', 'arrow-down', 'arrow-up'), Sell))))
   })
   
-  output$video <- renderUI({
-    tags$iframe(src = 'https://www.youtube.com/embed/VWAU1r6rPvg')
-  })
+  output$video <- renderUI(tags$iframe(src = 'https://www.youtube.com/embed/VWAU1r6rPvg'))
   
   ## Real-time graph in shiny.
   ## https://stackoverflow.com/questions/42109370/invalidatelater-stopped-in-r-shiny-app
   
-  })
+  ## https://shiny.rstudio.com/articles/reconnecting.html
+  ## Set this to "force" instead of TRUE for testing locally (without Shiny Server)
+  session$allowReconnect(TRUE)
+  
+  }#)
 
 # Run the application
 shinyApp(ui = ui, server = server)

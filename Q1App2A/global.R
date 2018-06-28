@@ -1,58 +1,21 @@
-suppressWarnings(require('shiny'))
 suppressWarnings(require('cronR'))
 suppressWarnings(require('xts'))
 suppressWarnings(require('quantmod'))
 suppressWarnings(require('lubridate'))
 suppressWarnings(require('stringr'))
-suppressWarnings(require('memoise'))
-suppressWarnings(require('rugarch'))
-suppressWarnings(require('rmgarch'))
 
 fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
-cur <- c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 'USD/CAD', 'AUD/USD')
-wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')#, 'Saturday', 'Sunday')
+wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
 
 #'@ if(now('GMT') == today('GMT')) {
 ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
 ## Above link prove that https://finance.yahoo.com using GMT time zone.  
-#'@ if(weekdays(today('GMT')) %in% wd) {
-#'@   for(i in seq(fx)) {
-#'@     suppressWarnings(getSymbols(fx[i], from = (today('GMT') - 1) %m-% years(1), 
-#'@                to = (today('GMT') - 1), auto.assign = FALSE))
-#'@   }
-#'@   rm(i)
-#'@ }
-
 if(weekdays(today('GMT')) %in% wd) {
-  prd <- ifelse(weekdays(today('GMT')) == wd[5], 3, 1)
-  
   for(i in seq(fx)) {
-    assign(fx[i], suppressWarnings(
-      getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
-                 to = (today('GMT') - prd), auto.assign = FALSE))) }
-  rm(i) }
-
-# Using "memoise" to automatically cache the results
-openBet <- memoise(function(currency, realFX, ahead = 1) {
-  
-  hi <- calC(currency, ahead, price = 'Hi')
-  lo <- calC(currency, ahead, price = 'Lo')
-  
-  bid <- realFX %>% dplyr::select(Symbol, Bid.Price) %>% 
-    dplyr::filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 
-                                'USD/CAD', 'AUD/USD'))
-  ask <- realFX %>% dplyr::select(Symbol, Ask.Price) %>% 
-    dplyr::filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 
-                                'USD/CAD', 'AUD/USD'))
-  
-  ## http://webrates.truefx.com/rates/connect.html
-  tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res)
-  return(tmp)
-})
-
-kellyBet <- function(currency, ){
-  
-  return(res)
+    getSymbols(fx[i], from = (today('GMT') - 1) %m-% years(1), 
+               to = (today('GMT') - 1))
+  }
+  rm(i)
 }
 
 
@@ -289,12 +252,12 @@ calC <- memoise(function(currency, ahead = 1, price = 'Cl') {
 })
 
 forecastData <- function(price = 'Cl') {
-  forC.EURUSD <- calC('EURUSD=X', price = price, ahead = ahead)
-  forC.USDJPY <- calC('JPY=X', price = price, ahead = ahead)
-  forC.GBPUSD <- calC('GBPUSD=X', price = price, ahead = ahead)
-  forC.USDCHF <- calC('CHF=X', price = price, ahead = ahead)
-  forC.USDCAD <- calC('CAD=X', price = price, ahead = ahead)
-  forC.AUDUSD <- calC('AUDUSD=X', price = price, ahead = ahead)
+  forC.EURUSD <- calC('EURUSD=X', price = price)
+  forC.USDJPY <- calC('JPY=X', price = price)
+  forC.GBPUSD <- calC('GBPUSD=X', price = price)
+  forC.USDCHF <- calC('CHF=X', price = price)
+  forC.USDCAD <- calC('CAD=X', price = price)
+  forC.AUDUSD <- calC('AUDUSD=X', price = price)
   
   fxC <- ldply(list(EURUSD = forC.EURUSD, 
                     USDJPY = forC.USDJPY, 

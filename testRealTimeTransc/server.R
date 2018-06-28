@@ -14,9 +14,14 @@ suppressWarnings(require('memoise'))
 suppressWarnings(require('stringr'))
 suppressWarnings(require('RCurl'))
 
+fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
+wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
+wd %<>% factor(., levels = ., ordered = TRUE)
+
 ## ================== Server ===========================================
 # Define server logic required to draw a histogram
-shinyServer <- function(input, output, session) {
+#shinyServer <- function(input, output, session) {
+server <- shinyServer(function(input, output, session) {
     
     output$currentTime <- renderText({
         # Forces invalidation in 1000 milliseconds
@@ -89,7 +94,6 @@ shinyServer <- function(input, output, session) {
     })
     
     refresh <- reactive({
-        
         line <- fetchData()
         
         if(file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))) {
@@ -103,40 +107,33 @@ shinyServer <- function(input, output, session) {
         } else {
             
             repeat{
-                
                 #'@ startTime <- now('GMT')
                 startTime <- today('GMT')
+                validate(need(weekdays(today('GMT')) %in% wd, 'Today has no data.'))
                 
-                validate(
-                    need(weekdays(today('GMT')) %in% wd, 'Today has no data.')
-                )
-                
-                #'@ if(now('GMT') == today('GMT')) {
                 ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
                 ## Above link prove that https://finance.yahoo.com using GMT time zone.  
                 if(weekdays(today('GMT')) %in% wd) {
                     prd <- ifelse(weekdays(today('GMT')) == wd[5], 3, 1)
                     
                     for(i in seq(fx)) {
-                        getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
-                                   to = (today('GMT') - prd))
-                    }
-                    rm(i)
-                }
+                        assign(fx[i], suppressWarnings(
+                            getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
+                                   to = (today('GMT') - prd), auto.assign = FALSE))) }
+                    rm(i) }
                 
                 fcPR <- fcstPunterData()
                 #'@ print(as.character(now('GMT')))
                 #'@ print(fcPR)
+                if(exists('fcPR')) break
                 
                 ## scheduled sleepTime as 24 hours to start next task
                 sleepTime <- startTime + 24*60*60 - startTime
                 if (sleepTime > 0)
-                    Sys.sleep(sleepTime)
-            }
+                    Sys.sleep(sleepTime) }
             
             ## filter and only pick USDJPY
-            fcPR %<>% filter(.id == 'USDJPY')
-        }
+            fcPR %<>% filter(.id == 'USDJPY') }
         
         #'@ invalidateLater(1000, session)
         rx <- line %>% filter(Symbol == 'USD/JPY') %>% 
@@ -151,13 +148,12 @@ shinyServer <- function(input, output, session) {
         if(rx$fc.Low == rx$Bid.Price){
             tr.buy <- rx %>% mutate(Price = fc.Low, Transaction = 'Buy') %>% 
                 dplyr::select(`TimeStamp (GMT)`, Price, Transaction)
-            saveRDS(tr.buy, paste0('data/buy.', now('GMT'), '.rds'))
-        }
+            saveRDS(tr.buy, paste0('data/buy.', now('GMT'), '.rds')) }
+        
         if(rx$fc.High == rx$Ask.Price){
             tr.sell <- rx %>% mutate(Price = fc.High, Transaction = 'Sell') %>% 
                 dplyr::select(`TimeStamp (GMT)`, Price, Transaction)
-            saveRDS(tr.sell, paste0('data/sell.', now('GMT'), '.rds'))
-        }
+            saveRDS(tr.sell, paste0('data/sell.', now('GMT'), '.rds')) }
         
         return(rx)
     })
@@ -213,7 +209,7 @@ shinyServer <- function(input, output, session) {
     ## https://shiny.rstudio.com/articles/reconnecting.html
     ## Set this to "force" instead of TRUE for testing locally (without Shiny Server)
     session$allowReconnect(TRUE)
-    }
+    })
 
 # Run the application 
 #'@ shinyApp(ui = ui, server = server)

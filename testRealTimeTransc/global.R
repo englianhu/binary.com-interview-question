@@ -11,6 +11,8 @@ suppressWarnings(require('magrittr'))
 suppressWarnings(require('memoise'))
 suppressWarnings(require('stringr'))
 suppressWarnings(require('RCurl'))
+suppressWarnings(require('rugarch'))
+suppressWarnings(require('rmgarch'))
 
 Sys.setenv(TZ = 'GMT')
 zones <- attr(as.POSIXlt(now('GMT')), 'tzone')
@@ -23,8 +25,16 @@ wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
 wd %<>% factor(., levels = ., ordered = TRUE)
 ## https://beta.rstudioconnect.com/connect/#/apps/3803/logs
 ## ================== Functions ========================================
+if(weekdays(today('GMT')) %in% wd) {
+  prd <- ifelse(weekdays(today('GMT')) == wd[5], 3, 1)
+  
+  for(i in seq(fx)) {
+    assign(fx[i], suppressWarnings(
+      getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
+                 to = (today('GMT') - prd), auto.assign = FALSE))) }
+  rm(i) }
 
-## Function to get new observations
+# Function to get new observations
 #'@ get_new_data <- function() readLines('http://webrates.truefx.com/rates/connect.html')
 
 armaSearch <- function(data, .method = 'CSS-ML'){ 
