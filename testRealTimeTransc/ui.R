@@ -46,7 +46,6 @@ shinyUI <- fluidPage(
                  actionButton('refresh', 'Refresh Data', 
                               icon = icon('refresh'), class = 'btn-primary'), 
                  br(), 
-                 br(), 
                  DT::dataTableOutput('transc')), 
         
         tabPanel('Settlement List', 

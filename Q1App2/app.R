@@ -231,7 +231,7 @@ server <- function(input, output, session) {
     if(!input$pause)
       invalidateLater(750)
     qtf <- QueryTrueFX() %>% mutate(TimeStamp = as.character(TimeStamp)) %>% 
-      rename(`TimeStamp (GMT)` = TimeStamp) %>% 
+      dplyr::rename(`TimeStamp (GMT)` = TimeStamp) %>% 
       filter(Symbol %in% c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 
                            'USD/CAD', 'AUD/USD'))
     ## http://webrates.truefx.com/rates/connect.html

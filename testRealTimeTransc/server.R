@@ -52,7 +52,8 @@ server <- shinyServer(function(input, output, session) {
                         ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
                         ## Above link prove that https://finance.yahoo.com using GMT time zone.  
                         #if(weekdays(today('GMT')) %in% wd) {
-                        prd <- ifelse(weekdays(today('GMT')) %in% wd[1:4], 1, 3)
+                        #prd <- ifelse(weekdays(today('GMT')) %in% wd[2:5], 1, 3)
+                        prd <- 1 #since count trading day.
                         
                         for(i in seq(fx)) {
                             assign(fx[i], suppressWarnings(
@@ -121,7 +122,7 @@ server <- shinyServer(function(input, output, session) {
             invalidateLater(750)
         ## http://webrates.truefx.com/rates/connect.html
         qtf <- QueryTrueFX() %>% mutate(TimeStamp = as.character(TimeStamp)) %>% 
-            rename(`TimeStamp (GMT)` = TimeStamp)
+            dplyr::rename(`TimeStamp (GMT)` = TimeStamp)
         qtf <- qtf[, c(6, 1:3, 5:4)] %>% filter(Symbol == 'USD/JPY')
         return(qtf)
     })
@@ -130,9 +131,11 @@ server <- shinyServer(function(input, output, session) {
         line <- fetchData()
         fcPR <- fcstPunterData()
         
-        rx <- cbind(line, fcPR) %>% mutate(
-            fc.High = round(fc.High, 3), fc.Low = round(fc.Low, 3)) %>% 
-            rename(`Forecast Data (GMT)` = ForecastDate.GMT)
+        rx <- cbind(line, fcPR) %>% 
+            mutate(fc.High = round(fc.High, 3), fc.Low = round(fc.Low, 3))
+        
+        rx %<>% dplyr::rename(`LatestDate (GMT)` = LatestDate.GMT, 
+                              `ForecastDate (GMT)` = ForecastDate.GMT)
         
         if(rx$fc.Low == rx$Bid.Price){
             tr.buy <- rx %>% mutate(Price = fc.Low, Transaction = 'Buy') %>% 

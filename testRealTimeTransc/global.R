@@ -30,12 +30,13 @@ wd %<>% factor(., levels = ., ordered = TRUE)
 ## https://beta.rstudioconnect.com/connect/#/apps/3803/logs
 ## ================== Functions ========================================
 #if(weekdays(today('GMT')) %in% wd) {
-  prd <- ifelse(weekdays(today('GMT')) %in% wd[1:4], 1, 3)
-  
+  #prd <- ifelse(weekdays(today('GMT')) %in% wd[2:5], 1, 3)
+  prd = 1 #since count trading day.
+
   for(i in seq(fx)) {
     assign(fx[i], suppressWarnings(
-      getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
-                 to = (today('GMT') - prd), auto.assign = FALSE))) }
+      getSymbols(fx[i], from = (today('GMT') - days(prd)) %m-% years(1), 
+                 to = (today('GMT') - days(prd)), auto.assign = FALSE))) }
   rm(i)
 #}
 
@@ -264,11 +265,15 @@ calC <- memoise(function(currency, ahead = 1, price = 'Cl') {
     distribution.model = 'snorm')
   fit = ugarchfit(spec, mbase, solver = 'hybrid')
   fc = ugarchforecast(fit, n.ahead = ahead)
-  res = tail(attributes(fc)$forecast$seriesFor, ahead - (ahead - 1))
+  res = tail(attributes(fc)$forecast$seriesFor, 1)
   colnames(res) = names(mbase)
   latestPrice = tail(mbase, 1)
-  forDate = latestPrice %>% index + days(ahead)
+  
+  dy = ifelse(weekdays(index(latestPrice)) %in% wd[1:4], 1, 3)
+  forDate = latestPrice %>% index + days(dy)
   rownames(res) <- as.character(forDate)
+  latestPrice <- xts(latestPrice)
+  res <- as.xts(res)
   
   tmp = list(latestPrice = latestPrice, forecastPrice = res)
   return(tmp)
@@ -277,11 +282,18 @@ calC <- memoise(function(currency, ahead = 1, price = 'Cl') {
 forecastUSDJPY <- function(ahead = 1, price = 'Cl') {
   forC.USDJPY <- calC('JPY=X', ahead = ahead, price = price)
   
-  fxC <- data.frame(ForecastDate.GMT = rownames(forC.USDJPY$forecastPrice), 
-                    Currency = forC.USDJPY$forecastPrice)
+  fxC <- data.frame(
+    LatestDate.GMT = index(forC.USDJPY$latestPrice), 
+    latestPrice = forC.USDJPY$latestPrice, 
+    ForecastDate.GMT = index(forC.USDJPY$forecastPrice), 
+    Currency = forC.USDJPY$forecastPrice)
   
-  if(price == 'Hi') fxC %<>% rename(fc.High = USD.JPY)
-  if(price == 'Lo') fxC %<>% rename(fc.Low = USD.JPY)
+  rownames(fxC) <- NULL
+  
+  if(price == 'Op') fxC %<>% dplyr::rename(lst.Open = USD.JPY, fc.Open = USD.JPY.1)
+  if(price == 'Hi') fxC %<>% dplyr::rename(lst.High = USD.JPY, fc.High = USD.JPY.1)
+  if(price == 'Lo') fxC %<>% dplyr::rename(lst.Low = USD.JPY, fc.Low = USD.JPY.1)
+  if(price == 'Cl') fxC %<>% dplyr::rename(lst.Close = USD.JPY, fc.Close = USD.JPY.1)
   
   return(fxC)
   }
@@ -289,8 +301,10 @@ forecastUSDJPY <- function(ahead = 1, price = 'Cl') {
 forecastUSDJPYHL <- function(ahead = ahead){
   fxLo <- forecastUSDJPY(ahead = ahead, price = 'Lo')
   fxHi <- forecastUSDJPY(ahead = ahead, price = 'Hi')
-  fxHL <- merge(fxHi, fxLo, by = c('ForecastDate.GMT'))
+  fxHL <- merge(fxHi, fxLo, by = c('LatestDate.GMT', 'ForecastDate.GMT'))
   rm(fxHi, fxLo)
+  
+  fxHL <- fxHL[c(1, 3, 5, 2, 4, 6)]
   return(fxHL)
   }
 
