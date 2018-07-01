@@ -128,7 +128,8 @@ ui <- shinyUI(fluidPage(
                  tags$hr(), 
                  h4('Forecasted Daily Price'), 
                  p('Below forecasted price will be automatically calculcate 12AM every weekday.'), 
-                 formattableOutput('fcastBPr')),  
+                 formattableOutput('fcastBPr')), 
+        
         tabPanel('Appendix', 
                  tabsetPanel(
                    tabPanel('Statistics', 
@@ -137,8 +138,16 @@ ui <- shinyUI(fluidPage(
                             p('As I tried to build couples of univariate models and concludes that ', 
                               HTML("<a href='https://vlab.stern.nyu.edu/doc/3?topic=mdls'>GJR-GARCH Model</a>"), 
                               'is the best fit model. You are feel free to browse over ', 
-                              HTML("<a href='http://rpubs.com/englianhu/316133'>binary.com Interview Question I (Extention)</a>"), 
-                              'for the research. Below is the equation for the model.', 
+                              tags$ul(
+                                tags$li(HTML("<a href='https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html'>binary.com Interview Question I</a>")), 
+                                tags$li(HTML("<a href='http://rpubs.com/englianhu/316133'>binary.com Interview Question I (Extention)</a>")), 
+                                tags$li(HTML("<a href='https://beta.rstudioconnect.com/content/3073/'>Q1App</a>")), 
+                                tags$li(HTML("<a href='https://beta.rstudioconnect.com/content/2367/'>ShinyApp</a>"), '(App for 3 Questions)')), 
+                              'for the research study which compare the accuracy and the return of investment of various statistical models. '), 
+                            p('You are feel free to surf over', 
+                              HTML("<a href='https://github.com/englianhu/binary.com-interview-question'>binary.com Interview Question (GitHub Source Codes)</a>"), 
+                              ' to get the source codes as well as some research papers on the quantitative trading.'), 
+                            p('Below is the equation for the model.', 
                               withMathJax(
                                 helpText('$$\\delta_{t}^{2} = \\omega + (\\alpha + \\gamma I_{t-1}) \\varepsilon_{t-1}^{2} + \\beta \\sigma_{t-1}^{2}$$')), 
                               'where'), 
@@ -153,6 +162,8 @@ ui <- shinyUI(fluidPage(
                               ' while the real-time price to staking and settlement is getting from ', 
                               HTML("<a href='https://www.truefx.com/'>TrueFX.com.</a>"), 
                               'Therefore there has no any guarantee of profit and also accuracy of price dataset.')), 
+                   tabPanel('Studies', 
+                            tags$iframe(src = 'https://beta.rstudioconnect.com/content/3091/ryo-eng.html', height = 800, width = '100%', frameborder = 0)), 
                    tabPanel('Reference', 
                             h3('Future Works'), 
                             p('This application is an algorithmic trading in daily ', 
@@ -177,7 +188,6 @@ ui <- shinyUI(fluidPage(
                               tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
                                      tags$img(height = '20px', alt='hot', #align='right', 
                                               src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg')))), 
-                   
                    tabPanel('Author', 
                             h3('Author'), 
                             tags$iframe(src = 'https://beta.rstudioconnect.com/content/3091/ryo-eng.html', height = 800, width = '100%', frameborder = 0)))))), 
@@ -187,7 +197,7 @@ ui <- shinyUI(fluidPage(
              tags$img(height = '20px', alt = 'scibrokes', #align='right', 
                       src='https://raw.githubusercontent.com/scibrokes/betting-strategy-and-model-validation/master/regressionApps/oda-army.jpg')), 
       HTML("<a href='http://www.scibrokes.com'>Scibrokes®</a>"))
-    )))
+        )))
 
 
 
@@ -197,7 +207,7 @@ ui <- shinyUI(fluidPage(
 # === Shiny Server ===============================================
 #server <- shinyServer(function(input, output, session) {
 server <- function(input, output, session) {
-    
+  
   output$currentTime <- renderText({
     # Forces invalidation in 1000 milliseconds
     invalidateLater(1000, session)
@@ -305,12 +315,12 @@ server <- function(input, output, session) {
   
   # Initialize realData
   realData <<- get_new_data() #ldply(1:60, get_new_data()) %>% tbl_df
-
+  
   
   # Function to update realData
   update_data <- function(){
     realData <<- rbind(realData, get_new_data())
-
+    
     if(nrow(realData) > 60) {
       #'@ if(length(realData) > 60) {
       realData <<- realData[((nrow(realData) - 59):nrow(realData)),]
@@ -755,7 +765,7 @@ server <- function(input, output, session) {
         ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
         ## Above link prove that https://finance.yahoo.com using GMT time zone.  
         if(weekdays(today('GMT')) %in% wd) {
-          prd <- ifelse(weekdays(today('GMT')) == wd[5], 3, 1)
+          prd <- ifelse(weekdays(today('GMT')) %in% wd[1:4], 1, 3)
           
           for(i in seq(fx)) {
             assign(fx[i], suppressWarnings(
@@ -775,7 +785,7 @@ server <- function(input, output, session) {
       
       ## filter and only pick USDJPY
       fcPR %<>% filter(.id == 'USDJPY')
-      }
+    }
     
     #'@ invalidateLater(1000, session)
     rx <- line %>% filter(Symbol == 'USD/JPY') %>% 
@@ -798,7 +808,7 @@ server <- function(input, output, session) {
       saveRDS(tr.sell, paste0('data/sell.', now('GMT'), '.rds')) }
     
     return(rx)
-    })
+  })
   
   refreshBanker <- reactive({
     
@@ -839,7 +849,7 @@ server <- function(input, output, session) {
     
     rx <- cbind(line, fcBR[-1])
     return(rx)
-    })
+  })
   
   output$fcastPPr <- renderFormattable({
     
@@ -865,7 +875,7 @@ server <- function(input, output, session) {
   
   ## https://shiny.rstudio.com/articles/reconnecting.html
   ## Set this to "force" instead of TRUE for testing locally (without Shiny Server)
-  session$allowReconnect(TRUE)
+  #session$allowReconnect(TRUE)
   
   }#)
 

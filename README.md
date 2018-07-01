@@ -30,7 +30,7 @@
 
 <span style='color:red'>**Blooper...**</span>
 
-  Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [Q1 ShinyApp](https://beta.rstudioconnect.com/content/2367/).
+  Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) which contain the questions and answers of 3 questions.
 
 <img src='www/20170113_104005.gif' width='360'>
 

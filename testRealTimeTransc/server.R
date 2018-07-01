@@ -13,8 +13,10 @@ suppressWarnings(require('magrittr'))
 suppressWarnings(require('memoise'))
 suppressWarnings(require('stringr'))
 suppressWarnings(require('RCurl'))
+suppressWarnings(require('forecast'))
 
-fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
+#fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
+fx <- c('JPY=X')
 wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
 wd %<>% factor(., levels = ., ordered = TRUE)
 
@@ -33,10 +35,41 @@ server <- shinyServer(function(input, output, session) {
         isolate({
             withProgress({
                 setProgress(message = "Processing algorithmic forecast...")
-                fxLo <- forecastData(price = 'Lo')
-                fxHi <- forecastData(price = 'Hi')
-                fxHL <- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
-                rm(fxHi, fxLo)
+                #fxHL <- forecastUSDJPYHL(ahead = prd)
+                
+                if(file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))) {
+                    fxHL <- ldply(dir('data', 
+                                      pattern = paste0('fcstPunterGMT', today('GMT'))), function(x){
+                                          readRDS(paste0('data/', x)) })
+                    
+                } else {
+                    
+                    repeat{
+                        # startTime <- now('GMT')
+                        startTime <- today('GMT')
+                        # validate(need(weekdays(today('GMT')) %in% wd, 'Today has no data.'))
+                        
+                        ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
+                        ## Above link prove that https://finance.yahoo.com using GMT time zone.  
+                        #if(weekdays(today('GMT')) %in% wd) {
+                        prd <- ifelse(weekdays(today('GMT')) %in% wd[1:4], 1, 3)
+                        
+                        for(i in seq(fx)) {
+                            assign(fx[i], suppressWarnings(
+                                getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
+                                           to = (today('GMT') - prd), auto.assign = FALSE))) }
+                        rm(i) #}
+                        
+                        fxHL <- forecastUSDJPYHL(ahead = prd)
+                        #'@ print(as.character(now('GMT')))
+                        #'@ print(fxHL)
+                        if(exists('fxHL')) break
+                        
+                        ## scheduled sleepTime as 24 hours to start next task
+                        sleepTime <- startTime + 24*60*60 - startTime
+                        if (sleepTime > 0)
+                            Sys.sleep(sleepTime) }
+                }
             })
         })
         
@@ -53,8 +86,8 @@ server <- shinyServer(function(input, output, session) {
     #'@     if(now('GMT') == timeR) {
     #'@         timeR <- timeR + minutes(1)
     #'@     } else {
-    #'@         fxLo <- forecastData(price = 'Lo')
-    #'@         fxHi <- forecastData(price = 'Hi')
+    #'@         fxLo <- forecastUSDJPY(price = 'Lo')
+    #'@         fxHi <- forecastUSDJPY(price = 'Hi')
     #'@         fxHL <- merge(fxHi, fxLo, by = c('.id', 'ForecastDate.GMT'))
     #'@         rm(fxHi, fxLo)
     #'@         fxHL %>% mutate(
@@ -89,61 +122,17 @@ server <- shinyServer(function(input, output, session) {
         ## http://webrates.truefx.com/rates/connect.html
         qtf <- QueryTrueFX() %>% mutate(TimeStamp = as.character(TimeStamp)) %>% 
             rename(`TimeStamp (GMT)` = TimeStamp)
-        qtf <- qtf[, c(6, 1:3, 5:4)]
+        qtf <- qtf[, c(6, 1:3, 5:4)] %>% filter(Symbol == 'USD/JPY')
         return(qtf)
     })
     
     refresh <- reactive({
         line <- fetchData()
+        fcPR <- fcstPunterData()
         
-        if(file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))) {
-            fcPR <- ldply(dir('data', 
-                      pattern = paste0('fcstPunterGMT', today('GMT'))), function(x){
-                readRDS(paste0('data/', x)) })
-            
-            ## filter and only pick USDJPY
-            fcPR %<>% filter(.id == 'USDJPY')
-            
-        } else {
-            
-            repeat{
-                #'@ startTime <- now('GMT')
-                startTime <- today('GMT')
-                validate(need(weekdays(today('GMT')) %in% wd, 'Today has no data.'))
-                
-                ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
-                ## Above link prove that https://finance.yahoo.com using GMT time zone.  
-                if(weekdays(today('GMT')) %in% wd) {
-                    prd <- ifelse(weekdays(today('GMT')) == wd[5], 3, 1)
-                    
-                    for(i in seq(fx)) {
-                        assign(fx[i], suppressWarnings(
-                            getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
-                                   to = (today('GMT') - prd), auto.assign = FALSE))) }
-                    rm(i) }
-                
-                fcPR <- fcstPunterData()
-                #'@ print(as.character(now('GMT')))
-                #'@ print(fcPR)
-                if(exists('fcPR')) break
-                
-                ## scheduled sleepTime as 24 hours to start next task
-                sleepTime <- startTime + 24*60*60 - startTime
-                if (sleepTime > 0)
-                    Sys.sleep(sleepTime) }
-            
-            ## filter and only pick USDJPY
-            fcPR %<>% filter(.id == 'USDJPY') }
-        
-        #'@ invalidateLater(1000, session)
-        rx <- line %>% filter(Symbol == 'USD/JPY') %>% 
-            mutate(
-                Bid.Price = round(Bid.Price, 3), 
-                Ask.Price = round(Ask.Price, 3), 
-                fc.High = round(fcPR$Currency.Hi, 3), 
-                fc.Low = round(fcPR$Currency.Lo, 3)) %>% 
-            dplyr::select(`TimeStamp (GMT)`, Bid.Price, Ask.Price, 
-                          fc.High, fc.Low)
+        rx <- cbind(line, fcPR) %>% mutate(
+            fc.High = round(fc.High, 3), fc.Low = round(fc.Low, 3)) %>% 
+            rename(`Forecast Data (GMT)` = ForecastDate.GMT)
         
         if(rx$fc.Low == rx$Bid.Price){
             tr.buy <- rx %>% mutate(Price = fc.Low, Transaction = 'Buy') %>% 
@@ -208,7 +197,7 @@ server <- shinyServer(function(input, output, session) {
     
     ## https://shiny.rstudio.com/articles/reconnecting.html
     ## Set this to "force" instead of TRUE for testing locally (without Shiny Server)
-    session$allowReconnect(TRUE)
+    #session$allowReconnect(TRUE)
     })
 
 # Run the application 
