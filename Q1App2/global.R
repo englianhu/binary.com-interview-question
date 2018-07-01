@@ -1,3 +1,4 @@
+options(warn = -1)
 suppressWarnings(require('shiny'))
 suppressWarnings(require('cronR'))
 suppressWarnings(require('xts'))

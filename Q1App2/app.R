@@ -133,37 +133,50 @@ ui <- shinyUI(fluidPage(
         tabPanel('Appendix', 
                  tabsetPanel(
                    tabPanel('Statistics', 
-                            h3('Statistical Modelling'), 
-                            htmlOutput('video'), 
-                            p('As I tried to build couples of univariate models and concludes that ', 
-                              HTML("<a href='https://vlab.stern.nyu.edu/doc/3?topic=mdls'>GJR-GARCH Model</a>"), 
-                              'is the best fit model. You are feel free to browse over ', 
-                              tags$ul(
-                                tags$li(HTML("<a href='https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html'>binary.com Interview Question I</a>")), 
-                                tags$li(HTML("<a href='http://rpubs.com/englianhu/316133'>binary.com Interview Question I (Extention)</a>")), 
-                                tags$li(HTML("<a href='https://beta.rstudioconnect.com/content/3073/'>Q1App</a>")), 
-                                tags$li(HTML("<a href='https://beta.rstudioconnect.com/content/2367/'>ShinyApp</a>"), '(App for 3 Questions)')), 
-                              'for the research study which compare the accuracy and the return of investment of various statistical models. '), 
-                            p('You are feel free to surf over', 
-                              HTML("<a href='https://github.com/englianhu/binary.com-interview-question'>binary.com Interview Question (GitHub Source Codes)</a>"), 
-                              ' to get the source codes as well as some research papers on the quantitative trading.'), 
-                            p('Below is the equation for the model.', 
-                              withMathJax(
-                                helpText('$$\\delta_{t}^{2} = \\omega + (\\alpha + \\gamma I_{t-1}) \\varepsilon_{t-1}^{2} + \\beta \\sigma_{t-1}^{2}$$')), 
-                              'where'), 
-                            p(withMathJax(
-                              helpText('$$I_{t-1}=
+                            tabsetPanel(
+                              tabPanel('Statistics',  
+                                       h3('Statistical Modelling'), 
+                                       htmlOutput('video'), 
+                                       p('As I tried to build couples of univariate models and concludes that ', 
+                                         HTML("<a href='https://vlab.stern.nyu.edu/doc/3?topic=mdls'>GJR-GARCH Model</a>"), 
+                                         'is the best fit model. You are feel free to browse over ', 
+                                         tags$ul(
+                                           tags$li(HTML("<a href='https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html'>binary.com Interview Question I</a>")), 
+                                           tags$li(HTML("<a href='http://rpubs.com/englianhu/316133'>binary.com Interview Question I (Extention)</a>")), 
+                                           tags$li(HTML("<a href='https://beta.rstudioconnect.com/content/3073/'>Q1App</a>")), 
+                                           tags$li(HTML("<a href='https://beta.rstudioconnect.com/content/2367/'>ShinyApp</a>"), 
+                                                   '(App for 3 Questions : Blooper)'), 
+                                           tags$li(HTML("<a href='https://beta.rstudioconnect.com/content/3775/'>testRealTimeTransc</a>"))), 
+                                         'for the research study which compare the accuracy and the return of investment of various statistical models. '), 
+                                       p('You are feel free to surf over', 
+                                         HTML("<a href='https://github.com/englianhu/binary.com-interview-question'>binary.com Interview Question (GitHub Source Codes)</a>"), 
+                                         ' to get the source codes as well as some research papers on the quantitative trading.'), 
+                                       p('Below is the equation for the model.', 
+                                         withMathJax(
+                                           helpText('$$\\delta_{t}^{2} = \\omega + (\\alpha + \\gamma I_{t-1}) \\varepsilon_{t-1}^{2} + \\beta \\sigma_{t-1}^{2}$$')), 
+                                         'where'), 
+                                       p(withMathJax(
+                                         helpText('$$I_{t-1}=
                                        \\begin{cases}
                                        0& \\text{if } r_{t-1} \\leq \\mu\\\\
                                        1& \\text{if } r_{t-1} > \\mu
                                        \\end{cases}$$'))), 
-                            p('The daily data for calculation is getting from ', 
-                              HTML("<a href='https://finance.yahoo.com/'>Yahoo! finance</a>"), 
-                              ' while the real-time price to staking and settlement is getting from ', 
-                              HTML("<a href='https://www.truefx.com/'>TrueFX.com.</a>"), 
-                              'Therefore there has no any guarantee of profit and also accuracy of price dataset.')), 
-                   tabPanel('Studies', 
-                            tags$iframe(src = 'https://beta.rstudioconnect.com/content/3091/ryo-eng.html', height = 800, width = '100%', frameborder = 0)), 
+                                       p('The daily data for calculation is getting from ', 
+                                         HTML("<a href='https://finance.yahoo.com/'>Yahoo! finance</a>"), 
+                                         ' while the real-time price to staking and settlement is getting from ', 
+                                         HTML("<a href='https://www.truefx.com/'>TrueFX.com.</a>"), 
+                                         'Therefore there has no any guarantee of profit and also accuracy of price dataset.')), 
+                              #tabPanel('ShinyApp', 
+                              #         tags$iframe(src = 'https://beta.rstudioconnect.com/content/2367/', height = 800, width = '100%', frameborder = 0)), 
+                              tabPanel('Q1', 
+                                       tags$iframe(src = 'https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html', height = 800, width = '100%', frameborder = 0)), 
+                              #tabPanel('Q1App', 
+                              #         tags$iframe(src = 'https://beta.rstudioconnect.com/content/3073/', height = 800, width = '100%', frameborder = 0)), 
+                              tabPanel('Q1E', 
+                                       tags$iframe(src = 'http://rpubs.com/englianhu/316133', height = 800, width = '100%', frameborder = 0))#, 
+                              #tabPanel('Real-Time App', 
+                              #         tags$iframe(src = 'https://beta.rstudioconnect.com/content/3775/', height = 800, width = '100%', frameborder = 0))
+                              )), 
                    tabPanel('Reference', 
                             h3('Future Works'), 
                             p('This application is an algorithmic trading in daily ', 

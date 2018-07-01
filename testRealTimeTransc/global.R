@@ -294,6 +294,10 @@ forecastUSDJPYHL <- function(ahead = ahead){
   return(fxHL)
   }
 
+kellyBet <- function(){
+  
+  return(res)
+  }
 
 ## ================== Reference ========================================
 ## https://shiny.rstudio.com/articles/persistent-data-storage.html
