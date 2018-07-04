@@ -451,14 +451,15 @@ forecastUSDJPY <- function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
   return(fxC)
   }
 
-forecastUSDJPYHL <- function(mbase, currency = 'JPY=X', ahead = ahead){
-  fxLo <- forecastUSDJPY(mbase, currency = currency, ahead = ahead, price = 'Lo')
-  fxHi <- forecastUSDJPY(mbase, currency = currency, ahead = ahead, price = 'Hi')
-  fxHL <- merge(fxHi, fxLo, by = c('LatestDate.GMT', 'ForecastDate.GMT'))
-  rm(fxHi, fxLo)
+forecastUSDJPYHL <- function(mbase, .preCat = 'Op', .setPrice = 'Cl', 
+                             currency = 'JPY=X', ahead = 1){
+  fx1 <- forecastUSDJPY(mbase, currency = currency, ahead = ahead, price = .preCat)
+  fx2 <- forecastUSDJPY(mbase, currency = currency, ahead = ahead, price = .setPrice)
+  fxm <- merge(fx1, fx2, by = c('LatestDate.GMT', 'ForecastDate.GMT'))
+  rm(fx1, fx2)
   
-  fxHL <- fxHL[c(1, 3, 5, 2, 4, 6)]
-  return(fxHL)
+  fxm <- fxm[c(1, 3, 5, 2, 4, 6)]
+  return(fxm)
   }
 
 simKelly <- function(mbase) {
@@ -479,7 +480,7 @@ kellyBet <- function(mbase, initialFundSize = 10000){
   #                      Fct.High = round(Fct.High, 3), 
   #                      Fct.Low = round(Fct.Low, 3)) %>% data.table
   #
-  #LatestDate.GMT Lst.High Lst.Low ForecastDate.GMT Fct.High Fct.Low     ProbB      ProbS
+  #   LatestDate.GMT Lst.High Lst.Low ForecastDate.GMT Fct.High Fct.Low     ProbB      ProbS
   #1:     2017-06-27  112.399 111.863              T+1  112.547 111.766 0.8280676 0.17193237
   #2:     2017-06-28  112.920 112.154              T+1  113.050 112.085 0.8845984 0.11540162
   #3:     2017-06-29  112.389 111.749              T+1  112.581 111.730 0.8323185 0.16768149
@@ -499,7 +500,7 @@ kellyBet <- function(mbase, initialFundSize = 10000){
   #                      Fct.High = round(Fct.High, 3), 
   #                      Fct.Low = round(Fct.Low, 3)) %>% data.table
   #
-  #LatestDate.GMT Lst.High Lst.Low ForecastDate.GMT Fct.High Fct.Low     ProbB     ProbS
+  #   LatestDate.GMT Lst.High Lst.Low ForecastDate.GMT Fct.High Fct.Low     ProbB     ProbS
   #1:     2017-06-27  112.399 111.863              T+1  112.547 111.766 0.4753219 0.5246781
   #2:     2017-06-28  112.920 112.154              T+1  113.050 112.085 0.4753219 0.5246781
   #3:     2017-06-29  112.389 111.749              T+1  112.581 111.730 0.4753219 0.5246781
@@ -518,7 +519,7 @@ kellyBet <- function(mbase, initialFundSize = 10000){
   #   ProbS = 1 - ProbB, Fct.High = round(Fct.High, 3), 
   #   Fct.Low = round(Fct.Low, 3)) %>% data.table
   #
-  #LatestDate.GMT Lst.High Lst.Low ForecastDate.GMT Fct.High Fct.Low     ProbB     ProbS
+  #   LatestDate.GMT Lst.High Lst.Low ForecastDate.GMT Fct.High Fct.Low     ProbB     ProbS
   #1:     2017-06-27  112.399 111.863              T+1  112.547 111.766 0.6829508 0.3170492
   #2:     2017-06-28  112.920 112.154              T+1  113.050 112.085 0.7296487 0.2703513
   #3:     2017-06-29  112.389 111.749              T+1  112.581 111.730 0.6774416 0.3225584
@@ -536,7 +537,7 @@ kellyBet <- function(mbase, initialFundSize = 10000){
   #   ProbS = 1 - ProbB, Fct.High = round(Fct.High, 3), 
   #   Fct.Low = round(Fct.Low, 3)) %>% data.table
   #
-  #LatestDate.GMT Lst.High Lst.Low ForecastDate.GMT Fct.High Fct.Low     ProbB     ProbS
+  #   LatestDate.GMT Lst.High Lst.Low ForecastDate.GMT Fct.High Fct.Low     ProbB     ProbS
   #1:     2017-06-27  112.399 111.863              T+1  112.547 111.766 0.7106333 0.2893667
   #2:     2017-06-28  112.920 112.154              T+1  113.050 112.085 0.7626865 0.2373135
   #3:     2017-06-29  112.389 111.749              T+1  112.581 111.730 0.7044035 0.2955965
