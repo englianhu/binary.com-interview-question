@@ -25,21 +25,28 @@ timeR <- now('GMT')
 
 #fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
 fx <- c('JPY=X')
-wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
+
+#fxObj <- c('EURUSD', 'USDJPY', 'GBPUSD', 'USDCHF', 'USDCAD', 'AUDUSD')
+fxObj <- c('USDJPY')
+
+wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
 wd %<>% factor(., levels = ., ordered = TRUE)
 ## https://beta.rstudioconnect.com/connect/#/apps/3803/logs
-## ================== Functions ========================================
+## ====================== Data ========================================
 #if(weekdays(today('GMT')) %in% wd) {
   #prd <- ifelse(weekdays(today('GMT')) %in% wd[2:5], 1, 3)
   prd = 1 #since count trading day.
-
+  
   for(i in seq(fx)) {
-    assign(fx[i], suppressWarnings(
+    assign(fxObj[i], na.omit(suppressWarnings(
       getSymbols(fx[i], from = (today('GMT') - days(prd)) %m-% years(1), 
-                 to = (today('GMT') - days(prd)), auto.assign = FALSE))) }
+                 to = (today('GMT') - days(prd)), auto.assign = FALSE)))) }
   rm(i)
 #}
+#mbase <- `JPY=X`
+#rm(`JPY=X`)
 
+## ================== Functions ========================================
 # Function to get new observations
 #'@ get_new_data <- function() readLines('http://webrates.truefx.com/rates/connect.html')
 
@@ -117,136 +124,263 @@ armaSearch <- function(data, .method = 'CSS-ML'){
   return(armacoef)
 }
 
-filterFX <- function(currency, price = 'Cl') {
-  if(currency == 'AUDUSD=X') {
-    if(price == 'Op') {
-      mbase <- `AUDUSD=X` %>% Op %>% na.omit; rm(`AUDUSD=X`)
-    } else if(price == 'Hi') {
-      mbase <- `AUDUSD=X` %>% Hi %>% na.omit; rm(`AUDUSD=X`)
-    } else if(price == 'Lo') {
-      mbase <- `AUDUSD=X` %>% Lo %>% na.omit; rm(`AUDUSD=X`)
-    } else if(price == 'Cl') {
-      mbase <- `AUDUSD=X` %>% Cl %>% na.omit; rm(`AUDUSD=X`)
-    } else if(price == 'Ad') {
-      mbase <- `AUDUSD=X` %>% Ad %>% na.omit; rm(`AUDUSD=X`)
-    } else {
-      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
-    }
-    names(mbase) %<>% str_replace_all('AUDUSD=X', 'AUD.USD')
-    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+  filterFX <- function(mbase, currency = 'JPY=X', price = 'Cl') {
     
-  } else if(currency == 'EURUSD=X') {
-    if(price == 'Op') {
-      mbase <- `EURUSD=X` %>% Op %>% na.omit; rm(`EURUSD=X`)
-    } else if(price == 'Hi') {
-      mbase <- `EURUSD=X` %>% Hi %>% na.omit; rm(`EURUSD=X`)
-    } else if(price == 'Lo') {
-      mbase <- `EURUSD=X` %>% Lo %>% na.omit; rm(`EURUSD=X`)
-    } else if(price == 'Cl') {
-      mbase <- `EURUSD=X` %>% Cl %>% na.omit; rm(`EURUSD=X`)
-    } else if(price == 'Ad') {
-      mbase <- `EURUSD=X` %>% Ad %>% na.omit; rm(`EURUSD=X`)
+    if(currency == 'AUDUSD=X') {
+      if(price == 'Op') {
+        mbase %<>% Op %>% na.omit; rm(`AUDUSD=X`)
+      } else if(price == 'Hi') {
+        mbase %<>% Hi %>% na.omit; rm(`AUDUSD=X`)
+      } else if(price == 'Lo') {
+        mbase %<>% Lo %>% na.omit; rm(`AUDUSD=X`)
+      } else if(price == 'Cl') {
+        mbase %<>% Cl %>% na.omit; rm(`AUDUSD=X`)
+      } else if(price == 'Ad') {
+        mbase %<>% Ad %>% na.omit; rm(`AUDUSD=X`)
+      } else {
+        stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+      }
+      names(mbase) %<>% str_replace_all('AUDUSD=X', 'AUD.USD')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+      
+    } else if(currency == 'EURUSD=X') {
+      if(price == 'Op') {
+        mbase %<>% Op %>% na.omit; rm(`EURUSD=X`)
+      } else if(price == 'Hi') {
+        mbase %<>% Hi %>% na.omit; rm(`EURUSD=X`)
+      } else if(price == 'Lo') {
+        mbase %<>% Lo %>% na.omit; rm(`EURUSD=X`)
+      } else if(price == 'Cl') {
+        mbase %<>% Cl %>% na.omit; rm(`EURUSD=X`)
+      } else if(price == 'Ad') {
+        mbase %<>% Ad %>% na.omit; rm(`EURUSD=X`)
+      } else {
+        stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+      }
+      names(mbase) %<>% str_replace_all('EURUSD=X', 'EUR.USD')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+      
+    } else if(currency == 'GBPUSD=X') {
+      if(price == 'Op') {
+        mbase %<>% Op %>% na.omit; rm(`GBPUSD=X`)
+      } else if(price == 'Hi') {
+        mbase %<>% Hi %>% na.omit; rm(`GBPUSD=X`)
+      } else if(price == 'Lo') {
+        mbase %<>% Lo %>% na.omit; rm(`GBPUSD=X`)
+      } else if(price == 'Cl') {
+        mbase %<>% Cl %>% na.omit; rm(`GBPUSD=X`)
+      } else if(price == 'Ad') {
+        mbase %<>% Ad %>% na.omit; rm(`GBPUSD=X`)
+      } else {
+        stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+      }
+      names(mbase) %<>% str_replace_all('GBPUSD=X', 'GBP.USD')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+      
+    } else if(currency == 'CHF=X') {
+      if(price == 'Op') {
+        mbase %<>% Op %>% na.omit; rm(`CHF=X`)
+      } else if(price == 'Hi') {
+        mbase %<>% Hi %>% na.omit; rm(`CHF=X`)
+      } else if(price == 'Lo') {
+        mbase %<>% Lo %>% na.omit; rm(`CHF=X`)
+      } else if(price == 'Cl') {
+        mbase %<>% Cl %>% na.omit; rm(`CHF=X`)
+      } else if(price == 'Ad') {
+        mbase %<>% Ad %>% na.omit; rm(`CHF=X`)
+      } else {
+        stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+      }
+      names(mbase) %<>% str_replace_all('CHF=X', 'USD.CHF')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+      
+    } else if(currency == 'CAD=X') {
+      if(price == 'Op') {
+        mbase %<>% Op %>% na.omit; rm(`CAD=X`)
+      } else if(price == 'Hi') {
+        mbase %<>% Hi %>% na.omit; rm(`CAD=X`)
+      } else if(price == 'Lo') {
+        mbase %<>% Lo %>% na.omit; rm(`CAD=X`)
+      } else if(price == 'Cl') {
+        mbase %<>% Cl %>% na.omit; rm(`CAD=X`)
+      } else if(price == 'Ad') {
+        mbase %<>% Ad %>% na.omit; rm(`CAD=X`)
+      } else {
+        stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+      }
+      names(mbase) %<>% str_replace_all('CAD=X', 'USD.CAD')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+      
+    } else if(currency == 'CNY=X') {
+      if(price == 'Op') {
+        mbase %<>% Op %>% na.omit; rm(`CNY=X`)
+      } else if(price == 'Hi') {
+        mbase %<>% Hi %>% na.omit; rm(`CNY=X`)
+      } else if(price == 'Lo') {
+        mbase %<>% Lo %>% na.omit; rm(`CNY=X`)
+      } else if(price == 'Cl') {
+        mbase %<>% Cl %>% na.omit; rm(`CNY=X`)
+      } else if(price == 'Ad') {
+        mbase %<>% Ad %>% na.omit; rm(`CNY=X`)
+      } else {
+        stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+      }
+      names(mbase) %<>% str_replace_all('CNY=X', 'USD.CNY')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+      
+    } else if(currency == 'JPY=X') {
+      if(price == 'Op') {
+        mbase %<>% Op %>% na.omit; rm(`JPY=X`)
+      } else if(price == 'Hi') {
+        mbase %<>% Hi %>% na.omit; rm(`JPY=X`)
+      } else if(price == 'Lo') {
+        mbase %<>% Lo %>% na.omit; rm(`JPY=X`)
+      } else if(price == 'Cl') {
+        mbase %<>% Cl %>% na.omit; rm(`JPY=X`)
+      } else if(price == 'Ad') {
+        mbase %<>% Ad %>% na.omit; rm(`JPY=X`)
+      } else {
+        stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+      }
+      names(mbase) %<>% str_replace_all('JPY=X', 'USD.JPY')
+      names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+      
     } else {
-      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+      stop('Kindly choose common currencies exchange.')
     }
-    names(mbase) %<>% str_replace_all('EURUSD=X', 'EUR.USD')
-    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
-    
-  } else if(currency == 'GBPUSD=X') {
-    if(price == 'Op') {
-      mbase <- `GBPUSD=X` %>% Op %>% na.omit; rm(`GBPUSD=X`)
-    } else if(price == 'Hi') {
-      mbase <- `GBPUSD=X` %>% Hi %>% na.omit; rm(`GBPUSD=X`)
-    } else if(price == 'Lo') {
-      mbase <- `GBPUSD=X` %>% Lo %>% na.omit; rm(`GBPUSD=X`)
-    } else if(price == 'Cl') {
-      mbase <- `GBPUSD=X` %>% Cl %>% na.omit; rm(`GBPUSD=X`)
-    } else if(price == 'Ad') {
-      mbase <- `GBPUSD=X` %>% Ad %>% na.omit; rm(`GBPUSD=X`)
-    } else {
-      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
-    }
-    names(mbase) %<>% str_replace_all('GBPUSD=X', 'GBP.USD')
-    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
-    
-  } else if(currency == 'CHF=X') {
-    if(price == 'Op') {
-      mbase <- `CHF=X` %>% Op %>% na.omit; rm(`CHF=X`)
-    } else if(price == 'Hi') {
-      mbase <- `CHF=X` %>% Hi %>% na.omit; rm(`CHF=X`)
-    } else if(price == 'Lo') {
-      mbase <- `CHF=X` %>% Lo %>% na.omit; rm(`CHF=X`)
-    } else if(price == 'Cl') {
-      mbase <- `CHF=X` %>% Cl %>% na.omit; rm(`CHF=X`)
-    } else if(price == 'Ad') {
-      mbase <- `CHF=X` %>% Ad %>% na.omit; rm(`CHF=X`)
-    } else {
-      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
-    }
-    names(mbase) %<>% str_replace_all('CHF=X', 'USD.CHF')
-    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
-    
-  } else if(currency == 'CAD=X') {
-    if(price == 'Op') {
-      mbase <- `CAD=X` %>% Op %>% na.omit; rm(`CAD=X`)
-    } else if(price == 'Hi') {
-      mbase <- `CAD=X` %>% Hi %>% na.omit; rm(`CAD=X`)
-    } else if(price == 'Lo') {
-      mbase <- `CAD=X` %>% Lo %>% na.omit; rm(`CAD=X`)
-    } else if(price == 'Cl') {
-      mbase <- `CAD=X` %>% Cl %>% na.omit; rm(`CAD=X`)
-    } else if(price == 'Ad') {
-      mbase <- `CAD=X` %>% Ad %>% na.omit; rm(`CAD=X`)
-    } else {
-      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
-    }
-    names(mbase) %<>% str_replace_all('CAD=X', 'USD.CAD')
-    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
-    
-  } else if(currency == 'CNY=X') {
-    if(price == 'Op') {
-      mbase <- `CNY=X` %>% Op %>% na.omit; rm(`CNY=X`)
-    } else if(price == 'Hi') {
-      mbase <- `CNY=X` %>% Hi %>% na.omit; rm(`CNY=X`)
-    } else if(price == 'Lo') {
-      mbase <- `CNY=X` %>% Lo %>% na.omit; rm(`CNY=X`)
-    } else if(price == 'Cl') {
-      mbase <- `CNY=X` %>% Cl %>% na.omit; rm(`CNY=X`)
-    } else if(price == 'Ad') {
-      mbase <- `CNY=X` %>% Ad %>% na.omit; rm(`CNY=X`)
-    } else {
-      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
-    }
-    names(mbase) %<>% str_replace_all('CNY=X', 'USD.CNY')
-    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
-    
-  } else if(currency == 'JPY=X') {
-    if(price == 'Op') {
-      mbase <- `JPY=X` %>% Op %>% na.omit; rm(`JPY=X`)
-    } else if(price == 'Hi') {
-      mbase <- `JPY=X` %>% Hi %>% na.omit; rm(`JPY=X`)
-    } else if(price == 'Lo') {
-      mbase <- `JPY=X` %>% Lo %>% na.omit; rm(`JPY=X`)
-    } else if(price == 'Cl') {
-      mbase <- `JPY=X` %>% Cl %>% na.omit; rm(`JPY=X`)
-    } else if(price == 'Ad') {
-      mbase <- `JPY=X` %>% Ad %>% na.omit; rm(`JPY=X`)
-    } else {
-      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
-    }
-    names(mbase) %<>% str_replace_all('JPY=X', 'USD.JPY')
-    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
-    
-  } else {
-    stop('Kindly choose common currencies exchange.')
+    return(mbase)
   }
-  return(mbase)
-}
+  
+  #filterFX <- function(mbase, currency, price = 'Cl') {
+  #  if(currency == 'AUDUSD=X') {
+  #    if(price == 'Op') {
+  #      mbase <- `AUDUSD=X` %>% Op %>% na.omit; rm(`AUDUSD=X`)
+  #    } else if(price == 'Hi') {
+  #      mbase <- `AUDUSD=X` %>% Hi %>% na.omit; rm(`AUDUSD=X`)
+  #    } else if(price == 'Lo') {
+  #      mbase <- `AUDUSD=X` %>% Lo %>% na.omit; rm(`AUDUSD=X`)
+  #    } else if(price == 'Cl') {
+  #      mbase <- `AUDUSD=X` %>% Cl %>% na.omit; rm(`AUDUSD=X`)
+  #    } else if(price == 'Ad') {
+  #      mbase <- `AUDUSD=X` %>% Ad %>% na.omit; rm(`AUDUSD=X`)
+  #    } else {
+  #      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+  #    }
+  #    names(mbase) %<>% str_replace_all('AUDUSD=X', 'AUD.USD')
+  #    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+  #    
+  #  } else if(currency == 'EURUSD=X') {
+  #    if(price == 'Op') {
+  #      mbase <- `EURUSD=X` %>% Op %>% na.omit; rm(`EURUSD=X`)
+  #    } else if(price == 'Hi') {
+  #      mbase <- `EURUSD=X` %>% Hi %>% na.omit; rm(`EURUSD=X`)
+  #    } else if(price == 'Lo') {
+  #      mbase <- `EURUSD=X` %>% Lo %>% na.omit; rm(`EURUSD=X`)
+  #    } else if(price == 'Cl') {
+  #      mbase <- `EURUSD=X` %>% Cl %>% na.omit; rm(`EURUSD=X`)
+  #    } else if(price == 'Ad') {
+  #      mbase <- `EURUSD=X` %>% Ad %>% na.omit; rm(`EURUSD=X`)
+  #    } else {
+  #      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+  #    }
+  #    names(mbase) %<>% str_replace_all('EURUSD=X', 'EUR.USD')
+  #    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+  #    
+  #  } else if(currency == 'GBPUSD=X') {
+  #    if(price == 'Op') {
+  #      mbase <- `GBPUSD=X` %>% Op %>% na.omit; rm(`GBPUSD=X`)
+  #    } else if(price == 'Hi') {
+  #      mbase <- `GBPUSD=X` %>% Hi %>% na.omit; rm(`GBPUSD=X`)
+  #    } else if(price == 'Lo') {
+  #      mbase <- `GBPUSD=X` %>% Lo %>% na.omit; rm(`GBPUSD=X`)
+  #    } else if(price == 'Cl') {
+  #      mbase <- `GBPUSD=X` %>% Cl %>% na.omit; rm(`GBPUSD=X`)
+  #    } else if(price == 'Ad') {
+  #      mbase <- `GBPUSD=X` %>% Ad %>% na.omit; rm(`GBPUSD=X`)
+  #    } else {
+  #      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+  #    }
+  #    names(mbase) %<>% str_replace_all('GBPUSD=X', 'GBP.USD')
+  #    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+  #    
+  #  } else if(currency == 'CHF=X') {
+  #    if(price == 'Op') {
+  #      mbase <- `CHF=X` %>% Op %>% na.omit; rm(`CHF=X`)
+  #    } else if(price == 'Hi') {
+  #      mbase <- `CHF=X` %>% Hi %>% na.omit; rm(`CHF=X`)
+  #    } else if(price == 'Lo') {
+  #      mbase <- `CHF=X` %>% Lo %>% na.omit; rm(`CHF=X`)
+  #    } else if(price == 'Cl') {
+  #      mbase <- `CHF=X` %>% Cl %>% na.omit; rm(`CHF=X`)
+  #    } else if(price == 'Ad') {
+  #      mbase <- `CHF=X` %>% Ad %>% na.omit; rm(`CHF=X`)
+  #    } else {
+  #      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+  #    }
+  #    names(mbase) %<>% str_replace_all('CHF=X', 'USD.CHF')
+  #    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+  #    
+  #  } else if(currency == 'CAD=X') {
+  #    if(price == 'Op') {
+  #      mbase <- `CAD=X` %>% Op %>% na.omit; rm(`CAD=X`)
+  #    } else if(price == 'Hi') {
+  #      mbase <- `CAD=X` %>% Hi %>% na.omit; rm(`CAD=X`)
+  #    } else if(price == 'Lo') {
+  #      mbase <- `CAD=X` %>% Lo %>% na.omit; rm(`CAD=X`)
+  #    } else if(price == 'Cl') {
+  #      mbase <- `CAD=X` %>% Cl %>% na.omit; rm(`CAD=X`)
+  #    } else if(price == 'Ad') {
+  #      mbase <- `CAD=X` %>% Ad %>% na.omit; rm(`CAD=X`)
+  #    } else {
+  #      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+  #    }
+  #    names(mbase) %<>% str_replace_all('CAD=X', 'USD.CAD')
+  #    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+  #    
+  #  } else if(currency == 'CNY=X') {
+  #    if(price == 'Op') {
+  #      mbase <- `CNY=X` %>% Op %>% na.omit; rm(`CNY=X`)
+  #    } else if(price == 'Hi') {
+  #      mbase <- `CNY=X` %>% Hi %>% na.omit; rm(`CNY=X`)
+  #    } else if(price == 'Lo') {
+  #      mbase <- `CNY=X` %>% Lo %>% na.omit; rm(`CNY=X`)
+  #    } else if(price == 'Cl') {
+  #      mbase <- `CNY=X` %>% Cl %>% na.omit; rm(`CNY=X`)
+  #    } else if(price == 'Ad') {
+  #      mbase <- `CNY=X` %>% Ad %>% na.omit; rm(`CNY=X`)
+  #    } else {
+  #      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+  #    }
+  #    names(mbase) %<>% str_replace_all('CNY=X', 'USD.CNY')
+  #    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+  #    
+  #  } else if(currency == 'JPY=X') {
+  #    if(price == 'Op') {
+  #      mbase <- `JPY=X` %>% Op %>% na.omit; rm(`JPY=X`)
+  #    } else if(price == 'Hi') {
+  #      mbase <- `JPY=X` %>% Hi %>% na.omit; rm(`JPY=X`)
+  #    } else if(price == 'Lo') {
+  #      mbase <- `JPY=X` %>% Lo %>% na.omit; rm(`JPY=X`)
+  #    } else if(price == 'Cl') {
+  #      mbase <- `JPY=X` %>% Cl %>% na.omit; rm(`JPY=X`)
+  #    } else if(price == 'Ad') {
+  #      mbase <- `JPY=X` %>% Ad %>% na.omit; rm(`JPY=X`)
+  #    } else {
+  #      stop("'price' must be 'Op', 'Hi', 'Lo', 'Cl' or 'Ad'.")
+  #    }
+  #    names(mbase) %<>% str_replace_all('JPY=X', 'USD.JPY')
+  #    names(mbase) %<>% str_replace_all('Open|.High|.Low|.Close|Adjusted', '')
+  #    
+  #  } else {
+  #    stop('Kindly choose common currencies exchange.')
+  #  }
+  #  return(mbase)
+  #}
 
 # Using "memoise" to automatically cache the results
-calC <- memoise(function(currency, ahead = 1, price = 'Cl') {
+calC <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
   
-  mbase = filterFX(currency, price = price)
+  mbase = filterFX(mbase, currency = currency, price = price)
   
   armaOrder = armaSearch(mbase)
   armaOrder %<>% dplyr::filter(AIC == min(AIC)) %>% .[c('p', 'q')] %>% unlist
@@ -269,38 +403,57 @@ calC <- memoise(function(currency, ahead = 1, price = 'Cl') {
   colnames(res) = names(mbase)
   latestPrice = tail(mbase, 1)
   
-  dy = ifelse(weekdays(index(latestPrice)) %in% wd[1:4], 1, 3)
-  forDate = latestPrice %>% index + days(dy)
-  rownames(res) <- as.character(forDate)
+  #----
+  ## count the number of days to forecast.
+  #dy = ifelse(weekdays(index(latestPrice)) %in% wd[1:4], 1, 2)
+  #if(weekdays(index(latestPrice)) %in% wd[c(1:3, 7)]) {
+  #  dy <- 1
+  #} else if(weekdays(index(latestPrice)) %in% wd[6]) {
+  #  dy <- 2
+  #} else if(weekdays(index(latestPrice)) %in% wd[4:5]) {
+  #  dy <- 3
+  #} else {
+  #  stop('Weekdays must be within Monday to Sunday.')
+  #}
+  #----
+  #forDate = latestPrice %>% index + days(dy)
+  
+  ## straighly use today('GMT') since last date will be the last 
+  ##   trading day we get from getSymbols(), therefore the next 
+  ##   trading day will be today('GMT').
+  #'@ forDate = as.Date(today('GMT'))
+  
+  #rownames(res) <- as.character(forDate)
   latestPrice <- xts(latestPrice)
-  res <- as.xts(res)
+  #res <- as.xts(res)
   
   tmp = list(latestPrice = latestPrice, forecastPrice = res)
   return(tmp)
 })
 
-forecastUSDJPY <- function(ahead = 1, price = 'Cl') {
-  forC.USDJPY <- calC('JPY=X', ahead = ahead, price = price)
+forecastUSDJPY <- function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
+  forC.USDJPY <- calC(mbase, currency = currency, ahead = ahead, price = price)
   
   fxC <- data.frame(
     LatestDate.GMT = index(forC.USDJPY$latestPrice), 
     latestPrice = forC.USDJPY$latestPrice, 
-    ForecastDate.GMT = index(forC.USDJPY$forecastPrice), 
+    #ForecastDate.GMT = index(forC.USDJPY$forecastPrice), 
+    ForecastDate.GMT = rownames(forC.USDJPY$forecastPrice), 
     Currency = forC.USDJPY$forecastPrice)
   
   rownames(fxC) <- NULL
   
-  if(price == 'Op') fxC %<>% dplyr::rename(lst.Open = USD.JPY, fc.Open = USD.JPY.1)
-  if(price == 'Hi') fxC %<>% dplyr::rename(lst.High = USD.JPY, fc.High = USD.JPY.1)
-  if(price == 'Lo') fxC %<>% dplyr::rename(lst.Low = USD.JPY, fc.Low = USD.JPY.1)
-  if(price == 'Cl') fxC %<>% dplyr::rename(lst.Close = USD.JPY, fc.Close = USD.JPY.1)
+  if(price == 'Op') fxC %<>% dplyr::rename(Lst.Open = USD.JPY, Fct.Open = USD.JPY.1)
+  if(price == 'Hi') fxC %<>% dplyr::rename(Lst.High = USD.JPY, Fct.High = USD.JPY.1)
+  if(price == 'Lo') fxC %<>% dplyr::rename(Lst.Low = USD.JPY, Fct.Low = USD.JPY.1)
+  if(price == 'Cl') fxC %<>% dplyr::rename(Lst.Close = USD.JPY, Fct.Close = USD.JPY.1)
   
   return(fxC)
   }
 
-forecastUSDJPYHL <- function(ahead = ahead){
-  fxLo <- forecastUSDJPY(ahead = ahead, price = 'Lo')
-  fxHi <- forecastUSDJPY(ahead = ahead, price = 'Hi')
+forecastUSDJPYHL <- function(mbase, currency = 'JPY=X', ahead = ahead){
+  fxLo <- forecastUSDJPY(mbase, currency = currency, ahead = ahead, price = 'Lo')
+  fxHi <- forecastUSDJPY(mbase, currency = currency, ahead = ahead, price = 'Hi')
   fxHL <- merge(fxHi, fxLo, by = c('LatestDate.GMT', 'ForecastDate.GMT'))
   rm(fxHi, fxLo)
   
@@ -308,7 +461,27 @@ forecastUSDJPYHL <- function(ahead = ahead){
   return(fxHL)
   }
 
-kellyBet <- function(){
+simKelly <- function(mbase) {
+  
+  
+  return(res)
+  }
+
+kellyBet <- function(mbase, initialFundSize = 10000){
+  
+  mbase %<>% data.frame
+  names(mbase) <- str_replace_all(names(mbase), 'JPY.X', 'USDJPY')
+  
+  mbase$USDJPY.Mean <- pnorm(n = nrow(mbase), 
+                             mean = (mbase$USDJPY.High + mbase$USDJPY.Low)/2, 
+                             sd = sd((mbase$USDJPY.High + mbase$USDJPY.Low)/2))
+  
+  # Kelly criterion
+  # Advantages = (prob of win * decimal odds) + (prob of lose * -1)
+  # Optimal Kelly wager % = Advantages / decimal odds
+  mbase$Adv <- (mbase$EMprob * mbase$COMOdds) + ((1-mbase$EMprob) * -1)
+  mbase$Staking <- mbase$Adv / mbase$COMOdds
+  mbase$Staking <- ifelse(mbase$Staking < 0, 0, mbase$Staking)
   
   return(res)
   }

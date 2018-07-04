@@ -17,7 +17,10 @@ suppressWarnings(require('forecast'))
 
 #fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
 fx <- c('JPY=X')
-wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
+fxObj <- c('USDJPY')
+
+#wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')
+wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday')
 wd %<>% factor(., levels = ., ordered = TRUE)
 
 ## ================== Server ===========================================
@@ -56,12 +59,12 @@ server <- shinyServer(function(input, output, session) {
                         prd <- 1 #since count trading day.
                         
                         for(i in seq(fx)) {
-                            assign(fx[i], suppressWarnings(
+                            assign(fxObj[i], na.omit(suppressWarnings(
                                 getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
-                                           to = (today('GMT') - prd), auto.assign = FALSE))) }
+                                           to = (today('GMT') - prd), auto.assign = FALSE)))) }
                         rm(i) #}
                         
-                        fxHL <- forecastUSDJPYHL(ahead = prd)
+                        fxHL <- forecastUSDJPYHL(USDJPY, ahead = prd)
                         #'@ print(as.character(now('GMT')))
                         #'@ print(fxHL)
                         if(exists('fxHL')) break
@@ -102,15 +105,15 @@ server <- shinyServer(function(input, output, session) {
     #'@         
     #'@         rx %>% formattable(list(
     #'@             Bid.Price = formatter('span', 
-    #'@                                   style = x ~ style(color = ifelse(x > (rx$fc.Low + rx$fc.High) / 2, 'red', 'green')), 
-    #'@                                   x ~ icontext(ifelse(x > (rx$fc.Low + rx$fc.High) / 2, 'arrow-down', 'arrow-up'), x)), 
+    #'@                                   style = x ~ style(color = ifelse(x > (rx$Fct.Low + rx$Fct.High) / 2, 'red', 'green')), 
+    #'@                                   x ~ icontext(ifelse(x > (rx$Fct.Low + rx$Fct.High) / 2, 'arrow-down', 'arrow-up'), x)), 
     #'@             Ask.Price = formatter('span', 
-    #'@                                   style = x ~ style(color = ifelse(x < (rx$fc.Low + rx$fc.High) / 2, 'red', 'green')),
-    #'@                                   x ~ icontext(ifelse(x < (rx$fc.Low + rx$fc.High) / 2, 'arrow-down', 'arrow-up'), x)), 
-    #'@             fc.Low = formatter('span', 
+    #'@                                   style = x ~ style(color = ifelse(x < (rx$Fct.Low + rx$Fct.High) / 2, 'red', 'green')),
+    #'@                                   x ~ icontext(ifelse(x < (rx$Fct.Low + rx$Fct.High) / 2, 'arrow-down', 'arrow-up'), x)), 
+    #'@             Fct.Low = formatter('span', 
     #'@                                style = x ~ style(color = ifelse(x > 0, 'red', 'green')), 
     #'@                                x ~ icontext(ifelse(x > 0, 'arrow-down', 'arrow-up'), x)), 
-    #'@             fc.High = formatter('span',
+    #'@             Fct.High = formatter('span',
     #'@                                 style = x ~ style(color = ifelse(x < 0, 'red', 'green')),
     #'@                                 x ~ icontext(ifelse(x < 0, 'arrow-down', 'arrow-up'), x))
     #'@         ))})
@@ -132,18 +135,23 @@ server <- shinyServer(function(input, output, session) {
         fcPR <- fcstPunterData()
         
         rx <- cbind(line, fcPR) %>% 
-            mutate(fc.High = round(fc.High, 3), fc.Low = round(fc.Low, 3))
+            mutate(Fct.High = round(Fct.High, 3), Fct.Low = round(Fct.Low, 3))
         
         rx %<>% dplyr::rename(`LatestDate (GMT)` = LatestDate.GMT, 
                               `ForecastDate (GMT)` = ForecastDate.GMT)
         
-        if(rx$fc.Low == rx$Bid.Price){
-            tr.buy <- rx %>% mutate(Price = fc.Low, Transaction = 'Buy') %>% 
+        trdDay <- str_split(rx$'TimeStamp (GMT)', ' ')[[1]][1]
+        forDay <- rx$'ForecastDate (GMT)'
+        
+        #if((rx$Fct.Low == rx$Bid.Price) & (forDay == trdDay)){
+        if(rx$Fct.Low == rx$Bid.Price){
+            tr.buy <- rx %>% mutate(Price = Fct.Low, Transaction = 'Buy') %>% 
                 dplyr::select(`TimeStamp (GMT)`, Price, Transaction)
             saveRDS(tr.buy, paste0('data/buy.', now('GMT'), '.rds')) }
         
-        if(rx$fc.High == rx$Ask.Price){
-            tr.sell <- rx %>% mutate(Price = fc.High, Transaction = 'Sell') %>% 
+        #if((rx$Fct.High == rx$Ask.Price) & (forDay == trdDay)){
+        if(rx$Fct.High == rx$Ask.Price){
+            tr.sell <- rx %>% mutate(Price = Fct.High, Transaction = 'Sell') %>% 
                 dplyr::select(`TimeStamp (GMT)`, Price, Transaction)
             saveRDS(tr.sell, paste0('data/sell.', now('GMT'), '.rds')) }
         
@@ -156,15 +164,15 @@ server <- shinyServer(function(input, output, session) {
         
         rx %>% formattable(list(
             Bid.Price = formatter('span', 
-                                  style = x ~ style(color = ifelse(x > (rx$fc.Low + rx$fc.High) / 2, 'red', 'green')), 
-                                  x ~ icontext(ifelse(x > (rx$fc.Low + rx$fc.High) / 2, 'arrow-down', 'arrow-up'), x)), 
+                                  style = x ~ style(color = ifelse(x > (rx$Fct.Low + rx$Fct.High) / 2, 'red', 'green')), 
+                                  x ~ icontext(ifelse(x > (rx$Fct.Low + rx$Fct.High) / 2, 'arrow-down', 'arrow-up'), x)), 
             Ask.Price = formatter('span', 
-                                  style = x ~ style(color = ifelse(x < (rx$fc.Low + rx$fc.High) / 2, 'red', 'green')),
-                                  x ~ icontext(ifelse(x < (rx$fc.Low + rx$fc.High) / 2, 'arrow-down', 'arrow-up'), x)), 
-            fc.Low = formatter('span', 
+                                  style = x ~ style(color = ifelse(x < (rx$Fct.Low + rx$Fct.High) / 2, 'red', 'green')),
+                                  x ~ icontext(ifelse(x < (rx$Fct.Low + rx$Fct.High) / 2, 'arrow-down', 'arrow-up'), x)), 
+            Fct.Low = formatter('span', 
                             style = x ~ style(color = ifelse(x > 0, 'red', 'green')), 
                             x ~ icontext(ifelse(x > 0, 'arrow-down', 'arrow-up'), x)), 
-            fc.High = formatter('span',
+            Fct.High = formatter('span',
                              style = x ~ style(color = ifelse(x < 0, 'red', 'green')),
                              x ~ icontext(ifelse(x < 0, 'arrow-down', 'arrow-up'), x))
         ))})
