@@ -133,9 +133,10 @@ filterFX <- function(mbase, currency = 'JPY=X', price = 'Cl') {
 
 ## ============= Data ==============================
 prd = 1 #since count trading day.
+fxObj <- c('USDJPY')
 
 for(i in seq(fx)) {
-  assign(fx[i], na.omit(suppressWarnings(
+  assign(fxObj[i], na.omit(suppressWarnings(
     getSymbols(fx[i], from = (today('GMT') - days(prd)) %m-% years(2), 
                to = (today('GMT') - days(prd)), auto.assign = FALSE)))) }
 rm(i)
@@ -157,21 +158,34 @@ pred.data <- ldply(dateID, function(dt) {
   smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
   frd = as.numeric(difftime(dt, dtr), units = 'days')
   fit = forecastUSDJPYHL(mbase = smp, currency = 'JPY=X', ahead = 1)
-  saveRDS(fit, paste0('testRealTimeTransc/data/fit.', as.character(dt), '.rds'))
+  saveRDS(fit, paste0('testRealTimeTransc/data/fcstPunterGMT', as.character(dt), '.rds'))
   cat(as.character(dt), '\n')
   fit
   }, .parallel = FALSE)
 
-ldply(dir('testRealTimeTransc/data', pattern = '^fit.'), function(dt) 
-  readRDS(paste0('testRealTimeTransc/data/', as.character(dt))))
+#ldply(dir('testRealTimeTransc/data', pattern = '^fit.'), function(dt) 
+#  readRDS(paste0('testRealTimeTransc/data/', as.character(dt))))
+
+#nm <- llply(dir('testRealTimeTransc/data', pattern = '^fit.'), function(x) {
+#  str_replace_all(x, '^fit.', 'fcstPunterGMT')
+#})
+#
+#file.rename(from = file.path(getwd(), 'testRealTimeTransc/data', 
+#                             list.files('testRealTimeTransc/data', pattern = '^fit.')), 
+#            to = file.path(getwd(), 'testRealTimeTransc/data', nm))
 
 ## Set as our daily settlement price.
 obs.data <- mbase[index(mbase) > dateID0]
 
+pred.data %>% mutate(
+  ProbB = pnorm(Fct.Low, mean = mean(Fct.High), sd = sd(Fct.High)), 
+  ProbS = 1 - ProbB, Fct.High = round(Fct.High, 3), 
+  Fct.Low = round(Fct.Low, 3)) %>% data.table
 
-
-
-
+pred.data %>% mutate(
+  ProbB = pnorm(Fct.High, mean = mean(Fct.Low), sd = sd(Fct.Low)), 
+  ProbS = 1 - ProbB, Fct.High = round(Fct.High, 3), 
+  Fct.Low = round(Fct.Low, 3)) %>% data.table
 
 
 
