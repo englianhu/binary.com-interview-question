@@ -1,21 +1,23 @@
 ## ================== Declaration ========================================
-options(warn = -1)
-suppressWarnings(require('shiny'))
-suppressWarnings(require('cronR'))
-suppressWarnings(require('xts'))
-suppressWarnings(require('quantmod'))
-suppressWarnings(require('TFX'))
-suppressWarnings(require('lubridate'))
-suppressWarnings(require('plyr'))
-suppressWarnings(require('dplyr'))
-suppressWarnings(require('tidyr'))
-suppressWarnings(require('magrittr'))
-suppressWarnings(require('memoise'))
-suppressWarnings(require('stringr'))
-suppressWarnings(require('RCurl'))
-suppressWarnings(require('rugarch'))
-suppressWarnings(require('rmgarch'))
-suppressWarnings(require('forecast'))
+options(warn = -1, 'getSymbols.yahoo.warning' = FALSE)
+suppressPackageStartupMessages(suppressWarnings(require('BBmisc')))
+suppressAll(require('shiny'))
+suppressAll(require('cronR'))
+suppressAll(require('xts'))
+suppressAll(require('quantmod'))
+suppressAll(require('TFX'))
+suppressAll(require('lubridate'))
+suppressAll(require('plyr'))
+suppressAll(require('dplyr'))
+suppressAll(require('data.table'))
+suppressAll(require('tidyr'))
+suppressAll(require('magrittr'))
+suppressAll(require('memoise'))
+suppressAll(require('stringr'))
+suppressAll(require('RCurl'))
+suppressAll(require('rugarch'))
+suppressAll(require('rmgarch'))
+suppressAll(require('forecast'))
 
 Sys.setenv(TZ = 'GMT')
 zones <- attr(as.POSIXlt(now('GMT')), 'tzone')
@@ -45,6 +47,8 @@ wd %<>% factor(., levels = ., ordered = TRUE)
 #}
 #mbase <- `JPY=X`
 #rm(`JPY=X`)
+names(USDJPY) <- str_replace_all(names(USDJPY), 'JPY.X', 'USD.JPY')
+USDJPY %<>% na.omit
 
 ## ================== Functions ========================================
 # Function to get new observations
@@ -564,6 +568,102 @@ kellyBet <- function(mbase, initialFundSize = 10000){
   
   return(res)
   }
+
+# ---------------- KellyS ------------------------------------------
+## http://srdas.github.io/MLBook/Gambling.html
+KellyS <- function(fitm, .preCat = 'Lo', .forCat = 'Hi', .initialFundSize = 10000, 
+                   .filterBets = FALSE, .fundLeverageLog = FALSE) {
+  
+  fitm %<>% na.omit
+  
+  if(.preCat == 'Op') fitm %<>% rename(Point.Forecast = Fct.Open)
+  if(.preCat == 'Hi') fitm %<>% rename(Point.Forecast = Fct.High)
+  if(.preCat == 'Lo') fitm %<>% rename(Point.Forecast = Fct.Low)
+  if(.preCat == 'Cl') fitm %<>% rename(Point.Forecast = Fct.Close)
+  
+  if(.forCat == 'Op') fitm %<>% rename(forClose = Fct.Open)
+  if(.forCat == 'Hi') fitm %<>% rename(forClose = Fct.High)
+  if(.forCat == 'Lo') fitm %<>% rename(forClose = Fct.Low)
+  if(.forCat == 'Cl') fitm %<>% rename(forClose = Fct.Close)
+  
+  fitm %<>% mutate(
+    ProbB = pnorm(Point.Forecast, mean = mean(forClose), sd = sd(forClose)), 
+    ProbS = 1 - ProbB)#, Fct.High = round(Fct.High, 3), 
+  #Fct.Low = round(Fct.Low, 3))
+  
+  fitm %<>% mutate(Point.Forecast = round(lag(Point.Forecast), 3), 
+                   forClose = round(lag(forClose), 3)) %>% na.omit %>% data.table
+  
+  fitm %<>% mutate(BR = .initialFundSize) %>% 
+    #'@ mutate(Return.Back = ifelse(Prob > 0.5, Diff * Back * stakes, 0), 
+    #'@        Return.Lay = ifelse(Prob < 0.5, -Diff * Lay * stakes, 0))
+    mutate(fB = 2 * ProbB - 1, fS = 2 * ProbS - 1, 
+           #EUB = ProbB * log(BR * (1 + fB)) + (1 - ProbB) * log(BR * (1 - fB)), 
+           #EUS = ProbS * log(BR * (1 + fS)) + (1 - ProbS) * log(BR * (1 - fS)), 
+           EUB = ProbB * log(ProbB) + (1 - ProbB) * log(1 - ProbB), 
+           EUS = ProbS * log(ProbS) + (1 - ProbS) * log(1 - ProbS), 
+           #EUB = ProbB * (BR * (1 + fB)) + (1 - ProbB) * (BR * (1 - fB)), 
+           #EUS = ProbS * (BR * (1 + fS)) + (1 - ProbS) * (BR * (1 - fS)), 
+           #'@ Edge = ifelse(f > 0, EUB, EUS), #For f > 0 need to buy and f <= 0 need to sell.
+           #need to study on the risk management on "predicted profit" and "real profit".
+           Edge = ifelse(fB > 0, EUB, ifelse(fS > 0, EUS, 0)), 
+           PF = ifelse(Point.Forecast >= Lst.Low & 
+                         Point.Forecast <= Lst.High, 
+                       Point.Forecast, 0), #if forecasted place-bet price doesn't existing within Hi-Lo price, then the buying action is not stand. Assume there has no web bandwith delay.
+           FC = ifelse(forClose >= Lst.Low & forClose <= Lst.High, 
+                       forClose, Lst.Close), #if forecasted settle price doesn't existing within Hi-Lo price, then the closing action at closing price. Assume there has no web bandwith delay.
+           #'@ Diff = round(forClose - USDJPY.Close, 2),
+           ##forecasted closed price minus real close price.
+           
+           Buy = ifelse(PF > 0 & FC > PF, 1, 0), ##buy action
+           Sell = ifelse(PF > 0 & FC < PF, 1, 0), ##sell action
+           BuyS = Edge * Buy * (forClose - PF), 
+           SellS = Edge * Sell * (PF - forClose), 
+           Profit = BuyS + SellS, Bal = BR + Profit)
+  
+  
+  #'@ fitm %>% dplyr::select(Point.Forecast, forClose, Prob, BR, f, EU, Edge, PF, FC, Buy, Sell, SP, Bal)
+  #'@ fitm %>% dplyr::select(ProbB, ProbS, BR, fB, fS, EUB, EUS, Edge, PF, USDJPY.Open, FC, Buy, Sell, BuyS, SellS, Profit, Bal) %>% filter(PF > 0, FC > 0)
+  
+  ## The ets staking models (Kelly criterion) Adjusted Banl-roll and Balance column.
+  for(i in seq(2, nrow(fitm))) {
+    fitm$BR[i] = fitm$Bal[i - 1]
+    fitm$fB[i] = 2 * fitm$ProbB[i] - 1
+    fitm$fS[i] = 2 * fitm$ProbS[i] - 1
+    fitm$EUB[i] = fitm$ProbB[i] * log(fitm$BR[i] * (1 + fitm$fB[i])) + 
+      (1 - fitm$ProbB[i]) * log(fitm$BR[i] * (1 - fitm$fB[i]))
+    fitm$EUS[i] = fitm$ProbS[i] * log(fitm$BR[i] * (1 + fitm$fS[i])) + 
+      (1 - fitm$ProbS[i]) * log(fitm$BR[i] * (1 - fitm$fS[i]))
+    fitm$Edge[i] = ifelse(fitm$fB[i] > 0, fitm$EUB[i], 
+                          ifelse(fitm$fS[i] > 0, fitm$EUS[i], 0)) #For f > 0 need to buy and f <= 0 need to sell.
+    #need to study on the risk management on "predicted profit" and "real profit".
+    
+    fitm$BuyS[i] = fitm$Edge[i] * fitm$Buy[i] * (fitm$forClose[i] - fitm$PF[i])
+    fitm$SellS[i] = fitm$Edge[i] * fitm$Sell[i] * (fitm$PF[i] - fitm$forClose[i])
+    fitm$Profit[i] = fitm$BuyS[i] + fitm$SellS[i]
+    fitm$Bal[i] = fitm$BR[i] + fitm$Profit[i]
+    if(fitm$Bal[i] <= 0) stop('All invested fund ruined!')
+  }; rm(i)
+  
+  #names(mbase) <- str_replace_all(names(mbase), '^(.*?)+\\.', nm)
+  
+  if(.filterBets == TRUE) {
+    fitm %<>% filter(PF > 0, FC > 0)
+  }
+  
+  fitm %<>% mutate(RR = Bal/BR)
+  
+  ## convert the log leverage value of fund size and profit into normal digital figure with exp().
+  if(.fundLeverageLog == TRUE) fitm %<>% 
+    mutate(BR = exp(BR), BuyS = exp(BuyS), SellS = exp(SellS), 
+           Profit = exp(Profit), Bal = exp(Profit))
+  
+  return(fitm)
+  }
+
+
+
+
 
 ## ================== Reference ========================================
 ## https://shiny.rstudio.com/articles/persistent-data-storage.html

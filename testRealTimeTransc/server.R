@@ -62,6 +62,7 @@ server <- shinyServer(function(input, output, session) {
                             assign(fxObj[i], na.omit(suppressWarnings(
                                 getSymbols(fx[i], from = (today('GMT') - prd) %m-% years(1), 
                                            to = (today('GMT') - prd), auto.assign = FALSE)))) }
+                        USDJPY %<>% na.omit
                         rm(i) #}
                         
                         fxHL <- forecastUSDJPYHL(USDJPY, ahead = prd)

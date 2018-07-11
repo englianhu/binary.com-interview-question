@@ -151,6 +151,8 @@ ui <- shinyUI(fluidPage(
                                        p('You are feel free to surf over', 
                                          HTML("<a href='https://github.com/englianhu/binary.com-interview-question'>binary.com Interview Question (GitHub Source Codes)</a>"), 
                                          ' to get the source codes as well as some research papers on the quantitative trading.'), 
+                                       
+                                       ##https://www.zybuluo.com/knight/note/96093
                                        p('Below is the equation for the model.', 
                                          withMathJax(
                                            helpText('$$\\delta_{t}^{2} = \\omega + (\\alpha + \\gamma I_{t-1}) \\varepsilon_{t-1}^{2} + \\beta \\sigma_{t-1}^{2}$$')), 
