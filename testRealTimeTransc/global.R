@@ -474,6 +474,7 @@ simKelly <- function(mbase) {
 
 kellyBet <- function(mbase, initialFundSize = 10000){
   
+  ## https://quantstrattrader.wordpress.com/2017/09/29/the-kelly-criterion-does-it-work/
   mbase %<>% data.frame
   names(mbase) <- str_replace_all(names(mbase), 'JPY.X', 'USDJPY')
   ## https://github.com/englianhu/binary.com-interview-question/blob/master/function/simStakesGarch.R

@@ -18,6 +18,7 @@ suppressAll(require('RCurl'))
 suppressAll(require('rugarch'))
 suppressAll(require('rmgarch'))
 suppressAll(require('forecast'))
+suppressAll(require('formattable'))
 
 prd = 1 #since count trading day.
 
@@ -669,6 +670,104 @@ pred.dataHL <- ldply(dateID, function(dt) {
   cat(as.character(dt), '\n')
   fit
 }, .parallel = FALSE)
+
+## --------- Start Simulate daily price ------------------------
+## Simulate forecast data up-to-date.
+dtb <- ldply(paste0('testRealTimeTransc/data/', dir('testRealTimeTransc/data', pattern = 'fcstPunterGMT')), readRDS)
+dtc <- dir('testRealTimeTransc/data', pattern = 'fcstPunterGMT') %>% str_replace_all('fcstPunterGMT', '') %>% str_replace_all('.rds', '')
+dtc <- dtc[!dtc %in% dtb$LatestDate.GMT]
+dd <- dplyr::filter(pred.dataHL, !LatestDate.GMT %in% dtc)
+
+## Save the forecast price.
+llply(split(dd, dd$LatestDate.GMT), function(x) {
+  saveRDS(x, paste0('testRealTimeTransc/data/fcstPunterGMT', as.character(x$LatestDate.GMT), '.rds'))
+})
+
+## Check again the files.
+ldply(paste0('testRealTimeTransc/data/', dir('testRealTimeTransc/data', pattern = 'fcstPunterGMT')), readRDS)
+## --------- End Simulate daily price ------------------------
+
+## Simulate Kelly staking model.
+##   Static data where closed price gather from Yahoo but not 
+##   real-time closed price data from TFX::QueryFX() everyday 12AM GMT.
+obs <- ldply(
+  paste0('testRealTimeTransc/data/', 
+         dir('testRealTimeTransc/data', pattern = 'fcstPunterGMT')), readRDS) %>% 
+  mutate(Fct.High = lag(round(Fct.High, 3)), Fct.Low = lag(round(Fct.Low, 3))) %>% 
+  data.table
+
+## Closed price as settlement price for those no closing transaction.
+Closed <- mbase %>% Cl %>% data.frame
+Closed <- data.frame(LatestDate.GMT = as.Date(rownames(Closed)), 
+                     Lst.Close = Closed$JPY.X.Close)
+rownames(Closed) <- NULL
+
+obs <- plyr::join(obs, Closed, by = 'LatestDate.GMT') %>% na.omit
+obs$ForecastDate.GMT <- NULL
+
+obs %<>% mutate(Back = percent(pnorm(Fct.High, mean = mean(Fct.Low), sd = sd(Fct.Low))), 
+               Lay = percent(pnorm(Fct.Low, mean = mean(Fct.High), sd = sd(Fct.High))))
+
+## Randomized dummy value.
+## Method 1 - simulate sample() 1000 times.
+##   Do not work since don't know the mean value based on central limit theory.
+#'@ obs %>% mutate(HL = sample(0:1, nrow(.), replace = TRUE))
+
+## Method 2 - directly use the mean value to determine the dummy value.
+##   Based on pnorm of 'Back' and 'Lay' to determine which come first 
+##   due to OHLC table has no timeline to know highest or lowest price 
+##   come first therefore we don't know buy or sell transaction will be 
+##   done first.
+##   There will be a high risk due to the placed stakes will be different 
+##   based on the percentage of bankroll and percentage of winning.
+obs %<>% mutate(
+  Median = (Lst.High + Lst.Low)/2, 
+  Rdm = round(pnorm(Median, mean = mean(Median), sd = sd(Median)), 0))
+
+## In order to know the timeline price movement, here I gather tick data 
+##   via https://tickdata.fxcorporate.com/EURUSD/2018/25.csv.gz
+
+dir.create('testRealTimeTransc/data/tickdata')
+## number of week from 25:52
+llply(25:52, function(i) {
+  if(!file.exists(paste0('testRealTimeTransc/data/tickdata/W', i, '.csv.gz')))
+    download.file(url = paste0('https://tickdata.fxcorporate.com/EURUSD/2018/', i,'.csv.gz'), 
+                               destfile = paste0('testRealTimeTransc/data/tickdata/W', i, '.csv.gz'))
+  })
+
+library(R.utils)
+llply(25:52, function(i) {
+  if(!file.exists(paste0('testRealTimeTransc/data/tickdata/W', i, '.csv')))
+    R.utils::gunzip(paste0('testRealTimeTransc/data/tickdata/W', i, '.csv.gz'), remove = FALSE)
+})
+
+## https://www.r-bloggers.com/memory-limit-management-in-r/
+w <- dir('testRealTimeTransc/data/tickdata', pattern = '.csv$')
+ldply(w, function(x) {
+  fread(paste0('testRealTimeTransc/data/tickdata/', x))
+})
+
+## download txt format data due to csv files oversize...
+llply(25:52, function(i) {
+  download.file(paste0('https://github.com/englianhu/Quant-Strategies-HFT/blob/master/data/W', i,'.zip?raw=true'), 
+                destfile = paste0('testRealTimeTransc/data/tickdata/W', i,'.zip'))
+  })
+
+
+llply(dir('testRealTimeTransc/data/tickdata', pattern = '.zip$'), function(x) {
+  unzip(paste0('testRealTimeTransc/data/tickdata/', x), exdir = 'testRealTimeTransc/data/tickdata')
+  })
+
+## read files into 1 file.
+WT <- ldply(dir('testRealTimeTransc/data/tickdata', pattern = '.txt$'), function(x) {
+  data.table::fread(paste0('testRealTimeTransc/data/tickdata/', x))
+  }) %>% tbl_df %>% mutate(
+    DateTime = mdy_hms(DateTime), 
+    Date = as.Date(DateTime))
+
+
+
+
 
 
 ## Various packages for moving average
