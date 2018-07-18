@@ -40,7 +40,7 @@ registerDoParallel(cl)
 # Create a cluster object to be used for rugarcgh and rmgarch models.
 #'@ cluster = makePSOCKcluster(15)
 suppressPackageStartupMessages(library('BBmisc'))
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'tidyquant', 'turner', 'readr', 'R.utils', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'data.table', 'tidyverse', 'tidyquant', 'turner', 'readr', 'R.utils', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
 
 suppressAll(lib(pkgs))
 
@@ -69,63 +69,22 @@ rm(pkgs)
 ## Remove all objects include hidden objects.
 #'@ rm(list = ls(all.names = TRUE))
 
+library('plyr')
+library('dplyr')
+library('purrr')
+library('readr')
+library('magrittr')
+library('lubridate')
+library('data.table')
+library('R.utils')
+
 ## get currency dataset online.
 yr <- c(2015, 2016, 2017, 2018)
 wk <- 1:53
 
 ## https://www.epochconverter.com/years
 llply(yr, function(i) {
-  #'@ if(i == 2015) wk <- 1:53 else wk <- 1:52
-  lnk <- paste0('https://tickdata.fxcorporate.com/USDJPY/', i, '/', wk, '.csv.gz')
-  if(!dir.exists('data/tickdata')) dir.create('data/tickdata')
-  if(!file.exists(paste0('data/tickdata/Y', i, 'W', wk, '.csv.gz'))) 
-    download.file(lnk, destfile = paste0('data/tickdata/Y', i, 'W', wk, '.csv.gz'))
-  })
-
-llply(yr, function(i) {
-  llply(wk, function(j) {
-  if(file.exists(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz')) & 
-    !file.exists(paste0('data/tickdata/Y', i, 'W', j, '.csv')))
-    R.utils::gunzip(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz'), remove = FALSE)
-  })
-})
-
-## remove all files size less than 1MB
-file.remove(paste0('data/tickdata/', dir('data/tickdata', pattern = '.csv$')[file.size(paste0('data/tickdata/', dir('data/tickdata', pattern = '.csv$'))) <= 1000000]))
-
-llply(yr, function(i) {
-  llply(wk, function(j) {
-  if(file.exists(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz')))
-    unzip(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz'), exdir = 'data/tickdata')
-  })
-})
-
-
-for(i in yr){
-    for(j in wk) {
-        R.utils::gunzip(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz'), remove = FALSE)
-      Sys.sleep(5)
-      cat(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz extracted!\n'))
-    }
-}
-
-for(i in yr){
-    for(j in wk) {
-        R.utils::gunzip(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz'), remove = FALSE)
-      Sys.sleep(5)
-      if(file.exists(paste0('data/tickdata/Y', i, 'W', j, '.csv'))) 
-        cat(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz extracted!\n'))
-    }
-}
-
-### ----------------------------------------
-## get currency dataset online.
-yr <- c(2015, 2016, 2017, 2018)
-wk <- 1:53
-
-## https://www.epochconverter.com/years
-llply(yr, function(i) {
-  if(i == 2015) wk <- 1:53 else wk <- 1:52
+  if(i == 2015|i == 2017) wk <- 1:53 else wk <- 1:52
   llply(wk, function(j) {
     lnk <- paste0(
       'https://tickdata.fxcorporate.com/USDJPY/', i, '/', j, '.csv.gz')
@@ -133,20 +92,34 @@ llply(yr, function(i) {
     if(!file.exists(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz'))) {
       download.file(lnk, destfile = paste0(
         'data/tickdata/Y', i, 'W', j, '.csv.gz'))
-      cat(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz downloaded!\n'))
+      #cat(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz downloaded!\n'))
     }
   })
 })
 
 llply(yr, function(i) {
+  if(i == 2015|i == 2017) wk <- 1:53 else wk <- 1:52
   llply(wk, function(j) {
-    if(file.exists(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz'))) {
+    if(file.exists(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz')) & 
+       !file.exists(paste0('data/tickdata/Y', i, 'W', j, '.csv'))) {
       R.utils::gunzip(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz'), 
                       remove = FALSE)
       cat(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz extracted!\n'))
     }
   })
 })
+
+## remove all files size less than 1MB
+if(any(file.exists(paste0(
+  'data/tickdata/', dir('data/tickdata', pattern = '.csv')[file.size(paste0(
+    'data/tickdata/', dir('data/tickdata', pattern = '.csv'))) <= 1000000])))) {
+  file.remove(paste0(
+    'data/tickdata/', dir('data/tickdata', pattern = '.csv')[file.size(paste0(
+      'data/tickdata/', dir('data/tickdata', pattern = '.csv'))) <= 1000000]))
+  }
+
+
+
 
 
 ### ----------------------------------------
