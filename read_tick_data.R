@@ -188,7 +188,7 @@ read_HL_tick_data <- function(dr = 'data/USDJPY/', df.type = 'data.table') {
   
   file.remove(paste0(dr, dir(dr, pattern = '_HL.rds')))
   
-  return(res)
+  return(unique(res))
   }
 
 

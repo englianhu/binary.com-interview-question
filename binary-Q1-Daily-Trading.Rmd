@@ -1,14 +1,20 @@
 ---
 title: "<img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/757b27e1e93132368b0898152078be4961b05a28/www/binary-logo-resize.jpg' width='240'>"
-subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Application of Kelly Betting on Tick-Data-History"
+subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Tick-Data-History For Daily Trading"
 author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/ENG.jpg' width='24'> <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/RYO.jpg?raw=true' width='24'>®"
-date: "`r today('Asia/Tokyo')`"
+date: "`r lubridate::today('Asia/Tokyo')`"
 output:
+  html_document:
+    toc: yes
+    toc_depth: 4
+    number_sections: true
+    toc_float:
+      collapsed: false
+      smooth_scroll: false
   tufte::tufte_html:
     toc: yes
     toc_depth: 4
     self_contained: no
-    number_sections: true
   tufte::tufte_book:
     citation_package: natbib
     latex_engine: xelatex
@@ -20,67 +26,49 @@ link-citations: yes
 
 ```{r setup, include = FALSE}
 suppressPackageStartupMessages(library('BBmisc'))
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'tidyquant', 'turner', 'readr', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'tidyquant', 'turner', 'readr', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'memoise', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
 
 suppressAll(lib(pkgs))
-
-#'@ suppressAll(l_ply(c('last.R', 'Mn.R', 'has.Mn.R', 'simAutoArima.R', 'simStakesAutoArima.R', 'simETS.R', 'simStakesETS.R', 'plotChart2.R', 'armaSearch.R', 'simGarch.R', 'simStakesGarch.R'), function(pkg) source(paste0('./function/', pkg))))
 
 ## Set option to below if you want to plot an independent webpage with graph 
 #'@ op <- options(gvis.plot.tag=NULL)
 op <- options(gvis.plot.tag = 'chart')
-options(gvis.plot.tag = 'chart', warn = -1)
+options(gvis.plot.tag = 'chart', warn = -1, 'getSymbols.yahoo.warning' = FALSE)
 #'@ options(rpubs.upload.method = 'internal')
 
-## R: llply fully reproducible results in parallel
-## https://stackoverflow.com/questions/34946177/r-llply-fully-reproducible-results-in-parallel
-cl <- makeCluster(detectCores())
-registerDoParallel(cl)
-
-# Create a cluster object to be used for rugarcgh and rmgarch models.
-#'@ cluster = makePSOCKcluster(15)
-suppressPackageStartupMessages(library('BBmisc'))
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'data.table', 'tidyverse', 'tidyquant', 'turner', 'readr', 'R.utils', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
-
-suppressAll(lib(pkgs))
-
-#'@ suppressAll(l_ply(c('last.R', 'Mn.R', 'has.Mn.R', 'simAutoArima.R', 'simStakesAutoArima.R', 'simETS.R', 'simStakesETS.R', 'plotChart2.R', 'armaSearch.R', 'simGarch.R', 'simStakesGarch.R'), function(pkg) source(paste0('./function/', pkg))))
-
-# invalidate cache when the package version changes
-#'@ knitr::opts_chunk$set(tidy = FALSE, cache.extra = packageVersion('tint'))
 rm(pkgs)
 #'@ options(htmltools.dir.version = FALSE)
+
+## filter tick data to get daily high-low price (with timeline).
+source('function/filter_HL.R')
+source('function/read_HL_tick_data.R')
+source('function/armaSearch.R')
+source('function/calC.R')
+source('function/filterFX.R')
+source('function/forecastUSDJPY.R')
+source('function/forecastUSDJPYHL.R')
 ```
 
-# 1. Introduction
+# Introduction
 
   In order to test the timeline of daily highest and lowest price, here I created this file to read the high volume tick-data-history to test the efficiency of Kelly Criterion betting models. Kindly refer to [Reference] for further information.
 
-# 2. Data
+# Data
 
-## 2.1 Read Data
+## Read Data
 
   I use more than 3 years data (from week 1 2015 until week 27 2018)^[You are feel feel to get the data via [FXCMTickData](https://github.com/fxcm/FXCMTickData)] for the question as experiment, 1st year data is burn-in data for statistical modelling and prediction purpose while following 2 years data for forecasting and staking. There have 52 trading weeks within a year.
 
-```{r read-data, echo = FALSE, eval = FALSE}
+```{r read-data1, echo = FALSE, eval = FALSE}
 ## ================== eval = FALSE =============================
 ## Do not execute...
 ## 
 ## Remove all objects include hidden objects.
 #'@ rm(list = ls(all.names = TRUE))
-
-library('plyr')
-library('dplyr')
-library('purrr')
-library('readr')
-library('magrittr')
-library('lubridate')
-library('data.table')
-library('R.utils')
-
 ## get currency dataset online.
 yr <- c(2015, 2016, 2017, 2018)
 wk <- 1:53
+dr <- 'data/USDJPY/'
 
 ## https://www.epochconverter.com/years
 llply(yr, function(i) {
@@ -88,199 +76,220 @@ llply(yr, function(i) {
   llply(wk, function(j) {
     lnk <- paste0(
       'https://tickdata.fxcorporate.com/USDJPY/', i, '/', j, '.csv.gz')
-    if(!dir.exists('data/tickdata')) dir.create('data/tickdata')
-    if(!file.exists(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz'))) {
+    if(!dir.exists(dr)) dir.create(dr)
+    if(!file.exists(paste0(dr, 'Y', i, 'W', j, '.csv.gz'))) {
       download.file(lnk, destfile = paste0(
-        'data/tickdata/Y', i, 'W', j, '.csv.gz'))
-      #cat(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz downloaded!\n'))
+        dr, 'Y', i, 'W', j, '.csv.gz'))
+      #cat(paste0(dr, 'Y', i, 'W', j, '.csv.gz downloaded!\n'))
     }
   })
 })
 
+## https://stackoverflow.com/questions/43642708/fread-with-gunzip-whats-the-more-memory-efficient-way/43643513
+## https://stackoverflow.com/questions/37727865/how-can-i-use-fread-to-read-gz-files-in-r?noredirect=1&lq=1
+#'@ data.table::fread("gunzip -c data/tickdata/Y2015W1.csv.gz")
+## Due to the dataset size more than 1.5 mil rows, here I run and tidy the dataset instead of read the *.csv.gz or *.csv files.
+
 llply(yr, function(i) {
   if(i == 2015|i == 2017) wk <- 1:53 else wk <- 1:52
   llply(wk, function(j) {
-    if(file.exists(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz')) & 
-       !file.exists(paste0('data/tickdata/Y', i, 'W', j, '.csv'))) {
-      R.utils::gunzip(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz'), 
+    if(file.exists(paste0(dr, 'Y', i, 'W', j, '.csv.gz')) & 
+       !file.exists(paste0(dr, 'Y', i, 'W', j, '.csv'))) {
+      R.utils::gunzip(paste0(dr, 'Y', i, 'W', j, '.csv.gz'), 
                       remove = FALSE)
-      cat(paste0('data/tickdata/Y', i, 'W', j, '.csv.gz extracted!\n'))
+      cat(paste0(dr, 'Y', i, 'W', j, '.csv.gz extracted!\n'))
     }
   })
 })
 
 ## remove all files size less than 1MB
-if(any(file.exists(paste0(
-  'data/tickdata/', dir('data/tickdata', pattern = '.csv')[file.size(paste0(
-    'data/tickdata/', dir('data/tickdata', pattern = '.csv'))) <= 1000000])))) {
-  file.remove(paste0(
-    'data/tickdata/', dir('data/tickdata', pattern = '.csv')[file.size(paste0(
-      'data/tickdata/', dir('data/tickdata', pattern = '.csv'))) <= 1000000]))
+if(any(file.exists(paste0(dr, dir(dr, pattern = '.csv')[file.size(paste0(
+  dr, dir(dr, pattern = '.csv'))) <= 1000000])))) {
+  file.remove(paste0(dr, dir(dr, pattern = '.csv')[file.size(
+    paste0(dr, dir(dr, pattern = '.csv'))) <= 1000000]))
   }
-
-
-
-
-
-### ----------------------------------------
-
-## https://stackoverflow.com/questions/43642708/fread-with-gunzip-whats-the-more-memory-efficient-way/43643513
-## https://stackoverflow.com/questions/37727865/how-can-i-use-fread-to-read-gz-files-in-r?noredirect=1&lq=1
-#'@ data.table::fread("gunzip -c data/tickdata/Y2015W1.csv.gz")
-
-l_ply(dir('data/tickdata', pattern = '.csv$'), function(x) file.remove(paste0('data/tickdata/', x)))
-
-for(i in yr){
-    for(j in wk) {
-        assign(paste0('Y', i, 'W', j), data.table::fread(paste0('data/tickdata/Y', i, 'W', j, '.csv')))
-    }
-}
-
-
-
-#'@ USDJPY <- readRDS('./data/USDJPY.rds')
-USDJPY <- xts(USDJPY[, -1], order.by = USDJPY$Date)
-
-## dateID
-dateID <- index(mbase)
-dateID0 <- ymd('2015-01-01')
-dateID <- dateID[dateID > dateID0]
-obs.data <- USDJPY[index(USDJPY) > dateID0]
-
-## Now we try to use the daily mean value which is (Hi + Lo) / 2.
-pred.data <- ldply(dateID, function(dt) {
-  smp = USDJPY
-  dtr = last(index(smp[index(smp) < dt]))
-  smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
-  frd = as.numeric(difftime(dt, dtr), units = 'days')
-  fit = ets(smp) #https://www.otexts.org/fpp/7/7
-  data.frame(Date = dt, forecast(fit, h = frd)) %>% tbl_df
-  }, .parallel = FALSE) %>% tbl_df
-
-cmp.data <- xts(pred.data[, -1], order.by = pred.data$Date)
-cmp.data <- cbind(cmp.data, obs.data)
-rm(obs.data, pred.data)
-
-# Test the models
-lm(Point.Forecast~ USD.JPY, data = cmp.data)
-MCMCregress(Point.Forecast~ USD.JPY, data = cmp.data)
-
-plot(forecast(fit))
-forecast(fit, h = 4)
 ```
 
-```{r read-data2, warning = FALSE}
+```{r read-data2, echo = FALSE, eval = FALSE}
+## --------------------- Read Data -------------------------------
+dr <- 'data/USDJPY/'
+fls <- dir(dr, pattern = '.csv$')
+#dfm <- read.csv(paste0(dr, fls), skipNul = TRUE)
+
+# start <- seq(1, 186, 31)
+# stop <- start - 1
+# stop <- c(stop[-1], length(fls))
+# paste0('fls = fls[', start, ':', stop, ']')
+
+nm <- str_replace_all(fls, '.csv', '')
+
+##
+for(i in seq(length(fls))) {
+  #if(!file.exists(paste0(dr, nm[i], '.rds'))) {
+  assign(nm[i], read.csv(
+    paste0(dr, fls[i]), skipNul = TRUE) %>% tbl_df)
+  
+  ## save dataset.
+  eval(parse(text = paste0(
+    "saveRDS(", nm[i], ", '", dr, nm[i], ".rds')")))
+  eval(parse(text = paste0("rm(", nm[i], ")")))
+  cat(paste0(dr, nm[i], '.rds saved!\n'))
+  #}
+}; rm(i, fls, nm)
+
+## --------------------- Check Files -------------------------------
+## check the number of *.rds files in directory.
+drt <- dir(dr, pattern = '[^_HL].rds')
+
+# start <- seq(1, 186, 31)
+# stop <- start - 1
+# stop <- c(stop[-1], length(drt))
+# paste0('drt = drt[', start, ':', stop, ']')
+
+##
+drt %>% str_split_fixed('Y|W|.rds', 4) %>% tbl_df %>% 
+  select(V2, V3) %>% filter(V2 == 2015)
+
+## If the downloaded files are display in Asia/Tokyo timezone, then 
+##   we can change to default UTC timezone.
+#'@ Y2015W2 %>% mutate(DateTime = mdy_hms(DateTime, tz = 'Asia/Tokyo'), 
+#'@                    DateTime = with_tz(DateTime, 'UTC'))
+
+## --------------------- Filter Data -------------------------------
+dr <- 'data/USDJPY/'
+drt <- dir(dr, pattern = '[^_HL].rds')
+nm <- str_replace_all(drt, '.rds', '')
+# start <- seq(1, 186, 31)
+# stop <- start - 1
+# stop <- c(stop[-1], length(drt))
+# data.frame(drt = paste0('drt = drt[', start, ':', stop, ']'), colm = ';', 
+#            nm = paste0('nm = nm[', start, ':', stop, ']'))
+
+for(i in seq(length(drt))) {
+  assign(nm[i], readRDS(paste0(dr, drt[i])))
+  
+  ## filter daily highest and lowest price.
+  #'@ assign(paste0(nm[i], '_HL'), nm[i] %>% mutate(Date = as.Date(mdy_hms(DateTime))) %>% 
+  #'@   group_by(Date) %>% 
+  #'@   filter(Bid == min(Bid)|Bid == max(Bid)|Ask == min(Ask)|Ask == max(Ask)) %>% 
+  #'@   filter(!duplicated(Bid)|!duplicated(Ask)))
+  ## Error : assign() cannot handle nm[i] %>% mutate(...) since 'nm[i]' is class character.
+  
+  ## convert timezone, will take time around 20 minutes for 1 million plus rows due to not vectorised handling.
+  #'@ eval(parse(text = paste0(
+  #'@   nm[i], "_HL <- ", nm[i], " %>% mutate(DateTime = mdy_hms(DateTime, tz = 'UTC')) %>% rowwise() %>% do(DateTime = with_tz(.$DateTime, tzone = 'GMT')) %>% mutate(Date = as.Date(DateTime))")))
+  
+  ## filter daily highest and lowest price.
+  eval(parse(text = paste0(
+    nm[i], "_HL <- ", nm[i], " %>% mutate(DateTime = with_tz(mdy_hms(DateTime), 'GMT'), Date = as.Date(DateTime)) %>% group_by(Date) %>% filter(Bid == min(Bid)|Bid == max(Bid)|Ask == min(Ask)|Ask == max(Ask))")))
+  eval(parse(text = paste0(nm[i], '_HL %<>% filter(!duplicated(Bid)|!duplicated(Ask))')))
+  
+  ## save dataset.
+  eval(parse(text = paste0(
+    "saveRDS(", nm[i], "_HL, '", dr, nm[i], "_HL.rds')")))
+  eval(parse(text = paste0("rm(", nm[i], ")")))
+  eval(parse(text = paste0("rm(", nm[i], "_HL)")))
+  cat(paste0(dr, nm[i], '_HL.rds saved!\n'))
+  }
+
+#'@ test <- Y2018W9
+#'@ test %<>% mutate(DateTime = mdy_hms(DateTime, tz = 'UTC')) %>% rowwise() %>% 
+#'@   do(DateTime = with_tz(.$DateTime, tzone = 'GMT')) %>% 
+#'@   mutate(Date = as.Date(DateTime))
+
+## -----------------------------------------------------------------
+## convert timezone, will take time around 20 minutes for 1 million plus rows due to not vectorised handling.
+#'@ eval(parse(text = paste0(
+#'@   nm[i], "_HL <- ", nm[i], " %>% mutate(DateTime = mdy_hms(DateTime, tz = 'UTC')) %>% rowwise() %>% do(DateTime = with_tz(.$DateTime, tzone = 'GMT')) %>% mutate(Date = as.Date(DateTime))")))
+
+## check the number of *.rds files in directory.
+dr <- 'data/USDJPY/'
+drt <- dir(dr, pattern = '_HL.rds')
+
+#'@ drt %>% str_split_fixed('Y|W|_HL.rds', 4) %>% tbl_df %>% 
+#'@   select(V2, V3) %>% filter(V2 == 2015)
+
+nm <- str_replace_all(drt, '.rds', '')
+
+## filter_HL() to get daily unique high low price.
+#'@ source('function/filter_HL.R')
+
+## simulate secondary filter daily high-low price.
+for(i in seq(length(drt))) {
+  assign(nm[i], readRDS(paste0(dr, drt[i])))
+  assign(nm[i], eval(parse(text = paste0('filter_HL(', nm[i], ')'))))
+  
+  ## save dataset.
+  eval(parse(text = paste0(
+    "saveRDS(", nm[i], ", '", dr, nm[i], ".rds')")))
+  eval(parse(text = paste0("rm(", nm[i], ")")))
+  cat(paste0(dr, nm[i], '.rds saved!\n'))  
+  }
+```
+
+  I gathered the dataset from below few websites: 
+  
+  - `quantmod::getSymbols(src = 'yahoo')`: which contains OHLCV data price (timezone in GMT). The place orders function required highest or lowest price come first, therefore I gathered the data via **FXCMTickData**.
+  - `TFX::queryFX()`: which shows the current price. The place orders function required data history, therefore I gathered the data via **FXCMTickData**.
+  - [FXCMTickData](https://github.com/fxcm/FXCMTickData) : which contain the timeline of highest and lowest price within a day (timezone in UTC). The daily dataset used for forecast daily price.
+  
+  <span style='color:red'>There will probably occurs inconsistancy of data price among 3 dataset, however there will be cost few years time to gather all real time price via `TFX::queryFX()`. Otherwise all data gather via 1 channel (`queryFX()`) will be perfect.<span>
+  
+  The will be another research project for **Real Time High Frequency Trading**. You are feel free to browse over [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
+
+```{r read-data3, echo = FALSE, eval = FALSE}
+HL_tick_data <- read_HL_tick_data()
+dtID <- unique(HL_tick_data$Date)
+
+## arrange the sequence of highest and lowest price.
+HL_tick_data %>% mutate(sq = rep(1:4, length(dtID)))
+```
+
+```{r read-data4, echo = FALSE, eval = FALSE}
 ## get currency dataset online.
-## http://stackoverflow.com/questions/24219694/get-symbols-quantmod-ohlc-currency-data
-#'@ getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20')
+#'@ getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20') #oanda only provides 180 days data. getSymbols()
 
-## getFX() doesn't shows Op, Hi, Lo, Cl price but only price. Therefore no idea to place bets.
-#'@ USDJPY <- getSymbols('JPY=X', src = 'yahoo', from = '2014-01-01', 
-#'@                      to = '2017-01-20', auto.assign = FALSE)
+## Get data
+#'@ USDJPY <- getSymbols('JPY=X', src = 'yahoo', from = '2015-01-04', 
+#'@                      to = '2018-07-06', auto.assign = FALSE)
 #'@ names(USDJPY) <- str_replace_all(names(USDJPY), 'JPY=X', 'USDJPY')
-#'@ USDJPY <- xts(USDJPY[, -1], order.by = USDJPY$Date)
+#'@ USDJPY %<>% na.omit
+#'@ saveRDS(USDJPY, 'data/USDJPY/USDJPY.rds')
 
-#'@ saveRDS(USDJPY, './data/USDJPY.rds')
-USDJPY <- read_rds(path = './data/USDJPY.rds')
+USDJPY <- readRDS('./data/USDJPY/USDJPY.rds')
+if(!is.xts(USDJPY)) USDJPY <- xts(USDJPY[, -1], order.by = USDJPY$Date)
 mbase <- USDJPY
 
 ## dateID
 dateID <- index(mbase)
-dateID0 <- ymd('2015-01-01')
+dateID0 <- ymd('2016-01-04')
 dateID <- dateID[dateID > dateID0]
+obs.data <- USDJPY[index(mbase) > dateID0]
+
+## Now we try to use the daily mean value which is (Hi + Lo) / 2.
+pred.data <- ldply(dateID, function(dt) {
+  smp = mbase
+  dtr = last(index(smp[index(smp) < dt]))
+  smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
+  frd = as.numeric(difftime(dt, dtr), units = 'days')
+  fit = suppressAll(forecastUSDJPYHL(smp, .preCat = 'Hi', .setPrice = 'Lo'))
+  
+  fit %>% tbl_df
+  }, .parallel = FALSE) %>% tbl_df
+
+cmp.data <- xts(pred.data[, -1], order.by = pred.data$Date)
+cmp.data <- cbind(cmp.data, obs.data)
+rm(obs.data, pred.data, USDJPY)
 ```
 
-```{r data-summary}
+```{r data-summary, eval = FALSE}
 dim(mbase)
 summary(mbase) %>% kable(width = 'auto')
 ```
 
-## 2.2 Tidy Data
+## Tidy Data
 
-#### 2.1.2.1 ARIMA vs ETS
-  
-  <span style='color:red'>**Remarks :** *Here I try to predict the sell/buy price and also settled price. However just noticed the question asking about prediction of the variance^[The profit is made based on the range of variance Hi-Lo price but not the accuracy of the highest, lowest or closing price.] based on mean price. I can also use the focasted highest and forecasted lowest price for variance prediction as well. However I will conduct another study and answer for the variance with Garch models.*</span>
-
-  Below are some articles with regards exponential smoothing.
-  
- - [<span style='color:blue'>Recent Advances in Robust Statistics: Theory and Applications</span>](https://books.google.com.my/books?id=ntR5DQAAQBAJ&pg=PA174&lpg=PA174&dq=exponential+smoothing+mcmc&source=bl&ots=QANf4o9oFh&sig=JWov-64qeFTcOScG2pYj9OVCl2k&hl=ja&sa=X&redir_esc=y#v=onepage&q=exponential%20smoothing%20mcmc&f=false)
- - [<span style='color:blue'>Error, trend, seasonality - ets and its forecast model friends</span>](http://ellisp.github.io/blog/2016/11/27/ets-friends)
- - [<span style='color:blue'>A study of outliers in the exponential smoothing approach to forecasting</span>](https://www.statindex.org/articles/258660)
- - [<span style='color:blue'>8.10 ARIMA vs ETS</span>](https://www.otexts.org/fpp/8/10)
- - [<span style='color:blue'>Introduction to ARIMA : nonseasonal models</span>](http://people.duke.edu/~rnau/411arim.htm#les)
-
-  It is a common myth that ARIMA models are more general than exponential smoothing. While linear exponential smoothing models are all special cases of ARIMA models, the non-linear exponential smoothing models have no equivalent ARIMA counterparts. There are also many ARIMA models that have no exponential smoothing counterparts. In particular, every ETS model^[[<span style='color:blue'>**forecast::ets()**</span>](https://www.rdocumentation.org/packages/forecast/versions/7.3/topics/ets) : Usually a three-character string identifying method using the framework terminology of Hyndman et al. (2002) and Hyndman et al. (2008). The first letter denotes the error type ("A", "M" or "Z"); the second letter denotes the trend type ("N","A","M" or "Z"); and the third letter denotes the season type ("N","A","M" or "Z"). In all cases, "N"=none, "A"=additive, "M"=multiplicative and "Z"=automatically selected. So, for example, "ANN" is simple exponential smoothing with additive errors, "MAM" is multiplicative Holt-Winters' method with multiplicative errors, and so on.
-It is also possible for the model to be of class "ets", and equal to the output from a previous call to ets. In this case, the same model is fitted to y without re-estimating any smoothing parameters. See also the use.initial.values argument.] is non-stationary, while ARIMA models can be stationary.
-
-  The ETS models with seasonality or non-damped trend or both have two unit roots (i.e., they need two levels of differencing to make them stationary). All other ETS models have one unit root (they need one level of differencing to make them stationary).
-
-  The following table gives some equivalence relationships for the two classes of models.
-
-  | ETS model	          | ARIMA model	                          | Parameters                    |
-  |:-------------------:|:-------------------------------------:|:-----------------------------:|
-  | $ETS(A, N, N)$	    | $ARIMA(0, 1, 1)$	                    | $θ_{1} = α − 1$               |
-  | $ETS(A, A, N)$	    | $ARIMA(0, 2, 2)$	                    | $θ_{1} = α + β − 2$           |
-  |                     |                                       | $θ_{2} = 1 − α$               |
-  | $ETS(A, A_{d}, N)$	| $ARIMA(1, 1, 2)$	                    | $ϕ_{1} = ϕ$                   |
-  |                     |                                       | $θ_{1} = α + ϕβ − 1 −  ϕ$     |
-  |                     |                                       | $θ_{2} = (1 − α)ϕ$            |
-  | $ETS(A, N, A)$	    | $ARIMA(0, 0, m)(0, 1, 0)_{m}$	        |                               |
-  | $ETS(A, A, A)$	    | $ARIMA(0, 1, m+1)(0, 1, 0)_{m}$	      |                               |
-  | $ETS(A, A_{d}, A)$	| $ARIMA(1, 0, m+1)(0, 1, 0)_{m}$	      |                               |
-
-  For the seasonal models, there are a large number of restrictions on the ARIMA parameters.
-
-  Kindly refer to [<span style='color:blue'>*8.10 ARIMA vs ETS*</span>](https://www.otexts.org/fpp/8/10) for further details.
-
-```{r build-AutoArima}
-## Modelling Auto Arima focasting data.
-#'@ fitAutoArima.op <- suppressAll(simAutoArima(USDJPY, .prCat = 'Op')) #will take a minute
-#'@ saveRDS(fitAutoArima.op, './data/fitAutoArima.op.rds')
-
-#'@ fitAutoArima.hi <- suppressAll(simAutoArima(USDJPY, .prCat = 'Hi')) #will take a minute
-#'@ saveRDS(fitAutoArima.hi, './data/fitAutoArima.hi.rds')
-
-#'@ fitAutoArima.mn <- suppressAll(simAutoArima(USDJPY, .prCat = 'Mn')) #will take a minute
-#'@ saveRDS(fitAutoArima.mn, './data/fitAutoArima.mn.rds')
-
-#'@ fitAutoArima.lo <- suppressAll(simAutoArima(USDJPY, .prCat = 'Lo')) #will take a minute
-#'@ saveRDS(fitAutoArima.lo, './data/fitAutoArima.lo.rds')
-
-#'@ fitAutoArima.cl <- suppressAll(simAutoArima(USDJPY, .prCat = 'Cl')) #will take a minute
-#'@ saveRDS(fitAutoArima.cl, './data/fitAutoArima.cl.rds')
-
-fitAutoArima.op <- readRDS('./data/fitAutoArima.op.rds')
-fitAutoArima.hi <- readRDS('./data/fitAutoArima.hi.rds')
-fitAutoArima.mn <- readRDS('./data/fitAutoArima.mn.rds')
-fitAutoArima.lo <- readRDS('./data/fitAutoArima.lo.rds')
-fitAutoArima.cl <- readRDS('./data/fitAutoArima.cl.rds')
-```
-
-```{r build-ETS}
-## Modelling ETS focasting data.
-#'@ fitETS.op <- suppressAll(simETS(USDJPY, .prCat = 'Op')) #will take a minute
-#'@ saveRDS(fitETS.op, './data/fitETS.op.rds')
-
-#'@ fitETS.hi <- suppressAll(simETS(USDJPY, .prCat = 'Hi')) #will take a minute
-#'@ saveRDS(fitETS.hi, './data/fitETS.hi.rds')
-
-#'@ fitETS.mn <- suppressAll(simETS(USDJPY, .prCat = 'Mn')) #will take a minute
-#'@ saveRDS(fitETS.mn, './data/fitETS.mn.rds')
-
-#'@ fitETS.lo <- suppressAll(simETS(USDJPY, .prCat = 'Lo')) #will take a minute
-#'@ saveRDS(fitETS.lo, './data/fitETS.lo.rds')
-
-#'@ fitETS.cl <- suppressAll(simETS(USDJPY, .prCat = 'Cl')) #will take a minute
-#'@ saveRDS(fitETS.cl, './data/fitETS.cl.rds')
-
-fitETS.op <- readRDS('./data/fitETS.op.rds')
-fitETS.hi <- readRDS('./data/fitETS.hi.rds')
-fitETS.mn <- readRDS('./data/fitETS.mn.rds')
-fitETS.lo <- readRDS('./data/fitETS.lo.rds')
-fitETS.cl <- readRDS('./data/fitETS.cl.rds')
-```
-
-```{r lm-ETS, warning = FALSE}
+```{r lm-ETS, warning = FALSE, eval = FALSE}
 ## Here I test the accuracy of forecasting of ets ZZZ model 1.
 
 ## Test the models
@@ -307,7 +316,7 @@ summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.cl))
 
 **Mean Squared Error**
 
-```{r combine-dataAutoArima}
+```{r combine-dataAutoArima, eval = FALSE}
 fcdataAA <- do.call(cbind, list(USDJPY.FPOP.Open = fitAutoArima.op$Point.Forecast, 
                               USDJPY.FPHI.High = fitAutoArima.hi$Point.Forecast, 
                               USDJPY.FPMN.Mean = fitAutoArima.mn$Point.Forecast, 
@@ -330,7 +339,7 @@ paste('Low = ', mean((fcdataAA$USDJPY.FPLO.Low - fcdataAA$USDJPY.Low)^2))
 paste('Close = ', mean((fcdataAA$USDJPY.FPCL.Close - fcdataAA$USDJPY.Close)^2))
 ```
 
-```{r combine-dataETS}
+```{r combine-dataETS, eval = FALSE}
 fcdata <- do.call(cbind, list(USDJPY.FPOP.Open = fitETS.op$Point.Forecast, 
                               USDJPY.FPHI.High = fitETS.hi$Point.Forecast, 
                               USDJPY.FPMN.Mean = fitETS.mn$Point.Forecast, 
@@ -353,19 +362,19 @@ paste('Low = ', mean((fcdata$USDJPY.FPLO.Low - fcdata$USDJPY.Low)^2))
 paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
 ```
 
-## 2.3 Data Visualization
+## Data Visualization
 
 
-```{r plotETS-2, echo = FALSE}
+```{r plotETS-2, echo = FALSE, eval = FALSE}
 #'@ source('./function/plotChart2.R', local = TRUE)
 suppressAll(rm(fitETS.op, fitETS.hi, fitETS.mn, fitETS.lo, fitETS.cl))
 
 plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'ETS Model : USDJPY')
 ```
 
-# 3. Betting Strategy
+# Betting Strategy
 
-# 4. Return of Investment
+# Return of Investment
 
 ```{r simStaking-AutoArima, eval = FALSE, include = FALSE}
 ##============================ EVAL = FALSE ================================
@@ -475,7 +484,7 @@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate =
 # 20 fundCLCL 2015-01-02 2017-01-20     1000   1000.000   0.00000 1.000000
 ```
 
-```{r ROI-AutoArima, echo = FALSE}
+```{r ROI-AutoArima, echo = FALSE, eval = FALSE}
 ## load the pre-run and saved models.
 ## Profit and Loss of Arima models.
 
@@ -502,7 +511,7 @@ aa.tbl %>% kable(width = 'auto')
 
   Profit and Loss of default `ZZZ` ets models.
 
-```{r simStaking-woutLog, warning = FALSE}
+```{r simStaking-woutLog, warning = FALSE, eval = FALSE}
 ## 
 ## Model 1 without leverage.
 ## 
@@ -928,7 +937,7 @@ tagList(
     RR = formatter('span', style = x ~ formattable::style(color = ifelse(rank(-x) <= 3, 'blue', 'grey')), x ~ sprintf('%1.2f%% (rank: %.0f)', 100 * x, rank(-x)))))))
 ```
 
-```{r plot-varAutoArima, echo = FALSE, results = 'asis'}
+```{r plot-varAutoArima, echo = FALSE, eval = FALSE, results = 'asis'}
 ## Betting strategy 1 - Normal range betting
 ## Plot the ROI of investment fund.
 plotAutoArima <- data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])
@@ -938,7 +947,7 @@ LineAutoArima <-  gvisLineChart(plotAutoArima, 'Date', names(plotAutoArima)[-1],
 plot(LineAutoArima)
 ```
 
-# 6. Conclusion
+# Conclusion
 
 
 
@@ -949,9 +958,9 @@ options(warn = 0)
 #'@ stopCluster(cl)
 ```
 
-# 7. Appendix
+# Appendix
 
-## 7.1 Documenting File Creation 
+## Documenting File Creation 
 
   It's useful to record some information about how your file was created.
 
@@ -980,7 +989,7 @@ data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(
 rm(sys1)
 ```
 
-## 7.2 Reference
+## Reference
 
   01. [<span style='color:blue'>Quant Strategies HFT</span>](https://github.com/englianhu/Quant-Strategies-HFT)
   02. [<span style='color:blue'>Real Time FXCM</span>](https://github.com/scibrokes/real-time-fxcm)<img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>

@@ -3,7 +3,7 @@ suppressPackageStartupMessages(require(BBmisc))
 pkgs <- c('data.table', 'plyr', 'dplyr', 'magrittr', 'purrr', 
           'tidyr', 'stringr', 'lubridate', 'R.utils')
 
-lib(pkgs)
+suppressAll(lib(pkgs))
 rm(pkgs)
 
 ## get currency dataset online.
