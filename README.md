@@ -5,7 +5,7 @@
 
 ## Interview Sample Question
 
-  The sample question for Interview a job in Binary options.
+  The sample question for Interview a job in Binary.com. Here I try to write a web application which is automatically gather data, calculate, forecast, place orders, settlement and also P&L report from tip-to-toe. Here I also conducting few research tasks to test the efficiency of some statistical models, and also refer to a [Master Degree level quantitave assignment](https://github.com/englianhu/Quant-Strategies-HFT) as my studies. Hope that I can be shortlisted to be a member of Binary.com.
 
 ### Question I
 
@@ -30,15 +30,28 @@
 
 <span style='color:red'>**Blooper...**</span>
 
-  Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [Q1 ShinyApp](https://beta.rstudioconnect.com/content/2367/).
+  Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) which contain the questions and answers of 3 questions.
 
 <img src='www/20170113_104005.gif' width='360'>
 
+  Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.com/content/3775/) trial version to test the real time trading, and a completed version is [Q1App2](https://beta.rstudioconnect.com/content/3138/).
+
   Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/316133).
+
+#### Shiny Application
+
+  - **shinyApp** : `shiny::runGitHub('englianhu/binary.com-interview-question')` - Application which compare the accuracy of multiple `lasso`, `ridge` and `elastic net` models (blooper).
+  - **Q1App** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q1')` - the application gather, calculate and forecast price. Once the user select currency and the forecast day, the system will auto calculate and plot the graph.
+  - **testRealTimeTransc** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'testRealTimeTransc')` - real time trading system which auto gather, calculate the forecast price, and also place orders, as well as settlement and plot P&L everyday.
+  - **Q1App2** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q1App2')` - The application contain the Banker and Punter section which applied aboved statistical modelling.
 
 ### Question II
 
   For question 2, I simply write an app, kindly use [Q2App](https://beta.rstudioconnect.com/content/3089/).
+
+#### Shiny Application
+
+  - **Q2** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q2')` - An application which applied queuing theory.
 
 ### Question III
 

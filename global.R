@@ -5,6 +5,10 @@
 ## Search available packages.
 ## http://thecoatlessprofessor.com/programming/automatically-check-if-r-package-is-the-latest-version-on-package-load/
 ## 
+## 
+## require(devtools)
+## install_version("ggplot2", version = "0.9.1", repos = "http://cran.us.r-project.org")
+## 
 suppressPackageStartupMessages(library("BBmisc"))
 suppressAll(library('devtools'))
 suppressAll(library('lubridate'))

@@ -5,8 +5,8 @@ account: englianhu
 server: beta.rstudioconnect.com
 hostUrl: https://beta.rstudioconnect.com/__api__
 appId: 3770
-bundleId: 8416
+bundleId: 8419
 url: https://beta.rstudioconnect.com/content/3770/
-when: 1527934768.01437
+when: 1527943565.8113
 asMultiple: FALSE
 asStatic: FALSE

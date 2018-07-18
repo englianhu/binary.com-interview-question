@@ -5,9 +5,9 @@ account: englianhu
 server: beta.rstudioconnect.com
 hostUrl: https://beta.rstudioconnect.com/__api__
 appId: 2367
-bundleId: 6631
+bundleId: 8744
 url: https://beta.rstudioconnect.com/content/2367/
-when: 1507428546.9964
+when: 1530432029.2056
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: .RData|binary-forex-trading-Q1.html|binary-forex-trading-Q1.log|binary-forex-trading-Q1.pdf|binary-forex-trading-Q1.Rmd|binary-forex-trading-Q1.tex|binary-forex-trading-Q1E.html|binary-forex-trading-Q1E.Rmd|binary-forex-trading.html|binary-forex-trading.Rmd|draft.Garch.R|draft.Garch2.R|draft.Garch3.R|draft.simETS2.R|draft.simGarch2.R|draft.simGarch2A.R|LICENSE|Q1E-read-data3.RData|Q1E.RData|README.html|README.md|skeleton.bib|binary-forex-trading-Q1_files|binary-forex-trading-Q1E_files|binary-forex-trading_files|data|function
+ignoredFiles: .RData|binary-forex-trading-Q1.log|binary-forex-trading-Q1.pdf|binary-forex-trading-Q1.Rmd|binary-forex-trading-Q1.tex|binary-forex-trading-Q1E.Rmd|binary-forex-trading-Q3.Rmd|binary-forex-trading.html|draft.Garch.R|draft.Garch2.R|draft.Garch3.R|draft.simETS2.R|draft.simGarch2.R|draft.simGarch2A.R|LICENSE|README.html|README.md|skeleton.bib

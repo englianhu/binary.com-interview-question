@@ -1,13 +1,14 @@
 ---
 title: "<img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/757b27e1e93132368b0898152078be4961b05a28/www/binary-logo-resize.jpg' width='240'>"
 subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question I"
-author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/ENG.jpg' width='24'> <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/RYO.jpg?raw=true' width='24'>白戸則道®"
+author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/ENG.jpg' width='24'> <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/RYO.jpg?raw=true' width='24'>®"
 date: "`r Sys.Date()`"
 output:
   tufte::tufte_html:
     toc: yes
     toc_depth: 4
     self_contained: no
+    number_sections: true
   tufte::tufte_book:
     citation_package: natbib
     latex_engine: xelatex
