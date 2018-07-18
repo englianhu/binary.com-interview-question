@@ -5,8 +5,8 @@ suppressWarnings(require('BBmisc'))
 suppressWarnings(require('shiny'))
 suppressWarnings(require('httr'))
 
-options(rgl.useNULL=TRUE)
-set_config(use_proxy(url = '127.0.0.1', port = 0000))
+#'@ options(rgl.useNULL=TRUE)
+#'@ set_config(use_proxy(url = '127.0.0.1', port = 0000))
 
 suppressWarnings(require('memoise'))
 suppressWarnings(require('stringr'))
