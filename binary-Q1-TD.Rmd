@@ -1,7 +1,7 @@
 ---
-title: "<img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/757b27e1e93132368b0898152078be4961b05a28/www/binary-logo-resize.jpg' width='240'>"
+title: "<img src='www/binary-logo-resize.jpg' width='240'>"
 subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Tick-Data-History For Daily Trading"
-author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/ENG.jpg' width='24'> <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/RYO.jpg?raw=true' width='24'>®"
+author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
   html_document:
@@ -237,13 +237,48 @@ for(i in seq(length(drt))) {
   
   The will be another research project for **Real Time High Frequency Trading**. You are feel free to browse over [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
 
-```{r read-data3, echo = FALSE, eval = FALSE}
+  Below is the dataset gather via `getSymbols(src = 'yahoo')`.
+
+```{r data-summary}
+## read saved dataset.
+mbase <- readRDS('./data/USDJPY/USDJPY.rds')
+
+dim(mbase)
+summary(mbase) %>% kable(width = 'auto')
+```
+
+*Table 2.1.1 : summary of daily price dataset.*
+
+## Tidy Data
+
+  Here I gather the tick data via **FXCMTickData**, there are more than million rows dataset (million rows per file while there are 52 files over 52 weeks) while I tidy and filter only highest and lowest `bid/ask` price. From the table below we can know the timeline which is weather highest or lowest price came first.
+
+```{r read-data3}
+## read tick data.
 HL_tick_data <- read_HL_tick_data()
 dtID <- unique(HL_tick_data$Date)
 
 ## arrange the sequence of highest and lowest price.
-HL_tick_data %>% mutate(sq = rep(1:4, length(dtID)))
+HL_tick_data %>% tbl_df %>% mutate(sq = rep(1:4, length(dtID)))
 ```
+
+*Table 2.2.1 : daily high-low price tick-data.*
+
+# Statistical Modelling
+
+## Forecast Daily Hi-Lo Price
+
+  Here I directly apply GARCH model due to I had compared few statistical models and got the best fitted model. Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) ([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1)) for the paper.
+  
+  - Auto Arima models (Adjusted and use the optimal AR and MA parameters)
+  - Exponential Time Series  (27 ETS models)
+  - Univariate Garch models (GARCH, T-GARCH, GJR-GARCH, eGARCH, etc altogather 12 models.)
+  - Exponential Weighted Moving Average
+  - <s>Monte Carlo Markov Chain</s>
+  - <s>Bayesian Time Series</s>
+  - <s>Midas</s>
+  
+  Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/316133). The paper compare and get the optimal predictive model based on the various number of observations.
 
 ```{r read-data4, echo = FALSE, eval = FALSE}
 ## get currency dataset online.
@@ -266,6 +301,11 @@ dateID0 <- ymd('2016-01-04')
 dateID <- dateID[dateID > dateID0]
 obs.data <- USDJPY[index(mbase) > dateID0]
 
+#start <- seq(1, 652, 109)
+#stop <- start - 1
+#stop <- c(stop[-1], length(dateID))
+#data.frame(dateID = paste0('dateID = dateID[', start, ':', stop, ']'))
+
 ## Now we try to use the daily mean value which is (Hi + Lo) / 2.
 pred.data <- ldply(dateID, function(dt) {
   smp = mbase
@@ -273,63 +313,38 @@ pred.data <- ldply(dateID, function(dt) {
   smp = smp[paste0(dtr %m-% years(1), '/', dtr)]
   frd = as.numeric(difftime(dt, dtr), units = 'days')
   fit = suppressAll(forecastUSDJPYHL(smp, .preCat = 'Hi', .setPrice = 'Lo'))
+  cat(paste('Latest Date (GMT):', fit$LatestDate.GMT, 'done!\n'))
   
   fit %>% tbl_df
   }, .parallel = FALSE) %>% tbl_df
 
-cmp.data <- xts(pred.data[, -1], order.by = pred.data$Date)
-cmp.data <- cbind(cmp.data, obs.data)
-rm(obs.data, pred.data, USDJPY)
+rm(obs.data, USDJPY)
 ```
 
-```{r data-summary, eval = FALSE}
-dim(mbase)
-summary(mbase) %>% kable(width = 'auto')
+  Here I forecast 1 trading day advanced for daily Hi-Lo price.
+
+```{r read-data5}
+pred.data <- ldply(paste0('data/USDJPY/', dir('data/USDJPY', pattern = '^pred.data')), readRDS) %>% tbl_df
 ```
 
-## Tidy Data
-
-```{r lm-ETS, warning = FALSE, eval = FALSE}
-## Here I test the accuracy of forecasting of ets ZZZ model 1.
-
-## Test the models
-## opened price fit data
-summary(lm(Point.Forecast~ USDJPY.Close, data = fitETS.op))
-summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.op))
-
-## highest price fit data
-summary(lm(Point.Forecast~ USDJPY.Close, data = fitETS.hi))
-summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.hi))
-
-## mean price fit data (mean price of daily highest and lowest price)
-summary(lm(Point.Forecast~ USDJPY.Close, data = fitETS.mn))
-summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.mn))
-
-## lowest price fit data
-summary(lm(Point.Forecast~ USDJPY.Close, data = fitETS.lo))
-summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.lo))
-
-## closed price fit data
-summary(lm(Point.Forecast~ USDJPY.Close, data = fitETS.cl))
-summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.cl))
+```{r plot-data5, echo = FALSE}
+pred.data %>% data.table
 ```
 
-**Mean Squared Error**
+*Table 3.1 : Forecast high-low daily price.*
 
-```{r combine-dataAutoArima, eval = FALSE}
-fcdataAA <- do.call(cbind, list(USDJPY.FPOP.Open = fitAutoArima.op$Point.Forecast, 
-                              USDJPY.FPHI.High = fitAutoArima.hi$Point.Forecast, 
-                              USDJPY.FPMN.Mean = fitAutoArima.mn$Point.Forecast, 
-                              USDJPY.FPLO.Low = fitAutoArima.lo$Point.Forecast, 
-                              USDJPY.FPCL.Close = fitAutoArima.cl$Point.Forecast, 
-                              USDJPY.Open = fitAutoArima.op$USDJPY.Open, 
-                              USDJPY.High = fitAutoArima.op$USDJPY.High, 
-                              USDJPY.Low = fitAutoArima.op$USDJPY.Low, 
-                              USDJPY.Close = fitAutoArima.op$USDJPY.Close))
-fcdataAA <- na.omit(fcdataAA)
-names(fcdataAA) <- c('USDJPY.FPOP.Open', 'USDJPY.FPHI.High', 'USDJPY.FPMN.Mean', 
-                   'USDJPY.FPLO.Low', 'USDJPY.FPCL.Close', 'USDJPY.Open', 
-                   'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')
+## Mean Squared Error
+
+```{r mse1, eval = FALSE}
+mbase1 <- data.frame(Date = index(mbase), mbase) %>% tbl_df
+pred.data1 <- pred.data %>% tbl_df
+
+## Add `Date` column as forecasted Date.
+pred.data1 %>% mutate(Date = lead(LatestDate.GMT), 
+                      Date = str_replace_na(last(
+                        LatestDate.GMT) + days(1)))
+
+join(mbase1, pred.data1, by = 'Date')
 
 ## Mean Squared Error : comparison of accuracy
 paste('Open = ', mean((fcdataAA$USDJPY.FPOP.Open - fcdataAA$USDJPY.Open)^2))
@@ -361,9 +376,6 @@ paste('Mean = ', mean((fcdata$USDJPY.FPMN.Mean - (fcdata$USDJPY.High + fcdata$US
 paste('Low = ', mean((fcdata$USDJPY.FPLO.Low - fcdata$USDJPY.Low)^2))
 paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
 ```
-
-## Data Visualization
-
 
 ```{r plotETS-2, echo = FALSE, eval = FALSE}
 #'@ source('./function/plotChart2.R', local = TRUE)
@@ -992,7 +1004,7 @@ rm(sys1)
 ## Reference
 
   01. [<span style='color:blue'>Quant Strategies HFT</span>](https://github.com/englianhu/Quant-Strategies-HFT)
-  02. [<span style='color:blue'>Real Time FXCM</span>](https://github.com/scibrokes/real-time-fxcm)<img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
-  03. [<span style='color:blue'>Real Time Trading System (Trial)</span>](https://beta.rstudioconnect.com/content/3775/)<img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/hot.jpg?raw=true' width='20'>
+  02. [<span style='color:blue'>Real Time FXCM</span>](https://github.com/scibrokes/real-time-fxcm)<img src='www/hot.jpg' width='20'>
+  03. [<span style='color:blue'>Real Time Trading System (Trial)</span>](https://beta.rstudioconnect.com/content/3775/)<img src='www/hot.jpg' width='20'>
 
-**Powered by - Copyright® Intellectual Property Rights of <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/oda-army2.jpg?raw=true' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**
+**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**
