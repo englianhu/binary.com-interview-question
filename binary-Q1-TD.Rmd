@@ -51,13 +51,15 @@ source('function/forecastUSDJPYHL.R')
 
 # Introduction
 
-  In order to test the timeline of daily highest and lowest price, here I created this file to read the high volume tick-data-history to test the efficiency of Kelly Criterion betting models. Kindly refer to [Reference] for further information.
+From the [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or ([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1)) and also [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)). Both papers test the accuracy of various statistical models and gain a high ROI (Return on Investment) per annum. However, as stated in the paper there has a concern which is don't know highest or lowest price came first, therefore the paper compared all possible outcomes. Finally the `Hi-Lo` and `Lo-Hi` models made highest returns. The research on this paper will be applicable to the real-life.
+
+In order to test the timeline of daily highest and lowest price when I am writing [Real Time Trading System (Trial)](https://beta.rstudioconnect.com/content/3775/), here I created this file to read the high volume tick-data-history to test the efficiency of Kelly Criterion betting models. Kindly refer to section [Reference] for further information.
 
 # Data
 
 ## Read Data
 
-  I use more than 3 years data (from week 1 2015 until week 27 2018)^[You are feel feel to get the data via [FXCMTickData](https://github.com/fxcm/FXCMTickData)] for the question as experiment, 1st year data is burn-in data for statistical modelling and prediction purpose while following 2 years data for forecasting and staking. There have 52 trading weeks within a year.
+I use more than 3 years data (from week 1 2015 until week 27 2018)^[You are feel feel to get the data via [FXCMTickData](https://github.com/fxcm/FXCMTickData)] for the question as experiment, 1st year data is burn-in data for statistical modelling and prediction purpose while following 2 years data for forecasting and staking. There have 52 trading weeks within a year.
 
 ```{r read-data1, echo = FALSE, eval = FALSE}
 ## ================== eval = FALSE =============================
@@ -162,7 +164,8 @@ nm <- str_replace_all(drt, '.rds', '')
 # start <- seq(1, 186, 31)
 # stop <- start - 1
 # stop <- c(stop[-1], length(drt))
-# data.frame(drt = paste0('drt = drt[', start, ':', stop, ']'), colm = ';', 
+# data.frame(drt = paste0('drt = drt[', start, ':', stop, ']'), 
+#            colm = ';', 
 #            nm = paste0('nm = nm[', start, ':', stop, ']'))
 
 for(i in seq(length(drt))) {
@@ -227,15 +230,15 @@ for(i in seq(length(drt))) {
   }
 ```
 
-I gathered the dataset from below few websites: 
-  
-- `quantmod::getSymbols(src = 'yahoo')`: which contains OHLCV data price (timezone in GMT). The place orders function required highest or lowest price come first, therefore I gathered the data via **FXCMTickData**.
-- `TFX::queryFX()`: which shows the current price. The place orders function required data history, therefore I gathered the data via **FXCMTickData**.
-- [FXCMTickData](https://github.com/fxcm/FXCMTickData) : which contain the timeline of highest and lowest price within a day (timezone in UTC). The daily dataset used for forecast daily price.
-  
-<span style='color:red'>There will probably occurs inconsistancy of data price among 3 dataset, however there will be cost few years time to gather all real time price via `TFX::queryFX()`. Otherwise all data gather via 1 channel (`queryFX()`) will be perfect.<span>
-  
-The will be another research project for **Real Time High Frequency Trading**. You are feel free to browse over [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
+I gathered the 3 datasets from below websites: 
+
+- **1st Dataset** - `quantmod::getSymbols(src = 'yahoo')`: which contains OHLCV data price (timezone in GMT). The place orders function required highest or lowest price come first, therefore I gathered the data via **FXCMTickData**.
+- **2nd Dataset** - [FXCMTickData](https://github.com/fxcm/FXCMTickData) : which contain the timeline of highest and lowest price within a day (timezone in UTC). The daily dataset used for forecast daily price.
+- **3rd Dataset** - `TFX::queryFX()`: which shows the current price. The place orders function required data history, therefore I gathered the data via **FXCMTickData**.
+
+<span style='color:red'>There will probably occurs inconsistancy of data price among 3 datasets, however there will be cost few years time to gather all real time price via `TFX::queryFX()`. Otherwise all data gather via 1 channel (`queryFX()`) will be perfect. However, you can feel free to read futher in this paper where verified the consistancy of datasets.<span>
+
+The will be another research project for **Real Time High Frequency Trading** where collect the real-time data and also high-frquency trading. You are feel free to browse over [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
 
 Below is the dataset gather via `getSymbols(src = 'yahoo')`.
 
@@ -255,25 +258,31 @@ summary(mbase) %>%
   select(Var2, Freq) %>% 
   rename(Category = Var2) %>% 
   kable %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 ```
 
-*Table 2.1.1 : summary of daily price dataset.*
+*Table 2.1.1 : 1st dataset - summary of daily price dataset.*
 
 ## Tidy Data
 
-Here I gather the tick data via **FXCMTickData**, there are more than million rows dataset (million rows per file while there are 52 files over 52 weeks) while I tidy and filter only highest and lowest `bid/ask` price. From the table below we can know the timeline which is weather highest or lowest price came first.
+For 2nd dataset, here I gather the tick data via **FXCMTickData**, there are more than million rows dataset (million rows per file while there are 52 files over 52 weeks) while I tidy and filter only highest and lowest `bid/ask` price. From the table below we can know the timeline which is weather highest or lowest price came first.
 
 ```{r read-data3}
 ## read tick data.
-HL_tick_data <- read_HL_tick_data()
+HL_tick_data <- read_HL_tick_data() %>% arrange(Date)
 dtID <- unique(HL_tick_data$Date)
 
 ## arrange the sequence of highest and lowest price.
-HL_tick_data %>% tbl_df %>% mutate(sq = rep(1:4, length(dtID)))
+HL_tick_data %<>% tbl_df %>% mutate(sq = rep(1:4, length(dtID)))
+
+## Print dataset
+HL_tick_data
 ```
 
-*Table 2.2.1 : daily high-low price tick-data.*
+*Table 2.2.1 : 2nd dataset - daily high-low price tick-data.*
+
+For 3rd dataset, due to there is a real-time data, the **Real Time Trading System (Trial)** web application only stored the real-time `bid/ask` transaction price but not collect all tick-data in seconds. However, you are feel free to gather from [DataCollection](https://beta.rstudioconnect.com/content/3153/).
 
 # Statistical Modelling
 
@@ -281,7 +290,7 @@ HL_tick_data %>% tbl_df %>% mutate(sq = rep(1:4, length(dtID)))
 
 $$\sigma^2_{t} = \omega + \sum_{i=1}^{\rho}(\alpha_{i} + \gamma_{i} I_{t-i}) \varepsilon_{t-i}^{2} + \sum_{j=1}^{q}\beta_{j}\sigma^{2}_{t-j}\ \cdots\ Equation\ 3.1.1$$
 
-Here I directly apply *GJR-GARCH*^[Kindly refer to [GJR-GARCH 模型](https://vlab.stern.nyu.edu/zh/doc/3?topic=mdls) for more information] model due to I had compared few statistical models and got the best fitted model. Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or ([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1)) for the paper.
+Here I directly apply *GJR-GARCH*^[Kindly refer to [GJR-GARCH 模型](https://vlab.stern.nyu.edu/zh/doc/3?topic=mdls) for more information] model due to I had compared few statistical models and got the best fitted model. Kindly refer to **Binary.com Interview Q1** for the paper.
 
 - Auto Arima models (Adjusted and use the optimal AR and MA parameters)
 - Exponential Time Series (27 ETS models)
@@ -291,13 +300,13 @@ Here I directly apply *GJR-GARCH*^[Kindly refer to [GJR-GARCH 模型](https://vl
 - <s>Bayesian Time Series</s>
 - <s>Midas</s>
 
-Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. . You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)). The paper compare and get the optimal predictive model based on the various number of observations.
+Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over **Binary.com Interview Q1 (Extention)**. The paper compare and get the optimal predictive model based on the various number of observations.
 
 ```{r read-data4, echo = FALSE, eval = FALSE}
 ## get currency dataset online.
 #'@ getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20') #oanda only provides 180 days data. getSymbols()
 
-## Get data
+## Get data.
 #'@ USDJPY <- getSymbols('JPY=X', src = 'yahoo', from = '2015-01-04', 
 #'@                      to = '2018-07-06', auto.assign = FALSE)
 #'@ names(USDJPY) <- str_replace_all(names(USDJPY), 'JPY=X', 'USDJPY')
@@ -334,7 +343,7 @@ pred.data <- ldply(dateID, function(dt) {
 rm(obs.data, USDJPY)
 ```
 
-Here I forecast 1 trading day advanced for daily Hi-Lo price.
+Here I read my saved dataset where forecast 1 trading day advanced for daily Hi-Lo price. Kindly refer to **Real Time Trading System (Trial)** for more information.
 
 ```{r read-data5}
 pred.data <- ldply(paste0('data/USDJPY/', dir('data/USDJPY', pattern = '^pred.data')), readRDS) %>% tbl_df
@@ -346,45 +355,23 @@ pred.data %>% data.table
 
 *Table 3.1.1 : Forecast high-low daily price.*
 
-Below I tidy the dataset.
+Below I combine the daily price dataset with forecast `Hi-Lo` price.
 
 ```{r tidy-data1}
 ## Copied dataset.
-mbase1 <- data.frame(Date = index(mbase), mbase) %>% tbl_df
-pred.data1 <- pred.data %>% tbl_df
+mbase <- data.frame(Date = index(mbase), mbase) %>% tbl_df
+pred.data %<>% tbl_df
 
 ## Add `Date` column as forecasted Date.
-pred.data1$Date <- lead(pred.data1$LatestDate.GMT)
-pred.data1$Date[length(pred.data1$Date)] <- last(pred.data1$LatestDate.GMT) + days(1)
+pred.data$Date <- lead(pred.data$LatestDate.GMT)
+pred.data$Date[length(pred.data$Date)] <- last(pred.data$LatestDate.GMT) + days(1)
 
-## Current daily price.
-pred.data1A <- pred.data1 %>% 
-    select(LatestDate.GMT, Lst.High, Lst.Low) %>% 
-    mutate(Date = lead(LatestDate.GMT), 
-           High = lead(Lst.High), Low = lead(Lst.Low)) %>% 
-    select(Date, High, Low) %>% data.table %>% na.omit
-
-pred.data1B <- pred.data1 %>% 
-    select(Date, Fct.High, Fct.Low) %>% data.table
-
-pred.data1 <- merge(pred.data1A, pred.data1B, by = 'Date')
+pred.data %<>% select(Date, Fct.High, Fct.Low) %>% data.table
 
 ## Merge dataset.
-pred <- merge(tbl_df(mbase1), pred.data1, by = 'Date') %>% 
+pred <- merge(tbl_df(mbase), pred.data, by = 'Date') %>% 
   tbl_df %>% select(-USDJPY.Volume, -USDJPY.Adjusted)
-rm(mbase1, pred.data1, pred.data1A, pred.data1B)
-
-## Here I test if the dataset scrapped from `quantmod::getSymbols(src = 'yahoo')` equal to FXCMTickData.
-# pred %>% mutate(test.H = USDJPY.High == High, 
-#                 test.L = USDJPY.Low == Low) %>% 
-#     select(test.H, test.L) %>% unique
-## A tibble: 1 x 2
-#  test.H test.L
-#  <lgl>  <lgl> 
-#1 TRUE   TRUE
-
-## Therefore here I removed the duplicated columns. 
-pred %<>% select(-High, -Low)
+rm(pred.data)
 
 ## Print dataset.
 pred %>% data.table
@@ -392,14 +379,38 @@ pred %>% data.table
 
 *Table 3.1.2 : Tidy dataset for forecast high-low daily price.*
 
+Below I test if the dataset scrapped from `quantmod::getSymbols(src = 'yahoo')` equal to **FXCMTickData**. Unfortunately the data gathered is not tally each other.
+
+```{r tidy-data2}
+mb.dateID <- unique(mbase$Date)
+td.dateID <- unique(HL_tick_data$Date)
+
+## Check the start and end date
+data.frame(MB = range(mb.dateID), 
+           TD = range(td.dateID)) %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_left')
+```
+
+*Table 3.1.3 : Date range of 1st dataset and 2nd dataset.* at left-hand-side shows the date range for both **MB** (mbase dataset) and **TD** (tick-data).
+
+<span style='color:red'>Below shows all dates NOT in each dataset. Unfortunately the inconsistancy of dataset gathered from `getSymbols(src = 'yahoo')` will caused whole predictive models bias, it will affect the staking amount and evetually effect the ROI. The dataset used to working fine few years ago. There will be another research which gather only dataset from operator to solve the issue.<span>
+
+```{r tidy-data3}
+## Check if dateID not in another dataset.
+mb.dateID[!mb.dateID %in% td.dateID]
+td.dateID[!td.dateID %in% mb.dateID]
+```
+
 ## Mean Squared Error
 
 ```{r mse1}
 ## Mean Squared Error : Comparison of accuracy.
 ## https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
-data.frame(Category = c('High = ', 'Low = '), 
-           MSE = c(mean((pred$Fct.High - pred$USDJPY.High)^2), 
-                   mean((pred$Fct.Low - pred$USDJPY.Low)^2))) %>% 
+data.frame(
+  Category = c('High = ', 'Low = '), 
+  MSE = c(mean((pred$Fct.High - pred$USDJPY.High)^2), 
+          mean((pred$Fct.Low - pred$USDJPY.Low)^2))) %>% 
   kable %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_right')
 ```
@@ -410,9 +421,14 @@ $$\frac{1}{n}\sum_{t=1}^{n}e_t^2 \cdots Equation\ 3.2.1$$
 
 # Betting Strategy
 
-For the betting strategy, here I need to adjust a bit from **Binary.com Interview Q1** where fit the .
+For the betting strategy, here I need to adjust a bit from **Binary.com Interview Q1** as stated in section [Introduction]. Below I tidy the dataset to match the `bid/ask` price for close a transaction.
+
+As we know from previous paper, the closing price will be settled price if the forecast price has no occured within a day (from 12:00:01 AM until next day 12:00:00 AM, due to system calculate the price spend a minute, therefore the opening price will not in count.).
 
 ```{r data-summary4}
+## Here I combine real-time dataset with the daily dataset.
+pred <- merge(pred, HL_tick_data, by = 'Date') %>% arrange(DateTime)
+
 pred %>% data.table
 ```
 
@@ -998,7 +1014,9 @@ plot(LineAutoArima)
 
 # Conclusion
 
+I can use tick-data from **FXCMTickData** for this paper while it is weekly and not up-to-date, the `getSymbols()` able to get near real-time (15 minutes late) where suite for daily trading in **Real Time Trading System (Trial)** but there are a lot of trading date is not available. 
 
+Therefore High Frequency Trading in another research **Real Time FXCM** where all data price gathered from real-time will be accurate.
 
 ```{r stopPar, echo = FALSE}
 ## Set options back to original options
