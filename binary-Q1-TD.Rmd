@@ -227,31 +227,42 @@ for(i in seq(length(drt))) {
   }
 ```
 
-  I gathered the dataset from below few websites: 
+I gathered the dataset from below few websites: 
   
-  - `quantmod::getSymbols(src = 'yahoo')`: which contains OHLCV data price (timezone in GMT). The place orders function required highest or lowest price come first, therefore I gathered the data via **FXCMTickData**.
-  - `TFX::queryFX()`: which shows the current price. The place orders function required data history, therefore I gathered the data via **FXCMTickData**.
-  - [FXCMTickData](https://github.com/fxcm/FXCMTickData) : which contain the timeline of highest and lowest price within a day (timezone in UTC). The daily dataset used for forecast daily price.
+- `quantmod::getSymbols(src = 'yahoo')`: which contains OHLCV data price (timezone in GMT). The place orders function required highest or lowest price come first, therefore I gathered the data via **FXCMTickData**.
+- `TFX::queryFX()`: which shows the current price. The place orders function required data history, therefore I gathered the data via **FXCMTickData**.
+- [FXCMTickData](https://github.com/fxcm/FXCMTickData) : which contain the timeline of highest and lowest price within a day (timezone in UTC). The daily dataset used for forecast daily price.
   
-  <span style='color:red'>There will probably occurs inconsistancy of data price among 3 dataset, however there will be cost few years time to gather all real time price via `TFX::queryFX()`. Otherwise all data gather via 1 channel (`queryFX()`) will be perfect.<span>
+<span style='color:red'>There will probably occurs inconsistancy of data price among 3 dataset, however there will be cost few years time to gather all real time price via `TFX::queryFX()`. Otherwise all data gather via 1 channel (`queryFX()`) will be perfect.<span>
   
-  The will be another research project for **Real Time High Frequency Trading**. You are feel free to browse over [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
+The will be another research project for **Real Time High Frequency Trading**. You are feel free to browse over [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
 
-  Below is the dataset gather via `getSymbols(src = 'yahoo')`.
+Below is the dataset gather via `getSymbols(src = 'yahoo')`.
 
-```{r data-summary}
+```{r data-summary1}
 ## read saved dataset.
 mbase <- readRDS('./data/USDJPY/USDJPY.rds')
+```
 
-dim(mbase)
-summary(mbase) %>% kable(width = 'auto')
+```{r data-summary2, echo = FALSE}
+## size of dataset.
+paste0('mbase : [', paste(dim(mbase), collapse = ' x '), ']')
+```
+
+```{r data-summary3, echo = FALSE}
+summary(mbase) %>% 
+  tidy %>% 
+  select(Var2, Freq) %>% 
+  rename(Category = Var2) %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 *Table 2.1.1 : summary of daily price dataset.*
 
 ## Tidy Data
 
-  Here I gather the tick data via **FXCMTickData**, there are more than million rows dataset (million rows per file while there are 52 files over 52 weeks) while I tidy and filter only highest and lowest `bid/ask` price. From the table below we can know the timeline which is weather highest or lowest price came first.
+Here I gather the tick data via **FXCMTickData**, there are more than million rows dataset (million rows per file while there are 52 files over 52 weeks) while I tidy and filter only highest and lowest `bid/ask` price. From the table below we can know the timeline which is weather highest or lowest price came first.
 
 ```{r read-data3}
 ## read tick data.
@@ -268,17 +279,19 @@ HL_tick_data %>% tbl_df %>% mutate(sq = rep(1:4, length(dtID)))
 
 ## Forecast Daily Hi-Lo Price
 
-  Here I directly apply GARCH model due to I had compared few statistical models and got the best fitted model. Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) ([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1)) for the paper.
-  
-  - Auto Arima models (Adjusted and use the optimal AR and MA parameters)
-  - Exponential Time Series  (27 ETS models)
-  - Univariate Garch models (GARCH, T-GARCH, GJR-GARCH, eGARCH, etc altogather 12 models.)
-  - Exponential Weighted Moving Average
-  - <s>Monte Carlo Markov Chain</s>
-  - <s>Bayesian Time Series</s>
-  - <s>Midas</s>
-  
-  Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/316133). The paper compare and get the optimal predictive model based on the various number of observations.
+$$\sigma^2_{t} = \omega + \sum_{i=1}^{\rho}(\alpha_{i} + \gamma_{i} I_{t-i}) \varepsilon_{t-i}^{2} + \sum_{j=1}^{q}\beta_{j}\sigma^{2}_{t-j}\ \cdots\ Equation\ 3.1.1$$
+
+Here I directly apply *GJR-GARCH*^[Kindly refer to [GJR-GARCH 模型](https://vlab.stern.nyu.edu/zh/doc/3?topic=mdls) for more information] model due to I had compared few statistical models and got the best fitted model. Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or ([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1)) for the paper.
+
+- Auto Arima models (Adjusted and use the optimal AR and MA parameters)
+- Exponential Time Series (27 ETS models)
+- Univariate Garch models (GARCH, T-GARCH, GJR-GARCH, eGARCH, etc altogather 12 models.)
+- Exponential Weighted Moving Average
+- <s>Monte Carlo Markov Chain</s>
+- <s>Bayesian Time Series</s>
+- <s>Midas</s>
+
+Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. . You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)). The paper compare and get the optimal predictive model based on the various number of observations.
 
 ```{r read-data4, echo = FALSE, eval = FALSE}
 ## get currency dataset online.
@@ -321,7 +334,7 @@ pred.data <- ldply(dateID, function(dt) {
 rm(obs.data, USDJPY)
 ```
 
-  Here I forecast 1 trading day advanced for daily Hi-Lo price.
+Here I forecast 1 trading day advanced for daily Hi-Lo price.
 
 ```{r read-data5}
 pred.data <- ldply(paste0('data/USDJPY/', dir('data/USDJPY', pattern = '^pred.data')), readRDS) %>% tbl_df
@@ -331,50 +344,76 @@ pred.data <- ldply(paste0('data/USDJPY/', dir('data/USDJPY', pattern = '^pred.da
 pred.data %>% data.table
 ```
 
-*Table 3.1 : Forecast high-low daily price.*
+*Table 3.1.1 : Forecast high-low daily price.*
 
-## Mean Squared Error
+Below I tidy the dataset.
 
-```{r mse1, eval = FALSE}
+```{r tidy-data1}
+## Copied dataset.
 mbase1 <- data.frame(Date = index(mbase), mbase) %>% tbl_df
 pred.data1 <- pred.data %>% tbl_df
 
 ## Add `Date` column as forecasted Date.
-pred.data1 %>% mutate(Date = lead(LatestDate.GMT), 
-                      Date = str_replace_na(last(
-                        LatestDate.GMT) + days(1)))
+pred.data1$Date <- lead(pred.data1$LatestDate.GMT)
+pred.data1$Date[length(pred.data1$Date)] <- last(pred.data1$LatestDate.GMT) + days(1)
 
-join(mbase1, pred.data1, by = 'Date')
+## Current daily price.
+pred.data1A <- pred.data1 %>% 
+    select(LatestDate.GMT, Lst.High, Lst.Low) %>% 
+    mutate(Date = lead(LatestDate.GMT), 
+           High = lead(Lst.High), Low = lead(Lst.Low)) %>% 
+    select(Date, High, Low) %>% data.table %>% na.omit
 
-## Mean Squared Error : comparison of accuracy
-paste('Open = ', mean((fcdataAA$USDJPY.FPOP.Open - fcdataAA$USDJPY.Open)^2))
-paste('High = ', mean((fcdataAA$USDJPY.FPHI.High - fcdataAA$USDJPY.High)^2))
-paste('Mean = ', mean((fcdataAA$USDJPY.FPMN.Mean - (fcdataAA$USDJPY.High + fcdataAA$USDJPY.Low)/2)^2))
-paste('Low = ', mean((fcdataAA$USDJPY.FPLO.Low - fcdataAA$USDJPY.Low)^2))
-paste('Close = ', mean((fcdataAA$USDJPY.FPCL.Close - fcdataAA$USDJPY.Close)^2))
+pred.data1B <- pred.data1 %>% 
+    select(Date, Fct.High, Fct.Low) %>% data.table
+
+pred.data1 <- merge(pred.data1A, pred.data1B, by = 'Date')
+
+## Merge dataset.
+pred <- merge(tbl_df(mbase1), pred.data1, by = 'Date') %>% 
+  tbl_df %>% select(-USDJPY.Volume, -USDJPY.Adjusted)
+rm(mbase1, pred.data1, pred.data1A, pred.data1B)
+
+## Here I test if the dataset scrapped from `quantmod::getSymbols(src = 'yahoo')` equal to FXCMTickData.
+# pred %>% mutate(test.H = USDJPY.High == High, 
+#                 test.L = USDJPY.Low == Low) %>% 
+#     select(test.H, test.L) %>% unique
+## A tibble: 1 x 2
+#  test.H test.L
+#  <lgl>  <lgl> 
+#1 TRUE   TRUE
+
+## Therefore here I removed the duplicated columns. 
+pred %<>% select(-High, -Low)
+
+## Print dataset.
+pred %>% data.table
 ```
 
-```{r combine-dataETS, eval = FALSE}
-fcdata <- do.call(cbind, list(USDJPY.FPOP.Open = fitETS.op$Point.Forecast, 
-                              USDJPY.FPHI.High = fitETS.hi$Point.Forecast, 
-                              USDJPY.FPMN.Mean = fitETS.mn$Point.Forecast, 
-                              USDJPY.FPLO.Low = fitETS.lo$Point.Forecast, 
-                              USDJPY.FPCL.Close = fitETS.cl$Point.Forecast, 
-                              USDJPY.Open = fitETS.op$USDJPY.Open, 
-                              USDJPY.High = fitETS.op$USDJPY.High, 
-                              USDJPY.Low = fitETS.op$USDJPY.Low, 
-                              USDJPY.Close = fitETS.op$USDJPY.Close))
-fcdata <- na.omit(fcdata)
-names(fcdata) <- c('USDJPY.FPOP.Open', 'USDJPY.FPHI.High', 'USDJPY.FPMN.Mean', 
-                   'USDJPY.FPLO.Low', 'USDJPY.FPCL.Close', 'USDJPY.Open', 
-                   'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')
+*Table 3.1.2 : Tidy dataset for forecast high-low daily price.*
 
-## Mean Squared Error : comparison of accuracy
-paste('Open = ', mean((fcdata$USDJPY.FPOP.Open - fcdata$USDJPY.Open)^2))
-paste('High = ', mean((fcdata$USDJPY.FPHI.High - fcdata$USDJPY.High)^2))
-paste('Mean = ', mean((fcdata$USDJPY.FPMN.Mean - (fcdata$USDJPY.High + fcdata$USDJPY.Low)/2)^2))
-paste('Low = ', mean((fcdata$USDJPY.FPLO.Low - fcdata$USDJPY.Low)^2))
-paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
+## Mean Squared Error
+
+```{r mse1}
+## Mean Squared Error : Comparison of accuracy.
+## https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+data.frame(Category = c('High = ', 'Low = '), 
+           MSE = c(mean((pred$Fct.High - pred$USDJPY.High)^2), 
+                   mean((pred$Fct.Low - pred$USDJPY.Low)^2))) %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_right')
+```
+
+$$\frac{1}{n}\sum_{t=1}^{n}e_t^2 \cdots Equation\ 3.2.1$$
+
+*Table 3.2.1 : Mean Squared Error high-low daily price.* at the right-hand-side shows the accuracy of the predictive model. You can also refer to previous studies where compare the accuracy of predicted `Open`, `High`, `Low` and `Close` price.
+
+# Betting Strategy
+
+For the betting strategy, here I need to adjust a bit from **Binary.com Interview Q1** where fit the .
+
+```{r data-summary4}
+pred %>% data.table
 ```
 
 ```{r plotETS-2, echo = FALSE, eval = FALSE}
@@ -384,12 +423,10 @@ suppressAll(rm(fitETS.op, fitETS.hi, fitETS.mn, fitETS.lo, fitETS.cl))
 plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'ETS Model : USDJPY')
 ```
 
-# Betting Strategy
-
 # Return of Investment
 
 ```{r simStaking-AutoArima, eval = FALSE, include = FALSE}
-##============================ EVAL = FALSE ================================
+##==================== EVAL = FALSE =========================
 ## 
 ## Model 1 without leverage.
 ## 
