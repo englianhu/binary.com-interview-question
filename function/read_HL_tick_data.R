@@ -9,13 +9,15 @@ read_HL_tick_data <- function(dr = 'data/USDJPY/', df.type = 'data.table') {
   rm(pkgs)
   
   #'@ dr <- 'data/USDJPY/'
+  dr1 <- str_replace(dr, '/$', '')
   
   ## unzip dataset.
   if(file.exists(paste0(dr, 'USDJPY.zip'))) {
-    unzip(paste0(dr, 'USDJPY.zip'), exdir = dr)
+    #'@ unzip(paste0(dr, 'USDJPY.zip'), exdir = dr)
+    unzip(paste0(dr, 'USDJPY.zip'), exdir = dr1)
   }
   
-  res <- ldply(paste0(dr, dir(dr, pattern = '_HL.rds')), readRDS)
+  res <- ldply(paste0(dr, dir(dr1, pattern = '_HL.rds')), readRDS)
   
   if(df.type == 'data.table') {
     res %<>% data.table
@@ -25,7 +27,9 @@ read_HL_tick_data <- function(dr = 'data/USDJPY/', df.type = 'data.table') {
     stop("Kindly choose df.type = 'data.table' or df.type = 'tbl_df'.")
   }
   
-  file.remove(paste0(dr, dir(dr, pattern = '_HL.rds')))
+  file.remove(paste0(dr, dir(dr1, pattern = '_HL.rds')))
+  
+  res %<>% select(Date, DateTime, Bid, Ask)
   
   return(unique(res))
 }
