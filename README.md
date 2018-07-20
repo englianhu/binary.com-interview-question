@@ -24,7 +24,7 @@
   - Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
   - Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
 
-  Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) ([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
+  Kindly refer to [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or ([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
   
   Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3073/) where [Q1App2](https://beta.rstudioconnect.com/content/3138/) is another app for financial value betting.
 
@@ -36,7 +36,7 @@
 
   Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.com/content/3775/) trial version to test the real time trading, and a completed version is [Q1App2](https://beta.rstudioconnect.com/content/3138/).
 
-  Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over [Binary.com Interview Q1E](http://rpubs.com/englianhu/316133).
+  Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)).
 
 #### Shiny Application
 
