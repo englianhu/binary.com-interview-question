@@ -22,6 +22,28 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
   
   if(method == 'HiLo-sd') {
     
+    mbase %<>% mutate(BR = .initialFundSize) %>% 
+      #'@ mutate(Return.Back = ifelse(Prob > 0.5, Diff * Back * stakes, 0), 
+      #'@        Return.Lay = ifelse(Prob < 0.5, -Diff * Lay * stakes, 0))
+      mutate(fB = 2 * ProbB - 1, fS = 2 * ProbS - 1, 
+             EUB = ProbB * log(BR * (1 + fB)) + (1 - ProbB) * log(BR * (1 - fB)), 
+             EUS = ProbS * log(BR * (1 + fS)) + (1 - ProbS) * log(BR * (1 - fS)), 
+             #'@ Edge = ifelse(f > 0, EUB, EUS), #For f > 0 need to buy and f <= 0 need to sell.
+             #need to study on the risk management on "predicted profit" and "real profit".
+             Edge = ifelse(fB > 0, EUB, ifelse(fS > 0, EUS, 0)), 
+             PF = ifelse(Point.Forecast >= USDJPY.Low & 
+                           Point.Forecast <= USDJPY.High, 
+                         Point.Forecast, 0), #if forecasted place-bet price doesn't existing within Hi-Lo price, then the buying action is not stand. Assume there has no web bandwith delay.
+             FC = ifelse(forClose >= USDJPY.Low & forClose <= USDJPY.High, 
+                         forClose, USDJPY.Close), #if forecasted settle price doesn't existing within Hi-Lo price, then the closing action at closing price. Assume there has no web bandwith delay.
+             #'@ Diff = round(forClose - USDJPY.Close, 2),
+             ##forecasted closed price minus real close price.
+             
+             Buy = ifelse(PF > 0 & FC > PF, 1, 0), ##buy action
+             Sell = ifelse(PF > 0 & FC < PF, 1, 0), ##sell action
+             BuyS = Edge * Buy * (forClose - PF), 
+             SellS = Edge * Sell * (PF - forClose), 
+             Profit = BuyS + SellS, Bal = BR + Profit)
     
     
   } else if(method == 'HiLo-diff') {
