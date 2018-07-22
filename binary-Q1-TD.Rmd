@@ -288,6 +288,8 @@ For 3rd dataset, due to there is a real-time data, the **Real Time Trading Syste
 
 ## Forecast Daily Hi-Lo Price
 
+I tried to apply Lasso, Elastic Net and Ridge models to test the accuracy of prediction via [shinyApp](https://beta.rstudioconnect.com/content/2367/).
+
 $$\begin{equation}
 \sigma^2_{t} = \omega + \sum_{i=1}^{\rho}(\alpha_{i} + \gamma_{i} I_{t-i}) \varepsilon_{t-i}^{2} + \sum_{j=1}^{q}\beta_{j}\sigma^{2}_{t-j}\ \cdots\ Equation\ 3.1.1
 \end{equation}$$
@@ -496,9 +498,16 @@ pred %<>% group_by(Date) %>%
     rename(High = USDJPY.High, Low = USDJPY.Low, Close = USDJPY.Close) %>% data.table
 ```
 
-## Optimal Edge
+## Staking Strategy
 
 [Chapter 20 Against the Odds: The Mathematics of Gambling](http://srdas.github.io/MLBook/Gambling.html#odds)^[Publised book [**Data Science: Theories, Models, Algorithms, and Analytics** - *Sanjiv Ranjan Das (2017-03-24)*](http://srdas.github.io/MLBook/).] elaborates the odds price, edge, Kelly Criterion staking model, portfolio, Entropy and also day trading.
+
+**Binary.com Interview Q1** compares all possible outcomes of predicted price and ROI. Due to the financial betting only allows player place bets and awaiting for the settlement (unless placed another bet at other predicted price), there will be no any limit order and close transaction request (similar with FOREX trading market can place more than 1 limit order to lock the profit).
+
+- Forecasted Highest Price to sell and, close
+- 
+
+## Optimal Edge
 
 Here I adjusted a bit on the previous research [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion) based on another betting strategy to measure the optimal staking amount which is measure the edge based on the forecast highest price and lowest price.
 
@@ -508,7 +517,8 @@ p^∗_{i} = \frac{1}{h_{i}}\ ;\ x = l_{i}
 
 $h_{i}$ is the highest price where $l_{i}$ is the lowest price.
 
-```{r staking}
+```{r staking1, echo = FALSE, eval = FALSE}
+## =============== WRONG ==================
 ## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
 pred %>% 
     mutate(
@@ -525,6 +535,32 @@ pred %>%
            Sell2 = ifelse(Fct.Low <= Ask, 1, 0), 
            Sell3 = ifelse(Fct.Low <= Lo, 1, 0)) %>% 
     select(-High, -Low, -Close)
+## A tibble: 1,244 x 14
+#   DateTime               sq   Bid   Ask Fct.High Fct.Low    Hi    Lo  Buy1  Buy2  Buy3 Sell1 Sell2 Sell3
+#   <dttm>              <int> <dbl> <dbl>    <dbl>   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+# 1 2016-01-05 03:06:08     1  120.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+# 2 2016-01-05 12:22:55     4   NA   119.     120.    119.    NA     1     1    NA    NA     0     0     0
+# 3 2016-01-06 00:07:16     2  119.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+# 4 2016-01-06 11:38:17     3   NA   118.     120.    119.    NA     1     1    NA    NA     0     0     0
+# 5 2016-01-07 01:16:01     2  119.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+# 6 2016-01-07 09:24:27     4   NA   117.     120.    119.    NA     1     1    NA    NA     0     0     0
+# 7 2016-01-08 13:30:07     2  119.   NA      119.    119.     0    NA     1     1     1     0    NA    NA
+# 8 2016-01-08 21:57:33     3   NA   117.     119.    119.    NA     1     1    NA    NA     0     0     0
+# 9 2016-01-11 01:34:30     2   NA   117.     120.    119.    NA     1     1    NA    NA     0     0     0
+#10 2016-01-11 13:37:52     4  118.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+## ... with 1,234 more rows
+```
+
+```{r staking2, results = 'asis'}
+## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
+pred %>% 
+    tbl_df %>% 
+    select(-DateTime) %>% 
+    mutate(
+        Fct.High = round(Fct.High, 3), 
+        Fct.Low = round(Fct.Low, 3), 
+        Buy = ifelse(Fct.High >= High & Fct.High <= Low, 1, 0), 
+        Sell = ifelse(Fct.Low <= Low & Fct.Low >= High, 1, 0))
 ```
 
 *Table 4.2.1 : Buy-Long and Sell-Short table.*
