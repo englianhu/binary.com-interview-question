@@ -37,18 +37,18 @@ wd %<>% factor(., levels = ., ordered = TRUE)
 ## ====================== Data ========================================
 #if(weekdays(today('GMT')) %in% wd) {
   #prd <- ifelse(weekdays(today('GMT')) %in% wd[2:5], 1, 3)
-  prd = 1 #since count trading day.
-  
-  for(i in seq(fx)) {
-    assign(fxObj[i], na.omit(suppressWarnings(
-      getSymbols(fx[i], from = (today('GMT') - days(prd)) %m-% years(1), 
-                 to = (today('GMT') - days(prd)), auto.assign = FALSE)))) }
-  rm(i)
+#'@   prd = 1 #since count trading day.
+#'@   
+#'@   for(i in seq(fx)) {
+#'@     assign(fxObj[i], na.omit(suppressWarnings(
+#'@       getSymbols(fx[i], from = (today('GMT') - days(prd)) %m-% years(1), 
+#'@                  to = (today('GMT') - days(prd)), auto.assign = FALSE)))) }
+#'@   rm(i)
 #}
 #mbase <- `JPY=X`
 #rm(`JPY=X`)
-names(USDJPY) <- str_replace_all(names(USDJPY), 'JPY.X', 'USD.JPY')
-USDJPY %<>% na.omit
+#'@ names(USDJPY) <- str_replace_all(names(USDJPY), 'JPY.X', 'USD.JPY')
+#'@ USDJPY %<>% na.omit
 
 ## ================== Functions ========================================
 # Function to get new observations

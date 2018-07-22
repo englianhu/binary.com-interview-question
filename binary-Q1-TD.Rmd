@@ -270,7 +270,7 @@ For 2nd dataset, here I gather the tick data via **FXCMTickData**, there are mor
 
 ```{r read-data3}
 ## read tick data.
-HL_tick_data <- read_HL_tick_data() %>% arrange(Date)
+HL_tick_data <- read_HL_tick_data()
 dtID <- unique(HL_tick_data$Date)
 
 ## arrange the sequence of highest and lowest price.
@@ -287,6 +287,8 @@ For 3rd dataset, due to there is a real-time data, the **Real Time Trading Syste
 # Statistical Modelling
 
 ## Forecast Daily Hi-Lo Price
+
+I tried to apply Lasso, Elastic Net and Ridge models to test the accuracy of prediction via [shinyApp](https://beta.rstudioconnect.com/content/2367/).
 
 $$\begin{equation}
 \sigma^2_{t} = \omega + \sum_{i=1}^{\rho}(\alpha_{i} + \gamma_{i} I_{t-i}) \varepsilon_{t-i}^{2} + \sum_{j=1}^{q}\beta_{j}\sigma^{2}_{t-j}\ \cdots\ Equation\ 3.1.1
@@ -404,7 +406,7 @@ mb.dateID[!mb.dateID %in% td.dateID]
 td.dateID[!td.dateID %in% mb.dateID]
 ```
 
-```{r plot-data1A, echo = FALSE, results = 'asis'}
+```{r plot-data1A, echo = FALSE}
 ## Real price.
 pl.RHigh <- pred %>% 
   select(Date, USDJPY.High)
@@ -485,16 +487,26 @@ As we know from previous paper, the closing price will be settled price if the f
 
 ```{r data-summary4}
 ## Here I combine real-time dataset with the daily dataset.
-pred <- merge(pred, HL_tick_data, by = 'Date') %>% 
-  tbl_df %>% 
-  arrange(DateTime)
+pred <- merge(HL_tick_data, pred,  by = 'Date') %>% 
+  tbl_df
 
-pred %>% data.table
+## Tidy dataset.
+pred %<>% group_by(Date) %>% 
+    dplyr::filter(Bid == max(Bid, na.rm = TRUE)|Ask == min(Ask, na.rm = TRUE)) %>% 
+    select(DateTime, Date, USDJPY.High, USDJPY.Low, USDJPY.Close, sq, Bid, Ask, Fct.High, Fct.Low) %>% 
+    rename(High = USDJPY.High, Low = USDJPY.Low, Close = USDJPY.Close) %>% data.table
 ```
 
-## Optimal Edge
+## Staking Strategy
 
 [Chapter 20 Against the Odds: The Mathematics of Gambling](http://srdas.github.io/MLBook/Gambling.html#odds)^[Publised book [**Data Science: Theories, Models, Algorithms, and Analytics** - *Sanjiv Ranjan Das (2017-03-24)*](http://srdas.github.io/MLBook/).] elaborates the odds price, edge, Kelly Criterion staking model, portfolio, Entropy and also day trading.
+
+**Binary.com Interview Q1** compares all possible outcomes of predicted price and ROI. Due to the financial betting only allows player place bets and awaiting for the settlement (unless placed another bet at other predicted price), there will be no any limit order and close transaction request (similar with FOREX trading market can place more than 1 limit order to lock the profit).
+
+- Forecasted Highest Price to sell and, close
+- 
+
+## Optimal Edge
 
 Here I adjusted a bit on the previous research [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion) based on another betting strategy to measure the optimal staking amount which is measure the edge based on the forecast highest price and lowest price.
 
@@ -504,26 +516,59 @@ p^∗_{i} = \frac{1}{h_{i}}\ ;\ x = l_{i}
 
 $h_{i}$ is the highest price where $l_{i}$ is the lowest price.
 
-```{r staking}
-## Basic data
-#'@ p <- 0.25    #private prob of winning
-#'@ odds <- 4    #actual odds
-#'@ edge <- p*odds - (1-p)
-#'@ f <- edge/odds
-#'@ paste("edge =", edge ,"; f =",f)
-##[1] "edge = 0.25 ; f = 0.0625"
-
+```{r staking1, echo = FALSE, eval = FALSE}
+## =============== WRONG ==================
 ## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
-kbase <- pred %>% mutate(
-    p1 = 1/Fct.Low, Edge.H = p1 * Fct.High - (1 - p1), 
-    p2 = 1/Fct.High, Edge.L = p2 * Fct.Low - (1 - p2), 
-    f1 = Edge.H/Fct.Low, f2 = Edge.L/Fct.High) %>% 
-    select(-USDJPY.Open, -USDJPY.High, -USDJPY.Low, -USDJPY.Close)
-
-kbase %>% data.table
+pred %>% 
+    mutate(
+        Fct.High = round(Fct.High, 3), 
+        Fct.Low = round(Fct.Low, 3), 
+        Hi = ifelse(High >= Bid, 1, 0), 
+        Lo = ifelse(Low >= Ask, 1, 0)) %>% 
+    tbl_df %>% 
+    select(-Date) %>% 
+    mutate(Buy1 = ifelse(Fct.High >= High, 1, 0), 
+           Buy2 = ifelse(Fct.High >= Bid, 1, 0), 
+           Buy3 = ifelse(Fct.High >= Hi, 1, 0), 
+           Sell1 = ifelse(Fct.Low <= Low, 1, 0), 
+           Sell2 = ifelse(Fct.Low <= Ask, 1, 0), 
+           Sell3 = ifelse(Fct.Low <= Lo, 1, 0)) %>% 
+    select(-High, -Low, -Close)
+## A tibble: 1,244 x 14
+#   DateTime               sq   Bid   Ask Fct.High Fct.Low    Hi    Lo  Buy1  Buy2  Buy3 Sell1 Sell2 Sell3
+#   <dttm>              <int> <dbl> <dbl>    <dbl>   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+# 1 2016-01-05 03:06:08     1  120.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+# 2 2016-01-05 12:22:55     4   NA   119.     120.    119.    NA     1     1    NA    NA     0     0     0
+# 3 2016-01-06 00:07:16     2  119.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+# 4 2016-01-06 11:38:17     3   NA   118.     120.    119.    NA     1     1    NA    NA     0     0     0
+# 5 2016-01-07 01:16:01     2  119.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+# 6 2016-01-07 09:24:27     4   NA   117.     120.    119.    NA     1     1    NA    NA     0     0     0
+# 7 2016-01-08 13:30:07     2  119.   NA      119.    119.     0    NA     1     1     1     0    NA    NA
+# 8 2016-01-08 21:57:33     3   NA   117.     119.    119.    NA     1     1    NA    NA     0     0     0
+# 9 2016-01-11 01:34:30     2   NA   117.     120.    119.    NA     1     1    NA    NA     0     0     0
+#10 2016-01-11 13:37:52     4  118.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+## ... with 1,234 more rows
 ```
 
-*Table 4.2.1 : Kelly ratio.*
+```{r staking2}
+## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
+pred %>% 
+    tbl_df %>% 
+    select(-DateTime) %>% 
+    mutate(
+        Fct.High = round(Fct.High, 3), 
+        Fct.Low = round(Fct.Low, 3), 
+        Buy = ifelse(Fct.High >= High & Fct.High <= Low, 1, 0), 
+        Sell = ifelse(Fct.Low <= Low & Fct.Low >= High, 1, 0))
+```
+
+*Table 4.2.1 : Buy-Long and Sell-Short table.*
+
+$$\begin{equation}
+\frac{1}{n}\sum_{t=1}^{n}e_t^2\ \cdots\ Equation\ 3.2.1
+\end{equation}$$
+
+*Table 3.2.1 : Mean Squared Error high-low daily price.* at the right-hand-side shows the accuracy of the predictive model. You can also refer to previous studies where compare the accuracy of predicted `Open`, `High`, `Low` and `Close` price.
 
 # Return of Investment
 
@@ -580,19 +625,19 @@ options(warn = 0)
 
 ## Documenting File Creation 
 
-  It's useful to record some information about how your file was created.
+It's useful to record some information about how your file was created.
 
-  - File creation date: 2018-07-13
-  - File latest updated date: `r today('Asia/Tokyo')`
-  - `r R.version.string`
-  - R version (short form): `r getRversion()`
-  - [<span style='color:blue'>**rmarkdown** package</span>](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
-  - [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
-  - File version: 1.0.1
-  - Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
-  - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
-  - Additional session information
-  
+- File creation date: 2018-07-13
+- File latest updated date: `r today('Asia/Tokyo')`
+- `r R.version.string`
+- R version (short form): `r getRversion()`
+- [<span style='color:blue'>**rmarkdown** package</span>](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+- [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
+- File version: 1.0.1
+- Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
+- GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
+- Additional session information
+
 ```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
 suppressMessages(require('dplyr', quietly = TRUE))
 suppressMessages(require('formattable', quietly = TRUE))
@@ -600,11 +645,20 @@ suppressMessages(require('formattable', quietly = TRUE))
 lubridate::now('Asia/Tokyo')
 sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
 rownames(sys1) <- NULL
-sys1 %>% formattable %>% as.htmlwidget
+#'@ sys1 %>% formattable %>% as.htmlwidget
 
-data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(Category = Category, Sys.info =  Sys.info..) %>% formattable %>% as.htmlwidget
+sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(Category = Category, Sys.info =  Sys.info..)
+#'@ sys2 %>% formattable %>% as.htmlwidget
 
-rm(sys1)
+sys1 %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))#, full_width = FALSE, position = 'float_left')
+
+sys2 %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))#, full_width = FALSE, position = 'float_right')
+
+rm(sys1, sys2)
 ```
 
 ## Reference
