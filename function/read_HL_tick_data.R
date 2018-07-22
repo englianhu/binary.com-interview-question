@@ -28,7 +28,11 @@ read_HL_tick_data <- function(dr = 'data/USDJPY/', df.type = 'data.table') {
   }
 
   file.remove(paste0(dr, dir(dr1, pattern = '_HL.rds')))
+<<<<<<< HEAD
   res %<>% select(Date, DateTime, Bid, Ask)
+=======
+  res %<>% select(Date, DateTime, Bid, Ask) %>% arrange(DateTime)
+>>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
 
   return(unique(res))
 }

@@ -246,6 +246,7 @@ Below is the dataset gather via `getSymbols(src = 'yahoo')`.
 ## read saved dataset.
 mbase <- readRDS('./data/USDJPY/USDJPY.rds')
 ```
+<<<<<<< HEAD
 
 ```{r data-summary2, echo = FALSE}
 ## size of dataset.
@@ -262,6 +263,24 @@ summary(mbase) %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
+=======
+
+```{r data-summary2, echo = FALSE}
+## size of dataset.
+paste0('mbase : [', paste(dim(mbase), collapse = ' x '), ']')
+```
+
+```{r data-summary3, echo = FALSE}
+summary(mbase) %>% 
+  tidy %>% 
+  select(Var2, Freq) %>% 
+  rename(Category = Var2) %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+>>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
 *Table 2.1.1 : 1st dataset - summary of daily price dataset.*
 
 ## Tidy Data
@@ -288,8 +307,11 @@ For 3rd dataset, due to there is a real-time data, the **Real Time Trading Syste
 
 ## Forecast Daily Hi-Lo Price
 
+<<<<<<< HEAD
 I tried to apply Lasso, Elastic Net and Ridge models to test the accuracy of prediction via [shinyApp](https://beta.rstudioconnect.com/content/2367/).
 
+=======
+>>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
 $$\begin{equation}
 \sigma^2_{t} = \omega + \sum_{i=1}^{\rho}(\alpha_{i} + \gamma_{i} I_{t-i}) \varepsilon_{t-i}^{2} + \sum_{j=1}^{q}\beta_{j}\sigma^{2}_{t-j}\ \cdots\ Equation\ 3.1.1
 \end{equation}$$
@@ -434,6 +456,7 @@ hc <- highchart(type = 'stock') %>%
 
 hc
 ```
+<<<<<<< HEAD
 
 *Graph 3.2.1A : <span style='color:red'>Forecast daily highest price</span> vs <span style='color:blue'>real daily highest price</span>.*
 
@@ -445,6 +468,19 @@ hc <- highchart(type = 'stock') %>%
   hc_add_series(pl.RLow, id = 'pl.RLow', color = 'blue') %>% 
   hc_add_series(pl.FLow, id = 'pl.FLow', color = 'red')
 
+=======
+
+*Graph 3.2.1A : <span style='color:red'>Forecast daily highest price</span> vs <span style='color:blue'>real daily highest price</span>.*
+
+```{r plot-data1B, echo = FALSE, results = 'asis'}
+## Plot graph
+hc <- highchart(type = 'stock') %>% 
+  hc_title(text = 'USD/JPY Currency Exchange Rate') %>% 
+  hc_subtitle(text = 'Comparison of Forecast and Real Price (Lowest Price)') %>% 
+  hc_add_series(pl.RLow, id = 'pl.RLow', color = 'blue') %>% 
+  hc_add_series(pl.FLow, id = 'pl.FLow', color = 'red')
+
+>>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
 rm(pl.RHigh, pl.RLow, pl.FHigh, pl.FLow)
 hc
 ```
@@ -465,6 +501,7 @@ data.frame(
   kable %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_right')
 ```
+<<<<<<< HEAD
 
 $$\begin{equation}
 \frac{1}{n}\sum_{t=1}^{n}e_t^2\ \cdots\ Equation\ 3.2.1
@@ -564,6 +601,69 @@ pred %>%
 ```
 
 *Table 4.2.1 : Buy-Long and Sell-Short table.*
+=======
+
+$$\begin{equation}
+\frac{1}{n}\sum_{t=1}^{n}e_t^2\ \cdots\ Equation\ 3.2.1
+\end{equation}$$
+
+*Table 3.2.1 : Mean Squared Error high-low daily price.* at the right-hand-side shows the accuracy of the predictive model. You can also refer to previous studies where compare the accuracy of predicted `Open`, `High`, `Low` and `Close` price.
+
+# Betting Strategy
+
+## Kelly Criterion
+
+$$\begin{equation}
+f = \frac{Edge}{Odds} = \frac{p^∗ x−(1−p^∗)}{x}
+ \ \cdots Equation\ 4.1.1 
+ \end{equation}$$
+
+For the betting strategy, here I need to adjust a bit from **Binary.com Interview Q1** as stated in section [Introduction]. Below I tidy the dataset to match the `bid/ask` price for close a transaction.
+
+As we know from previous paper, the closing price will be settled price if the forecast price has no occured within a day (from 12:00:01 AM until next day 12:00:00 AM, due to system calculate the price spend a minute, therefore the opening price will not in count.).
+
+```{r data-summary4}
+## Here I combine real-time dataset with the daily dataset.
+pred <- merge(pred, HL_tick_data, by = 'Date') %>% 
+  tbl_df %>% 
+  arrange(DateTime)
+
+pred %>% data.table
+```
+
+## Optimal Edge
+
+[Chapter 20 Against the Odds: The Mathematics of Gambling](http://srdas.github.io/MLBook/Gambling.html#odds)^[Publised book [**Data Science: Theories, Models, Algorithms, and Analytics** - *Sanjiv Ranjan Das (2017-03-24)*](http://srdas.github.io/MLBook/).] elaborates the odds price, edge, Kelly Criterion staking model, portfolio, Entropy and also day trading.
+
+Here I adjusted a bit on the previous research [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion) based on another betting strategy to measure the optimal staking amount which is measure the edge based on the forecast highest price and lowest price.
+
+$$\begin{equation}
+p^∗_{i} = \frac{1}{h_{i}}\ ;\ x = l_{i}
+\end{equation}$$
+
+$h_{i}$ is the highest price where $l_{i}$ is the lowest price.
+
+```{r staking}
+## Basic data
+#'@ p <- 0.25    #private prob of winning
+#'@ odds <- 4    #actual odds
+#'@ edge <- p*odds - (1-p)
+#'@ f <- edge/odds
+#'@ paste("edge =", edge ,"; f =",f)
+##[1] "edge = 0.25 ; f = 0.0625"
+
+## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
+kbase <- pred %>% mutate(
+    p1 = 1/Fct.Low, Edge.H = p1 * Fct.High - (1 - p1), 
+    p2 = 1/Fct.High, Edge.L = p2 * Fct.Low - (1 - p2), 
+    f1 = Edge.H/Fct.Low, f2 = Edge.L/Fct.High) %>% 
+    select(-USDJPY.Open, -USDJPY.High, -USDJPY.Low, -USDJPY.Close)
+
+kbase %>% data.table
+```
+
+*Table 4.2.1 : Kelly ratio.*
+>>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
 
 # Return of Investment
 
