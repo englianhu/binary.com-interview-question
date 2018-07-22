@@ -483,13 +483,17 @@ For the betting strategy, here I need to adjust a bit from **Binary.com Intervie
 
 As we know from previous paper, the closing price will be settled price if the forecast price has no occured within a day (from 12:00:01 AM until next day 12:00:00 AM, due to system calculate the price spend a minute, therefore the opening price will not in count.).
 
-```{r data-summary4}
+```{r data-summary4, results = 'asis'}
 ## Here I combine real-time dataset with the daily dataset.
-pred <- merge(pred, HL_tick_data, by = 'Date') %>% 
+pred <- merge(HL_tick_data, pred,  by = 'Date') %>% 
   tbl_df %>% 
   arrange(DateTime)
 
-pred %>% data.table
+## Tidy dataset.
+pred %<>% group_by(Date) %>% 
+    dplyr::filter(Bid == max(Bid, na.rm = TRUE)|Ask == min(Ask, na.rm = TRUE)) %>% 
+    select(DateTime, Date, USDJPY.High, USDJPY.Low, USDJPY.Close, sq, Bid, Ask, Fct.High, Fct.Low) %>% 
+    rename(High = USDJPY.High, Low = USDJPY.Low, Close = USDJPY.Close) %>% data.table
 ```
 
 ## Optimal Edge
@@ -505,25 +509,25 @@ p^∗_{i} = \frac{1}{h_{i}}\ ;\ x = l_{i}
 $h_{i}$ is the highest price where $l_{i}$ is the lowest price.
 
 ```{r staking}
-## Basic data
-#'@ p <- 0.25    #private prob of winning
-#'@ odds <- 4    #actual odds
-#'@ edge <- p*odds - (1-p)
-#'@ f <- edge/odds
-#'@ paste("edge =", edge ,"; f =",f)
-##[1] "edge = 0.25 ; f = 0.0625"
-
 ## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
-kbase <- pred %>% mutate(
-    p1 = 1/Fct.Low, Edge.H = p1 * Fct.High - (1 - p1), 
-    p2 = 1/Fct.High, Edge.L = p2 * Fct.Low - (1 - p2), 
-    f1 = Edge.H/Fct.Low, f2 = Edge.L/Fct.High) %>% 
-    select(-USDJPY.Open, -USDJPY.High, -USDJPY.Low, -USDJPY.Close)
-
-kbase %>% data.table
+pred %>% 
+    mutate(
+        Fct.High = round(Fct.High, 3), 
+        Fct.Low = round(Fct.Low, 3), 
+        Hi = ifelse(High >= Bid, 1, 0), 
+        Lo = ifelse(Low >= Ask, 1, 0)) %>% 
+    tbl_df %>% 
+    select(-Date) %>% 
+    mutate(Buy1 = ifelse(Fct.High >= High, 1, 0), 
+           Buy2 = ifelse(Fct.High >= Bid, 1, 0), 
+           Buy3 = ifelse(Fct.High >= Hi, 1, 0), 
+           Sell1 = ifelse(Fct.Low <= Low, 1, 0), 
+           Sell2 = ifelse(Fct.Low <= Ask, 1, 0), 
+           Sell3 = ifelse(Fct.Low <= Lo, 1, 0)) %>% 
+    select(-High, -Low, -Close)
 ```
 
-*Table 4.2.1 : Kelly ratio.*
+*Table 4.2.1 : Buy-Long and Sell-Short table.*
 
 # Return of Investment
 

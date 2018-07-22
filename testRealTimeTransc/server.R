@@ -41,12 +41,14 @@ server <- shinyServer(function(input, output, session) {
                 #fxHL <- forecastUSDJPYHL(ahead = prd)
                 
                 if(file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))) {
-                    fxHL <- ldply(dir('data', 
-                                      pattern = paste0('fcstPunterGMT', today('GMT'))), function(x){
-                                          readRDS(paste0('data/', x)) })
+                    fxHL <- ldply(
+                        dir('data', pattern = 
+                                paste0('fcstPunterGMT', today('GMT'))), function(x){
+                                    readRDS(paste0('data/', x)) })
                     
                 } else {
                     
+                    ## https://stackoverflow.com/questions/20507247/r-repeat-function-until-condition-met?answertab=votes#tab-top
                     repeat{
                         # startTime <- now('GMT')
                         startTime <- today('GMT')
@@ -65,7 +67,7 @@ server <- shinyServer(function(input, output, session) {
                         USDJPY %<>% na.omit
                         rm(i) #}
                         
-                        fxHL <- forecastUSDJPYHL(USDJPY, ahead = prd)
+                        fxHL <- suppressWarnings(forecastUSDJPYHL(USDJPY, ahead = prd))
                         #'@ print(as.character(now('GMT')))
                         #'@ print(fxHL)
                         if(exists('fxHL')) break
@@ -74,13 +76,17 @@ server <- shinyServer(function(input, output, session) {
                         sleepTime <- startTime + 24*60*60 - startTime
                         if (sleepTime > 0)
                             Sys.sleep(sleepTime) }
+                    
+                    if(!dir.exists('data')) dir.create('data')
+                    if(!file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))){
+                        saveRDS(fxHL, paste0('data/fcstPunterGMT', today('GMT'), '.rds')) }
                 }
             })
         })
         
-        if(!dir.exists('data')) dir.create('data')
-        if(!file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))){
-            saveRDS(fxHL, paste0('data/fcstPunterGMT', today('GMT'), '.rds')) }
+        #'@ if(!dir.exists('data')) dir.create('data')
+        #'@ if(!file.exists(paste0('data/fcstPunterGMT', today('GMT'), '.rds'))){
+        #'@     saveRDS(fxHL, paste0('data/fcstPunterGMT', today('GMT'), '.rds')) }
         
         return(fxHL)
     })
@@ -144,14 +150,15 @@ server <- shinyServer(function(input, output, session) {
         trdDay <- str_split(rx$'TimeStamp (GMT)', ' ')[[1]][1]
         forDay <- rx$'ForecastDate (GMT)'
         
-        #if((rx$Fct.Low == rx$Bid.Price) & (forDay == trdDay)){
-        if(rx$Fct.Low == rx$Bid.Price){
+        ## https://dailypriceaction.com/forex-beginners/forex-bid-ask-spread
+        #if((rx$Fct.Low == rx$Ask.Price) & (forDay == trdDay)){
+        if(rx$Fct.Low == rx$Ask.Price){
             tr.buy <- rx %>% mutate(Price = Fct.Low, Transaction = 'Buy') %>% 
                 dplyr::select(`TimeStamp (GMT)`, Price, Transaction)
             saveRDS(tr.buy, paste0('data/buy.', now('GMT'), '.rds')) }
         
-        #if((rx$Fct.High == rx$Ask.Price) & (forDay == trdDay)){
-        if(rx$Fct.High == rx$Ask.Price){
+        #if((rx$Fct.High == rx$Bid.Price) & (forDay == trdDay)){
+        if(rx$Fct.High == rx$Bid.Price){
             tr.sell <- rx %>% mutate(Price = Fct.High, Transaction = 'Sell') %>% 
                 dplyr::select(`TimeStamp (GMT)`, Price, Transaction)
             saveRDS(tr.sell, paste0('data/sell.', now('GMT'), '.rds')) }
