@@ -3,9 +3,8 @@
 
 suppressWarnings(require('BBmisc'))
 suppressWarnings(require('shiny'))
-<<<<<<< HEAD
-=======
 suppressWarnings(require('httr'))
+<<<<<<< HEAD
 <<<<<<< HEAD
 =======
 
@@ -14,6 +13,8 @@ suppressWarnings(require('httr'))
 
 >>>>>>> 625a9d893fbce4db5d2e5c9a40098a32d3380b07
 >>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
+=======
+>>>>>>> c06ac11e4001347e080877687649bc8ee5eb50ca
 suppressWarnings(require('memoise'))
 suppressWarnings(require('stringr'))
 suppressWarnings(require('xts'))
@@ -39,6 +40,9 @@ suppressWarnings(require('stringr'))
 #'@ set_config(use_proxy(url = '127.0.0.1', port = 0000))
 =======
 >>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
+
+#'@ options(rgl.useNULL=TRUE)
+#'@ set_config(use_proxy(url = '127.0.0.1', port = 0000))
 
 #'@ pkgs <- c('shiny', 'memoise', 'stringr', 'xts', 'TFX', 'quantmod', 
 #'@           'rugarch', 'lubridate', 'ggplot2', 'highcharter', 'formattable', 

@@ -7,10 +7,14 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
   ##      as the x value and Low/High as baseline variance.
   ## 
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> c06ac11e4001347e080877687649bc8ee5eb50ca
   ## 2a) method = 'HiLo-sd' : The mean value of variane of forecast highest 
   ##      price and mean value of forecast lowest price. The method origin 
   ##      from `simStakesGarch.R` but modified a bit which is combine both 
   ##      HiLo and LoHi but also added timeline placing order criteria.
+<<<<<<< HEAD
   ## 
   ## 2b) method = 'HiLo-diff' : Both highest and lowest price directly used 
   ##      as odds price.
@@ -25,6 +29,12 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
 >>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
   ## 
   
+=======
+  ## 
+  ## 2b) method = 'HiLo-diff' : Both highest and lowest price directly used 
+  ##      as odds price.
+
+>>>>>>> c06ac11e4001347e080877687649bc8ee5eb50ca
   source('function/pnorm_bid_ask.R')
   
   ## tidy dataset.
@@ -33,10 +43,14 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
   if(method == 'HiLo-sd') {
     
 <<<<<<< HEAD
+<<<<<<< HEAD
     mbase %<>% mutate(BR = init_br) %>% 
 =======
     mbase %<>% mutate(BR = .initialFundSize) %>% 
 >>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
+=======
+    mbase %<>% mutate(BR = init_br) %>% 
+>>>>>>> c06ac11e4001347e080877687649bc8ee5eb50ca
       #'@ mutate(Return.Back = ifelse(Prob > 0.5, Diff * Back * stakes, 0), 
       #'@        Return.Lay = ifelse(Prob < 0.5, -Diff * Lay * stakes, 0))
       mutate(fB = 2 * ProbB - 1, fS = 2 * ProbS - 1, 

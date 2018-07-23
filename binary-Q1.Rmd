@@ -24,7 +24,7 @@ output:
 link-citations: yes
 ---
 
-```{r setup, include = FALSE}
+```{r setup, warning = FALSE, include = FALSE}
 suppressPackageStartupMessages(library('BBmisc'))
 pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'tidyquant', 'turner', 'readr', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'MCMCpack', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')#, 'Mcomp', 'bsts')
 
@@ -78,7 +78,7 @@ rm(pkgs)
 
   I use 3 years data for the question as experiment, 1st year data is burn-in data for statistical modelling and prediction purpose while following 2 years data for forecasting and staking. There have 252 trading days within a year.
 
-```{r read-data, echo = FALSE, eval = FALSE}
+```{r read-data, echo = FALSE, warning = FALSE, eval = FALSE}
 ## ================== eval = FALSE =============================
 ## Do not execute...
 ## 
@@ -139,7 +139,7 @@ dateID0 <- ymd('2015-01-01')
 dateID <- dateID[dateID > dateID0]
 ```
 
-```{r data-summary}
+```{r data-summary, warning = FALSE}
 dim(mbase)
 summary(mbase) %>% kable(width = 'auto')
 ```
@@ -181,7 +181,7 @@ It is also possible for the model to be of class "ets", and equal to the output 
 
   Kindly refer to [<span style='color:blue'>*8.10 ARIMA vs ETS*</span>](https://www.otexts.org/fpp/8/10) for further details.
 
-```{r build-AutoArima}
+```{r build-AutoArima, warning = FALSE}
 ## Modelling Auto Arima focasting data.
 #'@ fitAutoArima.op <- suppressAll(simAutoArima(USDJPY, .prCat = 'Op')) #will take a minute
 #'@ saveRDS(fitAutoArima.op, './data/fitAutoArima.op.rds')
@@ -205,7 +205,7 @@ fitAutoArima.lo <- readRDS('./data/fitAutoArima.lo.rds')
 fitAutoArima.cl <- readRDS('./data/fitAutoArima.cl.rds')
 ```
 
-```{r build-ETS}
+```{r build-ETS, warning = FALSE}
 ## Modelling ETS focasting data.
 #'@ fitETS.op <- suppressAll(simETS(USDJPY, .prCat = 'Op')) #will take a minute
 #'@ saveRDS(fitETS.op, './data/fitETS.op.rds')
@@ -264,7 +264,7 @@ summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitETS.cl))
 
 **Mean Squared Error**
 
-```{r combine-dataAutoArima}
+```{r combine-dataAutoArima, warning = FALSE}
 fcdataAA <- do.call(cbind, list(USDJPY.FPOP.Open = fitAutoArima.op$Point.Forecast, 
                               USDJPY.FPHI.High = fitAutoArima.hi$Point.Forecast, 
                               USDJPY.FPMN.Mean = fitAutoArima.mn$Point.Forecast, 
@@ -274,7 +274,8 @@ fcdataAA <- do.call(cbind, list(USDJPY.FPOP.Open = fitAutoArima.op$Point.Forecas
                               USDJPY.High = fitAutoArima.op$USDJPY.High, 
                               USDJPY.Low = fitAutoArima.op$USDJPY.Low, 
                               USDJPY.Close = fitAutoArima.op$USDJPY.Close))
-fcdataAA <- na.omit(fcdataAA)
+
+fcdataAA %<>% na.omit
 names(fcdataAA) <- c('USDJPY.FPOP.Open', 'USDJPY.FPHI.High', 'USDJPY.FPMN.Mean', 
                    'USDJPY.FPLO.Low', 'USDJPY.FPCL.Close', 'USDJPY.Open', 
                    'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')
@@ -287,7 +288,7 @@ paste('Low = ', mean((fcdataAA$USDJPY.FPLO.Low - fcdataAA$USDJPY.Low)^2))
 paste('Close = ', mean((fcdataAA$USDJPY.FPCL.Close - fcdataAA$USDJPY.Close)^2))
 ```
 
-```{r combine-dataETS}
+```{r combine-dataETS, warning = FALSE}
 fcdata <- do.call(cbind, list(USDJPY.FPOP.Open = fitETS.op$Point.Forecast, 
                               USDJPY.FPHI.High = fitETS.hi$Point.Forecast, 
                               USDJPY.FPMN.Mean = fitETS.mn$Point.Forecast, 
@@ -297,7 +298,8 @@ fcdata <- do.call(cbind, list(USDJPY.FPOP.Open = fitETS.op$Point.Forecast,
                               USDJPY.High = fitETS.op$USDJPY.High, 
                               USDJPY.Low = fitETS.op$USDJPY.Low, 
                               USDJPY.Close = fitETS.op$USDJPY.Close))
-fcdata <- na.omit(fcdata)
+
+fcdata %<>% na.omit
 names(fcdata) <- c('USDJPY.FPOP.Open', 'USDJPY.FPHI.High', 'USDJPY.FPMN.Mean', 
                    'USDJPY.FPLO.Low', 'USDJPY.FPCL.Close', 'USDJPY.Open', 
                    'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')
@@ -391,7 +393,7 @@ $$h_{t} = {\omega} + \sum_{i=1}^q{{\alpha}_{i} {\epsilon}_{t-i}^2} + \sum_{j=1}^
 
   Firstly we use `rugarch` <s>and then `rmgarch`</s>^[Due to file loading heavily, here I leave the multivariate Garch models for future works.] to compare the result.
 
-```{r intro-Garch}
+```{r intro-Garch, warning = FALSE}
 ## http://www.unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/
 ugarchspec()
 
@@ -409,7 +411,7 @@ spec = ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(2, 1)),
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/0q3gSJKJUs8" frameborder="0" allowfullscreen></iframe>
 
-```{r build-Garch}
+```{r build-Garch, warning = FALSE}
 ## Modelling Garch ('sGarch' model) focasting data.
 #'@ fitGM.op <- suppressAll(simGarch(USDJPY, .prCat = 'Op')) #will take a minute
 #'@ saveRDS(fitGM.op, './data/fitGM.op.rds')
@@ -531,7 +533,7 @@ fitGM.cl <- readRDS('./data/fitGM.cl.rds')
   - [<span style='color:blue'>Burn-In is Unnecessary</span>](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
   - [<span style='color:blue'>**Nice R Code** *Punning code better since 2013*</span>](https://nicercode.github.io/guides/mcmc/)
 
-```{r lm-Garch}
+```{r lm-Garch, warning = FALSE}
 ## Here I test the accuracy of forecasting of univariate Garch ('sGarch' model) models.
 
 ## Test the models
@@ -558,7 +560,7 @@ summary(MCMCregress(Point.Forecast~ USDJPY.Close, data = fitGM.cl))
 
 **Mean Squared Error**
 
-```{r combine-dataGM}
+```{r combine-dataGM, warning = FALSE}
 ## Univariate Garch models.
 fcdataGM <- do.call(cbind, list(USDJPY.FPOP.Open = fitGM.op$Point.Forecast, 
                               USDJPY.FPHI.High = fitGM.hi$Point.Forecast, 
@@ -569,7 +571,8 @@ fcdataGM <- do.call(cbind, list(USDJPY.FPOP.Open = fitGM.op$Point.Forecast,
                               USDJPY.High = fitGM.op$USDJPY.High, 
                               USDJPY.Low = fitGM.op$USDJPY.Low, 
                               USDJPY.Close = fitGM.op$USDJPY.Close))
-fcdataGM <- na.omit(fcdataGM)
+
+fcdataGM %<>% na.omit
 names(fcdataGM) <- c('USDJPY.FPOP.Open', 'USDJPY.FPHI.High', 'USDJPY.FPMN.Mean', 
                    'USDJPY.FPLO.Low', 'USDJPY.FPCL.Close', 'USDJPY.Open', 
                    'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')
@@ -607,7 +610,7 @@ $$\mu_{t} + 1 = \mu_{t} + \nu_{t}\ ,\ \nu_{t}∼N(0,\sigma_{\nu}_{2})$$
 
 #### ARIMA vs ETS
 
-```{r plotETS-1, echo = FALSE}
+```{r plotETS-1, echo = FALSE, warning = FALSE}
 ## Plot the models
 ## opened price fit data
 autoplot(forecast(ets(fitETS.op$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#ffcccc', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', title = 'Forecasts from ETS model [A,N,N]', subtitle = 'Opening Price Forecast', caption = 'Source : USDJPY')
@@ -627,7 +630,7 @@ autoplot(forecast(ets(fitETS.lo$Point.Forecast), h = 4), facets = TRUE) + geom_f
 autoplot(forecast(ets(fitETS.cl$Point.Forecast), h = 4), facets = TRUE) + geom_forecast(color = '#FFCCCC', show.legend = FALSE) + labs(x = 'Day', y = 'Forex Price', title = 'Forecasts from ETS model [A,N,N]', subtitle = 'Closing Price Forecast', caption = 'Source : USDJPY')
 ```
 
-```{r plotETS-2, echo = FALSE}
+```{r plotETS-2, echo = FALSE, warning = FALSE}
 #'@ source('./function/plotChart2.R', local = TRUE)
 suppressAll(rm(fitETS.op, fitETS.hi, fitETS.mn, fitETS.lo, fitETS.cl))
 
@@ -636,7 +639,7 @@ plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'ETS Mod
 
 #### Garch vs EWMA
 
-```{r plotGM-1, echo = FALSE}
+```{r plotGM-1, echo = FALSE, warning = FALSE}
 #'@ source('./function/plotChart2.R', local = TRUE)
 suppressAll(rm(fitGM.op, fitGM.hi, fitGM.mn, fitGM.lo, fitGM.cl))
 
@@ -686,7 +689,7 @@ plotChart2(fcdataGM, initialName = 'FP', chart.type = 'FP', graph.title = 'Garch
 
 #### ARIMA vs ETS
 
-```{r simStaking-AutoArima, eval = FALSE, include = FALSE}
+```{r simStaking-AutoArima, eval = FALSE, warning = FALSE, include = FALSE}
 ##============================ EVAL = FALSE ================================
 ## 
 ## Model 1 without leverage.
@@ -794,7 +797,7 @@ ldply(fundList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate =
 # 20 fundCLCL 2015-01-02 2017-01-20     1000   1000.000   0.00000 1.000000
 ```
 
-```{r ROI-AutoArima, echo = FALSE}
+```{r ROI-AutoArima, warning = FALSE, echo = FALSE}
 ## load the pre-run and saved models.
 ## Profit and Loss of Arima models.
 
@@ -956,7 +959,7 @@ fundList <- list(fundOPHI = fundOPHI, fundHIHI = fundHIHI, fundMNHI = fundMNHI, 
                 fundOPCL = fundOPCL, fundHICL = fundHICL, fundMNCL = fundMNCL, fundLOCL = fundLOCL, fundCLCL = fundCLCL)
 ```
 
-```{r simStaking-withLog, eval = FALSE, include = FALSE}
+```{r simStaking-withLog, eval = FALSE, warning = FALSE, include = FALSE}
 ##============================ EVAL = FALSE ================================
 ## 
 ## Leveraged model 2
@@ -1019,7 +1022,7 @@ fundCLCL <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSiz
 #20 fundCLCL 2015-01-02 2017-01-20 6.907755   6.907755   0.00000  1.000000
 ```
 
-```{r simStaking-woutLogLeverage, eval = FALSE, include = FALSE}
+```{r simStaking-woutLogLeverage, eval = FALSE, warning = FALSE, include = FALSE}
 ##============================ EVAL = FALSE ================================
 ## 
 ## Leveraged model 3
@@ -1120,7 +1123,7 @@ ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestD
 llply(fundList, function(x) x[c('BR', 'fB', 'fS', 'EUB', 'EUS', 'Edge', 'PF', 'FC', 'Buy', 'Sell', 'BuyS', 'SellS', 'Profit', 'Bal', 'RR')] %>% dplyr::filter(PF >0 | FC > 0))
 ```
 
-```{r simStaking-withLogLeverage, eval = FALSE, include = FALSE}
+```{r simStaking-withLogLeverage, eval = FALSE, warning = FALSE, include = FALSE}
 ##============================ EVAL = FALSE ================================
 ## 
 ## Leveraged model 4
@@ -1212,7 +1215,7 @@ fundCLCL <- simStakesETS(mbase, .prCat = 'Cl', .setPrice = 'Cl', .initialFundSiz
 
 #### Garch vs EWMA
 
-```{r simStakingG-woutLog, eval = FALSE, include = FALSE}
+```{r simStakingG-woutLog, eval = FALSE, warning = FALSE, include = FALSE}
 ##============================ EVAL = FALSE ================================
 ## 
 ## Garch Model 1 without leverage.
@@ -1338,7 +1341,7 @@ ldply(fundGMList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate
 
   Now we apply the bootstrap (Application of Monte Carlo method to simulate 10000 times) onto the simulation of the forecasting.
 
-```{r test-etsBoostrap, echo = FALSE, eval = FALSE}
+```{r test-etsBoostrap, echo = FALSE, warning = FALSE, eval = FALSE}
 ##============================ EVAL = FALSE ================================
 ## Application of Monte Carlo method to simulate 10000 times.
 ## 
@@ -1419,7 +1422,7 @@ ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestD
 #20 fundCLCL 2015-01-02 2017-01-20     1000   1000.000   0.00000 1.000000
 ```
 
-```{r multi-etsM}
+```{r multi-etsM, warning = FALSE}
 ## set all models provided by ets function.
 ets.m1 <- c('A', 'M', 'Z')
 ets.m2 <- c('N', 'A', 'M', 'Z')
@@ -1430,7 +1433,7 @@ rm(ets.m1, ets.m2, ets.m3)
 pp <- expand.grid(c('Op', 'Hi', 'Mn', 'Lo', 'Cl'), c('Op', 'Hi', 'Mn', 'Lo', 'Cl')) %>% mutate(PP = paste(Var1, Var2)) %>% .$PP %>% str_split(' ')
 ```
 
-```{r multi-ets, echo = FALSE, eval = FALSE}
+```{r multi-ets, echo = FALSE, warning = FALSE, eval = FALSE}
 ## Application of Monte Carlo method to simulate 10000 times.
 ## 
 ## pre-run and saved models.
@@ -1487,7 +1490,7 @@ microbenchmark(res <- llply(ets.m, function(x) {
 
   In order to trace the errors, here I check the source codes of the function but also test the coding as you can know via [<span style='color:blue'>Error : Forbidden model combination #554</span>](https://github.com/robjhyndman/forecast/issues/554). Here I only take 22 models among 48 models.
 
-```{r valid.etsModels, echo = FALSE, eval = FALSE}
+```{r valid.etsModels, echo = FALSE, warning = FALSE, eval = FALSE}
 ## filtered valid models.
 ##============================ EVAL = FALSE ================================
 > ets.m
@@ -1517,13 +1520,12 @@ ANN MNN ZNN AAN MAN ZAN MMN ZMN AZN MZN ZZN ANZ MNZ ZNZ AAZ MAZ ZAZ MMZ ZMZ AZZ 
 # 25  25  25  25  25  25  25  25  25  25  25   1  25  25  25  25  25  25  25  25  25  25  25
 
 nms <- sapply(ets.m, function(x) { 
-    dir('data', pattern = x) %>% length
-  }, USE.NAMES = TRUE) %>% .[. == 25] %>% names #here I use only [. == 25].
-
+    dir('data', pattern = paste0(x, '.{9}$')) %>% length
+  }) %>% .[. == 25] %>% names #here I use only [. == 25].
 
 #'@ nms <- sapply(ets.m, function(x) { 
-#'@    dir('data', pattern = x) %>% length
-#'@  }, USE.NAMES = TRUE) %>% .[. > 0] %>% names #here original [. > 0].
+#'@    dir('data', pattern = paste0(x, '.{9}$')) %>% length
+#'@  }) %>% .[. > 0] %>% names #here original [. > 0].
 
 fls <- sapply(nms, function(x) {
     sapply(pp, function(y) { 
@@ -1542,7 +1544,7 @@ names(fundList) <- sapply(fundList, function(x) xts::first(x$Model))
 ets.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ```
 
-```{r roi-ets, echo = FALSE, eval = FALSE}
+```{r roi-ets, echo = FALSE, warning = FALSE, eval = FALSE}
 ## plot html table
 ##============================ EVAL = FALSE ================================
 tagList(
@@ -1560,7 +1562,7 @@ tagList(
     RR = formatter('span', style = x ~ formattable::style(color = ifelse(rank(-x) <= 3, 'blue', 'grey')), x ~ sprintf('%1.2f%% (rank: %.0f)', 100 * x, rank(-x)))))))
 ```
 
-```{r plot-ets2, echo = FALSE}
+```{r plot-ets2, warning = FALSE, echo = FALSE}
 ## plot interactive table
 ets.tbl %>% datatable(
     caption = "Table 2.1.7.1 : Summary of ROI (2015-Jan-01 to 2017-Jan-20)", 
@@ -1604,7 +1606,7 @@ ldply(c('LoHi', 'HiLo'), function(ppr) {
 
   Hereby, I try to place bets on the variance which is requested by the assessment. Firstly we look at **Auto Arima** model.
 
-```{r fundList-AutoArima}
+```{r fundList-AutoArima, warning = FALSE}
 ## load the pre-run and saved models.
 ## Profit and Loss of Arima models.
 
@@ -1615,7 +1617,7 @@ fundList <- llply(flsAutoArima, function(dt) {
 names(fundList) <- sapply(fundList, function(x) xts::first(x$Model))
 ```
 
-```{r varStaking-AutoArima}
+```{r varStaking-AutoArima, warning = FALSE}
 ## Focast the variance and convert to probability.
 varHL <- fundList[grep('HILO|LOHI', names(fundList))]
 ntm <- c(names((varHL)[names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')]), names((varHL)[!names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')])) %>% str_replace('.HILO|.LOHI', '') %>% unique %>% sort
@@ -1637,7 +1639,7 @@ varHL2 <- suppressMessages(llply(ntm, function(nm) {
     }) %>% unique %>% join_all %>% tbl_df)
 ```
 
-```{r varStaking-2AutoArima, results = 'asis'}
+```{r varStaking-2AutoArima, warning = FALSE, results = 'asis'}
 ## Application of MASS::mvrnorm() or mvtnorm::rmvnorm() ##nope
 #'@ varHL2 <- xts(varHL2[, -1], as.Date(varHL2$Date))
 
@@ -1661,19 +1663,20 @@ varB1 <- suppressMessages(llply(ntm, function(nm) {
 tail(data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])) %>% kable(width = 'auto')
 ```
 
-```{r plot-varAutoArima, echo = FALSE, results = 'asis'}
+```{r plot-varAutoArima, echo = FALSE, warning = FALSE, results = 'asis'}
 ## Betting strategy 1 - Normal range betting
 ## Plot the ROI of investment fund.
 plotAutoArima <- data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])
 LineAutoArima <-  gvisLineChart(plotAutoArima, 'Date', names(plotAutoArima)[-1],
                         options = list(title = 'Auto Arima Models', 
                                        gvis.editor = 'Edit me!'))
-plot(LineAutoArima)
+pl <- plot(LineAutoArima)
+pl
 ```
 
   Now we look at **ETS** model.
 
-```{r fundList-ETS}
+```{r fundList-ETS, warning = FALSE}
 ## 
 ## From 22 ets models with 25 hilo, opcl, mnmn, opop etc different price data. There will be 550 models.
 fundList <- llply(fls[grep('HiLo|LoHi', fls)], function(dt) {
@@ -1683,7 +1686,7 @@ fundList <- llply(fls[grep('HiLo|LoHi', fls)], function(dt) {
 names(fundList) <- sapply(fundList, function(x) xts::first(x$Model))
 ```
 
-```{r varStaking-ETS}
+```{r varStaking-ETS, warning = FALSE}
 ## Focast the variance and convert to probability.
 varHL <- fundList[grep('HiLo|LoHi', names(fundList))]
 ntm <- c(names((varHL)[names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')]), names((varHL)[!names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')])) %>% str_replace('.HiLo|.LoHi', '') %>% unique %>% sort
@@ -1705,7 +1708,7 @@ varHL2 <- suppressMessages(llply(ntm, function(nm) {
     }) %>% unique %>% join_all %>% tbl_df)
 ```
 
-```{r varStaking-2ETS, results = 'asis'}
+```{r varStaking-2ETS, warning = FALSE, results = 'asis'}
 ## Application of MASS::mvrnorm() or mvtnorm::rmvnorm() ##nope
 #'@ varHL2 <- xts(varHL2[, -1], as.Date(varHL2$Date))
 
@@ -1731,21 +1734,22 @@ tail(data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])) %>% kable(widt
 
   From above coding and below graph, we can know my *first staking method*^[The variance range is solely based on forecasted figures irrespect the volatility of real time effect, only made settlement after closed market. After that use the daily Hi-Lo variance compare to initial forecasted variance. Even though there has no such highest price nor lowest price will not affect the predicted transaction.] which is **NOT EXCEED** the daily Hi-Lo range will generates profit or ruined depends on the statistical models.
 
-```{r plot-varETS, echo = FALSE, results = 'asis'}
+```{r plot-varETS, warning = FALSE, echo = FALSE, results = 'asis'}
 ## Betting strategy 1 - Normal range betting
 ## Plot the ROI of investment fund.
 plotETS <- data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])
 LineETS <-  gvisLineChart(plotETS, 'Date', names(plotETS)[-1],
                         options = list(title = 'ETS Models', 
                                        gvis.editor = 'Edit me!'))
-plot(LineETS)
+pl <- plot(LineETS)
+pl
 ```
 
   <s>The 2nd staking method is based on real-time volativity which is the transaction will only stand if the highest or lowest price happenned within hte variance, same with the initial Kelly staking model. The closing Price will be Highest or Lowest price if one among the price doesn't exist within the range of variance.</s>
 
 <span style='color:red'>*It doesn't work since the closed price* **MUST** *be between highest and lowest price. Here I stop it and set as `eval = FALSE` for display purpose but not execute*</span>
 
-```{r varStaking-2, echo = FALSE, eval = FALSE}
+```{r varStaking-2, warning = FALSE, echo = FALSE, eval = FALSE}
 ## ================== eval = FALSE =============================
 ## Do not execute...
 ## 
@@ -1792,7 +1796,7 @@ suppressMessages(llply(ntm, function(nm) {
 ```
 
 
-```{r varStaking-3, echo = FALSE, eval = FALSE}
+```{r varStaking-3, warning = FALSE, echo = FALSE, eval = FALSE}
 ## ================== eval = FALSE =============================
 ## Do not execute...
 ## 
@@ -1839,7 +1843,7 @@ pp <- llply(pp, function(x) x[x[1]!=x[2]][!is.null(x)])
 pp <- pp[!is.na(pp)]
 ```
 
-```{r acf-pacf, echo = FALSE}
+```{r acf-pacf, warning = FALSE, echo = FALSE}
 pq.op <- diff(as.vector(Op(mbase)), difference = 1)
 pq.hi <- diff(as.vector(Hi(mbase)), difference = 1)
 pq.mn <- diff(as.vector((Hi(mbase) + Lo(mbase)) / 2), difference = 1)
@@ -2078,7 +2082,7 @@ Gaussian
   
   *There are several possible directions for future work. It might be better to use other marginal models such as the EGARCH, QGARCH and GJR GARCH, that capture the asymmetry in the conditional variances. If the univariate GARCH models are more correct, the DCC-GARCH model might yield better results. Other error distributions, such as a Normal Inverse Gaussian (NIG) might also give a better fit. When we fitted the Gaussian, Student’s t- and skew Student’s t-distibutions to the data, we assumed all the distributions to be the same for the three series. This might be a too restrictive criteria. A model where the marginal distributions is allowed to be different for each of the asset series might give a better fit. One then might use a Copula to link the marginals together.*
 
-```{r dstSS, eval = FALSE, include = FALSE}
+```{r dstSS, eval = FALSE, warning = FALSE, include = FALSE}
 dstGarch <- llply(.dist.model.par, function(dst) {
   simStakesGarch(mbase, .solver = 'hybrid', .prCat = 'Mn', .prCat.method = 'CSS-ML', 
                  .baseDate = ymd('2015-01-01'), .parallel = FALSE, 
@@ -2138,7 +2142,7 @@ saveRDS(dstGarch, './data/dstsGarch.Mn.Cl.rds')
 #Error in diag(fit$robust.cvar) : invalid 'nrow' value (too large or NA)
 ```
 
-```{r read-dst}
+```{r read-dst, warning = FALSE}
 dstGarch <- readRDS('./data/dstsGarch.Mn.Cl.rds')
 dst.m <- ldply(dstGarch, function(x) x %>% dplyr::select(BR, Profit, Bal, RR) %>% tail(1)) %>% mutate(BR = 1000, Profit = Bal - BR, RR = Bal / BR)
 #    .id   BR   Profit      Bal       RR
@@ -2157,7 +2161,7 @@ dst.m %>% kable(width = 'auto')
 
   From above comparison of distribution used, we know that ``r dst.m %>% dplyr::filter(RR == max(RR)) %>% .$.id`` distribution generates most return (notes : I should use LoHi instead of MnCl since it will generates highest ROI, however most of LoHi Garch models facing large data size or large NA values error. Here I skip the LoHi data for comparison). Now we know the best `p` and `q`, solver using `hybrid`, and best fitted distribution. Now we try to compare the Garch models.
 
-```{r garch-M, eval = FALSE, include = FALSE}
+```{r garch-M, eval = FALSE, warning = FALSE, include = FALSE}
 ### 1) sGARCH =================================================================
 z = simStakesGarch(mbase, .solver = .solver.par[1], .prCat = pp[[19]][1], 
                    .prCat.method = 'CSS-ML', .baseDate = ymd('2015-01-01'), 
@@ -2476,7 +2480,7 @@ cat(paste0(txt1, ' done!', '\n'))
 rm(z)
 ```
 
-```{r multi-garch, eval = FALSE, include = FALSE}
+```{r multi-garch, eval = FALSE, warning = FALSE, include = FALSE}
 ## ---------- eval = FALSE -------------------
 ## http://www.unstarched.net/2014/01/02/the-realized-garch-model/
 ## https://eranraviv.com/volatility-forecast-evaluation-in-r/
@@ -2504,7 +2508,7 @@ garch.m <- suppressAll(llply(.variance.model.par[-2], function(vm) {
   }, .progress = 'text'))
 ```
 
-```{r multi-garch2, eval = FALSE, include = FALSE}
+```{r multi-garch2, eval = FALSE, warning = FALSE, include = FALSE}
 ## load the pre-run and saved models.
 ## Profit and Loss of Arima models.
 
@@ -2547,7 +2551,7 @@ gm.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date
 gm.tbl %>% kable(width = 'auto')
 ```
 
-```{r gjrGarch, eval = FALSE, include = FALSE}
+```{r gjrGarch, eval = FALSE, warning = FALSE, include = FALSE}
 ## Wrongly... 'fGARCH.GJRGARCH' model is the best but not 'gjrGARCH' model.
 ## 
 ### 4 gjrGARCH ===========================================================
@@ -2585,12 +2589,12 @@ gjrGarch <- llply(pp, function(y) {
 
   Below is the summary of ROI of Garch and EWMA by Kelly models.
 
-```{r Garch-EWMA, echo = FALSE}
+```{r Garch-EWMA, echo = FALSE, warning = FALSE}
 ## norm distribution generates highest ROI compare to snorm.
-flsEWMA <- dir('./data', pattern = '.hybrid')
+flsEWMA <- dir('data', pattern = '.hybrid.rds$')
 
 fundList <- llply(flsEWMA, function(dt) {
-  fl = paste0('./data/', dt)
+  fl = paste0('data/', dt)
   if(file.size(fl) > 100) {
     cbind(Model = str_replace_all(dt, '.rds', ''), 
         readRDS(file = fl)) %>% tbl_df
@@ -2623,7 +2627,7 @@ tagList(
 
 **Volatility Staking**
 
-```{r ROI-Garch, echo = FALSE}
+```{r ROI-Garch, echo = FALSE, warning = FALSE}
 ## load the pre-run and saved models.
 ## Profit and Loss of Arima models.
 
@@ -2644,7 +2648,7 @@ fundList[sapply(fundList, is.null)] <- NULL
 #'@ gm.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 ```
 
-```{r varStaking-varGarch, echo = FALSE}
+```{r varStaking-varGarch, echo = FALSE, warning = FALSE}
 ## Focast the variance and convert to probability.
 varHL <- fundList[grep('Hi.Lo|Lo.Hi', names(fundList))]
 ntm <- c(names((varHL)[names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')]), names((varHL)[!names(varHL) %in% c('Date', 'USDJPY.High', 'USDJPY.Low', 'USDJPY.Close')])) %>% str_replace('.Hi.Lo|.Lo.Hi', '') %>% unique %>% sort
@@ -2666,7 +2670,7 @@ varHL2 <- suppressMessages(llply(ntm, function(nm) {
     }) %>% unique %>% join_all %>% tbl_df)
 ```
 
-```{r varStaking-2varGarch, echo = FALSE, results = 'asis'}
+```{r varStaking-2varGarch, warning = FALSE, echo = FALSE, results = 'asis'}
 ## Application of MASS::mvrnorm() or mvtnorm::rmvnorm() ##nope
 #'@ varHL2 <- xts(varHL2[, -1], as.Date(varHL2$Date))
 
@@ -2690,14 +2694,15 @@ varB1 <- suppressMessages(llply(ntm, function(nm) {
 tail(data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])) %>% kable(width = 'auto')
 ```
 
-```{r plot-varGarch, echo = FALSE, results = 'asis'}
+```{r plot-varGarch, warning = FALSE, echo = FALSE, results = 'asis'}
 ## Betting strategy 1 - Normal range betting
 ## Plot the ROI of investment fund.
 plotGarch <- data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])
 LineGarch <-  gvisLineChart(plotGarch, 'Date', names(plotGarch)[-1],
                         options = list(title = 'Garch Models', 
                                        gvis.editor = 'Edit me!'))
-plot(LineGarch)
+pl <- plot(LineGarch)
+pl
 ```
 
 #### MCMC vs Bayesian Time Series
@@ -2719,7 +2724,7 @@ plot(LineGarch)
 
 
 
-```{r stopPar, echo = FALSE}
+```{r stopPar, echo = FALSE, warning = FALSE}
 ## Set options back to original options
 options(op)
 options(warn = 0)
@@ -2742,19 +2747,28 @@ stopCluster(cl)
   - Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
   - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
   - Additional session information
-  
+
 ```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
 suppressMessages(require('dplyr', quietly = TRUE))
 suppressMessages(require('formattable', quietly = TRUE))
 
-lubridate::now()
+lubridate::now('Asia/Tokyo')
 sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
 rownames(sys1) <- NULL
-sys1 %>% formattable %>% as.htmlwidget
+#'@ sys1 %>% formattable %>% as.htmlwidget
 
-data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(Category = Category, Sys.info =  Sys.info..) %>% formattable %>% as.htmlwidget
+sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(Category = Category, Sys.info =  Sys.info..)
+#'@ sys2 %>% formattable %>% as.htmlwidget
 
-rm(sys1)
+sys1 %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))#, full_width = FALSE, position = 'float_left')
+
+sys2 %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))#, full_width = FALSE, position = 'float_right')
+
+rm(sys1, sys2)
 ```
 
 ## Reference
