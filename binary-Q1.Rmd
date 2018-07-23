@@ -4,13 +4,13 @@ subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/engli
 author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
 date: "`r lubridate::now()`"
 output:
-  html_document:
+  html_document: 
+    number_sections: yes
     toc: yes
     toc_depth: 4
-    number_sections: true
     toc_float:
-      collapsed: false
-      smooth_scroll: false
+      collapsed: no
+      smooth_scroll: no
   tufte::tufte_html:
     toc: yes
     toc_depth: 4
@@ -50,11 +50,11 @@ options(gvis.plot.tag = 'chart', warn = -1)
 
 ## R: llply fully reproducible results in parallel
 ## https://stackoverflow.com/questions/34946177/r-llply-fully-reproducible-results-in-parallel
-cl <- makeCluster(detectCores())
-registerDoParallel(cl)
+#'@ cl <- makeCluster(detectCores())
+#'@ registerDoParallel(cl)
 
 # Create a cluster object to be used for rugarcgh and rmgarch models.
-cluster = makePSOCKcluster(15)
+#'@ cluster = makePSOCKcluster(16)
 
 # invalidate cache when the package version changes
 #'@ knitr::opts_chunk$set(tidy = FALSE, cache.extra = packageVersion('tint'))
@@ -141,24 +141,26 @@ dateID <- dateID[dateID > dateID0]
 
 ```{r data-summary, warning = FALSE}
 dim(mbase)
-summary(mbase) %>% kable(width = 'auto')
+summary(mbase) %>% 
+  kable %>%
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 ### Statistical Modelling
 
 #### ARIMA vs ETS
-  
-  <span style='color:red'>**Remarks :** *Here I try to predict the sell/buy price and also settled price. However just noticed the question asking about prediction of the variance^[The profit is made based on the range of variance Hi-Lo price but not the accuracy of the highest, lowest or closing price.] based on mean price. I can also use the focasted highest and forecasted lowest price for variance prediction as well. However I will conduct another study and answer for the variance with Garch models.*</span>
 
-  Below are some articles with regards exponential smoothing.
-  
- - [<span style='color:blue'>Recent Advances in Robust Statistics: Theory and Applications</span>](https://books.google.com.my/books?id=ntR5DQAAQBAJ&pg=PA174&lpg=PA174&dq=exponential+smoothing+mcmc&source=bl&ots=QANf4o9oFh&sig=JWov-64qeFTcOScG2pYj9OVCl2k&hl=ja&sa=X&redir_esc=y#v=onepage&q=exponential%20smoothing%20mcmc&f=false)
- - [<span style='color:blue'>Error, trend, seasonality - ets and its forecast model friends</span>](http://ellisp.github.io/blog/2016/11/27/ets-friends)
- - [<span style='color:blue'>A study of outliers in the exponential smoothing approach to forecasting</span>](https://www.statindex.org/articles/258660)
- - [<span style='color:blue'>8.10 ARIMA vs ETS</span>](https://www.otexts.org/fpp/8/10)
- - [<span style='color:blue'>Introduction to ARIMA : nonseasonal models</span>](http://people.duke.edu/~rnau/411arim.htm#les)
+<span style='color:red'>**Remarks :** *Here I try to predict the sell/buy price and also settled price. However just noticed the question asking about prediction of the variance^[The profit is made based on the range of variance Hi-Lo price but not the accuracy of the highest, lowest or closing price.] based on mean price. I can also use the focasted highest and forecasted lowest price for variance prediction as well. However I will conduct another study and answer for the variance with Garch models.*</span>
 
-  It is a common myth that ARIMA models are more general than exponential smoothing. While linear exponential smoothing models are all special cases of ARIMA models, the non-linear exponential smoothing models have no equivalent ARIMA counterparts. There are also many ARIMA models that have no exponential smoothing counterparts. In particular, every ETS model^[[<span style='color:blue'>**forecast::ets()**</span>](https://www.rdocumentation.org/packages/forecast/versions/7.3/topics/ets) : Usually a three-character string identifying method using the framework terminology of Hyndman et al. (2002) and Hyndman et al. (2008). The first letter denotes the error type ("A", "M" or "Z"); the second letter denotes the trend type ("N","A","M" or "Z"); and the third letter denotes the season type ("N","A","M" or "Z"). In all cases, "N"=none, "A"=additive, "M"=multiplicative and "Z"=automatically selected. So, for example, "ANN" is simple exponential smoothing with additive errors, "MAM" is multiplicative Holt-Winters' method with multiplicative errors, and so on.
+Below are some articles with regards exponential smoothing.
+
+- [<span style='color:blue'>Recent Advances in Robust Statistics: Theory and Applications</span>](https://books.google.com.my/books?id=ntR5DQAAQBAJ&pg=PA174&lpg=PA174&dq=exponential+smoothing+mcmc&source=bl&ots=QANf4o9oFh&sig=JWov-64qeFTcOScG2pYj9OVCl2k&hl=ja&sa=X&redir_esc=y#v=onepage&q=exponential%20smoothing%20mcmc&f=false)
+- [<span style='color:blue'>Error, trend, seasonality - ets and its forecast model friends</span>](http://ellisp.github.io/blog/2016/11/27/ets-friends)
+- [<span style='color:blue'>A study of outliers in the exponential smoothing approach to forecasting</span>](https://www.statindex.org/articles/258660)
+- [<span style='color:blue'>8.10 ARIMA vs ETS</span>](https://www.otexts.org/fpp/8/10)
+- [<span style='color:blue'>Introduction to ARIMA : nonseasonal models</span>](http://people.duke.edu/~rnau/411arim.htm#les)
+
+It is a common myth that ARIMA models are more general than exponential smoothing. While linear exponential smoothing models are all special cases of ARIMA models, the non-linear exponential smoothing models have no equivalent ARIMA counterparts. There are also many ARIMA models that have no exponential smoothing counterparts. In particular, every ETS model^[[<span style='color:blue'>**forecast::ets()**</span>](https://www.rdocumentation.org/packages/forecast/versions/7.3/topics/ets) : Usually a three-character string identifying method using the framework terminology of Hyndman et al. (2002) and Hyndman et al. (2008). The first letter denotes the error type ("A", "M" or "Z"); the second letter denotes the trend type ("N","A","M" or "Z"); and the third letter denotes the season type ("N","A","M" or "Z"). In all cases, "N"=none, "A"=additive, "M"=multiplicative and "Z"=automatically selected. So, for example, "ANN" is simple exponential smoothing with additive errors, "MAM" is multiplicative Holt-Winters' method with multiplicative errors, and so on.
 It is also possible for the model to be of class "ets", and equal to the output from a previous call to ets. In this case, the same model is fitted to y without re-estimating any smoothing parameters. See also the use.initial.values argument.] is non-stationary, while ARIMA models can be stationary.
 
   The ETS models with seasonality or non-damped trend or both have two unit roots (i.e., they need two levels of differencing to make them stationary). All other ETS models have one unit root (they need one level of differencing to make them stationary).
@@ -231,11 +233,11 @@ fitETS.cl <- readRDS('./data/fitETS.cl.rds')
 
 **Application of MCMC**
 
-  Need to refer to MCMC since I am using exponential smoothing models...
+Need to refer to MCMC since I am using exponential smoothing models...
 
-  - [<span style='color:blue'>Markov Chain Monte Carlo Method</span>](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_introbayes_sect007.htm)
-  - [<span style='color:blue'>Burn-In is Unnecessary</span>](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
-  - [<span style='color:blue'>**Nice R Code** *Punning code better since 2013*</span>](https://nicercode.github.io/guides/mcmc/)
+- [<span style='color:blue'>Markov Chain Monte Carlo Method</span>](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_introbayes_sect007.htm)
+- [<span style='color:blue'>Burn-In is Unnecessary</span>](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
+- [<span style='color:blue'>**Nice R Code** *Punning code better since 2013*</span>](https://nicercode.github.io/guides/mcmc/)
 
 ```{r lm-ETS, warning = FALSE}
 ## Here I test the accuracy of forecasting of ets ZZZ model 1.
@@ -314,70 +316,59 @@ paste('Close = ', mean((fcdata$USDJPY.FPCL.Close - fcdata$USDJPY.Close)^2))
 
 #### Garch vs EWMA
 
-  Basically for volatility analyzing, we can using RSY Volatility mesure, kindly refer to *Analyzing Financial Data and Implementing Financial Models using R*^[paper 22] for more information. Well, Garch model is designate for forecast volatility.
+Basically for volatility analyzing, we can using RSY Volatility mesure, kindly refer to *Analyzing Financial Data and Implementing Financial Models using R*^[paper 22] for more information. Well, Garch model is designate for forecast volatility.
 
-  Now we look at Garch model, *Figlewski (2004)*^[*Paper 19th*] applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. The author applid Garch on SAP200, 10-years-bond and 20-years-bond and concludes that the Garch model is better than eGarch but implied volatility model better than Garch and eGarch, and the monthly Hi-Lo data is better accurate than daily Hi-Lo for long term investment.
+Now we look at Garch model, *Figlewski (2004)*^[*Paper 19th*] applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. The author applid Garch on SAP200, 10-years-bond and 20-years-bond and concludes that the Garch model is better than eGarch but implied volatility model better than Garch and eGarch, and the monthly Hi-Lo data is better accurate than daily Hi-Lo for long term investment.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/wsYXKh_xmSs" frameborder="0" allowfullscreen></iframe>
 
-$$h_{t} = {\omega} + \sum_{i=1}^q{{\alpha}_{i} {\epsilon}_{t-i}^2} + \sum_{j=1}^p{{\gamma}_{j} h_{t-j}}\ \dots equation\ 2.1.2.2.1$$
+$$\begin{equation}
+h_{t} = {\omega} + \sum_{i=1}^q{{\alpha}_{i} {\epsilon}_{t-i}^2} + \sum_{j=1}^p{{\gamma}_{j} h_{t-j}}\ \dots equation\ 2.1.2.2.1
+\end{equation}$$
 
-  - [<span style='color:blue'>Volatility Forecasting Using GARCH(1,1)</span>](https://quantumfinancier.wordpress.com/2010/08/26/volatility-forecasting-using-garch11/)
-  - [<span style='color:blue'>Regime Switching System Using Volatility Forecast</span>](https://quantumfinancier.wordpress.com/2010/08/27/regime-switching-system-using-volatility-forecast/)
-  - [<span style='color:blue'>Normalized Price Spread Strategy</span>](https://quantumfinancier.wordpress.com/2010/06/17/normalized-price-spread-strategy/)
-  - [<span style='color:blue'>Volatility Autocorrelation in Different Markets</span>](https://quantumfinancier.wordpress.com/2010/05/27/volatility-autocorrelation-in-different-markets/)
-  - [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (part 1)</span>](https://quantumfinancier.wordpress.com/2010/09/12/381/)
-  - [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (part 2)</span>](https://quantumfinancier.wordpress.com/2010/09/14/basic-introduction-to-garch-and-egarch-part-2/)
-  - [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (Part 3)</span>](http://quantumfinancier.wordpress.com/2010/09/23/basic-introduction-to-garch-and-egarch-part-3/amp)^[Using this EGARCH model, we can epect a better estimate the volatility for assets returns due to how the EGARCH counteracts the limitations on the classic GARCH model.Here is the final part of the series of posts on the volatility modelling where I will briefly talk about one of the many variant of the GARCH model: the exponential GARCH (abbreviated EGARCH). I chose this variant because it improves the GARCH model and better model some market mechanics. In the GARCH post, I didn’t mention any of the limitation of the model as I kept them for today’s post. First of all, the GARCH model assume that only the magnitude of unanticipated excess returns determines $\sigma^2_t$. Intuitively, we can question this assumption; I, for one, would argue that not only the magnitude but also the direction of the returns affects volatility.]
-  - [<span style='color:blue'>Analysis List</span>](https://vlab.stern.nyu.edu/doc?topic=mdls)
-  
-    - Volatility Analysis
-    
-      + [<span style='color:blue'>AGARCH](https://vlab.stern.nyu.edu/doc/6?topic=mdls</span>)
-      + [<span style='color:blue'>APARCH</span>](https://vlab.stern.nyu.edu/doc/5?topic=mdls)
-      + [<span style='color:blue'>Asy. MEM</span>](https://vlab.stern.nyu.edu/doc/10?topic=mdls)
-      + [<span style='color:blue'>Asy. Power MEM</span>](https://vlab.stern.nyu.edu/doc/11?topic=mdls)
-      + [<span style='color:blue'>CDS-GARCH</span>](https://vlab.stern.nyu.edu/doc/25?topic=mdls)
-      + [<span style='color:blue'>CDS-GARCH-DYN</span>](https://vlab.stern.nyu.edu/doc/26?topic=mdls)
-      + [<span style='color:blue'>EGARCH</span>](https://vlab.stern.nyu.edu/doc/4?topic=mdls)
-      + [<span style='color:blue'>GARCH</span>](https://vlab.stern.nyu.edu/doc/2?topic=mdls)
-      + [<span style='color:blue'>GAS-GARCH Student T</span>](https://vlab.stern.nyu.edu/doc/23?topic=mdls)
-      + [<span style='color:blue'>GJR-GARCH</span>](https://vlab.stern.nyu.edu/doc/3?topic=mdls)
-      + [<span style='color:blue'>MEM</span>](https://vlab.stern.nyu.edu/doc/9?topic=mdls)
-      + [<span style='color:blue'>Spline-GARCH</span>](https://vlab.stern.nyu.edu/doc/7?topic=mdls)
-      + [<span style='color:blue'>Zero Slope Spline-GARCH</span>](https://vlab.stern.nyu.edu/doc/8?topic=mdls)
-      
-    - Correlation Analysis
-    
-      + [<span style='color:blue'>EWMA Covariance</span>](https://vlab.stern.nyu.edu/doc/12?topic=mdls)
-      + [<span style='color:blue'>GARCH-DCC</span>](https://vlab.stern.nyu.edu/doc/13?topic=mdls)
-      + [<span style='color:blue'>GARCH-DECO</span>](https://vlab.stern.nyu.edu/doc/20?topic=mdls)
-      + [<span style='color:blue'>GJR-DCC</span>](https://vlab.stern.nyu.edu/doc/14?topic=mdls)
-      + [<span style='color:blue'>GJR-DECO</span>](https://vlab.stern.nyu.edu/doc/21?topic=mdls)
-      
-    - Systemic Risk Analysis
-    
-      + [<span style='color:blue'>Domestic MES</span>](https://vlab.stern.nyu.edu/doc/40?topic=mdls)
-      + [<span style='color:blue'>Dynamic MES</span>](https://vlab.stern.nyu.edu/doc/16?topic=mdls)
-      + [<span style='color:blue'>Dynamic MES with Simulation</span>](https://vlab.stern.nyu.edu/doc/22?topic=mdls)
-      + [<span style='color:blue'>Global Dynamic MES</span>](https://vlab.stern.nyu.edu/doc/17?topic=mdls)
-      
-    - Long Run Value at Risk
-    
-      + [<span style='color:blue'>Long Term GJR-GARCH Forecast</span>](https://vlab.stern.nyu.edu/doc/18?topic=mdls)
-      + [<span style='color:blue'>Long Term GJR-GARCH Forecast with Options</span>](https://vlab.stern.nyu.edu/doc/19?topic=mdls)
-      
-    - Liquidity Analysis
-    
-      + [<span style='color:blue'>Asymmetric ILLIQ</span>](https://vlab.stern.nyu.edu/doc/28?topic=mdls)
-      + [<span style='color:blue'>Historical ILLIQ</span>](https://vlab.stern.nyu.edu/doc/29?topic=mdls)
-      + [<span style='color:blue'>Spline ILLIQ</span>](https://vlab.stern.nyu.edu/doc/27?topic=mdls)
-      
-    - Fixed Income Analysis
-    
-      + [<span style='color:blue'>ESR Interest Rate Forecast</span>](https://vlab.stern.nyu.edu/doc/39?topic=mdls)
-
-  - [<span style='color:blue'>Extensions of the GARCH Model</span>](http://sfb649.wiwi.hu-berlin.de/fedc_homepage/xplore/tutorials/sfehtmlnode67.html)^[Comparison among the GARCH, TGARCH (Threshold GARCH) and EGARCH (Exponential GARCH) models.]
+- [<span style='color:blue'>Volatility Forecasting Using GARCH(1,1)</span>](https://quantumfinancier.wordpress.com/2010/08/26/volatility-forecasting-using-garch11/)
+- [<span style='color:blue'>Regime Switching System Using Volatility Forecast</span>](https://quantumfinancier.wordpress.com/2010/08/27/regime-switching-system-using-volatility-forecast/)
+- [<span style='color:blue'>Normalized Price Spread Strategy</span>](https://quantumfinancier.wordpress.com/2010/06/17/normalized-price-spread-strategy/)
+- [<span style='color:blue'>Volatility Autocorrelation in Different Markets</span>](https://quantumfinancier.wordpress.com/2010/05/27/volatility-autocorrelation-in-different-markets/)
+- [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (part 1)</span>](https://quantumfinancier.wordpress.com/2010/09/12/381/)
+- [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (part 2)</span>](https://quantumfinancier.wordpress.com/2010/09/14/basic-introduction-to-garch-and-egarch-part-2/)
+- [<span style='color:blue'>Basic Introduction to GARCH and EGARCH (Part 3)</span>](http://quantumfinancier.wordpress.com/2010/09/23/basic-introduction-to-garch-and-egarch-part-3/amp)^[Using this EGARCH model, we can epect a better estimate the volatility for assets returns due to how the EGARCH counteracts the limitations on the classic GARCH model.Here is the final part of the series of posts on the volatility modelling where I will briefly talk about one of the many variant of the GARCH model: the exponential GARCH (abbreviated EGARCH). I chose this variant because it improves the GARCH model and better model some market mechanics. In the GARCH post, I didn’t mention any of the limitation of the model as I kept them for today’s post. First of all, the GARCH model assume that only the magnitude of unanticipated excess returns determines $\sigma^2_t$. Intuitively, we can question this assumption; I, for one, would argue that not only the magnitude but also the direction of the returns affects volatility.]
+- [<span style='color:blue'>Analysis List</span>](https://vlab.stern.nyu.edu/doc?topic=mdls)
+- Volatility Analysis
+  + [<span style='color:blue'>AGARCH](https://vlab.stern.nyu.edu/doc/6?topic=mdls</span>)
+  + [<span style='color:blue'>APARCH</span>](https://vlab.stern.nyu.edu/doc/5?topic=mdls)
+  + [<span style='color:blue'>Asy. MEM</span>](https://vlab.stern.nyu.edu/doc/10?topic=mdls)
+  + [<span style='color:blue'>Asy. Power MEM</span>](https://vlab.stern.nyu.edu/doc/11?topic=mdls)
+  + [<span style='color:blue'>CDS-GARCH</span>](https://vlab.stern.nyu.edu/doc/25?topic=mdls)
+  + [<span style='color:blue'>CDS-GARCH-DYN</span>](https://vlab.stern.nyu.edu/doc/26?topic=mdls)
+  + [<span style='color:blue'>EGARCH</span>](https://vlab.stern.nyu.edu/doc/4?topic=mdls)
+  + [<span style='color:blue'>GARCH</span>](https://vlab.stern.nyu.edu/doc/2?topic=mdls)
+  + [<span style='color:blue'>GAS-GARCH Student T</span>](https://vlab.stern.nyu.edu/doc/23?topic=mdls)
+  + [<span style='color:blue'>GJR-GARCH</span>](https://vlab.stern.nyu.edu/doc/3?topic=mdls)
+  + [<span style='color:blue'>MEM</span>](https://vlab.stern.nyu.edu/doc/9?topic=mdls)
+  + [<span style='color:blue'>Spline-GARCH</span>](https://vlab.stern.nyu.edu/doc/7?topic=mdls)
+  + [<span style='color:blue'>Zero Slope Spline-GARCH</span>](https://vlab.stern.nyu.edu/doc/8?topic=mdls)
+- Correlation Analysis
+  + [<span style='color:blue'>EWMA Covariance</span>](https://vlab.stern.nyu.edu/doc/12?topic=mdls)
+  + [<span style='color:blue'>GARCH-DCC</span>](https://vlab.stern.nyu.edu/doc/13?topic=mdls)
+  + [<span style='color:blue'>GARCH-DECO</span>](https://vlab.stern.nyu.edu/doc/20?topic=mdls)
+  + [<span style='color:blue'>GJR-DCC</span>](https://vlab.stern.nyu.edu/doc/14?topic=mdls)
+  + [<span style='color:blue'>GJR-DECO</span>](https://vlab.stern.nyu.edu/doc/21?topic=mdls)
+- Systemic Risk Analysis
+  + [<span style='color:blue'>Domestic MES</span>](https://vlab.stern.nyu.edu/doc/40?topic=mdls)
+  + [<span style='color:blue'>Dynamic MES</span>](https://vlab.stern.nyu.edu/doc/16?topic=mdls)
+  + [<span style='color:blue'>Dynamic MES with Simulation</span>](https://vlab.stern.nyu.edu/doc/22?topic=mdls)
+  + [<span style='color:blue'>Global Dynamic MES</span>](https://vlab.stern.nyu.edu/doc/17?topic=mdls)
+- Long Run Value at Risk
+  + [<span style='color:blue'>Long Term GJR-GARCH Forecast</span>](https://vlab.stern.nyu.edu/doc/18?topic=mdls)
+  + [<span style='color:blue'>Long Term GJR-GARCH Forecast with Options</span>](https://vlab.stern.nyu.edu/doc/19?topic=mdls)
+- Liquidity Analysis
+  + [<span style='color:blue'>Asymmetric ILLIQ</span>](https://vlab.stern.nyu.edu/doc/28?topic=mdls)
+  + [<span style='color:blue'>Historical ILLIQ</span>](https://vlab.stern.nyu.edu/doc/29?topic=mdls)
+  + [<span style='color:blue'>Spline ILLIQ</span>](https://vlab.stern.nyu.edu/doc/27?topic=mdls)
+- Fixed Income Analysis
+  + [<span style='color:blue'>ESR Interest Rate Forecast</span>](https://vlab.stern.nyu.edu/doc/39?topic=mdls)
+- [<span style='color:blue'>Extensions of the GARCH Model</span>](http://sfb649.wiwi.hu-berlin.de/fedc_homepage/xplore/tutorials/sfehtmlnode67.html)^[Comparison among the GARCH, TGARCH (Threshold GARCH) and EGARCH (Exponential GARCH) models.]
   - [<span style='color:blue'>How to fit ARMA+GARCH Model In R?</span>](https://quant.stackexchange.com/questions/4948/how-to-fit-armagarch-model-in-r?answertab=votes#tab-top)
   - [<span style='color:blue'>A short introduction to the rugarch package</span>](http://unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/)
   - [<span style='color:blue'>A practical introduction to garch modeling</span>](https://www.r-bloggers.com/a-practical-introduction-to-garch-modeling/)
@@ -391,7 +382,7 @@ $$h_{t} = {\omega} + \sum_{i=1}^q{{\alpha}_{i} {\epsilon}_{t-i}^2} + \sum_{j=1}^
   - [<span style='color:blue'>rmgarch - How to Multivariate GARCH Models in R | R-How.com</span>](https://r-how.com/packages/rmgarch)
   - [<span style='color:blue'>Volatility forecast evaluation in R</span>](https://eranraviv.com/volatility-forecast-evaluation-in-r/)
 
-  Firstly we use `rugarch` <s>and then `rmgarch`</s>^[Due to file loading heavily, here I leave the multivariate Garch models for future works.] to compare the result.
+Firstly we use `rugarch` <s>and then `rmgarch`</s>^[Due to file loading heavily, here I leave the multivariate Garch models for future works.] to compare the result.
 
 ```{r intro-Garch, warning = FALSE}
 ## http://www.unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/
@@ -405,9 +396,9 @@ nrow(expand.grid(GARCH = 1:14, VEX = 0:1, VT = 0:1, Mean = 0:1, ARCHM = 0:2, ARF
 spec = ugarchspec(variance.model = list(model = 'eGARCH', garchOrder = c(2, 1)), distribution = 'std')
 ```
 
-  There will be `r nrow(expand.grid(GARCH = 1:14, VEX = 0:1, VT = 0:1, Mean = 0:1, ARCHM = 0:2, ARFIMA = 0:1, MEX = 0:1, DISTR = 1:10))` possible combination Garch models. Here I tried to filter few among them.
+There will be `r nrow(expand.grid(GARCH = 1:14, VEX = 0:1, VT = 0:1, Mean = 0:1, ARCHM = 0:2, ARFIMA = 0:1, MEX = 0:1, DISTR = 1:10))` possible combination Garch models. Here I tried to filter few among them.
 
-  Now we try to build a Garch model and will build some Garch models to get the best fit in later section.
+Now we try to build a Garch model and will build some Garch models to get the best fit in later section.
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/0q3gSJKJUs8" frameborder="0" allowfullscreen></iframe>
 
@@ -527,11 +518,11 @@ fitGM.cl <- readRDS('./data/fitGM.cl.rds')
 
 **Application of MCMC**
 
-  Need to refer to MCMC since I am using Garch models...
+Need to refer to MCMC since I am using Garch models...
 
-  - [<span style='color:blue'>Markov Chain Monte Carlo Method</span>](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_introbayes_sect007.htm)
-  - [<span style='color:blue'>Burn-In is Unnecessary</span>](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
-  - [<span style='color:blue'>**Nice R Code** *Punning code better since 2013*</span>](https://nicercode.github.io/guides/mcmc/)
+- [<span style='color:blue'>Markov Chain Monte Carlo Method</span>](https://support.sas.com/documentation/cdl/en/statug/63033/HTML/default/viewer.htm#statug_introbayes_sect007.htm)
+- [<span style='color:blue'>Burn-In is Unnecessary</span>](http://users.stat.umn.edu/~geyer/mcmc/burn.html)
+- [<span style='color:blue'>**Nice R Code** *Punning code better since 2013*</span>](https://nicercode.github.io/guides/mcmc/)
 
 ```{r lm-Garch, warning = FALSE}
 ## Here I test the accuracy of forecasting of univariate Garch ('sGarch' model) models.
@@ -587,12 +578,17 @@ paste('Close = ', mean((fcdataGM$USDJPY.FPCL.Close - fcdataGM$USDJPY.Close)^2))
 
 #### MCMC vs Bayesian Time Series
 
-  Generally, we can write a Bayesian structural model like this:
+Generally, we can write a Bayesian structural model like this:
 
-$$Y_{t} = \mu_{t}+x_{t}\beta + S_{t}+e_{t}\ ,\ e_{t}∼N(0,\sigma_{e}_{2})$$
-$$\mu_{t} + 1 = \mu_{t} + \nu_{t}\ ,\ \nu_{t}∼N(0,\sigma_{\nu}_{2})$$
+$$\begin{equation}
+Y_{t} = \mu_{t} + x_{t}\beta + S_{t} + \varepsilon_{t}\ ;\ e_{t}\sim N(0,\sigma_{e}^{2})
+\end{equation}$$
 
-  For bayesian and MCMC, I leave it for future works.
+$$\begin{equation}
+\mu_{t} + 1 = \mu_{t} + \nu_{t}\ ,\ \nu_{t}\sim N(0,\sigma_{\nu}^{2})
+\end{equation}$$
+
+For bayesian and MCMC, I leave it for future works.
 
 ```{r bsts}
 ## Sorry ARIMA, but I’m Going Bayesian (packages : bsts, arm)
@@ -602,11 +598,11 @@ $$\mu_{t} + 1 = \mu_{t} + \nu_{t}\ ,\ \nu_{t}∼N(0,\sigma_{\nu}_{2})$$
 
 #### MIDAS
 
-  For Midas, I also leave it for future works. Kindly refer to [<span style='color:blue'>Mixed Frequency Data Sampling Regression Models - The R Package midasr</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/757b27e1e93132368b0898152078be4961b05a28/reference/Mixed%20Frequency%20Data%20Sampling%20Regression%20Models%20-%20The%20R%20Package%20midasr.pdf) for more information about Midas.
+For Midas, I also leave it for future works. Kindly refer to [<span style='color:blue'>Mixed Frequency Data Sampling Regression Models - The R Package midasr</span>](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/757b27e1e93132368b0898152078be4961b05a28/reference/Mixed%20Frequency%20Data%20Sampling%20Regression%20Models%20-%20The%20R%20Package%20midasr.pdf) for more information about Midas.
 
 ### Data Visualization
 
-  Plot graph.
+Plot graph.
 
 #### ARIMA vs ETS
 
@@ -657,27 +653,27 @@ plotChart2(fcdataGM, initialName = 'FP', chart.type = 'FP', graph.title = 'Garch
 
 #### ARIMA vs ETS
 
-  Staking function. Here I apply Kelly criterion as the betting strategy. I don't pretend to know the order of price flutuation flow from the Hi-Lo price range, therefore I just using Closing price for settlement while the staking price restricted within the variance (Hi-Lo) to made the transaction stand. The settled price can only be closing price unless staking price is opening price which sellable within the Hi-Lo range.
-  
-  Due to we cannot know the forecasted sell/buy price and also forecasted closing price which is coming first solely from Hi-Lo data, therefore the Profit&Loss will slidely different (sell/buy price = forecasted sell/buy price).
-  
-  - Forecasted profit = edge based on forecasted sell/buy price - forecasted settled price.
-  - If the forecasted sell/buy price doesn't exist within the Hi-Lo price, then the transaction is not stand.
-  - If the forecasted settled price does not exist within the Hi-Lo price, then the settled price will be the real closing price.
+Staking function. Here I apply Kelly criterion as the betting strategy. I don't pretend to know the order of price flutuation flow from the Hi-Lo price range, therefore I just using Closing price for settlement while the staking price restricted within the variance (Hi-Lo) to made the transaction stand. The settled price can only be closing price unless staking price is opening price which sellable within the Hi-Lo range.
 
-  Kindly refer to [<span style='color:blue'>**Quintuitive** ARMA Models for Trading</span>](http://www.quintutive.com2012/08/22/arma-models-for-trading) to know how to determine PULL or CALL with ARMA models^[The author compare the ROI between **Buy-and-Hold** with **GARCH** model.].
+Due to we cannot know the forecasted sell/buy price and also forecasted closing price which is coming first solely from Hi-Lo data, therefore the Profit&Loss will slidely different (sell/buy price = forecasted sell/buy price).
 
-  Here I set an application of leverage while it is very risky (the variance of ROI is very high) as we can know from later comparison.
+- Forecasted profit = edge based on forecasted sell/buy price - forecasted settled price.
+- If the forecasted sell/buy price doesn't exist within the Hi-Lo price, then the transaction is not stand.
+- If the forecasted settled price does not exist within the Hi-Lo price, then the settled price will be the real closing price.
+
+Kindly refer to [<span style='color:blue'>**Quintuitive** ARMA Models for Trading</span>](http://www.quintutive.com2012/08/22/arma-models-for-trading) to know how to determine PULL or CALL with ARMA models^[The author compare the ROI between **Buy-and-Hold** with **GARCH** model.].
+
+Here I set an application of leverage while it is very risky (the variance of ROI is very high) as we can know from later comparison.
 
 **Staking Model**
 
-  For Buy-Low-Sell-High tactic, I placed two limit order for tomorrow now, which are buy and sell. The transaction will be standed once the price hit in tomorrow. If the buy price doesn't met, there will be no transaction made, while sell price doesn't occur will use closing price for settlement.^[Using Kelly criterion staking model]
+For Buy-Low-Sell-High tactic, I placed two limit order for tomorrow now, which are buy and sell. The transaction will be standed once the price hit in tomorrow. If the buy price doesn't met, there will be no transaction made, while sell price doesn't occur will use closing price for settlement.^[Using Kelly criterion staking model]
 
-  For variance betting, I used both focasted highest minus the forecasted lowest price to get the range. After that placed two limit orders as well. If one among the buy or sell price doesn't appear will use closing price as final settlement.^[Place $100 for every single bet.]
+For variance betting, I used both focasted highest minus the forecasted lowest price to get the range. After that placed two limit orders as well. If one among the buy or sell price doesn't appear will use closing price as final settlement.^[Place $100 for every single bet.]
 
 #### Garch vs EWMA
 
-  The staking models same with what I applied onto ETS modelled dataset.
+The staking models same with what I applied onto ETS modelled dataset.
 
 #### MCMC vs Bayesian Time Series
 
@@ -812,7 +808,10 @@ names(fundList) <- sapply(fundList, function(x) xts::first(x$Model))
 ## Summary of ROI
 aa.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date), LatestDate = last(Date), InitFund = xts::first(BR), LatestFund = last(Bal), Profit = sum(Profit), RR = LatestFund/InitFund) %>% dplyr::select(StartDate, LatestDate, InitFund, LatestFund, Profit, RR) %>% unique }) %>% tbl_df
 
-aa.tbl %>% kable(width = 'auto')
+aa.tbl %>% 
+  kable %>%
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 ```
 
   The return of investment from best fitted Auto Arima model.
@@ -1322,7 +1321,7 @@ ldply(fundGMList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate
 #20   fundCLCL 2015-01-02 2017-01-20     1000   1000.000 1.020225e-06 1.000000
 ```
 
-  From above table summary we can know that `model 1 without any leverage` will be growth with a stable pace where LoHi and LoHi generates highest return rates. fundLOHI indicates investment **fund** buy at **LO**west price and sell at **HI**ghest price and vice verse.
+From above table summary we can know that `model 1 without any leverage` will be growth with a stable pace where LoHi and LoHi generates highest return rates. fundLOHI indicates investment **fund** buy at **LO**west price and sell at **HI**ghest price and vice verse.
 
 ```  
 # 4  fundGMLOHI 2015-01-02 2017-01-20     1000   1770.291 7.702907e+02 1.770291
@@ -1339,7 +1338,7 @@ ldply(fundGMList, function(x) { x %>% mutate(StartDate = first(Date), LatestDate
 
 #### ARIMA vs ETS
 
-  Now we apply the bootstrap (Application of Monte Carlo method to simulate 10000 times) onto the simulation of the forecasting.
+Now we apply the bootstrap (Application of Monte Carlo method to simulate 10000 times) onto the simulation of the forecasting.
 
 ```{r test-etsBoostrap, echo = FALSE, warning = FALSE, eval = FALSE}
 ##============================ EVAL = FALSE ================================
@@ -1488,7 +1487,7 @@ microbenchmark(res <- llply(ets.m, function(x) {
 # Error in ets(zz, model = "AMN") : Forbidden model combination 
 ```
 
-  In order to trace the errors, here I check the source codes of the function but also test the coding as you can know via [<span style='color:blue'>Error : Forbidden model combination #554</span>](https://github.com/robjhyndman/forecast/issues/554). Here I only take 22 models among 48 models.
+In order to trace the errors, here I check the source codes of the function but also test the coding as you can know via [<span style='color:blue'>Error : Forbidden model combination #554</span>](https://github.com/robjhyndman/forecast/issues/554). Here I only take 22 models among 48 models.
 
 ```{r valid.etsModels, echo = FALSE, warning = FALSE, eval = FALSE}
 ## filtered valid models.
@@ -1598,13 +1597,13 @@ ldply(c('LoHi', 'HiLo'), function(ppr) {
 #4 AZZ.HiLo 2015-01-02 2017-01-20     1000   1666.752 666.7518 1.666752
 ```
 
-  From above table, we find the ets model `AZN` and `AZZ` generates highest return compare to rest of 21 ets models.
+From above table, we find the ets model `AZN` and `AZZ` generates highest return compare to rest of 21 ets models.
 
-  *Figlewski (2004)* applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. Since I only predict 2 years investment therefore a further research works on the data sizing and longer prediction terms need (for example: 1 month, 3 months, 6 months data to predict coming price, 2ndly comparison of the ROI from 7 years or upper).
+*Figlewski (2004)* applied few models and also using different length of data for comparison. Now I use daily Hi-Lo and 365 days data in order to predict the next market price. Since I only predict 2 years investment therefore a further research works on the data sizing and longer prediction terms need (for example: 1 month, 3 months, 6 months data to predict coming price, 2ndly comparison of the ROI from 7 years or upper).
 
 **Variance/Volatility Analsis**
 
-  Hereby, I try to place bets on the variance which is requested by the assessment. Firstly we look at **Auto Arima** model.
+Hereby, I try to place bets on the variance which is requested by the assessment. Firstly we look at **Auto Arima** model.
 
 ```{r fundList-AutoArima, warning = FALSE}
 ## load the pre-run and saved models.
@@ -1660,7 +1659,9 @@ varB1 <- suppressMessages(llply(ntm, function(nm) {
 }) %>% join_all %>% tbl_df)
 
 ## shows the last 6 balance (ROI)
-tail(data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])) %>% kable(width = 'auto')
+tail(data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])) %>% 
+  kable %>%
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 ```{r plot-varAutoArima, echo = FALSE, warning = FALSE, results = 'asis'}
@@ -1674,7 +1675,7 @@ pl <- plot(LineAutoArima)
 pl
 ```
 
-  Now we look at **ETS** model.
+Now we look at **ETS** model.
 
 ```{r fundList-ETS, warning = FALSE}
 ## 
@@ -1729,10 +1730,13 @@ varB1 <- suppressMessages(llply(ntm, function(nm) {
 }) %>% join_all %>% tbl_df)
 
 ## shows the last 6 balance (ROI)
-tail(data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])) %>% kable(width = 'auto')
+tail(data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])) %>% 
+  kable %>%
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%')#, height = '400px')
 ```
 
-  From above coding and below graph, we can know my *first staking method*^[The variance range is solely based on forecasted figures irrespect the volatility of real time effect, only made settlement after closed market. After that use the daily Hi-Lo variance compare to initial forecasted variance. Even though there has no such highest price nor lowest price will not affect the predicted transaction.] which is **NOT EXCEED** the daily Hi-Lo range will generates profit or ruined depends on the statistical models.
+From above coding and below graph, we can know my *first staking method*^[The variance range is solely based on forecasted figures irrespect the volatility of real time effect, only made settlement after closed market. After that use the daily Hi-Lo variance compare to initial forecasted variance. Even though there has no such highest price nor lowest price will not affect the predicted transaction.] which is **NOT EXCEED** the daily Hi-Lo range will generates profit or ruined depends on the statistical models.
 
 ```{r plot-varETS, warning = FALSE, echo = FALSE, results = 'asis'}
 ## Betting strategy 1 - Normal range betting
@@ -1745,7 +1749,7 @@ pl <- plot(LineETS)
 pl
 ```
 
-  <s>The 2nd staking method is based on real-time volativity which is the transaction will only stand if the highest or lowest price happenned within hte variance, same with the initial Kelly staking model. The closing Price will be Highest or Lowest price if one among the price doesn't exist within the range of variance.</s>
+<s>The 2nd staking method is based on real-time volativity which is the transaction will only stand if the highest or lowest price happenned within hte variance, same with the initial Kelly staking model. The closing Price will be Highest or Lowest price if one among the price doesn't exist within the range of variance.</s>
 
 <span style='color:red'>*It doesn't work since the closed price* **MUST** *be between highest and lowest price. Here I stop it and set as `eval = FALSE` for display purpose but not execute*</span>
 
@@ -1795,7 +1799,6 @@ suppressMessages(llply(ntm, function(nm) {
 # 7  1000   100  1100
 ```
 
-
 ```{r varStaking-3, warning = FALSE, echo = FALSE, eval = FALSE}
 ## ================== eval = FALSE =============================
 ## Do not execute...
@@ -1807,21 +1810,21 @@ suppressMessages(llply(ntm, function(nm) {
 
 #### Garch vs EWMA
 
-  As I mentioned in first section which is the combination models will be more than 10,000, therefore I try to refer to `acf()` and `pacf()` to determine the best fit value `p` and `q` for ARMA model. You can refer to below articles for more information.
-  
-  - [<span style='color:blue'>时间序列ARMA中p，q选择</span>](http://blog.csdn.net/xiaodongxiexie/article/details/54633272?locationNum=2&fps=1)
-  - [<span style='color:blue'>时间序列分析之ARIMA模型预测__R篇</span>](http://www.cnblogs.com/bicoffee/p/3838049.html)^[Due to this article compare the combination models with `acf` and `pacf` and eventually get that `acf` and `pacf` produce a better fit model.]
-  - [<span style='color:blue'>Time Series Analysis of Apple Stock Prices Using GARCH models</span>](https://rstudio-pubs-static.s3.amazonaws.com/258811_b43d4c7bb2c74851b5b95f29a09c5b30.html)
-  - [<span style='color:blue'>时间序列建模问题，如何准确的建立时间序列模型？</span>](https://www.zhihu.com/question/31833683/answer/116155144)
-  - [<span style='color:blue'>Arima预测模型（R语言）</span>](http://blog.csdn.net/desilting/article/details/39013825)
-  - [<span style='color:blue'>时间序列分析---(ARIMA模型)](http://zhoulili1987619126.lofter.com/post/1cc8f7a3_74e7f10)
-  - [<span style='color:blue'>Identifying the numbers of AR or MA terms in an ARIMA model</span>](http://people.duke.edu/~rnau/411arim3.htm)
-  - [<span style='color:blue'>8.7 ARIMA modelling in R</span>](https://www.otexts.org/fpp/8/7)^[(a) The best model (with smallest AICc) is selected from the following four:] ^[ARIMA(2,d,2),] ^[ARIMA(0,d,0),] ^[ARIMA(1,d,0),] ^[ARIMA(0,d,1).]
-  - [<span style='color:blue'>2.2 Partial Autocorrelation Function (PACF)</span>](https://onlinecourses.science.psu.edu/stat510/node/62)
-  - [<span style='color:blue'>Forecasting Time Series</span>](http://ptrckprry.com/course/forecasting/lecture/archfit.html)
-  - [<span style='color:blue'>Lecture 4: Modelling Volatility of S&P returns</span>](https://klein.uk/teaching/quant2/docs/Lec4.html)
-  - [<span style='color:blue'>Course Files :: MPO1 & MPO1A</span>](https://github.com/mfrmn/qrm/blob/master/MPO1A/L2E2Ascript.r)
-  - [<span style='color:blue'>第二章平稳时间序列模型——ACF和PACF和样本ACF/PACF</span>](http://www.cnblogs.com/xuanlvshu/p/5410721.html)
+As I mentioned in first section which is the combination models will be more than 10,000, therefore I try to refer to `acf()` and `pacf()` to determine the best fit value `p` and `q` for ARMA model. You can refer to below articles for more information.
+
+- [<span style='color:blue'>时间序列ARMA中p，q选择</span>](http://blog.csdn.net/xiaodongxiexie/article/details/54633272?locationNum=2&fps=1)
+- [<span style='color:blue'>时间序列分析之ARIMA模型预测__R篇</span>](http://www.cnblogs.com/bicoffee/p/3838049.html)^[Due to this article compare the combination models with `acf` and `pacf` and eventually get that `acf` and `pacf` produce a better fit model.]
+- [<span style='color:blue'>Time Series Analysis of Apple Stock Prices Using GARCH models</span>](https://rstudio-pubs-static.s3.amazonaws.com/258811_b43d4c7bb2c74851b5b95f29a09c5b30.html)
+- [<span style='color:blue'>时间序列建模问题，如何准确的建立时间序列模型？</span>](https://www.zhihu.com/question/31833683/answer/116155144)
+- [<span style='color:blue'>Arima预测模型（R语言）</span>](http://blog.csdn.net/desilting/article/details/39013825)
+- [<span style='color:blue'>时间序列分析---(ARIMA模型)](http://zhoulili1987619126.lofter.com/post/1cc8f7a3_74e7f10)
+- [<span style='color:blue'>Identifying the numbers of AR or MA terms in an ARIMA model</span>](http://people.duke.edu/~rnau/411arim3.htm)
+- [<span style='color:blue'>8.7 ARIMA modelling in R</span>](https://www.otexts.org/fpp/8/7)^[(a) The best model (with smallest AICc) is selected from the following four:] ^[ARIMA(2,d,2),] ^[ARIMA(0,d,0),] ^[ARIMA(1,d,0),] ^[ARIMA(0,d,1).]
+- [<span style='color:blue'>2.2 Partial Autocorrelation Function (PACF)</span>](https://onlinecourses.science.psu.edu/stat510/node/62)
+- [<span style='color:blue'>Forecasting Time Series</span>](http://ptrckprry.com/course/forecasting/lecture/archfit.html)
+- [<span style='color:blue'>Lecture 4: Modelling Volatility of S&P returns</span>](https://klein.uk/teaching/quant2/docs/Lec4.html)
+- [<span style='color:blue'>Course Files :: MPO1 & MPO1A</span>](https://github.com/mfrmn/qrm/blob/master/MPO1A/L2E2Ascript.r)
+- [<span style='color:blue'>第二章平稳时间序列模型——ACF和PACF和样本ACF/PACF</span>](http://www.cnblogs.com/xuanlvshu/p/5410721.html)
 
 ```{r multi-garchM, message = FALSE, warning = FALSE}
 ## Multiple Garch models inside `rugarch` package.
@@ -1865,14 +1868,14 @@ autoplot(acf(pq.lo, lag.max = 100, main = 'ACF of Lowest Price'))
 autoplot(acf(pq.cl, lag.max = 100, main = 'ACF of Closing Price'))
 ```
 
-  Here I use a function to find the optimal value of `p` and `q` from `armaOrder(0,0)` to `armaOrder(5,5)` by refer to [<span style='color:blue'>R-ARMA(p,q)如何选找最小AIC的p,q值</span>](http://blog.csdn.net/u012543538/article/details/38663715).
+Here I use a function to find the optimal value of `p` and `q` from `armaOrder(0,0)` to `armaOrder(5,5)` by refer to [<span style='color:blue'>R-ARMA(p,q)如何选找最小AIC的p,q值</span>](http://blog.csdn.net/u012543538/article/details/38663715).
   
-  However, due to optimal `r` and `s` for Garch model will consume alot of time to test the optimal `garchOrder(r,s)` here I skip it and just using default `garchOrder(1,1)`.
+However, due to optimal `r` and `s` for Garch model will consume alot of time to test the optimal `garchOrder(r,s)` here I skip it and just using default `garchOrder(1,1)`.
   
-  - An ARMA(p,q) model specifies the conditional mean of the process
-  - The GARCH(r,s) model specifies the conditional variance of the process
+- An ARMA(p,q) model specifies the conditional mean of the process
+- The GARCH(r,s) model specifies the conditional variance of the process
 
-  Kindly refer to [<span style='color:blue'>What is the difference between GARCH and ARMA?</span>](https://stats.stackexchange.com/questions/41509/what-is-the-difference-between-garch-and-arma) for more information.
+Kindly refer to [<span style='color:blue'>What is the difference between GARCH and ARMA?</span>](https://stats.stackexchange.com/questions/41509/what-is-the-difference-between-garch-and-arma) for more information.
 
 ```{r pq-value, warning = FALSE}
 pq.op <- suppressWarnings(armaSearch(Op(mbase)))
@@ -2051,7 +2054,6 @@ pq.cl <- suppressWarnings(armaSearch(Cl(mbase)))
 # 35 5 4  NA
 # 36 5 5  NA
 
-
 #'@ > pq.op <- suppressWarnings(armaSearch(Op(mbase)))
 # the min AIC = 1623.453 , p = 4 , q = 4 
 #'@ > pq.hi <- suppressWarnings(armaSearch(Hi(mbase)))
@@ -2066,21 +2068,20 @@ pq.cl <- suppressWarnings(armaSearch(Cl(mbase)))
 # the min AIC = 1634.782 , p = 3 , q = 3
 ```
 
-  Paper [<span style='color:blue'>Multivariate DCC-GARCH Model
+Paper [<span style='color:blue'>Multivariate DCC-GARCH Model
 -With Various Error Distributions</span>](https://github.com/englianhu/binary.com-interview-question/blob/8eefcd3a1615918d032eca2ccc560f7548215c99/reference/Multivariate%20DCC-GARCH%20Model.pdf) applied few error distribuions onto dcc-garch model (I leave the multivariate Garch for future works):-
 
-  - multivariate
-Gaussian
-  - Student's t
-  - skew Student's t
+- multivariate Gaussian
+- Student's t
+- skew Student's t
 
-  Below are the conclusion from the paper.
+Below are the conclusion from the paper.
 
-  *In this thesis we have studied the DCC-GARCH model with Gaussian, Student’s t and skew Student’s t-distributed errors. For a basic understanding of the GARCH model, the univariate GARCH and multivariate GARCH models in general were discussed before the DCC-GARCH model was considered...*
+*In this thesis we have studied the DCC-GARCH model with Gaussian, Student’s t and skew Student’s t-distributed errors. For a basic understanding of the GARCH model, the univariate GARCH and multivariate GARCH models in general were discussed before the DCC-GARCH model was considered...*
   
-  *After precenting the theory, DCC-GARCH models were fit to a portfolio consisting of European, American and Japanese stocks assuming three different error distributions; multivariate Gaussian, Student’s t and skew Student’s t. The European, American and Japanese series seemed to have a bit different marginal distributions.* **The DCC-GARCH model with skew Student’s t-distributed errors performed best.** *But even the DCC-GARCH with skew Student’s t-distributed errors did explain all of the asymmetry in the asset series. Hence even better models may be considered. Comparing the DCC-GARCH model with the CCC-GARCH model using the Kupiec test showed that the first model gave a better fit to the data.*
+*After precenting the theory, DCC-GARCH models were fit to a portfolio consisting of European, American and Japanese stocks assuming three different error distributions; multivariate Gaussian, Student’s t and skew Student’s t. The European, American and Japanese series seemed to have a bit different marginal distributions.* **The DCC-GARCH model with skew Student’s t-distributed errors performed best.** *But even the DCC-GARCH with skew Student’s t-distributed errors did explain all of the asymmetry in the asset series. Hence even better models may be considered. Comparing the DCC-GARCH model with the CCC-GARCH model using the Kupiec test showed that the first model gave a better fit to the data.*
   
-  *There are several possible directions for future work. It might be better to use other marginal models such as the EGARCH, QGARCH and GJR GARCH, that capture the asymmetry in the conditional variances. If the univariate GARCH models are more correct, the DCC-GARCH model might yield better results. Other error distributions, such as a Normal Inverse Gaussian (NIG) might also give a better fit. When we fitted the Gaussian, Student’s t- and skew Student’s t-distibutions to the data, we assumed all the distributions to be the same for the three series. This might be a too restrictive criteria. A model where the marginal distributions is allowed to be different for each of the asset series might give a better fit. One then might use a Copula to link the marginals together.*
+*There are several possible directions for future work. It might be better to use other marginal models such as the EGARCH, QGARCH and GJR GARCH, that capture the asymmetry in the conditional variances. If the univariate GARCH models are more correct, the DCC-GARCH model might yield better results. Other error distributions, such as a Normal Inverse Gaussian (NIG) might also give a better fit. When we fitted the Gaussian, Student’s t- and skew Student’s t-distibutions to the data, we assumed all the distributions to be the same for the three series. This might be a too restrictive criteria. A model where the marginal distributions is allowed to be different for each of the asset series might give a better fit. One then might use a Copula to link the marginals together.*
 
 ```{r dstSS, eval = FALSE, warning = FALSE, include = FALSE}
 dstGarch <- llply(.dist.model.par, function(dst) {
@@ -2156,7 +2157,9 @@ dst.m <- ldply(dstGarch, function(x) x %>% dplyr::select(BR, Profit, Bal, RR) %>
 #8  ghyp 1000 137.0740 1137.074 1.137074
 #9   jsu 1000 178.7324 1178.732 1.178732
 
-dst.m %>% kable(width = 'auto')
+dst.m %>% 
+  kable %>%
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
   From above comparison of distribution used, we know that ``r dst.m %>% dplyr::filter(RR == max(RR)) %>% .$.id`` distribution generates most return (notes : I should use LoHi instead of MnCl since it will generates highest ROI, however most of LoHi Garch models facing large data size or large NA values error. Here I skip the LoHi data for comparison). Now we know the best `p` and `q`, solver using `hybrid`, and best fitted distribution. Now we try to compare the Garch models.
@@ -2548,7 +2551,9 @@ gm.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Date
 #15                  realGARCH 2015-01-02 2017-01-20     1000        NaN      NaN      NaN
 #16                     sGARCH 2015-01-02 2017-01-20     1000   1196.402 196.4022 1.196402
 
-gm.tbl %>% kable(width = 'auto')
+gm.tbl %>% 
+  kable %>%
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 ```{r gjrGarch, eval = FALSE, warning = FALSE, include = FALSE}
@@ -2580,14 +2585,14 @@ gjrGarch <- llply(pp, function(y) {
  })
 ```
 
-  For dcc-Garch models which are multivariate Garch models will be future works : 
-  
-  - [<span style='color:blue'>Multivariate GARCH(1,1) in R</span>](https://stackoverflow.com/questions/35035857/multivariate-garch1-1-in-r)
-  - [<span style='color:blue'>Multivariate volatility forecasting (1)</span>](https://eranraviv.com/multivariate-volatility-forecasting-1/)
-  - [<span style='color:blue'>Multivariate volatility forecasting, part 2 – equicorrelation</span>](https://eranraviv.com/multivariate-volatility-forecasting-2/)
-  - [<span style='color:blue'>The GARCH-DCC Model and 2-stage DCC(MVT) estimation</span>](http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/)
+For dcc-Garch models which are multivariate Garch models will be future works : 
 
-  Below is the summary of ROI of Garch and EWMA by Kelly models.
+- [<span style='color:blue'>Multivariate GARCH(1,1) in R</span>](https://stackoverflow.com/questions/35035857/multivariate-garch1-1-in-r)
+- [<span style='color:blue'>Multivariate volatility forecasting (1)</span>](https://eranraviv.com/multivariate-volatility-forecasting-1/)
+- [<span style='color:blue'>Multivariate volatility forecasting, part 2 – equicorrelation</span>](https://eranraviv.com/multivariate-volatility-forecasting-2/)
+- [<span style='color:blue'>The GARCH-DCC Model and 2-stage DCC(MVT) estimation</span>](http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/)
+
+Below is the summary of ROI of Garch and EWMA by Kelly models.
 
 ```{r Garch-EWMA, echo = FALSE, warning = FALSE}
 ## norm distribution generates highest ROI compare to snorm.
@@ -2670,7 +2675,7 @@ varHL2 <- suppressMessages(llply(ntm, function(nm) {
     }) %>% unique %>% join_all %>% tbl_df)
 ```
 
-```{r varStaking-2varGarch, warning = FALSE, echo = FALSE, results = 'asis'}
+```{r varStaking-2varGarch, warning = FALSE, echo = FALSE}
 ## Application of MASS::mvrnorm() or mvtnorm::rmvnorm() ##nope
 #'@ varHL2 <- xts(varHL2[, -1], as.Date(varHL2$Date))
 
@@ -2691,7 +2696,10 @@ varB1 <- suppressMessages(llply(ntm, function(nm) {
 }) %>% join_all %>% tbl_df)
 
 ## shows the last 6 balance (ROI)
-tail(data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])) %>% kable(width = 'auto')
+tail(data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])) %>% 
+  kable %>%
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%')#, height = '400px')
 ```
 
 ```{r plot-varGarch, warning = FALSE, echo = FALSE, results = 'asis'}
@@ -2728,25 +2736,25 @@ pl
 ## Set options back to original options
 options(op)
 options(warn = 0)
-stopCluster(cl)
+#'@ stopCluster(cl)
 ```
 
 # Appendix
 
 ## Documenting File Creation 
 
-  It's useful to record some information about how your file was created.
+It's useful to record some information about how your file was created.
 
-  - File creation date: 2015-07-22
-  - File latest updated date: `r Sys.Date()`
-  - `r R.version.string`
-  - R version (short form): `r getRversion()`
-  - [<span style='color:blue'>**rmarkdown** package</span>](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
-  - [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
-  - File version: 1.0.1
-  - Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
-  - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
-  - Additional session information
+- File creation date: 2015-07-22
+- File latest updated date: `r today('Asia/Tokyo')`
+- `r R.version.string`
+- R version (short form): `r getRversion()`
+- [<span style='color:blue'>**rmarkdown** package</span>](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+- [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
+- File version: 1.0.1
+- Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
+- GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
+- Additional session information
 
 ```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
 suppressMessages(require('dplyr', quietly = TRUE))

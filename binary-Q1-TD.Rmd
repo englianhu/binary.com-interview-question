@@ -246,7 +246,6 @@ Below is the dataset gather via `getSymbols(src = 'yahoo')`.
 ## read saved dataset.
 mbase <- readRDS('./data/USDJPY/USDJPY.rds')
 ```
-<<<<<<< HEAD
 
 ```{r data-summary2, echo = FALSE}
 ## size of dataset.
@@ -263,24 +262,6 @@ summary(mbase) %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
-=======
-
-```{r data-summary2, echo = FALSE}
-## size of dataset.
-paste0('mbase : [', paste(dim(mbase), collapse = ' x '), ']')
-```
-
-```{r data-summary3, echo = FALSE}
-summary(mbase) %>% 
-  tidy %>% 
-  select(Var2, Freq) %>% 
-  rename(Category = Var2) %>% 
-  kable %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
-  scroll_box(width = '100%', height = '400px')
-```
-
->>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
 *Table 2.1.1 : 1st dataset - summary of daily price dataset.*
 
 ## Tidy Data
@@ -307,16 +288,8 @@ For 3rd dataset, due to there is a real-time data, the **Real Time Trading Syste
 
 ## Forecast Daily Hi-Lo Price
 
-<<<<<<< HEAD
-<<<<<<< HEAD
 I tried to apply Lasso, Elastic Net and Ridge models to test the accuracy of prediction via [shinyApp](https://beta.rstudioconnect.com/content/2367/).
 
-=======
->>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
-=======
-I tried to apply Lasso, Elastic Net and Ridge models to test the accuracy of prediction via [shinyApp](https://beta.rstudioconnect.com/content/2367/).
-
->>>>>>> c06ac11e4001347e080877687649bc8ee5eb50ca
 $$\begin{equation}
 \sigma^2_{t} = \omega + \sum_{i=1}^{\rho}(\alpha_{i} + \gamma_{i} I_{t-i}) \varepsilon_{t-i}^{2} + \sum_{j=1}^{q}\beta_{j}\sigma^{2}_{t-j}\ \cdots\ Equation\ 3.1.1
 \end{equation}$$
@@ -461,7 +434,6 @@ hc <- highchart(type = 'stock') %>%
 
 hc
 ```
-<<<<<<< HEAD
 
 *Graph 3.2.1A : <span style='color:red'>Forecast daily highest price</span> vs <span style='color:blue'>real daily highest price</span>.*
 
@@ -473,26 +445,13 @@ hc <- highchart(type = 'stock') %>%
   hc_add_series(pl.RLow, id = 'pl.RLow', color = 'blue') %>% 
   hc_add_series(pl.FLow, id = 'pl.FLow', color = 'red')
 
-=======
-
-*Graph 3.2.1A : <span style='color:red'>Forecast daily highest price</span> vs <span style='color:blue'>real daily highest price</span>.*
-
-```{r plot-data1B, echo = FALSE, results = 'asis'}
-## Plot graph
-hc <- highchart(type = 'stock') %>% 
-  hc_title(text = 'USD/JPY Currency Exchange Rate') %>% 
-  hc_subtitle(text = 'Comparison of Forecast and Real Price (Lowest Price)') %>% 
-  hc_add_series(pl.RLow, id = 'pl.RLow', color = 'blue') %>% 
-  hc_add_series(pl.FLow, id = 'pl.FLow', color = 'red')
-
->>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
 rm(pl.RHigh, pl.RLow, pl.FHigh, pl.FLow)
 hc
 ```
 
 *Graph 3.2.1B : <span style='color:red'>Forecast daily highest price</span> vs <span style='color:blue'>real daily lowest price</span>.*
 
-*Graph 3.2.1A* and *Graph 3.2.1B* compare the real price and forecast price. Following section will be compare the MSE (Mean Squared Error).
+*Graph 3.2.1A* and *Graph 3.2.1B* above compare the real price and forecast price. Following section will be compare the MSE (Mean Squared Error).
 
 ## Mean Squared Error
 
@@ -506,7 +465,6 @@ data.frame(
   kable %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_right')
 ```
-<<<<<<< HEAD
 
 $$\begin{equation}
 \frac{1}{n}\sum_{t=1}^{n}e_t^2\ \cdots\ Equation\ 3.2.1
@@ -593,105 +551,6 @@ pred %>%
 ## ... with 1,234 more rows
 ```
 
-```{r staking2, results = 'asis'}
-## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
-pred %>% 
-    tbl_df %>% 
-    select(-DateTime) %>% 
-    mutate(
-        Fct.High = round(Fct.High, 3), 
-        Fct.Low = round(Fct.Low, 3), 
-        Buy = ifelse(Fct.High >= High & Fct.High <= Low, 1, 0), 
-        Sell = ifelse(Fct.Low <= Low & Fct.Low >= High, 1, 0))
-```
-
-*Table 4.2.1 : Buy-Long and Sell-Short table.*
-=======
-
-$$\begin{equation}
-\frac{1}{n}\sum_{t=1}^{n}e_t^2\ \cdots\ Equation\ 3.2.1
-\end{equation}$$
-
-*Table 3.2.1 : Mean Squared Error high-low daily price.* at the right-hand-side shows the accuracy of the predictive model. You can also refer to previous studies where compare the accuracy of predicted `Open`, `High`, `Low` and `Close` price.
-
-# Betting Strategy
-
-## Kelly Criterion
-
-$$\begin{equation}
-f = \frac{Edge}{Odds} = \frac{p^∗ x−(1−p^∗)}{x}
- \ \cdots Equation\ 4.1.1 
- \end{equation}$$
-
-For the betting strategy, here I need to adjust a bit from **Binary.com Interview Q1** as stated in section [Introduction]. Below I tidy the dataset to match the `bid/ask` price for close a transaction.
-
-As we know from previous paper, the closing price will be settled price if the forecast price has no occured within a day (from 12:00:01 AM until next day 12:00:00 AM, due to system calculate the price spend a minute, therefore the opening price will not in count.).
-
-```{r data-summary4}
-## Here I combine real-time dataset with the daily dataset.
-pred <- merge(HL_tick_data, pred,  by = 'Date') %>% 
-  tbl_df
-
-## Tidy dataset.
-pred %<>% group_by(Date) %>% 
-    dplyr::filter(Bid == max(Bid, na.rm = TRUE)|Ask == min(Ask, na.rm = TRUE)) %>% 
-    select(DateTime, Date, USDJPY.High, USDJPY.Low, USDJPY.Close, sq, Bid, Ask, Fct.High, Fct.Low) %>% 
-    rename(High = USDJPY.High, Low = USDJPY.Low, Close = USDJPY.Close) %>% data.table
-```
-
-## Staking Strategy
-
-[Chapter 20 Against the Odds: The Mathematics of Gambling](http://srdas.github.io/MLBook/Gambling.html#odds)^[Publised book [**Data Science: Theories, Models, Algorithms, and Analytics** - *Sanjiv Ranjan Das (2017-03-24)*](http://srdas.github.io/MLBook/).] elaborates the odds price, edge, Kelly Criterion staking model, portfolio, Entropy and also day trading.
-
-**Binary.com Interview Q1** compares all possible outcomes of predicted price and ROI. Due to the financial betting only allows player place bets and awaiting for the settlement (unless placed another bet at other predicted price), there will be no any limit order and close transaction request (similar with FOREX trading market can place more than 1 limit order to lock the profit).
-
-- Forecasted Highest Price to sell and, close
-- 
-
-## Optimal Edge
-
-Here I adjusted a bit on the previous research [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion) based on another betting strategy to measure the optimal staking amount which is measure the edge based on the forecast highest price and lowest price.
-
-$$\begin{equation}
-p^∗_{i} = \frac{1}{h_{i}}\ ;\ x = l_{i}
-\end{equation}$$
-
-$h_{i}$ is the highest price where $l_{i}$ is the lowest price.
-
-```{r staking1, echo = FALSE, eval = FALSE}
-## =============== WRONG ==================
-## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
-pred %>% 
-    mutate(
-        Fct.High = round(Fct.High, 3), 
-        Fct.Low = round(Fct.Low, 3), 
-        Hi = ifelse(High >= Bid, 1, 0), 
-        Lo = ifelse(Low >= Ask, 1, 0)) %>% 
-    tbl_df %>% 
-    select(-Date) %>% 
-    mutate(Buy1 = ifelse(Fct.High >= High, 1, 0), 
-           Buy2 = ifelse(Fct.High >= Bid, 1, 0), 
-           Buy3 = ifelse(Fct.High >= Hi, 1, 0), 
-           Sell1 = ifelse(Fct.Low <= Low, 1, 0), 
-           Sell2 = ifelse(Fct.Low <= Ask, 1, 0), 
-           Sell3 = ifelse(Fct.Low <= Lo, 1, 0)) %>% 
-    select(-High, -Low, -Close)
-## A tibble: 1,244 x 14
-#   DateTime               sq   Bid   Ask Fct.High Fct.Low    Hi    Lo  Buy1  Buy2  Buy3 Sell1 Sell2 Sell3
-#   <dttm>              <int> <dbl> <dbl>    <dbl>   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
-# 1 2016-01-05 03:06:08     1  120.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
-# 2 2016-01-05 12:22:55     4   NA   119.     120.    119.    NA     1     1    NA    NA     0     0     0
-# 3 2016-01-06 00:07:16     2  119.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
-# 4 2016-01-06 11:38:17     3   NA   118.     120.    119.    NA     1     1    NA    NA     0     0     0
-# 5 2016-01-07 01:16:01     2  119.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
-# 6 2016-01-07 09:24:27     4   NA   117.     120.    119.    NA     1     1    NA    NA     0     0     0
-# 7 2016-01-08 13:30:07     2  119.   NA      119.    119.     0    NA     1     1     1     0    NA    NA
-# 8 2016-01-08 21:57:33     3   NA   117.     119.    119.    NA     1     1    NA    NA     0     0     0
-# 9 2016-01-11 01:34:30     2   NA   117.     120.    119.    NA     1     1    NA    NA     0     0     0
-#10 2016-01-11 13:37:52     4  118.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
-## ... with 1,234 more rows
-```
-
 ```{r staking2}
 ## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
 pred %>% 
@@ -704,10 +563,6 @@ pred %>%
         Sell = ifelse(Fct.Low <= Low & Fct.Low >= High, 1, 0))
 ```
 
-<<<<<<< HEAD
-*Table 4.2.1 : Kelly ratio.*
->>>>>>> 1ae30d6a5a7d53e85a3ff48a520c05102a0014aa
-=======
 *Table 4.2.1 : Buy-Long and Sell-Short table.*
 
 $$\begin{equation}
@@ -715,7 +570,6 @@ $$\begin{equation}
 \end{equation}$$
 
 *Table 3.2.1 : Mean Squared Error high-low daily price.* at the right-hand-side shows the accuracy of the predictive model. You can also refer to previous studies where compare the accuracy of predicted `Open`, `High`, `Low` and `Close` price.
->>>>>>> c06ac11e4001347e080877687649bc8ee5eb50ca
 
 # Return of Investment
 
