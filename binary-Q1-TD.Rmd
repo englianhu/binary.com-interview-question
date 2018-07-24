@@ -4,13 +4,13 @@ subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/engli
 author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
-  html_document:
+  html_document: 
+    number_sections: yes
     toc: yes
     toc_depth: 4
-    number_sections: true
     toc_float:
-      collapsed: false
-      smooth_scroll: false
+      collapsed: no
+      smooth_scroll: no
   tufte::tufte_html:
     toc: yes
     toc_depth: 4
@@ -252,10 +252,10 @@ mbase <- readRDS('./data/USDJPY/USDJPY.rds')
 paste0('mbase : [', paste(dim(mbase), collapse = ' x '), ']')
 ```
 
-```{r data-summary3, echo = FALSE}
+```{r data-summary3, echo = FALSE, results = 'asis'}
 summary(mbase) %>% 
   tidy %>% 
-  select(Var2, Freq) %>% 
+  select(-Var1) %>% 
   rename(Category = Var2) %>% 
   kable %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
@@ -481,6 +481,8 @@ f = \frac{Edge}{Odds} = \frac{p^∗ x−(1−p^∗)}{x}
  \ \cdots Equation\ 4.1.1 
  \end{equation}$$
 
+The section 1 inside [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion) shows the ROI for betting on sportsbook, where section 2 will be started during spared time after FOREX market.
+
 For the betting strategy, here I need to adjust a bit from **Binary.com Interview Q1** as stated in section [Introduction]. Below I tidy the dataset to match the `bid/ask` price for close a transaction.
 
 As we know from previous paper, the closing price will be settled price if the forecast price has no occured within a day (from 12:00:01 AM until next day 12:00:00 AM, due to system calculate the price spend a minute, therefore the opening price will not in count.).
@@ -502,20 +504,53 @@ pred %<>% group_by(Date) %>%
 
 [Chapter 20 Against the Odds: The Mathematics of Gambling](http://srdas.github.io/MLBook/Gambling.html#odds)^[Publised book [**Data Science: Theories, Models, Algorithms, and Analytics** - *Sanjiv Ranjan Das (2017-03-24)*](http://srdas.github.io/MLBook/).] elaborates the odds price, edge, Kelly Criterion staking model, portfolio, Entropy and also day trading.
 
-**Binary.com Interview Q1** compares all possible outcomes of predicted price and ROI. Due to the financial betting only allows player place bets and awaiting for the settlement (unless placed another bet at other predicted price), there will be no any limit order and close transaction request (similar with FOREX trading market can place more than 1 limit order to lock the profit).
+$$\begin{eqnarray}
+g_t(f) &=& \frac{1}{t} \ln \left( \frac{B_t}{B_0}  \right) \\
+&=&  \frac{1}{t} \ln \left( \prod_{i=1}^t [1+r +f(Z_t -r)\varepsilon] \right) \\
+&=&  \frac{1}{t}  \sum_{i=1}^t \ln \left( [1+r +f(Z_t -r)\varepsilon] \right)
+\end{eqnarray}
+ \ \cdots Equation\ 4.2.1 $$
 
-- Forecasted Highest Price to sell and, close
-- 
+By applying the law of central limit theorem for large data, here we get:
+
+$$\begin{equation}
+g(f) = \lim_{t \rightarrow \infty} g_t(f) = E[\ln(1+r + f (Z-r)\varepsilon)]
+ \ \cdots Equation\ 4.2.2 
+ \end{equation}$$
+
+and $\varepsilon_{i}$ is a weight function where applied statistical models to forecast the price. I used some models and eventually concludes the GJR-GARCH model generated highest ROI. The weight function doesn't same with different currencies since it using substraction among 2 forecast prices but not in ratio^[The pips difference for USD/JPY different with others. Thereore there will need to compare among currencies (if generated higher ROI than normal Kelly model).].
+
+$$\begin{equation}
+\varepsilon = h(x)_{1} - v
+ \ \cdots Equation\ 4.2.3 
+ \end{equation}$$
+
+$v$ is a switch function to determine the settled price.
+
+$$\begin{equation}
+v
+\left\{\begin{matrix}
+h(x)_{2}
+ & if(Lo <= h(x)_{2} <= Hi)
+ & \\ Cl
+ & otherwise
+\end{matrix}\right.
+\ \cdots Equation\ 4.2.4 
+\end{equation}$$
+
+where $Hi$, $Lo$ and $Cl$ are the daily highest, lowest and closed price.
+
+**Binary.com Interview Q1** applied a more sophisticated model as stated above to compares all possible outcomes of predicted price and ROI. Due to the financial betting only allows player place bets and awaiting for the settlement (unless placed another bet at other predicted price), there will be no any limit order and close transaction request (similar with FOREX trading market can place more than 1 limit order to lock the profit).
+
+<span style='color:red'>The staking model in previous papers (includes **Binary.com Interview Q1 (Extention)**) have only **MISTAKE** which is wrote for real FOREX trading market but not financial betting since I only think of spread betting but forgot the normal betting :</span>
+
+- <span style='color:red'>Forecast highest price to sell and forecast lowest price to buy to maximise the profit : I wrote 2nd forecast price as settled price if it was between the daily Hi-Lo range (otherwise daily closed price will be settled price). There will be only applicable to FOREX trading market but NOT financial betting market.</span>
+- <span style='color:red'>However it will be more easily since the settled price will be only daily closed price. Here I will tune a bit the coding and also add normal Kelly criterion model for comparison. Therefore the ROI for both financial betting and also normal trading market will be shown in this paper.</span>
+- <span style='color:red'>The ONLY objective is made the research applicable to real-life in order to write a real-trading system byond the future.</span>
 
 ## Optimal Edge
 
-Here I adjusted a bit on the previous research [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion) based on another betting strategy to measure the optimal staking amount which is measure the edge based on the forecast highest price and lowest price.
-
-$$\begin{equation}
-p^∗_{i} = \frac{1}{h_{i}}\ ;\ x = l_{i}
-\end{equation}$$
-
-$h_{i}$ is the highest price where $l_{i}$ is the lowest price.
+I don't pretend to know the optimal edge for staking. Here I need to compare above models with normal Kelly model.
 
 ```{r staking1, echo = FALSE, eval = FALSE}
 ## =============== WRONG ==================
@@ -563,13 +598,7 @@ pred %>%
         Sell = ifelse(Fct.Low <= Low & Fct.Low >= High, 1, 0))
 ```
 
-*Table 4.2.1 : Buy-Long and Sell-Short table.*
-
-$$\begin{equation}
-\frac{1}{n}\sum_{t=1}^{n}e_t^2\ \cdots\ Equation\ 3.2.1
-\end{equation}$$
-
-*Table 3.2.1 : Mean Squared Error high-low daily price.* at the right-hand-side shows the accuracy of the predictive model. You can also refer to previous studies where compare the accuracy of predicted `Open`, `High`, `Low` and `Close` price.
+*Table 4.3.1 : Buy-Long and Sell-Short table.*
 
 # Return of Investment
 
