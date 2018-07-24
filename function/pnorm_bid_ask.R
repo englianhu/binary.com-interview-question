@@ -1,8 +1,7 @@
 pnorm_bid_ask <- function(mbase, pnorm_type = 'Bid-Lo') {
   
   mbase %<>% tbl_df %>% 
-    mutate(Fct.High = round(Fct.High, 3), 
-           Fct.Low = round(Fct.Low, 3))
+    mutate(Fct.High = round(Fct.High, 3), Fct.Low = round(Fct.Low, 3))
   
   if(pnorm_type == 'Bid-Lo'|pnorm_type == 'Ask-Hi') {
     

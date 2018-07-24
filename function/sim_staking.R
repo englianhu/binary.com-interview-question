@@ -11,10 +11,10 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
   ## ===================================================================
   ## Sub argument for pnorm_type above.
   ## 
-  ## 2a) bid_ask = '1-1' : use the p_bid1 and p_ask1.
-  ## 2b) bid_ask = '1-2' : use the p_bid1 and p_ask2.
-  ## 2c) bid_ask = '2-1' : use the p_bid2 and p_ask1.
-  ## 2d) bid_ask = '2-2' : use the p_bid2 and p_ask2.
+  ## 2a) bid_ask = 'b1-a1' : use the p_bid1 and p_ask1.
+  ## 2b) bid_ask = 'b1-a2' : use the p_bid1 and p_ask2.
+  ## 2c) bid_ask = 'b2-a1' : use the p_bid2 and p_ask1.
+  ## 2d) bid_ask = 'b2-a2' : use the p_bid2 and p_ask2.
   ## 
   ## ===================================================================
   ## 3a) forex_market = TRUE : normal trading market can close transaction 
@@ -23,16 +23,16 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
   ##      closed price for settlement once placed an oder.
   ## 
   ## ===================================================================
-  ## There will be 2 limit orders placed. One for buy 
-  ##  and one for sell, hedge = TRUE will stand the 2nd limit order 
-  ##  even though the 1st limit order has open transaction.
+  ## There will be 2 limit orders placed. One for buy and one for sell, 
+  ##  hedge = TRUE will stand the 2nd limit order even though the 1st 
+  ##  limit order has open transaction.
   ## Applicable for both financial betting and also FOREX trading 
   ##  market but there has a criteria which is only predict by using 
   ##  fcHi-fcCl and fcLo-fcCl to minimise the risk. The Kelly ratio 
   ##  will be based on forecast-Cl but real-Cl will be settled price. 
   ## It will be .
   ## 
-  ## 4a) hedge = TRUE : 
+  ## 4a) hedge = TRUE : .
   ## 
   ## 4b) hedge = FALSE : .
   ## 
