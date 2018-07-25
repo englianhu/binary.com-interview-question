@@ -148,14 +148,15 @@ drt <- dir(dr, pattern = '[^_HL].rds')
 # stop <- c(stop[-1], length(drt))
 # paste0('drt = drt[', start, ':', stop, ']')
 
-##
+##verify the number of files.
 drt %>% str_split_fixed('Y|W|.rds', 4) %>% tbl_df %>% 
   select(V2, V3) %>% filter(V2 == 2015)
 
 ## If the downloaded files are display in Asia/Tokyo timezone, then 
 ##   we can change to default UTC timezone.
-#'@ Y2015W2 %>% mutate(DateTime = mdy_hms(DateTime, tz = 'Asia/Tokyo'), 
-#'@                    DateTime = with_tz(DateTime, 'UTC'))
+#'@ Y2015W2 %>% mutate(
+#'@   DateTime = mdy_hms(DateTime, tz = 'Asia/Tokyo'), 
+#'@   DateTime = with_tz(DateTime, 'UTC'))
 
 ## --------------------- Filter Data -------------------------------
 dr <- 'data/USDJPY/'
@@ -485,7 +486,7 @@ The section 1 inside [Application of Kelly Criterion model in Sportsbook Investm
 
 For the betting strategy, here I need to adjust a bit from **Binary.com Interview Q1** as stated in section [Introduction]. Below I tidy the dataset to match the `bid/ask` price for close a transaction.
 
-As we know from previous paper, the closing price will be settled price if the forecast price has no occured within a day (from 12:00:01 AM until next day 12:00:00 AM, due to system calculate the price spend a minute, therefore the opening price will not in count.).
+As we know from previous paper, the closing price will be settled price (closed transaction) if the forecast price has no occured within a day (from 12:00:01 AM until next day 12:00:00 AM, due to system calculate the price spend a minute, therefore the opening price will not in count.). There will be 2 limit orders (but and sell) placed after 12:00:00AM. Once one among the order limit stand (opened transaction), another limit order will be automatically turned to be closed transaction request. Therefore there will only transaction within a trading day unless no any order limit placed stand.
 
 ```{r data-summary4, results = 'asis'}
 ## Here I combine real-time dataset with the daily dataset.
@@ -545,8 +546,44 @@ where $Hi$, $Lo$ and $Cl$ are the daily highest, lowest and closed price.
 <span style='color:red'>The staking model in previous papers (includes **Binary.com Interview Q1 (Extention)**) have only **MISTAKE** which is wrote for real FOREX trading market but not financial betting since I only think of spread betting but forgot the normal betting :</span>
 
 - <span style='color:red'>Forecast highest price to sell and forecast lowest price to buy to maximise the profit : I wrote 2nd forecast price as settled price if it was between the daily Hi-Lo range (otherwise daily closed price will be settled price). There will be only applicable to FOREX trading market but NOT financial betting market.</span>
-- <span style='color:red'>However it will be more easily since the settled price will be only daily closed price. Here I will tune a bit the coding and also add normal Kelly criterion model for comparison. Therefore the ROI for both financial betting and also normal trading market will be shown in this paper.</span>
-- <span style='color:red'>The ONLY objective is made the research applicable to real-life in order to write a real-trading system byond the future.</span>
+- <span style='color:red'>However it will be more easily since the settled price will be only daily closed price while I will do in another paper.</span>
+
+The paper **Binary.com Interview Q1** compares all outcome :
+
+- `Hi-Cl` + `Lo-Cl` generate highest ROI in financial betting market.^[Here I will conducting another research for financial betting.]
+- `Hi-Lo` or `Lo-Hi` will be best betting strategy for noarmal FOREX market.
+
+```{r betting-strategy, echo = FALSE}
+bs <- data.frame(.id = c('fundAutoArimaHICL', 'fundAutoArimaLOCL'), 
+                 StartDate = ymd('2015-01-02'), 
+                 LatestDate = ymd('2017-01-20'), 
+                 InitFund = 1000, 
+                 LatestFund = c(1401.694, 1499.818), 
+                 Profit = c(401.69378, 499.81773), 
+                 RR = formattable::percent(c(1.401694, 1.499818)))
+
+sm <- data.frame(.id = 'Combine', 
+                 StartDate = ymd('2015-01-02'), 
+                 LatestDate = ymd('2017-01-20'), 
+                 bs %>% dplyr::select(InitFund, LatestFund, Profit) %>% colSums %>% t) %>% 
+    mutate(RR = formattable::percent(LatestFund/InitFund))
+
+rbind(bs, sm) %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+rm(bs, sm)
+```
+
+*Table 4.2.1 : betting strategy for fiancial betting.*
+
+```
+No               .id  StartDate LatestDate InitFund  LatesFund    Profit        RR
+07 fundAutoArimaHILO 2015-01-02 2017-01-20     1000   1637.251 637.25113 163.7251%
+10 fundAutoArimaLOHI 2015-01-02 2017-01-20     1000   1716.985 716.98492 171.6985%
+```
+*Table 4.2.2 : betting strategy for normal FOREX market.*
+
+Kindly refer to [2.1.5 Return of Investment in **binary Q1**](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html#return-of-investment) for full table.
 
 ## Optimal Edge
 
@@ -608,7 +645,7 @@ pred %>%
 plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'ETS Model : USDJPY')
 ```
 
-The return of investment from best fitted Auto Arima model.
+
 
 ```{r roi-ets, echo = FALSE, eval = FALSE}
 ## plot html table

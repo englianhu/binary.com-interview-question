@@ -1549,7 +1549,7 @@ ets.tbl <- ldply(fundList, function(x) { x %>% mutate(StartDate = xts::first(Dat
 tagList(
   tags$div(align = "center", 
            class = "bg-info", 
-           tags$h3(class = "bg-primary", "Profit and Loss of Investment (2015-Jan-02 2017-Jan-20)"), 
+           tags$h3(class = "bg-primary", "Profit and Loss of Investment (2015-Jan-01 2017-Jan-20)"), 
            tags$h5(align = "center", class = "text-muted", 
                    "Error-Trend-Seasonal or ExponenTial Smoothing Models")), 
   as.htmlwidget(ets.tbl %>% formattable(list(

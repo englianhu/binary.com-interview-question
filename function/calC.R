@@ -1,9 +1,10 @@
-# Using "memoise" to automatically cache the results
 calC <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
   
-  mbase = filterFX(mbase, currency = currency, price = price)
+  # Using "memoise" to automatically cache the results
+  source('function/filterFX.R')
+  mbase = suppressWarnings(filterFX(mbase, currency = currency, price = price))
   
-  armaOrder = armaSearch(mbase)
+  armaOrder = suppressWarnings(armaSearch(mbase))
   armaOrder %<>% dplyr::filter(AIC == min(AIC)) %>% .[c('p', 'q')] %>% unlist
   
   spec = ugarchspec(

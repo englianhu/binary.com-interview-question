@@ -1,6 +1,6 @@
 sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo', 
-                        bid_ask = '1-1', forex_market = TRUE, 
-                        hedge = FALSE, Kelly = 'normal') {
+                        bid_ask = 'b1-a1', forex_market = TRUE, 
+                        Kelly = 'normal') {
   ## ===================================================================
   ## 1a) pnorm_type = 'Bid-Lo' / pnorm_type = 'Ask-Hi' : Set the Low/High 
   ##      as the x value and High/Low as baseline variance.
@@ -23,24 +23,10 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
   ##      closed price for settlement once placed an oder.
   ## 
   ## ===================================================================
-  ## There will be 2 limit orders placed. One for buy and one for sell, 
-  ##  hedge = TRUE will stand the 2nd limit order even though the 1st 
-  ##  limit order has open transaction.
-  ## Applicable for both financial betting and also FOREX trading 
-  ##  market but there has a criteria which is only predict by using 
-  ##  fcHi-fcCl and fcLo-fcCl to minimise the risk. The Kelly ratio 
-  ##  will be based on forecast-Cl but real-Cl will be settled price. 
-  ## It will be .
-  ## 
-  ## 4a) hedge = TRUE : .
-  ## 
-  ## 4b) hedge = FALSE : .
-  ## 
-  ## ===================================================================
-  ## 5a) Kelly = 'normal' : The mean value of variane of forecast highest 
+  ## 4a) Kelly = 'normal' : The mean value of variane of forecast highest 
   ##      price and mean value of forecast lowest price.
   ## 
-  ## 5b) Kelly = 'adjusted' : Same with Kelly = 'normal' but the 
+  ## 4b) Kelly = 'adjusted' : Same with Kelly = 'normal' but the 
   ##      difference of both forecast price for open/close transactions.
   ## 
   ## ===================================================================
@@ -52,17 +38,24 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
   
   mbase %<>% mutate(BR = init_br) %>% 
     mutate(
-      fB1 = 2 * pB1 - 1, fS1 = 2 * pS1 - 1, ##
+      fB1 = 2 * pB1 - 1, fS1 = 2 * pS1 - 1, ##buy and sell
       B1 = pB1 * log(BR * (1 + fB1)) + (1 - pB1) * log(BR * (1 - fB1)), 
       S1 = pS1 * log(BR * (1 + fS1)) + (1 - pS1) * log(BR * (1 - fS1)), 
       Edge1 = ifelse(fB1 > 0, B1, ifelse(fS1 > 0, S1, 0)), 
       
-      fB2 = 2 * pB2 - 1, fS2 = 2 * pS2 - 1, ##
+      fB2 = 2 * pB2 - 1, fS2 = 2 * pS2 - 1, ##buy and sell
       B2 = pB2 * log(BR * (1 + fB2)) + (1 - pB2) * log(BR * (1 - fB2)), 
       S2 = pS2 * log(BR * (1 + fS2)) + (1 - pS2) * log(BR * (1 - fS2)), 
-      Edge1 = ifelse(fB1 > 0, B1, ifelse(fS1 > 0, S1, 0)))
+      Edge2 = ifelse(fB2 > 0, B2, ifelse(fS2 > 0, S2, 0)))
   
   if(Kelly == 'normal') {
+    
+    mbase %<>% mutate(
+      Buy = ifelse(Fct.High >= High & Fct.High <= Low, 1, 0), 
+      Sell = ifelse(Fct.Low <= Low & Fct.Low >= High, 1, 0), 
+      Profit = Buy + Sell, Bal = BR + Profit)
+  
+  } else if(Kelly == 'adjusted') {
     
     mbase %<>% mutate(
       PF = ifelse(Point.Forecast >= USDJPY.Low & Point.Forecast <= USDJPY.High, 
@@ -77,28 +70,6 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
                                            #  then the closing action at 
                                            #  closing price. Assume there has 
                                            #  no web bandwith delay. 
-      Buy = ifelse(PF > 0 & FC > PF, 1, 0),  # buy action
-      Sell = ifelse(PF > 0 & FC < PF, 1, 0), # sell action
-      BuyS = Edge * Buy * (forClose - PF), 
-      SellS = Edge * Sell * (PF - forClose), 
-      Profit = BuyS + SellS, Bal = BR + Profit)
-
-  } else if(Kelly == 'adjusted') {
-    
-    
-    mbase %<>% mutate(
-      PF = ifelse(Point.Forecast >= USDJPY.Low & Point.Forecast <= USDJPY.High, 
-                  Point.Forecast, 0), #if forecasted place-bet price doesn't 
-      #  existing within Hi-Lo price, then 
-      #  the buying action is not stand. 
-      #  Assume there has no web bandwith 
-      #  delay. 
-      FC = ifelse(forClose >= USDJPY.Low & forClose <= USDJPY.High, 
-                  forClose, USDJPY.Close), #if forecasted settle price doesn't 
-      #  existing within Hi-Lo price, 
-      #  then the closing action at 
-      #  closing price. Assume there has 
-      #  no web bandwith delay. 
       Buy = ifelse(PF > 0 & FC > PF, 1, 0),  # buy action
       Sell = ifelse(PF > 0 & FC < PF, 1, 0), # sell action
       BuyS = Edge * Buy * (forClose - PF), 
