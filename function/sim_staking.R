@@ -1,5 +1,5 @@
 sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo', 
-                        bid_ask = 'b1-a1', forex_market = TRUE, 
+                        bid_ask = 'b1-a1', financial_bet = FALSE, 
                         Kelly = 'normal') {
   ## ===================================================================
   ## 1a) pnorm_type = 'Bid-Lo' / pnorm_type = 'Ask-Hi' : Set the Low/High 
@@ -17,9 +17,9 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
   ## 2d) bid_ask = 'b2-a2' : use the p_bid2 and p_ask2.
   ## 
   ## ===================================================================
-  ## 3a) forex_market = TRUE : normal trading market can close transaction 
+  ## 3a) financial_bet = FALSE : normal trading market can close transaction 
   ##      before closed price.
-  ## 3b) forex_market = FALSE : financial betting market only can awaiting 
+  ## 3b) financial_bet = TRUE : financial betting market only can awaiting 
   ##      closed price for settlement once placed an oder.
   ## 
   ## ===================================================================
@@ -31,7 +31,14 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
   ## 
   ## ===================================================================
   
+  source('function/sim_predict.R')
   source('function/pnorm_bid_ask.R')
+  
+  ## price forecasting simulation.
+  mbase <- sim_predict(mbase, .getFX = NULL, .from = NULL, .to = NULL, 
+                       timeID0 = ymd(index(mbase)[100]), 
+                       .preCat = 'Op', .preCat2 = NULL, .setPrice = 'Cl', 
+                       currency = 'JPY=X', ahead = 1)
   
   ## tidy dataset.
   mbase <- pnorm_bid_ask(mbase, pnorm_type = pnorm_type)

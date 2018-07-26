@@ -42,10 +42,6 @@ rm(pkgs)
 ## filter tick data to get daily high-low price (with timeline).
 source('function/filter_HL.R')
 source('function/read_HL_tick_data.R')
-source('function/armaSearch.R')
-source('function/calC.R')
-source('function/filterFX.R')
-source('function/forecastUSDJPY.R')
 source('function/forecastUSDJPYHL.R')
 ```
 

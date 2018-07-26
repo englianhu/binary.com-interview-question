@@ -1,5 +1,13 @@
 filterFX <- function(mbase, currency = 'JPY=X', price = 'Cl') {
   
+  cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
+               'CNY=X', 'JPY=X')
+  
+  cr_name <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 
+               'USDCNY', 'USDJPY')
+  
+  price_type <- c('Op', 'Hi', 'Lo', 'Cl', 'Ad')
+  
   if(currency == 'AUDUSD=X') {
     if(price == 'Op') {
       mbase %<>% Op %>% na.omit; suppressWarnings(rm(`AUDUSD=X`))
@@ -129,5 +137,9 @@ filterFX <- function(mbase, currency = 'JPY=X', price = 'Cl') {
   } else {
     stop('Kindly choose common currencies exchange.')
   }
+  
+  mbase %<>% na.omit
+  
   return(mbase)
 }
+

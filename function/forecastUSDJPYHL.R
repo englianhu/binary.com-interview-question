@@ -2,15 +2,15 @@ forecastUSDJPYHL <- function(mbase, .preCat = 'Op', .preCat2 = NULL,
                              .setPrice = 'Cl', currency = 'JPY=X', ahead = 1){
   
   source('function/forecastUSDJPY.R')
-  source('function/calC.R')
-  source('function/filterFX.R')
-  
-  if(!is.xts(mbase)) mbase <- as.xts(dplyr::select(
-    mbase, -Date), order.by = mbase$Date)
   
   pr <- c('Op', 'Hi', 'Lo', 'Cl')
-  if(.preCat %in% pr) {
+  
+  if (!is.xts(mbase)) mbase <- as.xts(dplyr::select(
+    mbase, -Date), order.by = mbase$Date)
+  
+  if (.preCat %in% pr) {
     .preCat <- .preCat
+    
   } else {
     stop(".preCat = 'Op', .preCat = 'Hi', .preCat = 'Lo', .preCat = 'Cl'.")
   }
@@ -22,9 +22,18 @@ forecastUSDJPYHL <- function(mbase, .preCat = 'Op', .preCat2 = NULL,
     .preCat2 <- .preCat2
     
   } else {
-    stop(".preCat = 'Op', .preCat = 'Hi', .preCat = 'Lo', .preCat = 'Cl'.")
+    stop(".preCat2 = 'Op', .preCat2 = 'Hi', .preCat2 = 'Lo', .preCat2 = 'Cl'.")
   }
   
+  if (.preCat3 %in% pr) {
+    .preCat3 <- .preCat3
+    
+  } else {
+    stop(".preCat3 = 'Op', .preCat3 = 'Hi', .preCat3 = 'Lo', .preCat3 = 'Cl'.")
+  }
+  
+  
+  ## forecast data.
   fx1 <- forecastUSDJPY(mbase, currency = currency, 
                         ahead = ahead, price = .preCat)
   
