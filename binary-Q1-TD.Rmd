@@ -1,0 +1,792 @@
+---
+title: "<img src='www/binary-logo-resize.jpg' width='240'>"
+subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Tick-Data-History For Daily Trading"
+author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
+date: "`r lubridate::today('Asia/Tokyo')`"
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: no
+      smooth_scroll: no
+  tufte::tufte_html:
+    toc: yes
+    toc_depth: 4
+    self_contained: no
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+link-citations: yes
+---
+
+```{r setup, include = FALSE}
+suppressPackageStartupMessages(library('BBmisc'))
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'pryr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'tidyquant', 'turner', 'readr', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'memoise', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
+
+suppressAll(lib(pkgs))
+
+## Set option to below if you want to plot an independent webpage with graph 
+#'@ op <- options(gvis.plot.tag=NULL)
+op <- options(gvis.plot.tag = 'chart')
+options(gvis.plot.tag = 'chart', warn = -1, 'getSymbols.yahoo.warning' = FALSE)
+#'@ options(rpubs.upload.method = 'internal')
+
+rm(pkgs)
+#'@ options(htmltools.dir.version = FALSE)
+
+## filter tick data to get daily high-low price (with timeline).
+source('function/filter_HL.R')
+source('function/read_HL_tick_data.R')
+source('function/forecastUSDJPYHL.R')
+source('function/sim_predict.R')
+source('function/sim_staking.R')
+```
+
+# Introduction
+
+From the [Binary.com Interview Q1](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or ([Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1)) and also [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)). Both papers test the accuracy of various statistical models and gain a high ROI per annum. However, as stated in the paper there has a concern which is don't know highest or lowest price came first, therefore the paper compared all possible outcomes. Finally the `Hi-Lo` and `Lo-Hi` models made highest returns. The research on this paper will be applicable to the real-life.
+
+In order to test the timeline of daily highest and lowest price when I am writing [Real Time Trading System (Trial)](https://beta.rstudioconnect.com/content/3775/), here I created this file to read the tick-data-history to test the ROI (Return On Investment) per annum. Kindly refer to section [Reference] for further information.
+
+# Data
+
+## Read Data
+
+I use more than 3 years data (from week 1 2015 until week 27 2018)^[You are feel feel to get the data via [FXCMTickData](https://github.com/fxcm/FXCMTickData)] for the question as experiment, 1st year data is burn-in data for statistical modelling and prediction purpose while following 2 years data for forecasting and staking. There have 52 trading weeks within a year.
+
+```{r read-data1, echo = FALSE, eval = FALSE}
+## ================== eval = FALSE =============================
+## Do not execute...
+## 
+## Remove all objects include hidden objects.
+#'@ rm(list = ls(all.names = TRUE))
+## get currency dataset online.
+yr <- c(2015, 2016, 2017, 2018)
+wk <- 1:53
+dr <- 'data/USDJPY/'
+
+## https://www.epochconverter.com/years
+llply(yr, function(i) {
+  if(i == 2015|i == 2017) wk <- 1:53 else wk <- 1:52
+  llply(wk, function(j) {
+    lnk <- paste0(
+      'https://tickdata.fxcorporate.com/USDJPY/', i, '/', j, '.csv.gz')
+    if(!dir.exists(dr)) dir.create(dr)
+    if(!file.exists(paste0(dr, 'Y', i, 'W', j, '.csv.gz'))) {
+      download.file(lnk, destfile = paste0(
+        dr, 'Y', i, 'W', j, '.csv.gz'))
+      #cat(paste0(dr, 'Y', i, 'W', j, '.csv.gz downloaded!\n'))
+    }
+  })
+})
+
+## https://stackoverflow.com/questions/43642708/fread-with-gunzip-whats-the-more-memory-efficient-way/43643513
+## https://stackoverflow.com/questions/37727865/how-can-i-use-fread-to-read-gz-files-in-r?noredirect=1&lq=1
+#'@ data.table::fread("gunzip -c data/tickdata/Y2015W1.csv.gz")
+## Due to the dataset size more than 1.5 mil rows, here I run and tidy the dataset instead of read the *.csv.gz or *.csv files.
+
+llply(yr, function(i) {
+  if(i == 2015|i == 2017) wk <- 1:53 else wk <- 1:52
+  llply(wk, function(j) {
+    if(file.exists(paste0(dr, 'Y', i, 'W', j, '.csv.gz')) & 
+       !file.exists(paste0(dr, 'Y', i, 'W', j, '.csv'))) {
+      R.utils::gunzip(paste0(dr, 'Y', i, 'W', j, '.csv.gz'), 
+                      remove = FALSE)
+      cat(paste0(dr, 'Y', i, 'W', j, '.csv.gz extracted!\n'))
+    }
+  })
+})
+
+## remove all files size less than 1MB
+if(any(file.exists(paste0(dr, dir(dr, pattern = '.csv')[file.size(paste0(
+  dr, dir(dr, pattern = '.csv'))) <= 1000000])))) {
+  file.remove(paste0(dr, dir(dr, pattern = '.csv')[file.size(
+    paste0(dr, dir(dr, pattern = '.csv'))) <= 1000000]))
+  }
+```
+
+```{r read-data2, echo = FALSE, eval = FALSE}
+## --------------------- Read Data -------------------------------
+dr <- 'data/USDJPY/'
+fls <- dir(dr, pattern = '.csv$')
+#dfm <- read.csv(paste0(dr, fls), skipNul = TRUE)
+
+# start <- seq(1, 186, 31)
+# stop <- start - 1
+# stop <- c(stop[-1], length(fls))
+# paste0('fls = fls[', start, ':', stop, ']')
+
+nm <- str_replace_all(fls, '.csv', '')
+
+##
+for(i in seq(length(fls))) {
+  #if(!file.exists(paste0(dr, nm[i], '.rds'))) {
+  assign(nm[i], read.csv(
+    paste0(dr, fls[i]), skipNul = TRUE) %>% tbl_df)
+  
+  ## save dataset.
+  eval(parse(text = paste0(
+    "saveRDS(", nm[i], ", '", dr, nm[i], ".rds')")))
+  eval(parse(text = paste0("rm(", nm[i], ")")))
+  cat(paste0(dr, nm[i], '.rds saved!\n'))
+  #}
+}; rm(i, fls, nm)
+
+## --------------------- Check Files -------------------------------
+## check the number of *.rds files in directory.
+drt <- dir(dr, pattern = '[^_HL].rds')
+
+# start <- seq(1, 186, 31)
+# stop <- start - 1
+# stop <- c(stop[-1], length(drt))
+# paste0('drt = drt[', start, ':', stop, ']')
+
+##verify the number of files.
+drt %>% str_split_fixed('Y|W|.rds', 4) %>% tbl_df %>% 
+  select(V2, V3) %>% filter(V2 == 2015)
+
+## If the downloaded files are display in Asia/Tokyo timezone, then 
+##   we can change to default UTC timezone.
+#'@ Y2015W2 %>% mutate(
+#'@   DateTime = mdy_hms(DateTime, tz = 'Asia/Tokyo'), 
+#'@   DateTime = with_tz(DateTime, 'UTC'))
+
+## --------------------- Filter Data -------------------------------
+dr <- 'data/USDJPY/'
+drt <- dir(dr, pattern = '[^_HL].rds')
+nm <- str_replace_all(drt, '.rds', '')
+# start <- seq(1, 186, 31)
+# stop <- start - 1
+# stop <- c(stop[-1], length(drt))
+# data.frame(drt = paste0('drt = drt[', start, ':', stop, ']'), 
+#            colm = ';', 
+#            nm = paste0('nm = nm[', start, ':', stop, ']'))
+
+for(i in seq(length(drt))) {
+  assign(nm[i], readRDS(paste0(dr, drt[i])))
+  
+  ## filter daily highest and lowest price.
+  #'@ assign(paste0(nm[i], '_HL'), nm[i] %>% mutate(Date = as.Date(mdy_hms(DateTime))) %>% 
+  #'@   group_by(Date) %>% 
+  #'@   filter(Bid == min(Bid)|Bid == max(Bid)|Ask == min(Ask)|Ask == max(Ask)) %>% 
+  #'@   filter(!duplicated(Bid)|!duplicated(Ask)))
+  ## Error : assign() cannot handle nm[i] %>% mutate(...) since 'nm[i]' is class character.
+  
+  ## convert timezone, will take time around 20 minutes for 1 million plus rows due to not vectorised handling.
+  #'@ eval(parse(text = paste0(
+  #'@   nm[i], "_HL <- ", nm[i], " %>% mutate(DateTime = mdy_hms(DateTime, tz = 'UTC')) %>% rowwise() %>% do(DateTime = with_tz(.$DateTime, tzone = 'GMT')) %>% mutate(Date = as.Date(DateTime))")))
+  
+  ## filter daily highest and lowest price.
+  eval(parse(text = paste0(
+    nm[i], "_HL <- ", nm[i], " %>% mutate(DateTime = with_tz(mdy_hms(DateTime), 'GMT'), Date = as.Date(DateTime)) %>% group_by(Date) %>% filter(Bid == min(Bid)|Bid == max(Bid)|Ask == min(Ask)|Ask == max(Ask))")))
+  eval(parse(text = paste0(nm[i], '_HL %<>% filter(!duplicated(Bid)|!duplicated(Ask))')))
+  
+  ## save dataset.
+  eval(parse(text = paste0(
+    "saveRDS(", nm[i], "_HL, '", dr, nm[i], "_HL.rds')")))
+  eval(parse(text = paste0("rm(", nm[i], ")")))
+  eval(parse(text = paste0("rm(", nm[i], "_HL)")))
+  cat(paste0(dr, nm[i], '_HL.rds saved!\n'))
+  }
+
+#'@ test <- Y2018W9
+#'@ test %<>% mutate(DateTime = mdy_hms(DateTime, tz = 'UTC')) %>% rowwise() %>% 
+#'@   do(DateTime = with_tz(.$DateTime, tzone = 'GMT')) %>% 
+#'@   mutate(Date = as.Date(DateTime))
+
+## -----------------------------------------------------------------
+## convert timezone, will take time around 20 minutes for 1 million plus rows due to not vectorised handling.
+#'@ eval(parse(text = paste0(
+#'@   nm[i], "_HL <- ", nm[i], " %>% mutate(DateTime = mdy_hms(DateTime, tz = 'UTC')) %>% rowwise() %>% do(DateTime = with_tz(.$DateTime, tzone = 'GMT')) %>% mutate(Date = as.Date(DateTime))")))
+
+## check the number of *.rds files in directory.
+dr <- 'data/USDJPY/'
+drt <- dir(dr, pattern = '_HL.rds')
+
+#'@ drt %>% str_split_fixed('Y|W|_HL.rds', 4) %>% tbl_df %>% 
+#'@   select(V2, V3) %>% filter(V2 == 2015)
+
+nm <- str_replace_all(drt, '.rds', '')
+
+## filter_HL() to get daily unique high low price.
+#'@ source('function/filter_HL.R')
+
+## simulate secondary filter daily high-low price.
+for(i in seq(length(drt))) {
+  assign(nm[i], readRDS(paste0(dr, drt[i])))
+  assign(nm[i], eval(parse(text = paste0('filter_HL(', nm[i], ')'))))
+  
+  ## save dataset.
+  eval(parse(text = paste0(
+    "saveRDS(", nm[i], ", '", dr, nm[i], ".rds')")))
+  eval(parse(text = paste0("rm(", nm[i], ")")))
+  cat(paste0(dr, nm[i], '.rds saved!\n'))  
+  }
+```
+
+I gathered the 3 datasets from below websites: 
+
+- **1st Dataset** - `quantmod::getSymbols(src = 'yahoo')`: which contains OHLCV data price (timezone in GMT). The place orders function required highest or lowest price come first, therefore I gathered the data via **FXCMTickData**.
+- **2nd Dataset** - [FXCMTickData](https://github.com/fxcm/FXCMTickData) : which contain the timeline of highest and lowest price within a day (timezone in UTC). The daily dataset used for forecast daily price.
+- **3rd Dataset** - `TFX::queryFX()`: which shows the current price. The place orders function required data history, therefore I gathered the data via **FXCMTickData**.
+
+<span style='color:red'>There will probably occurs inconsistancy of data price among 3 datasets, however there will be cost few years time to gather all real time price via `TFX::queryFX()`. Otherwise all data gather via 1 channel (`queryFX()`) will be perfect. However, you can feel free to read futher in this paper where verified the consistancy of datasets.</span>
+
+The will be another research project for **Real Time High Frequency Trading** where collect the real-time data and also high-frquency trading. You are feel free to browse over [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
+
+Below is the dataset gather via `getSymbols(src = 'yahoo')`.
+
+```{r data-summary1}
+## read saved dataset.
+mbase <- readRDS('./data/USDJPY/USDJPY.rds')
+```
+
+```{r data-summary2, echo = FALSE}
+## size of dataset.
+paste0('mbase : [', paste(dim(mbase), collapse = ' x '), ']')
+```
+
+```{r data-summary3, echo = FALSE, results = 'asis'}
+summary(mbase) %>% 
+  tidy %>% 
+  select(-Var1) %>% 
+  rename(Category = Var2) %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 2.1.1 : 1st dataset - summary of daily price dataset.*
+
+## Tidy Data
+
+For 2nd dataset, here I gather the tick data via **FXCMTickData**, there are more than million rows dataset (million rows per file while there are 52 files over 52 weeks) while I tidy and filter only highest and lowest `bid/ask` price. From the table below we can know the timeline which is weather highest or lowest price came first.
+
+```{r read-data3}
+## read tick data.
+HL_tick_data <- read_HL_tick_data()
+dtID <- unique(HL_tick_data$Date)
+
+## arrange the sequence of highest and lowest price.
+HL_tick_data %<>% tbl_df %>% mutate(sq = rep(1:4, length(dtID)))
+
+## Print dataset
+HL_tick_data
+```
+
+*Table 2.2.1 : 2nd dataset - daily high-low price tick-data.*
+
+For 3rd dataset, due to there is a real-time data, the **Real Time Trading System (Trial)** web application only stored the real-time `bid/ask` transaction price but not collect all tick-data in seconds. However, you are feel free to gather from [DataCollection](https://beta.rstudioconnect.com/content/3153/).
+
+# Statistical Modelling
+
+## Forecast Daily Hi-Lo Price
+
+I tried to apply Lasso, Elastic Net and Ridge models to test the accuracy of prediction via [shinyApp](https://beta.rstudioconnect.com/content/2367/).
+
+$$\begin{equation}
+\sigma^2_{t} = \omega + \sum_{i=1}^{\rho}(\alpha_{i} + \gamma_{i} I_{t-i}) \varepsilon_{t-i}^{2} + \sum_{j=1}^{q}\beta_{j}\sigma^{2}_{t-j}\ \cdots\ Equation\ 3.1.1
+\end{equation}$$
+
+Here I directly apply *GJR-GARCH*^[Kindly refer to [GJR-GARCH 模型](https://vlab.stern.nyu.edu/zh/doc/3?topic=mdls) for more information] model due to I had compared few statistical models and got the best fitted model. Kindly refer to **Binary.com Interview Q1** for the paper.
+
+- Auto Arima models (Adjusted and use the optimal AR and MA parameters)
+- Exponential Time Series (27 ETS models)
+- Univariate Garch models (GARCH, T-GARCH, GJR-GARCH, eGARCH, etc altogather 12 models.)
+- Exponential Weighted Moving Average
+- <s>Monte Carlo Markov Chain</s>
+- <s>Bayesian Time Series</s>
+- <s>Midas</s>
+
+Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over **Binary.com Interview Q1 (Extention)**. The paper compare and get the optimal predictive model based on the various number of observations.
+
+```{r read-data4, echo = FALSE, eval = FALSE}
+## get currency dataset online.
+#'@ getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20') #oanda only provides 180 days data. getSymbols()
+
+## Get data.
+#'@ USDJPY <- getSymbols('JPY=X', src = 'yahoo', from = '2015-01-04', 
+#'@                      to = '2018-07-06', auto.assign = FALSE)
+#'@ names(USDJPY) <- str_replace_all(names(USDJPY), 'JPY=X', 'USDJPY')
+#'@ USDJPY %<>% na.omit
+#'@ saveRDS(USDJPY, 'data/USDJPY/USDJPY.rds')
+
+mbase <- readRDS('./data/USDJPY/USDJPY.rds')
+if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
+
+## dateID or timeID
+timeID <- index(mbase)
+timeID0 <- ymd('2016-01-04')
+timeID <- timeID[timeID > dateID0] # index(mbase)[index(mbase) > ymd('2016-01-04')]
+
+#length(timeID)
+#[1] 651
+#start <- seq(1, 652, 109)
+#stop <- start - 1
+#stop <- c(stop[-1], length(timeID))
+#data.frame(timeID = paste0('timeID = timeID[', start, ':', stop, ']'))
+#1   timeID = timeID[1:109] # index(mbase)[index(mbase) > ymd('2016-01-04')][1:109]
+#2 timeID = timeID[110:218] # index(mbase)[index(mbase) > ymd('2016-01-04')][110:218]
+#3 timeID = timeID[219:327] # index(mbase)[index(mbase) > ymd('2016-01-04')][219:327]
+#4 timeID = timeID[328:436] # index(mbase)[index(mbase) > ymd('2016-01-04')][328:436]
+#5 timeID = timeID[437:545] # index(mbase)[index(mbase) > ymd('2016-01-04')][437:545]
+#6 timeID = timeID[546:651] # index(mbase)[index(mbase) > ymd('2016-01-04')][546:651]
+
+## simulate financial betting.
+pred.data <- sim_predict(
+    mbase, #timeID = index(mbase), 
+	timeID = index(mbase)[index(mbase) > ymd('2016-01-04')][546:651], 
+	timeID0 = ymd('2016-01-04'), 
+	.preCat = 'Op', .preCat2 = 'Hi', .preCat3 = 'Lo', .preCat4 = 'Cl', 
+	.save = TRUE, currency = 'JPY=X')
+
+#index(mbase)[index(mbase) > ymd('2016-01-04')][268:269] #error
+#Latest Date (GMT): 2017-01-11 done!
+#Latest Date (GMT): 2017-01-11 saved!
+#
+#Error in solve.default(res$hessian * n.used, A) : 
+#  Lapack routine dgesv: system is exactly singular: U[1,1] = 0
+
+#> pred.data %>% dplyr::filter(LatestDate.GMT == '2017-01-12')
+## A tibble: 1 x 10
+#  LatestDate.GMT Lst.Open Lst.Low Fct.High Lst.Close ForecastDate.GMT Fct.Open Lst.High  Fct.Low
+#          <date>    <dbl>   <dbl>    <dbl>     <dbl>           <fctr>    <dbl>    <dbl>    <dbl>
+#1     2017-01-12       NA  113.76 110.5123        NA              T+1       NA  115.219 113.6786
+# ... with 1 more variables: Fct.Close <dbl>
+#> pred.data %>% dplyr::filter(LatestDate.GMT == '2017-01-13')
+## A tibble: 1 x 10
+#  LatestDate.GMT Lst.Open Lst.Low Fct.High Lst.Close ForecastDate.GMT Fct.Open Lst.High  Fct.Low
+#          <date>    <dbl>   <dbl>    <dbl>     <dbl>           <fctr>    <dbl>    <dbl>    <dbl>
+#1     2017-01-13  114.696 114.284 110.5143   114.664              T+1 114.5294  115.388 114.3947
+## ... with 1 more variables: Fct.Close <dbl>
+#> pred.data %>% dplyr::filter(LatestDate.GMT == '2017-01-11')
+## A tibble: 1 x 10
+#  LatestDate.GMT Lst.Open Lst.Low Fct.High Lst.Close ForecastDate.GMT Fct.Open Lst.High  Fct.Low
+#          <date>    <dbl>   <dbl>    <dbl>     <dbl>           <fctr>    #<dbl>    <dbl>    <dbl>
+#1     2017-01-11  115.875 115.681 110.5116   115.872              T+1 115.7538  116.835 115.7639
+## ... with 1 more variables: Fct.Close <dbl>
+
+rm(obs.data, USDJPY)
+
+#> pred.data %>% dplyr::filter(LatestDate.GMT == '2017-01-12')
+## A tibble: 1 x 10
+#  LatestDate.GMT Lst.Open Lst.High Lst.Low Lst.Close ForecastDate.GMT Fct.Open Fct.High  Fct.Low
+#          <date>    <dbl>    <dbl>   <dbl>     <dbl>           <fctr>    <dbl>    <dbl>    <dbl>
+#1     2017-01-12  115.055  115.219  113.76        NA              T+1 115.1867 110.5123 113.6786
+## ... with 1 more variables: Fct.Close <dbl>
+```
+
+Here I read my saved dataset where forecast 1 trading day advanced for daily Hi-Lo price. Kindly refer to **Real Time Trading System (Trial)** for more information.
+
+```{r read-data5, echo = FALSE}
+pred.data <- readRDS('data/USDJPY/pred.data.rds') %>% tbl_df
+pred.data %>% data.table
+```
+
+*Table 3.1.1 : Forecast high-low daily price.*
+
+```{r tidy-data1}
+pred.data %>% dplyr::filter(LatestDate.GMT == '2017-01-12') %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 3.1.2 : Forecast daily price missing close price.*
+
+Due to the day 2017-01-12 unable forecast the closed price.^[`armaSearch()` error on method = 'ML'], here I omit the transaction on that day.
+
+Below I combine the daily price dataset with forecast `Hi-Lo` price.
+
+```{r tidy-data2}
+## filter data.
+pred.data %<>% dplyr::filter(LatestDate.GMT != '2017-01-12')
+
+## Copied dataset.
+mbase <- data.frame(Date = index(mbase), mbase) %>% tbl_df
+pred.data %<>% tbl_df
+
+## Add `Date` column as forecasted Date.
+pred.data$Date <- lead(pred.data$LatestDate.GMT)
+pred.data$Date[length(pred.data$Date)] <- rmgarch::last(pred.data$LatestDate.GMT) + days(1)
+
+pred.data %<>% select(Date, Fct.Open, Fct.High, Fct.Low, Fct.Close) %>% data.table
+
+## Merge dataset.
+pred <- merge(tbl_df(mbase), pred.data, by = 'Date') %>% 
+  tbl_df %>% select(-USDJPY.Volume, -USDJPY.Adjusted)
+rm(pred.data)
+
+## Print dataset.
+pred %>% data.table
+```
+
+*Table 3.1.2 : Tidy dataset for forecast high-low daily price.*
+
+Below I test if the dataset scrapped from `quantmod::getSymbols(src = 'yahoo')` equal to **FXCMTickData**. Unfortunately the data gathered is not tally each other.
+
+```{r tidy-data3}
+mb.dateID <- unique(mbase$Date)
+td.dateID <- unique(HL_tick_data$Date)
+
+## Check the start and end date
+data.frame(MB = range(mb.dateID), 
+           TD = range(td.dateID)) %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_left')
+```
+
+*Table 3.1.3 : Date range of 1st dataset and 2nd dataset.* at left-hand-side shows the date range for both **MB** (mbase dataset) and **TD** (tick-data).
+
+<span style='color:red'>Below shows all dates NOT in each dataset. Unfortunately the inconsistancy of dataset gathered from `getSymbols(src = 'yahoo')` will caused whole predictive models bias, it will affect the staking amount and evetually effect the ROI. The dataset used to working fine few years ago. There will be another research which gather only dataset from operator to solve the issue.</span>
+
+```{r tidy-data4}
+## Check if dateID not in another dataset.
+mb.dateID[!mb.dateID %in% td.dateID]
+td.dateID[!td.dateID %in% mb.dateID]
+```
+
+```{r plot-data1A, echo = FALSE}
+## Real price.
+pl.RHigh <- pred %>% 
+  select(Date, USDJPY.High)
+pl.RHigh <- as.xts(pl.RHigh[-1], order.by = pl.RHigh$Date)
+
+pl.RLow <- pred %>% 
+  select(Date, USDJPY.Low)
+pl.RLow <- as.xts(pl.RLow[-1], order.by = pl.RLow$Date)
+
+## Predicted price.
+pl.FHigh <- pred %>% 
+  select(Date, Fct.High)
+pl.FHigh <- as.xts(pl.FHigh[-1], order.by = pl.FHigh$Date)
+
+pl.FLow <- pred %>% 
+  select(Date, Fct.Low)
+pl.FLow <- as.xts(pl.FLow[-1], order.by = pl.FLow$Date)
+
+## Plot graph
+hc <- highchart(type = 'stock') %>% 
+  hc_title(text = 'USD/JPY Currency Exchange Rate') %>% 
+  hc_subtitle(text = 'Comparison of Forecast and Real Price (Highest Price)') %>% 
+  hc_add_series(pl.RHigh, id = 'pl.RHigh', color = 'blue') %>% 
+  hc_add_series(pl.FHigh, id = 'pl.FHigh', color = 'red')
+
+hc
+```
+
+*Graph 3.2.1A : <span style='color:red'>Forecast daily highest price</span> vs <span style='color:blue'>real daily highest price</span>.*
+
+```{r plot-data1B, echo = FALSE, results = 'asis'}
+## Plot graph
+hc <- highchart(type = 'stock') %>% 
+  hc_title(text = 'USD/JPY Currency Exchange Rate') %>% 
+  hc_subtitle(text = 'Comparison of Forecast and Real Price (Lowest Price)') %>% 
+  hc_add_series(pl.RLow, id = 'pl.RLow', color = 'blue') %>% 
+  hc_add_series(pl.FLow, id = 'pl.FLow', color = 'red')
+
+rm(pl.RHigh, pl.RLow, pl.FHigh, pl.FLow)
+hc
+```
+
+*Graph 3.2.1B : <span style='color:red'>Forecast daily highest price</span> vs <span style='color:blue'>real daily lowest price</span>.*
+
+*Graph 3.2.1A* and *Graph 3.2.1B* above compare the real price and forecast price. Following section will be compare the MSE (Mean Squared Error).
+
+## Mean Squared Error
+
+```{r mse1}
+## Mean Squared Error : Comparison of accuracy.
+## https://cran.r-project.org/web/packages/kableExtra/vignettes/awesome_table_in_html.html
+data.frame(
+  Category = c('High = ', 'Low = '), 
+  MSE = c(mean((pred$Fct.High - pred$USDJPY.High)^2), 
+          mean((pred$Fct.Low - pred$USDJPY.Low)^2))) %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_right')
+```
+
+$$\begin{equation}
+\frac{1}{n}\sum_{t=1}^{n}e_t^2\ \cdots\ Equation\ 3.2.1
+\end{equation}$$
+
+*Table 3.2.1 : Mean Squared Error high-low daily price.* at the right-hand-side shows the accuracy of the predictive model. You can also refer to previous studies where compare the accuracy of predicted `Open`, `High`, `Low` and `Close` price.
+
+# Betting Strategy
+
+## Kelly Criterion
+
+$$\begin{equation}
+f = \frac{Edge}{Odds} = \frac{p^∗ x−(1−p^∗)}{x}
+ \ \cdots Equation\ 4.1.1 
+ \end{equation}$$
+
+The section 1 inside [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion) shows the ROI for betting on sportsbook, where section 2 will be started during spared time after FOREX market.
+
+For the betting strategy, here I need to adjust a bit from **Binary.com Interview Q1** as stated in section [Introduction]. Below I tidy the dataset to match the `bid/ask` price for close a transaction.
+
+As we know from previous paper, the closing price will be settled price (closed transaction) if the forecast price has no occured within a day (from 12:00:01 AM until next day 12:00:00 AM, due to system calculate the price spend a minute, therefore the opening price will not in count.). There will be 2 limit orders (but and sell) placed after 12:00:00AM. Once one among the order limit stand (opened transaction), another limit order will be automatically turned to be closed transaction request. Therefore there will only transaction within a trading day unless no any order limit placed stand.
+
+```{r data-summary4, results = 'asis'}
+## Here I combine real-time dataset with the daily dataset.
+pred <- merge(HL_tick_data, pred,  by = 'Date') %>% 
+  tbl_df %>% 
+  arrange(DateTime)
+
+## Tidy dataset.
+pred %<>% group_by(Date) %>% 
+    dplyr::filter(Bid == max(Bid, na.rm = TRUE)|Ask == min(Ask, na.rm = TRUE)) %>% 
+    select(DateTime, Date, USDJPY.High, USDJPY.Low, USDJPY.Close, sq, Bid, Ask, Fct.High, Fct.Low, Fct.Close) %>% 
+    rename(High = USDJPY.High, Low = USDJPY.Low, Close = USDJPY.Close) %>% data.table
+```
+
+## Staking Strategy
+
+[Chapter 20 Against the Odds: The Mathematics of Gambling](http://srdas.github.io/MLBook/Gambling.html#odds)^[Publised book [**Data Science: Theories, Models, Algorithms, and Analytics** - *Sanjiv Ranjan Das (2017-03-24)*](http://srdas.github.io/MLBook/).] elaborates the odds price, edge, Kelly Criterion staking model, portfolio, Entropy and also day trading.
+
+$$\begin{eqnarray}
+g_t(f) &=& \frac{1}{t} \ln \left( \frac{B_t}{B_0}  \right) \\
+&=&  \frac{1}{t} \ln \left( \prod_{i=1}^t [1+r +f(Z_t -r)\varepsilon] \right) \\
+&=&  \frac{1}{t}  \sum_{i=1}^t \ln \left( [1+r +f(Z_t -r)\varepsilon] \right)
+\end{eqnarray}
+ \ \cdots Equation\ 4.2.1 $$
+
+By applying the law of central limit theorem for large data, here we get:
+
+$$\begin{equation}
+g(f) = \lim_{t \rightarrow \infty} g_t(f) = E[\ln(1+r + f (Z-r)\varepsilon)]
+ \ \cdots Equation\ 4.2.2 
+ \end{equation}$$
+
+and $\varepsilon_{i}$ is a weight function where applied statistical models to forecast the price. I used some models and eventually concludes the GJR-GARCH model generated highest ROI. The weight function doesn't same with different currencies since it using substraction among 2 forecast prices but not in ratio^[The pips difference for USD/JPY different with others. Thereore there will need to compare among currencies (if generated higher ROI than normal Kelly model).].
+
+$$\begin{equation}
+\varepsilon = h(x)_{1} - v
+ \ \cdots Equation\ 4.2.3 
+ \end{equation}$$
+
+$v$ is a switch function to determine the settled price.
+
+$$\begin{equation}
+v
+\left\{\begin{matrix}
+h(x)_{2}
+ & if(Lo <= h(x)_{2} <= Hi)
+ & \\ Cl
+ & otherwise
+\end{matrix}\right.
+\ \cdots Equation\ 4.2.4 
+\end{equation}$$
+
+where $Hi$, $Lo$ and $Cl$ are the daily highest, lowest and closed price.
+
+**Binary.com Interview Q1** applied a more sophisticated model as stated above to compares all possible outcomes of predicted price and ROI. Due to the financial betting only allows player place bets and awaiting for the settlement (unless placed another bet at other predicted price), there will be no any limit order and close transaction request (similar with FOREX trading market can place more than 1 limit order to lock the profit).
+
+<span style='color:red'>The staking model in previous papers (includes **Binary.com Interview Q1 (Extention)**) have only **MISTAKE** which is wrote for real FOREX trading market but not financial betting since I only think of spread betting but forgot the normal betting :</span>
+
+- <span style='color:red'>Forecast highest price to sell and forecast lowest price to buy to maximise the profit : I wrote 2nd forecast price as settled price if it was between the daily Hi-Lo range (otherwise daily closed price will be settled price). There will be only applicable to FOREX trading market but NOT financial betting market.</span>
+- <span style='color:red'>However it will be more easily since the settled price will be only daily closed price.</span>
+
+The paper **Binary.com Interview Q1** compares all outcome :
+
+- `Hi-Cl` + `Lo-Cl` generate highest ROI in financial betting market.^[Here I will conducting another research for financial betting.]
+- `Hi-Lo` or `Lo-Hi` will be best betting strategy for noarmal FOREX market.
+
+```{r betting-strategy, echo = FALSE}
+bs <- data.frame(.id = c('fundAutoArimaHICL', 'fundAutoArimaLOCL'), 
+                 StartDate = ymd('2015-01-02'), 
+                 LatestDate = ymd('2017-01-20'), 
+                 InitFund = 1000, 
+                 LatestFund = c(1401.694, 1499.818), 
+                 Profit = c(401.69378, 499.81773), 
+                 RR = formattable::percent(c(1.401694, 1.499818)))
+
+sm <- data.frame(.id = 'Combine', 
+                 StartDate = ymd('2015-01-02'), 
+                 LatestDate = ymd('2017-01-20'), 
+                 bs %>% dplyr::select(InitFund, LatestFund, Profit) %>% colSums %>% t) %>% 
+    mutate(RR = formattable::percent(LatestFund/InitFund))
+
+rbind(bs, sm) %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+rm(bs, sm)
+```
+
+*Table 4.2.1 : betting strategy for fiancial betting.*
+
+```
+No               .id  StartDate LatestDate InitFund  LatesFund    Profit        RR
+07 fundAutoArimaHILO 2015-01-02 2017-01-20     1000   1637.251 637.25113 163.7251%
+10 fundAutoArimaLOHI 2015-01-02 2017-01-20     1000   1716.985 716.98492 171.6985%
+```
+*Table 4.2.2 : betting strategy for normal FOREX market.*
+
+Kindly refer to [2.1.5 Return of Investment in **binary Q1**](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html#return-of-investment) for full table.
+
+## Optimal Edge
+
+I don't pretend to know the optimal edge for staking. Here I need to compare above models with normal Kelly model.
+
+```{r staking1, echo = FALSE, eval = FALSE}
+## =============== WRONG ==================
+## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
+pred %>% 
+    mutate(
+        Fct.High = round(Fct.High, 3), 
+        Fct.Low = round(Fct.Low, 3), 
+        Hi = ifelse(High >= Bid, 1, 0), 
+        Lo = ifelse(Low >= Ask, 1, 0)) %>% 
+    tbl_df %>% 
+    select(-Date) %>% 
+    mutate(Buy1 = ifelse(Fct.High >= High, 1, 0), 
+           Buy2 = ifelse(Fct.High >= Bid, 1, 0), 
+           Buy3 = ifelse(Fct.High >= Hi, 1, 0), 
+           Sell1 = ifelse(Fct.Low <= Low, 1, 0), 
+           Sell2 = ifelse(Fct.Low <= Ask, 1, 0), 
+           Sell3 = ifelse(Fct.Low <= Lo, 1, 0)) %>% 
+    select(-High, -Low, -Close)
+## A tibble: 1,244 x 14
+#   DateTime               sq   Bid   Ask Fct.High Fct.Low    Hi    Lo  Buy1  Buy2  Buy3 Sell1 Sell2 Sell3
+#   <dttm>              <int> <dbl> <dbl>    <dbl>   <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl> <dbl>
+# 1 2016-01-05 03:06:08     1  120.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+# 2 2016-01-05 12:22:55     4   NA   119.     120.    119.    NA     1     1    NA    NA     0     0     0
+# 3 2016-01-06 00:07:16     2  119.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+# 4 2016-01-06 11:38:17     3   NA   118.     120.    119.    NA     1     1    NA    NA     0     0     0
+# 5 2016-01-07 01:16:01     2  119.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+# 6 2016-01-07 09:24:27     4   NA   117.     120.    119.    NA     1     1    NA    NA     0     0     0
+# 7 2016-01-08 13:30:07     2  119.   NA      119.    119.     0    NA     1     1     1     0    NA    NA
+# 8 2016-01-08 21:57:33     3   NA   117.     119.    119.    NA     1     1    NA    NA     0     0     0
+# 9 2016-01-11 01:34:30     2   NA   117.     120.    119.    NA     1     1    NA    NA     0     0     0
+#10 2016-01-11 13:37:52     4  118.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
+## ... with 1,234 more rows
+```
+
+```{r staking2}
+## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
+pred %>% 
+    tbl_df %>% 
+    select(-DateTime) %>% 
+    mutate(
+        Fct.High = round(Fct.High, 3), 
+        Fct.Low = round(Fct.Low, 3), 
+        Buy = ifelse(Fct.High <= High & Fct.High >= Low, 1, 0), 
+        Sell = ifelse(Fct.Low >= Low & Fct.Low <= High, 1, 0))
+```
+
+*Table 4.3.1 : Buy-Long and Sell-Short table.*
+
+# Return of Investment
+
+## Normal FOREX Market
+
+```{r ROI-1}
+
+```
+
+```{r plot-data2, echo = FALSE, eval = FALSE}
+#'@ source('./function/plotChart2.R', local = TRUE)
+
+plotChart2(fcdata, initialName = 'FP', chart.type = 'FP', graph.title = 'ETS Model : USDJPY')
+```
+
+```{r roi-ets, echo = FALSE, eval = FALSE}
+## plot html table
+##==================== EVAL = FALSE =====================
+tagList(
+  tags$div(align = "center", 
+           class = "bg-info", 
+           tags$h3(class = "bg-primary", "Profit and Loss of Investment (2015-Jan-02 2017-Jan-20)"), 
+           tags$h5(align = "center", class = "text-muted", 
+                   "Error-Trend-Seasonal or ExponenTial Smoothing Models")), 
+  as.htmlwidget(ets.tbl %>% formattable(list(
+    
+    LatestFund = formatter('span', style = x ~ formattable::style(color = ifelse(rank(-x) <= 3, 'blue', 'grey')), x ~ paste0(round(x, 2), ' (rank: ', sprintf('%02f', rank(-x)), ')')), 
+    
+    Profit = formatter('span', style = x ~ formattable::style(color = ifelse(rank(-x) <= 3, 'blue', 'grey')), x ~ paste0(round(x, 2), ' (rank: ', sprintf('%02f', rank(-x)), ')')), 
+    
+    RR = formatter('span', style = x ~ formattable::style(color = ifelse(rank(-x) <= 3, 'blue', 'grey')), x ~ sprintf('%1.2f%% (rank: %.0f)', 100 * x, rank(-x)))))))
+```
+
+```{r plot-varAutoArima, echo = FALSE, eval = FALSE, results = 'asis'}
+## Betting strategy 1 - Normal range betting
+## Plot the ROI of investment fund.
+plotAutoArima <- data.frame(varB1['Date'], varB1[grep('Bal', names(varB1))])
+LineAutoArima <-  gvisLineChart(plotAutoArima, 'Date', names(plotAutoArima)[-1],
+                        options = list(title = 'Auto Arima Models', 
+                                       gvis.editor = 'Edit me!'))
+plot(LineAutoArima)
+```
+
+## Financial Betting Market
+
+
+```{r ROI-2}
+
+```
+
+# Conclusion
+
+I can use tick-data from **FXCMTickData** for this paper while it is weekly and not up-to-date, the `getSymbols()` able to get near real-time (15 minutes late) where suite for daily trading in **Real Time Trading System (Trial)** but there are a lot of trading date is not available. 
+
+Therefore High Frequency Trading in another research **Real Time FXCM** where all data price gathered from real-time will be accurate.
+
+```{r stopPar, echo = FALSE}
+## Set options back to original options
+options(op)
+options(warn = 0)
+#'@ stopCluster(cl)
+```
+
+# Appendix
+
+## Documenting File Creation 
+
+It's useful to record some information about how your file was created.
+
+- File creation date: 2018-07-13
+- File latest updated date: `r today('Asia/Tokyo')`
+- `r R.version.string`
+- R version (short form): `r getRversion()`
+- [<span style='color:blue'>**rmarkdown** package</span>](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+- [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
+- File version: 1.0.1
+- Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
+- GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
+- Additional session information
+
+```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+
+lubridate::now('Asia/Tokyo')
+sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+#'@ sys1 %>% formattable %>% as.htmlwidget
+
+sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(Category = Category, Sys.info =  Sys.info..)
+#'@ sys2 %>% formattable %>% as.htmlwidget
+
+sys1 %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))#, full_width = FALSE, position = 'float_left')
+
+sys2 %>% 
+  kable %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))#, full_width = FALSE, position = 'float_right')
+
+rm(sys1, sys2)
+```
+
+## Reference
+
+  01. [<span style='color:blue'>Quant Strategies HFT</span>](https://github.com/englianhu/Quant-Strategies-HFT)
+  02. [<span style='color:blue'>Real Time FXCM</span>](https://github.com/scibrokes/real-time-fxcm)<img src='www/hot.jpg' width='20'>
+  03. [<span style='color:blue'>Real Time Trading System (Trial)</span>](https://beta.rstudioconnect.com/content/3775/)<img src='www/hot.jpg' width='20'>
+
+**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**

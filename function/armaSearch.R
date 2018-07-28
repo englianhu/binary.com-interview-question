@@ -1,4 +1,3 @@
-#ARMA Modeling寻找AIC值最小的p,q
 armaSearch <- suppressWarnings(function(data, .method = 'CSS-ML'){ 
   ## I set .method = 'CSS-ML' as default method since the AIC value we got is 
   ##  smaller than using method 'ML' while using method 'CSS' facing error.
@@ -62,6 +61,7 @@ armaSearch <- suppressWarnings(function(data, .method = 'CSS-ML'){
     }
   }
   
+  #ARMA Modeling寻找AIC值最小的p,q
   colnames(armacoef) <- c('p', 'q', 'AIC')
   pos <- which(armacoef$AIC == min(armacoef$AIC))
   cat(paste0('method = \'', data.arma$mth, '\', the min AIC = ', armacoef$AIC[pos], 
