@@ -26,8 +26,27 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
   ## 4a) Kelly = 'normal' : The mean value of variane of forecast highest 
   ##      price and mean value of forecast lowest price.
   ## 
-  ## 4b) Kelly = 'adjusted' : Same with Kelly = 'normal' but the 
+  ## 4b) Kelly = 'adjusted1' : Similar with Kelly = 'normal' but the 
   ##      difference of both forecast price for open/close transactions.
+  ## 
+  ## 4c) Kelly = 'adjusted2' : Similar with Kelly = 'adjust1' but the 
+  ##      difference of both forecast price in leverage
+  ## 
+  ## 4d) Kelly = 'adjusted3' : Model used in binary-Q1 which is wrongly 
+  ##      using `Edge1 = ifelse(fB1 > 0, B1, ifelse(fS1 > 0, S1, 0))`. 
+  ##      Therefore the fS will be secondary edge for fB but not 0.
+  ## 
+  ## 4e) Kelly = 'adjusted4' : Similar with Kelly = 'adjusted3' but 
+  ##      seperate the arguments PF and PF2.
+  ## 
+  ## 4f) Kelly = 'adjusted5' : Similar with Kelly = 'normal' but use 
+  ##      `Edge1 = ifelse(fB1 > 0, B1, ifelse(fS1 > 0, S1, 0))` but 
+  ##      not `Edge1a = ifelse(fB1 > 0, B1, 0)` and 
+  ##      `Edge1b = ifelse(fS1 > 0, S1, 0)`.
+  ## 
+  ## 4f) Kelly = 'adjusted6' : Similar with Kelly = 'adjusted5' but 
+  ##      use `Edge1 = ifelse(fB1 > 0, B1, ifelse(fS1 > 0, S1, 0))` 
+  ##      and `Edge2 = ifelse(fS1 > 0, S1, ifelse(fB1 > 0, B1, 0))`.
   ## 
   ## ===================================================================
   
@@ -45,66 +64,129 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
   mbase <- pnorm_bid_ask(mbase, pnorm_type = pnorm_type, financial_bet = financial_bet)
   
   if (bid_ask == 'b1-a1') {
-    mbase %<>% mutate(pB1 = p_ask1, pS1 = p_bid1, pB2 = p_ask2, pS2 = p_bid2)
+    mbase %<>% mutate(pS1 = p_bid1, pB1 = p_ask1, pS2 = p_bid2, pB2 = p_ask2)
     
   } else if (bid_ask == 'b1-a2') {
-    mbase %<>% mutate(pB1 = p_ask1, pS1 = p_bid2, pB2 = p_ask1, pS2 = p_bid2)
+    mbase %<>% mutate(pS1 = p_bid2, pB1 = p_ask1, pS2 = p_bid2, pB2 = p_ask1)
     
   } else if (bid_ask == 'b2-a1') {
-    mbase %<>% mutate(pB1 = p_ask2, pS1 = p_bid1, pB2 = p_ask2, pS2 = p_bid1)
+    mbase %<>% mutate(pS1 = p_bid1, pB1 = p_ask2, pS2 = p_bid1, pB2 = p_ask2)
     
   } else if (bid_ask == 'b2-a2') {
-    mbase %<>% mutate(pB1 = p_ask2, pS1 = p_bid2, pB2 = p_ask1, pS2 = p_bid1)
+    mbase %<>% mutate(pS1 = p_bid2, pB1 = p_ask2, pS2 = p_bid1, pB2 = p_ask1)
     
   } else {
-    stop("bid_ask = 'b1-a2', bid_ask = 'b1-a2', bid_ask = 'b2-a1', bid_ask = 'b2-a2'.")
+    stop("bid_ask = 'b1-a1', bid_ask = 'b1-a2', bid_ask = 'b2-a1', bid_ask = 'b2-a2'.")
   }
   
   ## Kelly model.
   mbase %<>% mutate(BR = init_br) %>% 
     mutate(
-      fB1 = 2 * pB1 - 1, fS1 = 2 * pS1 - 1, ##buy and sell
+      fB1 = 2 * pB1 - 1, fS1 = 2 * pS1 - 1, ##ask for buy and bid for sell.
       B1 = pB1 * log(BR * (1 + fB1)) + (1 - pB1) * log(BR * (1 - fB1)), 
       S1 = pS1 * log(BR * (1 + fS1)) + (1 - pS1) * log(BR * (1 - fS1)), 
-      Edge1 = ifelse(fB1 > 0, B1, ifelse(fS1 > 0, S1, 0)), 
+      # Edge1 = ifelse(fB1 > 0, B1, ifelse(fS1 > 0, S1, 0)), 
+      Edge1a = ifelse(fB1 > 0, B1, 0), 
+      Edge1b = ifelse(fS1 > 0, S1, 0), 
       
-      fB2 = 2 * pB2 - 1, fS2 = 2 * pS2 - 1, ##buy and sell
+      fB2 = 2 * pB2 - 1, fS2 = 2 * pS2 - 1, ##ask for buy and bid for sell.
       B2 = pB2 * log(BR * (1 + fB2)) + (1 - pB2) * log(BR * (1 - fB2)), 
       S2 = pS2 * log(BR * (1 + fS2)) + (1 - pS2) * log(BR * (1 - fS2)), 
-      Edge2 = ifelse(fB2 > 0, B2, ifelse(fS2 > 0, S2, 0)))
+      # Edge2 = ifelse(fB2 > 0, B2, ifelse(fS2 > 0, S2, 0)), 
+      Edge2a = ifelse(fB2 > 0, B2, 0), 
+      Edge2b = ifelse(fS2 > 0, S2, 0))
   
   if(Kelly == 'normal') {
     
     mbase %<>% mutate(
       Buy = ifelse(Fct.Low <= High & Fct.Low >= Low, 1, 0), 
       Sell = ifelse(Fct.High >= Low & Fct.High <= High, 1, 0), 
-      Profit = Buy * Edge1 + Sell * Edge2, Bal = BR + cumsum(Profit))
+      Profit = Buy * Edge1a + Sell * Edge1b, Bal = BR + cumsum(Profit))
   
-  } else if(Kelly == 'adjusted') {
+  } else if(Kelly == 'adjusted1') {
     
     mbase %<>% mutate(
-      PF = ifelse(Fct.Low >= Low & Fct.Low <= High, 
-                  Fct.Low, 0), #if forecasted place-bet price doesn't 
-                                      #  existing within Hi-Lo price, then 
-                                      #  the buying action is not stand. 
-                                      #  Assume there has no web bandwith 
-                                      #  delay. 
-      PF2 = ifelse(Fct.High >= Low & Fct.High <= High, 
-                   Fct.High, 0), 
+      PF = ifelse(Fct.Low >= Low & Fct.Low <= High, Fct.Low, 0), 
+                                      #if forecasted place-bet price 
+                                      #  doesn't existing within Hi-Lo 
+                                      #  price, then the buying action is 
+                                      #  not stand. Assume there has no 
+                                      #  web bandwith delay. 
+      PF2 = ifelse(Fct.High >= Low & Fct.High <= High, Fct.High, 0), 
       FC = ifelse(Fct.Close >= Low & Fct.Close <= High, 
-                  Fct.Close, Close),  #if forecasted settle price doesn't 
-                                      #  existing within Hi-Lo price, 
-                                      #  then the closing action at 
-                                      #  closing price. Assume there has 
-                                      #  no web bandwith delay. 
-      Buy = ifelse(PF > 0 & FC > PF, 1, 0),  # buy action
+                  Fct.Close, Close),  #if forecasted settle price 
+                                      #  doesn't existing within Hi-Lo 
+                                      #  price, then the closing action 
+                                      #  at closing price. Assume there 
+                                      #  has no web bandwith delay. 
+      Buy = ifelse(PF > 0 & FC > PF, 1, 0),    # buy action
+      Sell = ifelse(PF2 > 0 & FC < PF2, 1, 0), # sell action
+      BuyS = Edge1a * Buy * (Fct.Close - PF),    #adjusted difference in pips
+      SellS = Edge1b * Sell * (PF2 - Fct.Close), # similar with financial beting.
+      Profit = BuyS + SellS, Bal = BR + cumsum(Profit))
+    
+  } else if(Kelly == 'adjusted2') {
+      
+      mbase %<>% mutate(
+        PF = ifelse(Fct.Low >= Low & Fct.Low <= High, Fct.Low, 0), 
+        PF2 = ifelse(Fct.High >= Low & Fct.High <= High, Fct.High, 0), 
+        FC = ifelse(Fct.Close >= Low & Fct.Close <= High, 
+                    Fct.Close, Close), 
+        Buy = ifelse(PF > 0 & FC > PF, 1, 0),    # buy action
+        Sell = ifelse(PF2 > 0 & FC < PF2, 1, 0), # sell action
+        BuyS = Edge1a * Buy * (PF/(Fct.Close - PF)),           #adjusted
+        SellS = Edge1b * Sell * (Fct.Close/(PF2 - Fct.Close)), # leverage.
+        Profit = BuyS + SellS, Bal = BR + cumsum(Profit))
+    
+  } else if(Kelly == 'adjusted3') {
+    
+    mbase %<>% mutate(
+      Edge1 = ifelse(fB1 > 0, B1, ifelse(fS1 > 0, S1, 0)), 
+      PF = ifelse(Fct.Low >= Low & Fct.Low <= High, Fct.Low, 0), 
+      #PF2 = ifelse(Fct.High >= Low & Fct.High <= High, Fct.High, 0), 
+      FC = ifelse(Fct.Close >= Low & Fct.Close <= High, 
+                  Fct.Close, Close), 
+      Buy = ifelse(PF > 0 & FC > PF, 1, 0),    # buy action
       Sell = ifelse(PF > 0 & FC < PF, 1, 0), # sell action
-      BuyS = Edge1 * Buy * (Fct.Close - PF), 
+      BuyS = Edge1 * Buy * (Fct.Close - PF),   #adjusted
       SellS = Edge1 * Sell * (PF - Fct.Close), 
       Profit = BuyS + SellS, Bal = BR + cumsum(Profit))
     
+  } else if(Kelly == 'adjusted4') {
+    
+    mbase %<>% mutate(
+      Edge1 = ifelse(fB1 > 0, B1, ifelse(fS1 > 0, S1, 0)), 
+      PF = ifelse(Fct.Low >= Low & Fct.Low <= High, Fct.Low, 0), 
+      PF2 = ifelse(Fct.High >= Low & Fct.High <= High, Fct.High, 0), 
+      FC = ifelse(Fct.Close >= Low & Fct.Close <= High, 
+                  Fct.Close, Close), 
+      Buy = ifelse(PF > 0 & FC > PF, 1, 0),    # buy action
+      Sell = ifelse(PF2 > 0 & FC < PF2, 1, 0), # sell action
+      BuyS = Edge1 * Buy * (Fct.Close - PF),    #adjusted
+      SellS = Edge1 * Sell * (PF2 - Fct.Close), 
+      Profit = BuyS + SellS, Bal = BR + cumsum(Profit))
+    
+  } else if(Kelly == 'adjusted5') {
+      
+    mbase %<>% mutate(
+      Edge1 = ifelse(fB1 > 0, B1, ifelse(fS1 > 0, S1, 0)), 
+      Buy = ifelse(Fct.Low <= High & Fct.Low >= Low, 1, 0), 
+      Sell = ifelse(Fct.High >= Low & Fct.High <= High, 1, 0), 
+      Profit = Buy * Edge1 + Sell * Edge1, Bal = BR + cumsum(Profit))
+    
+  } else if(Kelly == 'adjusted6') {
+    
+    mbase %<>% mutate(
+      Edge1 = ifelse(fB1 > 0, B1, ifelse(fS1 > 0, S1, 0)), 
+      Edge2 = ifelse(fS1 > 0, S1, ifelse(fB1 > 0, B1, 0)), 
+      Buy = ifelse(Fct.Low <= High & Fct.Low >= Low, 1, 0), 
+      Sell = ifelse(Fct.High >= Low & Fct.High <= High, 1, 0), 
+      Profit = Buy * Edge1 + Sell * Edge2, Bal = BR + cumsum(Profit))
+    
   } else {
-    stop("Kindly choose method = 'normal' or method = 'adjusted'.")
+    stop(paste("Kindly choose Kelly = 'normal', Kelly = 'adjusted1',", 
+               "Kelly = 'adjusted2', Kelly = 'adjusted3' or", 
+               "Kelly = 'adjusted2'."))
   }
   
   return(mbase)

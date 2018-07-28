@@ -1,7 +1,8 @@
 plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL, 
                        initialName = 'Op', chart.type = NULL, chart.type2 = FALSE, 
                        chart.theme = 'hc_theme_economist()', stacked = FALSE, 
-                       graph.title = 'Financial Market Counter') {
+                       initial = NULL, graph.title = 'Financial Market Counter', 
+                       subtitle = 'Multiple funds trend chart initial stock price : ') {
   ## http://jkunst.com/highcharter/highstock.html
   ## type = 'single' or type = 'multiple'. Plot comparison graph or single fund details.
   ## chart.type = 'Op', chart.type = 'Hi', chart.type = 'Lo', chart.type = 'Cl' or 
@@ -77,11 +78,23 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     FUND.RSI.SellLevel <- xts(rep(70, NROW(Fund)), index(Fund))
     FUND.RSI.BuyLevel  <- xts(rep(30, NROW(Fund)), index(Fund))
     
-    if(initialName == 'Op') {
-      initial <- Op(Fund)[1, ] %>% unique %>% currency
-      fname <- names(Op(Fund)) %>% str_replace_all('.Open', '')
+    if(initialName == 'Op'|initialName == 'Hi'|initialName == 'Lo'|
+       initialName == 'Cl'|initialName == 'Vo'|initialName == 'Ad') {
+      
+      if(is.null(initial)) {
+        initial <- Op(Fund)[1, ] %>% unique %>% currency
+      } else {
+        initial <- initial
+      }
+      fname <- names(Fund) %>% 
+        str_replace_all('.Open|.High|.Low|.Close|.Volume|.Adjusted', '')
+      
     } else {
-      initial <- Fund[1, ] %>% unique %>% currency #need to modify
+      if(is.null(initial)) {
+        initial <- Fund[1, ] %>% unique %>% currency #need to modify
+      } else {
+        initial <- initial
+      }
       fname <- names(Fund)
     }
     
@@ -131,18 +144,33 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     
     chart.type <- ifelse(is.null(chart.type), 'Cl', chart.type)
     
-    if(initialName == 'Op') {
-      initial <- Op(Fund)[1, ] %>% unique %>% currency
-      fname <- names(Op(Fund)) %>% str_replace_all('.Open', '')
+    if(initialName == 'Op'|initialName == 'Hi'|initialName == 'Lo'|
+       initialName == 'Cl'|initialName == 'Vo'|initialName == 'Ad') {
       
-      fname <- grep('.Open', names(Op(Fund)), value = TRUE) %>% 
+      if(!is.null(initial)) {
+        initial <- initial
+      } else {
+        initial <- Op(Fund)[1, ] %>% unique %>% currency
+      }
+      
+      fname <- names(Fund) %>% 
+        str_replace_all('.Open|.High|.Low|.Close|.Volume|.Adjusted', '')
+      
+      fname <- grep('.Open|.High|.Low|.Close|.Volume|.Adjusted', 
+                    names(Fund), value = TRUE) %>% 
         str_split('\\.') %>% llply(., function(x) 
-          paste0(str_replace_all(x, 'Open', '')[1:2], collapse = '.')) %>% unlist
+          paste0(str_replace_all(
+            x, '.Open|.High|.Low|.Close|.Volume|.Adjusted', '')[1:2], 
+            collapse = '.')) %>% unlist
       
     } else {
-      initial <- Fund[1, ] %>% unique %>% currency #need to modify
-      fname <- names(Fund)
       
+      if(!is.null(initial)) {
+        initial <- initial
+      } else {
+        initial <- Fund[1, ] %>% unique %>% currency #need to modify
+      }
+      fname <- names(Fund)
     }
     
     ## comparison of fund size and growth of various Kelly models
@@ -217,7 +245,7 @@ plotChart2 <- function(Fund, type = 'multiple', event = NULL, event.dates = NULL
     plotc <- paste0(
       'highchart(type = \'stock\') %>% ', 
       'hc_title(text = \'', graph.title, '\') %>% ', 
-      'hc_subtitle(text = paste0(\'Multiple funds trend chart initial stock price : \', paste0(initial, collapse = \', \'))) %>% ', 
+      'hc_subtitle(text = paste0(\'', subtitle, '\', paste0(initial, collapse = \', \'))) %>% ', 
       paste0('hc_add_series(Fund[,', seq(fname), '], name = \'', fname,'\', id = \'', fname, '\')', collapse = ' %>% '), 
       ' %>% hc_add_series_flags(event.dates, title = paste0(\'E\', event), text = paste(\'Event : High volatility \', event), id = id) %>% hc_add_theme(hc_theme_flat());')
     
