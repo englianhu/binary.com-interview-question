@@ -734,7 +734,7 @@ sim_staking(pred) %>%
 
 *Table 5.1.1 : ROI for normal FOREX market.*
 
-```{r plot-data2, echo = FALSE}
+```{r plot-data2a, echo = FALSE}
 fx <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b1-a1', financial_bet = FALSE, 
                     Kelly = 'none') %>% 
@@ -745,179 +745,47 @@ names(fx)[2] <- 'None.Close'
 plotChart2(fx, graph.title = 'Peformance of Investment Fund for FOREX Market', subtitle = 'Initial Fund size : ', initial = '$10,000')
 ```
 
-*Graph 5.1.1 : ROI for normal FOREX market. (None)*
-
-
-```{r plot-data21, echo = FALSE}
-
-fx1a <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
-                    bid_ask = 'b1-a1', financial_bet = FALSE, 
-                    Kelly = 'mixed') %>% 
-  dplyr::select(Date, Bal)
-
-fx1b <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
-                    bid_ask = 'b1-a2', financial_bet = FALSE, 
-                    Kelly = 'mixed') %>% 
-  dplyr::select(Date, Bal)
-
-fx1c <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
-                    bid_ask = 'b2-a1', financial_bet = FALSE, 
-                    Kelly = 'mixed') %>% 
-  dplyr::select(Date, Bal)
-
-fx1d <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
-                    bid_ask = 'b2-a2', financial_bet = FALSE, 
-                    Kelly = 'mixed') %>% 
-  dplyr::select(Date, Bal)
-
-fx2a <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
-                    bid_ask = 'b1-a1', financial_bet = FALSE, 
-                    Kelly = 'mixed') %>% 
-  dplyr::select(Date, Bal)
-
-fx2b <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
-                    bid_ask = 'b1-a2', financial_bet = FALSE, 
-                    Kelly = 'mixed') %>% 
-  dplyr::select(Date, Bal)
-
-fx2c <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
-                    bid_ask = 'b2-a1', financial_bet = FALSE, 
-                    Kelly = 'mixed') %>% 
-  dplyr::select(Date, Bal)
-
-fx2d <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
-                    bid_ask = 'b2-a2', financial_bet = FALSE, 
-                    Kelly = 'mixed') %>% 
-  dplyr::select(Date, Bal)
-
-## convert to xts format.
-fx1a <- xts(fx1a[-1], order.by = fx1a$Date)
-fx1b <- xts(fx1b[-1], order.by = fx1b$Date)
-fx1c <- xts(fx1c[-1], order.by = fx1c$Date)
-fx1d <- xts(fx1d[-1], order.by = fx1d$Date)
-fx2a <- xts(fx2a[-1], order.by = fx2a$Date)
-fx2b <- xts(fx2b[-1], order.by = fx2b$Date)
-fx2c <- xts(fx2c[-1], order.by = fx2c$Date)
-fx2d <- xts(fx2d[-1], order.by = fx2d$Date)
-
-## combine dataset.
-fxm <- do.call(cbind, list(fx1a, fx1b, fx1c, fx1d, fx2a, fx2b, fx2c, fx2d))
-
-names(fxm) <- c('BL.B1A1.Close', 'BL.B1A2.Close', 'BL.B2A1.Close', 'BL.B2A2.Close', 
-                'AL.B1A1.Close', 'AL.B1A2.Close', 'AL.B2A1.Close', 'AL.B2A2.Close')
-
-rm(fx1a, fx1b, fx1c, fx1c, fx1d, fx1a, fx2b, fx2c, fx2c, fx2d)
-
-plotChart2(fxm, graph.title = 'Peformance of Investment Fund for FOREX Market', subtitle = 'Initial Fund size : ', initial = '$10,000')
-```
-
-*Graph 5.1.1A : ROI for normal FOREX market. (Mixed Kelly model)*
-
-```{r plot-data2a, echo = FALSE}
-
-fx1a <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
-                    bid_ask = 'b1-a1', financial_bet = FALSE, 
-                    Kelly = 'normal') %>% 
-  dplyr::select(Date, Bal)
-
-fx1b <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
-                    bid_ask = 'b1-a2', financial_bet = FALSE, 
-                    Kelly = 'normal') %>% 
-  dplyr::select(Date, Bal)
-
-fx1c <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
-                    bid_ask = 'b2-a1', financial_bet = FALSE, 
-                    Kelly = 'normal') %>% 
-  dplyr::select(Date, Bal)
-
-fx1d <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
-                    bid_ask = 'b2-a2', financial_bet = FALSE, 
-                    Kelly = 'normal') %>% 
-  dplyr::select(Date, Bal)
-
-fx2a <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
-                    bid_ask = 'b1-a1', financial_bet = FALSE, 
-                    Kelly = 'normal') %>% 
-  dplyr::select(Date, Bal)
-
-fx2b <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
-                    bid_ask = 'b1-a2', financial_bet = FALSE, 
-                    Kelly = 'normal') %>% 
-  dplyr::select(Date, Bal)
-
-fx2c <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
-                    bid_ask = 'b2-a1', financial_bet = FALSE, 
-                    Kelly = 'normal') %>% 
-  dplyr::select(Date, Bal)
-
-fx2d <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
-                    bid_ask = 'b2-a2', financial_bet = FALSE, 
-                    Kelly = 'normal') %>% 
-  dplyr::select(Date, Bal)
-
-## convert to xts format.
-fx1a <- xts(fx1a[-1], order.by = fx1a$Date)
-fx1b <- xts(fx1b[-1], order.by = fx1b$Date)
-fx1c <- xts(fx1c[-1], order.by = fx1c$Date)
-fx1d <- xts(fx1d[-1], order.by = fx1d$Date)
-fx2a <- xts(fx2a[-1], order.by = fx2a$Date)
-fx2b <- xts(fx2b[-1], order.by = fx2b$Date)
-fx2c <- xts(fx2c[-1], order.by = fx2c$Date)
-fx2d <- xts(fx2d[-1], order.by = fx2d$Date)
-
-## combine dataset.
-fxm <- do.call(cbind, list(fx1a, fx1b, fx1c, fx1d, fx2a, fx2b, fx2c, fx2d))
-
-names(fxm) <- c('BL.B1A1.Close', 'BL.B1A2.Close', 'BL.B2A1.Close', 'BL.B2A2.Close', 
-                'AL.B1A1.Close', 'AL.B1A2.Close', 'AL.B2A1.Close', 'AL.B2A2.Close')
-
-rm(fx1a, fx1b, fx1c, fx1c, fx1d, fx1a, fx2b, fx2c, fx2c, fx2d)
-
-plotChart2(fxm, graph.title = 'Peformance of Investment Fund for FOREX Market', subtitle = 'Initial Fund size : ', initial = '$10,000')
-```
-
-*Graph 5.1.1A : ROI for normal FOREX market. (Normal Kelly model)*
+*Graph 5.1.1A : ROI for normal FOREX market. (None)*
 
 ```{r plot-data2b, echo = FALSE}
-
 fx1a <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b1-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted1') %>% 
+                    Kelly = 'mixed') %>% 
   dplyr::select(Date, Bal)
 
 fx1b <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b1-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted1') %>% 
+                    Kelly = 'mixed') %>% 
   dplyr::select(Date, Bal)
 
 fx1c <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b2-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted1') %>% 
+                    Kelly = 'mixed') %>% 
   dplyr::select(Date, Bal)
 
 fx1d <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b2-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted1') %>% 
+                    Kelly = 'mixed') %>% 
   dplyr::select(Date, Bal)
 
 fx2a <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b1-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted1') %>% 
+                    Kelly = 'mixed') %>% 
   dplyr::select(Date, Bal)
 
 fx2b <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b1-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted1') %>% 
+                    Kelly = 'mixed') %>% 
   dplyr::select(Date, Bal)
 
 fx2c <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b2-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted1') %>% 
+                    Kelly = 'mixed') %>% 
   dplyr::select(Date, Bal)
 
 fx2d <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b2-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted1') %>% 
+                    Kelly = 'mixed') %>% 
   dplyr::select(Date, Bal)
 
 ## convert to xts format.
@@ -941,48 +809,48 @@ rm(fx1a, fx1b, fx1c, fx1c, fx1d, fx1a, fx2b, fx2c, fx2c, fx2d)
 plotChart2(fxm, graph.title = 'Peformance of Investment Fund for FOREX Market', subtitle = 'Initial Fund size : ', initial = '$10,000')
 ```
 
-*Graph 5.1.1B : ROI for normal FOREX market. (Adjusted Kelly model 1)*
+*Graph 5.1.1B : ROI for normal FOREX market. (Mixed Kelly model)*
 
 ```{r plot-data2c, echo = FALSE}
 
 fx1a <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b1-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted2') %>% 
+                    Kelly = 'normal') %>% 
   dplyr::select(Date, Bal)
 
 fx1b <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b1-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted2') %>% 
+                    Kelly = 'normal') %>% 
   dplyr::select(Date, Bal)
 
 fx1c <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b2-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted2') %>% 
+                    Kelly = 'normal') %>% 
   dplyr::select(Date, Bal)
 
 fx1d <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b2-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted2') %>% 
+                    Kelly = 'normal') %>% 
   dplyr::select(Date, Bal)
 
 fx2a <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b1-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted2') %>% 
+                    Kelly = 'normal') %>% 
   dplyr::select(Date, Bal)
 
 fx2b <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b1-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted2') %>% 
+                    Kelly = 'normal') %>% 
   dplyr::select(Date, Bal)
 
 fx2c <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b2-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted2') %>% 
+                    Kelly = 'normal') %>% 
   dplyr::select(Date, Bal)
 
 fx2d <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b2-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted2') %>% 
+                    Kelly = 'normal') %>% 
   dplyr::select(Date, Bal)
 
 ## convert to xts format.
@@ -1006,48 +874,48 @@ rm(fx1a, fx1b, fx1c, fx1c, fx1d, fx1a, fx2b, fx2c, fx2c, fx2d)
 plotChart2(fxm, graph.title = 'Peformance of Investment Fund for FOREX Market', subtitle = 'Initial Fund size : ', initial = '$10,000')
 ```
 
-*Graph 5.1.1C : ROI for normal FOREX market. (Adjusted Kelly model 2)*
+*Graph 5.1.1C : ROI for normal FOREX market. (Normal Kelly model)*
 
 ```{r plot-data2d, echo = FALSE}
 
 fx1a <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b1-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted3') %>% 
+                    Kelly = 'adjusted1') %>% 
   dplyr::select(Date, Bal)
 
 fx1b <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b1-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted3') %>% 
+                    Kelly = 'adjusted1') %>% 
   dplyr::select(Date, Bal)
 
 fx1c <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b2-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted3') %>% 
+                    Kelly = 'adjusted1') %>% 
   dplyr::select(Date, Bal)
 
 fx1d <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b2-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted3') %>% 
+                    Kelly = 'adjusted1') %>% 
   dplyr::select(Date, Bal)
 
 fx2a <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b1-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted3') %>% 
+                    Kelly = 'adjusted1') %>% 
   dplyr::select(Date, Bal)
 
 fx2b <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b1-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted3') %>% 
+                    Kelly = 'adjusted1') %>% 
   dplyr::select(Date, Bal)
 
 fx2c <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b2-a1', financial_bet = FALSE, 
-                    Kelly = 'adjusted3') %>% 
+                    Kelly = 'adjusted1') %>% 
   dplyr::select(Date, Bal)
 
 fx2d <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
                     bid_ask = 'b2-a2', financial_bet = FALSE, 
-                    Kelly = 'adjusted3') %>% 
+                    Kelly = 'adjusted1') %>% 
   dplyr::select(Date, Bal)
 
 ## convert to xts format.
@@ -1071,12 +939,142 @@ rm(fx1a, fx1b, fx1c, fx1c, fx1d, fx1a, fx2b, fx2c, fx2c, fx2d)
 plotChart2(fxm, graph.title = 'Peformance of Investment Fund for FOREX Market', subtitle = 'Initial Fund size : ', initial = '$10,000')
 ```
 
-*Graph 5.1.1D : ROI for normal FOREX market. (Adjusted Kelly model 3)*
+*Graph 5.1.1D : ROI for normal FOREX market. (Adjusted Kelly model 1)*
 
 ```{r plot-data2e, echo = FALSE}
 
 fx1a <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b1-a1', financial_bet = FALSE, 
+                    Kelly = 'adjusted2') %>% 
+  dplyr::select(Date, Bal)
+
+fx1b <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
+                    bid_ask = 'b1-a2', financial_bet = FALSE, 
+                    Kelly = 'adjusted2') %>% 
+  dplyr::select(Date, Bal)
+
+fx1c <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
+                    bid_ask = 'b2-a1', financial_bet = FALSE, 
+                    Kelly = 'adjusted2') %>% 
+  dplyr::select(Date, Bal)
+
+fx1d <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
+                    bid_ask = 'b2-a2', financial_bet = FALSE, 
+                    Kelly = 'adjusted2') %>% 
+  dplyr::select(Date, Bal)
+
+fx2a <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
+                    bid_ask = 'b1-a1', financial_bet = FALSE, 
+                    Kelly = 'adjusted2') %>% 
+  dplyr::select(Date, Bal)
+
+fx2b <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
+                    bid_ask = 'b1-a2', financial_bet = FALSE, 
+                    Kelly = 'adjusted2') %>% 
+  dplyr::select(Date, Bal)
+
+fx2c <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
+                    bid_ask = 'b2-a1', financial_bet = FALSE, 
+                    Kelly = 'adjusted2') %>% 
+  dplyr::select(Date, Bal)
+
+fx2d <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
+                    bid_ask = 'b2-a2', financial_bet = FALSE, 
+                    Kelly = 'adjusted2') %>% 
+  dplyr::select(Date, Bal)
+
+## convert to xts format.
+fx1a <- xts(fx1a[-1], order.by = fx1a$Date)
+fx1b <- xts(fx1b[-1], order.by = fx1b$Date)
+fx1c <- xts(fx1c[-1], order.by = fx1c$Date)
+fx1d <- xts(fx1d[-1], order.by = fx1d$Date)
+fx2a <- xts(fx2a[-1], order.by = fx2a$Date)
+fx2b <- xts(fx2b[-1], order.by = fx2b$Date)
+fx2c <- xts(fx2c[-1], order.by = fx2c$Date)
+fx2d <- xts(fx2d[-1], order.by = fx2d$Date)
+
+## combine dataset.
+fxm <- do.call(cbind, list(fx1a, fx1b, fx1c, fx1d, fx2a, fx2b, fx2c, fx2d))
+
+names(fxm) <- c('BL.B1A1.Close', 'BL.B1A2.Close', 'BL.B2A1.Close', 'BL.B2A2.Close', 
+                'AL.B1A1.Close', 'AL.B1A2.Close', 'AL.B2A1.Close', 'AL.B2A2.Close')
+
+rm(fx1a, fx1b, fx1c, fx1c, fx1d, fx1a, fx2b, fx2c, fx2c, fx2d)
+
+plotChart2(fxm, graph.title = 'Peformance of Investment Fund for FOREX Market', subtitle = 'Initial Fund size : ', initial = '$10,000')
+```
+
+*Graph 5.1.1E : ROI for normal FOREX market. (Adjusted Kelly model 2)*
+
+```{r plot-data2f, echo = FALSE}
+
+fx1a <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
+                    bid_ask = 'b1-a1', financial_bet = FALSE, 
+                    Kelly = 'adjusted3') %>% 
+  dplyr::select(Date, Bal)
+
+fx1b <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
+                    bid_ask = 'b1-a2', financial_bet = FALSE, 
+                    Kelly = 'adjusted3') %>% 
+  dplyr::select(Date, Bal)
+
+fx1c <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
+                    bid_ask = 'b2-a1', financial_bet = FALSE, 
+                    Kelly = 'adjusted3') %>% 
+  dplyr::select(Date, Bal)
+
+fx1d <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
+                    bid_ask = 'b2-a2', financial_bet = FALSE, 
+                    Kelly = 'adjusted3') %>% 
+  dplyr::select(Date, Bal)
+
+fx2a <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
+                    bid_ask = 'b1-a1', financial_bet = FALSE, 
+                    Kelly = 'adjusted3') %>% 
+  dplyr::select(Date, Bal)
+
+fx2b <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
+                    bid_ask = 'b1-a2', financial_bet = FALSE, 
+                    Kelly = 'adjusted3') %>% 
+  dplyr::select(Date, Bal)
+
+fx2c <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
+                    bid_ask = 'b2-a1', financial_bet = FALSE, 
+                    Kelly = 'adjusted3') %>% 
+  dplyr::select(Date, Bal)
+
+fx2d <- sim_staking(pred, pnorm_type = 'Ask-Lo', 
+                    bid_ask = 'b2-a2', financial_bet = FALSE, 
+                    Kelly = 'adjusted3') %>% 
+  dplyr::select(Date, Bal)
+
+## convert to xts format.
+fx1a <- xts(fx1a[-1], order.by = fx1a$Date)
+fx1b <- xts(fx1b[-1], order.by = fx1b$Date)
+fx1c <- xts(fx1c[-1], order.by = fx1c$Date)
+fx1d <- xts(fx1d[-1], order.by = fx1d$Date)
+fx2a <- xts(fx2a[-1], order.by = fx2a$Date)
+fx2b <- xts(fx2b[-1], order.by = fx2b$Date)
+fx2c <- xts(fx2c[-1], order.by = fx2c$Date)
+fx2d <- xts(fx2d[-1], order.by = fx2d$Date)
+
+## combine dataset.
+fxm <- do.call(cbind, list(fx1a, fx1b, fx1c, fx1d, fx2a, fx2b, fx2c, fx2d))
+
+names(fxm) <- c('BL.B1A1.Close', 'BL.B1A2.Close', 'BL.B2A1.Close', 'BL.B2A2.Close', 
+                'AL.B1A1.Close', 'AL.B1A2.Close', 'AL.B2A1.Close', 'AL.B2A2.Close')
+
+rm(fx1a, fx1b, fx1c, fx1c, fx1d, fx1a, fx2b, fx2c, fx2c, fx2d)
+
+plotChart2(fxm, graph.title = 'Peformance of Investment Fund for FOREX Market', subtitle = 'Initial Fund size : ', initial = '$10,000')
+```
+
+*Graph 5.1.1F : ROI for normal FOREX market. (Adjusted Kelly model 3)*
+
+```{r plot-data2g, echo = FALSE}
+
+fx1a <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
+                    bid_ask = 'b1-a1', financial_bet = FALSE, 
                     Kelly = 'adjusted4') %>% 
   dplyr::select(Date, Bal)
 
@@ -1136,9 +1134,9 @@ rm(fx1a, fx1b, fx1c, fx1c, fx1d, fx1a, fx2b, fx2c, fx2c, fx2d)
 plotChart2(fxm, graph.title = 'Peformance of Investment Fund for FOREX Market', subtitle = 'Initial Fund size : ', initial = '$10,000')
 ```
 
-*Graph 5.1.1E : ROI for normal FOREX market. (Adjusted Kelly model 4)*
+*Graph 5.1.1G : ROI for normal FOREX market. (Adjusted Kelly model 4)*
 
-```{r plot-data2f, echo = FALSE}
+```{r plot-data2h, echo = FALSE}
 
 fx1a <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b1-a1', financial_bet = FALSE, 
@@ -1201,10 +1199,9 @@ rm(fx1a, fx1b, fx1c, fx1c, fx1d, fx1a, fx2b, fx2c, fx2c, fx2d)
 plotChart2(fxm, graph.title = 'Peformance of Investment Fund for FOREX Market', subtitle = 'Initial Fund size : ', initial = '$10,000')
 ```
 
-*Graph 5.1.1F : ROI for normal FOREX market. (Adjusted Kelly model 5)*
+*Graph 5.1.1H : ROI for normal FOREX market. (Adjusted Kelly model 5)*
 
-```{r plot-data2g, echo = FALSE}
-
+```{r plot-data2i, echo = FALSE}
 fx1a <- sim_staking(pred, pnorm_type = 'Bid-Lo', 
                     bid_ask = 'b1-a1', financial_bet = FALSE, 
                     Kelly = 'adjusted6') %>% 
