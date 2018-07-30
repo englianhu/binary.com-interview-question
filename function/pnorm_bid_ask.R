@@ -41,6 +41,7 @@ pnorm_bid_ask <- function(mbase, pnorm_type = 'Bid-Lo', financial_bet = FALSE) {
     }
     
   } else {
+    
     if (pnorm_type == 'Bid-Lo'|pnorm_type == 'Ask-Hi') {
       
       ## Set Fct.Low as x value, mean(Fct.High) as baseline for bid prob.
@@ -77,5 +78,5 @@ pnorm_bid_ask <- function(mbase, pnorm_type = 'Bid-Lo', financial_bet = FALSE) {
   }
   
   return(mbase)
-  }
+}
 
