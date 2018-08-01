@@ -532,7 +532,7 @@ f = \frac{Edge}{Odds} = \frac{p^∗ x−(1−p^∗)}{x}
 
 The section 1 inside [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion) shows the ROI for betting on sportsbook, where section 2 will be started during spared time after FOREX market.
 
-For the betting strategy, here I need to adjust a bit from **Binary.com Interview Q1** as stated in section [Introduction]. Below I tidy the dataset to match the `bid/ask` price for close a transaction.
+For the betting strategy, here I need to do correction from **Binary.com Interview Q1** as stated in section [Introduction]. Below I tidy the dataset to match the `bid/ask` price for close a transaction.
 
 As we know from previous paper, the closing price will be settled price (closed transaction) if the forecast price has no occured within a day (from 12:00:01 AM until next day 12:00:00 AM, due to system calculate the price spend a minute, therefore the opening price will not in count.). There will be 2 limit orders (but and sell) placed after 12:00:00AM. Once one among the order limit stand (opened transaction), another limit order will be automatically turned to be closed transaction request. Therefore there will only transaction within a trading day unless no any order limit placed stand.
 
@@ -568,6 +568,47 @@ pred <- ldply(split(pred, pred$Date), function(x) {
 
 pred$.id <- NULL
 ```
+
+[2.1.4 Staking Model] in **Binary.com Interview Q1** states that the financial market unable to know the payout rate in advanced, therefore use the forecasted pice based on statistical models. I use the amount calculated by Kelly Criterion as the stakes (possible loss or terms as stop-loss in financial market), variance of forecasted Hi/Lo and also Closed price. However it doesn't make sense in financial market.
+
+> Hedge Fund Market Wizards has a good discussion on this in Ed Thorp's chapter.
+> 
+ - Kelly Criterion has highest long-term growth rate, but gives you higher drawdowns and risk of ruin.
+- In gambling you know your theoretical odds, but in trading your win rate is only an estimate.
+- If you estimate your win rate incorrectly, the profits you'd miss out on by underestimating are less than the losses you'd incur by being overconfident.
+- If there's large uncertainty about your win rate (e.g. trend following systems) Kelly may be inappropriate.
+- "Suppose you have 1MM and your max allowable drawdown is 200K - then from the Kelly perspective you don't have 1MM, you have 200K in capital."
+- If you bet .5 K.C. you get .75 of the returns with .5 of the volatility - half Kelly is better psychologically.
+
+Source : [Kelly Criterion in Forex *primordia • Jul 22, 2017, 7:07 PM*](https://amp.reddit.com/r/Forex/comments/6oxh5e/kelly_criterion_in_forex)
+
+> EXAMPLE
+Let's look at a trading example.
+> 
+Say, you have a EURUSD trading strategy that wins approximately 70% of the time. The StopLoss in your strategy is 40 pips and the TakeProfit is 20 pips (spread accounted for).
+> 
+This means that your B and P parameters are as follows:
+> 
+B = 20 pips / 40 pips = 0.5
+P = 70% = 0.7
+Let's input these values into Kelly’s formula and see what we get:
+> 
+K = ( PxB – (1–P) ) / B
+K = ( 0.7 x 0.5 – (1–0.7) ) / 0.5 = 0.1
+> 
+This means that the optimal risk for this trading strategy that will maximize your profits in the long term is 10%.
+> 
+If you want to be a bit more conservative, then go with the Half-Kelly of 5%.
+> 
+Whatever you do, don’t invest more than 10% per trade – it’s pointless.
+> 
+If you invest more than 20% then you will turn this great strategy into one that will ruin your account.
+> 
+That's how you apply the Kelly Criterion in practice.
+
+Source : [ForexBoat:Kelly Criterion](https://www.forexboat.com/kelly-criterion/)^[You may feel free to read the comment onto the article [Q&A on Kelly criterion, stop-loss, take-profit and also leverage ratio](https://www.forexboat.com/kelly-criterion/#comment-2053452762) as well.]
+
+
 
 ## Staking Strategy
 
@@ -717,6 +758,9 @@ In this paper will count the difference of pips and also leverage ratio. The ris
 ## Application of Kelly Criterion to Financial Betting Market
 
 Previous paper use Kelly model to placed a certain amount and awaiting for settlement. The forecast closed price will be the settled price if it was within the range of HiLo in the day. There is not workable due to traders not allowed to placed an close transaction limit order in financial betting market.
+
+- [Financial Spread Betting : Binary](http://www.financial-spread-betting.com/Bet-markets.html)
+- [What are Binary Options or Fixed Odds Bets? Binary.com](http://winonmarkets.net/wp/2014/03/20/what-are-binary-options-or-fixed-odds-bets-binary-com/)
 
 Due to there has no dataset for financial betting, therefore I do not have the payout rate or odds price for <s>minutely, hourly and</s> daily betting. The sample dataset and research might refer to **Application of Kelly Criterion model in Sportsbook Investment** where collected odds price of 49 bookmakers and placed bets on 33 operators^[The odds price offered by operators do not same with the probabilities of the result, similar with the exchange rate offered by different operators will be difference as well.].
 

@@ -17,6 +17,8 @@ calC <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
       armaOrder = armaOrder, 
       include.mean = TRUE, archm = FALSE, 
       archpow = 1, arfima = FALSE, 
+      ## https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch?answertab=votes#tab-top
+      ## https://d.cosx.org/d/2689-2689/9
       external.regressors = NULL, 
       archex = FALSE), 
     distribution.model = 'snorm')

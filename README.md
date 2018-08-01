@@ -38,6 +38,8 @@ Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.c
 
 Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models <s>from minutes to</s> daily. You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)).
 
+Here I also find the optimal arma order for GARCH models as you can refer to [模型中的AR与MA参数最优化](http://rpubs.com/englianhu/arma-order-for-garch).
+
 #### Shiny Application
 
 - **shinyApp** : `shiny::runGitHub('englianhu/binary.com-interview-question')` - Application which compare the accuracy of multiple `lasso`, `ridge` and `elastic net` models (blooper).

@@ -1,0 +1,243 @@
+---
+title: "模型中的AR与MA参数最优化"
+author: "Ryo, Eng Lian Hu"
+date: "`r lubridate::today('Asia/Tokyo')`"
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: no
+      smooth_scroll: no
+---
+
+# 简介
+
+近几年开始着手汇市预测与投资模式，分别使用了`ARIMA`、`ETS`、`GARCH`等等统计模型。在比较了多模型后，GJR-GARCH预测最为精准，然而在默认模型下并没有将`ARIMA(p,d,q)`值最优化。
+
+**原文**：[哥哥姐姐，请问IGARCH模型的参数估计怎么编程实现啊.](https://d.cosx.org/d/2689-2689/10)
+
+```{r setup}
+suppressPackageStartupMessages(require('BBmisc'))
+
+## 读取程序包
+pkg <- c('lubridate', 'plyr', 'dplyr', 'rugarch', 'forecast', 'quantmod', 'microbenchmark')
+suppressAll(lib(pkg))
+rm(pkg)
+```
+
+刚刚无意中发现，分享下`rugarch`中的模式最优化...
+
+# 数据
+
+首先读取数据...
+
+```{r get-data, warning = FALSE}
+getFX('AUD/USD', from = (today('GMT') - 1) %m-% years(1))
+summary(AUDUSD)
+#              Index          AUD.USD      
+# Min.   :2017-05-17   Min.   :0.7399  
+# 1st Qu.:2017-06-30   1st Qu.:0.7607  
+# Median :2017-08-14   Median :0.7817  
+# Mean   :2017-08-14   Mean   :0.7768  
+# 3rd Qu.:2017-09-28   3rd Qu.:0.7930  
+# Max.   :2017-11-12   Max.   :0.8079
+```
+
+# 统计建模
+
+## ARFIMA：ARMA 最优化（新程序）
+
+然后计算最优`arma order`... 包括`d`值。
+
+```{r arma-order1, warning = FALSE}
+best.ARMA <- function(mbase){
+  #ARMA Modeling minimum AIC value of `p,d,q`
+  fit <- auto.arima(mbase)
+  arimaorder(fit)
+  }
+```
+
+```{r garch-model1, warning = FALSE}
+calC <- function(mbase) {
+    
+    armaOrder = best.ARMA(mbase)
+    
+    ## Set arma order for `p, d, q` for GARCH model.
+    #'@ https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'gjrGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+      mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], #set arma order for `p` and `q`.
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, #set arima = TRUE
+        external.regressors = NULL, 
+        archex = FALSE), 
+      fixed.pars = list(arfima = armaOrder[2]), #set fixed.pars for `d` value
+      distribution.model = 'snorm')
+    
+    fit = ugarchfit(spec, mbase, solver = 'hybrid')
+    return(fit)
+  }
+```
+
+## ARFIMA：ARMA 最优化（旧程序）
+
+计算最优arma order中的`p`值与`q`值... 不包括`d`值。
+
+```{r arma-order2, warning = FALSE}
+armaSearch <- function(data, .method = 'CSS-ML'){ 
+    ## ARMA Modeling寻找AIC值最小的p,q
+    ##
+    ## I set .method = 'CSS-ML' as default method since the AIC value we got is 
+    ##  smaller than using method 'ML' while using method 'CSS' facing error.
+    ## 
+    ## https://stats.stackexchange.com/questions/209730/fitting-methods-in-arima
+    ## According to the documentation, this is how each method fits the model:
+    ##  - CSS minimises the sum of squared residuals.
+    ##  - ML maximises the log-likelihood function of the ARIMA model.
+    ##  - CSS-ML mixes both methods: first, CSS is run, the starting parameters 
+    ##    for the optimization algorithm are set to zeros or to the values given 
+    ##    in the optional argument init; then, ML is applied passing the CSS 
+    ##    parameter estimates as starting parameter values for the optimization algorithm.
+    
+    .methods = c('CSS-ML', 'ML', 'CSS')
+    
+    if(!.method %in% .methods) stop(paste('Kindly choose .method among ', 
+                                          paste0(.methods, collapse = ', '), '!'))
+    
+    armacoef <- data.frame()
+    for (p in 0:5){
+      for (q in 0:5) {
+        #data.arma = arima(diff(data), order = c(p, 0, q))
+        #'@ data.arma = arima(data, order = c(p, 1, q), method = .method)
+        if(.method == 'CSS-ML') {
+          data.arma = tryCatch({
+            arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
+            mth = 'CSS-ML'
+            list(arma, mth)
+          }, error = function(e) {
+            arma = arima(data, order = c(p, 1, q), method = 'ML')
+            mth = 'ML'
+            list(arma = arma, mth = mth)
+          })
+        } else if(.method == 'ML') {
+          data.arma = tryCatch({
+            arma = arima(data, order = c(p, 1, q), method = 'ML')
+            mth = 'ML'
+            list(arma = arma, mth = mth)
+          }, error = function(e) {
+            arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
+            mth = 'CSS-ML'
+            list(arma = arma, mth = mth)
+          })
+        } else if(.method == 'CSS') {
+          data.arma = tryCatch({
+            arma = arima(data, order = c(p, 1, q), method = 'CSS')
+            mth = 'CSS'
+            list(arma = arma, mth = mth)
+          }, error = function(e) {
+            arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
+            mth = 'CSS-ML'
+            list(arma = arma, mth = mth)
+          })
+        } else {
+          stop(paste('Kindly choose .method among ', paste0(.methods, collapse = ', '), '!'))
+        }
+        names(data.arma) <- c('arma', 'mth')
+        
+        #cat('p =', p, ', q =', q, 'AIC =', data.arma$arma$aic, '\n')
+        armacoef <- rbind(armacoef,c(p, q, data.arma$arma$aic))
+      }
+    }
+    colnames(armacoef) <- c('p', 'q', 'AIC')
+    pos <- which(armacoef$AIC == min(armacoef$AIC))
+    cat(paste0('method = \'', data.arma$mth, '\', the min AIC = ', armacoef$AIC[pos], 
+               ', p = ', armacoef$p[pos], ', q = ', armacoef$q[pos], '\n'))
+    return(armacoef)
+  }
+```
+
+```{r garch-model2, warning = FALSE}
+calC2 <- function(mbase, ahead = 1, price = 'Cl') {
+    
+    armaOrder = armaSearch(mbase)
+    armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'gjrGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+      mean.model = list(
+        armaOrder = armaOrder, 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = FALSE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+      distribution.model = 'snorm')
+    fit = ugarchfit(spec, mbase, solver = 'hybrid')
+    #'@ fc = ugarchforecast(fit, n.ahead = ahead)
+    #'@ res = attributes(fc)$forecast$seriesFor
+    #'@ colnames(res) = names(mbase)
+    
+    #'@ tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res)
+    #'@ return(tmp)
+    return(fit)
+    }
+```
+
+# 模式比较
+
+```{r fit, warning = FALSE}
+fit <- calC(AUDUSD)
+fit2 <- calC2(AUDUSD)
+```
+
+有关多种GARCH模式比较，请参考参考文献中的链接3... 包括比较：
+
+- auto.arima
+- exponential smoothing models (ETS)
+- GARCH (包括GARCH、eGARCH、iGARCH、fGARCH、gjrGARCH等模式)
+- exponential weighted models
+
+```{r aic1}
+infocriteria(fit)
+
+#Akaike       -9.098131
+#Bayes        -8.956222
+#Shibata      -9.101862
+#Hannan-Quinn -9.040593
+```
+
+```{r aic2}
+infocriteria(fit2)
+#Akaike       -9.072344
+#Bayes        -8.948174
+#Shibata      -9.075221
+#Hannan-Quinn -9.021998
+```
+
+结果fit胜出，比fit2更佳... 证明p值、d值与q值都可以优化（包括模式中设定默认的d值）... 目前正在编写着[Q1App2](https://beta.rstudioconnect.com/content/3138/)自动交易应用，除了模式最优化以外，程序上分秒必争... `microbenchmark`测试效率，今天刚编写了个[DataCollection](https://beta.rstudioconnect.com/content/3153/)应用采集实时数据以方便之后的高频率交易自动化建模，更多详情请参阅[Real Time FXCM](https://github.com/scibrokes/real-time-fxcm)。
+
+```{r micro, warning = FALSE}
+#'@ microbenchmark(calC(AUDUSD))
+#'@ microbenchmark(calC2(AUDUSD))
+
+system.time(calC(AUDUSD))
+system.time(calC2(AUDUSD))
+```
+
+由于使用`microbenchmark`非常耗时，在这儿僕使用`system.time()`比较运行速度，结果还是新程序`calC()`比旧程序`calC2()`迅速。
+
+# 参考文献
+
+01. [[<span style='color:blue'>How does one specify arima (p,d,q) in ugarchspec for ugarchfit in rugarch?</span>]](https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch)<img src='www/hot.jpg' width='20'>
+02. [[<span style='color:blue'>How to read p,d and q of auto.arima()?</span>]](https://stats.stackexchange.com/questions/178577/how-to-read-p-d-and-q-of-auto-arima)
+03. [[<span style='color:blue'>binary.com : Job Application - Quantitative Analyst</span>]](https://github.com/englianhu/binary.com-interview-question)
+
+**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**
