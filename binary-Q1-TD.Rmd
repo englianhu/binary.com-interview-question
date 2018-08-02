@@ -308,6 +308,11 @@ Here I directly apply *GJR-GARCH*^[Kindly refer to [GJR-GARCH 模型](https://vl
 
 Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over **Binary.com Interview Q1 (Extention)**. The paper compare and get the optimal predictive model based on the various number of observations.
 
+## ARMA Order
+
+
+- []()
+
 ```{r read-data4, echo = FALSE, eval = FALSE}
 ## get currency dataset online.
 #'@ getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20') #oanda only provides 180 days data. getSymbols()
@@ -402,7 +407,7 @@ pred.data %>% dplyr::filter(LatestDate.GMT == '2017-01-12') %>%
 
 *Table 3.1.2 : Forecast daily price missing close price.*
 
-Due to the day 2017-01-12 unable forecast the closed price.^[`armaSearch()` error on method = 'ML'], here I omit the transaction on that day.
+<s>Due to the day 2017-01-12 unable forecast the closed price.^[`armaSearch()` error on method = 'ML'], here I omit the transaction on that day.</s>
 
 Below I combine the daily price dataset with forecast `Hi-Lo` price.
 
@@ -441,10 +446,12 @@ td.dateID <- unique(HL_tick_data$Date)
 data.frame(MB = range(mb.dateID), 
            TD = range(td.dateID)) %>% 
   kable %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_left')
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_left') %>%
+  footnote(general = 'Date range of 1st and 2nd dataset.',
+           general_title = 'Table 3.1.4 : ', footnote_as_chunk = TRUE)
 ```
 
-*Table 3.1.4 : Date range of 1st dataset and 2nd dataset.* at left-hand-side shows the date range for both **MB** (mbase dataset) and **TD** (tick-data).
+*Table 3.1.4* shows the date range for both **MB** (mbase dataset) and **TD** (tick-data).
 
 <span style='color:red'>Below shows all dates NOT in each dataset. Unfortunately the inconsistancy of dataset gathered from `getSymbols(src = 'yahoo')` will caused whole predictive models bias, it will affect the staking amount and evetually effect the ROI. The dataset used to working fine few years ago. There will be another research which gather only dataset from operator to solve the issue.</span>
 
@@ -512,7 +519,10 @@ data.frame(
           mean((pred$Fct.Low - pred$USDJPY.Low)^2), 
           mean((pred$Fct.Close - pred$USDJPY.Close)^2))) %>% 
   kable %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_right')
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_right') %>%
+  footnote(general = 'Date range of 1st and 2nd dataset.',
+           general_title = 'Table 3.1.4 : ', footnote_as_chunk = TRUE)
+
 ```
 
 $$\begin{equation}
@@ -1861,5 +1871,7 @@ rm(sys1, sys2)
   01. [<span style='color:blue'>Quant Strategies HFT</span>](https://github.com/englianhu/Quant-Strategies-HFT)
   02. [<span style='color:blue'>Real Time FXCM</span>](https://github.com/scibrokes/real-time-fxcm)<img src='www/hot.jpg' width='20'>
   03. [<span style='color:blue'>Real Time Trading System (Trial)</span>](https://beta.rstudioconnect.com/content/3775/)<img src='www/hot.jpg' width='20'>
+
+--------------------
 
 **Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**

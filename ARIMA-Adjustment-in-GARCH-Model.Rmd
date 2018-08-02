@@ -33,9 +33,9 @@ rm(pkg)
 
 首先读取数据...
 
-```{r get-data, warning = FALSE}
-getFX('AUD/USD', from = (today('GMT') - 1) %m-% years(1))
-summary(AUDUSD)
+```{r get-data}
+#'@ getFX('AUD/USD', from = (today('GMT') - 1) %m-% years(1))
+#'@ summary(AUDUSD)
 #              Index          AUD.USD      
 # Min.   :2017-05-17   Min.   :0.7399  
 # 1st Qu.:2017-06-30   1st Qu.:0.7607  
@@ -43,16 +43,34 @@ summary(AUDUSD)
 # Mean   :2017-08-14   Mean   :0.7768  
 # 3rd Qu.:2017-09-28   3rd Qu.:0.7930  
 # Max.   :2017-11-12   Max.   :0.8079
+
+cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
+               'CNY=X', 'JPY=X')
+  
+names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 
+               'USDCNY', 'USDJPY')
+  
+price_type <- c('Op', 'Hi', 'Lo', 'Cl', 'Ad')
+
+## gather fx dataset.
+#'@ fx <- llply(cr_code, function(x) suppressAll(getSymbols(x, from = (today('GMT') - 1) %m-% years(3), auto.assign = FALSE)))
+
+#'@ saveRDS(fx, 'data/fx3y.rds')
+fx <- readRDS('data/fx3y.rds')
 ```
 
 # 统计建模
 
+## ARMA 模型
+
+
+
 ## ARFIMA：ARMA 最优化（新程序）
 
-然后计算最优`arma order`... 包括`d`值。
+然后计算最优arma order... 包括`d`值。
 
 ```{r arma-order1, warning = FALSE}
-best.ARMA <- function(mbase){
+opt_arma <- function(mbase){
   #ARMA Modeling minimum AIC value of `p,d,q`
   fit <- auto.arima(mbase)
   arimaorder(fit)
@@ -60,28 +78,48 @@ best.ARMA <- function(mbase){
 ```
 
 ```{r garch-model1, warning = FALSE}
-calC <- function(mbase) {
-    
-    armaOrder = best.ARMA(mbase)
-    
-    ## Set arma order for `p, d, q` for GARCH model.
-    #'@ https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch
-    spec = ugarchspec(
-      variance.model = list(
-        model = 'gjrGARCH', garchOrder = c(1, 1), 
-        submodel = NULL, external.regressors = NULL, 
-        variance.targeting = FALSE), 
-      mean.model = list(
-        armaOrder = armaOrder[c(1, 3)], #set arma order for `p` and `q`.
-        include.mean = TRUE, archm = FALSE, 
-        archpow = 1, arfima = TRUE, #set arima = TRUE
-        external.regressors = NULL, 
-        archex = FALSE), 
-      fixed.pars = list(arfima = armaOrder[2]), #set fixed.pars for `d` value
-      distribution.model = 'snorm')
-    
-    fit = ugarchfit(spec, mbase, solver = 'hybrid')
-    return(fit)
+calc_fx <- function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
+  
+  ## Using "memoise" to automatically cache the results
+  ## http://rpubs.com/englianhu/arma-order-for-garch
+  source('function/filterFX.R')
+  #'@ source('function/armaSearch.R') #old optimal arma p,q value searching, but no d value. 
+  source('function/opt_arma.R') #rename the function best.ARMA()
+  
+  mbase = suppressWarnings(filterFX(mbase, currency = currency, price = price))
+  armaOrder = opt_arma(mbase)
+  
+  ## Set arma order for `p, d, q` for GARCH model.
+  #'@ https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch
+  spec = ugarchspec(
+    variance.model = list(
+      model = 'gjrGARCH', garchOrder = c(1, 1), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder[c(1, 3)], #set arma order for `p` and `q`.
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = TRUE, #set arima = TRUE
+      external.regressors = NULL, 
+      archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), #set fixed.pars for `d` value
+    distribution.model = 'snorm')
+  
+  fit = ugarchfit(spec, mbase, solver = 'hybrid')
+  
+  fc = ugarchforecast(fit, n.ahead = ahead)
+  res = xts::last(attributes(fc)$forecast$seriesFor)
+  #res <- tail(attributes(fc)$forecast$seriesFor, 1)
+  colnames(res) = names(mbase)
+  latestPrice = tail(mbase, 1)
+
+  #rownames(res) <- as.character(forDate)
+  latestPrice <- xts(latestPrice)
+  #res <- as.xts(res)
+  
+  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
+             AIC = infocriteria(fit))
+  return(tmp)
   }
 ```
 
@@ -107,8 +145,9 @@ armaSearch <- function(data, .method = 'CSS-ML'){
     
     .methods = c('CSS-ML', 'ML', 'CSS')
     
-    if(!.method %in% .methods) stop(paste('Kindly choose .method among ', 
-                                          paste0(.methods, collapse = ', '), '!'))
+    if(!.method %in% .methods) 
+      stop(paste('Kindly choose .method among ', 
+                 paste0(.methods, collapse = ', '), '!'))
     
     armacoef <- data.frame()
     for (p in 0:5){
@@ -163,32 +202,44 @@ armaSearch <- function(data, .method = 'CSS-ML'){
 ```
 
 ```{r garch-model2, warning = FALSE}
-calC2 <- function(mbase, ahead = 1, price = 'Cl') {
-    
-    armaOrder = armaSearch(mbase)
-    armaOrder %<>% dplyr::filter(AIC==min(AIC)) %>% .[c('p', 'q')] %>% unlist
-    
-    spec = ugarchspec(
-      variance.model = list(
-        model = 'gjrGARCH', garchOrder = c(1, 1), 
-        submodel = NULL, external.regressors = NULL, 
-        variance.targeting = FALSE), 
-      mean.model = list(
-        armaOrder = armaOrder, 
-        include.mean = TRUE, archm = FALSE, 
-        archpow = 1, arfima = FALSE, 
-        external.regressors = NULL, 
-        archex = FALSE), 
-      distribution.model = 'snorm')
-    fit = ugarchfit(spec, mbase, solver = 'hybrid')
-    #'@ fc = ugarchforecast(fit, n.ahead = ahead)
-    #'@ res = attributes(fc)$forecast$seriesFor
-    #'@ colnames(res) = names(mbase)
-    
-    #'@ tmp = list(latestPrice = tail(mbase, 1), forecastPrice = res)
-    #'@ return(tmp)
-    return(fit)
-    }
+calC <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
+  
+  # Using "memoise" to automatically cache the results
+  source('function/filterFX.R')
+  source('function/armaSearch.R')
+  mbase = suppressWarnings(filterFX(mbase, currency = currency, price = price))
+  
+  armaOrder = suppressWarnings(armaSearch(mbase))
+  armaOrder %<>% dplyr::filter(AIC == min(AIC)) %>% .[c('p', 'q')] %>% unlist
+  
+  spec = ugarchspec(
+    variance.model = list(
+      model = 'gjrGARCH', garchOrder = c(1, 1), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder, 
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = FALSE, 
+      ## https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch?answertab=votes#tab-top
+      ## https://d.cosx.org/d/2689-2689/9
+      external.regressors = NULL, 
+      archex = FALSE), 
+    distribution.model = 'snorm')
+  fit = ugarchfit(spec, mbase, solver = 'hybrid')
+  fc = ugarchforecast(fit, n.ahead = ahead)
+  res = tail(attributes(fc)$forecast$seriesFor, 1)
+  colnames(res) = names(mbase)
+  latestPrice = tail(mbase, 1)
+
+  #rownames(res) <- as.character(forDate)
+  latestPrice <- xts(latestPrice)
+  #res <- as.xts(res)
+  
+  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
+             AIC = infocriteria(fit))
+  return(tmp)
+})
 ```
 
 # 模式比较
@@ -236,8 +287,10 @@ system.time(calC2(AUDUSD))
 
 # 参考文献
 
-01. [[<span style='color:blue'>How does one specify arima (p,d,q) in ugarchspec for ugarchfit in rugarch?</span>]](https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch)<img src='www/hot.jpg' width='20'>
-02. [[<span style='color:blue'>How to read p,d and q of auto.arima()?</span>]](https://stats.stackexchange.com/questions/178577/how-to-read-p-d-and-q-of-auto-arima)
-03. [[<span style='color:blue'>binary.com : Job Application - Quantitative Analyst</span>]](https://github.com/englianhu/binary.com-interview-question)
+01. [How does one specify arima (p,d,q) in ugarchspec for ugarchfit in rugarch?](https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch)<img src='www/hot.jpg' width='20'>
+02. [How to read p,d and q of auto.arima()?](https://stats.stackexchange.com/questions/178577/how-to-read-p-d-and-q-of-auto-arima)
+03. [binary.com : Job Application - Quantitative Analyst](https://github.com/englianhu/binary.com-interview-question)
 
-**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**
+--------------------
+
+**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**

@@ -1,10 +1,16 @@
 forecastUSDJPY <- function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
   
-  source('function/calC.R')
+  #'@ source('function/calC.R') #'Old optimal arma search, not the best model 
+                                #'  due to no optimal d value but only p and q.
+  source('function/calc_fx.R')  #'Rename best.ARMA(), new optimal arma value 
+                                #'  search which contain p,d,q values.
   source('function/filterFX.R')
   
+  #'@ forC_price <- suppressWarnings(
+  #'@   calC(mbase, currency = currency, ahead = ahead, price = price))
+  
   forC_price <- suppressWarnings(
-    calC(mbase, currency = currency, ahead = ahead, price = price))
+    calc_fx(mbase, currency = currency, ahead = ahead, price = price))
   
   fxC <- data.frame(
     LatestDate.GMT = index(forC_price$latestPrice), 
