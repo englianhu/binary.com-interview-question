@@ -16,22 +16,22 @@ output:
 
 近几年开始着手汇市预测与投资模式，分别使用了`ARIMA`、`ETS`、`GARCH`等等统计模型。在比较了多模型后，GJR-GARCH预测最为精准，然而在默认模型下并没有将`ARIMA(p,d,q)`值最优化。
 
-**原文**：[哥哥姐姐，请问IGARCH模型的参数估计怎么编程实现啊.](https://d.cosx.org/d/2689-2689/10)
+**原文**：[哥哥姐姐，请问IGARCH模型的参数估计怎么编程实现啊.](https://d.cosx.org/d/2689-2689/10)，此文章添加解释与一些参考文献，并且测试3年移动数据以确定新GARCH模型是否更为精准。
 
 ```{r setup}
 suppressPackageStartupMessages(require('BBmisc'))
 
 ## 读取程序包
-pkg <- c('lubridate', 'plyr', 'dplyr', 'rugarch', 'forecast', 'quantmod', 'microbenchmark')
+pkg <- c('lubridate', 'plyr', 'dplyr', 'magrittr', 'stringr', 'rugarch', 'forecast', 'quantmod', 'microbenchmark')
 suppressAll(lib(pkg))
 rm(pkg)
 ```
 
-刚刚无意中发现，分享下`rugarch`中的模式最优化...
+无意中发现，分享下`rugarch`中的GARCH模式最优化...
 
 # 数据
 
-首先读取数据...
+首先读取3年汇市数据...
 
 ```{r get-data}
 #'@ getFX('AUD/USD', from = (today('GMT') - 1) %m-% years(1))
@@ -46,88 +46,91 @@ rm(pkg)
 
 cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
                'CNY=X', 'JPY=X')
-  
+
 names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 
                'USDCNY', 'USDJPY')
-  
-price_type <- c('Op', 'Hi', 'Lo', 'Cl', 'Ad')
+
+price_type <- c('Op', 'Hi', 'Lo', 'Cl')
 
 ## gather fx dataset.
 #'@ fx <- llply(cr_code, function(x) suppressAll(getSymbols(x, from = (today('GMT') - 1) %m-% years(3), auto.assign = FALSE)))
 
-#'@ saveRDS(fx, 'data/fx3y.rds')
-fx <- readRDS('data/fx3y.rds')
+#'@ if (!dir.exists('data/fx')) dir.create('data/fx')
+#'@ saveRDS(fx, 'data/fx/fx3y.rds')
+fx <- readRDS('data/fx/fx3y.rds') %>% na.omit
 ```
 
 # 统计建模
 
+## 基础模型
+
+> **fGarch** : Various submodels arise from this model, and are passed to the ugarchspec "variance.model" list via the submodel option,
+> 
+- The simple GARCH model of Bollerslev (1986) when $\lambda = \delta = 2$ and $\eta_{1j} = \eta_{2j} = 0$ (submodel = 'GARCH').
+- The Absolute Value GARCH (AVGARCH) model of Taylor (1986) and Schwert (1990) when $\lambda = \delta = 1$ and $|\eta_{1j} | ≤ 1$ (submodel = 'AVGARCH').
+- The GJR GARCH (GJRGARCH) model of Glosten et al. (1993) when $\lambda = \delta = 2$ and $\eta_{2j} = 0$ (submodel = 'GJRGARCH').
+- The Threshold GARCH (TGARCH) model of Zakoian (1994) when $\lambda = \delta = 1, \eta_{2j} = 0$ and $|\eta_{1j} | ≤ 1$ (submodel = 'TGARCH').
+- The Nonlinear ARCH model of Higgins et al. (1992) when $\delta = \lambda$ and $\eta_{1j} = \eta_{2j} = 0$ (submodel = 'NGARCH').
+- The Nonlinear Asymmetric GARCH model of Engle and Ng (1993) when $\delta = \lambda = 2$ and $\eta_{1j} = 0$ (submodel = 'NAGARCH').
+- The Asymmetric Power ARCH model of Ding et al. (1993) when $\delta = \lambda, \eta_{2j} = 0$ and $|\eta_{1j} | ≤ 1$ (submodel = 'APARCH').
+- The Exponential GARCH model of Nelson (1991) when $\delta = 1, \lambda = 0$ and $\eta_{2j} = 0$ (not implemented as a submodel of fGARCH).
+- The Full fGARCH model of Hentschel (1995) when $\delta = \lambda$ (submodel = 'ALLGARCH').
+
+> The choice of distribution is entered via the 'distribution.model' option of the ugarchspec method. The package also implements a set of functions to work with the parameters of these distributions. These are:
+> 
+- `ddist(distribution = "norm", y, mu = 0, sigma = 1, lambda = -0.5, skew = 1, shape = 5)`. The density (d*) function.
+- `pdist(distribution = "norm", q, mu = 0, sigma = 1, lambda = -0.5, skew = 1, shape = 5)`. The distribution (p*) function.
+- `qdist(distribution = "norm", p, mu = 0, sigma = 1, lambda = -0.5, skew = 1, shape = 5)`. The quantile (q*) function.
+- `rdist(distribution = "norm", n, mu = 0, sigma = 1, lambda = -0.5, skew = 1, shape = 5)`. The sampling (q*) function.
+- `fitdist(distribution = "norm", x, control = list())`. A function for fitting data using any of the included distributions.
+- `dskewness(distribution = "norm", skew = 1, shape = 5, lambda = -0.5)`. The distribution skewness (analytical where possible else by quadrature integration).
+- `dkurtosis(distribution = "norm", skew = 1, shape = 5, lambda = -0.5)`. The distribution excess kurtosis (analytical where it exists else by quadrature integration).
+
+> The family of APARCH models includes the ARCH and GARCH models, and five other ARCH extensions as special cases:
+> 
+- ARCH Model of Engle when $\delta = 2$, $\gamma_{i} = 0$, and $\beta_{j} = 0$.
+- GARCH Model of Bollerslev when $\delta = 2$, and $\gamma_{i} = 0$.
+- TS-GARCH Model of Taylor and Schwert when $\delta = 1$, and $\gamma_{i} = 0$.
+- GJR-GARCH Model of Glosten, Jagannathan, and Runkle when $\delta = 2$.
+- T-ARCH Model of Zakoian when $\delta = 1$.
+- N-ARCH Model of Higgens and Bera when $\gamma_{i} = 0$, and $\beta_{j} = 0$.
+- Log-ARCH Model of Geweke and Pentula when $\delta → 0$.
+
+Source : *2. Mean and Variance Equation* inside [Parameter Estimation of ARMA Models with GARCH/APARCH Errors - An R and SPlus Software Implementation](https://github.com/englianhu/binary.com-interview-question/raw/master/reference/Parameter%20Estimation%20of%20ARMA%20Models%20with%20GARCH%20or%20APARCH%20Errors%20-%20An%20R%20and%20SPlus%20Software%20Implementation.pdf)
+
+有关多种GARCH模式比较，请参考参考文献中的链接3... 包括比较：
+
+- auto.arima
+- exponential smoothing models (ETS)
+- GARCH (包括GARCH、eGARCH、iGARCH、fGARCH、gjrGARCH等模式)
+- exponential weighted models
+
+$$\begin{equation}
+\sigma^2_{t} = \omega + \sum_{i=1}^{\rho}(\alpha_{i} + \gamma_{i} I_{t-i}) \varepsilon_{t-i}^{2} + \sum_{j=1}^{q}\beta_{j}\sigma^{2}_{t-j}\ \cdots\ Equation\ 3.1.1
+\end{equation}$$
+
+在之前的文章已经分别比较多种统计模式，得知GJR-GARCH模型的预测结果最为精准，以下稍微介绍下平滑移动加权模型。
+
 ## ARMA 模型
 
+ARMA Mean Equation: The `ARMA(m,n)` process of autoregressive order `m` and moving average order `n` can be described as
 
+$$\begin{align*}
+x_{t} &= \mu + \sum_{i=1}^{m} \alpha_{i} x_{t-i} + \sum^{n}_{j=1} \beta_{j} \varepsilon_{t-j} + \varepsilon_{t}
+ \\ &= \mu + \alpha(B)x_{t} + \beta(B) \varepsilon_{t}
+\end{align*} \cdots\ Equation\ 3.2.1$$
 
-## ARFIMA：ARMA 最优化（新程序）
+- [Computer Lab Sessions 2&3](https://github.com/englianhu/binary.com-interview-question/raw/master/reference/Computer%20Lab%20Sessions%202%263.pdf)
+- [時間序列分析 - 總體經濟與財務金融之應用 - 定態時間序列II ARMA模型](https://github.com/englianhu/binary.com-interview-question/raw/master/reference/%E6%99%82%E9%96%93%E5%BA%8F%E5%88%97%E5%88%86%E6%9E%90%20-%20%E7%B8%BD%E9%AB%94%E7%B6%93%E6%BF%9F%E8%88%87%E8%B2%A1%E5%8B%99%E9%87%91%E8%9E%8D%E4%B9%8B%E6%87%89%E7%94%A8%20-%20%E5%AE%9A%E6%85%8B%E6%99%82%E9%96%93%E5%BA%8F%E5%88%97II%20ARMA%E6%A8%A1%E5%9E%8B.pdf)
+- [Introduction to the rugarch package](https://github.com/englianhu/binary.com-interview-question/raw/master/reference/Introduction%20to%20the%20rugarch%20package.pdf)
+- [Parameter Estimation of ARMA Models with GARCH/APARCH Errors - An R and SPlus Software Implementation](https://github.com/englianhu/binary.com-interview-question/raw/master/reference/Parameter%20Estimation%20of%20ARMA%20Models%20with%20GARCH%20or%20APARCH%20Errors%20-%20An%20R%20and%20SPlus%20Software%20Implementation.pdf)
+- [How to choose the order of a GARCH model?](https://stats.stackexchange.com/questions/154754/how-to-choose-the-order-of-a-garch-model)
 
-然后计算最优arma order... 包括`d`值。
-
-```{r arma-order1, warning = FALSE}
-opt_arma <- function(mbase){
-  #ARMA Modeling minimum AIC value of `p,d,q`
-  fit <- auto.arima(mbase)
-  arimaorder(fit)
-  }
-```
-
-```{r garch-model1, warning = FALSE}
-calc_fx <- function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
-  
-  ## Using "memoise" to automatically cache the results
-  ## http://rpubs.com/englianhu/arma-order-for-garch
-  source('function/filterFX.R')
-  #'@ source('function/armaSearch.R') #old optimal arma p,q value searching, but no d value. 
-  source('function/opt_arma.R') #rename the function best.ARMA()
-  
-  mbase = suppressWarnings(filterFX(mbase, currency = currency, price = price))
-  armaOrder = opt_arma(mbase)
-  
-  ## Set arma order for `p, d, q` for GARCH model.
-  #'@ https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch
-  spec = ugarchspec(
-    variance.model = list(
-      model = 'gjrGARCH', garchOrder = c(1, 1), 
-      submodel = NULL, external.regressors = NULL, 
-      variance.targeting = FALSE), 
-    mean.model = list(
-      armaOrder = armaOrder[c(1, 3)], #set arma order for `p` and `q`.
-      include.mean = TRUE, archm = FALSE, 
-      archpow = 1, arfima = TRUE, #set arima = TRUE
-      external.regressors = NULL, 
-      archex = FALSE), 
-    fixed.pars = list(arfima = armaOrder[2]), #set fixed.pars for `d` value
-    distribution.model = 'snorm')
-  
-  fit = ugarchfit(spec, mbase, solver = 'hybrid')
-  
-  fc = ugarchforecast(fit, n.ahead = ahead)
-  res = xts::last(attributes(fc)$forecast$seriesFor)
-  #res <- tail(attributes(fc)$forecast$seriesFor, 1)
-  colnames(res) = names(mbase)
-  latestPrice = tail(mbase, 1)
-
-  #rownames(res) <- as.character(forDate)
-  latestPrice <- xts(latestPrice)
-  #res <- as.xts(res)
-  
-  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
-             AIC = infocriteria(fit))
-  return(tmp)
-  }
-```
-
-## ARFIMA：ARMA 最优化（旧程序）
+## GJR-GARCH：ARMA(p,q)值最优化（旧程序）
 
 计算最优arma order中的`p`值与`q`值... 不包括`d`值。
 
-```{r arma-order2, warning = FALSE}
+```{r arma-order1, warning = FALSE}
 armaSearch <- function(data, .method = 'CSS-ML'){ 
     ## ARMA Modeling寻找AIC值最小的p,q
     ##
@@ -201,8 +204,8 @@ armaSearch <- function(data, .method = 'CSS-ML'){
   }
 ```
 
-```{r garch-model2, warning = FALSE}
-calC <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
+```{r garch-model1, warning = FALSE}
+calC <- function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
   
   # Using "memoise" to automatically cache the results
   source('function/filterFX.R')
@@ -239,38 +242,124 @@ calC <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
   tmp = list(latestPrice = latestPrice, forecastPrice = res, 
              AIC = infocriteria(fit))
   return(tmp)
-})
+}
+```
+
+## Fi-GJR-GARCH：ARFIMA(p,d,q)值最优化（新程序）
+
+> **The fractionally integrated GARCH model ('fiGARCH')** : Contrary to the case of the ARFIMA model, the degree of persistence in the FIGARCH model operates in the oppposite direction, so that as the fractional differencing parameter d gets closer to one, the memory of the FIGARCH process increases, a direct result of the parameter acting on the squared errors rather than the conditional variance. When `d = 0` the FIGARCH collapses to the vanilla GARCH model and when `d = 1` to the integrated GARCH model...
+> 
+> Motivated by the developments in long memory processes, and in particular the ARFIMA type models (see section 2.1), Baillie et al. (1996) proposed the fractionally integrated generalized autoregressive conditional heteroscedasticity, or FIGARCH, model to capture long memory (in essence hyperbolic memory). Unlike the standard GARCH where shocks decay at an exponential rate, or the integrated GARCH model where shocks persist forever, in the FIGARCH model shocks decay at a slower hyperbolic rate. Consider the standard GARCH equation:
+> 
+$$\begin{equation}
+\sigma^{2}_{t} = \omega + \alpha (L) \varepsilon^{2}_{t} + \beta (L) \sigma^{2} \cdots\ Equation\ 3.1.2
+\end{equation}$$
+
+Source : *2.2.10 The fractionally integrated GARCH model ('fiGARCH')* inside [Introduction to the rugarch package](https://github.com/englianhu/binary.com-interview-question/raw/master/reference/Introduction%20to%20the%20rugarch%20package.pdf)
+
+然后计算最优arma order... 包括`d`值。
+
+```{r arma-order2, warning = FALSE}
+opt_arma <- function(mbase){
+  #ARMA Modeling minimum AIC value of `p,d,q`
+  fit <- auto.arima(mbase)
+  arimaorder(fit)
+  }
+```
+
+```{r garch-model2, warning = FALSE}
+calc_fx <- function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
+  
+  ## Using "memoise" to automatically cache the results
+  ## http://rpubs.com/englianhu/arma-order-for-garch
+  source('function/filterFX.R')
+  #'@ source('function/armaSearch.R') #old optimal arma p,q value searching, but no d value. 
+  source('function/opt_arma.R') #rename the function best.ARMA()
+  
+  mbase = suppressWarnings(filterFX(mbase, currency = currency, price = price))
+  armaOrder = opt_arma(mbase)
+  
+  ## Set arma order for `p, d, q` for GARCH model.
+  #'@ https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch
+  spec = ugarchspec(
+    variance.model = list(
+      model = 'gjrGARCH', garchOrder = c(1, 1), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder[c(1, 3)], #set arma order for `p` and `q`.
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = TRUE, #set arima = TRUE
+      external.regressors = NULL, 
+      archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), #set fixed.pars for `d` value
+    distribution.model = 'snorm')
+  
+  fit = ugarchfit(spec, mbase, solver = 'hybrid')
+  
+  fc = ugarchforecast(fit, n.ahead = ahead)
+  res = xts::last(attributes(fc)$forecast$seriesFor)
+  #res <- tail(attributes(fc)$forecast$seriesFor, 1)
+  colnames(res) = names(mbase)
+  latestPrice = tail(mbase, 1)
+
+  #rownames(res) <- as.character(forDate)
+  latestPrice <- xts(latestPrice)
+  #res <- as.xts(res)
+  
+  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
+             AIC = infocriteria(fit))
+  return(tmp)
+  }
 ```
 
 # 模式比较
 
-```{r fit, warning = FALSE}
-fit <- calC(AUDUSD)
-fit2 <- calC2(AUDUSD)
+首先比较运行时间。
+
+```{r processing-time, warning = FALSE}
+#'@ microbenchmark(calC(AUDUSD))
+#'@ microbenchmark(calC2(AUDUSD))
+
+system.time(fit <- calc_fx(fx[[1]]))
+system.time(fit2 <- calC(fx[[1]]))
 ```
 
-有关多种GARCH模式比较，请参考参考文献中的链接3... 包括比较：
+以下僕运行三年数据测试后事先储存，然后直接读取。
 
-- auto.arima
-- exponential smoothing models (ETS)
-- GARCH (包括GARCH、eGARCH、iGARCH、fGARCH、gjrGARCH等模式)
-- exponential weighted models
+```{r sim-pred1, warning = FALSE}
+pred1 <- list()
 
-```{r aic1}
-infocriteria(fit)
+for (i in seq(cr_code)) {
+  pred1[[i]] <- ldply(price_type, function(y) {
+    df = calC(fx[[names(cr_code)[i]]], currency = cr_code[i], price = y)
+    df = data.frame(Date = index(df[[1]][1]), Type = paste0(names(df[[1]]), '.', y), df[[1]], df[[2]], t(df[[3]]))
+    names(df)[4] %<>% str_replace_all('1', 'T+1')
+    df
+  })
+  
+  if (!dir.exists(paste0('data/fx', names(pred1[[i]])[3]))) dir.create(paste0('data/fx', names(pred1[[i]])[3]))
+  saveRDS(pred1[[i]], paste0('data/fx', names(pred1[[i]])[3], '/pred1.', unique(pred1[[i]]$Date), '.rds'))
+}; rm(i)
 
-#Akaike       -9.098131
-#Bayes        -8.956222
-#Shibata      -9.101862
-#Hannan-Quinn -9.040593
 ```
 
-```{r aic2}
-infocriteria(fit2)
-#Akaike       -9.072344
-#Bayes        -8.948174
-#Shibata      -9.075221
-#Hannan-Quinn -9.021998
+```{r sim-pred2, warning = FALSE}
+pred2 <- list()
+
+for (i in seq(cr_code)) {
+  pred2[[i]] <- ldply(price_type, function(y) {
+    df = calc_fx(fx[[names(cr_code)[i]]], currency = cr_code[i], price = y)
+    df = data.frame(Date = index(df[[1]][1]), Type = paste0(names(df[[1]]), '.', y), df[[1]], df[[2]], t(df[[3]]))
+    names(df)[4] %<>% str_replace_all('1', 'T+1')
+    df
+  })
+  
+  if (!dir.exists(paste0('data/fx', names(pred2[[i]])[3]))) dir.create(paste0('data/fx', names(pred2[[i]])[3]))
+  saveRDS(pred2[[i]], paste0('data/fx', names(pred2[[i]])[3], '/pred2.', unique(pred2[[i]]$Date), '.rds'))
+
+}; rm(i)
+
 ```
 
 结果fit胜出，比fit2更佳... 证明p值、d值与q值都可以优化（包括模式中设定默认的d值）... 目前正在编写着[Q1App2](https://beta.rstudioconnect.com/content/3138/)自动交易应用，除了模式最优化以外，程序上分秒必争... `microbenchmark`测试效率，今天刚编写了个[DataCollection](https://beta.rstudioconnect.com/content/3153/)应用采集实时数据以方便之后的高频率交易自动化建模，更多详情请参阅[Real Time FXCM](https://github.com/scibrokes/real-time-fxcm)。
@@ -279,8 +368,8 @@ infocriteria(fit2)
 #'@ microbenchmark(calC(AUDUSD))
 #'@ microbenchmark(calC2(AUDUSD))
 
-system.time(calC(AUDUSD))
-system.time(calC2(AUDUSD))
+#system.time(calC(AUDUSD))
+#system.time(calC2(AUDUSD))
 ```
 
 由于使用`microbenchmark`非常耗时，在这儿僕使用`system.time()`比较运行速度，结果还是新程序`calC()`比旧程序`calC2()`迅速。

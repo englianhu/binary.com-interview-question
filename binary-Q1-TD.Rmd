@@ -311,8 +311,6 @@ Here I wrote another extention page for Q1 which is analyse the multiple currenc
 ## ARMA Order
 
 
-- []()
-
 ```{r read-data4, echo = FALSE, eval = FALSE}
 ## get currency dataset online.
 #'@ getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20') #oanda only provides 180 days data. getSymbols()
