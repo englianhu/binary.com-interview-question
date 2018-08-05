@@ -28,8 +28,8 @@ calc_fx <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') 
   fit = ugarchfit(spec, mbase, solver = 'hybrid')
   
   fc = ugarchforecast(fit, n.ahead = ahead)
-  res = xts::last(attributes(fc)$forecast$seriesFor)
-  #res <- tail(attributes(fc)$forecast$seriesFor, 1)
+  #res = xts::last(attributes(fc)$forecast$seriesFor)
+  res = tail(attributes(fc)$forecast$seriesFor, 1)
   colnames(res) = names(mbase)
   latestPrice = tail(mbase, 1)
   

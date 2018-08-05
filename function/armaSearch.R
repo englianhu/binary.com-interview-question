@@ -22,35 +22,50 @@ armaSearch <- suppressWarnings(function(data, .method = 'CSS-ML'){
       #data.arma = arima(diff(data), order = c(p, 0, q))
       #'@ data.arma = arima(data, order = c(p, 1, q), method = .method)
       if(.method == 'CSS-ML') {
-        data.arma = tryCatch({
-          arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
-          mth = 'CSS-ML'
-          list(arma, mth)
+          data.arma = tryCatch({
+            arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
+            mth = 'CSS-ML'
+            list(arma, mth)
+          }, error = function(e) tryCatch({
+            arma = arima(data, order = c(p, 1, q), method = 'ML')
+            mth = 'ML'
+            list(arma = arma, mth = mth)
+          }, error = function(e) {
+            arma = arima(data, order = c(p, 1, q), method = 'CSS')
+            mth = 'CSS'
+            list(arma = arma, mth = mth)
+          }))
+          
+        } else if(.method == 'ML') {
+          data.arma = tryCatch({
+            arma = arima(data, order = c(p, 1, q), method = 'ML')
+            mth = 'ML'
+            list(arma = arma, mth = mth)
+          }, error = function(e) tryCatch({
+            arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
+            mth = 'CSS-ML'
+            list(arma = arma, mth = mth)
+          }, error = function(e) {
+            arma = arima(data, order = c(p, 1, q), method = 'CSS')
+            mth = 'CSS'
+            list(arma = arma, mth = mth)
+          }))
+          
+        } else if(.method == 'CSS') {
+          data.arma = tryCatch({
+            arma = arima(data, order = c(p, 1, q), method = 'CSS')
+            mth = 'CSS'
+            list(arma = arma, mth = mth)
+          }, error = function(e) tryCatch({
+            arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
+            mth = 'CSS-ML'
+            list(arma = arma, mth = mth)
           }, error = function(e) {
             arma = arima(data, order = c(p, 1, q), method = 'ML')
             mth = 'ML'
             list(arma = arma, mth = mth)
-          })
-      } else if(.method == 'ML') {
-        data.arma = tryCatch({
-          arma = arima(data, order = c(p, 1, q), method = 'ML')
-          mth = 'ML'
-          list(arma = arma, mth = mth)
-          }, error = function(e) {
-            arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
-            mth = 'CSS-ML'
-            list(arma = arma, mth = mth)
-          })
-      } else if(.method == 'CSS') {
-        data.arma = tryCatch({
-          arma = arima(data, order = c(p, 1, q), method = 'CSS')
-          mth = 'CSS'
-          list(arma = arma, mth = mth)
-        }, error = function(e) {
-          arma = arima(data, order = c(p, 1, q), method = 'CSS-ML')
-          mth = 'CSS-ML'
-          list(arma = arma, mth = mth)
-        })
+          }))
+          
       } else {
         stop(paste('Kindly choose .method among ', paste0(.methods, collapse = ', '), '!'))
       }

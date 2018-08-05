@@ -19,26 +19,24 @@ I use daily OHLCV USDJPY data (from 2014-01-01 to 2017-01-20) and application of
 - <s>Bayesian Time Series</s>
 - <s>Midas</s>
 
-For the staking model, I simply forecast the highest and lowest price, and then : 
-  
-- Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
-- Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
-
 Kindly refer to [Binary.com Interview Q1](http://rpubs.com/englianhu/binary-Q1) ([Old link](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or [Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1)) for more information.
+
+Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models <s>from minutes to</s> daily. You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)).
+
+Here I also find the optimal arma order for GARCH models as you can refer to [GARCH模型中的ARMA(p,d,q)参数最优化](http://rpubs.com/englianhu/arma-order-for-garch).
 
 Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3073/) where [Q1App2](https://beta.rstudioconnect.com/content/3138/) is another app for financial value betting.
 
 <span style='color:red'>**Blooper...**</span>
 
-Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) which contain the questions and answers of 3 questions.
+Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) which contain the questions and answers of 3 questions. For the staking model, I simply forecast the highest and lowest price, and then : 
+  
+- Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
+- Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
 
 <img src='www/20170113_104005.gif' width='360'>
 
 Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.com/content/3775/) trial version to test the real time trading, and a completed version is [Q1App2](https://beta.rstudioconnect.com/content/3138/).
-
-Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models <s>from minutes to</s> daily. You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)).
-
-Here I also find the optimal arma order for GARCH models as you can refer to [模型中的AR与MA参数最优化](http://rpubs.com/englianhu/arma-order-for-garch).
 
 #### Shiny Application
 
@@ -49,7 +47,7 @@ Here I also find the optimal arma order for GARCH models as you can refer to [�
 
 ### Question II
 
-For question 2, I simply write an app, kindly use [Q2App](https://beta.rstudioconnect.com/content/3089/).
+For question 2, I simply write an app, kindly use [Q2App](https://beta.rstudioconnect.com/content/3089/). The bivariate or trivariate poisson model might useful for analyse the probability of fund-in and fund-out by investors in order to manage whole investment pool. Unfortunately there has no such dataset avaiable for fund pool management modelling.
 
 #### Shiny Application
 
