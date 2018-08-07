@@ -23,7 +23,7 @@ Kindly refer to [Binary.com Interview Q1](http://rpubs.com/englianhu/binary-Q1) 
 
 Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models <s>from minutes to</s> daily. You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)).
 
-Here I also find the optimal arma order for GARCH models as you can refer to [GARCH模型中的ARMA(p,d,q)参数最优化](http://rpubs.com/englianhu/arma-order-for-garch).
+Here I also find the optimal arma order for GARCH models as you can refer to [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH).
 
 Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3073/) where [Q1App2](https://beta.rstudioconnect.com/content/3138/) is another app for financial value betting.
 

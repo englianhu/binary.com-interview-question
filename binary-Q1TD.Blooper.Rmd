@@ -1,7 +1,7 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
-subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>"
-author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
   html_document: 
@@ -24,7 +24,7 @@ output:
 link-citations: yes
 ---
 
-```{r setup, include = FALSE}
+```{r setup, include=FALSE}
 suppressPackageStartupMessages(library('BBmisc'))
 pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'pryr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'tidyquant', 'turner', 'readr', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'memoise', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
 
@@ -62,7 +62,7 @@ I use more than 3 years data (from week 1 2015 until week 27 2018)^[You are feel
 
 There will be a certain spread charged by operators but the OHLC dataset does not provide the information for the course of the exchange rate. The tick-data history will be similar with rebirth model in soccer betting for normal FOREX trading market. The financial betting market similar with pre-match soccer betting.
 
-```{r read-data1, echo = FALSE, eval = FALSE}
+```{r read-data1, echo=FALSE, eval=FALSE}
 ## ================== eval = FALSE =============================
 ## Do not execute...
 ## 
@@ -113,7 +113,7 @@ if(any(file.exists(paste0(dr, dir(dr, pattern = '.csv')[file.size(paste0(
   }
 ```
 
-```{r read-data2, echo = FALSE, eval = FALSE}
+```{r read-data2, echo=FALSE, eval=FALSE}
 ## --------------------- Read Data -------------------------------
 dr <- 'data/USDJPY/'
 fls <- dir(dr, pattern = '.csv$')
@@ -249,12 +249,12 @@ Below is the dataset gather via `getSymbols(src = 'yahoo')`.
 mbase <- readRDS('./data/USDJPY/USDJPY.rds')
 ```
 
-```{r data-summary2, echo = FALSE}
+```{r data-summary2, echo=FALSE}
 ## size of dataset.
 paste0('mbase : [', paste(dim(mbase), collapse = ' x '), ']')
 ```
 
-```{r data-summary3, echo = FALSE, results = 'asis'}
+```{r data-summary3, echo=FALSE, results='asis'}
 summary(mbase) %>% 
   tidy %>% 
   select(-Var1) %>% 
@@ -1815,6 +1815,8 @@ plotChart2(fxm, graph.title = 'Peformance of Investment Fund for Financial Betti
 
 I can use tick-data from **FXCMTickData** for this paper while it is weekly and not up-to-date, the `getSymbols()` able to get near real-time (15 minutes late) where suite for daily trading in **Real Time Trading System (Trial)** but there are a lot of trading date is not available. 
 
+Due to I had almost completed this paper and only noticed that I am using `calC()` but not `calc_fx()` for simulation. Therefore I wrote another paper to compare the accuacy of the arma ordered GARCH models via [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH). There will be another paper for multivariate GARCH model upon completion of **Q1App2** web application.
+
 Therefore High Frequency Trading in another research **Real Time FXCM** where all data price gathered from real-time will be accurate.
 
 ```{r stopPar, echo = FALSE}
@@ -1834,11 +1836,10 @@ It's useful to record some information about how your file was created.
 - File latest updated date: `r today('Asia/Tokyo')`
 - `r R.version.string`
 - R version (short form): `r getRversion()`
-- [<span style='color:blue'>**rmarkdown** package</span>](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
-- [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
+- [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
 - File version: 1.0.1
-- Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
-- GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
+- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
+- GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
 - Additional session information
 
 ```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
@@ -1866,9 +1867,9 @@ rm(sys1, sys2)
 
 ## Reference
 
-  01. [<span style='color:blue'>Quant Strategies HFT</span>](https://github.com/englianhu/Quant-Strategies-HFT)
-  02. [<span style='color:blue'>Real Time FXCM</span>](https://github.com/scibrokes/real-time-fxcm)<img src='www/hot.jpg' width='20'>
-  03. [<span style='color:blue'>Real Time Trading System (Trial)</span>](https://beta.rstudioconnect.com/content/3775/)<img src='www/hot.jpg' width='20'>
+01. [Quant Strategies HFT](https://github.com/englianhu/Quant-Strategies-HFT)
+02. [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm)<img src='www/hot.jpg' width='20'>
+03. [Real Time Trading System (Trial)](https://beta.rstudioconnect.com/content/3775/)<img src='www/hot.jpg' width='20'>
 
 --------------------
 

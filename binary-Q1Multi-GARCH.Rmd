@@ -1,0 +1,159 @@
+---
+title: "<img src='www/binary-logo-resize.jpg' width='240'>"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Multivariate GARCH Models"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
+date: "`r lubridate::today('Asia/Tokyo')`"
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+---
+
+```{r setup}
+suppressPackageStartupMessages(library('BBmisc'))
+
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch')
+
+suppressAll(lib(pkgs))
+
+funs <- c('calc_fx.R', 'opt_arma.R')
+l_ply(funs, function(x) source(paste0('./function/', x)))
+
+## Set option to below if you want to plot an independent webpage with graph 
+#'@ op <- options(gvis.plot.tag=NULL)
+op <- options(gvis.plot.tag = 'chart')
+options(gvis.plot.tag = 'chart', warn = -1)
+
+rm(pkgs)
+```
+
+# Introduction
+
+From previous papers, I tried to apply few models for FOREX price forecasting and eventually got to know **Fractional Intergrated GJR-GARCH** is the best fit model as we can refer to [GARCH模型中的ARMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH). Today I am zooming into the multivariate GARCH models.
+
+# Data
+
+Similar with **GARCH模型中的ARMA(p,d,q)参数最优化**, I use the dataset from [Binary-Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E).
+
+```{r read-data, warning=FALSE}
+cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
+             'CNY=X', 'JPY=X')
+
+#'@ names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 
+#'@                     'USDCNY', 'USDJPY')
+
+names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
+
+price_type <- c('Op', 'Hi', 'Lo', 'Cl')
+
+## 读取雅虎数据。
+mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
+```
+
+# Modelling
+
+## Introduce Multivariate Garch Models
+
+  Multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH.
+
+## DCC
+
+
+```{r multivariate, eval=FALSE}
+fit <- llply(fxPrice, function(x){
+
+  armaOrder <- armaSearch(x) %>% dplyr::filter(AIC == min(AIC)) %>% .[c('p', 'q')] %>% unlist
+  
+  xspec = ugarchspec(
+    variance.model = list(
+      model = 'gjrGARCH', garchOrder = c(1, 1), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder, 
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = FALSE, 
+      external.regressors = NULL, 
+      archex = FALSE), 
+    distribution.model = 'snorm')
+  
+  uspec = multispec(replicate(10, xspec))
+
+  spec1 = dccspec(uspec = uspec, dccOrder = c(1, 1), 
+                  model='aDCC', distribution = 'mvt')
+  
+  cl = makePSOCKcluster(10)
+  multf = multifit(uspec, x, cluster = cl)
+  
+  fit1 = dccfit(spec1, data = x, solver = 'hybrid', 
+                fit.control = list(eval.se = TRUE), 
+                fit = multf, cluster = cl)
+  })
+```
+
+## GO-GARCH
+
+
+
+## Copula-GARCH
+
+
+# Conclusion
+
+
+```{r stopPar, echo = FALSE}
+## Set options back to original options
+options(op)
+options(warn = 0)
+```
+
+# Appendix
+
+## Documenting File Creation 
+
+It's useful to record some information about how your file was created.
+
+- File creation date: 2017-10-17
+- File latest updated date: `r today('Asia/Tokyo')`
+- `r R.version.string`
+- R version (short form): `r getRversion()`
+- [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+- File version: 1.0.1
+- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
+- GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
+- Additional session information:
+
+```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+
+sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+
+sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
+names(sys2)[2] <- c('Sys.info')
+
+sys1 %<>% rbind(., data.frame(Category = 'Current time', session_info = paste(as.character(now('Asia/Tokyo')), 'JST')))
+
+cbind(sys1, sys2) %>% 
+  kable(caption = 'Additional session information:') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+rm(sys1, sys2)
+```
+
+## 5.2 Reference
+
+01. [Betting Strategy and Model Validation - Part II](https://englianhu.github.io/2017/10/Betting_Strategy_and_Model_Validation_-_Part_02/)
+02. [**binary.com Job Application - Quantitative Analyst** *sample question*](https://github.com/englianhu/binary.com-interview-question)
+03. [Binary.com Interview Q1](http://rpubs.com/englianhu/binary-Q1) ([Old link](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or [Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
+04. [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133))
+05. [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+
+--------------------
+
+**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
