@@ -37,6 +37,8 @@ From previous papers, I tried to apply few models for FOREX price forecasting an
 
 # Data
 
+## Read Data
+
 Similar with **GARCH模型中的ARMA(p,d,q)参数最优化**, I use the dataset from [Binary-Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E).
 
 ```{r read-data, warning=FALSE}
@@ -53,6 +55,112 @@ price_type <- c('Op', 'Hi', 'Lo', 'Cl')
 ## 读取雅虎数据。
 mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
 ```
+
+```{r tidy-data1}
+##数据1
+fx1 <- llply(names(cr_code), function(x) {
+    fls <- list.files(paste0('data/fx/', x), pattern = '^pred1')
+    dfm <- ldply(fls, function(y) {
+        readRDS(paste0('data/fx/', x, '/', y))
+    }) %>% data.frame(Cat = 'pred1', .) %>% tbl_df
+    names(dfm)[4:5] <- c('Price', 'Price.T1')
+    dfm
+ })
+names(fx1) <- names(cr_code)
+
+##数据2
+fx2 <- llply(names(cr_code), function(x) {
+    fls <- list.files(paste0('data/fx/', x), pattern = '^pred2')
+    dfm <- ldply(fls, function(y) {
+        readRDS(paste0('data/fx/', x, '/', y))
+    }) %>% data.frame(Cat = 'pred2', .) %>% tbl_df
+    names(dfm)[4:5] <- c('Price', 'Price.T1')
+    dfm
+ })
+names(fx2) <- names(cr_code)
+
+## Merge and tidy dataset.
+fx1 %<>% ldply %>% tbl_df
+fx2 %<>% ldply %>% tbl_df
+fx <- suppressAll(
+  bind_rows(fx1, fx2) %>% arrange(Date) %>% 
+    mutate(.id = factor(.id), Cat = factor(Cat), Price.T1 = lag(Price.T1, 56)) %>% 
+    dplyr::filter(Date >= ymd('2013-01-01') & Date <= ymd('2017-08-30')))
+
+rm(fx1, fx2)
+```
+
+## Univariaite Forecast Data Error
+
+Here I tried to look back the forecast data in previous paper **GARCH模型中的ARMA(p,d,q)参数最优化**.
+
+```{r tidy-data2}
+## Spread data.
+fxm <- fx %>% separate(Type, c('Type', 'PT')) %>% 
+    spread(PT, Price.T1) %>% 
+    select(-Type, -Price, -Akaike, -Bayes, -Shibata, -Hannan.Quinn) %>% 
+    ddply(.(.id, Cat, Date), summarise, 
+              Op = na.omit(Op), 
+              Hi = na.omit(Hi), 
+              Lo = na.omit(Lo), 
+              Cl = na.omit(Cl)) %>% tbl_df
+```
+
+```{r pred1-HiLo}
+fx1 <- fxm %>% 
+    mutate(diff = round(Hi - Lo, 3)) %>% 
+    dplyr::filter(diff <= 0 & Cat == 'pred1')
+
+fx1 %>% 
+  kable(caption = 'Preditive Error for Univariate gjrGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 2.2.1A `r paste0('[', paste(dim(fx1), collapse = ' x '), ']')` : Preditive Error for Univariate gjrGARCH.*
+
+```{r pred2-HiLo}
+fx2 <- fxm %>% 
+    mutate(diff = round(Hi - Lo, 3)) %>% 
+    dplyr::filter(diff <= 0 & Cat == 'pred2')
+
+fx2 %>% 
+  kable(caption = 'Preditive Error for Univariate Fi-gjrGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 2.2.1B `r paste0('[', paste(dim(fx2), collapse = ' x '), ']')` : Preditive Error for Univariate Fi-gjrGARCH.*
+
+Above *Table 2.2.1A* and *Table 2.2.1B* proof that the univariate GARCH might forecast error price due to both highest and lowest price are independence. Here I also filter the closed price as well in below tables.
+
+```{r pred1-Cl}
+fx1 <- fxm %>% 
+    mutate(Range = ifelse(Cl > Hi | Cl < Lo, 0, 1)) %>% 
+    dplyr::filter(Range == 0 & Cat == 'pred1')
+
+fx1 %>% 
+  kable(caption = 'Preditive Error for Univariate gjrGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 2.2.2A `r paste0('[', paste(dim(fx1), collapse = ' x '), ']')` : Preditive Error for Univariate gjrGARCH.*
+
+```{r pred2-Cl}
+fx2 <- fxm %>% 
+    mutate(Range = ifelse(Cl > Hi | Cl < Lo, 0, 1)) %>% 
+    dplyr::filter(Range == 0 & Cat == 'pred2')
+
+fx2 %>% 
+  kable(caption = 'Preditive Error for Univariate Fi-gjrGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 2.2.2B `r paste0('[', paste(dim(fx2), collapse = ' x '), ']')` : Preditive Error for Univariate Fi-gjrGARCH.*
+
+From above tables, we know the univariate statistical modelling will facing statistical preditive error. Here I use the multivariate methods for further modelling.
 
 # Modelling
 
@@ -134,10 +242,11 @@ suppressMessages(require('formattable', quietly = TRUE))
 sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
 rownames(sys1) <- NULL
 
+sys1 %<>% rbind(., data.frame(Category = 'Current time', session_info = paste(as.character(now('Asia/Tokyo')), 'JST')))
+
 sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
 names(sys2)[2] <- c('Sys.info')
-
-sys1 %<>% rbind(., data.frame(Category = 'Current time', session_info = paste(as.character(now('Asia/Tokyo')), 'JST')))
+rownames(sys2) <- NULL
 
 cbind(sys1, sys2) %>% 
   kable(caption = 'Additional session information:') %>% 
@@ -146,7 +255,7 @@ cbind(sys1, sys2) %>%
 rm(sys1, sys2)
 ```
 
-## 5.2 Reference
+## Reference
 
 01. [Betting Strategy and Model Validation - Part II](https://englianhu.github.io/2017/10/Betting_Strategy_and_Model_Validation_-_Part_02/)
 02. [**binary.com Job Application - Quantitative Analyst** *sample question*](https://github.com/englianhu/binary.com-interview-question)
@@ -154,6 +263,6 @@ rm(sys1, sys2)
 04. [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133))
 05. [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 
---------------------
+---
 
 **Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**

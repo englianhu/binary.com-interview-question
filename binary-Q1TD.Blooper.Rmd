@@ -11,17 +11,6 @@ output:
     toc_float:
       collapsed: yes
       smooth_scroll: yes
-  tufte::tufte_html:
-    toc: yes
-    toc_depth: 4
-    self_contained: no
-  tufte::tufte_book:
-    citation_package: natbib
-    latex_engine: xelatex
-  tufte::tufte_handout:
-    citation_package: natbib
-    latex_engine: xelatex
-link-citations: yes
 ---
 
 ```{r setup, include=FALSE}
@@ -310,7 +299,7 @@ Here I wrote another extention page for Q1 which is analyse the multiple currenc
 
 ## ARMA Order
 
-```{r read-data4, echo = FALSE, eval = FALSE}
+```{r read-data4, echo=FALSE, eval=FALSE}
 ## get currency dataset online.
 #'@ getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20') #oanda only provides 180 days data. getSymbols()
 
@@ -388,7 +377,7 @@ rm(obs.data, USDJPY)
 
 Here I read my saved dataset where forecast 1 trading day advanced for daily Hi-Lo price. Kindly refer to **Real Time Trading System (Trial)** for more information.
 
-```{r read-data5, echo = FALSE}
+```{r read-data5, echo=FALSE}
 pred.data <- readRDS('data/USDJPY/pred.data.rds') %>% tbl_df
 pred.data %>% data.table
 ```
@@ -501,7 +490,7 @@ rm(pl.RHigh, pl.RLow, pl.FHigh, pl.FLow)
 hc
 ```
 
-*Graph 3.2.1B : <span style='color:red'>Forecast daily highest price</span> vs <span style='color:blue'>real daily lowest price</span>.*
+*Graph 3.2.1B : <span style='color:red'>Forecast daily lowest price</span> vs <span style='color:blue'>real daily lowest price</span>.*
 
 *Graph 3.2.1A* and *Graph 3.2.1B* above compare the real price and forecast price. Following section will be compare the MSE (Mean Squared Error).
 
@@ -517,7 +506,7 @@ data.frame(
           mean((pred$Fct.Close - pred$USDJPY.Close)^2))) %>% 
   kable(caption = 'Mean Squared Error') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_right') %>%
-  footnote(general = 'Date range of 1st and 2nd dataset.',
+  footnote(general = 'MSE of prediction.',
            general_title = 'Table 3.3.1 : ', footnote_as_chunk = TRUE)
 
 ```
@@ -526,7 +515,39 @@ $$\begin{equation}
 \frac{1}{n}\sum_{t=1}^{n}e_t^2\ \cdots\ Equation\ 3.3.1
 \end{equation}$$
 
-*Table 3.3.1 : Mean Squared Error high-low daily price.* at the right-hand-side shows the accuracy of the predictive model. You can also refer to previous studies where compare the accuracy of predicted `Open`, `High`, `Low` and `Close` price.
+*Table 3.3.1* at the right-hand-side shows the accuracy of the predictive model. You can also refer to previous studies where compare the accuracy of predicted `Open`, `High`, `Low` and `Close` price.
+
+## Univariate Preditive Error
+
+[GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH) compare the accuracy of gjrGARCH and Fi-gjrGARCH model while **Multivariate GARCH Models** states the statistical predictive error based on univariate and also use more sophistical methods for modelling. This paper I still keep using univariate gjrGARCH in mentioned paper which is not the most accurate.
+
+```{r tidy-data5}
+rx <- pred %>% 
+    mutate(diff = Fct.High - Fct.Low) %>% 
+    dplyr::filter(diff <= 0)
+
+rx %>% 
+  kable(caption = 'Preditive Error for Univariate gjrGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 3.4.1 `r paste0('[', paste(dim(rx), collapse = ' x '), ']')` : Preditive `HiLo` Error for Univariate gjrGARCH.*
+
+```{r tidy-data6}
+rx <- pred %>% 
+    mutate(Range = ifelse(Fct.Close > Fct.High | Fct.Close < Fct.Low, 0, 1)) %>% 
+    dplyr::filter(Range == 0)
+
+rx %>% 
+  kable(caption = 'Preditive Error for Univariate gjrGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 3.4.2 `r paste0('[', paste(dim(rx), collapse = ' x '), ']')` : Preditive `Cl` Error for Univariate gjrGARCH.*
+
+*Table 3.4.1* states the forecast highest price lower than forecast lowest price where *Table 3.4.2* states forecast closing price not in the range of forecast highest and lowest price. [Betting Strategy] in next section will omit the error and only trade on the high winning opportunities.
 
 # Betting Strategy
 
@@ -558,8 +579,16 @@ pred %<>% group_by(Date) %>%
 pred %<>% mutate(
         Fct.High = round(Fct.High, 3), 
         Fct.Low = round(Fct.Low, 3), 
-        Sell = ifelse(Fct.High <= High & Fct.High >= Low, 1, 0), 
-        Buy = ifelse(Fct.Low >= Low & Fct.Low <= High, 1, 0))
+        Sell = ifelse((Fct.High <= High & 
+                       Fct.High >= Low & 
+                       Fct.High > Fct.Low) &        # Here I filter the 
+                      (Fct.Close > Fct.High |       #  both HiLo and Cl 
+                       Fct.Close < Fct.Low), 1, 0), #  predictive error.
+        Buy = ifelse((Fct.Low >= Low & 
+                      Fct.Low <= High & 
+                      Fct.Low < Fct.High) &         # Here I filter the 
+                     (Fct.Close > Fct.High |        #  both HiLo and Cl 
+                      Fct.Close < Fct.Low), 1, 0))  #  predictive error.
     
 ## follow the seq to determine the buy or sell limit order stand within a day. Then the other side will be automatically switch to close transaction limit order but not placed another limit order.
 pred <- ldply(split(pred, pred$Date), function(x) {
@@ -573,6 +602,7 @@ pred <- ldply(split(pred, pred$Date), function(x) {
   x }) %>% tbl_df
 
 pred$.id <- NULL
+pred %<>% mutate(Trans = factor(Trans))
 ```
 
 Topic *2.1.4 Staking Model* in paper **Binary Q1** states that the financial market unable to know the payout rate in advanced, therefore use the forecasted pice based on statistical models. I use the amount calculated by Kelly Criterion as the stakes (possible loss or terms as stop-loss in financial market), variance of forecasted Hi/Lo and also Closed price. However it doesn't make sense in financial market.
@@ -738,20 +768,6 @@ pred %>%
 #10 2016-01-11 13:37:52     4  118.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
 ## ... with 1,234 more rows
 ```
-
-```{r staking2}
-## http://srdas.github.io/MLBook/Gambling.html#simulation-of-the-betting-strategy
-pred %>% 
-    tbl_df %>% 
-    select(-DateTime) %>% 
-    mutate(
-        Fct.High = round(Fct.High, 3), 
-        Fct.Low = round(Fct.Low, 3), 
-        Sell = ifelse(Fct.High <= High & Fct.High >= Low, 1, 0), 
-        Buy = ifelse(Fct.Low >= Low & Fct.Low <= High, 1, 0))
-```
-
-*Table 4.3.1 : Buy-Long and Sell-Short table.*
 
 ## Application of Kelly Criterion to Normal FOREX Market
 
@@ -1815,7 +1831,7 @@ plotChart2(fxm, graph.title = 'Peformance of Investment Fund for Financial Betti
 
 I can use tick-data from **FXCMTickData** for this paper while it is weekly and not up-to-date, the `getSymbols()` able to get near real-time (15 minutes late) where suite for daily trading in **Real Time Trading System (Trial)** but there are a lot of trading date is not available. 
 
-Due to I had almost completed this paper and only noticed that I am using `calC()` but not `calc_fx()` for simulation. Therefore I wrote another paper to compare the accuacy of the arma ordered GARCH models via [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH). There will be another paper for multivariate GARCH model upon completion of **Q1App2** web application.
+Due to I had almost completed this paper and only noticed that I am using `calC()` but not `calc_fx()` for simulation. Therefore I wrote another paper to compare the accuacy of the arma ordered GARCH models via **GARCH模型中的`ARMA(p,d,q)`参数最优化**. There will be another paper for multivariate GARCH model upon completion of **Q1App2** web application.
 
 Therefore High Frequency Trading in another research **Real Time FXCM** where all data price gathered from real-time will be accurate.
 
@@ -1871,6 +1887,7 @@ rm(sys1, sys2)
 02. [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm)<img src='www/hot.jpg' width='20'>
 03. [Real Time Trading System (Trial)](https://beta.rstudioconnect.com/content/3775/)<img src='www/hot.jpg' width='20'>
 
---------------------
+---
 
 **Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**
+

@@ -101,9 +101,9 @@ sim_staking <- function(mbase, init_br = 10000, pnorm_type = 'Bid-Lo',
                             ifelse(Buy == 1, 'buy', 0)))
 
       if (x[1,]$Trans == 'sell'|x[1,]$Trans == 'buy') { #if open transaction.
-        x[nrow(x),]$Trans <- 'close'                    #  then close transaction.
-      }
-      x
+        x[nrow(x),]$Trans <- 'close' }                  #  then close transaction.
+      x %<>% mutate(Trans = factor(Trans))
+      
     }) %>% tbl_df
     
   } else if (Trans == FALSE & 'Trans' %in% names(mbase)) {

@@ -372,7 +372,7 @@ system.time(fit2 <- calC(mbase[[names(cr_code)[sp]]], currency = cr_code[sp]))
 
 timeID <- llply(mbase, function(x) as.character(index(x))) %>% 
   unlist %>% unique %>% as.Date %>% sort
-timeID <- c(timeID, last(timeID) + days(1)) #the last date + 1 in order to predict the next day of last date to make whole dataset completed.
+timeID <- c(timeID, xts::last(timeID) + days(1)) #the last date + 1 in order to predict the next day of last date to make whole dataset completed.
 timeID0 <- ymd('2013-01-01')
 timeID <- timeID[timeID >= timeID0]
 
