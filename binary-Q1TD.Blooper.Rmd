@@ -1544,7 +1544,7 @@ fxm <- do.call(cbind, list(fx1a, fx1b, fx1c, fx1d, fx2a, fx2b, fx2c, fx2d))
 names(fxm) <- c('BL.B1A1.Close', 'BL.B1A2.Close', 'BL.B2A1.Close', 'BL.B2A2.Close', 
                 'AL.B1A1.Close', 'AL.B1A2.Close', 'AL.B2A1.Close', 'AL.B2A2.Close')
 
-rm(fx1a, fx1b, fx1c, fx1c, fx1d, fx1a, fx2b, fx2c, fx2c, fx2d)
+rm(fx1a, fx1b, fx1c, fx1d, fx1a, fx2b, fx2c, fx2d)
 
 plotChart2(fxm, graph.title = 'Peformance of Investment Fund for Financial Betting Market', subtitle = 'Initial Fund size : ', initial = '$10,000')
 ```
