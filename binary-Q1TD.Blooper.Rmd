@@ -579,6 +579,7 @@ pred %<>% group_by(Date) %>%
 pred %<>% mutate(
         Fct.High = round(Fct.High, 3), 
         Fct.Low = round(Fct.Low, 3), 
+        Fct.Close = round(Fct.Close, 3), 
         Sell = ifelse((Fct.High <= High & 
                        Fct.High >= Low & 
                        Fct.High > Fct.Low) &        # Here I filter the 
@@ -589,7 +590,7 @@ pred %<>% mutate(
                       Fct.Low < Fct.High) &         # Here I filter the 
                      (Fct.Close > Fct.High |        #  both HiLo and Cl 
                       Fct.Close < Fct.Low), 1, 0))  #  predictive error.
-    
+
 ## follow the seq to determine the buy or sell limit order stand within a day. Then the other side will be automatically switch to close transaction limit order but not placed another limit order.
 pred <- ldply(split(pred, pred$Date), function(x) {
     x %<>% mutate(Trans = ifelse(!is.na(Bid), 'sell', 'buy'), 
