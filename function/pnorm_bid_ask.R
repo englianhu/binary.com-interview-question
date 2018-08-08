@@ -47,13 +47,13 @@ pnorm_bid_ask <- function(mbase, pnorm_type = 'Bid-Lo', financial_bet = FALSE) {
       ## Set Fct.Low as x value, mean(Fct.High) as baseline for bid prob.
       ## BFAL : Bid first Ask later. (buy-sell)
       mbase %<>% mutate(
-        p_bid1 = pnorm(Fct.Low, mean = mean(Fct.Low), sd = sd(Fct.Low)), 
+        p_bid1 = pnorm(Fct.Low, mean = mean(Fct.High), sd = sd(Fct.High)), 
         p_ask1 = 1 - p_bid1) #bid price for sell, ask price for buy orders.
       
       ## Set Fct.High as x value, mean(Fct.Low) as baseline for ask prob.
       ## AFBL : Ask first Bid later. (sell-buy)
       mbase %<>% mutate(
-        p_ask2 = pnorm(Fct.High, mean = mean(Fct.High), sd = sd(Fct.High)), 
+        p_ask2 = pnorm(Fct.High, mean = mean(Fct.Low), sd = sd(Fct.Low)), 
         p_bid2 = 1 - p_ask2) #bid price for sell, ask price for buy orders.
       
     } else if(pnorm_type == 'Ask-Lo'|pnorm_type == 'Bid-Hi') {
@@ -61,13 +61,13 @@ pnorm_bid_ask <- function(mbase, pnorm_type = 'Bid-Lo', financial_bet = FALSE) {
       ## Set Fct.High as x value, mean(Fct.Low) as baseline for bid prob.
       ## BFAL : Bid first Ask later. (buy-sell)
       mbase %<>% mutate(
-        p_bid1 = pnorm(Fct.High, mean = mean(Fct.High), sd = sd(Fct.High)), 
+        p_bid1 = pnorm(Fct.High, mean = mean(Fct.Low), sd = sd(Fct.Low)), 
         p_ask1 = 1 - p_bid1) #bid price for sell, ask price for buy orders.
       
       ## Set Fct.Low as x value, mean(Fct.High) as baseline for ask prob.
       ## AFBL : Ask first Bid later. (sell-buy)
       mbase %<>% mutate(
-        p_ask2 = pnorm(Fct.Low, mean = mean(Fct.Low), sd = sd(Fct.Low)), 
+        p_ask2 = pnorm(Fct.Low, mean = mean(Fct.High), sd = sd(Fct.High)), 
         p_bid2 = 1 - p_ask2) #bid price for sell, ask price for buy orders.
       
     } else {

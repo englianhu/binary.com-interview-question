@@ -8,6 +8,8 @@ filterFX <- function(mbase, currency = 'JPY=X', price = 'Cl') {
   
   price_type <- c('Op', 'Hi', 'Lo', 'Cl', 'Ad')
   
+  if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
+  
   if(currency == 'AUDUSD=X') {
     if(price == 'Op') {
       mbase %<>% Op %>% na.omit; suppressWarnings(rm(`AUDUSD=X`))

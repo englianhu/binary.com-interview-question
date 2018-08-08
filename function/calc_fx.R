@@ -6,6 +6,8 @@ calc_fx <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') 
   #'@ source('function/armaSearch.R') #old optimal arma p,q value searching, but no d value. 
   source('function/opt_arma.R') #rename the function best.ARMA()
   
+  if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
+  
   mbase = suppressWarnings(filterFX(mbase, currency = currency, price = price))
   armaOrder = opt_arma(mbase)
   
