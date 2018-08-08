@@ -1,6 +1,6 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
-subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Tick-Data-HiLo For Daily Trading"
 author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
@@ -295,9 +295,39 @@ Here I directly apply *GJR-GARCH*^[Kindly refer to [GJR-GARCH 模型](https://vl
 - <s>Bayesian Time Series</s>
 - <s>Midas</s>
 
+![](www/ARCH-family.jpg)
+
+*Source presentation 3.1.1 : []()*
+
 Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over **Binary Q1 (Extention)**. The paper compare and get the optimal predictive model based on the various number of observations.
 
+## GARCH Order
+
+The `rugarch` package not only provides various GARCH models but also contains below 3 to suite our needs :
+
+- variance.model
+- mean.model
+- distribution.model
+
+Kindly refer to [rugarch包与R语言中的garch族模型](http://mob.dataguru.cn/mportal.php?mod=view&aid=794) for more information.
+
+![](www/optimal-garchOrder-1.jpg)
+
+*Source presentation 3.2.1 : []()*
+
+![](www/optimal-garchOrder-2.jpg)
+
+*Source presentation 3.2.2 : []()*
+
+![](www/optimal-garchOrder-3.jpg)
+
+*Source presentation 3.2.3 : []()*
+
+Due to above presentation compares the `infocriteria` of the GARCH order, here I directly set `garchOrder(1,1)` in my model.
+
 ## ARMA Order
+
+For ARMA order, kindly refer to **GARCH模型中的`ARMA(p,d,q)`参数最优化**^[You can read the paper by search inside section [Reference]] for more information. I used old function which is `calC()` but not `calc_fx()` in this paper.
 
 ```{r read-data4, echo=FALSE, eval=FALSE}
 ## get currency dataset online.
@@ -382,7 +412,7 @@ pred.data <- readRDS('data/USDJPY/pred.data.rds') %>% tbl_df
 pred.data %>% data.table
 ```
 
-*Table 3.2.1 : Forecast high-low daily price.*
+*Table 3.3.1 : Forecast high-low daily price.*
 
 ```{r tidy-data1}
 pred.data %>% dplyr::filter(LatestDate.GMT == '2017-01-12') %>% 
@@ -391,7 +421,7 @@ pred.data %>% dplyr::filter(LatestDate.GMT == '2017-01-12') %>%
   scroll_box(width = '100%')
 ```
 
-*Table 3.2.2 : Forecast daily price missing close price.*
+*Table 3.3.2 : Forecast daily price missing close price.*
 
 <s>Due to the day 2017-01-12 unable forecast the closed price.^[`armaSearch()` error on method = 'ML'], here I omit the transaction on that day.</s>
 
@@ -420,7 +450,7 @@ rm(pred.data)
 pred %>% data.table
 ```
 
-*Table 3.2.3 : Tidy dataset for forecast high-low daily price.*
+*Table 3.3.3 : Tidy dataset for forecast high-low daily price.*
 
 Below I test if the dataset scrapped from `quantmod::getSymbols(src = 'yahoo')` equal to **FXCMTickData**. Unfortunately the data gathered is not tally each other.
 
@@ -434,10 +464,10 @@ data.frame(MB = range(mb.dateID),
   kable(caption = 'Data Range') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_left') %>%
   footnote(general = 'Date range of 1st and 2nd dataset.',
-           general_title = 'Table 3.2.4 : ', footnote_as_chunk = TRUE)
+           general_title = 'Table 3.3.4 : ', footnote_as_chunk = TRUE)
 ```
 
-*Table 3.2.4* shows the date range for both **MB** (mbase dataset) and **TD** (tick-data).
+*Table 3.3.4* shows the date range for both **MB** (mbase dataset) and **TD** (tick-data).
 
 <span style='color:red'>Below shows all dates NOT in each dataset. Unfortunately the inconsistancy of dataset gathered from `getSymbols(src = 'yahoo')` will caused whole predictive models bias, it will affect the staking amount and evetually effect the ROI. The dataset used to working fine few years ago. There will be another research which gather only dataset from operator to solve the issue.</span>
 
@@ -476,7 +506,7 @@ hc <- highchart(type = 'stock') %>%
 hc
 ```
 
-*Graph 3.2.1A : <span style='color:red'>Forecast daily highest price</span> vs <span style='color:blue'>real daily highest price</span>.*
+*Graph 3.3.1A : <span style='color:red'>Forecast daily highest price</span> vs <span style='color:blue'>real daily highest price</span>.*
 
 ```{r plot-data1B, echo = FALSE, results = 'asis'}
 ## Plot graph
@@ -490,9 +520,9 @@ rm(pl.RHigh, pl.RLow, pl.FHigh, pl.FLow)
 hc
 ```
 
-*Graph 3.2.1B : <span style='color:red'>Forecast daily lowest price</span> vs <span style='color:blue'>real daily lowest price</span>.*
+*Graph 3.3.1B : <span style='color:red'>Forecast daily lowest price</span> vs <span style='color:blue'>real daily lowest price</span>.*
 
-*Graph 3.2.1A* and *Graph 3.2.1B* above compare the real price and forecast price. Following section will be compare the MSE (Mean Squared Error).
+*Graph 3.3.1A* and *Graph 3.3.1B* above compare the real price and forecast price. Following section will be compare the MSE (Mean Squared Error).
 
 ## Mean Squared Error
 
@@ -507,19 +537,19 @@ data.frame(
   kable(caption = 'Mean Squared Error') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'), full_width = FALSE, position = 'float_right') %>%
   footnote(general = 'MSE of prediction.',
-           general_title = 'Table 3.3.1 : ', footnote_as_chunk = TRUE)
+           general_title = 'Table 3.4.1 : ', footnote_as_chunk = TRUE)
 
 ```
 
 $$\begin{equation}
-\frac{1}{n}\sum_{t=1}^{n}e_t^2\ \cdots\ Equation\ 3.3.1
+\frac{1}{n}\sum_{t=1}^{n}e_t^2\ \cdots\ Equation\ 3.4.1
 \end{equation}$$
 
-*Table 3.3.1* at the right-hand-side shows the accuracy of the predictive model. You can also refer to previous studies where compare the accuracy of predicted `Open`, `High`, `Low` and `Close` price.
+*Table 3.4.1* at the right-hand-side shows the accuracy of the predictive model. You can also refer to previous studies where compare the accuracy of predicted `Open`, `High`, `Low` and `Close` price. For accuracy comparison of statistical models, you might refer to **GARCH模型中的`ARMA(p,d,q)`参数最优化** or previous papers for further information.
 
 ## Univariate Preditive Error
 
-[GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH) compare the accuracy of gjrGARCH and Fi-gjrGARCH model while **Multivariate GARCH Models** states the statistical predictive error based on univariate and also use more sophistical methods for modelling. This paper I still keep using univariate gjrGARCH in mentioned paper which is not the most accurate.
+**GARCH模型中的`ARMA(p,d,q)`参数最优化** compare the accuracy of gjrGARCH and Fi-gjrGARCH model while **Multivariate GARCH Models** states the statistical predictive error based on univariate and also use more sophistical methods for modelling. This paper I still keep using univariate gjrGARCH in mentioned paper which is not the most accurate.
 
 ```{r tidy-data5}
 rx <- pred %>% 
@@ -532,7 +562,7 @@ rx %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
-*Table 3.4.1 `r paste0('[', paste(dim(rx), collapse = ' x '), ']')` : Preditive `HiLo` Error for Univariate gjrGARCH.*
+*Table 3.5.1 `r paste0('[', paste(dim(rx), collapse = ' x '), ']')` : Preditive `HiLo` Error for Univariate gjrGARCH.*
 
 ```{r tidy-data6}
 rx <- pred %>% 
@@ -545,9 +575,9 @@ rx %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
-*Table 3.4.2 `r paste0('[', paste(dim(rx), collapse = ' x '), ']')` : Preditive `Cl` Error for Univariate gjrGARCH.*
+*Table 3.5.2 `r paste0('[', paste(dim(rx), collapse = ' x '), ']')` : Preditive `Cl` Error for Univariate gjrGARCH.*
 
-*Table 3.4.1* states the forecast highest price lower than forecast lowest price where *Table 3.4.2* states forecast closing price not in the range of forecast highest and lowest price. [Betting Strategy] in next section will omit the error and only trade on the high winning opportunities.
+*Table 3.5.1* states the forecast highest price lower than forecast lowest price where *Table 3.5.2* states forecast closing price not in the range of forecast highest and lowest price. [Betting Strategy] in next section will omit the error and only trade on the high winning opportunities.
 
 # Betting Strategy
 
@@ -617,7 +647,7 @@ Topic *2.1.4 Staking Model* in paper **Binary Q1** states that the financial mar
 - "Suppose you have 1MM and your max allowable drawdown is 200K - then from the Kelly perspective you don't have 1MM, you have 200K in capital."
 - If you bet .5 K.C. you get .75 of the returns with .5 of the volatility - half Kelly is better psychologically.
 
-Source : [Kelly Criterion in Forex *primordia • Jul 22, 2017, 7:07 PM*](https://amp.reddit.com/r/Forex/comments/6oxh5e/kelly_criterion_in_forex)
+*Source quote 4.1.1 : [Kelly Criterion in Forex primordia • Jul 22, 2017, 7:07 PM](https://amp.reddit.com/r/Forex/comments/6oxh5e/kelly_criterion_in_forex)*
 
 > EXAMPLE
 Let's look at a trading example.
@@ -643,7 +673,7 @@ If you invest more than 20% then you will turn this great strategy into one that
 > 
 That's how you apply the Kelly Criterion in practice.
 
-Source : [ForexBoat:Kelly Criterion](https://www.forexboat.com/kelly-criterion/)^[You may feel free to read the comment onto the article [Q&A on Kelly criterion, stop-loss, take-profit and also leverage ratio](https://www.forexboat.com/kelly-criterion/#comment-2053452762) as well.]
+*Source quote 4.1.2 : [ForexBoat:Kelly Criterion](https://www.forexboat.com/kelly-criterion/)^[You may feel free to read the comment onto the article [Q&A on Kelly criterion, stop-loss, take-profit and also leverage ratio](https://www.forexboat.com/kelly-criterion/#comment-2053452762) as well.]*
 
 ## Staking Strategy
 
@@ -728,7 +758,7 @@ No               .id  StartDate LatestDate InitFund  LatesFund    Profit        
 ```
 *Table 4.2.2 : betting strategy for normal FOREX market.*
 
-Kindly refer to [2.1.5 Return of Investment in **binary Q1**](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html#return-of-investment) for full table. However, the paper does not .
+Kindly refer to [2.1.5 Return of Investment in **binary Q1**](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html#return-of-investment) for full table. However, the paper does not filter the univariate preditive error.
 
 ## Optimal Edge
 
@@ -770,13 +800,15 @@ pred %>%
 ## ... with 1,234 more rows
 ```
 
-As mentioned, my previous paper using `pnorm()` without weighted the most recent price, here I try to use `ppois()` to overcame the weighted data issue^[As the GARCH model has already forecast the most recent price.].
+As mentioned, my previous paper using `pnorm()` without weighted the most recent price, here I try to use `ppois()` to overcame the weighted data issue^[As the GARCH model has already forecast the most recent price.]. However, there has a question for stop-loss in order to make the $Equation\ 4.1.1$ stand. `B = 20 pips / 40 pips = 0.5 where 20 pips take-profit and 40 pips stop-loss` in *Source quote 4.1.2* also provides an example for mentioned equation.
 
 ## Application of Kelly Criterion to Normal FOREX Market
 
 Previous paper using the forecast HiLo price and forecast closing price as settlement, the stakes will be the edge for `pnorm(Hi, mean(Lo), sd(Lo))` and vice verse. It will be $\frac{\sigma_{Hi}}{\sigma_{Lo}}$ or $\frac{\sigma_{Lo}}{\sigma_{Hi}}$ but missing the difference of pips between buy/sell price and closed price.
 
 In this paper will count the difference of pips and also leverage ratio. The risk management on leverage will be counted into the staking model.
+
+The papers **The Kelly Criterion and the Stock Market** and **Beat the Market - A Scientific Stock Market System** states the application of Kelly criterion onto the stock market. Kindly refer to the paper in [Reference] for further knowledge.
 
 ## Application of Kelly Criterion to Financial Betting Market
 
@@ -1887,10 +1919,13 @@ rm(sys1, sys2)
 ## Reference
 
 01. [Quant Strategies HFT](https://github.com/englianhu/Quant-Strategies-HFT)
-02. [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm)<img src='www/hot.jpg' width='20'>
+02. [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm)
 03. [Real Time Trading System (Trial)](https://beta.rstudioconnect.com/content/3775/)<img src='www/hot.jpg' width='20'>
+04. [](The Kelly Criterion and the Stock Market.pdf)
+05. [](Beat the Market - A Scientific Stock Market System.pdf)<img src='www/hot.jpg' width='20'>
+06. [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 
 ---
 
-**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**
+**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
 

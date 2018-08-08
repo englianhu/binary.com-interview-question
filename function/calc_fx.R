@@ -3,7 +3,6 @@ calc_fx <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') 
   ## Using "memoise" to automatically cache the results
   ## http://rpubs.com/englianhu/arma-order-for-garch
   source('function/filterFX.R')
-  #'@ source('function/armaSearch.R') #old optimal arma p,q value searching, but no d value. 
   source('function/opt_arma.R') #rename the function best.ARMA()
   
   if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
@@ -11,13 +10,13 @@ calc_fx <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') 
   mbase = suppressWarnings(filterFX(mbase, currency = currency, price = price))
   armaOrder = opt_arma(mbase)
   
-  ## Set arma order for `p, d, q` for GARCH model.
+  ## Set arma order and arfima for `p, d, q` for GARCH model.
   #'@ https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch
   spec = ugarchspec(
     variance.model = list(
-      model = 'gjrGARCH', garchOrder = c(1, 1), 
-      submodel = NULL, external.regressors = NULL, 
-      variance.targeting = FALSE), 
+      model = 'gjrGARCH', garchOrder = c(1, 1),    # Univariate Garch 2012 powerpoint.pdf
+      submodel = NULL, external.regressors = NULL, #   compares the garchOrder and 
+      variance.targeting = FALSE),                 #   concludes garch(1,1) is the best fit.
     mean.model = list(
       armaOrder = armaOrder[c(1, 3)], #set arma order for `p` and `q`.
       include.mean = TRUE, archm = FALSE, 
