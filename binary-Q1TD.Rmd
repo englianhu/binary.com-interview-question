@@ -1,6 +1,6 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
-subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Tick-Data-HiLo For Daily Trading"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>"
 author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
@@ -297,7 +297,7 @@ Here I directly apply *GJR-GARCH*^[Kindly refer to [GJR-GARCH 模型](https://vl
 
 ![](www/ARCH-family.jpg)
 
-*Source presentation 3.1.1 : []()*
+*Source presentation 3.1.1 : [Univariate Garch 2012 (powerpoint)](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Univariate%20Garch%202012%20powerpoint.pdf)*
 
 Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over **Binary Q1 (Extention)**. The paper compare and get the optimal predictive model based on the various number of observations.
 
@@ -313,15 +313,15 @@ Kindly refer to [rugarch包与R语言中的garch族模型](http://mob.dataguru.c
 
 ![](www/optimal-garchOrder-1.jpg)
 
-*Source presentation 3.2.1 : []()*
+*Source presentation 3.2.1 : Univariate Garch 2012 (powerpoint)*
 
 ![](www/optimal-garchOrder-2.jpg)
 
-*Source presentation 3.2.2 : []()*
+*Source presentation 3.2.2 : Univariate Garch 2012 (powerpoint)*
 
 ![](www/optimal-garchOrder-3.jpg)
 
-*Source presentation 3.2.3 : []()*
+*Source presentation 3.2.3 : Univariate Garch 2012 (powerpoint)*
 
 Due to above presentation compares the `infocriteria` of the GARCH order, here I directly set `garchOrder(1,1)` in my model.
 
@@ -675,7 +675,7 @@ That's how you apply the Kelly Criterion in practice.
 
 *Source quote 4.1.2 : [ForexBoat:Kelly Criterion](https://www.forexboat.com/kelly-criterion/)^[You may feel free to read the comment onto the article [Q&A on Kelly criterion, stop-loss, take-profit and also leverage ratio](https://www.forexboat.com/kelly-criterion/#comment-2053452762) as well.]*
 
-## Staking Strategy
+## Odds Price
 
 [Chapter 20 Against the Odds: The Mathematics of Gambling](http://srdas.github.io/MLBook/Gambling.html#odds)^[Publised book [**Data Science: Theories, Models, Algorithms, and Analytics** - *Sanjiv Ranjan Das (2017-03-24)*](http://srdas.github.io/MLBook/).] elaborates the odds price, edge, Kelly Criterion staking model, portfolio, Entropy and also day trading.
 
@@ -693,27 +693,50 @@ g(f) = \lim_{t \rightarrow \infty} g_t(f) = E[\ln(1+r + f (Z-r)\varepsilon)]
  \ \cdots Equation\ 4.2.2 
  \end{equation}$$
 
-and $\varepsilon_{i}$ is a weight function where applied statistical models to forecast the price. I used some models and eventually concludes the GJR-GARCH model generated highest ROI. The weight function doesn't same with different currencies since it using substraction among 2 forecast prices but not in ratio^[The pips difference for USD/JPY different with others. Thereore there will need to compare among currencies (if generated higher ROI than normal Kelly model).]. You might look at the Kelly adjusted model 5 and 6 in section [Return of Investment].
+and $\varepsilon_{i}$ is a weight function where applied statistical models to forecast the price. I used some models and eventually concludes the GJR-GARCH model generated highest ROI. The weight function doesn't same with different currencies since it using substraction among 2 forecast prices but not in ratio^[The pips difference for USD/JPY different with others. Thereore there will need to compare among currencies.].
 
 $$\begin{equation}
 \varepsilon = h(x)_{1} - v
  \ \cdots Equation\ 4.2.3 
  \end{equation}$$
 
-$v$ is a switch function to determine the settled price.
+where $tp = abs(h(x)_{1} - h(x)_{2})$ and $tp$ is take-profit pips. As mentioned, my previous paper using `pnorm()` without weighted the most recent price, here I try to use `ppois()` to overcame the weighted data issue^[As the GARCH model has already forecast the most recent price.]. However, there has a question for stop-loss in order to make the $Equation\ 4.1.1$ stand. `B = 20 pips / 40 pips = 0.5 where 20 pips take-profit and 40 pips stop-loss` in *Source quote 4.1.2* also provides an example for mentioned equation.
 
-$$\begin{equation}
-v
-\left\{\begin{matrix}
-h(x)_{2}
- & if(Lo <= h(x)_{2} <= Hi)
- & \\ Cl
- & otherwise
-\end{matrix}\right.
-\ \cdots Equation\ 4.2.4 
-\end{equation}$$
+Here I compare both $\sigma^2$ and VaR retrived from GARCH model to set as stop-loss pips.
 
-where $Hi$, $Lo$ and $Cl$ are the daily highest, lowest and closed price.
+```{r stop-loss1}
+## Both calC() and calc_fx() added new return value.
+##   paper binary-Q1-FiGJRGARCH.Rmd already completed. All 
+##   dataset need to re-simulate in order to get the VaR 
+##   and sigma^2 values to set as stop-loss pips. Only 
+##   based on the odds price we can calculate the staking 
+##   amount.
+
+calC <- function(..){
+  ...
+  ...
+  ...
+  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
+             fit = fit, AIC = infocriteria(fit))
+  return(tmp)
+}
+
+calc_fx <- function(..){
+  ...
+  ...
+  ...
+  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
+             fit = fit, AIC = infocriteria(fit))
+  return(tmp)
+}
+```
+
+<span style='color:red'>Here I forced to changed this paper to be blooper due to :</span>
+
+- Not most accurate model
+- Lake of VaR and $\sigma$ value.
+
+---
 
 **Binary Q1** applied a more sophisticated model as stated above to compares all possible outcomes of predicted price and ROI. Due to the financial betting only allows player place bets and awaiting for the settlement (unless placed another bet at other predicted price), there will be no any limit order and close transaction request (similar with FOREX trading market can place more than 1 limit order to lock the profit).
 
@@ -799,8 +822,6 @@ pred %>%
 #10 2016-01-11 13:37:52     4  118.   NA      120.    119.     0    NA     1     1     1     0    NA    NA
 ## ... with 1,234 more rows
 ```
-
-As mentioned, my previous paper using `pnorm()` without weighted the most recent price, here I try to use `ppois()` to overcame the weighted data issue^[As the GARCH model has already forecast the most recent price.]. However, there has a question for stop-loss in order to make the $Equation\ 4.1.1$ stand. `B = 20 pips / 40 pips = 0.5 where 20 pips take-profit and 40 pips stop-loss` in *Source quote 4.1.2* also provides an example for mentioned equation.
 
 ## Application of Kelly Criterion to Normal FOREX Market
 
@@ -1921,8 +1942,8 @@ rm(sys1, sys2)
 01. [Quant Strategies HFT](https://github.com/englianhu/Quant-Strategies-HFT)
 02. [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm)
 03. [Real Time Trading System (Trial)](https://beta.rstudioconnect.com/content/3775/)<img src='www/hot.jpg' width='20'>
-04. [](The Kelly Criterion and the Stock Market.pdf)
-05. [](Beat the Market - A Scientific Stock Market System.pdf)<img src='www/hot.jpg' width='20'>
+04. [The Kelly Criterion and the Stock Market](The Kelly Criterion and the Stock Market.pdf)
+05. [Beat the Market - A Scientific Stock Market System](Beat the Market - A Scientific Stock Market System.pdf)
 06. [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 
 ---

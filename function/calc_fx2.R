@@ -1,4 +1,5 @@
-calc_fx <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
+calc_fx2 <- memoise(function(mbase, .mv.model = 'dcc', .currency = 'JPY=X', 
+                             .ahead = 1, .price = 'Cl') {
   
   ## Using "memoise" to automatically cache the results
   ## http://rpubs.com/englianhu/arma-order-for-garch
@@ -7,30 +8,27 @@ calc_fx <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') 
   
   if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
   
-  mbase = suppressWarnings(filterFX(mbase, currency = currency, price = price))
+  mbase = suppressWarnings(filterFX(mbase, currency = .currency, price = .price))
   armaOrder = opt_arma(mbase)
   
   ## Set arma order and arfima for `p, d, q` for GARCH model.
   #'@ https://stats.stackexchange.com/questions/73351/how-does-one-specify-arima-p-d-q-in-ugarchspec-for-ugarchfit-in-rugarch
-  spec = ugarchspec(
+  spec = gogarchspec(
     variance.model = list(
       model = 'gjrGARCH', garchOrder = c(1, 1),    # Univariate Garch 2012 powerpoint.pdf
       submodel = NULL, external.regressors = NULL, #   compares the garchOrder and 
       variance.targeting = FALSE),                 #   concludes garch(1,1) is the best fit.
     mean.model = list(
-      armaOrder = armaOrder[c(1, 3)], #set arma order for `p` and `q`.
-      include.mean = TRUE, archm = FALSE, 
-      archpow = 1, arfima = TRUE, #set arima = TRUE
+      model = c('constant', 'AR', 'VAR'), robust = FALSE, 
+      lag = 1, lag.max = NULL, lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
       external.regressors = NULL, 
-      archex = FALSE), 
-    fixed.pars = list(arfima = armaOrder[2]), #set fixed.pars for `d` value
-    distribution.model = 'snorm')
+      robust.control = list("gamma" = 0.25, "delta" = 0.01, "nc" = 10, "ns" = 500)), 
+    distribution.model = c('mvnorm', 'manig', 'magh'))
   
-  fit = ugarchfit(spec, mbase, solver = 'hybrid')
+  fit = gogarchfit(spec, mbase, solver = 'hybrid')
   
-  fc = ugarchforecast(fit, n.ahead = ahead)
-  #res = xts::last(attributes(fc)$forecast$seriesFor)
-  res = tail(attributes(fc)$forecast$seriesFor, 1)
+  fc = gogarchforecast(fit, n.ahead = .ahead)
+  res = fitted(forecast)
   colnames(res) = names(mbase)
   latestPrice = tail(mbase, 1)
   
@@ -61,5 +59,6 @@ calc_fx <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') 
   tmp = list(latestPrice = latestPrice, forecastPrice = res, 
              fit = fit, AIC = infocriteria(fit))
   return(tmp)
-  })
+})
+
 

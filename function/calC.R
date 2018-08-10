@@ -53,6 +53,6 @@ calC <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
   #res <- as.xts(res)
   
   tmp = list(latestPrice = latestPrice, forecastPrice = res, 
-             AIC = infocriteria(fit))
+             fit = fit, AIC = infocriteria(fit))
   return(tmp)
 })

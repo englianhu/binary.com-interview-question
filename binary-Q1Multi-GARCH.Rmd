@@ -205,7 +205,16 @@ fit <- llply(fxPrice, function(x){
 
 ## GO-GARCH
 
+```{r go-garch}
 
+## attributes of univariate stage 1
+attributes(attributes(fit)$mfit$ufit)
+
+## attributes of univariate stage 2
+names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[1]])$fit)
+names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[2]])$fit)
+names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[3]])$fit)
+```
 
 ## Copula-GARCH
 
