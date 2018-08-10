@@ -675,7 +675,7 @@ That's how you apply the Kelly Criterion in practice.
 
 *Source quote 4.1.2 : [ForexBoat:Kelly Criterion](https://www.forexboat.com/kelly-criterion/)^[You may feel free to read the comment onto the article [Q&A on Kelly criterion, stop-loss, take-profit and also leverage ratio](https://www.forexboat.com/kelly-criterion/#comment-2053452762) as well.]*
 
-## Odds Price
+## Staking Model
 
 [Chapter 20 Against the Odds: The Mathematics of Gambling](http://srdas.github.io/MLBook/Gambling.html#odds)^[Publised book [**Data Science: Theories, Models, Algorithms, and Analytics** - *Sanjiv Ranjan Das (2017-03-24)*](http://srdas.github.io/MLBook/).] elaborates the odds price, edge, Kelly Criterion staking model, portfolio, Entropy and also day trading.
 
@@ -700,43 +700,20 @@ $$\begin{equation}
  \ \cdots Equation\ 4.2.3 
  \end{equation}$$
 
-where $tp = abs(h(x)_{1} - h(x)_{2})$ and $tp$ is take-profit pips. As mentioned, my previous paper using `pnorm()` without weighted the most recent price, here I try to use `ppois()` to overcame the weighted data issue^[As the GARCH model has already forecast the most recent price.]. However, there has a question for stop-loss in order to make the $Equation\ 4.1.1$ stand. `B = 20 pips / 40 pips = 0.5 where 20 pips take-profit and 40 pips stop-loss` in *Source quote 4.1.2* also provides an example for mentioned equation.
+$v$ is a switch function to determine the settled price.
 
-Here I compare both $\sigma^2$ and VaR retrived from GARCH model to set as stop-loss pips.
+$$\begin{equation}
+v
+\left\{\begin{matrix}
+h(x)_{2}
+ & if(Lo <= h(x)_{2} <= Hi)
+ & \\ Cl
+ & otherwise
+\end{matrix}\right.
+\ \cdots Equation\ 4.2.4 
+\end{equation}$$
 
-```{r stop-loss1}
-## Both calC() and calc_fx() added new return value.
-##   paper binary-Q1-FiGJRGARCH.Rmd already completed. All 
-##   dataset need to re-simulate in order to get the VaR 
-##   and sigma^2 values to set as stop-loss pips. Only 
-##   based on the odds price we can calculate the staking 
-##   amount.
-
-calC <- function(..){
-  ...
-  ...
-  ...
-  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
-             fit = fit, AIC = infocriteria(fit))
-  return(tmp)
-}
-
-calc_fx <- function(..){
-  ...
-  ...
-  ...
-  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
-             fit = fit, AIC = infocriteria(fit))
-  return(tmp)
-}
-```
-
-<span style='color:red'>Here I forced to changed this paper to be blooper due to :</span>
-
-- Not most accurate model
-- Lake of VaR and $\sigma$ value.
-
----
+where $Hi$, $Lo$ and $Cl$ are the daily highest, lowest and closed price.
 
 **Binary Q1** applied a more sophisticated model as stated above to compares all possible outcomes of predicted price and ROI. Due to the financial betting only allows player place bets and awaiting for the settlement (unless placed another bet at other predicted price), there will be no any limit order and close transaction request (similar with FOREX trading market can place more than 1 limit order to lock the profit).
 
@@ -1885,11 +1862,116 @@ plotChart2(fxm, graph.title = 'Peformance of Investment Fund for Financial Betti
 
 # Conclusion
 
+## Conclusion and Future Works
+
 I can use tick-data from **FXCMTickData** for this paper while it is weekly and not up-to-date, the `getSymbols()` able to get near real-time (15 minutes late) where suite for daily trading in **Real Time Trading System (Trial)** but there are a lot of trading date is not available. 
 
 Due to I had almost completed this paper and only noticed that I am using `calC()` but not `calc_fx()` for simulation. Therefore I wrote another paper to compare the accuacy of the arma ordered GARCH models via **GARCH模型中的`ARMA(p,d,q)`参数最优化**. There will be another paper for multivariate GARCH model upon completion of **Q1App2** web application.
 
 Therefore High Frequency Trading in another research **Real Time FXCM** where all data price gathered from real-time will be accurate.
+
+## Correction in Next Paper
+
+$$\begin{equation}
+\varepsilon = h(x)_{1} - h(x)_{2}
+ \ \cdots Equation\ 4.2.3 
+ \end{equation}$$
+
+where $tp = abs(h(x)_{1} - h(x)_{2})$ and $tp$ is take-profit pips. As mentioned, my previous paper using `pnorm()` without weighted the most recent price, here I try to use `ppois()` to overcame the weighted data issue^[As the GARCH model has already forecast the most recent price.]. However, there has a question for stop-loss in order to make the $Equation\ 4.1.1$ stand. `B = 20 pips / 40 pips = 0.5 where 20 pips take-profit and 40 pips stop-loss` in *Source quote 4.1.2* also provides an example for mentioned equation.
+
+Here I compare both $\sigma^2$ and VaR retrived from GARCH model to set as stop-loss pips.
+
+```{r stop-loss1}
+## Both calC() and calc_fx() added new return value.
+##   paper binary-Q1-FiGJRGARCH.Rmd already completed. All 
+##   dataset need to re-simulate in order to get the VaR 
+##   and sigma^2 values to set as stop-loss pips. Only 
+##   based on the odds price we can calculate the staking 
+##   amount.
+
+calC <- function(..){
+  ...
+  ...
+  ...
+  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
+             fit = fit, AIC = infocriteria(fit))
+  return(tmp)
+}
+
+calc_fx <- function(..){
+  ...
+  ...
+  ...
+  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
+             fit = fit, AIC = infocriteria(fit))
+  return(tmp)
+}
+```
+
+<span style='color:red'>Here I forced to changed this paper to be blooper due to :</span>
+
+- Existing saved simulated model files does not use most accurate Fi-gjrGARCH model.
+- Existing saved simulated model files does not include VaR and $\sigma$ value in order to set as a stop-loss pips.
+- When I reviewd the coding, there are statistical error occured in univariate forecasting. Although it will not affect whole staking model by filter before placed order, the multivariate models might be test the accuracy at first in order to modify the staking model.
+- Existing staking model is wrong since loss bets count as 0 as shows in *Table 5.1.1* and *Table 5.2.1*, it just a small error which can be corrected but the biggest problem is that whole predictive simulation need to do gain due to lack of stop-loss pips to correct the odds price in order to make Kelly criterion model stand.
+- Only know highest `bid` or lowest `ask` time in daily trading is not enough due to the stop-loss point might probably hit and close a transaction if based on the daily High-Low data.
+- I want to model a dynamic fractional Kelly criterion $0.5 <= f <= 1$, and compare with `optimalf()`, normal Kelly models and also modified Kelly model^[The paper named **Modified Kelly Criteria** in [Reference]] in section 2 **Application of Kelly Criterion model in Sportsbook Investment** to test the best fit betting strategy. It will occupied a long section in [Optimal Edge] but will test it in next paper.
+
+```{r test-HiLo}
+dfm <- xts(tibble(bid = round(rnorm(100, mean = 1, sd = 0.1), 5)) %>% 
+               mutate(ask = bid + 0.00003), order.by = now('Asia/Tokyo') - seconds(1:100))
+```
+
+```{r plot-HiLo}
+ggplot(dfm, aes(index(dfm))) + 
+    geom_line(aes(y = bid, colour = 'bid')) + 
+    geom_line(aes(y = ask, colour = 'ask')) + 
+    xlab('Time [Seconds]') + ylab('Currency X / Currency Y')
+```
+
+*Graph 6.2.1 : Demo real-time bid ask price moving.*
+
+Above graph shows an example for open transaction, take-profit and stop-loss point. The Hi-Lo `bid/ask` price without whole course of price flutuation will not be able to know the exact ROI.
+
+```{r fx-HiLo}
+subset(dfm, bid == max(bid)|ask == min(ask))
+```
+
+```{r smp-HiLo}
+## randomly set as example
+Hi <- dfm$bid %>% as.vector %>% sort(decreasing = TRUE) %>% .[2]
+Lo <- dfm$ask %>% as.vector %>% sort %>% .[2]
+
+## forecast highest and lowest price.  
+s.fct.Hi <- dfm$bid %>% as.vector %>% sort(decreasing = TRUE) %>% .[3]
+s.fct.Lo <- dfm$ask %>% as.vector %>% sort %>% .[3]
+
+##odds price for buy transaction, tk = take-profit and sl = stop-loss.
+buy.tk <- s.fct.Hi - s.fct.Lo #provided the univariate Hi > Lo
+buy.sl <- s.fct.Lo - 0.1 #given that 0.01 is a calculated value.
+
+##odds price for sell transaction, tk = take-profit and sl = stop-loss.
+sell.tk <- s.fct.Hi - s.fct.Lo #provided the univariate Hi > Lo 
+sell.sl <- s.fct.Hi + 0.1 #given that 0.01 is a calculated value.
+```
+
+The limit order of buy on `r s.fct.Lo` or sell on `r s.fct.Hi` will open transaction, and then :
+
+- If first ask price hit `r s.fct.Lo`, buy order limit open transaction.
+
+  + If bid price first hit `r buy.sl`, closed transaction and loss 0.1.
+  + If bid price first hit `r s.fct.Hi`, closed transaction and gain `r buy.tk`.
+  + If bid price does not appear within the day, then the closing price will be the settled price.
+  
+- If first bid price hit `r s.fct.Hi`, sell order limit open transaction.
+
+  + If ask price first hit `r sell.sl`, closed transaction and loss 0.1.
+  + If ask price first hit `r s.fct.Lo`, closed transaction and gain `r buy.tk`.
+  + If ask price does not appear within the day, then the closing price will be the settled price.
+
+From the example above, The daily highest price is `r Hi` and daily lowest price is `r Lo`. The highest `bid/ask` price is not neccesary daily Hi-Lo price. We unable know if we buy first or sell first solely based on the Hi-Lo tick data and also the daily OHLCV dataset but a completed tick-data required.^[I initially think only use filted Hi-Lo tick-data to wrote this paper and also states completed tick-data will be in project **Real Time FXCM** in section [Conclusion and Future Works]. However due to noticed a lot of ommit and careless and new idea upon studied couples reference at the same time.]
+
+Here I also publish this paper in order to let other quantitative traders or enthursiasters know the ROI of previous paper is not accurate based on mentioned equations in [Staking Model] and the table *Table 5.1.1* and *Table 5.1.1*.
 
 ```{r stopPar, echo = FALSE}
 ## Set options back to original options
