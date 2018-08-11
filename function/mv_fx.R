@@ -32,7 +32,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'aDCC',
     mbase <- cbind(Op(mbase), Hi(mbase), Lo(mbase), Cl(mbase))
     
   } else if (.include.Op == FALSE & .Cl.only == FALSE) {
-    base <- cbind(Hi(mbase), Lo(mbase), Cl(mbase))
+    mbase <- cbind(Hi(mbase), Lo(mbase), Cl(mbase))
     
   } else if ((.include.Op == TRUE & .Cl.only == TRUE)|
              (.include.Op == FALSE & .Cl.only == TRUE)) {

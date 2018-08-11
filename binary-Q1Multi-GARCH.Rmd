@@ -285,12 +285,12 @@ bk.dcc <- llply(md, function(x) {
     fit <- tryCatch(
       mv_fx(bk.base, .model = x, .solver = y, 
             .include.Op = FALSE, .Cl.only = TRUE), 
-      error = function(e) cat(paste0(x, '.', y, ' error.\n')))
+      error = function(e) cat(paste0('bk.', x, '.', y, ' error.\n')))
   
   if (!is.null('fit')) {
     eval(parse(text = paste0(
       "saveRDS(fit, 'data/fx/", paste0('bk.', x, '.', y), ".rds')")))
-    cat(paste0(x, '.', y, ' saved.\n'))
+    cat(paste0('bk.', x, '.', y, ' saved.\n'))
   }
   })
   names(dm) <- sv
@@ -373,7 +373,7 @@ pt.dcc <- llply(md, function(x) {
         eval(parse(text = paste0(
           "saveRDS(fit, 'data/fx/", 
           paste0('pt.', x, '.', y, '.', z), ".rds')")))
-        cat(paste0(x, '.', y, '.', z, ' saved.\n'))
+        cat(paste0('pt.', x, '.', y, '.', z, ' saved.\n'))
         }
     })
     names(TF) <- op
@@ -509,8 +509,8 @@ rm(sys1, sys2)
 03. [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 04. [The `rmgarch` Models - Background and Properties](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/The%20rmgarch%20Models%20-%20Background%20and%20Properties.pdf)
 05. [Financial Econometrics Practical - Univariate Volatility Modelling](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Financial%20Econometrics%20Practical%20-%20Univariate%20Volatility%20Modelling.pdf)
-06. [](http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/)
-07. [](https://eranraviv.com/multivariate-volatility-forecasting-2/)
+06. [The GARCH-DCC Model and 2-Stage DCC(MVT) Estimation](http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/)
+07. [Multivariate Volatility Forecasting, Part 2 – Equicorrelation](https://eranraviv.com/multivariate-volatility-forecasting-2/)
 
 ---
 
