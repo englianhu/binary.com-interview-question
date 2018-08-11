@@ -1957,13 +1957,13 @@ sell.sl <- s.fct.Hi + 0.1 #given that 0.01 is a calculated value.
 
 The limit order of buy on `r s.fct.Lo` or sell on `r s.fct.Hi` will open transaction, and then :
 
-- If first ask price hit `r s.fct.Lo`, buy order limit open transaction.
+1) If first ask price hit `r s.fct.Lo`, buy order limit open transaction.
 
   + If bid price first hit `r buy.sl`, closed transaction and loss 0.1.
   + If bid price first hit `r s.fct.Hi`, closed transaction and gain `r buy.tk`.
   + If bid price does not appear within the day, then the closing price will be the settled price.
   
-- If first bid price hit `r s.fct.Hi`, sell order limit open transaction.
+2) If first bid price hit `r s.fct.Hi`, sell order limit open transaction.
 
   + If ask price first hit `r sell.sl`, closed transaction and loss 0.1.
   + If ask price first hit `r s.fct.Lo`, closed transaction and gain `r buy.tk`.
@@ -2024,9 +2024,10 @@ rm(sys1, sys2)
 01. [Quant Strategies HFT](https://github.com/englianhu/Quant-Strategies-HFT)
 02. [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm)
 03. [Real Time Trading System (Trial)](https://beta.rstudioconnect.com/content/3775/)<img src='www/hot.jpg' width='20'>
-04. [The Kelly Criterion and the Stock Market](The Kelly Criterion and the Stock Market.pdf)
-05. [Beat the Market - A Scientific Stock Market System](Beat the Market - A Scientific Stock Market System.pdf)
+04. [The Kelly Criterion and the Stock Market](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/The%20Kelly%20Criterion%20and%20the%20Stock%20Market.pdf)
+05. [Beat the Market - A Scientific Stock Market System](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Beat%20the%20Market%20-%20A%20Scientific%20Stock%20Market%20System.pdf)
 06. [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+07. [Modified Kelly Criteria](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Modified%20Kelly%20Criteria.pdf)
 
 ---
 

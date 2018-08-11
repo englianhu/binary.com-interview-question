@@ -15,12 +15,14 @@ output:
 
 ```{r setup}
 suppressPackageStartupMessages(library('BBmisc'))
+#'@ suppressPackageStartupMessages(library('rmsfuns'))
 
 pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch')
 
 suppressAll(lib(pkgs))
+#'@ load_pkg(pkgs)
 
-funs <- c('calc_fx.R', 'opt_arma.R')
+funs <- c('calc_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
 
 ## Set option to below if you want to plot an independent webpage with graph 
@@ -52,7 +54,7 @@ names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 
 
 price_type <- c('Op', 'Hi', 'Lo', 'Cl')
 
-## 读取雅虎数据。
+## Read presaved Yahoo data.
 mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
 ```
 
@@ -170,11 +172,15 @@ From above tables, we know the univariate statistical modelling will facing stat
 
 ## DCC
 
+### Abtract of DDC
 
-```{r multivariate, eval=FALSE}
-fit <- llply(fxPrice, function(x){
+Due to article **The GARCH DCC Model and 2 Stage DCCMVT Estimation**^[Kindly refer to [Reference] for further reading.] compares the `model = c('DCC', 'aDCC')` but not `model = 'FDCC'` with all distributions and concludes that `aDCC` with `distribution = 'mvt'` is the best fit model and distribution for multivariate GARCH model. Here I directly use `mvt` but in different `solver` parameters.
 
-  armaOrder <- armaSearch(x) %>% dplyr::filter(AIC == min(AIC)) %>% .[c('p', 'q')] %>% unlist
+```{r dcc1, echo=FALSE, eval=FALSE}
+### ========= using cluster for sampling ===============
+fit <- llply(na.omit(Cl(mbase[['USDJPY']])), function(x){
+  
+  armaOrder = opt_arma(x)
   
   xspec = ugarchspec(
     variance.model = list(
@@ -182,30 +188,202 @@ fit <- llply(fxPrice, function(x){
       submodel = NULL, external.regressors = NULL, 
       variance.targeting = FALSE), 
     mean.model = list(
-      armaOrder = armaOrder, 
+      armaOrder = armaOrder[c(1, 3)], 
       include.mean = TRUE, archm = FALSE, 
-      archpow = 1, arfima = FALSE, 
+      archpow = 1, arfima = TRUE, 
       external.regressors = NULL, 
       archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
     distribution.model = 'snorm')
+    
+  uspec = multispec(replicate(4, xspec))
   
-  uspec = multispec(replicate(10, xspec))
-
   spec1 = dccspec(uspec = uspec, dccOrder = c(1, 1), 
                   model='aDCC', distribution = 'mvt')
   
-  cl = makePSOCKcluster(10)
+  cl = makePSOCKcluster(4)
   multf = multifit(uspec, x, cluster = cl)
   
   fit1 = dccfit(spec1, data = x, solver = 'hybrid', 
                 fit.control = list(eval.se = TRUE), 
                 fit = multf, cluster = cl)
+  
+  return(fit1)
   })
 ```
 
+### Modelling for Banker
+
+```{r bk-dcc, eval=FALSE}
+## Possible multivariate models.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
+
+## Includes the open price or not.
+bk.base <- llply(mbase, Cl)
+bk.base %<>% do.call(cbind, .) %>% na.omit
+
+## Statistical modelling
+bk.dcc <- llply(md, function(x) {
+  dm <- llply(sv, function(y) {
+    fit <- tryCatch(
+      mv_fx(bk.base, .model = x, .solver = y, 
+            .include.Op = FALSE, .Cl.only = TRUE), 
+      error = function(e) cat(paste0(x, '.', y, ' error.\n')))
+  
+  if (!is.null('fit')) {
+    eval(parse(text = paste0(
+      "saveRDS(fit, 'data/fx/", paste0('bk.', x, '.', y), ".rds')")))
+    cat(paste0(x, '.', y, ' saved.\n'))
+  }
+  })
+  names(dm) <- sv
+  dm
+})
+names(bk.dcc) <- md
+```
+
+I executed above coding and there are quite some models occured errors. The `FDCC` models do faced error even though change all possible solvers. Below I read presaved data which executed above.
+
+```{r read-bkdcc}
+fls <- list.files('data/fx', pattern = '^bk.') %>% str_replace_all('.rds', '')
+
+bk.dcc <- sapply(fls, function(x) readRDS(paste0('data/fx/', x, '.rds'))) %>% 
+  filterNull
+```
+
+Here I tried to compare the AIC values. The lowest value will be best fit model.
+
+```{r bkdcc-aic}
+##compare AIC values.
+dcc.AIC <- sapply(bk.dcc, function(x) data.frame(t(x$AIC))) %>% 
+    t %>% data.frame(.id = rownames(.)) %>% 
+    separate(.id, c('.id', '.model', '.solver')) %>% 
+    dplyr::select(.id, .model, .solver, Akaike, Bayes, Shibata, Hannan.Quinn)
+rownames(bk.dcc.AIC) <- NULL
+
+dcc.AIC %>% 
+  kable(caption = 'Akaike Information Criteria') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 3.2.3.1 : AIC comparison.*
+
+After that, look at the log-likehood figure as well to compare the correlation among models. The highest value will be best fit model.
+
+```{r bkdcc-logLik}
+##compare AIC values.
+dcc.logLik <- sapply(bk.dcc, function(x) attributes(x$fit)$mfit$llh) %>% 
+    t %>% t %>% data.frame(.id = rownames(.)) %>% 
+    separate(.id, c('.id', '.model', '.solver'))
+rownames(dcc.logLik) <- NULL
+names(dcc.logLik)[1] <- 'log.Likelihood'
+dcc.logLik %<>% dplyr::select(.id, .model, .solver, log.Likelihood)
+
+dcc.logLik %>% 
+  kable(caption = 'Log-Likelihood') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.3.2 : Log-Likelihood comparison.*
+
+### Modelling for Punter
+
+#### Single Currency
+
+Multivariate modelling for single currency.
+
+```{r pt-dcc, eval=FALSE}
+## Possible multivariate models.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
+op <- c(TRUE, FALSE)
+
+## Includes the open price or not.
+pt.base <- mbase[['USDJPY']][,1:4]
+
+## Statistical modelling
+pt.dcc <- llply(md, function(x) {
+  dm <- llply(sv, function(y) {
+    TF <- llply(op, function(z) {
+      fit <- tryCatch(
+        mv_fx(pt.base, .model = x, .solver = y, 
+              .include.Op = z, .Cl.only = FALSE), 
+        error = function(e) 
+          cat(paste0('pt.', x, '.', y, '.', z,' error.\n')))
+      
+      if (!is.null('fit')) {
+        eval(parse(text = paste0(
+          "saveRDS(fit, 'data/fx/", 
+          paste0('pt.', x, '.', y, '.', z), ".rds')")))
+        cat(paste0(x, '.', y, '.', z, ' saved.\n'))
+        }
+    })
+    names(TF) <- op
+    TF
+  })
+  names(dm) <- sv
+  dm
+})
+names(pt.dcc) <- md
+```
+
+I executed above coding and there are quite some models occured errors. The `FDCC` models do faced error even though change all possible solvers. Below I read presaved data which executed above.
+
+```{r read-ptdcc}
+fls <- list.files('data/fx', pattern = '^pt.') %>% str_replace_all('.rds', '')
+
+pt.dcc <- sapply(fls, function(x) readRDS(paste0('data/fx/', x, '.rds'))) %>% 
+  filterNull
+```
+
+Here I tried to compare the AIC values. The lowest value will be best fit model.
+
+```{r ptdcc-aic}
+##compare AIC values.
+dcc.AIC <- sapply(pt.dcc, function(x) data.frame(t(x$AIC))) %>% 
+    t %>% data.frame(.id = rownames(.)) %>% 
+    separate(.id, c('.id', '.model', '.solver')) %>% 
+    dplyr::select(.id, .model, .solver, Akaike, Bayes, Shibata, Hannan.Quinn)
+rownames(dcc.AIC) <- NULL
+
+dcc.AIC %>% 
+  kable(caption = 'Akaike Information Criteria') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 3.2.4.1 : AIC comparison.*
+
+After that, look at the log-likehood figure as well to compare the correlation among models. The highest value will be best fit model.
+
+```{r ptdcc-logLik}
+##compare AIC values.
+dcc.logLik <- sapply(bk.dcc, function(x) attributes(x$fit)$mfit$llh) %>% 
+    t %>% t %>% data.frame(.id = rownames(.)) %>% 
+    separate(.id, c('.id', '.model', '.solver'))
+rownames(dcc.logLik) <- NULL
+names(dcc.logLik)[1] <- 'log.Likelihood'
+dcc.logLik %<>% dplyr::select(.id, .model, .solver, log.Likelihood)
+
+dcc.logLik %>% 
+  kable(caption = 'Log-Likelihood') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.4.2 : Log-Likelihood comparison.*
+
+
+#### Currency Basket
+
+Nested multivariate modelling for a basket of currencies.
+
 ## GO-GARCH
 
-```{r go-garch}
+```{r go-garch1, eval=FALSE}
+
+.dist.models <- c('mvnorm', 'manig', 'magh')
 
 ## attributes of univariate stage 1
 attributes(attributes(fit)$mfit$ufit)
@@ -214,6 +392,11 @@ attributes(attributes(fit)$mfit$ufit)
 names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[1]])$fit)
 names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[2]])$fit)
 names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[3]])$fit)
+
+## AIC
+-2*as.numeric(logLik(fit))+2*(length(fit$coefficients)+1)
+
+-2 * as.numeric(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[1]])$fit$LLH) + 2*(length(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[1]])$fit$coef) + 1)
 ```
 
 ## Copula-GARCH
@@ -268,9 +451,11 @@ rm(sys1, sys2)
 
 01. [Betting Strategy and Model Validation - Part II](https://englianhu.github.io/2017/10/Betting_Strategy_and_Model_Validation_-_Part_02/)
 02. [**binary.com Job Application - Quantitative Analyst** *sample question*](https://github.com/englianhu/binary.com-interview-question)
-03. [Binary.com Interview Q1](http://rpubs.com/englianhu/binary-Q1) ([Old link](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or [Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
-04. [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133))
-05. [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+03. [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+04. [The `rmgarch` Models - Background and Properties](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/The%20rmgarch%20Models%20-%20Background%20and%20Properties.pdf)
+05. [Financial Econometrics Practical - Univariate Volatility Modelling](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Financial%20Econometrics%20Practical%20-%20Univariate%20Volatility%20Modelling.pdf)
+06. [](http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/)
+07. [](https://eranraviv.com/multivariate-volatility-forecasting-2/)
 
 ---
 

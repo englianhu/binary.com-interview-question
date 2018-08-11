@@ -38,7 +38,7 @@ Initially, I wrote a shiny app (as showing in below gif file) but it is heavily 
 
 Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.com/content/3775/) trial version to test the real time trading, and a completed version is [Q1App2](https://beta.rstudioconnect.com/content/3138/).
 
-Due to the paper [binary-Q1 Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>]() simulated the data and then only noticed I not yet updated the new function, then I wrote **GARCH模型中的`ARMA(p,d,q)`参数最优化** to compare the accuracy. However my later paper simulated dataset doesn't save the $fit$ in order to retrieve the $\sigma^2$ and VaR values for stop-loss pips when I got the idea. Here I put it as blooper and start **binary-Q1 Multivariate GARCH Models** and later on will write another **FOREX Day Trade Simulation** which will simulate all tick-data but not only HiLo data.
+Due to the paper [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](http://rpubs.com/englianhu/binary-Q1TD) simulated the data and then only noticed I not yet updated the new function, then I wrote **GARCH模型中的`ARMA(p,d,q)`参数最优化** to compare the accuracy. However my later paper simulated dataset doesn't save the $fit$ in order to retrieve the $\sigma^2$ and VaR values for stop-loss pips when I got the idea. Here I put it as blooper and start **binary-Q1 Multivariate GARCH Models** and later on will write another **FOREX Day Trade Simulation** which will simulate all tick-data but not only HiLo data.
 
 #### Shiny Application
 

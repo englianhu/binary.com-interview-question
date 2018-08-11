@@ -20,7 +20,7 @@ calc_fx <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') 
     mean.model = list(
       armaOrder = armaOrder[c(1, 3)], #set arma order for `p` and `q`.
       include.mean = TRUE, archm = FALSE, 
-      archpow = 1, arfima = TRUE, #set arima = TRUE
+      archpow = 1, arfima = TRUE, #set arfima = TRUE
       external.regressors = NULL, 
       archex = FALSE), 
     fixed.pars = list(arfima = armaOrder[2]), #set fixed.pars for `d` value
