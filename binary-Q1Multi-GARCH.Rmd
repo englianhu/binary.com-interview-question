@@ -348,7 +348,7 @@ dcc.logLik %>%
 
 #### Single Currency
 
-Multivariate modelling for single currency.
+Multivariate modelling for single currency. Here I tried to seperate to 2 type of forecasting dataset which are `OHLC` and `HLC` to know if includes the open price will be more accurate or not.
 
 ```{r pt-dcc, eval=FALSE}
 ## Possible multivariate models.
@@ -400,8 +400,8 @@ Here I tried to compare the AIC values. The lowest value will be best fit model.
 ##compare AIC values.
 dcc.AIC <- sapply(pt.dcc, function(x) data.frame(t(data.frame(x$AIC)))) %>% 
     t %>% data.frame(.id = rownames(.)) %>% 
-    separate(.id, c('.id', '.model', '.solver')) %>% 
-    dplyr::select(.id, .model, .solver, Akaike, Bayes, Shibata, Hannan.Quinn)
+    separate(.id, c('.id', '.model', '.solver', 'includes.Op')) %>% 
+    dplyr::select(.id, .model, .solver, includes.Op, Akaike, Bayes, Shibata, Hannan.Quinn)
 rownames(dcc.AIC) <- NULL
 
 dcc.AIC %>% 
@@ -416,12 +416,12 @@ After that, look at the log-likehood figure as well to compare the correlation a
 
 ```{r ptdcc-logLik}
 ##compare AIC values.
-dcc.logLik <- sapply(bk.dcc, function(x) attributes(x$fit)$mfit$llh) %>% 
+dcc.logLik <- sapply(pt.dcc, function(x) attributes(x$fit)$mfit$llh) %>% 
     t %>% t %>% data.frame(.id = rownames(.)) %>% 
-    separate(.id, c('.id', '.model', '.solver'))
+    separate(.id, c('.id', '.model', '.solver', 'includes.Op'))
 rownames(dcc.logLik) <- NULL
 names(dcc.logLik)[1] <- 'log.Likelihood'
-dcc.logLik %<>% dplyr::select(.id, .model, .solver, log.Likelihood)
+dcc.logLik %<>% dplyr::select(.id, .model, .solver, includes.Op, log.Likelihood)
 
 dcc.logLik %>% 
   kable(caption = 'Log-Likelihood') %>% 
