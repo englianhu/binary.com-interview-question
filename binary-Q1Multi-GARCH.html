@@ -232,12 +232,12 @@ div.tocify {
 <pre class="r"><code>suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs &lt;- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch')
+pkgs &lt;- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'rlist', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch')
 
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
 
-funs &lt;- c('calc_fx.R', 'opt_arma.R', 'filterFX.R')
+funs &lt;- c('calc_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
 
 ## Set option to below if you want to plot an independent webpage with graph 
@@ -265,7 +265,7 @@ names(cr_code) &lt;- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY
 
 price_type &lt;- c('Op', 'Hi', 'Lo', 'Cl')
 
-## 读取雅虎数据。
+## Read presaved Yahoo data.
 mbase &lt;- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %&gt;% na.omit)</code></pre>
 <pre class="r"><code>##数据1
 fx1 &lt;- llply(names(cr_code), function(x) {
@@ -177879,53 +177879,1206 @@ pred2
 </div>
 <div id="dcc" class="section level2">
 <h2><span class="header-section-number">3.2</span> DCC</h2>
-<pre class="r"><code>speclist &lt;- list(spec1, spec2, spec3)
-mspec &lt;- multispec(speclist)
+<div id="abtract-of-ddc" class="section level3">
+<h3><span class="header-section-number">3.2.1</span> Abtract of DDC</h3>
+<p>Due to article <strong>The GARCH DCC Model and 2 Stage DCCMVT Estimation</strong><a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a> compares the <code>model = c('DCC', 'aDCC')</code> but not <code>model = 'FDCC'</code> with all distributions and concludes that <code>aDCC</code> with <code>distribution = 'mvt'</code> is the best fit model and distribution for multivariate GARCH model. Here I directly use <code>mvt</code> but in different <code>solver</code> parameters.</p>
+<p>My initially workable models result.</p>
+<pre class="r"><code>workable.dcc &lt;- readRDS('data/fx/pt.dcc.rds')
 
-spec4 &lt;- dccspec(
-  mspec, VAR = TRUE, lag = 1, 
-  lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
-  external.regressors = VAREXO, 
-  dccOrder = c(1, 1), model = 'DCC', 
-  distribution = 'mvt') # Below article compares distribution model and 
-                        #   concludes that the 'mvt' is the best.
-                        # http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/
+#'@ dcc.AIC &lt;- ldply(workable.dcc, function(x) {
+#'@     ldply(x, function(y) {
+#'@             list.select(y, AIC) %&gt;% 
+#'@             data.frame %&gt;% t %&gt;% data.frame %&gt;% 
+#'@             mutate(includes.Op = c(TRUE, FALSE))
+#'@     }) %&gt;% rename(.solver = .id)
+#'@   }) %&gt;% 
+#'@   dplyr::select(.id, .solver, includes.Op, Akaike, Bayes, Shibata, Hannan.Quinn)
 
-fit &lt;- dccfit(spec4, VARENDO, fit.control = list(
-  eval.se = TRUE, stationarity = TRUE), ...)</code></pre>
-<pre class="r"><code>fit &lt;- llply(na.omit(Cl(mbase[['USDJPY']])), function(x){
+dcc.AIC &lt;- ldply(workable.dcc, function(x) {
+    zz &lt;- ldply(x, function(y) {
+        zz &lt;- ldply(y, function(z) {
+            z$AIC %&gt;% 
+            data.frame %&gt;% t %&gt;% data.frame
+        })
+        names(zz)[1] &lt;- 'includes.Op'
+        zz
+    })
+    names(zz)[1] &lt;- '.solver'
+    zz
+  })
+
+dcc.AIC %&gt;% 
+  kable(caption = 'Akaike Information Criteria') %&gt;% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %&gt;%
+  scroll_box(width = '100%', height = '400px')</code></pre>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Akaike Information Criteria
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+.id
+</th>
+<th style="text-align:left;">
+.solver
+</th>
+<th style="text-align:left;">
+includes.Op
+</th>
+<th style="text-align:right;">
+Akaike
+</th>
+<th style="text-align:right;">
+Bayes
+</th>
+<th style="text-align:right;">
+Shibata
+</th>
+<th style="text-align:right;">
+Hannan.Quinn
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+-2.330914
+</td>
+<td style="text-align:right;">
+-2.151473
+</td>
+<td style="text-align:right;">
+-2.333111
+</td>
+<td style="text-align:right;">
+-2.264012
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+2.248041
+</td>
+<td style="text-align:right;">
+2.370060
+</td>
+<td style="text-align:right;">
+2.247011
+</td>
+<td style="text-align:right;">
+2.293534
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+-2.319914
+</td>
+<td style="text-align:right;">
+-2.140474
+</td>
+<td style="text-align:right;">
+-2.322111
+</td>
+<td style="text-align:right;">
+-2.253012
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+2.199818
+</td>
+<td style="text-align:right;">
+2.321838
+</td>
+<td style="text-align:right;">
+2.198788
+</td>
+<td style="text-align:right;">
+2.245311
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+-2.330914
+</td>
+<td style="text-align:right;">
+-2.151473
+</td>
+<td style="text-align:right;">
+-2.333111
+</td>
+<td style="text-align:right;">
+-2.264012
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+2.248041
+</td>
+<td style="text-align:right;">
+2.370060
+</td>
+<td style="text-align:right;">
+2.247011
+</td>
+<td style="text-align:right;">
+2.293534
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+-2.046191
+</td>
+<td style="text-align:right;">
+-1.866750
+</td>
+<td style="text-align:right;">
+-2.048388
+</td>
+<td style="text-align:right;">
+-1.979289
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+2.178180
+</td>
+<td style="text-align:right;">
+2.300200
+</td>
+<td style="text-align:right;">
+2.177151
+</td>
+<td style="text-align:right;">
+2.223674
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+-2.330914
+</td>
+<td style="text-align:right;">
+-2.151473
+</td>
+<td style="text-align:right;">
+-2.333111
+</td>
+<td style="text-align:right;">
+-2.264012
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+2.248041
+</td>
+<td style="text-align:right;">
+2.370060
+</td>
+<td style="text-align:right;">
+2.247011
+</td>
+<td style="text-align:right;">
+2.293534
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+-2.041882
+</td>
+<td style="text-align:right;">
+-1.862441
+</td>
+<td style="text-align:right;">
+-2.044078
+</td>
+<td style="text-align:right;">
+-1.974980
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+2.217234
+</td>
+<td style="text-align:right;">
+2.339254
+</td>
+<td style="text-align:right;">
+2.216204
+</td>
+<td style="text-align:right;">
+2.262728
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><em>Table 3.2.1.1 : AIC comparison.</em></p>
+<pre class="r"><code>dcc.logLik &lt;- ldply(workable.dcc, function(x) {
+    zz = ldply(x, function(y) {
+        zz = ldply(y, function(z) {
+            attributes(z$fit)$mfit$llh
+        })
+        names(zz) &lt;- c('includes.Op', 'log.Likelihood')
+        zz
+    })
+    names(zz)[1] &lt;- '.solver'
+    zz
+  })
+
+dcc.logLik %&gt;% 
+  kable(caption = 'Log-Likelihood') %&gt;% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %&gt;%
+  scroll_box(width = '100%', height = '400px')</code></pre>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Log-Likelihood
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+.id
+</th>
+<th style="text-align:left;">
+.solver
+</th>
+<th style="text-align:left;">
+includes.Op
+</th>
+<th style="text-align:right;">
+log.Likelihood
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+1770.215
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+-1625.054
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+1762.097
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+-1589.466
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+1770.215
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+-1625.054
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+1560.089
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+-1573.497
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+1770.215
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+-1625.054
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+TRUE
+</td>
+<td style="text-align:right;">
+1556.909
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+FDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+FALSE
+</td>
+<td style="text-align:right;">
+-1602.319
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><em>Table 3.2.1.2 : Log-Likelihood comparison.</em></p>
+</div>
+<div id="modelling-for-banker" class="section level3">
+<h3><span class="header-section-number">3.2.2</span> Modelling for Banker</h3>
+<pre class="r"><code>## Possible multivariate models.
+md &lt;- c('DCC', 'aDCC', 'FDCC')
+sv &lt;- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
+
+## Includes the open price or not.
+bk.base &lt;- llply(mbase, Cl)
+bk.base %&lt;&gt;% do.call(cbind, .) %&gt;% na.omit
+
+## Statistical modelling
+bk.dcc &lt;- llply(md, function(x) {
+  dm &lt;- llply(sv, function(y) {
+    fit &lt;- tryCatch(
+      mv_fx(bk.base, .model = x, .solver = y, 
+            .include.Op = FALSE, .Cl.only = TRUE), 
+      error = function(e) cat(paste0(x, '.', y, ' error.\n')))
   
-  if(!is.xts(x)) x &lt;- xts(x[, -1], order.by = x$Date)
-  armaOrder = opt_arma(x)
-  
-  xspec = ugarchspec(
-    variance.model = list(
-      model = 'gjrGARCH', garchOrder = c(1, 1), 
-      submodel = NULL, external.regressors = NULL, 
-      variance.targeting = FALSE), 
-    mean.model = list(
-      armaOrder = armaOrder[c(1, 3)], 
-      include.mean = TRUE, archm = FALSE, 
-      archpow = 1, arfima = TRUE, 
-      external.regressors = NULL, 
-      archex = FALSE), 
-    fixed.pars = list(arfima = armaOrder[2]), 
-    distribution.model = 'snorm')
-    
-  uspec = multispec(replicate(10, xspec))
-  
-  spec1 = dccspec(uspec = uspec, dccOrder = c(1, 1), 
-                  model='aDCC', distribution = 'mvt')
-  
-  cl = makePSOCKcluster(10)
-  multf = multifit(uspec, x, cluster = cl)
-  
-  fit1 = dccfit(spec1, data = x, solver = 'hybrid', 
-                fit.control = list(eval.se = TRUE), 
-                fit = multf, cluster = cl)
-  
-  return(fit1)
-  })</code></pre>
+  if (!is.null('fit')) {
+    eval(parse(text = paste0(
+      &quot;saveRDS(fit, 'data/fx/&quot;, paste0('bk.', x, '.', y), &quot;.rds')&quot;)))
+    cat(paste0(x, '.', y, ' saved.\n'))
+  }
+  })
+  names(dm) &lt;- sv
+  dm
+})
+names(bk.dcc) &lt;- md</code></pre>
+<p>I executed above coding and there are quite some models occured errors. The <code>FDCC</code> models do faced error even though change all possible solvers. Below I read presaved data which executed above.</p>
+<pre class="r"><code>fls &lt;- list.files('data/fx', pattern = '^bk.') %&gt;% str_replace_all('.rds', '')
+
+bk.dcc &lt;- sapply(fls, function(x) readRDS(paste0('data/fx/', x, '.rds'))) %&gt;% 
+  filterNull</code></pre>
+<p>Here I tried to compare the AIC values. The lowest value will be best fit model.</p>
+<pre class="r"><code>##compare AIC values.
+dcc.AIC &lt;- sapply(bk.dcc, function(x) data.frame(t(x$AIC))) %&gt;% 
+    t %&gt;% data.frame(.id = rownames(.)) %&gt;% 
+    separate(.id, c('.id', '.model', '.solver')) %&gt;% 
+    dplyr::select(.id, .model, .solver, Akaike, Bayes, Shibata, Hannan.Quinn)
+rownames(dcc.AIC) &lt;- NULL
+
+dcc.AIC %&gt;% 
+  kable(caption = 'Akaike Information Criteria') %&gt;% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %&gt;%
+  scroll_box(width = '100%', height = '400px')</code></pre>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Akaike Information Criteria
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+.id
+</th>
+<th style="text-align:left;">
+.model
+</th>
+<th style="text-align:left;">
+.solver
+</th>
+<th style="text-align:left;">
+Akaike
+</th>
+<th style="text-align:left;">
+Bayes
+</th>
+<th style="text-align:left;">
+Shibata
+</th>
+<th style="text-align:left;">
+Hannan.Quinn
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+-45.5180951103067
+</td>
+<td style="text-align:left;">
+-45.100875160091
+</td>
+<td style="text-align:left;">
+-45.5293473978584
+</td>
+<td style="text-align:left;">
+-45.3625189650156
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+nlminb
+</td>
+<td style="text-align:left;">
+-45.5099375990563
+</td>
+<td style="text-align:left;">
+-45.0927176488406
+</td>
+<td style="text-align:left;">
+-45.5211898866081
+</td>
+<td style="text-align:left;">
+-45.3543614537653
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+-45.7433107152737
+</td>
+<td style="text-align:left;">
+-45.326090765058
+</td>
+<td style="text-align:left;">
+-45.7545630028254
+</td>
+<td style="text-align:left;">
+-45.5877345699826
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+-45.3794207917497
+</td>
+<td style="text-align:left;">
+-44.9657975652428
+</td>
+<td style="text-align:left;">
+-45.3904887819052
+</td>
+<td style="text-align:left;">
+-45.225185820125
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+nlminb
+</td>
+<td style="text-align:left;">
+-45.5028988314128
+</td>
+<td style="text-align:left;">
+-45.0892756049058
+</td>
+<td style="text-align:left;">
+-45.5139668215683
+</td>
+<td style="text-align:left;">
+-45.348663859788
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+-45.7446694154333
+</td>
+<td style="text-align:left;">
+-45.3310461889264
+</td>
+<td style="text-align:left;">
+-45.7557374055888
+</td>
+<td style="text-align:left;">
+-45.5904344438086
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><em>Table 3.2.3.1 : AIC comparison.</em></p>
+<p>After that, look at the log-likehood figure as well to compare the correlation among models. The highest value will be best fit model.</p>
+<pre class="r"><code>##compare AIC values.
+dcc.logLik &lt;- sapply(bk.dcc, function(x) attributes(x$fit)$mfit$llh) %&gt;% 
+    t %&gt;% t %&gt;% data.frame(.id = rownames(.)) %&gt;% 
+    separate(.id, c('.id', '.model', '.solver'))
+rownames(dcc.logLik) &lt;- NULL
+names(dcc.logLik)[1] &lt;- 'log.Likelihood'
+dcc.logLik %&lt;&gt;% dplyr::select(.id, .model, .solver, log.Likelihood)
+
+dcc.logLik %&gt;% 
+  kable(caption = 'Log-Likelihood') %&gt;% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Log-Likelihood
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+.id
+</th>
+<th style="text-align:left;">
+.model
+</th>
+<th style="text-align:left;">
+.solver
+</th>
+<th style="text-align:right;">
+log.Likelihood
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:right;">
+33617.32
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+nlminb
+</td>
+<td style="text-align:right;">
+33611.31
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:right;">
+33783.08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:right;">
+33514.25
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+nlminb
+</td>
+<td style="text-align:right;">
+33605.13
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:right;">
+33783.08
+</td>
+</tr>
+</tbody>
+</table>
+<p><em>Table 3.2.3.2 : Log-Likelihood comparison.</em></p>
+</div>
+<div id="modelling-for-punter" class="section level3">
+<h3><span class="header-section-number">3.2.3</span> Modelling for Punter</h3>
+<div id="single-currency" class="section level4">
+<h4><span class="header-section-number">3.2.3.1</span> Single Currency</h4>
+<p>Multivariate modelling for single currency.</p>
+<pre class="r"><code>## Possible multivariate models.
+md &lt;- c('DCC', 'aDCC', 'FDCC')
+sv &lt;- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
+op &lt;- c(TRUE, FALSE)
+
+## Includes the open price or not.
+pt.base &lt;- mbase[['USDJPY']][,1:4]
+
+## Statistical modelling
+pt.dcc &lt;- llply(md, function(x) {
+  dm &lt;- llply(sv, function(y) {
+    TF &lt;- llply(op, function(z) {
+      fit &lt;- tryCatch(
+        mv_fx(pt.base, .model = x, .solver = y, 
+              .include.Op = z, .Cl.only = FALSE), 
+        error = function(e) 
+          cat(paste0('pt.', x, '.', y, '.', z,' error.\n')))
+      
+      if (!is.null('fit')) {
+        eval(parse(text = paste0(
+          &quot;saveRDS(fit, 'data/fx/&quot;, 
+          paste0('pt.', x, '.', y, '.', z), &quot;.rds')&quot;)))
+        cat(paste0(x, '.', y, '.', z, ' saved.\n'))
+        }
+    })
+    names(TF) &lt;- op
+    TF
+  })
+  names(dm) &lt;- sv
+  dm
+})
+names(pt.dcc) &lt;- md</code></pre>
+<p>I executed above coding and there are quite some models occured errors. The <code>FDCC</code> models do faced error even though change all possible solvers. Below I read presaved data which executed above.</p>
+<pre class="r"><code>fls &lt;- list.files('data/fx', pattern = '^pt.[^dcc]') %&gt;% str_replace_all('.rds', '')
+
+pt.dcc &lt;- sapply(fls, function(x) readRDS(paste0('data/fx/', x, '.rds'))) %&gt;% 
+  filterNull</code></pre>
+<p>Here I tried to compare the AIC values. The lowest value will be best fit model.</p>
+<pre class="r"><code>##compare AIC values.
+dcc.AIC &lt;- sapply(pt.dcc, function(x) data.frame(t(data.frame(x$AIC)))) %&gt;% 
+    t %&gt;% data.frame(.id = rownames(.)) %&gt;% 
+    separate(.id, c('.id', '.model', '.solver')) %&gt;% 
+    dplyr::select(.id, .model, .solver, Akaike, Bayes, Shibata, Hannan.Quinn)
+rownames(dcc.AIC) &lt;- NULL
+
+dcc.AIC %&gt;% 
+  kable(caption = 'Akaike Information Criteria') %&gt;% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %&gt;%
+  scroll_box(width = '100%', height = '400px')</code></pre>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Akaike Information Criteria
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+.id
+</th>
+<th style="text-align:left;">
+.model
+</th>
+<th style="text-align:left;">
+.solver
+</th>
+<th style="text-align:left;">
+Akaike
+</th>
+<th style="text-align:left;">
+Bayes
+</th>
+<th style="text-align:left;">
+Shibata
+</th>
+<th style="text-align:left;">
+Hannan.Quinn
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+pt
+</td>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+-0.589302143720759
+</td>
+<td style="text-align:left;">
+-0.409861391513428
+</td>
+<td style="text-align:left;">
+-0.591498555970128
+</td>
+<td style="text-align:left;">
+-0.522399990855491
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+pt
+</td>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+-2.33091423696777
+</td>
+<td style="text-align:left;">
+-2.15147348476044
+</td>
+<td style="text-align:left;">
+-2.33311064921714
+</td>
+<td style="text-align:left;">
+-2.2640120841025
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+pt
+</td>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:left;">
+-0.586830088647991
+</td>
+<td style="text-align:left;">
+-0.410978151484806
+</td>
+<td style="text-align:left;">
+-0.588941328787699
+</td>
+<td style="text-align:left;">
+-0.521265978840028
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+pt
+</td>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:left;">
+-2.33226931424028
+</td>
+<td style="text-align:left;">
+-2.1564173770771
+</td>
+<td style="text-align:left;">
+-2.33438055437999
+</td>
+<td style="text-align:left;">
+-2.26670520443232
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p><em>Table 3.2.4.1 : AIC comparison.</em></p>
+<p>After that, look at the log-likehood figure as well to compare the correlation among models. The highest value will be best fit model.</p>
+<pre class="r"><code>##compare AIC values.
+dcc.logLik &lt;- sapply(bk.dcc, function(x) attributes(x$fit)$mfit$llh) %&gt;% 
+    t %&gt;% t %&gt;% data.frame(.id = rownames(.)) %&gt;% 
+    separate(.id, c('.id', '.model', '.solver'))
+rownames(dcc.logLik) &lt;- NULL
+names(dcc.logLik)[1] &lt;- 'log.Likelihood'
+dcc.logLik %&lt;&gt;% dplyr::select(.id, .model, .solver, log.Likelihood)
+
+dcc.logLik %&gt;% 
+  kable(caption = 'Log-Likelihood') %&gt;% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))</code></pre>
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Log-Likelihood
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;">
+.id
+</th>
+<th style="text-align:left;">
+.model
+</th>
+<th style="text-align:left;">
+.solver
+</th>
+<th style="text-align:right;">
+log.Likelihood
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:right;">
+33617.32
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+nlminb
+</td>
+<td style="text-align:right;">
+33611.31
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+aDCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:right;">
+33783.08
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+gosolnp
+</td>
+<td style="text-align:right;">
+33514.25
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+nlminb
+</td>
+<td style="text-align:right;">
+33605.13
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+bk
+</td>
+<td style="text-align:left;">
+DCC
+</td>
+<td style="text-align:left;">
+solnp
+</td>
+<td style="text-align:right;">
+33783.08
+</td>
+</tr>
+</tbody>
+</table>
+<p><em>Table 3.2.4.2 : Log-Likelihood comparison.</em></p>
+</div>
+<div id="currency-basket" class="section level4">
+<h4><span class="header-section-number">3.2.3.2</span> Currency Basket</h4>
+<p>Nested multivariate modelling for a basket of currencies.</p>
+</div>
+</div>
 </div>
 <div id="go-garch" class="section level2">
 <h2><span class="header-section-number">3.3</span> GO-GARCH</h2>
@@ -178091,7 +179244,7 @@ Owner
 Current time
 </td>
 <td style="text-align:left;">
-2018-08-11 13:38:08 JST
+2018-08-11 22:55:40 JST
 </td>
 <td style="text-align:left;">
 effective_user
@@ -178108,13 +179261,21 @@ Owner
 <ol style="list-style-type: decimal">
 <li><a href="https://englianhu.github.io/2017/10/Betting_Strategy_and_Model_Validation_-_Part_02/">Betting Strategy and Model Validation - Part II</a></li>
 <li><a href="https://github.com/englianhu/binary.com-interview-question"><strong>binary.com Job Application - Quantitative Analyst</strong> <em>sample question</em></a></li>
-<li><a href="http://rpubs.com/englianhu/binary-Q1">Binary.com Interview Q1</a> (<a href="https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html">Old link</a> or <a href="http://rpubs.com/englianhu/binary-forex-trading-Q1">Alternate link</a>)</li>
-<li><a href="http://rpubs.com/englianhu/binary-Q1E">Binary.com Interview Q1 (Extention)</a> or (<a href="http://rpubs.com/englianhu/316133">Alternate link</a>)</li>
 <li><a href="http://rpubs.com/englianhu/binary-Q1FiGJRGARCH">GARCH模型中的<code>ARMA(p,d,q)</code>参数最优化</a></li>
+<li><a href="https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/The%20rmgarch%20Models%20-%20Background%20and%20Properties.pdf">The <code>rmgarch</code> Models - Background and Properties</a></li>
+<li><a href="https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Financial%20Econometrics%20Practical%20-%20Univariate%20Volatility%20Modelling.pdf">Financial Econometrics Practical - Univariate Volatility Modelling</a></li>
+<li><a href="http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/"></a></li>
+<li><a href="https://eranraviv.com/multivariate-volatility-forecasting-2/"></a></li>
 </ol>
 <hr />
 <p><strong>Powered by - Copyright® Intellectual Property Rights of <img src="data:image/jpeg;base64,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" width="24"> <a href="http://www.scibrokes.com">Scibrokes®</a>個人の経営企業</strong></p>
 </div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Kindly refer to <a href="#reference">Reference</a> for further reading.<a href="#fnref1">↩</a></p></li>
+</ol>
 </div>
 
 

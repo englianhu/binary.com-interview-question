@@ -17,7 +17,7 @@ output:
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'rlist', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch')
 
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
@@ -212,6 +212,62 @@ fit <- llply(na.omit(Cl(mbase[['USDJPY']])), function(x){
   })
 ```
 
+My initially workable models result.
+
+```{r wdcc-aic}
+workable.dcc <- readRDS('data/fx/pt.dcc.rds')
+
+#'@ dcc.AIC <- ldply(workable.dcc, function(x) {
+#'@     ldply(x, function(y) {
+#'@             list.select(y, AIC) %>% 
+#'@             data.frame %>% t %>% data.frame %>% 
+#'@             mutate(includes.Op = c(TRUE, FALSE))
+#'@     }) %>% rename(.solver = .id)
+#'@   }) %>% 
+#'@   dplyr::select(.id, .solver, includes.Op, Akaike, Bayes, Shibata, Hannan.Quinn)
+
+dcc.AIC <- ldply(workable.dcc, function(x) {
+    zz <- ldply(x, function(y) {
+        zz <- ldply(y, function(z) {
+            z$AIC %>% 
+            data.frame %>% t %>% data.frame
+        })
+        names(zz)[1] <- 'includes.Op'
+        zz
+    })
+    names(zz)[1] <- '.solver'
+    zz
+  })
+
+dcc.AIC %>% 
+  kable(caption = 'Akaike Information Criteria') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 3.2.1.1 : AIC comparison.*
+
+```{r dcc-llh}
+dcc.logLik <- ldply(workable.dcc, function(x) {
+    zz = ldply(x, function(y) {
+        zz = ldply(y, function(z) {
+            attributes(z$fit)$mfit$llh
+        })
+        names(zz) <- c('includes.Op', 'log.Likelihood')
+        zz
+    })
+    names(zz)[1] <- '.solver'
+    zz
+  })
+
+dcc.logLik %>% 
+  kable(caption = 'Log-Likelihood') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 3.2.1.2 : Log-Likelihood comparison.*
+
 ### Modelling for Banker
 
 ```{r bk-dcc, eval=FALSE}
@@ -260,7 +316,7 @@ dcc.AIC <- sapply(bk.dcc, function(x) data.frame(t(x$AIC))) %>%
     t %>% data.frame(.id = rownames(.)) %>% 
     separate(.id, c('.id', '.model', '.solver')) %>% 
     dplyr::select(.id, .model, .solver, Akaike, Bayes, Shibata, Hannan.Quinn)
-rownames(bk.dcc.AIC) <- NULL
+rownames(dcc.AIC) <- NULL
 
 dcc.AIC %>% 
   kable(caption = 'Akaike Information Criteria') %>% 
@@ -332,7 +388,7 @@ names(pt.dcc) <- md
 I executed above coding and there are quite some models occured errors. The `FDCC` models do faced error even though change all possible solvers. Below I read presaved data which executed above.
 
 ```{r read-ptdcc}
-fls <- list.files('data/fx', pattern = '^pt.') %>% str_replace_all('.rds', '')
+fls <- list.files('data/fx', pattern = '^pt.[^dcc]') %>% str_replace_all('.rds', '')
 
 pt.dcc <- sapply(fls, function(x) readRDS(paste0('data/fx/', x, '.rds'))) %>% 
   filterNull
@@ -342,7 +398,7 @@ Here I tried to compare the AIC values. The lowest value will be best fit model.
 
 ```{r ptdcc-aic}
 ##compare AIC values.
-dcc.AIC <- sapply(pt.dcc, function(x) data.frame(t(x$AIC))) %>% 
+dcc.AIC <- sapply(pt.dcc, function(x) data.frame(t(data.frame(x$AIC)))) %>% 
     t %>% data.frame(.id = rownames(.)) %>% 
     separate(.id, c('.id', '.model', '.solver')) %>% 
     dplyr::select(.id, .model, .solver, Akaike, Bayes, Shibata, Hannan.Quinn)
@@ -373,7 +429,6 @@ dcc.logLik %>%
 ```
 
 *Table 3.2.4.2 : Log-Likelihood comparison.*
-
 
 #### Currency Basket
 
