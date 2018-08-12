@@ -52,8 +52,6 @@ cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X',
 
 names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
 
-price_type <- c('Op', 'Hi', 'Lo', 'Cl')
-
 ## Read presaved Yahoo data.
 mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
 ```
@@ -247,6 +245,8 @@ dcc.AIC %>%
 
 *Table 3.2.1.1 : AIC comparison.*
 
+From above table, `r unlist(dcc.AIC$Akaike) %>% .[which.min(.)] %>% names` with `r unlist(dcc.AIC$Akaike) %>% .[which.min(.)]` is the best fitted model.
+
 ```{r dcc-llh}
 dcc.logLik <- ldply(workable.dcc, function(x) {
     zz = ldply(x, function(y) {
@@ -326,6 +326,7 @@ dcc.AIC %>%
 
 *Table 3.2.3.1 : AIC comparison.*
 
+From above table, `r unlist(dcc.AIC$Akaike) %>% .[which.min(.)] %>% names` with `r unlist(dcc.AIC$Akaike) %>% .[which.min(.)]` is the best fitted model.
 After that, look at the log-likehood figure as well to compare the correlation among models. The highest value will be best fit model.
 
 ```{r bkdcc-logLik}
@@ -343,6 +344,36 @@ dcc.logLik %>%
 ```
 
 *Table 3.2.3.2 : Log-Likelihood comparison.*
+
+```{r bkdcc-roll}
+## Possible multivariate models.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
+
+## Includes the open price or not.
+bk.base <- llply(mbase, Cl)
+bk.base %<>% do.call(cbind, .) %>% na.omit
+
+## Statistical modelling
+bk.dcc <- llply(md, function(x) {
+  dm <- llply(sv, function(y) {
+    fit <- tryCatch(
+      mv_fx(bk.base, .model = x, .solver = y, 
+            .include.Op = FALSE, .Cl.only = TRUE, .roll = TRUE), 
+      error = function(e) cat(paste0('roll.bk.', x, '.', y, ' error.\n')))
+  
+  if (!is.null('fit')) {
+    eval(parse(text = paste0(
+      "saveRDS(fit, 'data/fx/", paste0('roll.bk.', x, '.', y), ".rds')")))
+    cat(paste0('roll.bk.', x, '.', y, ' saved.\n'))
+  }
+  })
+  names(dm) <- sv
+  dm
+})
+names(bk.dcc) <- md
+```
+
 
 ### Modelling for Punter
 
@@ -412,7 +443,7 @@ dcc.AIC %>%
 
 *Table 3.2.4.1 : AIC comparison.*
 
-After that, look at the log-likehood figure as well to compare the correlation among models. The highest value will be best fit model.
+From above table, `r unlist(dcc.AIC$Akaike) %>% .[which.min(.)] %>% names` with `r unlist(dcc.AIC$Akaike) %>% .[which.min(.)]` is the best fitted model. After that, look at the log-likehood figure as well to compare the correlation among models. The highest value will be best fit model.
 
 ```{r ptdcc-logLik}
 ##compare AIC values.
@@ -429,6 +460,55 @@ dcc.logLik %>%
 ```
 
 *Table 3.2.4.2 : Log-Likelihood comparison.*
+
+The model `r dcc.logLik %>% dplyr::filter(log.Likelihood == max(log.Likelihood)) %>% unite(.id, .id:includes.Op) %>% .$.id %>% str_replace_all('_', '.')` which highest logLik value `r dcc.logLik$log.Likelihood[which.max(dcc.logLik$log.Likelihood)]` is the best fitted model for correlation.
+
+```{r ptdcc-roll}
+## Possible multivariate models.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
+op <- c(TRUE, FALSE)
+
+## Includes the open price or not.
+pt.base <- mbase[['USDJPY']][,1:4]
+
+## Statistical modelling
+pt.dcc <- llply(md, function(x) {
+  dm <- llply(sv, function(y) {
+    TF <- llply(op, function(z) {
+      fit <- tryCatch(
+        mv_fx(pt.base, .model = x, .solver = y, 
+              .include.Op = z, .Cl.only = FALSE, .roll = TRUE), 
+        error = function(e) 
+          cat(paste0('roll.pt.', x, '.', y, '.', z,' error.\n')))
+      
+      if (!is.null('fit')) {
+        eval(parse(text = paste0(
+          "saveRDS(fit, 'data/fx/", 
+          paste0('roll.pt.', x, '.', y, '.', z), ".rds')")))
+        cat(paste0('roll.pt.', x, '.', y, '.', z, ' saved.\n'))
+        }
+    })
+    names(TF) <- op
+    TF
+  })
+  names(dm) <- sv
+  dm
+})
+names(pt.dcc) <- md
+```
+
+**VAR and Robust**
+
+Above models set `VAR=TRUE` and `robust=FALSE`, now I based on above best fitted model and adjust the parameter to test if it is more accurate.
+
+```{r dcc-var, eval=FALSE}
+.VARs = c(TRUE, FALSE)
+.rb = c(TRUE, FALSE)
+
+
+```
+
 
 #### Currency Basket
 

@@ -6,7 +6,7 @@ filter_spec <- function(mbase, .currency = 'JPY=X', .include.Op = TRUE,
   require('BBmisc')
   
   pkgs <- c('quantmod', 'forecast', 'plyr', 'dplyr', 'magrittr')
-  suppressPackageStartupMessages(load_pkg(pkgs))
+  suppressPackageStartupMessages(lib(pkgs))
   
   source('function/filterFX.R')
   source('function/opt_arma.R')

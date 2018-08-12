@@ -1,0 +1,928 @@
+---
+title: "<img src='www/binary-logo-resize.jpg' width='240'>"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Comparison of Univariate GARCH Models"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
+date: "`r lubridate::today('Asia/Tokyo')`"
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+---
+
+```{r setup}
+suppressPackageStartupMessages(library('BBmisc'))
+#'@ suppressPackageStartupMessages(library('rmsfuns'))
+
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'rlist', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch')
+
+suppressAll(lib(pkgs))
+#'@ load_pkg(pkgs)
+
+funs <- c('calc_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R')
+l_ply(funs, function(x) source(paste0('./function/', x)))
+
+## Set option to below if you want to plot an independent webpage with graph 
+#'@ op <- options(gvis.plot.tag=NULL)
+op <- options(gvis.plot.tag = 'chart')
+options(gvis.plot.tag = 'chart', warn = -1)
+
+rm(pkgs)
+```
+
+# Introduction
+
+From previous papers, I tried to apply couple models for FOREX price forecasting and eventually got to know *Fractional Intergrated GJR-GARCH* is the best fit model as we can refer to **GARCH模型中的ARMA(p,d,q)参数最优化**^[Kindly refer to paper in [Reference]]. Due to I simulate whole dataset to get the result in menmtioned paper is time consuming, I tried to apply `dccroll()` to know the mse by resampling but not only based on single `AIC`^[Only the `solver=solnp` stable but the other solvers not stable, the fluctuation of AIC value is quite high.]. I parse my `mv_fx()` function^[Due to some errors] and tested the **Binary-Q1 - Multivariate GARCH Models** and some additive parameters might probably need to be adjusted in the arguments of the function.
+
+```{r dcc, eval=FALSE}
+## --- eval=FALSE, not run but display chunk ---
+mv_fx <- function(...) {
+  ...
+  mod = dccroll(dccSpec, data = mbase, solver = .solver, 
+                    forecast.length = 50, cluster = cl)
+  cat('step 1/1 dccroll done!\n')
+  ...
+}
+
+cl = makePSOCKcluster(ncol(mbase))
+
+## Workable
+test_roll <- dccroll(dccspec(
+			multispec(c(ugarchspec(), ugarchspec(), ugarchspec(), 
+			            ugarchspec(), ugarchspec(), ugarchspec(), 
+			            ugarchspec())), distribution = 'mvt'), 
+			data = mbase, cluster = cl)
+
+## Not workable
+test_roll2 <- dccroll(dccspec(
+			multispec(c(
+			  uspec1 = ugarchspec(variance.model = list(model = 'gjrGARCH')), 
+				uspec2 = ugarchspec(variance.model = list(model = 'gjrGARCH')), 
+				uspec3 = ugarchspec(variance.model = list(model = 'gjrGARCH')), 
+				uspec4 = ugarchspec(variance.model = list(model = 'gjrGARCH')), 
+				uspec5 = ugarchspec(variance.model = list(model = 'gjrGARCH')), 
+				uspec6 = ugarchspec(variance.model = list(model = 'gjrGARCH')), 
+				uspec7 = ugarchspec(variance.model = list(model = 'gjrGARCH'))
+				))), data = mbase, cluster = cl)
+#Error in checkForRemoteErrors(val) : 
+#  one node produced an error: infinite or missing values in 'x'
+
+## Workable
+test_roll3 <- dccroll(dccspec(
+			multispec(c(
+			  uspec1 = ugarchspec(
+			    variance.model = list(model = 'eGARCH'), 
+			    distribution.model = 'snorm'), 
+				uspec2 = ugarchspec(
+				  variance.model = list(model = 'eGARCH'), 
+				  distribution.model = 'snorm'), 
+				uspec3 = ugarchspec(
+				  variance.model = list(model = 'eGARCH'), 
+				  distribution.model = 'snorm'), 
+				uspec4 = ugarchspec(
+				  variance.model = list(model = 'eGARCH'), 
+				  distribution.model = 'snorm'), 
+				uspec5 = ugarchspec(
+				  variance.model = list(model = 'eGARCH'), 
+				  distribution.model = 'snorm'), 
+				uspec6 = ugarchspec(
+				  variance.model = list(model = 'eGARCH'), 
+				  distribution.model = 'snorm'), 
+				uspec7 = ugarchspec(
+				  variance.model = list(model = 'eGARCH'), 
+				  distribution.model = 'snorm')
+				)), distribution = 'mvt'), data = mbase, cluster = cl)
+						
+## Not workable
+test_roll4 <- dccroll(dccspec(
+			multispec(c(
+			  uspec1 = ugarchspec(
+			    variance.model = list(model = 'gjrGARCH'), 
+			    distribution.model = 'snorm'), 
+			  uspec2 = ugarchspec(
+			    variance.model = list(model = 'gjrGARCH'), 
+			    distribution.model = 'snorm'), 
+				uspec3 = ugarchspec(
+				  variance.model = list(model = 'gjrGARCH'), 
+				  distribution.model = 'snorm'), 
+				uspec4 = ugarchspec(
+				  variance.model = list(model = 'gjrGARCH'), 
+				  distribution.model = 'snorm'), 
+				uspec5 = ugarchspec(
+				  variance.model = list(model = 'gjrGARCH'), 
+				  distribution.model = 'snorm'), 
+				uspec6 = ugarchspec(
+				  variance.model = list(model = 'gjrGARCH'), 
+				  distribution.model = 'snorm'), 
+				uspec7 = ugarchspec(
+				  variance.model = list(model = 'gjrGARCH'), 
+				  distribution.model = 'snorm')
+				)), distribution = 'mvt'), data = mbase, cluster = cl)
+#Error in checkForRemoteErrors(val) : 
+#  one node produced an error: infinite or missing values in 'x'
+```
+
+**Binary-Q1**^[Kindly refer to paper in [Reference]] compares all possible GARCH models in `rugarch` package while the result is in ROI (Return on Investment), due to the paper **Binary-Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>** found that the betting strategy is not workable in real-life. Therefore I try to compare again the GARCH models as well as suite for multivariate GARCH models.
+
+Due to the multivartiate models will not coped with every univariate models. Here I tried to compare the accuracy of forecasting by univariate GARCH models and later will compare with the multivariate models.
+
+# Data
+
+## Read Data
+
+Similar with **GARCH模型中的ARMA(p,d,q)参数最优化**, I use the dataset from **Binary-Q1 (Extention)**^[Kindly refer to paper in [Reference]] to ease the study.
+
+```{r read-data, warning=FALSE}
+cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
+             'CNY=X', 'JPY=X')
+
+#'@ names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 
+#'@                     'USDCNY', 'USDJPY')
+
+names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
+
+## Read presaved Yahoo data.
+mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
+```
+
+# GARCH Models
+
+## sGARCH
+
+```{r sGARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'sGARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r msesGARCH}
+if (!file.exists('data/fx/mse.sGARCH.rds')) {
+  mse.sGARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, forecast.length = nrow(x), refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.sGARCH, 'data/fx/mse.sGARCH.rds')
+  
+} else {
+  mse.sGARCH <- readRDS('data/fx/mse.sGARCH.rds')
+}
+
+mse.sGARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate sGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.1.1A : MSE of basket currencies.*
+
+`forecast.length = nrow(x), refit.every = 1, refit.window = 'moving'`
+
+```{r msesGARCH2}
+if (!file.exists('data/fx/mse.sGARCH2.rds')) {
+  mse.sGARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, forecast.length = nrow(x), 
+                       refit.every = 1, refit.window = 'moving', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    })
+  names(mse.sGARCH2)[2] <- 'MSE'
+  saveRDS(mse.sGARCH2, 'data/fx/mse.sGARCH2.rds')
+  
+} else {
+  mse.sGARCH2 <- readRDS('data/fx/mse.sGARCH2.rds')
+}
+
+mse.sGARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate sGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.1.1B : MSE of basket currencies.*
+
+## fGARCH
+
+### GARCH
+
+```{r fGARCH-GARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'GARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r msefGARCH-GARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.GARCH.rds')) {
+  mse.fGARCH.GARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.GARCH, 'data/fx/mse.fGARCH.GARCH.rds')
+  
+} else {
+  mse.fGARCH.GARCH <- readRDS('data/fx/mse.fGARCH.GARCH.rds')
+}
+
+mse.fGARCH.GARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-GARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.1.1A : MSE of basket currencies.*
+
+`forecast.length = nrow(x), refit.every = 1, refit.window = 'moving'`
+
+```{r msefGARCH-GARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.GARCH2.rds')) {
+  mse.fGARCH.GARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, forecast.length = nrow(x), 
+                       refit.every = 1, refit.window = 'moving', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.GARCH2, 'data/fx/mse.fGARCH.GARCH2.rds')
+  
+} else {
+  mse.fGARCH.GARCH2 <- readRDS('data/fx/mse.fGARCH.GARCH2.rds')
+}
+
+mse.fGARCH.GARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-GARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.1.1B : MSE of basket currencies.*
+
+### TGARCH
+
+```{r fGARCH-TGARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'TGARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r msefGARCH-TGARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.TGARCH.rds')) {
+  mse.fGARCH.TGARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.TGARCH, 'data/fx/mse.fGARCH.TGARCH.rds')
+  
+} else {
+  mse.fGARCH.TGARCH <- readRDS('data/fx/mse.fGARCH.TGARCH.rds')
+}
+
+mse.fGARCH.TGARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-TGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.2.1A : MSE of basket currencies.*
+
+`forecast.length = nrow(x), refit.every = 1, refit.window = 'moving'`
+
+```{r msefGARCH-TGARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.TGARCH2.rds')) {
+  mse.fGARCH.TGARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, forecast.length = nrow(x), 
+                       refit.every = 1, refit.window = 'moving', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.TGARCH2, 'data/fx/mse.fGARCH.TGARCH2.rds')
+  
+} else {
+  mse.fGARCH.TGARCH2 <- readRDS('data/fx/mse.fGARCH.TGARCH2.rds')
+}
+
+mse.fGARCH.TGARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-TGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.2.1B : MSE of basket currencies.*
+
+### AVGARCH
+
+```{r fGARCH-AVGARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'AVGARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r msefGARCH-AVGARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.AVGARCH.rds')) {
+  mse.fGARCH.AVGARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.AVGARCH, 'data/fx/mse.fGARCH.AVGARCH.rds')
+  
+} else {
+  mse.fGARCH.AVGARCH <- readRDS('data/fx/mse.fGARCH.AVGARCH.rds')
+}
+
+mse.fGARCH.AVGARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-AVGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.3.1A : MSE of basket currencies.*
+
+`forecast.length = nrow(x), refit.every = 1, refit.window = 'moving'`
+
+```{r msefGARCH-AVGARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.AVGARCH2.rds')) {
+  mse.fGARCH.AVGARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, forecast.length = nrow(x), 
+                       refit.every = 1, refit.window = 'moving', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.AVGARCH2, 'data/fx/mse.fGARCH.AVGARCH2.rds')
+  
+} else {
+  mse.fGARCH.AVGARCH2 <- readRDS('data/fx/mse.fGARCH.AVGARCH2.rds')
+}
+
+mse.fGARCH.AVGARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-AVGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.3.1B : MSE of basket currencies.*
+
+### NGARCH
+
+```{r fGARCH-NGARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'NGARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r msefGARCH-NGARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.NGARCH.rds')) {
+  mse.fGARCH.NGARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.NGARCH, 'data/fx/mse.fGARCH.NGARCH.rds')
+  
+} else {
+  mse.fGARCH.NGARCH <- readRDS('data/fx/mse.fGARCH.NGARCH.rds')
+}
+
+mse.fGARCH.NGARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-NGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.4.1 : MSE of basket currencies.*
+
+### NAGARCH
+
+```{r fGARCH-NAGARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'NAGARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r msefGARCH-NAGARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.NAGARCH.rds')) {
+  mse.fGARCH.NAGARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.NAGARCH, 'data/fx/mse.fGARCH.NAGARCH.rds')
+  
+} else {
+  mse.fGARCH.NAGARCH <- readRDS('data/fx/mse.fGARCH.NAGARCH.rds')
+}
+
+mse.fGARCH.NAGARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-NAGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.5.1 : MSE of basket currencies.*
+
+### APARCH
+
+```{r fGARCH-APARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'APARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r msefGARCH-APARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.APARCH.rds')) {
+  mse.fGARCH.APARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.APARCH, 'data/fx/mse.fGARCH.APARCH.rds')
+  
+} else {
+  mse.fGARCH.APARCH <- readRDS('data/fx/mse.fGARCH.APARCH.rds')
+}
+
+mse.fGARCH.APARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-APARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.6.1 : MSE of basket currencies.*
+
+### GJRGARCH
+
+```{r fGARCH-GJRGARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'GJRGARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r msefGARCH-GJRGARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.GJRGARCH.rds')) {
+  mse.fGARCH.GJRGARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.GJRGARCH, 'data/fx/mse.fGARCH.GJRGARCH.rds')
+  
+} else {
+  mse.fGARCH.GJRGARCH <- readRDS('data/fx/mse.fGARCH.GJRGARCH.rds')
+}
+
+mse.fGARCH.GJRGARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-GJRGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.7.1 : MSE of basket currencies.*
+
+### ALLGARCH
+
+```{r fGARCH-ALLGARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'ALLGARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r msefGARCH-ALLGARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.ALLGARCH.rds')) {
+  mse.fGARCH.ALLGARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.ALLGARCH, 'data/fx/mse.fGARCH.ALLGARCH.rds')
+  
+} else {
+  mse.fGARCH.ALLGARCH <- readRDS('data/fx/mse.fGARCH.ALLGARCH.rds')
+}
+
+mse.fGARCH.ALLGARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-ALLGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.8.1 : MSE of basket currencies.*
+
+## eGARCH
+
+```{r eGARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'eGARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r eGARCH1A, echo=FALSE}
+if (!file.exists('data/fx/mse.eGARCH.rds')) {
+  mse.eGARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.eGARCH, 'data/fx/mse.eGARCH.rds')
+  
+} else {
+  mse.eGARCH <- readRDS('data/fx/mse.eGARCH.rds')
+}
+```
+
+```{r eGARCH1B, eval=FALSE}
+## Due to above coding get a 0 data on USDJPY, therefore I separeted to 2.
+if (!file.exists('data/fx/mse.eGARCH.rds')) {
+  mse.eGARCH <- ldply(mbase[1:6], function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  
+  mse.eGARCH.jpy <- ugarchroll(spec, data = Cl(mbase[['USDJPY']]), refit.window = 'recursive')
+
+  mse.eGARCH.jpy <- attributes(mse.eGARCH.jpy)$forecast$density %>% 
+    tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    .$MSE %>% unique
+  #[1] 3955.059
+  mse.eGARCH <- rbind(mse.eGARCH, data.frame(.id = 'USDJPY', MSE = mse.eGARCH.jpy))
+  
+  saveRDS(mse.eGARCH, 'data/fx/mse.eGARCH.rds')
+  
+} else {
+  mse.eGARCH <- readRDS('data/fx/mse.eGARCH.rds')
+}
+```
+
+```{r mseeGARCH, echo=FALSE}
+mse.eGARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate eGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.3.1 : MSE of basket currencies.*
+
+## gjrGARCH
+
+```{r gjrGARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'gjrGARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r msegjrGARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.gjrGARCH.rds')) {
+  mse.gjrGARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.gjrGARCH, 'data/fx/mse.gjrGARCH.rds')
+  
+} else {
+  mse.gjrGARCH <- readRDS('data/fx/mse.gjrGARCH.rds')
+}
+
+mse.gjrGARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate gjrGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.4.1 : MSE of basket currencies.*
+
+## apARCH
+
+```{r apARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'apARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r mseapARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.apARCH.rds')) {
+  mse.apARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.apARCH, 'data/fx/mse.apARCH.rds')
+  
+} else {
+  mse.apARCH <- readRDS('data/fx/mse.apARCH.rds')
+}
+
+mse.apARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate apARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.5.1 : MSE of basket currencies.*
+
+## iGARCH
+
+```{r iGARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'iGARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r mseiGARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.iGARCH.rds')) {
+  mse.iGARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.iGARCH, 'data/fx/mse.iGARCH.rds')
+  
+} else {
+  mse.iGARCH <- readRDS('data/fx/mse.iGARCH.rds')
+}
+
+mse.iGARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate iGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.6.1 : MSE of basket currencies.*
+
+## csGARCH
+
+```{r csGARCH, warning=FALSE}
+spec <- ugarchspec(variance.model = list(model = 'csGARCH'))
+```
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r msecsGARCH, echo=FALSE}
+if (!file.exists('data/fx/mse.csGARCH.rds')) {
+  mse.csGARCH <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.csGARCH, 'data/fx/mse.csGARCH.rds')
+  
+} else {
+  mse.csGARCH <- readRDS('data/fx/mse.csGARCH.rds')
+}
+
+mse.csGARCH %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate csGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.7.1 : MSE of basket currencies.*
+
+# Model Comparison
+
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+
+```{r models}
+models <- list(sGARCH = mse.sGARCH, 
+            fGARCH.GARCH = mse.fGARCH.GARCH, 
+            fGARCH.TGARCH = mse.fGARCH.TGARCH, 
+            fGARCH.AVGARCH = mse.fGARCH.AVGARCH, 
+            fGARCH.NGARCH = mse.fGARCH.NGARCH, 
+            fGARCH.NAGARCH = mse.fGARCH.NAGARCH, 
+            fGARCH.APARCH = mse.fGARCH.APARCH, 
+            fGARCH.GJRGARCH = mse.fGARCH.GJRGARCH, 
+            fGARCH.ALLGARCH = mse.fGARCH.ALLGARCH, 
+            eGARCH = mse.eGARCH, 
+            gjrGARCH = mse.gjrGARCH, 
+            apARCH = mse.apARCH, 
+            iGARCH = mse.iGARCH, 
+            csGARCH = mse.csGARCH)
+
+m.mse <- ldply(models, function(x) {
+    x %>% mutate(Currency = .id) %>% select(Currency, MSE)
+    }) %>% tbl_df %>% spread(Currency, MSE)
+```
+
+```{r m-mse, echo=FALSE}
+tagList(
+  tags$div(align = "center", 
+           class = "bg-info", 
+           tags$h3(class = "bg-primary", "MSE Comparison"), 
+           tags$h5(align = "center", class = "text-muted", 
+                   "GARCH models")), 
+  as.htmlwidget(m.mse %>% formattable(list(
+    
+    .id = color_tile('white', 'darkgoldenrod'), 
+    
+    USDAUD = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+    USDEUR = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+    USDGBP = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+    USDCHF = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+    USDCAD = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+    USDCNY = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+    USDJPY = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')) 
+    ))))
+```
+
+# Distribution Model
+
+## norm
+
+`norm` for normal distribution.
+
+## snorm
+
+`snorm` for skew-normal distribution.
+
+## std
+
+`std` for student-t distribution.
+
+## sstd
+
+`sstd` for skew-student distribution.
+
+## ged
+
+`ged` for generalized error distribution.
+
+## sged
+
+`sged` for skew-generalized error distribution.
+
+## nig
+
+`nig` for normal inverse gaussian distribution.
+
+## ghyp
+
+`ghyp` for generalized hyperbolic distribution.
+
+## jsu
+
+`jsu` for Johnson's SU distribution.
+
+
+
+# Solver
+
+## nlminb
+
+## solnp
+
+## lbfgs
+
+## gosolnp
+
+## nloptr
+
+## hybrid
+
+
+# Model Comparison
+
+`ugarchspec()` choose the GARCH model and distribution while `ugarchfit()` choose the solver.
+
+## Optimal ARMA Order
+
+
+# Conclusion
+
+
+```{r stopPar, echo=FALSE}
+## Set options back to original options
+options(op)
+options(warn = 0)
+```
+
+# Appendix
+
+## Documenting File Creation 
+
+It's useful to record some information about how your file was created.
+
+- File creation date: 2018-08-12
+- File latest updated date: `r today('Asia/Tokyo')`
+- `r R.version.string`
+- R version (short form): `r getRversion()`
+- [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+- File version: 1.0.1
+- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
+- GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
+- Additional session information:
+
+```{r info, echo=FALSE, warning = FALSE, results = 'asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+
+sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+
+sys1 %<>% rbind(., data.frame(Category = 'Current time', session_info = paste(as.character(now('Asia/Tokyo')), 'JST')))
+
+sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
+names(sys2)[2] <- c('Sys.info')
+rownames(sys2) <- NULL
+
+cbind(sys1, sys2) %>% 
+  kable(caption = 'Additional session information:') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+rm(sys1, sys2)
+```
+
+## Reference
+
+01. [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+02. [Binary.com Interview Q1](http://rpubs.com/englianhu/binary-Q1) ([Old link](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or [Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
+03. [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133))
+04. [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](http://rpubs.com/englianhu/binary-Q1TD)
+
+---
+
+**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**

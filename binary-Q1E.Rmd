@@ -308,7 +308,7 @@ llply(mbase_day1, summary)
   Due to the dataset always happened errors and not completed somemore wrong figures, here I get the daily data from 2012-01-01 to 2017-08-31 via Yahoo. However only take the data from 2014-01-01 to 2017-08-31 as experiments.
 
 ```{r read-yahooData}
-## Save yahooData dataset.
+## Read yahooData dataset.
 USDAUD <- readRDS('./data/USDAUD.rds')
 USDEUR <- readRDS('./data/USDEUR.rds')
 USDGBP <- readRDS('./data/USDGBP.rds')

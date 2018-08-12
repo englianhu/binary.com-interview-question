@@ -1,0 +1,187 @@
+---
+title: "<img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/757b27e1e93132368b0898152078be4961b05a28/www/binary-logo-resize.jpg' width='240'>"
+subtitle: "[<span style='color:blue'>Multivariate GARCH models</span>](https://github.com/englianhu/binary.com-interview-question)"
+author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/ENG.jpg' width='24'> <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/RYO.jpg?raw=true' width='24'>白戸則道®"
+date: "`r Sys.Date()`"
+output:
+  tufte::tufte_html:
+    toc: yes
+    toc_depth: 4
+    self_contained: no
+  tufte::tufte_book:
+    citation_package: natbib
+    latex_engine: xelatex
+  tufte::tufte_handout:
+    citation_package: natbib
+    latex_engine: xelatex
+link-citations: yes
+---
+
+```{r setup}
+#'@ rm(list = ls(all = TRUE))
+
+suppressPackageStartupMessages(library('BBmisc'))
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch')
+
+suppressAll(lib(pkgs))
+
+pkgs <- c('armaSearch.R')
+l_ply(pkgs, function(x) source(paste0('./function/', x)))
+
+## Set option to below if you want to plot an independent webpage with graph 
+#'@ op <- options(gvis.plot.tag=NULL)
+op <- options(gvis.plot.tag = 'chart')
+options(gvis.plot.tag = 'chart', warn = -1)
+
+rm(pkgs)
+```
+
+# 1. Introduction
+
+  As we can know from reference, I tried to apply few models for forex currency forecasting. Today I am zooming into the multivariate GARCH models.
+
+# 2. Data
+
+```{r get-data, warning = FALSE}
+## AUDUSD
+getSymbols('AUD=X', from = Sys.Date() %m-% years(1), to = Sys.Date())
+AUDUSD <- `AUD=X` %>% Cl %>% na.omit; rm(`AUD=X`)
+AUDUSD <- 1/AUDUSD
+names(AUDUSD) %<>% str_replace_all('AUD=X', 'AUDUSD')
+
+## GBPUSD
+getSymbols('GBP=X', from = Sys.Date() %m-% years(1), to = Sys.Date())
+GBPUSD <- `GBP=X` %>% Cl %>% na.omit; rm(`GBP=X`)
+GBPUSD <- 1/GBPUSD
+names(GBPUSD) %<>% str_replace_all('GBP=X', 'GBPUSD')
+
+## EURUSD
+getSymbols('EUR=X', from = Sys.Date() %m-% years(1), to = Sys.Date())
+EURUSD <- `EUR=X` %>% Cl %>% na.omit; rm(`EUR=X`)
+EURUSD <- 1/EURUSD
+names(EURUSD) %<>% str_replace_all('EUR=X', 'EURUSD')
+
+## USDCHF
+getSymbols('CHF=X', from = Sys.Date() %m-% years(1), to = Sys.Date())
+USDCHF <- `CHF=X` %>% Cl %>% na.omit; rm(`CHF=X`)
+names(USDCHF) %<>% str_replace_all('CHF=X', 'USDCHF')
+
+## USDCAD
+getSymbols('CAD=X', from = Sys.Date() %m-% years(1), to = Sys.Date())
+USDCAD <- `CAD=X` %>% Cl %>% na.omit; rm(`CAD=X`)
+names(USDCAD) %<>% str_replace_all('CAD=X', 'USDCAD')
+
+## USDCNY
+getSymbols('CNY=X', from = Sys.Date() %m-% years(1), to = Sys.Date())
+USDCNY <- `CNY=X` %>% Cl %>% na.omit; rm(`CNY=X`)
+names(USDCNY) %<>% str_replace_all('CNY=X', 'USDCNY')
+
+## USDJPY
+getSymbols('JPY=X', from = Sys.Date() %m-% years(1), to = Sys.Date())
+USDJPY <- `JPY=X` %>% Cl %>% na.omit; rm(`JPY=X`)
+names(USDJPY) %<>% str_replace_all('JPY=X', 'USDJPY')
+
+fxPrice <- list(AUDUSD = AUDUSD, 
+                GBPUSD = GBPUSD, 
+                EURUSD = EURUSD, 
+                USDCHF = USDCHF, 
+                USDCAD = USDCAD, 
+                USDCNY = USDCNY, 
+                USDJPY = USDJPY)
+```
+
+# 3. Modelling
+
+## 3.1 Introduce Multivariate Garch Models
+
+  Multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH.
+
+## 3.2 DCC
+
+
+```{r multivariate}
+fit <- llply(fxPrice, function(x){
+
+  armaOrder <- armaSearch(x) %>% dplyr::filter(AIC == min(AIC)) %>% .[c('p', 'q')] %>% unlist
+  
+  xspec = ugarchspec(
+    variance.model = list(
+      model = 'gjrGARCH', garchOrder = c(1, 1), 
+      submodel = NULL, external.regressors = NULL, 
+      variance.targeting = FALSE), 
+    mean.model = list(
+      armaOrder = armaOrder, 
+      include.mean = TRUE, archm = FALSE, 
+      archpow = 1, arfima = FALSE, 
+      external.regressors = NULL, 
+      archex = FALSE), 
+    distribution.model = 'snorm')
+  
+  uspec = multispec(replicate(10, xspec))
+
+  spec1 = dccspec(uspec = uspec, dccOrder = c(1, 1), 
+                  model='aDCC', distribution = 'mvt')
+  
+  cl = makePSOCKcluster(10)
+  multf = multifit(uspec, x, cluster = cl)
+  
+  fit1 = dccfit(spec1, data = x, solver = 'hybrid', 
+                fit.control = list(eval.se = TRUE), 
+                fit = multf, cluster = cl)
+  
+  })
+```
+
+## 3.3 GO-GARCH
+
+
+
+## 3.4 Copula-GARCH
+
+
+# 4. Conclusion
+
+
+```{r stopPar, echo = FALSE}
+## Set options back to original options
+options(op)
+options(warn = 0)
+```
+
+# 5. Appendix
+
+## 5.1 Documenting File Creation 
+
+  It's useful to record some information about how your file was created.
+
+  - File creation date: 2017-10-17
+  - File latest updated date: `r Sys.Date()`
+  - `r R.version.string`
+  - R version (short form): `r getRversion()`
+  - [<span style='color:blue'>**rmarkdown** package</span>](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+  - [<span style='color:blue'>**tufte** package</span>](https://github.com/rstudio/tufte) version: `r packageVersion('tufte')`
+  - File version: 1.0.1
+  - Author Profile: [<span style='color:blue'>®γσ, Eng Lian Hu</span>](https://beta.rstudioconnect.com/englianhu/ryo-eng/)
+  - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
+  - Additional session information
+  
+```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+
+lubridate::now()
+sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+sys1 %>% formattable %>% as.htmlwidget
+
+data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1] %>% rename(Category = Category, Sys.info =  Sys.info..) %>% formattable %>% as.htmlwidget
+
+rm(sys1)
+```
+
+## 5.2 Reference
+
+  01. [<span style='color:blue'>Betting Strategy and Model Validation - Part II</span>](https://englianhu.github.io/2017/10/Betting_Strategy_and_Model_Validation_-_Part_02/)
+  02. [<span style='color:blue'>**binary.com Job Application - Quantitative Analyst** *sample question*</span>](https://github.com/englianhu/binary.com-interview-question)
+
+**Powered by - Copyright® Intellectual Property Rights of <img src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/oda-army2.jpg?raw=true' width='24'> [<span style='color:blue'>Scibrokes®</span>](http://www.scibrokes.com)個人の経営企業**

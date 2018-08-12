@@ -1,7 +1,7 @@
-mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'aDCC', 
+mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE, 
                           .dist.model = 'mvnorm', .currency = 'JPY=X', 
                           .ahead = 1, .include.Op = TRUE, .Cl.only = FALSE, 
-                          .solver = 'solnp') {
+                          .solver = 'solnp', .roll = FALSE) {
   
   require(plyr, quietly = TRUE)
   require(dplyr, quietly = TRUE)
@@ -65,7 +65,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'aDCC',
     mspec <- multispec(speclist)
     
     dccSpec <- dccspec(
-      mspec, VAR = TRUE, lag = 1, 
+      mspec, VAR = .VAR, lag = 1, 
       lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
       external.regressors = NULL, #external.regressors = VAREXO, 
       dccOrder = c(1, 1), model = .model, 
@@ -73,8 +73,29 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'aDCC',
                             #   concludes that the 'mvt' is the best.
                             # http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/
     
-    fit <- dccfit(dccSpec, data = mbase, solver = .solver)
-    fc <- dccforecast(fit, n.ahead = .ahead)
+    cl <- makePSOCKcluster(ncol(mbase))
+    
+    if (.roll == TRUE) {
+      mod = dccroll(dccSpec, data = mbase, solver = .solver, 
+                    forecast.length = nrow(mbase), cluster = cl)
+      cat('step 1/1 dccroll done!\n')
+      
+    } else {
+      
+      ## No need multifit()
+      #'@ multf <- multifit(mspec, data = mbase, cluster = cl)
+      #'@ cat('step 1/3 multifit done!\n')
+      
+      #'@ fit <- dccfit(dccSpec, data = mbase, solver = .solver, fit = multf, 
+      #'@               cluster = cl)
+      #'@ cat('step 2/3 dccfit done!\n')
+      fit <- dccfit(dccSpec, data = mbase, solver = .solver, cluster = cl)
+      cat('step 1/2 dccfit done!\n')
+      
+      fc <- dccforecast(fit, n.ahead = .ahead, cluster = cl)
+      #'@ cat('step 3/3 dccforecast done!\n')
+      cat('step 2/2 dccforecast done!\n')
+    }
     
   } else if (.mv.model == 'go-GARCH') {
     
@@ -100,15 +121,21 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'aDCC',
         submodel = NULL, external.regressors = NULL, #   compares the garchOrder and 
         variance.targeting = FALSE),                 #   concludes garch(1,1) is the best fit.
       mean.model = list(
-        model = .model, robust = FALSE, 
-        lag = 1, lag.max = NULL, lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
-        external.regressors = NULL, 
-        robust.control = list('gamma' = 0.25, 'delta' = 0.01, 
-                              'nc' = 10, 'ns' = 500)), 
+        model = .model, robust = FALSE), 
       distribution.model = .dist.model)
     
-    fit <- gogarchfit(spec, mbase, solver = 'hybrid')
-    fc <- gogarchforecast(fit, n.ahead = .ahead)
+    cl <- makePSOCKcluster(ncol(mbase))
+    fit <- gogarchfit(spec, mbase, solver = 'hybrid', cluster = cl)
+    cat('step 1/2 gogarchfit done!\n')
+    
+    if (.roll == TRUE) {
+      mod = gogarchroll(spec, data = mbase, solver = .solver, cluster = cl)
+      cat('step 2/1 gogarchroll done!\n')
+      
+    } else {
+      fc <- gogarchforecast(fit, n.ahead = .ahead, cluster = cl)
+      cat('step 2/2 gogarchforecast done!\n')
+    }
     
   } else if (.mv.model == 'copula-GARCH') {
     ...
@@ -116,17 +143,25 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'aDCC',
     stop("Kindly set .mv.model as 'dcc', 'go-GARCH' or 'copula-GARCH'.")
   }
   
-  res = fitted(fc)
-  colnames(res) = names(mbase)
-  latestPrice = tail(mbase, 1)
+  if (.roll == TRUE) {
+    return(report(mod, type = 'fpm'))
+    
+  } else {
+      
+    res = fitted(fc)
+    colnames(res) = names(mbase)
+    latestPrice = tail(mbase, 1)
+    
+    #rownames(res) <- as.character(forDate)
+    latestPrice <- xts(latestPrice)
+    #res <- as.xts(res)
+    
+    tmp = list(latestPrice = latestPrice, forecastPrice = res, 
+               fit = fit, forecast = fc, AIC = infocriteria(fit))
+    return(tmp)
+  }
   
-  #rownames(res) <- as.character(forDate)
-  latestPrice <- xts(latestPrice)
-  #res <- as.xts(res)
   
-  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
-             fit = fit, forecast = fc, AIC = infocriteria(fit))
-  return(tmp)
 })
 
 
