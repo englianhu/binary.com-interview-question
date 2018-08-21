@@ -1,10 +1,11 @@
 calc_fx <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, 
-                            price = 'Cl', .roll = FALSE) {
+                            price = 'Cl', .roll = FALSE, .cluster = FALSE) {
   
   ## Using "memoise" to automatically cache the results
   ## http://rpubs.com/englianhu/arma-order-for-garch
   source('function/filterFX.R')
   source('function/opt_arma.R') #rename the function best.ARMA()
+  require('forecast')
   
   if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
   
@@ -27,7 +28,12 @@ calc_fx <- memoise(function(mbase, currency = 'JPY=X', ahead = 1,
     fixed.pars = list(arfima = armaOrder[2]), #set fixed.pars for `d` value
     distribution.model = 'snorm')
   
-  cl = makePSOCKcluster(ncol(mbase))
+  if (.cluster == TRUE) {
+    cl <- makePSOCKcluster(ncol(mbase))
+  } else {
+    cl <- NULL
+  }
+  
   fit = ugarchfit(spec, mbase, solver = 'hybrid', cluster = cl)
   cat('step 1/2 ugarchfit done!\n')
   

@@ -1,7 +1,7 @@
 mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE, 
                           .dist.model = 'mvnorm', .currency = 'JPY=X', 
                           .ahead = 1, .include.Op = TRUE, .Cl.only = FALSE, 
-                          .solver = 'solnp', .roll = FALSE) {
+                          .solver = 'solnp', .roll = FALSE, .cluster = FALSE) {
   
   require(plyr, quietly = TRUE)
   require(dplyr, quietly = TRUE)
@@ -43,6 +43,12 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     stop(".Cl.only = TRUE will strictly only get closing price.")
   }
   
+  if (.cluster == TRUE) {
+    cl <- makePSOCKcluster(ncol(mbase))
+  } else {
+    cl <- NULL
+  }
+	
   if (.mv.model == 'dcc') {
     
     sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
@@ -72,8 +78,6 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       distribution = 'mvt') # Below article compares distribution model and 
                             #   concludes that the 'mvt' is the best.
                             # http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/
-    
-    cl <- makePSOCKcluster(ncol(mbase))
     
     if (.roll == TRUE) {
       mod = dccroll(dccSpec, data = mbase, solver = .solver, 
@@ -124,7 +128,6 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
         model = .model, robust = FALSE), 
       distribution.model = .dist.model)
     
-    cl <- makePSOCKcluster(ncol(mbase))
     fit <- gogarchfit(spec, mbase, solver = 'hybrid', cluster = cl)
     cat('step 1/2 gogarchfit done!\n')
     

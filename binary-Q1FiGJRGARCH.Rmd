@@ -23,7 +23,7 @@ output:
 suppressPackageStartupMessages(require('BBmisc'))
 
 ## 读取程序包
-pkg <- c('lubridate', 'plyr', 'dplyr', 'magrittr', 'stringr', 'rugarch', 'forecast', 'quantmod', 'microbenchmark', 'kableExtra', 'formattable')
+pkg <- c('lubridate', 'plyr', 'dplyr', 'magrittr', 'stringr', 'rugarch', 'forecast', 'quantmod', 'microbenchmark', 'knitr', 'kableExtra', 'formattable')
 suppressAll(lib(pkg))
 rm(pkg)
 ```
@@ -130,7 +130,7 @@ x_{t} &= \mu + \sum_{i=1}^{m} \alpha_{i} x_{t-i} + \sum^{n}_{j=1} \beta_{j} \var
 
 ## GJR-GARCH：ARMA(p,q)值最优化（旧程序）
 
-计算最优arma order中的`p`值与`q`值... 不包括`d`值。
+使用极大似然法计算最优arma order中的`p`值与`q`值，将原本默认值最优化，让模型马尔可夫化，每日的`p`与`q`值最将会使用最佳值... 不包括`d`值。
 
 ```{r arma-order1, warning = FALSE}
 armaSearch <- suppressWarnings(function(data, .method = 'CSS-ML') {
@@ -603,12 +603,30 @@ names(fx2) <- names(cr_code)
 #合并，并且整理数据。
 fx1 %<>% ldply %>% tbl_df
 fx2 %<>% ldply %>% tbl_df
-fx <- suppressAll(
-  bind_rows(fx1, fx2) %>% arrange(Date) %>% 
-    mutate(.id = factor(.id), Cat = factor(Cat), Price.T1 = lag(Price.T1, 56)) %>% 
+fx <- suppressAll(bind_rows(fx1, fx2) %>% arrange(Date) %>% 
+  mutate(.id = factor(.id), Cat = factor(Cat)) %>% 
+  ddply(.(Cat, Type), function(x) {
+    x %>% mutate(Price.T1 = lag(Price.T1, 1))
+  }) %>% tbl_df %>% 
     dplyr::filter(Date >= ymd('2013-01-01') & Date <= ymd('2017-08-30')))
 
 rm(fx1, fx2)
+```
+
+```{r tidy-data3}
+## filter all predictive error where sd >= 20%.
+notID <- fx %>% mutate(diff = abs(Price.T1/Price), se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% dplyr::filter(se == 1)
+ntimeID <- notID %>% .$Date %>% unique
+notID %>% 
+  kable(caption = 'Error data') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+僕尝试运行好几次，`USDCHF`都是获得同样的结果。然后将默认的`snorm`分布更换为`norm`就没有出现错误。至于`USDCNY`原始数据有误就不是统计模型的问题了。
+
+```{r tidy-data4}
+fx %<>% dplyr::filter(!Date %in% ntimeID)
 ```
 
 ## 精准度
@@ -618,13 +636,16 @@ rm(fx1, fx2)
 ```{r aic1}
 acc <- ddply(fx, .(Cat, Type), summarise, 
              mse = mean((Price.T1 - Price)^2), 
+             n = length(Price), 
+             Akaike.mse = (-2*mse)/n+2*4/n, 
              Akaike = mean(Akaike), 
              Bayes = mean(Bayes), 
              Shibata = mean(Shibata), 
              Hannan.Quinn = mean(Hannan.Quinn)) %>% 
-  tbl_df %>% mutate(mse = round(mse, 6))
+  tbl_df %>% mutate(mse = round(mse, 6)) %>% 
+  arrange(Type)
 
-acc %>% arrange(Type) %>% 
+acc %>% 
   kable(caption = 'Group Table Summary') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   group_rows('USD/AUD Open', 1, 2, label_row_css = 'background-color: #e68a00; color: #fff;') %>%
@@ -661,13 +682,16 @@ acc %>% arrange(Type) %>%
 ```{r aic2}
 acc <- ddply(fx, .(Cat, .id), summarise, 
              mse = mean((Price.T1 - Price)^2), 
+             n = length(Price), 
+             Akaike.mse = (-2*mse)/n+2*4/n, 
              Akaike = mean(Akaike), 
              Bayes = mean(Bayes), 
              Shibata = mean(Shibata), 
              Hannan.Quinn = mean(Hannan.Quinn)) %>% 
-  tbl_df %>% mutate(mse = round(mse, 6))
+  tbl_df %>% mutate(mse = round(mse, 6)) %>% 
+  arrange(.id)
 
-acc %>% arrange(.id) %>% 
+acc %>% 
   kable(caption = 'Group Table Summary') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   group_rows('USD/AUD', 1, 2, label_row_css = 'background-color: #003399; color: #fff;') %>%
@@ -683,6 +707,8 @@ acc %>% arrange(.id) %>%
 ```{r aic3}
 acc <- ddply(fx, .(Cat), summarise, 
              mse = mean((Price.T1 - Price)^2), 
+             n = length(Price), 
+             Akaike.mse = (-2*mse)/n+2*4/n, 
              Akaike = mean(Akaike), 
              Bayes = mean(Bayes), 
              Shibata = mean(Shibata), 

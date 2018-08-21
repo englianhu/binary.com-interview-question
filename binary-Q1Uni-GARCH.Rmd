@@ -17,12 +17,12 @@ output:
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'rlist', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'rlist', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch', 'forecast')
 
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
 
-funs <- c('calc_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R')
+funs <- c('uv_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'task_progress.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
 
 ## Set option to below if you want to plot an independent webpage with graph 
@@ -35,7 +35,9 @@ rm(pkgs)
 
 # Introduction
 
-From previous papers, I tried to apply couple models for FOREX price forecasting and eventually got to know *Fractional Intergrated GJR-GARCH* is the best fit model as we can refer to **GARCH模型中的ARMA(p,d,q)参数最优化**^[Kindly refer to paper in [Reference]]. Due to I simulate whole dataset to get the result in menmtioned paper is time consuming, I tried to apply `dccroll()` to know the mse by resampling but not only based on single `AIC`^[Only the `solver=solnp` stable but the other solvers not stable, the fluctuation of AIC value is quite high.]. I parse my `mv_fx()` function^[Due to some errors] and tested the **Binary-Q1 - Multivariate GARCH Models** and some additive parameters might probably need to be adjusted in the arguments of the function.
+From previous papers, I tried to apply couple models for FOREX price forecasting and eventually got to know *Fractional Intergrated GJR-GARCH* is the best fit model as we can refer to **GARCH模型中的ARMA(p,d,q)参数最优化**^[Kindly refer to paper in [Reference]]. Due to I simulate whole dataset to get the result in menmtioned paper is time consuming, I tried to apply `dccroll()` to know the mse by resampling but not only based on single `AIC`^[Only the `solver=solnp` stable but the other solvers not stable, the fluctuation of AIC value is quite high.]. I parse my `mv_fx()` function^[Due to some errors] and tested the **Binary-Q1 - Multivariate GARCH Models** and some additive parameters might probably need to be adjusted in the arguments of the function. [Arma Part Overfitting in Arma Garch Model fitting via fGarch Package](https://stackoverflow.com/questions/36312065/arma-part-overfitting-in-arma-garch-model-fitting-via-fgarch-package) is a similar study for models comparison in GARCH.
+
+Besides using the `ugarchroll()`, all models in this paper are Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r dcc, eval=FALSE}
 ## --- eval=FALSE, not run but display chunk ---
@@ -146,29 +148,64 @@ names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 
 
 ## Read presaved Yahoo data.
 mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
+
+price_type <- c('Op', 'Hi', 'Lo', 'Cl')
+
+gmds <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.AVGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.APARCH', 'fGARCH.GJRGARCH', 'fGARCH.ALLGARCH', 'eGARCH', 'gjrGARCH', 'apARCH', 'iGARCH', 'csGARCH')
+
+timeID <- llply(mbase, function(x) as.character(index(x))) %>% 
+  unlist %>% unique %>% as.Date %>% sort
+timeID <- c(timeID, xts::last(timeID) + days(1)) #the last date + 1 in order to predict the next day of last date to make whole dataset completed.
+timeID0 <- ymd('2013-01-01')
+timeID <- timeID[timeID >= timeID0]
+
+.cl = FALSE
 ```
 
 # GARCH Models
 
 ## sGARCH
 
-```{r sGARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'sGARCH'))
-```
-
-The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+Below is the backtest simulation. The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'` which only apply Monte Carlo method to resampling the model.
 
 ```{r msesGARCH}
 if (!file.exists('data/fx/mse.sGARCH.rds')) {
   mse.sGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, forecast.length = nrow(x), refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'sGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.sGARCH)[2] <- 'MSE'
   saveRDS(mse.sGARCH, 'data/fx/mse.sGARCH.rds')
   
 } else {
@@ -183,16 +220,27 @@ mse.sGARCH %>%
 
 *Table 3.1.1A : MSE of basket currencies.*
 
-`forecast.length = nrow(x), refit.every = 1, refit.window = 'moving'`
+By refer to below article, I use `ugarchroll()` which is a wrapper for `ugarchfit()` and `ugarchforecast()` which will made the thing use :
 
-```{r msesGARCH2}
+- [estimation difference between ugarchroll and ugarchfit](http://r.789695.n4.nabble.com/estimation-difference-between-ugarchroll-and-ugarchfit-td4631122.html)
+- [Window size in ugarchroll of rugarch package?](http://r.789695.n4.nabble.com/Window-size-in-ugarchroll-of-rugarch-package-td4669366.html)
+
+There has a concern to use it which is once there has an error during the course of simulation will cause whole data gone.^[`tryCatch()` might useful for `llply()` or else we can use `for()` to skip `NULL` or error result. Normally I will add `cat()` upon completion of one prediction to know the progress of whole simulation.] All my previous preditive result based on the Markov Chain theory^[Markov Chain theory explain the statiscal predicton only can predict the next stage based on current stage. For example in soccer In-Play : 1-0 or 0-1 can be predicted during 0-0, the fit for 0-0 will not be usable anymore once there has scored. Similar concept with scoring intensity in **Dixon & Robinson 1997**, the `armaOrder` and `arfima` parameters optimised the preditive accuracy at every single stage.] with statistical modelling and prediction model and saved every single predictive result.
+
+Below is the simulation . `n.start = ns` is the start point of simulation which is `ymd('2013-01-01')`, `forecast.length = nrow(x) - ns` is the length of forecast equal to the length from the n.start until the end of the dataset, `refit.every = 1` means re-estimate the fit value once only where `refit.window = 'moving'` where today's dataset only can predict 1 trading day in advance.
+
+```{r msesGARCH2, eval=FALSE}
+## --- eval=FALSE ---- Due to errors.
 if (!file.exists('data/fx/mse.sGARCH2.rds')) {
   mse.sGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
     cl <- makePSOCKcluster(ncol(x))
-    
-    roll <- ugarchroll(spec, data = x, forecast.length = nrow(x), 
-                       refit.every = 1, refit.window = 'moving', cluster = cl)
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
     attributes(roll)$forecast$density %>% 
       tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
@@ -212,13 +260,53 @@ mse.sGARCH2 %>%
 
 *Table 3.1.1B : MSE of basket currencies.*
 
+Due to I am not statisfy and doubted onto the `AIC` result based on model comparison by using basic model above. Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q` to proof if my previous study^[gjrGARCH model generated highest ROI.] in **Binary.com Interview Q1** is correct.
+
+**Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>** directly use the mentioned gjrGARCH model but add another criteria which is the timing of daily High-Low price based on highest `bid` and lowest `ask` price within a day.
+
+```{r msesGARCH3, eval=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+sGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      sGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'sGARCH', currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(sGARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(sGARCH[[i]])[3]))
+      
+      saveRDS(sGARCH[[i]], paste0(
+        'data/fx/', names(sGARCH[[i]])[3], '/sGARCH.', 
+        unique(sGARCH[[i]]$Date), '.rds'))
+    
+      cat(paste0(
+        'data/fx/', names(sGARCH[[i]])[3], '/sGARCH.', 
+        unique(sGARCH[[i]]$Date), '.rds saved!\n'))
+    }
+    }; rm(i)
+  }
+```
+
 ## fGARCH
 
 ### GARCH
-
-```{r fGARCH-GARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'GARCH'))
-```
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -226,13 +314,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.fGARCH.GARCH.rds')) {
   mse.fGARCH.GARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'GARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.fGARCH.GARCH)[2] <- 'MSE'
   saveRDS(mse.fGARCH.GARCH, 'data/fx/mse.fGARCH.GARCH.rds')
   
 } else {
@@ -240,23 +355,26 @@ if (!file.exists('data/fx/mse.fGARCH.GARCH.rds')) {
 }
 
 mse.fGARCH.GARCH %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2], na.rm = TRUE))) %>% 
   kable(caption = 'MSE for Univariate fGARCH-GARCH') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 *Table 3.2.1.1A : MSE of basket currencies.*
 
-`forecast.length = nrow(x), refit.every = 1, refit.window = 'moving'`
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
 ```{r msefGARCH-GARCH2, echo=FALSE}
 if (!file.exists('data/fx/mse.fGARCH.GARCH2.rds')) {
   mse.fGARCH.GARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
     cl <- makePSOCKcluster(ncol(x))
-    
-    roll <- ugarchroll(spec, data = x, forecast.length = nrow(x), 
-                       refit.every = 1, refit.window = 'moving', cluster = cl)
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
     attributes(roll)$forecast$density %>% 
       tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
@@ -275,11 +393,50 @@ mse.fGARCH.GARCH2 %>%
 
 *Table 3.2.1.1B : MSE of basket currencies.*
 
-### TGARCH
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
-```{r fGARCH-TGARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'TGARCH'))
+```{r msefGARCH-GARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+fGARCH.GARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      fGARCH.GARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'fGARCH', .submodel = 'GARCH', 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(fGARCH.GARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(fGARCH.GARCH[[i]])[3]))
+      
+      saveRDS(fGARCH.GARCH[[i]], paste0(
+        'data/fx/', names(fGARCH.GARCH[[i]])[3], '/fGARCH.GARCH.', 
+        unique(fGARCH.GARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(fGARCH.GARCH[[i]])[3], '/fGARCH.GARCH.', 
+        unique(fGARCH.GARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
 ```
+
+### TGARCH
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -287,13 +444,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.fGARCH.TGARCH.rds')) {
   mse.fGARCH.TGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'TGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  names(mse.fGARCH.TGARCH)[2] <- 'MSE'
   saveRDS(mse.fGARCH.TGARCH, 'data/fx/mse.fGARCH.TGARCH.rds')
   
 } else {
@@ -308,16 +492,19 @@ mse.fGARCH.TGARCH %>%
 
 *Table 3.2.2.1A : MSE of basket currencies.*
 
-`forecast.length = nrow(x), refit.every = 1, refit.window = 'moving'`
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
 ```{r msefGARCH-TGARCH2, echo=FALSE}
 if (!file.exists('data/fx/mse.fGARCH.TGARCH2.rds')) {
   mse.fGARCH.TGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
     cl <- makePSOCKcluster(ncol(x))
-    
-    roll <- ugarchroll(spec, data = x, forecast.length = nrow(x), 
-                       refit.every = 1, refit.window = 'moving', cluster = cl)
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
     attributes(roll)$forecast$density %>% 
       tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
@@ -336,11 +523,50 @@ mse.fGARCH.TGARCH2 %>%
 
 *Table 3.2.2.1B : MSE of basket currencies.*
 
-### AVGARCH
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
-```{r fGARCH-AVGARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'AVGARCH'))
+```{r msefGARCH-TGARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+fGARCH.TGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      fGARCH.TGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'fGARCH', .submodel = 'TGARCH', 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                       Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+     if (!dir.exists(paste0('data/fx/', names(fGARCH.TGARCH[[i]])[3]))) 
+       dir.create(paste0('data/fx/', names(fGARCH.TGARCH[[i]])[3]))
+     
+     saveRDS(fGARCH.TGARCH[[i]], paste0(
+       'data/fx/', names(fGARCH.TGARCH[[i]])[3], '/fGARCH.TGARCH.', 
+       unique(fGARCH.TGARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(fGARCH.TGARCH[[i]])[3], '/fGARCH.TGARCH.', 
+        unique(fGARCH.TGARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
 ```
+
+### AVGARCH
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -348,13 +574,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.fGARCH.AVGARCH.rds')) {
   mse.fGARCH.AVGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'AVGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.fGARCH.AVGARCH)[2] <- 'MSE'
   saveRDS(mse.fGARCH.AVGARCH, 'data/fx/mse.fGARCH.AVGARCH.rds')
   
 } else {
@@ -369,16 +622,19 @@ mse.fGARCH.AVGARCH %>%
 
 *Table 3.2.3.1A : MSE of basket currencies.*
 
-`forecast.length = nrow(x), refit.every = 1, refit.window = 'moving'`
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
 ```{r msefGARCH-AVGARCH2, echo=FALSE}
 if (!file.exists('data/fx/mse.fGARCH.AVGARCH2.rds')) {
   mse.fGARCH.AVGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
     cl <- makePSOCKcluster(ncol(x))
-    
-    roll <- ugarchroll(spec, data = x, forecast.length = nrow(x), 
-                       refit.every = 1, refit.window = 'moving', cluster = cl)
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
     attributes(roll)$forecast$density %>% 
       tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
@@ -397,11 +653,50 @@ mse.fGARCH.AVGARCH2 %>%
 
 *Table 3.2.3.1B : MSE of basket currencies.*
 
-### NGARCH
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
-```{r fGARCH-NGARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'NGARCH'))
+```{r msefGARCH-AVGARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+fGARCH.AVGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+     dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+     smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+     
+      fGARCH.AVGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'fGARCH', .submodel = 'AVGARCH', 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                       Type = paste0(names(df$latestPrice), '.', y), 
+                       df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+     })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(fGARCH.AVGARCH[[i]])[3]))) 
+       dir.create(paste0('data/fx/', names(fGARCH.AVGARCH[[i]])[3]))
+     
+     saveRDS(fGARCH.AVGARCH[[i]], paste0(
+       'data/fx/', names(fGARCH.AVGARCH[[i]])[3], '/fGARCH.AVGARCH.', 
+       unique(fGARCH.AVGARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+       'data/fx/', names(fGARCH.AVGARCH[[i]])[3], '/fGARCH.AVGARCH.', 
+       unique(fGARCH.AVGARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
 ```
+
+### NGARCH
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -409,13 +704,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.fGARCH.NGARCH.rds')) {
   mse.fGARCH.NGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'NGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.fGARCH.NGARCH)[2] <- 'MSE'
   saveRDS(mse.fGARCH.NGARCH, 'data/fx/mse.fGARCH.NGARCH.rds')
   
 } else {
@@ -428,13 +750,82 @@ mse.fGARCH.NGARCH %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-*Table 3.2.4.1 : MSE of basket currencies.*
+*Table 3.2.4.1A : MSE of basket currencies.*
+
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
+
+```{r msefGARCH-NGARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.NGARCH2.rds')) {
+  mse.fGARCH.NGARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.NGARCH2, 'data/fx/mse.fGARCH.NGARCH2.rds')
+  
+} else {
+  mse.fGARCH.NGARCH2 <- readRDS('data/fx/mse.fGARCH.NGARCH2.rds')
+}
+
+mse.fGARCH.NGARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-NGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.4.1B : MSE of basket currencies.*
+
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+
+```{r msefGARCH-NGARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+fGARCH.NGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      fGARCH.NGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'fGARCH', .submodel = 'NGARCH', 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(fGARCH.NGARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(fGARCH.NGARCH[[i]])[3]))
+      
+      saveRDS(fGARCH.NGARCH[[i]], paste0(
+        'data/fx/', names(fGARCH.NGARCH[[i]])[3], '/fGARCH.NGARCH.', 
+        unique(fGARCH.NGARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(fGARCH.NGARCH[[i]])[3], '/fGARCH.NGARCH.', 
+        unique(fGARCH.NGARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
 
 ### NAGARCH
-
-```{r fGARCH-NAGARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'NAGARCH'))
-```
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -442,13 +833,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.fGARCH.NAGARCH.rds')) {
   mse.fGARCH.NAGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'NAGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.fGARCH.NAGARCH)[2] <- 'MSE'
   saveRDS(mse.fGARCH.NAGARCH, 'data/fx/mse.fGARCH.NAGARCH.rds')
   
 } else {
@@ -461,13 +879,83 @@ mse.fGARCH.NAGARCH %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-*Table 3.2.5.1 : MSE of basket currencies.*
+*Table 3.2.5.1A : MSE of basket currencies.*
+
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
+
+```{r msefGARCH-NAGARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.NAGARCH2.rds')) {
+  mse.fGARCH.NAGARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.NAGARCH2, 'data/fx/mse.fGARCH.NAGARCH2.rds')
+  
+} else {
+  mse.fGARCH.NAGARCH2 <- readRDS('data/fx/mse.fGARCH.NAGARCH2.rds')
+}
+
+mse.fGARCH.NAGARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-NAGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.5.1B : MSE of basket currencies.*
+
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+
+```{r msefGARCH-NAGARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+fGARCH.NAGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      fGARCH.NAGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'fGARCH', .submodel = 'NAGARCH', 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(fGARCH.NAGARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(fGARCH.NAGARCH[[i]])[3]))
+      
+      saveRDS(fGARCH.NAGARCH[[i]], paste0(
+        'data/fx/', names(fGARCH.NAGARCH[[i]])[3], '/fGARCH.NAGARCH.', 
+        unique(fGARCH.NAGARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(fGARCH.NAGARCH[[i]])[3], '/fGARCH.NAGARCH.', 
+        unique(fGARCH.NAGARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
 
 ### APARCH
-
-```{r fGARCH-APARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'APARCH'))
-```
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -475,13 +963,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.fGARCH.APARCH.rds')) {
   mse.fGARCH.APARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'APARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.fGARCH.APARCH)[2] <- 'MSE'
   saveRDS(mse.fGARCH.APARCH, 'data/fx/mse.fGARCH.APARCH.rds')
   
 } else {
@@ -494,13 +1009,83 @@ mse.fGARCH.APARCH %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-*Table 3.2.6.1 : MSE of basket currencies.*
+*Table 3.2.6.1A : MSE of basket currencies.*
+
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
+
+```{r msefGARCH-APARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.APARCH2.rds')) {
+  mse.fGARCH.APARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.APARCH2, 'data/fx/mse.fGARCH.APARCH2.rds')
+  
+} else {
+  mse.fGARCH.APARCH2 <- readRDS('data/fx/mse.fGARCH.APARCH2.rds')
+}
+
+mse.fGARCH.APARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-APARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.6.1B : MSE of basket currencies.*
+
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+
+```{r msefGARCH-APARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+fGARCH.APARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      fGARCH.APARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'fGARCH', .submodel = 'APARCH', 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(fGARCH.APARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(fGARCH.APARCH[[i]])[3]))
+      
+      saveRDS(fGARCH.APARCH[[i]], paste0(
+        'data/fx/', names(fGARCH.APARCH[[i]])[3], '/fGARCH.APARCH.', 
+        unique(fGARCH.APARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(fGARCH.APARCH[[i]])[3], '/fGARCH.APARCH.', 
+        unique(fGARCH.APARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
 
 ### GJRGARCH
-
-```{r fGARCH-GJRGARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'GJRGARCH'))
-```
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -508,13 +1093,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.fGARCH.GJRGARCH.rds')) {
   mse.fGARCH.GJRGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'GJRGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.fGARCH.GJRGARCH)[2] <- 'MSE'
   saveRDS(mse.fGARCH.GJRGARCH, 'data/fx/mse.fGARCH.GJRGARCH.rds')
   
 } else {
@@ -527,13 +1139,83 @@ mse.fGARCH.GJRGARCH %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-*Table 3.2.7.1 : MSE of basket currencies.*
+*Table 3.2.7.1A : MSE of basket currencies.*
+
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
+
+```{r msefGARCH-GJRGARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.GJRGARCH2.rds')) {
+  mse.fGARCH.GJRGARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.GJRGARCH2, 'data/fx/mse.fGARCH.GJRGARCH2.rds')
+  
+} else {
+  mse.fGARCH.GJRGARCH2 <- readRDS('data/fx/mse.fGARCH.GJRGARCH2.rds')
+}
+
+mse.fGARCH.GJRGARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-GJRGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.7.1B : MSE of basket currencies.*
+
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+
+```{r msefGARCH-GJRGARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+fGARCH.GJRGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      fGARCH.GJRGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'fGARCH', .submodel = 'GJRGARCH', 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(fGARCH.GJRGARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(fGARCH.GJRGARCH[[i]])[3]))
+      
+      saveRDS(fGARCH.GJRGARCH[[i]], paste0(
+        'data/fx/', names(fGARCH.GJRGARCH[[i]])[3], '/fGARCH.GJRGARCH.', 
+        unique(fGARCH.GJRGARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(fGARCH.GJRGARCH[[i]])[3], '/fGARCH.GJRGARCH.', 
+        unique(fGARCH.GJRGARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
 
 ### ALLGARCH
-
-```{r fGARCH-ALLGARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'fGARCH', submodel = 'ALLGARCH'))
-```
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -541,13 +1223,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.fGARCH.ALLGARCH.rds')) {
   mse.fGARCH.ALLGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'ALLGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    
+    if (!is.null(roll)) {
+      res <- attributes(roll)$forecast$density %>% 
       tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.fGARCH.ALLGARCH)[2] <- 'MSE'
   saveRDS(mse.fGARCH.ALLGARCH, 'data/fx/mse.fGARCH.ALLGARCH.rds')
   
 } else {
@@ -560,13 +1269,83 @@ mse.fGARCH.ALLGARCH %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-*Table 3.2.8.1 : MSE of basket currencies.*
+*Table 3.2.8.1A : MSE of basket currencies.*
+
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
+
+```{r msefGARCH-ALLGARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.fGARCH.ALLGARCH2.rds')) {
+  mse.fGARCH.ALLGARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.fGARCH.ALLGARCH2, 'data/fx/mse.fGARCH.ALLGARCH2.rds')
+  
+} else {
+  mse.fGARCH.ALLGARCH2 <- readRDS('data/fx/mse.fGARCH.ALLGARCH2.rds')
+}
+
+mse.fGARCH.ALLGARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate fGARCH-ALLGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.2.8.1B : MSE of basket currencies.*
+
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+
+```{r msefGARCH-ALLGARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+fGARCH.ALLGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      fGARCH.ALLGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'fGARCH', .submodel = 'ALLGARCH', 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(fGARCH.ALLGARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(fGARCH.ALLGARCH[[i]])[3]))
+      
+      saveRDS(fGARCH.ALLGARCH[[i]], paste0(
+        'data/fx/', names(fGARCH.ALLGARCH[[i]])[3], '/fGARCH.ALLGARCH.', 
+        unique(fGARCH.ALLGARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(fGARCH.ALLGARCH[[i]])[3], '/fGARCH.ALLGARCH.', 
+        unique(fGARCH.ALLGARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
 
 ## eGARCH
-
-```{r eGARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'eGARCH'))
-```
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -574,13 +1353,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.eGARCH.rds')) {
   mse.eGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'eGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.eGARCH)[2] <- 'MSE'
   saveRDS(mse.eGARCH, 'data/fx/mse.eGARCH.rds')
   
 } else {
@@ -608,6 +1414,7 @@ if (!file.exists('data/fx/mse.eGARCH.rds')) {
     .$MSE %>% unique
   #[1] 3955.059
   mse.eGARCH <- rbind(mse.eGARCH, data.frame(.id = 'USDJPY', MSE = mse.eGARCH.jpy))
+  rm(mse.eGARCH.jpy)
   
   saveRDS(mse.eGARCH, 'data/fx/mse.eGARCH.rds')
   
@@ -623,13 +1430,118 @@ mse.eGARCH %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-*Table 3.3.1 : MSE of basket currencies.*
+*Table 3.3.1A : MSE of basket currencies.*
+
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
+
+```{r eGARCH2A, echo=FALSE}
+if (!file.exists('data/fx/mse.eGARCH2.rds')) {
+  mse.eGARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.eGARCH2, 'data/fx/mse.eGARCH2.rds')
+  
+} else {
+  mse.eGARCH2 <- readRDS('data/fx/mse.eGARCH2.rds')
+}
+```
+
+```{r eGARCH2B, eval=FALSE}
+## Due to above coding get a 0 data on USDJPY, therefore I separeted to 2.
+if (!file.exists('data/fx/mse.eGARCH2.rds')) {
+  mse.eGARCH2 <- ldply(mbase[1:6], function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  
+  mse.eGARCH.jpy <- ugarchroll(spec, data = Cl(mbase[['USDJPY']]), refit.window = 'recursive')
+
+  mse.eGARCH.jpy <- attributes(mse.eGARCH.jpy)$forecast$density %>% 
+    tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    .$MSE %>% unique
+  #[1] 3955.059
+  mse.eGARCH2 <- rbind(mse.eGARCH2, data.frame(.id = 'USDJPY', MSE = mse.eGARCH.jpy))
+  rm(mse.eGARCH.jpy)
+  
+  saveRDS(mse.eGARCH2, 'data/fx/mse.eGARCH2.rds')
+  
+} else {
+  mse.eGARCH2 <- readRDS('data/fx/mse.eGARCH2.rds')
+}
+```
+
+```{r mseeGARCH2, echo=FALSE}
+mse.eGARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate eGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.3.1B : MSE of basket currencies.*
+
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+
+```{r mseeGARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+eGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      eGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'eGARCH', .submodel = NULL, 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(eGARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(eGARCH[[i]])[3]))
+      
+      saveRDS(eGARCH[[i]], paste0(
+        'data/fx/', names(eGARCH[[i]])[3], '/eGARCH.', 
+        unique(eGARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(eGARCH[[i]])[3], '/eGARCH.', 
+        unique(eGARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
 
 ## gjrGARCH
-
-```{r gjrGARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'gjrGARCH'))
-```
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -637,13 +1549,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.gjrGARCH.rds')) {
   mse.gjrGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'gjrGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.gjrGARCH)[2] <- 'MSE'
   saveRDS(mse.gjrGARCH, 'data/fx/mse.gjrGARCH.rds')
   
 } else {
@@ -656,13 +1595,85 @@ mse.gjrGARCH %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-*Table 3.4.1 : MSE of basket currencies.*
+*Table 3.4.1A : MSE of basket currencies.*
+
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
+
+```{r msegjrGARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.gjrGARCH2.rds')) {
+  mse.gjrGARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.gjrGARCH2, 'data/fx/mse.gjrGARCH2.rds')
+  
+} else {
+  mse.gjrGARCH2 <- readRDS('data/fx/mse.gjrGARCH2.rds')
+}
+
+mse.gjrGARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate gjrGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.4.1B : MSE of basket currencies.*
+
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+
+Here I do not execute this model but directly read the previous dataset due to it is the model `pred2` in **GARCH模型中的ARMA(p,d,q)参数最优化**.
+
+```{r msegjrGARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+gjrGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      gjrGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'gjrGARCH', .submodel = NULL, 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(gjrGARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(gjrGARCH[[i]])[3]))
+      
+      saveRDS(gjrGARCH[[i]], paste0(
+        'data/fx/', names(gjrGARCH[[i]])[3], '/gjrGARCH.', 
+        unique(gjrGARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(gjrGARCH[[i]])[3], '/gjrGARCH.', 
+        unique(gjrGARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
 
 ## apARCH
-
-```{r apARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'apARCH'))
-```
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -670,13 +1681,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.apARCH.rds')) {
   mse.apARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'apARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.apARCH)[2] <- 'MSE'
   saveRDS(mse.apARCH, 'data/fx/mse.apARCH.rds')
   
 } else {
@@ -689,13 +1727,83 @@ mse.apARCH %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-*Table 3.5.1 : MSE of basket currencies.*
+*Table 3.5.1A : MSE of basket currencies.*
+
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
+
+```{r mseapARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.apARCH2.rds')) {
+  mse.apARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.apARCH2, 'data/fx/mse.apARCH2.rds')
+  
+} else {
+  mse.apARCH2 <- readRDS('data/fx/mse.apARCH2.rds')
+}
+
+mse.apARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate apARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.5.1B : MSE of basket currencies.*
+
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+
+```{r mseapARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+apARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      apARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'apARCH', .submodel = NULL, 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(apARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(apARCH[[i]])[3]))
+      
+      saveRDS(apARCH[[i]], paste0(
+        'data/fx/', names(apARCH[[i]])[3], '/apARCH.', 
+        unique(apARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(apARCH[[i]])[3], '/apARCH.', 
+        unique(apARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
 
 ## iGARCH
-
-```{r iGARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'iGARCH'))
-```
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -703,13 +1811,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.iGARCH.rds')) {
   mse.iGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'iGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.iGARCH)[2] <- 'MSE'
   saveRDS(mse.iGARCH, 'data/fx/mse.iGARCH.rds')
   
 } else {
@@ -722,13 +1857,83 @@ mse.iGARCH %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-*Table 3.6.1 : MSE of basket currencies.*
+*Table 3.6.1A : MSE of basket currencies.*
+
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
+
+```{r mseiGARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.iGARCH2.rds')) {
+  mse.iGARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.iGARCH2, 'data/fx/mse.iGARCH2.rds')
+  
+} else {
+  mse.iGARCH2 <- readRDS('data/fx/mse.iGARCH2.rds')
+}
+
+mse.iGARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate iGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.6.1B : MSE of basket currencies.*
+
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+
+```{r mseiGARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+iGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      iGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'iGARCH', .submodel = NULL, 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(iGARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(iGARCH[[i]])[3]))
+      
+      saveRDS(iGARCH[[i]], paste0(
+        'data/fx/', names(iGARCH[[i]])[3], '/iGARCH.', 
+        unique(iGARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(iGARCH[[i]])[3], '/iGARCH.', 
+        unique(iGARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
 
 ## csGARCH
-
-```{r csGARCH, warning=FALSE}
-spec <- ugarchspec(variance.model = list(model = 'csGARCH'))
-```
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -736,13 +1941,40 @@ The default setting is `forecast.length = 500, refit.every = 25, refit.window = 
 if (!file.exists('data/fx/mse.csGARCH.rds')) {
   mse.csGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
     
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'csGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  })
+  names(mse.csGARCH)[2] <- 'MSE'
   saveRDS(mse.csGARCH, 'data/fx/mse.csGARCH.rds')
   
 } else {
@@ -755,9 +1987,85 @@ mse.csGARCH %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-*Table 3.7.1 : MSE of basket currencies.*
+*Table 3.7.1A : MSE of basket currencies.*
 
-# Model Comparison
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
+
+```{r msecsGARCH2, echo=FALSE}
+if (!file.exists('data/fx/mse.csGARCH2.rds')) {
+  mse.csGARCH2 <- ldply(mbase, function(x) {
+    x <- Cl(x)
+    cl <- makePSOCKcluster(ncol(x))
+    ns = which(index(x) == timeID0)
+
+    roll <- ugarchroll(spec, data = x, n.start = ns, 
+                       forecast.length = nrow(x) - ns, 
+                       refit.every = 1, refit.window = 'moving', 
+                       cluster = cl)
+    attributes(roll)$forecast$density %>% 
+      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+      .$MSE %>% unique
+    }) %>% rename(MSE = V1)
+  saveRDS(mse.csGARCH2, 'data/fx/mse.csGARCH2.rds')
+  
+} else {
+  mse.csGARCH2 <- readRDS('data/fx/mse.csGARCH2.rds')
+}
+
+mse.csGARCH2 %>% 
+  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+  kable(caption = 'MSE for Univariate csGARCH') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*Table 3.7.1B : MSE of basket currencies.*
+
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+
+```{r msecsGARCH3, eval=FALSE, echo=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+csGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      csGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'csGARCH', .submodel = NULL, 
+                   currency = cr_code[i], price = y)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(csGARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(csGARCH[[i]])[3]))
+      
+      saveRDS(csGARCH[[i]], paste0(
+        'data/fx/', names(csGARCH[[i]])[3], '/csGARCH.', 
+        unique(csGARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(csGARCH[[i]])[3], '/csGARCH.', 
+        unique(csGARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+# 1st Stage Model Comparison
+
+## Basic Model
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -809,7 +2117,363 @@ tagList(
     ))))
 ```
 
+## Fractional Intergrated Model
+
+### MSE and AIC
+
+Below check the progress of the saved files.
+
+```{r check-progress}
+#'@ gmds <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.AVGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.APARCH', 'fGARCH.GJRGARCH', 'fGARCH.ALLGARCH', 'eGARCH', 'gjrGARCH', 'apARCH', 'iGARCH', 'csGARCH')
+
+## check how many data saved in progress.
+l_ply(gmds, function(x) {
+  x2 <- ifelse(x == 'gjrGARCH', 'pred2', x)
+  task_progress(.pattern = paste0('^', x2, '.'), .loops = FALSE)
+  })
+
+## check latest date saved in progress.
+l_ply(gmds, function(x) {
+  x2 <- ifelse(x == 'gjrGARCH', 'pred2', x)
+  task_progress(.date = TRUE, .pattern = paste0('^', x2, '.'), .loops = FALSE)
+  })
+```
+
+```{r read-models}
+## read all files which contain in mbase, missing files will prompt message.
+fx <- ldply(names(cr_code), function(x) {
+    tmID <- index(mbase[[x]])
+    tmID <- tmID[tmID >= ymd('2013-01-01') & 
+                     tmID <= ymd('2017-08-30')]
+    
+    dfm <- ldply(gmds, function(y) {
+      y2 <- ifelse(y == 'gjrGARCH', 'pred2', y)
+      
+      ldply(tmID, function(z) {
+        txt <- paste0('data/fx/', x, '/', y2, '.', z, '.rds')
+        tryCatch(readRDS(txt) %>% tbl_df, error = function(e) 
+          cat(paste(txt, 'error, no such file.\n')))
+            
+        }) %>% data.frame(Model = factor(y), .) %>% tbl_df
+      
+    }) %>% data.frame(.id = factor(x), .) %>% tbl_df
+    
+    names(dfm)[5:6] <- c('Price', 'Price.T1')
+    dfm
+  }) %>% tbl_df
+```
+
+Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+
+```{r tidy-data1, echo=FALSE, eval=FALSE}
+## read all available files.
+fx <- llply(gmds, function(x) {
+    x2 <- ifelse(x == 'gjrGARCH', 'pred2', x)
+    fx <- llply(names(cr_code), function(y) {
+        fls <- list.files(paste0('data/fx/', y), 
+                          pattern = paste0('^', x2, '.'))
+        dfm <- ldply(fls, function(z) {
+          txt <- paste0('data/fx/', y, '/', z)
+            tryCatch(readRDS(txt), error = function(e) 
+              cat(paste0(txt, ' error, no such file.\n')))
+        }) %>% data.frame(Model = x, .) %>% tbl_df
+        names(dfm)[4:5] <- c('Price', 'Price.T1')
+        dfm
+    })
+    names(fx) <- names(cr_code)
+    fx %<>% ldply %>% tbl_df
+  })
+names(fx) <- gmds
+
+fx <- suppressAll(
+  bind_rows(fx) %>% arrange(Date) %>% 
+    mutate(.id = factor(.id), Model = factor(Model), 
+           Price.T1 = lag(Price.T1, 56)) %>% 
+    dplyr::filter(Date >= ymd('2013-01-01') & 
+                  Date <= ymd('2017-08-30')))
+```
+
+```{r aic1}
+acc <- ddply(fx, .(.id, Model), summarise, 
+             mse = mean((Price.T1 - Price)^2), 
+             n = length(Price), 
+             Akaike = mean(Akaike), 
+             Bayes = mean(Bayes), 
+             Shibata = mean(Shibata), 
+             Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(mse = round(mse, 6))
+
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Group Table Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 15, 28, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 29, 42, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 43, 56, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 57, 70, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 71, 84, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 85, 98, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+```{r aic2}
+acc <- ddply(fx, .(Model), summarise, 
+             MSE = mean((Price.T1 - Price)^2), 
+             n = length(Price), 
+             AIC.MSE = mean((Akaike - mean(Akaike))^2),
+             Akaike = mean(Akaike), 
+             Bayes = mean(Bayes), 
+             Shibata = mean(Shibata), 
+             Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 6))
+
+acc %>% 
+  kable(caption = 'Group Table Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+### Filtered MSE and AIC
+
+Due to some errors, the mse values is not accurate. Here I filtered all dataset which $\sigma^2_{i} >= \mu_{i}$.
+
+```{r tidy-data2}
+## filter all predictive error.
+fx %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff) > Price, 1, 0)) %>% .[,-c(8:10)] %>% dplyr::filter(se == 1) %>% data.frame
+
+## filter all predictive error.
+notID <- fx %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff) >= Price, 1, 0)) %>% dplyr::filter(se == 1)
+ntimeID <- notID %>% .$Date %>% unique
+
+fx[,1:7] %>% dplyr::filter(!Date %in% ntimeID) %>% 
+    ddply(.(Model), summarise, 
+          MSE = mean((Price.T1 - Price)^2), 
+          n = length(Price), 
+          AIC.MSE = mean((Akaike - mean(Akaike))^2),
+          Akaike = mean(Akaike))
+```
+
+```{r aic-mse}
+fx %>% dplyr::filter(!Date %in% ntimeID) %>% 
+    ddply(.(Model), summarise, 
+      mse = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      Akaike.mse = (-2*mse)/n+2*4/n, 
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(mse = round(mse, 6))
+```
+
+```{r filter-data}
+## check completed dataset.
+mdate <- llply(gmds, function(x) {
+  x2 <- ifelse(x == 'gjrGARCH', 'pred2', x)
+  task_progress(.pattern = paste0('^', x2, '.'), .loops = FALSE, 
+                .filter.completed.data = TRUE)
+  })
+names(mdate) <- gmds
+
+## count all dateID must contain 7 currency in order to made all date in dataset united and completed.
+united.dateID <- ldply(mdate, count, 'date') %>% tbl_df %>% 
+  dplyr::filter(freq == 7) %>% arrange(date) %>% 
+  spread(.id, freq) %>% 
+  filter(csGARCH == 7 & fGARCH.GARCH == 7 & 
+         fGARCH.GJRGARCH == 7 & fGARCH.NAGARCH == 7 & 
+         fGARCH.NGARCH == 7 & fGARCH.TGARCH == 7 & 
+         gjrGARCH == 7 & iGARCH == 7 & sGARCH == 7) %>% 
+  .$date %>% unique %>% sort
+
+n.united.dateID <- ldply(mdate, count, 'date') %>% tbl_df %>% dplyr::filter(freq == 7) %>% ddply(.(.id), summarise, freq = length(freq))
+
+
+united.fx <- ldply(names(cr_code), function(x) {
+    tmID <- united.dateID$date
+    tmID <- tmID[tmID >= ymd('2013-01-01') & 
+                     tmID <= ymd('2017-08-30')]
+    
+    dfm <- ldply(gmds, function(y) {
+      y2 <- ifelse(y == 'gjrGARCH', 'pred2', y)
+      
+      ldply(tmID, function(z) {
+        txt <- paste0('data/fx/', x, '/', y2, '.', z, '.rds')
+        tryCatch(readRDS(txt) %>% tbl_df, error = function(e) 
+          cat(paste(txt, 'error, no such file.\n')))
+            
+        }) %>% data.frame(Model = factor(y), .) %>% tbl_df
+      
+    }) %>% data.frame(.id = factor(x), .) %>% tbl_df
+    
+    names(dfm)[5:6] <- c('Price', 'Price.T1')
+    dfm
+  }) %>% tbl_df
+
+## filter all predictive error, the sd > 10% will be omit.
+notID <- united.fx %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1)
+ntimeID <- notID %>% .$Date %>% unique
+
+## count the number of forecast `abs(Price.T1 - Price) >= Price` to know the 
+##   precise of the prediction.
+## Corrected : `abs(diff)/Price >= 0.1` to made it more accurate. Only filter the price difference < 0.1, then the price difference >= 0.1 will be counted how many times.
+notID %>% count('Model')
+
+united.fx[,1:7] %>% dplyr::filter(!Date %in% ntimeID) %>% 
+    ddply(.(Model), summarise, 
+          MSE = mean((Price.T1 - Price)^2), 
+          n = length(Price), 
+          Akaike.MSE = (-2*MSE)/n+2*4/n, 
+          Akaike = mean(Akaike))
+```
+
+```{r plot-data}
+## here we plot data to compare it.
+price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
+    spread(Model, Price.T1) %>% 
+    split(.$Type) %>% 
+    llply(., function(x) xts(x[-c(1:2)], order.by = x$Date))
+
+## here we plot data to compare it.
+price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
+    spread(Model, Price.T1) %>% 
+    split(.$Type)
+
+## here we plot data to compare it.
+price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
+  dplyr::filter(!Date %in% ntimeID) %>% 
+  spread(Model, Price.T1) %>% 
+  split(.$Type)
+```
+
+```{r plot-data2}
+llply(price, function(x) {
+  highchart() %>% 
+    hc_xAxis(Time = x$Date) %>% 
+    hc_add_series(name = names(x[3]), data = x$Price) %>% 
+    hc_add_series(name = names(x[4]), data = x$sGARCH) %>% 
+    hc_add_series(name = names(x[5]), data = x$fGARCH.GARCH) %>% 
+    hc_add_series(name = names(x[6]), data = x$fGARCH.TGARCH) %>% 
+    hc_add_series(name = names(x[7]), data = x$fGARCH.NGARCH) %>% 
+    hc_add_series(name = names(x[8]), data = x$fGARCH.NAGARCH) %>% 
+    hc_add_series(name = names(x[9]), data = x$fGARCH.GJRGARCH) %>% 
+    hc_add_series(name = names(x[10]), data = x$gjrGARCH) %>% 
+    hc_add_series(name = names(x[11]), data = x$iGARCH) %>% 
+    hc_add_series(name = names(x[12]), data = x$csGARCH)
+  })
+```
+
+#### Close Price
+
+```{r close-price1}
+## closing price.
+cp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Cl')
+
+## filter the dataset to know how many prediction sd < 0.1.
+cp %>% dplyr::filter(!Date %in% (cp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+    ddply(.(Model), summarise, 
+          MSE = mean((Price.T1 - Price)^2), 
+          n = length(Price), 
+          Akaike.MSE = (-2*MSE)/n+2*4/n, 
+          Akaike = mean(Akaike))
+
+cp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+```
+
+```{r close-price2}
+## closing price.
+cp <- united.fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Cl')
+
+## filter the dataset to know how many prediction sd < 0.1.
+cp %>% dplyr::filter(!Date %in% (cp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+    ddply(.(Model), summarise, 
+          MSE = mean((Price.T1 - Price)^2), 
+          n = length(Price), 
+          Akaike.MSE = (-2*MSE)/n+2*4/n, 
+          Akaike = mean(Akaike))
+
+cp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+```
+
+#### Hi-Lo Price
+
+Highest price.
+
+```{r high-price1}
+## highest price.
+hp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Hi')
+
+## filter the dataset to know how many prediction sd < 0.1.
+hp %>% dplyr::filter(!Date %in% (hp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+    ddply(.(Model), summarise, 
+          MSE = mean((Price.T1 - Price)^2), 
+          n = length(Price), 
+          Akaike.MSE = (-2*MSE)/n+2*4/n, 
+          Akaike = mean(Akaike))
+
+hp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+```
+
+```{r high-price2}
+## highest price.
+hp <- united.fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Hi')
+
+## filter the dataset to know how many prediction sd < 0.1.
+hp %>% dplyr::filter(!Date %in% (hp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+    ddply(.(Model), summarise, 
+          MSE = mean((Price.T1 - Price)^2), 
+          n = length(Price), 
+          Akaike.MSE = (-2*MSE)/n+2*4/n, 
+          Akaike = mean(Akaike))
+
+hp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+```
+
+Lowest price.
+
+```{r low-price}
+## lowest price.
+lp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Lo')
+
+## filter the dataset to know how many prediction sd < 0.1.
+lp %>% dplyr::filter(!Date %in% (lp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+    ddply(.(Model), summarise, 
+          MSE = mean((Price.T1 - Price)^2), 
+          n = length(Price), 
+          Akaike.MSE = (-2*MSE)/n+2*4/n, 
+          Akaike = mean(Akaike))
+
+lp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+```
+
+```{r low-price2}
+## lowest price.
+lp <- united.fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Lo')
+
+## filter the dataset to know how many prediction sd < 0.1.
+lp %>% dplyr::filter(!Date %in% (lp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+    ddply(.(Model), summarise, 
+          MSE = mean((Price.T1 - Price)^2), 
+          n = length(Price), 
+          Akaike.MSE = (-2*MSE)/n+2*4/n, 
+          Akaike = mean(Akaike))
+
+lp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+```
+
+### AIC for MSE
+
+By refer to [How to Choose a Forecast for Your Time Series](http://kourentzes.com/forecasting/2016/06/17/how-to-choose-a-forecast-for-your-time-series), here I calculated the AIC of MSE to choose the best fitted model.
+
+$$AIC = 2k - 2log(L)$$
+
+where $k$ is the number of parameter, log is the logarithm and L is the likelihood function.
+
+$$MSE = \sum_{i=1}^{n}(x_{i}-\mu_{i})^2$$
+
+$$AIC = 2k+nlog(MSE)$$
+
 # Distribution Model
+
+I set `snorm` as the default distribution from the comparison of ROI in **Binary-Q1**^[Kindly refer to paper in [Reference]]. [**rgarchdist** - Distribution:Rugarch Distribution Functions](https://www.rdocumentation.org/packages/rugarch/versons/1.4-0/topics/rgarchdist) list the available distribution function for `rugarch`.
 
 ## norm
 
