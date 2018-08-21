@@ -606,7 +606,7 @@ if (!file.exists('data/fx/mse.fGARCH.AVGARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
+  }) %>% tbl_df
   names(mse.fGARCH.AVGARCH)[2] <- 'MSE'
   saveRDS(mse.fGARCH.AVGARCH, 'data/fx/mse.fGARCH.AVGARCH.rds')
   
