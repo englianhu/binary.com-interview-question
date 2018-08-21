@@ -162,6 +162,56 @@ timeID <- timeID[timeID >= timeID0]
 .cl = FALSE
 ```
 
+# Expectation Maximization
+
+All my previous papers applied Markov theory which is $p(x_{n}|x_{n-1}...x_{1})$, here I try to test if the model maximised the likelihood of occurance. Here I iteration 100 times.
+
+```{r em, eval=FALSE}
+## ================ eval=FALSE ====================
+## sample data.
+x <- mbase[['USDJPY']] %>% Cl
+
+armaOrder = opt_arma(x)
+spec = ugarchspec(
+    variance.model = list(
+        model = 'sGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+
+fit <- ugarchfit(spec, x, solver = 'hybrid')
+
+## Execute 1 times.
+fc1 = ugarchforecast(fit, n.ahead = 1)
+
+## Execute 100 times to know if the coffecient value is applied ML method.
+fc2 = replicate(100, ugarchforecast(fit, n.ahead = 1))
+
+## retrieve the series and sigma values.
+fc1 <- cbind(attributes(fc1)$`forecast`$seriesFor, attributes(fc1)$`forecast`$sigmaFor)
+
+fc2 <- llply(fc2, function(x) cbind(attributes(x)$`forecast`$seriesFor, attributes(x)$`forecast`$sigmaFor)) %>% do.call('rbind', .)
+fc2 %<>% unique
+
+#> rbind(fc1, fc2)
+#    2017-08-30 2017-08-30
+#T+1   110.4566  0.6523954
+#T+1   110.4566  0.6523954
+
+#> fc1 == fc2
+#    2017-08-30 2017-08-30
+#T+1       TRUE       TRUE
+
+rm(x)
+```
+
 # GARCH Models
 
 ## sGARCH
@@ -204,8 +254,9 @@ if (!file.exists('data/fx/mse.sGARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.sGARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.sGARCH)[2] <- 'MSE'
+  mse.sGARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.sGARCH, 'data/fx/mse.sGARCH.rds')
   
 } else {
@@ -234,18 +285,44 @@ Below is the simulation . `n.start = ns` is the start point of simulation which 
 if (!file.exists('data/fx/mse.sGARCH2.rds')) {
   mse.sGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'sGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    })
-  names(mse.sGARCH2)[2] <- 'MSE'
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.sGARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.sGARCH2, 'data/fx/mse.sGARCH2.rds')
   
 } else {
@@ -346,8 +423,9 @@ if (!file.exists('data/fx/mse.fGARCH.GARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.fGARCH.GARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.fGARCH.GARCH)[2] <- 'MSE'
+  mse.fGARCH.GARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.GARCH, 'data/fx/mse.fGARCH.GARCH.rds')
   
 } else {
@@ -368,17 +446,44 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.fGARCH.GARCH2.rds')) {
   mse.fGARCH.GARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'GARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.fGARCH.GARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.GARCH2, 'data/fx/mse.fGARCH.GARCH2.rds')
   
 } else {
@@ -477,7 +582,8 @@ if (!file.exists('data/fx/mse.fGARCH.TGARCH.rds')) {
     }
     return(res)
   }) %>% tbl_df
-  names(mse.fGARCH.TGARCH)[2] <- 'MSE'
+  #'@ names(mse.fGARCH.TGARCH)[2] <- 'MSE'
+  mse.fGARCH.TGARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.TGARCH, 'data/fx/mse.fGARCH.TGARCH.rds')
   
 } else {
@@ -498,17 +604,44 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.fGARCH.TGARCH2.rds')) {
   mse.fGARCH.TGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'TGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.fGARCH.TGARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.TGARCH2, 'data/fx/mse.fGARCH.TGARCH2.rds')
   
 } else {
@@ -607,7 +740,8 @@ if (!file.exists('data/fx/mse.fGARCH.AVGARCH.rds')) {
     }
     return(res)
   }) %>% tbl_df
-  names(mse.fGARCH.AVGARCH)[2] <- 'MSE'
+  #'@ names(mse.fGARCH.AVGARCH)[2] <- 'MSE'
+  mse.fGARCH.AVGARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.AVGARCH, 'data/fx/mse.fGARCH.AVGARCH.rds')
   
 } else {
@@ -628,17 +762,44 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.fGARCH.AVGARCH2.rds')) {
   mse.fGARCH.AVGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'AVGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.fGARCH.AVGARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.AVGARCH2, 'data/fx/mse.fGARCH.AVGARCH2.rds')
   
 } else {
@@ -736,8 +897,9 @@ if (!file.exists('data/fx/mse.fGARCH.NGARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.fGARCH.NGARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.fGARCH.NGARCH)[2] <- 'MSE'
+  mse.fGARCH.NGARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.NGARCH, 'data/fx/mse.fGARCH.NGARCH.rds')
   
 } else {
@@ -758,16 +920,44 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.fGARCH.NGARCH2.rds')) {
   mse.fGARCH.NGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'NGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.fGARCH.NGARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.NGARCH2, 'data/fx/mse.fGARCH.NGARCH2.rds')
   
 } else {
@@ -865,8 +1055,9 @@ if (!file.exists('data/fx/mse.fGARCH.NAGARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.fGARCH.NAGARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.fGARCH.NAGARCH)[2] <- 'MSE'
+  mse.fGARCH.NAGARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.NAGARCH, 'data/fx/mse.fGARCH.NAGARCH.rds')
   
 } else {
@@ -887,17 +1078,44 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.fGARCH.NAGARCH2.rds')) {
   mse.fGARCH.NAGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'NAGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.fGARCH.NAGARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.NAGARCH2, 'data/fx/mse.fGARCH.NAGARCH2.rds')
   
 } else {
@@ -995,8 +1213,9 @@ if (!file.exists('data/fx/mse.fGARCH.APARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.fGARCH.APARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.fGARCH.APARCH)[2] <- 'MSE'
+  mse.fGARCH.APARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.APARCH, 'data/fx/mse.fGARCH.APARCH.rds')
   
 } else {
@@ -1017,17 +1236,44 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.fGARCH.APARCH2.rds')) {
   mse.fGARCH.APARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'APARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.fGARCH.APARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.APARCH2, 'data/fx/mse.fGARCH.APARCH2.rds')
   
 } else {
@@ -1125,8 +1371,9 @@ if (!file.exists('data/fx/mse.fGARCH.GJRGARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.fGARCH.GJRGARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.fGARCH.GJRGARCH)[2] <- 'MSE'
+  mse.fGARCH.GJRGARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.GJRGARCH, 'data/fx/mse.fGARCH.GJRGARCH.rds')
   
 } else {
@@ -1147,17 +1394,44 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.fGARCH.GJRGARCH2.rds')) {
   mse.fGARCH.GJRGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'GJRGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.fGARCH.GJRGARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.GJRGARCH2, 'data/fx/mse.fGARCH.GJRGARCH2.rds')
   
 } else {
@@ -1255,8 +1529,9 @@ if (!file.exists('data/fx/mse.fGARCH.ALLGARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.fGARCH.ALLGARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.fGARCH.ALLGARCH)[2] <- 'MSE'
+  mse.fGARCH.ALLGARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.ALLGARCH, 'data/fx/mse.fGARCH.ALLGARCH.rds')
   
 } else {
@@ -1277,13 +1552,33 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.fGARCH.ALLGARCH2.rds')) {
   mse.fGARCH.ALLGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'fGARCH', garchOrder = c(1, 1), 
+        submodel = 'ALLGARCH', external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
+                       cluster = .cl)
     attributes(roll)$forecast$density %>% 
       tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
@@ -1349,7 +1644,7 @@ for (dt in timeID) {
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
-```{r eGARCH1A, echo=FALSE}
+```{r eGARCH, echo=FALSE}
 if (!file.exists('data/fx/mse.eGARCH.rds')) {
   mse.eGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
@@ -1385,45 +1680,15 @@ if (!file.exists('data/fx/mse.eGARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.eGARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.eGARCH)[2] <- 'MSE'
+  mse.eGARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.eGARCH, 'data/fx/mse.eGARCH.rds')
   
 } else {
   mse.eGARCH <- readRDS('data/fx/mse.eGARCH.rds')
 }
-```
 
-```{r eGARCH1B, eval=FALSE}
-## Due to above coding get a 0 data on USDJPY, therefore I separeted to 2.
-if (!file.exists('data/fx/mse.eGARCH.rds')) {
-  mse.eGARCH <- ldply(mbase[1:6], function(x) {
-    x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    
-    roll <- ugarchroll(spec, data = x, refit.window = 'recursive', cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
-      .$MSE %>% unique
-    }) %>% rename(MSE = V1)
-  
-  mse.eGARCH.jpy <- ugarchroll(spec, data = Cl(mbase[['USDJPY']]), refit.window = 'recursive')
-
-  mse.eGARCH.jpy <- attributes(mse.eGARCH.jpy)$forecast$density %>% 
-    tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
-    .$MSE %>% unique
-  #[1] 3955.059
-  mse.eGARCH <- rbind(mse.eGARCH, data.frame(.id = 'USDJPY', MSE = mse.eGARCH.jpy))
-  rm(mse.eGARCH.jpy)
-  
-  saveRDS(mse.eGARCH, 'data/fx/mse.eGARCH.rds')
-  
-} else {
-  mse.eGARCH <- readRDS('data/fx/mse.eGARCH.rds')
-}
-```
-
-```{r mseeGARCH, echo=FALSE}
 mse.eGARCH %>% 
   rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
   kable(caption = 'MSE for Univariate eGARCH') %>% 
@@ -1434,62 +1699,54 @@ mse.eGARCH %>%
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
-```{r eGARCH2A, echo=FALSE}
+```{r eGARCH2, echo=FALSE}
 if (!file.exists('data/fx/mse.eGARCH2.rds')) {
   mse.eGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'eGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.eGARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.eGARCH2, 'data/fx/mse.eGARCH2.rds')
   
 } else {
   mse.eGARCH2 <- readRDS('data/fx/mse.eGARCH2.rds')
 }
-```
 
-```{r eGARCH2B, eval=FALSE}
-## Due to above coding get a 0 data on USDJPY, therefore I separeted to 2.
-if (!file.exists('data/fx/mse.eGARCH2.rds')) {
-  mse.eGARCH2 <- ldply(mbase[1:6], function(x) {
-    x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
-
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
-                       refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
-      .$MSE %>% unique
-    }) %>% rename(MSE = V1)
-  
-  mse.eGARCH.jpy <- ugarchroll(spec, data = Cl(mbase[['USDJPY']]), refit.window = 'recursive')
-
-  mse.eGARCH.jpy <- attributes(mse.eGARCH.jpy)$forecast$density %>% 
-    tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
-    .$MSE %>% unique
-  #[1] 3955.059
-  mse.eGARCH2 <- rbind(mse.eGARCH2, data.frame(.id = 'USDJPY', MSE = mse.eGARCH.jpy))
-  rm(mse.eGARCH.jpy)
-  
-  saveRDS(mse.eGARCH2, 'data/fx/mse.eGARCH2.rds')
-  
-} else {
-  mse.eGARCH2 <- readRDS('data/fx/mse.eGARCH2.rds')
-}
-```
-
-```{r mseeGARCH2, echo=FALSE}
 mse.eGARCH2 %>% 
   rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
   kable(caption = 'MSE for Univariate eGARCH') %>% 
@@ -1581,8 +1838,9 @@ if (!file.exists('data/fx/mse.gjrGARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.gjrGARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.gjrGARCH)[2] <- 'MSE'
+  mse.gjrGARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.gjrGARCH, 'data/fx/mse.gjrGARCH.rds')
   
 } else {
@@ -1603,17 +1861,44 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.gjrGARCH2.rds')) {
   mse.gjrGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'gjrGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.gjrGARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.gjrGARCH2, 'data/fx/mse.gjrGARCH2.rds')
   
 } else {
@@ -1713,8 +1998,9 @@ if (!file.exists('data/fx/mse.apARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.apARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.apARCH)[2] <- 'MSE'
+  mse.apARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.apARCH, 'data/fx/mse.apARCH.rds')
   
 } else {
@@ -1735,17 +2021,44 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.apARCH2.rds')) {
   mse.apARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'apARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.apARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.apARCH2, 'data/fx/mse.apARCH2.rds')
   
 } else {
@@ -1843,8 +2156,9 @@ if (!file.exists('data/fx/mse.iGARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.iGARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.iGARCH)[2] <- 'MSE'
+  mse.iGARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.iGARCH, 'data/fx/mse.iGARCH.rds')
   
 } else {
@@ -1865,17 +2179,44 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.iGARCH2.rds')) {
   mse.iGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'iGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.iGARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.iGARCH2, 'data/fx/mse.iGARCH2.rds')
   
 } else {
@@ -1973,8 +2314,9 @@ if (!file.exists('data/fx/mse.csGARCH.rds')) {
       res <- NULL
     }
     return(res)
-  })
-  names(mse.csGARCH)[2] <- 'MSE'
+  }) %>% tbl_df
+  #'@ names(mse.csGARCH)[2] <- 'MSE'
+  mse.csGARCH %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.csGARCH, 'data/fx/mse.csGARCH.rds')
   
 } else {
@@ -1995,17 +2337,44 @@ Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.
 if (!file.exists('data/fx/mse.csGARCH2.rds')) {
   mse.csGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
-    cl <- makePSOCKcluster(ncol(x))
-    ns = which(index(x) == timeID0)
+    if (.cl == TRUE) {
+      .cl <- makePSOCKcluster(ncol(x))
+    } else {
+      .cl <- NULL
+    }
+    armaOrder = opt_arma(x)
+    
+    spec = ugarchspec(
+      variance.model = list(
+        model = 'csGARCH', garchOrder = c(1, 1), 
+        submodel = NULL, external.regressors = NULL, 
+        variance.targeting = FALSE), 
+    mean.model = list(
+        armaOrder = armaOrder[c(1, 3)], 
+        include.mean = TRUE, archm = FALSE, 
+        archpow = 1, arfima = TRUE, 
+        external.regressors = NULL, 
+        archex = FALSE), 
+    fixed.pars = list(arfima = armaOrder[2]), 
+    distribution.model = 'snorm')
+    
+    ns <- which(index(x) == timeID0)
+    n <- nrow(x) - ns
 
-    roll <- ugarchroll(spec, data = x, n.start = ns, 
-                       forecast.length = nrow(x) - ns, 
+    roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
-                       cluster = cl)
-    attributes(roll)$forecast$density %>% 
-      tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
+                       cluster = .cl)
+    res <- attributes(roll)$forecast$density
+    
+    if (!is.null(res)) {
+      res %>% tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.csGARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.csGARCH2, 'data/fx/mse.csGARCH2.rds')
   
 } else {
@@ -2065,7 +2434,7 @@ for (dt in timeID) {
 
 # 1st Stage Model Comparison
 
-## Basic Model
+## Resampling Method
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -2117,7 +2486,7 @@ tagList(
     ))))
 ```
 
-## Fractional Intergrated Model
+## Markov Method
 
 ### MSE and AIC
 
