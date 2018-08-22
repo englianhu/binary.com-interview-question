@@ -19,7 +19,7 @@ I use daily OHLCV USDJPY data (from 2014-01-01 to 2017-01-20) and application of
 - <s>Bayesian Time Series</s>
 - <s>Midas</s>
 
-Kindly refer to [Binary.com Interview Q1](http://rpubs.com/englianhu/binary-Q1) ([Old link](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or [Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1)) for more information.
+Kindly refer to [Binary.com Interview Q1](http://rpubs.com/englianhu/binary-Q1) ([Old link](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or [Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1) or [Alternate link 2 (Added MSE comparison)](http://rpubs.com/englianhu/binary-Q1-Added)) for more information.
 
 Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models <s>from minutes to</s> daily. You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)).
 

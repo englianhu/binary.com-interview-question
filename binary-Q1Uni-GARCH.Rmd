@@ -35,9 +35,14 @@ rm(pkgs)
 
 # Introduction
 
+There are quite some papers study on the GARCH models.
+
+- **EGARCH, GKR-GARCH, TGARCH, AVGARCH, NGARCH, IGARCH and APARCH Models for Pathogens at Marine Recreational Sites**
+- **Predictive Accuracy of GARCH, GJR and EGARCH Models Select Exchange Rates Application**
+
 From previous papers, I tried to apply couple models for FOREX price forecasting and eventually got to know *Fractional Intergrated GJR-GARCH* is the best fit model as we can refer to **GARCH模型中的ARMA(p,d,q)参数最优化**^[Kindly refer to paper in [Reference]]. Due to I simulate whole dataset to get the result in menmtioned paper is time consuming, I tried to apply `dccroll()` to know the mse by resampling but not only based on single `AIC`^[Only the `solver=solnp` stable but the other solvers not stable, the fluctuation of AIC value is quite high.]. I parse my `mv_fx()` function^[Due to some errors] and tested the **Binary-Q1 - Multivariate GARCH Models** and some additive parameters might probably need to be adjusted in the arguments of the function. [Arma Part Overfitting in Arma Garch Model fitting via fGarch Package](https://stackoverflow.com/questions/36312065/arma-part-overfitting-in-arma-garch-model-fitting-via-fgarch-package) is a similar study for models comparison in GARCH.
 
-Besides using the `ugarchroll()`, all models in this paper are Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
+Besides using the `ugarchroll()`, all models in this paper are Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`. **AMATH546 - ECON589 HW3** also teach the use of `ugarchroll()`
 
 ```{r dcc, eval=FALSE}
 ## --- eval=FALSE, not run but display chunk ---
@@ -2994,7 +2999,7 @@ cp %>% mutate(diff = abs(Price.T1/Price),
 
 #### Hi-Lo Price
 
-Highest price.
+Here I compare the accuracy of highest price among all models.
 
 ```{r high-price1}
 ## highest price.
@@ -3052,7 +3057,7 @@ hp %>% mutate(diff = abs(Price.T1/Price),
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-Lowest price.
+Then we look at the lowest price among all models.
 
 ```{r low-price}
 ## lowest price.
@@ -3110,70 +3115,55 @@ lp %>% mutate(diff = abs(Price.T1/Price),
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
+# GARCH(1,1)?
+
+I had optimised the `mean.model` but not yet optimise the `variance.model`, **Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading (Blooper)** has provides an example for GARCH(m,n) comparison while below are the papers studied on the optimal GARCH order.
+
+- [Optimal lag order selection for a GARCH model](https://stats.stackexchange.com/questions/175400/optimal-lag-order-selection-for-a-garch-model?answertab=votes#tab-top)
+- [Does anything NOT beat the GARCH(1,1)?](http://unstarched.net/2013/01/07/does-anything-not-beat-the-garch11/)
+- [How to choose the order of a GARCH model?](https://stats.stackexchange.com/questions/154754/how-to-choose-the-order-of-a-garch-model?answertab=votes#tab-top)
+
+Above article states that the task of jointly determining the ARMA-GARCH orders is difficult...
 
 # Distribution Model
 
 I set `snorm` as the default distribution from the comparison of ROI in **Binary-Q1**^[Kindly refer to paper in [Reference]]. [**rgarchdist** - Distribution:Rugarch Distribution Functions](https://www.rdocumentation.org/packages/rugarch/versons/1.4-0/topics/rgarchdist) list the available distribution function for `rugarch`.
 
-## norm
+**Does anything NOT beat the GARCH(1,1)?** had compared few GARCH models which are :
 
-`norm` for normal distribution.
+- GARCH
+- GJR
+- EGARCH
+- APARCH
+- component GARCH
+- AVGARCH
+- NGARCH
+- NAGARCH
 
-## snorm
+with four distributions, the Normal, Skew-Student (Fernandez and Steel version), Normal Inverse Gaussian (`NIG`) and Johnson’s SU (`JSU`). The conditional mean was based on an ARMA(2,1) model, while the GARCH order was set at (1,1) and (2,1), giving a total combination of 64 models. To create the rolling forecasts, the `ugarchroll()` was used...
 
-`snorm` for skew-normal distribution.
+The author concludes that the normality assumption does not realistically capture the observed market dynamics, and neither does the GARCH(1,1)-N model. There were few models which did not beat it in this application. In fact, higher order GARCH models were shown to provide significant out performance on a range of tail related measures, and distributions such as the `NIG` and `JSU` appeared to provide the most realistic representation of the observed dynamics.
 
-## std
+Here I skipped the distribution section due to above model comparison in section [GARCH Models] has compare the models...
 
-`std` for student-t distribution.
-
-## sstd
-
-`sstd` for skew-student distribution.
-
-## ged
-
-`ged` for generalized error distribution.
-
-## sged
-
-`sged` for skew-generalized error distribution.
-
-## nig
-
-`nig` for normal inverse gaussian distribution.
-
-## ghyp
-
-`ghyp` for generalized hyperbolic distribution.
-
-## jsu
-
-`jsu` for Johnson's SU distribution.
-
-
+- `norm` for normal distribution.
+- `snorm` for skew-normal distribution.
+- `std` for student-t distribution.
+- `sstd` for skew-student distribution.
+- `ged` for generalized error distribution.
+- `sged` for skew-generalized error distribution.
+- `nig` for normal inverse gaussian distribution.
+- `ghyp` for generalized hyperbolic distribution.
+- `jsu` for Johnson's SU distribution.
 
 # Solver
 
-## nlminb
-
-## solnp
-
-## lbfgs
-
-## gosolnp
-
-## nloptr
-
-## hybrid
-
-
-# Model Comparison
-
-`ugarchspec()` choose the GARCH model and distribution while `ugarchfit()` choose the solver.
-
-## Optimal ARMA Order
-
+- nlminb
+- solnp
+- lbfgs
+- gosolnp
+- nloptr
+- hybrid
 
 # Conclusion
 
@@ -3226,36 +3216,19 @@ rm(sys1, sys2)
 02. [Binary.com Interview Q1](http://rpubs.com/englianhu/binary-Q1) ([Old link](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or [Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
 03. [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133))
 04. [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](http://rpubs.com/englianhu/binary-Q1TD)
-05. [41901 Probability and Statistics](41901 Probability and Statistics.pdf)
-06. [A Comparison of Volatility Models - Does Anything Beat a GARCH(1,1)]()
-07. [A Winners Curse for Econometric Models - On the Joint Distribution of In-Sample Fit and Out-of-Sample Fit and Its Implications for Model Selection]()
-08. [AMATH546 - ECON589 HW3]()
-09. [ARMA(1,1)-GARCH(1,1) Estimation and Forecast using rugarch 1.2-2]()
-10. [Creating Optimal Portfolios of Stocks with Time-Varying Risk]()
-11. [Dynamic Portfolio Optimization using Generalized Dynamic Conditoinal Heteroskedastic Factor Models]()
-12. [EGARCH, GKR-GARCH, TGARCH, AVGARCH, NGARCH, IGARCH and APARCH Models for Pathogens at Marine Recreational Sites]()
-13. [Enhancing Trading Strategies with Order Book Signals]()
-14. [GARCH Models in Value at Risk Estimation Empirical Evidence from Montenegrin Stock Exchange]()
-15. [How Does the Fortune's Formula-Kelly Capital Growth Model Perform]()
-16. [Information Theory and Gambling or Economics]()
-17. [Investment Portfolio Optimization with GARCH Models]()
-18. [Kelly Criterion Revisited - Optimal Bets]()
-19. [Markov-Switching Autoregressive Models for Wind Times Series (ppt)]()
-20. [Markov-Switching Autoregressive Models for Wind Times Series]()
-21. [Medium Term Simulations of the Full Kelly and Fractional]()
-22. [Modelling Exchange Rates using Regime Switching Models]()
-23. [Money Management (V1)]()
-24. [Money Management (V2)]()
-25. [Optimal Betting under Parameter Uncertainty - Improving the Kelly Criterion]()
-26. [Predicting Stock Price Returns using Garch Model]()
-27. [Predicting Accuracy of GARCH, GJR and EGARCH Models Select Exchange Rates Application]()
-28. [Stochastic Modelling and Optimization Methods in Investments]()
-29. [The Kelly Criterion - Implementation, Simulation and Backtest]()
-30. [The Kelly Criterion and Bet Comparison in Spread Betting]()
-31. [The Kelly Criterion for Spread Bets]()
-32. [The Market for English Premier League (EPL) Odds]()
-33. [Valuation of Soccer Spread Bets]()
-34. [Which GARCH Model is Best for Value-at-Risk]()
+05. [41901 Probability and Statistics](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/41901%20Probability%20and%20Statistics.pdf)
+06. [A Comparison of Volatility Models - Does Anything Beat a GARCH(1,1)](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/A%20Comparison%20of%20Volatility%20Models%20-%20Does%20Anything%20Beat%20a%20GARCH(1%2C1).pdf)
+07. [A Winners Curse for Econometric Models - On the Joint Distribution of In-Sample Fit and Out-of-Sample Fit and Its Implications for Model Selection](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/A%20Winners%20Curse%20for%20Econometric%20Models%20-%20On%20the%20Joint%20Distribution%20of%20In-Sample%20Fit%20and%20Out-of-Sample%20Fit%20and%20its%20Implications%20for%20Model%20Selection.pdf)
+08. [AMATH546 - ECON589 HW3](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/AMATH546%20-%20ECON589%20HW3.pdf)
+09. [ARMA(1,1)-GARCH(1,1) Estimation and Forecast using rugarch 1.2-2](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/ARMA(1%2C1)-GARCH(1%2C1)%20Estimation%20and%20Forecast%20using%20rugarch%201.2-2.pdf)
+10. [EGARCH, GKR-GARCH, TGARCH, AVGARCH, NGARCH, IGARCH and APARCH Models for Pathogens at Marine Recreational Sites](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/EGARCH%2C%20GJR-GARCH%2C%20TGARCH%2C%20AVGARCH%2C%20NGARCH%2C%20%20IGARCH%20and%20APARCH%20Models%20for%20Pathogens%20at%20Marine%20Recreational%20Sites.pdf)
+11. [GARCH Models in Value at Risk Estimation Empirical Evidence from Montenegrin Stock Exchange](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/GARCH%20Models%20in%20Value%20at%20Risk%20Estimation%20Empirical%20Evidence%20from%20the%20Montenegrin%20Stock%20Exchange.pdf)
+12. [Predicting Stock Price Returns using Garch Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Predicting%20Stock%20Prices%20Returns%20using%20Garch%20Model.pdf)
+13. [Predictive Accuracy of GARCH, GJR and EGARCH Models Select Exchange Rates Application](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Predictive%20Accuracy%20of%20GARCH%2C%20GJR%20and%20EGARCH%20Models%20Select%20Exchange%20Rates%20Application.pdf)
+14. [Which GARCH Model is Best for Value-at-Risk](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Which%20GARCH%20Model%20is%20Best%20for%20Value-at-Risk.pdf)
+15. [Optimal lag order selection for a GARCH model](https://stats.stackexchange.com/questions/175400/optimal-lag-order-selection-for-a-garch-model?answertab=votes#tab-top)
+16. [Does anything NOT beat the GARCH(1,1)?](http://unstarched.net/2013/01/07/does-anything-not-beat-the-garch11)
+17. [How to choose the order of a GARCH model?](https://stats.stackexchange.com/questions/154754/how-to-choose-the-order-of-a-garch-model?answertab=votes#tab-top)
 
 ---
 

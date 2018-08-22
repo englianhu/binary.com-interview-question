@@ -11,6 +11,7 @@ output:
     toc_float:
       collapsed: no
       smooth_scroll: no
+    self_contained: no
   tufte::tufte_html:
     toc: yes
     toc_depth: 4
@@ -2718,19 +2719,277 @@ pl
 
 #### MIDAS
 
+### Comparison of Accuracy
+
+In order to validate the accuracy of prediction, here I added this section to compare among the models. I added a mean mse for Hi and Lo in order to know the long term accuracy between Hi-Lo since an order stand upon the accuracy of both Hi and Lo. **binary-Q1 Multivariate GARCH Models** will be another study for both punter and banker.
+
+```{r mse1}
+## read files
+fls <- list.files('data', patter = '.snorm.hybrid.rds$')
+mds <- llply(fls, function(txt) {
+    tryCatch(readRDS(paste0('data/', txt)), 
+             error = function(e) cat(paste0('data/', txt, ' error!\n')))
+    })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+## measure mse.
+mds <- llply(names(mds), function(x) {
+  HiLo <- x %>% str_extract_all('Hi.Lo|Lo.Hi|Hi.Cl|Lo.Cl|Op.Hi|
+                                 Op.Lo|Op.Cl') %>% unlist
+  if (length(HiLo) > 0) {
+    dfm <- mds[[x]]
+    
+    if (HiLo == 'Hi.Lo') {
+      dfm %<>% mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+                     mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+      
+    } else if (HiLo == 'Lo.Hi') {
+      dfm %<>% mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+                     mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Hi.Cl') {
+      dfm %<>% mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+                     mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Lo.Cl') {
+      dfm %<>% mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+                     mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Hi') {
+      dfm %<>% mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+                     mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Lo') {
+      dfm %<>% mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+                     mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Cl') {
+      dfm %<>% mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+                     mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else {
+      stop('No such option.')
+    }
+    dfm %<>% .[, -c(1:26)] %>% unique
+  }
+  })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+mds %<>% ldply
+
+mds %>%  mutate(mse.HiLo = (mse.Hi + mse.Lo)/2) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+Here I filtered the `sd < 20%` dataset as below.
+
+```{r mse2}
+## read files
+fls <- list.files('data', patter = '.snorm.hybrid.rds$')
+mds <- llply(fls, function(txt) {
+    tryCatch(readRDS(paste0('data/', txt)), 
+             error = function(e) cat(paste0('data/', txt, ' error!\n')))
+    })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+## measure mse.
+mds <- llply(names(mds), function(x) {
+  HiLo <- x %>% str_extract_all('Hi.Lo|Lo.Hi|Hi.Cl|Lo.Cl|Op.Hi|
+                                 Op.Lo|Op.Cl') %>% unlist
+  if (length(HiLo) > 0) {
+    dfm <- mds[[x]]
+    
+    if (HiLo == 'Hi.Lo') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.High), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.Low), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+               mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+      
+    } else if (HiLo == 'Lo.Hi') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.Low), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.High), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+               mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Hi.Cl') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.High), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.Close), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Lo.Cl') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.Low), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.Close), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Hi') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.Open), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.High), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Lo') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.Open), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.Low), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Cl') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.Open), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.Close), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else {
+      stop('No such option.')
+    }
+    dfm %<>% .[, -c(1:30)] %>% unique
+  }
+  })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+mds %<>% ldply
+
+mds %>% mutate(mse.HiLo = (mse.Hi + mse.Lo)/2) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+Now I filtered the forecast price must be within highest and lowest price in order to made the order stand.
+
+```{r mse3}
+## read files
+fls <- list.files('data', patter = '.snorm.hybrid.rds$')
+mds <- llply(fls, function(txt) {
+    tryCatch(readRDS(paste0('data/', txt)), 
+             error = function(e) cat(paste0('data/', txt, ' error!\n')))
+    })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+## measure mse.
+mds <- llply(names(mds), function(x) {
+  HiLo <- x %>% str_extract_all('Hi.Lo|Lo.Hi|Hi.Cl|Lo.Cl|Op.Hi|
+                                 Op.Lo|Op.Cl') %>% unlist
+  if (length(HiLo) > 0) {
+    dfm <- mds[[x]]
+    
+    if (HiLo == 'Hi.Lo') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+               mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+      
+    } else if (HiLo == 'Lo.Hi') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+               mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Hi.Cl') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Lo.Cl') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Hi') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Lo') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Cl') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else {
+      stop('No such option.')
+    }
+    dfm %<>% .[, -c(1:26)] %>% unique
+  }
+  })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+mds %<>% ldply
+
+mds %>% mutate(mse.HiLo = (mse.Hi + mse.Lo)/2) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
 
 ### Conclusion
 
+#### Conclusion Words
 
-## Question 2
+Based on the central limit theorem, the better accurate model will produced higher returns in long run. In this paper I compare couples models and concludes that the `gjrGARCH` model generates highest return in USD/JPY.
 
+The article [Does anything NOT beat the GARCH(1,1)?](http://www.unstarched.net/2013/01/07/does-anything-not-beat-the-garch11/) compares couple models but also compare the Garch order GARCH(1,1) as well.
 
-## Question 3
+My later paper **GARCH模型中的ARMA(p,d,q)参数最优化** introduced a better accurate Fractional Intergrated GARCH model.
 
+#### Future Works
 
-# 3. Conclusion
-
-
+GARCH(1,1) and multivariate GARCH models as well as better staking model required in order to generates higher return.
 
 ```{r stopPar, echo = FALSE, warning = FALSE}
 ## Set options back to original options

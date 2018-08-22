@@ -317,7 +317,7 @@ simGarch <- function(mbase, .solver = 'hybrid', .prCat = 'Mn', .baseDate = ymd('
 	  fcc = attributes(fc)$forecast$seriesFor
 	}
 	
-    yy = data.frame(Date = dt, Point.Forecast = fcc)	
+    yy = data.frame(Date = dt, Point.Forecast = fcc)
 	names(yy) = c('Date', 'Point.Forecast')
 	yy
   }, .parallel = .parallel, .progress = .progress)) %>% tbl_df
