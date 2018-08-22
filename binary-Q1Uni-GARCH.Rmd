@@ -329,10 +329,12 @@ if (!file.exists('data/fx/mse.sGARCH2.rds')) {
   mse.sGARCH2 <- readRDS('data/fx/mse.sGARCH2.rds')
 }
 
-mse.sGARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate sGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.sGARCH2)) {
+  mse.sGARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate sGARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.1.1B : MSE of basket currencies.*
@@ -490,10 +492,12 @@ if (!file.exists('data/fx/mse.fGARCH.GARCH2.rds')) {
   mse.fGARCH.GARCH2 <- readRDS('data/fx/mse.fGARCH.GARCH2.rds')
 }
 
-mse.fGARCH.GARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate fGARCH-GARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.fGARCH.GARCH2)) {
+  mse.fGARCH.GARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate fGARCH-GARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.2.1.1B : MSE of basket currencies.*
@@ -648,10 +652,12 @@ if (!file.exists('data/fx/mse.fGARCH.TGARCH2.rds')) {
   mse.fGARCH.TGARCH2 <- readRDS('data/fx/mse.fGARCH.TGARCH2.rds')
 }
 
-mse.fGARCH.TGARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate fGARCH-TGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.fGARCH.TGARCH2)) {
+  mse.fGARCH.TGARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate fGARCH-TGARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.2.2.1B : MSE of basket currencies.*
@@ -806,10 +812,12 @@ if (!file.exists('data/fx/mse.fGARCH.AVGARCH2.rds')) {
   mse.fGARCH.AVGARCH2 <- readRDS('data/fx/mse.fGARCH.AVGARCH2.rds')
 }
 
-mse.fGARCH.AVGARCH2 %>% 
+if (!is.null(mse.fGARCH.AVGARCH2)) {
+  mse.fGARCH.AVGARCH2 %>% 
   rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
   kable(caption = 'MSE for Univariate fGARCH-AVGARCH') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.2.3.1B : MSE of basket currencies.*
@@ -964,10 +972,12 @@ if (!file.exists('data/fx/mse.fGARCH.NGARCH2.rds')) {
   mse.fGARCH.NGARCH2 <- readRDS('data/fx/mse.fGARCH.NGARCH2.rds')
 }
 
-mse.fGARCH.NGARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate fGARCH-NGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.fGARCH.NGARCH2)) {
+  mse.fGARCH.NGARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate fGARCH-NGARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.2.4.1B : MSE of basket currencies.*
@@ -1122,10 +1132,12 @@ if (!file.exists('data/fx/mse.fGARCH.NAGARCH2.rds')) {
   mse.fGARCH.NAGARCH2 <- readRDS('data/fx/mse.fGARCH.NAGARCH2.rds')
 }
 
-mse.fGARCH.NAGARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate fGARCH-NAGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.fGARCH.NAGARCH2)) {
+  mse.fGARCH.NAGARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate fGARCH-NAGARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.2.5.1B : MSE of basket currencies.*
@@ -1280,10 +1292,12 @@ if (!file.exists('data/fx/mse.fGARCH.APARCH2.rds')) {
   mse.fGARCH.APARCH2 <- readRDS('data/fx/mse.fGARCH.APARCH2.rds')
 }
 
-mse.fGARCH.APARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate fGARCH-APARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.fGARCH.APARCH2)) {
+  mse.fGARCH.APARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate fGARCH-APARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.2.6.1B : MSE of basket currencies.*
@@ -1438,10 +1452,12 @@ if (!file.exists('data/fx/mse.fGARCH.GJRGARCH2.rds')) {
   mse.fGARCH.GJRGARCH2 <- readRDS('data/fx/mse.fGARCH.GJRGARCH2.rds')
 }
 
-mse.fGARCH.GJRGARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate fGARCH-GJRGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.fGARCH.GJRGARCH2)) {
+  mse.fGARCH.GJRGARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate fGARCH-GJRGARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.2.7.1B : MSE of basket currencies.*
@@ -1596,10 +1612,12 @@ if (!file.exists('data/fx/mse.fGARCH.ALLGARCH2.rds')) {
   mse.fGARCH.ALLGARCH2 <- readRDS('data/fx/mse.fGARCH.ALLGARCH2.rds')
 }
 
-mse.fGARCH.ALLGARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate fGARCH-ALLGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.fGARCH.ALLGARCH2)) {
+  mse.fGARCH.ALLGARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate fGARCH-ALLGARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.2.8.1B : MSE of basket currencies.*
@@ -1754,10 +1772,12 @@ if (!file.exists('data/fx/mse.eGARCH2.rds')) {
   mse.eGARCH2 <- readRDS('data/fx/mse.eGARCH2.rds')
 }
 
-mse.eGARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate eGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.eGARCH2)) {
+  mse.eGARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate eGARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.3.1B : MSE of basket currencies.*
@@ -1912,10 +1932,12 @@ if (!file.exists('data/fx/mse.gjrGARCH2.rds')) {
   mse.gjrGARCH2 <- readRDS('data/fx/mse.gjrGARCH2.rds')
 }
 
-mse.gjrGARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate gjrGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.gjrGARCH2)) {
+  mse.gjrGARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate gjrGARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.4.1B : MSE of basket currencies.*
@@ -2072,10 +2094,12 @@ if (!file.exists('data/fx/mse.apARCH2.rds')) {
   mse.apARCH2 <- readRDS('data/fx/mse.apARCH2.rds')
 }
 
-mse.apARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate apARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.apARCH2)) {
+  mse.apARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate apARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.5.1B : MSE of basket currencies.*
@@ -2230,10 +2254,12 @@ if (!file.exists('data/fx/mse.iGARCH2.rds')) {
   mse.iGARCH2 <- readRDS('data/fx/mse.iGARCH2.rds')
 }
 
-mse.iGARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate iGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.iGARCH2)) {
+  mse.iGARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate iGARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.6.1B : MSE of basket currencies.*
@@ -2388,10 +2414,12 @@ if (!file.exists('data/fx/mse.csGARCH2.rds')) {
   mse.csGARCH2 <- readRDS('data/fx/mse.csGARCH2.rds')
 }
 
-mse.csGARCH2 %>% 
-  rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
-  kable(caption = 'MSE for Univariate csGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+if (!is.null(mse.csGARCH2)) {
+  mse.csGARCH2 %>% 
+    rbind(., data.frame(.id = 'Mean', MSE = colMeans(.[2]))) %>% 
+    kable(caption = 'MSE for Univariate csGARCH') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+}
 ```
 
 *Table 3.7.1B : MSE of basket currencies.*
@@ -2440,6 +2468,18 @@ for (dt in timeID) {
 ```
 
 # 1st Stage Model Comparison
+
+### MSE, AIC and BIC
+
+By refer to [How to Choose a Forecast for Your Time Series](http://kourentzes.com/forecasting/2016/06/17/how-to-choose-a-forecast-for-your-time-series), here I calculated the AIC of MSE to choose the best fitted model.
+
+$$AIC = 2k - 2log(L)$$
+
+where $k$ is the number of parameter, log is the logarithm and L is the likelihood function.
+
+$$MSE = \sum_{i=1}^{n}(x_{i}-\mu_{i})^2$$
+
+$$AIC = 2k+nlog(MSE)$$
 
 ## Resampling Method
 
@@ -2528,13 +2568,13 @@ models <- suppressAll(bind_rows(models)) %>% tbl_df %>%
 models %>% ddply(.(.id, Cat), summarise, MSE = mean(MSE, na.rm=TRUE)) %>% 
   kable(caption = 'Summary') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
-  group_rows('USD/CAD', 15, 25, label_row_css = 'background-color: #003399; color: #fff;') %>%
-  group_rows('USD/CHF', 26, 38, label_row_css = 'background-color: #003399; color: #fff;') %>%
-  group_rows('USD/CNY', 39, 49, label_row_css = 'background-color: #003399; color: #fff;') %>%
-  group_rows('USD/EUR', 50, 63, label_row_css = 'background-color: #003399; color: #fff;') %>%
-  group_rows('USD/GBP', 64, 76, label_row_css = 'background-color: #003399; color: #fff;') %>%
-  group_rows('USD/JPY', 77, 88, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+#  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+#  group_rows('USD/CAD', 15, 25, label_row_css = 'background-color: #003399; color: #fff;') %>%
+#  group_rows('USD/CHF', 26, 38, label_row_css = 'background-color: #003399; color: #fff;') %>%
+#  group_rows('USD/CNY', 39, 49, label_row_css = 'background-color: #003399; color: #fff;') %>%
+#  group_rows('USD/EUR', 50, 63, label_row_css = 'background-color: #003399; color: #fff;') %>%
+#  group_rows('USD/GBP', 64, 76, label_row_css = 'background-color: #003399; color: #fff;') %>%
+#  group_rows('USD/JPY', 77, 88, label_row_css = 'background-color: #003399; color: #fff;') %>% 
   scroll_box(width = '100%', height = '400px')
 ```
 
@@ -2603,9 +2643,10 @@ l_ply(gmds, function(x) {
 #' @   })
 ```
 
-```{r read-models}
+```{r read-models, warning=FALSE, message=FALSE}
 ## read all files which contain in mbase, missing files will prompt message.
-fx <- ldply(names(cr_code), function(x) {
+if (!exists('fx')) {
+  fx <- ldply(names(cr_code), function(x) {
     tmID <- index(mbase[[x]])
     tmID <- tmID[tmID >= ymd('2013-01-01') & 
                      tmID <= ymd('2017-08-30')]
@@ -2625,6 +2666,7 @@ fx <- ldply(names(cr_code), function(x) {
     names(dfm)[5:6] <- c('Price', 'Price.T1')
     dfm
   }) %>% tbl_df
+}
 ```
 
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
@@ -2692,8 +2734,9 @@ acc <- ddply(fx, .(Model), summarise,
     tbl_df %>% mutate(MSE = round(MSE, 6))
 
 acc %>% 
-  kable(caption = 'Group Table Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+  kable(caption = 'Model Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
 ```
 
 ### Filtered MSE and AIC
@@ -2702,18 +2745,22 @@ Due to some errors, the mse values is not accurate. Here I filtered all dataset 
 
 ```{r tidy-data2}
 ## filter all predictive error.
-fx %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff) > Price, 1, 0)) %>% .[,-c(8:10)] %>% dplyr::filter(se == 1) %>% data.frame
+#'@ fx %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff) > Price, 1, 0)) %>% .[,-c(8:10)] %>% dplyr::filter(se == 1) %>% data.frame
 
-## filter all predictive error.
-notID <- fx %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff) >= Price, 1, 0)) %>% dplyr::filter(se == 1)
+## filter all predictive error where sd >= 20%.
+notID <- fx %>% mutate(diff = abs(Price.T1/Price), se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% dplyr::filter(se == 1)
 ntimeID <- notID %>% .$Date %>% unique
 
-fx[,1:7] %>% dplyr::filter(!Date %in% ntimeID) %>% 
+fx[,1:8] %>% dplyr::filter(!Date %in% ntimeID) %>% 
     ddply(.(Model), summarise, 
           MSE = mean((Price.T1 - Price)^2), 
           n = length(Price), 
           AIC.MSE = mean((Akaike - mean(Akaike))^2),
-          Akaike = mean(Akaike))
+          Akaike = mean(Akaike), 
+          Bayes = mean(Bayes)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
 ```
 
 ```{r aic-mse}
@@ -2726,10 +2773,16 @@ fx %>% dplyr::filter(!Date %in% ntimeID) %>%
       Bayes = mean(Bayes), 
       Shibata = mean(Shibata), 
       Hannan.Quinn = mean(Hannan.Quinn)) %>% 
-    tbl_df %>% mutate(mse = round(mse, 6))
+    tbl_df %>% mutate(mse = round(mse, 6)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
 ```
 
-```{r filter-data}
+```{r filter-data, echo=FALSE, eval=FALSE}
+## filter gmds
+gmds2 <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.GJRGARCH', 'gjrGARCH', 'iGARCH', 'csGARCH')
+
 ## check completed dataset.
 mdate <- llply(gmds, function(x) {
   x2 <- ifelse(x == 'gjrGARCH', 'pred2', x)
@@ -2742,23 +2795,23 @@ names(mdate) <- gmds
 united.dateID <- ldply(mdate, count, 'date') %>% tbl_df %>% 
   dplyr::filter(freq == 7) %>% arrange(date) %>% 
   spread(.id, freq) %>% 
-  filter(csGARCH == 7 & fGARCH.GARCH == 7 & 
-         fGARCH.GJRGARCH == 7 & fGARCH.NAGARCH == 7 & 
-         fGARCH.NGARCH == 7 & fGARCH.TGARCH == 7 & 
-         gjrGARCH == 7 & iGARCH == 7 & sGARCH == 7) %>% 
+  filter(sGARCH == 7 & fGARCH.GARCH == 7 & fGARCH.TGARCH == 7 & 
+         fGARCH.NGARCH == 7 & fGARCH.NAGARCH == 7 & 
+         fGARCH.GJRGARCH == 7 & 
+         gjrGARCH == 7 & iGARCH == 7 & csGARCH == 7) %>% 
   .$date %>% unique %>% sort
 
 n.united.dateID <- ldply(mdate, count, 'date') %>% tbl_df %>% dplyr::filter(freq == 7) %>% ddply(.(.id), summarise, freq = length(freq))
 
-
 united.fx <- ldply(names(cr_code), function(x) {
-    tmID <- united.dateID$date
-    tmID <- tmID[tmID >= ymd('2013-01-01') & 
-                     tmID <= ymd('2017-08-30')]
-    
+
     dfm <- ldply(gmds, function(y) {
       y2 <- ifelse(y == 'gjrGARCH', 'pred2', y)
       
+      tmID <- united.dateID
+      tmID <- tmID[tmID >= ymd('2013-01-01') & 
+                     tmID <= ymd('2017-08-30')]
+    
       ldply(tmID, function(z) {
         txt <- paste0('data/fx/', x, '/', y2, '.', z, '.rds')
         tryCatch(readRDS(txt) %>% tbl_df, error = function(e) 
@@ -2772,24 +2825,29 @@ united.fx <- ldply(names(cr_code), function(x) {
     dfm
   }) %>% tbl_df
 
-## filter all predictive error, the sd > 10% will be omit.
-notID <- united.fx %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1)
+## filter all predictive error where sd >= 20%.
+notID <- united.fx %>% mutate(diff = abs(Price.T1/Price), se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% dplyr::filter(se == 1)
 ntimeID <- notID %>% .$Date %>% unique
 
 ## count the number of forecast `abs(Price.T1 - Price) >= Price` to know the 
 ##   precise of the prediction.
 ## Corrected : `abs(diff)/Price >= 0.1` to made it more accurate. Only filter the price difference < 0.1, then the price difference >= 0.1 will be counted how many times.
-notID %>% count('Model')
+notID %>% count('Model') %>% 
+  kable(caption = 'Count Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 
-united.fx[,1:7] %>% dplyr::filter(!Date %in% ntimeID) %>% 
+united.fx[,1:8] %>% dplyr::filter(!Date %in% ntimeID) %>% 
     ddply(.(Model), summarise, 
           MSE = mean((Price.T1 - Price)^2), 
           n = length(Price), 
           Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike))
+          Akaike = mean(Akaike), 
+          Bayes = mean(Bayes)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-```{r plot-data}
+```{r plot-data, echo=FALSE, eval=FALSE}
 ## here we plot data to compare it.
 price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
     spread(Model, Price.T1) %>% 
@@ -2800,15 +2858,9 @@ price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>%
 price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
     spread(Model, Price.T1) %>% 
     split(.$Type)
-
-## here we plot data to compare it.
-price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
-  dplyr::filter(!Date %in% ntimeID) %>% 
-  spread(Model, Price.T1) %>% 
-  split(.$Type)
 ```
 
-```{r plot-data2}
+```{r plot-data2, echo=FALSE, eval=FALSE}
 llply(price, function(x) {
   highchart() %>% 
     hc_xAxis(Time = x$Date) %>% 
@@ -2825,6 +2877,63 @@ llply(price, function(x) {
   })
 ```
 
+```{r filter-data2}
+## filter gmds
+gmds2 <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.GJRGARCH', 'gjrGARCH', 'iGARCH', 'csGARCH')
+
+## check completed dataset.
+mdate <- dplyr::count(fx, Date, Type) %>% tbl_df
+
+##filter 7 currency and OHLC data.
+united.dateID <- mdate %>% dplyr::filter(n == 14) %>% .$Date %>% unique
+
+## filter all predictive error where sd >= 20%.
+notID <- fx %>% dplyr::filter(Date %in% united.dateID) %>% 
+  mutate(diff = abs(Price.T1/Price), 
+         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+  dplyr::filter(se == 1)
+
+## prediction error details
+notID %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+
+## number of prediction error.
+dplyr::count(notID, Model) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+ntimeID <- notID %>% .$Date %>% unique
+
+fx[,1:8] %>% dplyr::filter(Date %in% united.dateID & !Date %in% ntimeID) %>% 
+    ddply(.(Model), summarise, 
+          MSE = mean((Price.T1 - Price)^2), 
+          n = length(Price), 
+          AIC.MSE = mean((Akaike - mean(Akaike))^2),
+          Akaike = mean(Akaike), 
+          Bayes = mean(Bayes)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+```{r aic-mseB}
+fx %>% dplyr::filter(Date %in% united.dateID & !Date %in% ntimeID) %>% 
+    ddply(.(Model), summarise, 
+      mse = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      Akaike.mse = (-2*mse)/n+2*4/n, 
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(mse = round(mse, 6)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
 #### Close Price
 
 ```{r close-price1}
@@ -2832,29 +2941,55 @@ llply(price, function(x) {
 cp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Cl')
 
 ## filter the dataset to know how many prediction sd < 0.1.
-cp %>% dplyr::filter(!Date %in% (cp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+cp %>% dplyr::filter(!Date %in% (
+  cp %>% mutate(diff = abs(Price.T1/Price), 
+                se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
     ddply(.(Model), summarise, 
           MSE = mean((Price.T1 - Price)^2), 
           n = length(Price), 
           Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike))
+          Akaike = mean(Akaike), 
+          Bayes = mean(Bayes)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
 
-cp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+cp %>% mutate(diff = abs(Price.T1/Price), 
+         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 ```{r close-price2}
 ## closing price.
-cp <- united.fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Cl')
+cp <- fx %>% dplyr::filter(Model %in% gmds2 & 
+                           Date %in% united.dateID & 
+                           !Date %in% ntimeID) %>% 
+  separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::select(-Cur) %>% dplyr::filter(Type == 'Cl')
 
 ## filter the dataset to know how many prediction sd < 0.1.
-cp %>% dplyr::filter(!Date %in% (cp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+cp %>% dplyr::filter(Model %in% gmds2 & !Date %in% (
+  cp %>% mutate(diff = abs(Price.T1/Price), 
+                se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
     ddply(.(Model), summarise, 
           MSE = mean((Price.T1 - Price)^2), 
           n = length(Price), 
           Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike))
+          Akaike = mean(Akaike), 
+          Bayes = mean(Bayes)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
 
-cp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+cp %>% mutate(diff = abs(Price.T1/Price), 
+         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 #### Hi-Lo Price
@@ -2866,29 +3001,55 @@ Highest price.
 hp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Hi')
 
 ## filter the dataset to know how many prediction sd < 0.1.
-hp %>% dplyr::filter(!Date %in% (hp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+hp %>% dplyr::filter(!Date %in% (
+  hp %>% mutate(diff = abs(Price.T1/Price), 
+                se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
     ddply(.(Model), summarise, 
           MSE = mean((Price.T1 - Price)^2), 
           n = length(Price), 
           Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike))
+          Akaike = mean(Akaike), 
+          Bayes = mean(Bayes)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
 
-hp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+hp %>% mutate(diff = abs(Price.T1/Price), 
+              se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 ```{r high-price2}
 ## highest price.
-hp <- united.fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Hi')
+hp <- fx %>% dplyr::filter(Model %in% gmds2 & 
+                           Date %in% united.dateID & 
+                           !Date %in% ntimeID) %>% 
+  separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::select(-Cur) %>% dplyr::filter(Type == 'Hi')
 
 ## filter the dataset to know how many prediction sd < 0.1.
-hp %>% dplyr::filter(!Date %in% (hp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+hp %>% dplyr::filter(Model %in% gmds2 & !Date %in% (
+  hp %>% mutate(diff = abs(Price.T1/Price), 
+         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
     ddply(.(Model), summarise, 
           MSE = mean((Price.T1 - Price)^2), 
           n = length(Price), 
           Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike))
+          Akaike = mean(Akaike), 
+          Bayes = mean(Bayes)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
 
-hp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+hp %>% mutate(diff = abs(Price.T1/Price), 
+         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 Lowest price.
@@ -2898,42 +3059,57 @@ Lowest price.
 lp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Lo')
 
 ## filter the dataset to know how many prediction sd < 0.1.
-lp %>% dplyr::filter(!Date %in% (lp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+lp %>% dplyr::filter(!Date %in% (
+  lp %>% mutate(diff = abs(Price.T1/Price), 
+                se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
     ddply(.(Model), summarise, 
           MSE = mean((Price.T1 - Price)^2), 
           n = length(Price), 
           Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike))
+          Akaike = mean(Akaike), 
+          Bayes = mean(Bayes)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
 
-lp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+lp %>% mutate(diff = abs(Price.T1/Price), 
+         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 ```{r low-price2}
 ## lowest price.
-lp <- united.fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Lo')
+lp <- fx %>% dplyr::filter(Model %in% gmds2 & 
+                           Date %in% united.dateID & 
+                           !Date %in% ntimeID) %>% 
+  separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::select(-Cur) %>% dplyr::filter(Type == 'Lo')
 
 ## filter the dataset to know how many prediction sd < 0.1.
-lp %>% dplyr::filter(!Date %in% (lp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+lp %>% dplyr::filter(Model %in% gmds2 & !Date %in% (
+  lp %>% mutate(diff = abs(Price.T1/Price), 
+         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
     ddply(.(Model), summarise, 
           MSE = mean((Price.T1 - Price)^2), 
           n = length(Price), 
           Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike))
+          Akaike = mean(Akaike), 
+          Bayes = mean(Bayes)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
 
-lp %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff)/Price >= 0.1, 1, 0)) %>% dplyr::filter(se == 1) %>% count('Model')
+lp %>% mutate(diff = abs(Price.T1/Price), 
+         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-### AIC for MSE
-
-By refer to [How to Choose a Forecast for Your Time Series](http://kourentzes.com/forecasting/2016/06/17/how-to-choose-a-forecast-for-your-time-series), here I calculated the AIC of MSE to choose the best fitted model.
-
-$$AIC = 2k - 2log(L)$$
-
-where $k$ is the number of parameter, log is the logarithm and L is the likelihood function.
-
-$$MSE = \sum_{i=1}^{n}(x_{i}-\mu_{i})^2$$
-
-$$AIC = 2k+nlog(MSE)$$
 
 # Distribution Model
 
@@ -3050,6 +3226,36 @@ rm(sys1, sys2)
 02. [Binary.com Interview Q1](http://rpubs.com/englianhu/binary-Q1) ([Old link](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or [Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1))
 03. [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133))
 04. [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](http://rpubs.com/englianhu/binary-Q1TD)
+05. [41901 Probability and Statistics](41901 Probability and Statistics.pdf)
+06. [A Comparison of Volatility Models - Does Anything Beat a GARCH(1,1)]()
+07. [A Winners Curse for Econometric Models - On the Joint Distribution of In-Sample Fit and Out-of-Sample Fit and Its Implications for Model Selection]()
+08. [AMATH546 - ECON589 HW3]()
+09. [ARMA(1,1)-GARCH(1,1) Estimation and Forecast using rugarch 1.2-2]()
+10. [Creating Optimal Portfolios of Stocks with Time-Varying Risk]()
+11. [Dynamic Portfolio Optimization using Generalized Dynamic Conditoinal Heteroskedastic Factor Models]()
+12. [EGARCH, GKR-GARCH, TGARCH, AVGARCH, NGARCH, IGARCH and APARCH Models for Pathogens at Marine Recreational Sites]()
+13. [Enhancing Trading Strategies with Order Book Signals]()
+14. [GARCH Models in Value at Risk Estimation Empirical Evidence from Montenegrin Stock Exchange]()
+15. [How Does the Fortune's Formula-Kelly Capital Growth Model Perform]()
+16. [Information Theory and Gambling or Economics]()
+17. [Investment Portfolio Optimization with GARCH Models]()
+18. [Kelly Criterion Revisited - Optimal Bets]()
+19. [Markov-Switching Autoregressive Models for Wind Times Series (ppt)]()
+20. [Markov-Switching Autoregressive Models for Wind Times Series]()
+21. [Medium Term Simulations of the Full Kelly and Fractional]()
+22. [Modelling Exchange Rates using Regime Switching Models]()
+23. [Money Management (V1)]()
+24. [Money Management (V2)]()
+25. [Optimal Betting under Parameter Uncertainty - Improving the Kelly Criterion]()
+26. [Predicting Stock Price Returns using Garch Model]()
+27. [Predicting Accuracy of GARCH, GJR and EGARCH Models Select Exchange Rates Application]()
+28. [Stochastic Modelling and Optimization Methods in Investments]()
+29. [The Kelly Criterion - Implementation, Simulation and Backtest]()
+30. [The Kelly Criterion and Bet Comparison in Spread Betting]()
+31. [The Kelly Criterion for Spread Bets]()
+32. [The Market for English Premier League (EPL) Odds]()
+33. [Valuation of Soccer Spread Bets]()
+34. [Which GARCH Model is Best for Value-at-Risk]()
 
 ---
 
