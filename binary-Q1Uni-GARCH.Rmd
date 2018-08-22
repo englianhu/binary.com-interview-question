@@ -1579,10 +1579,17 @@ if (!file.exists('data/fx/mse.fGARCH.ALLGARCH2.rds')) {
     roll <- ugarchroll(spec, data = x, n.start = ns, forecast.length = n, 
                        refit.every = 1, refit.window = 'moving', 
                        cluster = .cl)
-    attributes(roll)$forecast$density %>% 
+    
+    if (!is.null(roll)) {
+      res <- attributes(roll)$forecast$density %>% 
       tbl_df %>% mutate(MSE = mean((Mu - Realized)^2)) %>% 
       .$MSE %>% unique
-    }) %>% rename(MSE = V1)
+    } else {
+      res <- NULL
+    }
+    return(res)
+  }) %>% tbl_df
+  mse.fGARCH.ALLGARCH2 %<>% ddply(.(.id), summarise, MSE = mean((Mu - Realized)^2))
   saveRDS(mse.fGARCH.ALLGARCH2, 'data/fx/mse.fGARCH.ALLGARCH2.rds')
   
 } else {
@@ -1644,7 +1651,7 @@ for (dt in timeID) {
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
-```{r eGARCH, echo=FALSE}
+```{r mseeGARCH, echo=FALSE}
 if (!file.exists('data/fx/mse.eGARCH.rds')) {
   mse.eGARCH <- ldply(mbase, function(x) {
     x <- Cl(x)
@@ -1699,7 +1706,7 @@ mse.eGARCH %>%
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
-```{r eGARCH2, echo=FALSE}
+```{r mseeGARCH2, echo=FALSE}
 if (!file.exists('data/fx/mse.eGARCH2.rds')) {
   mse.eGARCH2 <- ldply(mbase, function(x) {
     x <- Cl(x)
@@ -2438,28 +2445,46 @@ for (dt in timeID) {
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
-```{r models}
-models <- list(sGARCH = mse.sGARCH, 
-            fGARCH.GARCH = mse.fGARCH.GARCH, 
-            fGARCH.TGARCH = mse.fGARCH.TGARCH, 
-            fGARCH.AVGARCH = mse.fGARCH.AVGARCH, 
-            fGARCH.NGARCH = mse.fGARCH.NGARCH, 
-            fGARCH.NAGARCH = mse.fGARCH.NAGARCH, 
-            fGARCH.APARCH = mse.fGARCH.APARCH, 
-            fGARCH.GJRGARCH = mse.fGARCH.GJRGARCH, 
-            fGARCH.ALLGARCH = mse.fGARCH.ALLGARCH, 
-            eGARCH = mse.eGARCH, 
-            gjrGARCH = mse.gjrGARCH, 
-            apARCH = mse.apARCH, 
-            iGARCH = mse.iGARCH, 
-            csGARCH = mse.csGARCH)
+```{r pick-mse1A}
+models <- llply(gmds, function(txt) {
+    readRDS(paste0('data/fx/mse.', txt, '.rds')) %>% 
+    data.frame(Cat = txt, .)
+  })
+names(models) <- gmds
 
-m.mse <- ldply(models, function(x) {
-    x %>% mutate(Currency = .id) %>% select(Currency, MSE)
-    }) %>% tbl_df %>% spread(Currency, MSE)
+models <- suppressAll(bind_rows(models)) %>% tbl_df %>% 
+    mutate(Cat = factor(Cat), .id = factor(.id))
+
+models %>% ddply(.(.id, Cat), summarise, MSE = mean(MSE, na.rm=TRUE)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 15, 25, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 26, 38, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 39, 49, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 50, 63, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 64, 76, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 77, 88, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
 ```
 
+Due to some models unable produced a result, here I only filter and display the models with 7 currencies as below.
+
+```{r pick-mse1B}
+#'@ dplyr::count(models, Cat) %>% dplyr::filter(n == 7)
+cats <- dplyr::count(models, Cat) %>% dplyr::filter(n == 7) %>% .[1] %>% unlist %>% factor
+
+models %>% ddply(.(Cat), summarise, MSE = mean(MSE, na.rm=TRUE)) %>% 
+    dplyr::filter(Cat %in% cats) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+Now I plot a table with rank where shows all possible models.
+
 ```{r m-mse, echo=FALSE}
+m.mse <- models %>% spread(.id, MSE)
+
 tagList(
   tags$div(align = "center", 
            class = "bg-info", 
@@ -2468,13 +2493,13 @@ tagList(
                    "GARCH models")), 
   as.htmlwidget(m.mse %>% formattable(list(
     
-    .id = color_tile('white', 'darkgoldenrod'), 
+    Cat = color_tile('white', 'darkgoldenrod'), 
     
     USDAUD = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
     
     USDEUR = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
     
-    USDGBP = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+#    USDGBP = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
     
     USDCHF = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
     
@@ -2488,13 +2513,83 @@ tagList(
 
 ## Markov Method
 
+Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
+
+```{r pick-mse2A, warning=FALSE}
+models <- llply(gmds, function(txt) {
+    dfm <- tryCatch(readRDS(paste0('data/fx/mse.', txt, '2.rds')), error = function(e) cat(paste0('data/fx/mse.', txt, '2.rds error!\n')))
+    if(!is.null(dfm)) dfm %>% data.frame(Cat = txt, .)
+  })
+names(models) <- gmds
+
+models <- suppressAll(bind_rows(models)) %>% tbl_df %>% 
+    mutate(Cat = factor(Cat), .id = factor(.id))
+
+models %>% ddply(.(.id, Cat), summarise, MSE = mean(MSE, na.rm=TRUE)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 15, 25, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 26, 38, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 39, 49, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 50, 63, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 64, 76, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 77, 88, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+Due to some models unable produced a result, here I only filter and display the models with 7 currencies as below.
+
+```{r pick-mse2B}
+#'@ dplyr::count(models, Cat) %>% dplyr::filter(n == 7)
+cats <- dplyr::count(models, Cat) %>% dplyr::filter(n == 7) %>% .[1] %>% unlist %>% factor
+
+models %>% ddply(.(Cat), summarise, MSE = mean(MSE, na.rm=TRUE)) %>% 
+    dplyr::filter(Cat %in% cats) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+Now I plot a table with rank where shows all possible models.
+
+```{r m-mse2, echo=FALSE}
+m.mse <- models %>% spread(.id, MSE)
+
+tagList(
+  tags$div(align = "center", 
+           class = "bg-info", 
+           tags$h3(class = "bg-primary", "MSE Comparison"), 
+           tags$h5(align = "center", class = "text-muted", 
+                   "GARCH models")), 
+  as.htmlwidget(m.mse %>% formattable(list(
+    
+    Cat = color_tile('white', 'darkgoldenrod'), 
+    
+    USDAUD = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+    USDEUR = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+ #   USDGBP = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+    USDCHF = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+    USDCAD = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+    USDCNY = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')), 
+    
+    USDJPY = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) <= 3, 'green', 'gray')), x ~ paste0(round(x, 7), ' (rank: ', sprintf('%02d', rank(x)), ')')) 
+    ))))
+```
+
+## Markov Method 2
+
+Now, we look at the mse where I use `ugarchfit()` and `ugarchforecast`, actually it is same with above [Markov Method] but just seperate all prediction result as single file where we able to filter the error to find the most accurate model (as well as know he frequence of bias and precise among the models.).
+
 ### MSE and AIC
 
 Below check the progress of the saved files.
 
 ```{r check-progress}
-#'@ gmds <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.AVGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.APARCH', 'fGARCH.GJRGARCH', 'fGARCH.ALLGARCH', 'eGARCH', 'gjrGARCH', 'apARCH', 'iGARCH', 'csGARCH')
-
 ## check how many data saved in progress.
 l_ply(gmds, function(x) {
   x2 <- ifelse(x == 'gjrGARCH', 'pred2', x)
@@ -2502,10 +2597,10 @@ l_ply(gmds, function(x) {
   })
 
 ## check latest date saved in progress.
-l_ply(gmds, function(x) {
-  x2 <- ifelse(x == 'gjrGARCH', 'pred2', x)
-  task_progress(.date = TRUE, .pattern = paste0('^', x2, '.'), .loops = FALSE)
-  })
+#' @ l_ply(gmds, function(x) {
+#' @   x2 <- ifelse(x == 'gjrGARCH', 'pred2', x)
+#' @   task_progress(.date = TRUE, .pattern = paste0('^', x2, '.'), .loops = FALSE)
+#' @   })
 ```
 
 ```{r read-models}
