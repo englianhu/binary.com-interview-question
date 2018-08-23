@@ -174,6 +174,8 @@ From above tables, we know the univariate statistical modelling will facing stat
 
 Due to article **The GARCH DCC Model and 2 Stage DCCMVT Estimation**^[Kindly refer to [Reference] for further reading.] compares the `model = c('DCC', 'aDCC')` but not `model = 'FDCC'` with all distributions and concludes that `aDCC` with `distribution = 'mvt'` is the best fit model and distribution for multivariate GARCH model. Here I directly use `mvt` but in different `solver` parameters.
 
+The paper [Binary.com Interview Q1 - Comparison of Univariate GARCH Models](https://rpubs.com/englianhu/binary-Q1Uni-GARCH) describes the GARCH orders. [How to identify the ARCH and GARCH lag length in dynamic conditional correlation GARCH model?](https://stats.stackexchange.com/questions/136302/how-to-identify-the-arch-and-garch-lag-length-in-dynamic-conditional-correlation?answertab=votes#tab-top) describes the GARCH(1,1) and also DCC-GARCH as well.
+
 ```{r dcc1, echo=FALSE, eval=FALSE}
 ### ========= using cluster for sampling ===============
 fit <- llply(na.omit(Cl(mbase[['USDJPY']])), function(x){
@@ -268,7 +270,7 @@ dcc.logLik %>%
 
 *Table 3.2.1.2 : Log-Likelihood comparison.*
 
-### Modelling for Banker
+### Close Price
 
 ```{r bk-dcc, eval=FALSE}
 ## Possible multivariate models.
@@ -375,7 +377,7 @@ names(bk.dcc) <- md
 ```
 
 
-### Modelling for Punter
+### Hi-Lo Price
 
 #### Single Currency
 

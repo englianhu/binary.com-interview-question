@@ -17,7 +17,7 @@ output:
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'rlist', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch', 'forecast')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'rlist', 'memoise', 'htmltools', 'highcharter', 'formattable', 'DT', 'rugarch', 'rmgarch', 'forecast')
 
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
@@ -25,11 +25,7 @@ suppressAll(lib(pkgs))
 funs <- c('uv_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'task_progress.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
 
-## Set option to below if you want to plot an independent webpage with graph 
-#'@ op <- options(gvis.plot.tag=NULL)
-op <- options(gvis.plot.tag = 'chart')
-options(gvis.plot.tag = 'chart', warn = -1)
-
+options(warn = -1)
 rm(pkgs)
 ```
 
@@ -42,7 +38,13 @@ There are quite some papers study on the GARCH models.
 
 From previous papers, I tried to apply couple models for FOREX price forecasting and eventually got to know *Fractional Intergrated GJR-GARCH* is the best fit model as we can refer to **GARCH模型中的ARMA(p,d,q)参数最优化**^[Kindly refer to paper in [Reference]]. Due to I simulate whole dataset to get the result in menmtioned paper is time consuming, I tried to apply `dccroll()` to know the mse by resampling but not only based on single `AIC`^[Only the `solver=solnp` stable but the other solvers not stable, the fluctuation of AIC value is quite high.]. I parse my `mv_fx()` function^[Due to some errors] and tested the **Binary-Q1 - Multivariate GARCH Models** and some additive parameters might probably need to be adjusted in the arguments of the function. [Arma Part Overfitting in Arma Garch Model fitting via fGarch Package](https://stackoverflow.com/questions/36312065/arma-part-overfitting-in-arma-garch-model-fitting-via-fgarch-package) is a similar study for models comparison in GARCH.
 
-Besides using the `ugarchroll()`, all models in this paper are Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`. **AMATH546 - ECON589 HW3** also teach the use of `ugarchroll()`
+I try to use 3 methods to compare the GARCH models.
+
+- The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`: refit couple times in order to make sure the stability of the prediction model.
+- Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`: refit once only with moving to know the prediction accuracy of the Markov model.
+- Similar with Markov model above, but just seperates to `ugarchfit()` and `ugarchforecast()` and save every single observation. It will be easy to find the origin of error and rerun that particular data prediction.
+
+Besides using the `ugarchroll()`, all models in this paper are Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`. **AMATH546 - ECON589 HW3** also teach the use of `ugarchroll()`.
 
 ```{r dcc, eval=FALSE}
 ## --- eval=FALSE, not run but display chunk ---
@@ -102,7 +104,7 @@ test_roll3 <- dccroll(dccspec(
 				  variance.model = list(model = 'eGARCH'), 
 				  distribution.model = 'snorm')
 				)), distribution = 'mvt'), data = mbase, cluster = cl)
-						
+
 ## Not workable
 test_roll4 <- dccroll(dccspec(
 			multispec(c(
@@ -2476,6 +2478,10 @@ for (dt in timeID) {
 
 ### MSE, AIC and BIC
 
+Due to some unknown reasons, the NGARCH and NAGARCH always bias to confuse the model selection. Here I try to look for some supportive methods.
+
+#### Calculate AIC for MSE
+
 By refer to [How to Choose a Forecast for Your Time Series](http://kourentzes.com/forecasting/2016/06/17/how-to-choose-a-forecast-for-your-time-series), here I calculated the AIC of MSE to choose the best fitted model.
 
 $$AIC = 2k - 2log(L)$$
@@ -2486,11 +2492,30 @@ $$MSE = \sum_{i=1}^{n}(x_{i}-\mu_{i})^2$$
 
 $$AIC = 2k+nlog(MSE)$$
 
+#### Using Bayes instead of AIC
+
+Below picture shows the use of BIC for Markov model (as well as few parameters used in the model) while AIC for static model. For section [Resampling Method], we can refer to AIC while section [Markov Method] and section [Markov Method 2] we refer to BIC.
+
+![](www/AIC-BIC.jpg)
+
+#### Calculate the MSE for AIC
+
+In order to know the stability of AIC value, here I try to measure the mean squared error of AIC as well.
+
+#### Filter the Bias Data
+
+As states, due to some unknown reasons, there has some data bias more than 100 times which is totally wrong. Some prediction price became AIC value and somemore the currency became `NULL` values after calculation.
+
+Here I also filter and count the number of bias to pick the best fit model.
+
 ## Resampling Method
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
 ```{r pick-mse1A}
+## remove all mse.*objects to save memory.
+eval(parse(text = paste0('rm(\'', ls()[str_detect(ls(), 'mse.')],'\')')))
+
 models <- llply(gmds, function(txt) {
     readRDS(paste0('data/fx/mse.', txt, '.rds')) %>% 
     data.frame(Cat = txt, .)
@@ -2784,33 +2809,33 @@ fx %>% dplyr::filter(!Date %in% ntimeID) %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
-```{r filter-data, echo=FALSE, eval=FALSE}
+```{r filter-data}
 ## filter gmds
 gmds2 <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.GJRGARCH', 'gjrGARCH', 'iGARCH', 'csGARCH')
 
 ## check completed dataset.
-mdate <- llply(gmds, function(x) {
+mdate <- llply(gmds2, function(x) {
   x2 <- ifelse(x == 'gjrGARCH', 'pred2', x)
   task_progress(.pattern = paste0('^', x2, '.'), .loops = FALSE, 
                 .filter.completed.data = TRUE)
   })
-names(mdate) <- gmds
+names(mdate) <- gmds2
 
 ## count all dateID must contain 7 currency in order to made all date in dataset united and completed.
-united.dateID <- ldply(mdate, count, 'date') %>% tbl_df %>% 
-  dplyr::filter(freq == 7) %>% arrange(date) %>% 
-  spread(.id, freq) %>% 
-  filter(sGARCH == 7 & fGARCH.GARCH == 7 & fGARCH.TGARCH == 7 & 
+united.dateID <- ldply(mdate, dplyr::count, date) %>% tbl_df %>% 
+  dplyr::filter(n == 7) %>% arrange(date) %>% 
+  spread(.id, n) %>% 
+  dplyr::filter(sGARCH == 7 & fGARCH.GARCH == 7 & fGARCH.TGARCH == 7 & 
          fGARCH.NGARCH == 7 & fGARCH.NAGARCH == 7 & 
          fGARCH.GJRGARCH == 7 & 
          gjrGARCH == 7 & iGARCH == 7 & csGARCH == 7) %>% 
   .$date %>% unique %>% sort
 
-n.united.dateID <- ldply(mdate, count, 'date') %>% tbl_df %>% dplyr::filter(freq == 7) %>% ddply(.(.id), summarise, freq = length(freq))
+n.united.dateID <- ldply(mdate, dplyr::count, date) %>% tbl_df %>% dplyr::filter(n == 7) %>% ddply(.(.id), summarise, n = length(n))
 
 united.fx <- ldply(names(cr_code), function(x) {
 
-    dfm <- ldply(gmds, function(y) {
+    dfm <- ldply(gmds2, function(y) {
       y2 <- ifelse(y == 'gjrGARCH', 'pred2', y)
       
       tmID <- united.dateID
@@ -2837,7 +2862,7 @@ ntimeID <- notID %>% .$Date %>% unique
 ## count the number of forecast `abs(Price.T1 - Price) >= Price` to know the 
 ##   precise of the prediction.
 ## Corrected : `abs(diff)/Price >= 0.1` to made it more accurate. Only filter the price difference < 0.1, then the price difference >= 0.1 will be counted how many times.
-notID %>% count('Model') %>% 
+notID %>% dplyr::count(Model) %>% 
   kable(caption = 'Count Summary') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 
@@ -2852,20 +2877,20 @@ united.fx[,1:8] %>% dplyr::filter(!Date %in% ntimeID) %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-```{r plot-data, echo=FALSE, eval=FALSE}
-## here we plot data to compare it.
-price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
-    spread(Model, Price.T1) %>% 
-    split(.$Type) %>% 
-    llply(., function(x) xts(x[-c(1:2)], order.by = x$Date))
+```{r plot-data}
+## here we convert to xts format to plot data to compare it.
+#'@ price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
+#'@     spread(Model, Price.T1) %>% 
+#'@     split(.$Type) %>% 
+#'@     llply(., function(x) xts(x[-c(1:2)], order.by = x$Date))
 
-## here we plot data to compare it.
+## here we keep as tibble format to plot data to compare it.
 price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
     spread(Model, Price.T1) %>% 
     split(.$Type)
 ```
 
-```{r plot-data2, echo=FALSE, eval=FALSE}
+```{r plot-data2}
 llply(price, function(x) {
   highchart() %>% 
     hc_xAxis(Time = x$Date) %>% 
@@ -2882,7 +2907,7 @@ llply(price, function(x) {
   })
 ```
 
-```{r filter-data2}
+```{r filter-data2, eval=FALSE, echo=FALSE}
 ## filter gmds
 gmds2 <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.GJRGARCH', 'gjrGARCH', 'iGARCH', 'csGARCH')
 
@@ -3144,7 +3169,9 @@ with four distributions, the Normal, Skew-Student (Fernandez and Steel version),
 
 The author concludes that the normality assumption does not realistically capture the observed market dynamics, and neither does the GARCH(1,1)-N model. There were few models which did not beat it in this application. In fact, higher order GARCH models were shown to provide significant out performance on a range of tail related measures, and distributions such as the `NIG` and `JSU` appeared to provide the most realistic representation of the observed dynamics.
 
-Here I skipped the distribution section due to above model comparison in section [GARCH Models] has compare the models...
+The author proof that the matrix relationship^[Therefore I skip [2nd Stage Model Comparison], my previous paper use 2nd stage parameter adjustment but noticed that the matrix relationship will correct.] among the distribution and models in order to get the best fit model. However there are couple of thesises proof that the best fit model for forex, stocks market is difference.
+
+Here I skipped the distribution section due to above model comparison in section [GARCH Models] has compare the models... **Binary.com Interview Q1** has compare the models as well.
 
 - `norm` for normal distribution.
 - `snorm` for skew-normal distribution.
@@ -3158,6 +3185,8 @@ Here I skipped the distribution section due to above model comparison in section
 
 # Solver
 
+The article **Does anything NOT beat the GARCH(1,1)?** using `hybrid` same with my previous paper **Binary.com Interview Q1** where my paper test and choose it since it is best fit for gjrGARCH model.
+
 - nlminb
 - solnp
 - lbfgs
@@ -3165,16 +3194,296 @@ Here I skipped the distribution section due to above model comparison in section
 - nloptr
 - hybrid
 
+# Review on binary-Q1
+
+Here I try to review on paper **Binary.com Interview Q1** to compare the accuracy of prediction.
+
+In order to validate the accuracy of prediction, here I added this section to compare among the models. I added a mean mse for Hi and Lo in order to know the long term accuracy between Hi-Lo since an order stand upon the accuracy of both Hi and Lo. **binary-Q1 Multivariate GARCH Models** will be another study for both punter and banker.
+
+```{r mse1}
+## read files
+fls <- list.files('data', patter = '.snorm.hybrid.rds$')
+mds <- llply(fls, function(txt) {
+    tryCatch(readRDS(paste0('data/', txt)), 
+             error = function(e) cat(paste0('data/', txt, ' error!\n')))
+    })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+## measure mse.
+mds <- llply(names(mds), function(x) {
+  HiLo <- x %>% str_extract_all('Hi.Lo|Lo.Hi|Hi.Cl|Lo.Cl|Op.Hi|
+                                 Op.Lo|Op.Cl') %>% unlist
+  if (length(HiLo) > 0) {
+    dfm <- mds[[x]]
+    
+    if (HiLo == 'Hi.Lo') {
+      dfm %<>% mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+                     mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+      
+    } else if (HiLo == 'Lo.Hi') {
+      dfm %<>% mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+                     mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Hi.Cl') {
+      dfm %<>% mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+                     mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Lo.Cl') {
+      dfm %<>% mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+                     mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Hi') {
+      dfm %<>% mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+                     mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Lo') {
+      dfm %<>% mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+                     mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Cl') {
+      dfm %<>% mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+                     mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else {
+      stop('No such option.')
+    }
+    dfm %<>% .[, -c(1:26)] %>% unique
+  }
+  })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+mds %<>% ldply
+
+mds %>%  mutate(mse.HiLo = (mse.Hi + mse.Lo)/2) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+Here I filtered the `sd < 20%` dataset as below.
+
+```{r mse2}
+## read files
+fls <- list.files('data', patter = '.snorm.hybrid.rds$')
+mds <- llply(fls, function(txt) {
+    tryCatch(readRDS(paste0('data/', txt)), 
+             error = function(e) cat(paste0('data/', txt, ' error!\n')))
+    })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+## measure mse.
+mds <- llply(names(mds), function(x) {
+  HiLo <- x %>% str_extract_all('Hi.Lo|Lo.Hi|Hi.Cl|Lo.Cl|Op.Hi|
+                                 Op.Lo|Op.Cl') %>% unlist
+  if (length(HiLo) > 0) {
+    dfm <- mds[[x]]
+    
+    if (HiLo == 'Hi.Lo') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.High), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.Low), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+               mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+      
+    } else if (HiLo == 'Lo.Hi') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.Low), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.High), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+               mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Hi.Cl') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.High), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.Close), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Lo.Cl') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.Low), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.Close), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Hi') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.Open), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.High), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Lo') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.Open), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.Low), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Cl') {
+      dfm %<>% mutate(diff1 = abs(Point.Forecast/USDJPY.Open), 
+                      se1 = ifelse(diff1 <= 0.8 | diff1 >= 1.25, 1, 0), 
+                      diff2 = abs(forClose/USDJPY.Close), 
+                      se2 = ifelse(diff2 <= 0.8 | diff2 >= 1.25, 1, 0)
+                      ) %>% 
+        dplyr::filter(se1 != 1 & se2 != 1) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else {
+      stop('No such option.')
+    }
+    dfm %<>% .[, -c(1:30)] %>% unique
+  }
+  })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+mds %<>% ldply
+
+mds %>% mutate(mse.HiLo = (mse.Hi + mse.Lo)/2) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+Now I filtered the forecast price must be within highest and lowest price in order to made the order stand.
+
+```{r mse3}
+## read files
+fls <- list.files('data', patter = '.snorm.hybrid.rds$')
+mds <- llply(fls, function(txt) {
+    tryCatch(readRDS(paste0('data/', txt)), 
+             error = function(e) cat(paste0('data/', txt, ' error!\n')))
+    })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+## measure mse.
+mds <- llply(names(mds), function(x) {
+  HiLo <- x %>% str_extract_all('Hi.Lo|Lo.Hi|Hi.Cl|Lo.Cl|Op.Hi|
+                                 Op.Lo|Op.Cl') %>% unlist
+  if (length(HiLo) > 0) {
+    dfm <- mds[[x]]
+    
+    if (HiLo == 'Hi.Lo') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+               mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+      
+    } else if (HiLo == 'Lo.Hi') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+               mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Hi.Cl') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Hi = mean((Point.Forecast - USDJPY.High)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Lo.Cl') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Lo = mean((Point.Forecast - USDJPY.Low)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Hi') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Hi = mean((forClose - USDJPY.High)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Lo') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Lo = mean((forClose - USDJPY.Low)^2)) %>% unique
+
+    } else if (HiLo == 'Op.Cl') {
+      dfm %<>% dplyr::filter(Point.Forecast <= USDJPY.High & 
+                             Point.Forecast >= USDJPY.Low & 
+                             forClose <= USDJPY.High & 
+                             forClose >= USDJPY.Low) %>% 
+        mutate(mse.Op = mean((Point.Forecast - USDJPY.Open)^2), 
+               mse.Cl = mean((forClose - USDJPY.Close)^2)) %>% unique
+
+    } else {
+      stop('No such option.')
+    }
+    dfm %<>% .[, -c(1:26)] %>% unique
+  }
+  })
+names(mds) <- str_replace_all(fls, '.rds', '')
+
+mds %<>% ldply
+
+mds %>% mutate(mse.HiLo = (mse.Hi + mse.Lo)/2) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
 # Conclusion
 
+## Conclusion Words
 
-```{r stopPar, echo=FALSE}
+Due to some unknown reason, the NGARCH and NAGARCH (and other models, some currencies as well.)^[Kindly refer to section [MSE, AIC and BIC].] always bias, therefore the AIC/BIC value and the mse value opposite site to made we hard to judge if it is good to fit. Fortunately I try to filter the bias where $\sigma ≥ 20\%$ and count the number of occurance to pick the model.
+
+![](www/accuracy-precision.jpg)
+
+## Future Works
+
+Perhaps the other day will compare the matrix models fit with distribution and solver. The multivariate GARCH model is also on going.
+
+```{r option, echo=FALSE}
 ## Set options back to original options
-options(op)
 options(warn = 0)
 ```
 
 # Appendix
+
+## Speech and Blooper
+
+There are a lot of time I waste just for verify and rerun the coding. `ugarchroll` function always interrupted after running few hours. The simulation wrote by me always interrupt as well, there are 14 GARCH models while I running 6 models at the meantime. `ugarchroll` for `refit.windows = 'recrusive'` cost me few days time while  `refit.windows = 'moving'` cost me weeks time and all in 24 hours without any rest.
+
+After get the MSE value and AIC value, I forced to debug the codes upon unexpected results especially bias. For example, the MSE value judge the best fit model but AIC and BIC judge as worst model. Here I also looking for some reference like AIC for MSE which applied AIC for compare the best MSE as introduced by a professor.
+
+Below are the blooper (behind the scene) for **GARCH模型中的ARMA(p,d,q)参数最优化** where I use almost a week to review and filter couple times.
+
+![](www/blooper-01.jpg)
+
+This paper compares 14 models with 3 mthods but **GARCH模型中的ARMA(p,d,q)参数最优化** only compares 2 models.
 
 ## Documenting File Creation 
 
