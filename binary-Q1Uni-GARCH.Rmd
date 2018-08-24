@@ -373,7 +373,8 @@ for (dt in timeID) {
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       sGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
-        df = uv_fx(smp, .model = 'sGARCH', currency = cr_code[i], price = y)
+        df = uv_fx(smp, .model = 'sGARCH', currency = cr_code[i], 
+                   price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -541,7 +542,7 @@ for (dt in timeID) {
       
       fGARCH.GARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'fGARCH', .submodel = 'GARCH', 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -707,7 +708,7 @@ for (dt in timeID) {
       
       fGARCH.TGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'fGARCH', .submodel = 'TGARCH', 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                        Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -873,7 +874,7 @@ for (dt in timeID) {
      
       fGARCH.AVGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'fGARCH', .submodel = 'AVGARCH', 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                        Type = paste0(names(df$latestPrice), '.', y), 
                        df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -1039,7 +1040,7 @@ for (dt in timeID) {
       
       fGARCH.NGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'fGARCH', .submodel = 'NGARCH', 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -1205,7 +1206,7 @@ for (dt in timeID) {
       
       fGARCH.NAGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'fGARCH', .submodel = 'NAGARCH', 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -1371,7 +1372,7 @@ for (dt in timeID) {
       
       fGARCH.APARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'fGARCH', .submodel = 'APARCH', 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -1537,7 +1538,7 @@ for (dt in timeID) {
       
       fGARCH.GJRGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'fGARCH', .submodel = 'GJRGARCH', 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -1703,7 +1704,7 @@ for (dt in timeID) {
       
       fGARCH.ALLGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'fGARCH', .submodel = 'ALLGARCH', 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -1869,7 +1870,7 @@ for (dt in timeID) {
       
       eGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'eGARCH', .submodel = NULL, 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -2037,7 +2038,7 @@ for (dt in timeID) {
       
       gjrGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'gjrGARCH', .submodel = NULL, 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -2203,7 +2204,7 @@ for (dt in timeID) {
       
       apARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'apARCH', .submodel = NULL, 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -2369,7 +2370,7 @@ for (dt in timeID) {
       
       iGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'iGARCH', .submodel = NULL, 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -2535,7 +2536,7 @@ for (dt in timeID) {
       
       csGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
         df = uv_fx(smp, .model = 'csGARCH', .submodel = NULL, 
-                   currency = cr_code[i], price = y)
+                   currency = cr_code[i], price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -2783,6 +2784,36 @@ if (!exists('fx')) {
 }
 ```
 
+```{r missing-files, echo=FALSE, eval=FALSE}
+missing <- ldply(names(cr_code), function(x) {
+    tmID <- index(mbase[[x]])
+    tmID <- tmID[tmID >= ymd('2013-01-01') & 
+                     tmID <= ymd('2017-08-30')]
+    
+    dfm <- ldply(gmds, function(y) {
+      y2 <- ifelse(y == 'gjrGARCH', 'pred2', y)
+      
+      ldply(tmID, function(z) {
+        txt <- paste0('data/fx/', x, '/', y2, '.', z, '.rds')
+        tryCatch({
+          fm <- readRDS(txt) %>% tbl_df
+          fm <- NULL
+          }, error = function(e) txt)
+          
+        }) %>% data.frame(Model = factor(y), .) %>% tbl_df
+      
+    }) %>% data.frame(.id = factor(x), .) %>% tbl_df
+
+    names(dfm)[3] <- 'path'
+    dfm
+  }) %>% tbl_df
+
+miss.timeID <- missing %>% .['path'] %>% 
+  apply(1, function(x) {
+    x %>% str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% unlist
+  }) %>% as.Date %>% sort %>% unique
+```
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r tidy-data1, echo=FALSE, eval=FALSE}
@@ -2853,9 +2884,14 @@ acc %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
-### Filtered MSE and AIC
+### Filtered MSE
 
-Due to some errors, the mse values is not accurate. Here I filtered all dataset which $\sigma^2_{i} >= \mu_{i}$.
+Due to some errors, the MSE values is not accurate. I can either filter AIC and BIC values or MSE values. Since the standard deviation based on price, even though the AIC value does not bias, but finally we take price figure but not the AIC figure.
+
+- Normally we need to follow AIC and BIC figure, but some unknown errors cause the forecast price became AIC or BIC values etc
+- Some unknown error made the AIC values bias 100 times than mean AIC value in their currency accordingly.
+
+There is the solution for filter unknown error. Here I filtered all dataset which $\sigma^2_{i} >= \mu_{i}$ and the AIC, BIC values just for reference in order to know there has .
 
 ```{r tidy-data2}
 ## filter all predictive error.
@@ -3061,7 +3097,7 @@ fx %>% dplyr::filter(Date %in% united.dateID & !Date %in% ntimeID) %>%
 #### Close Price
 
 ```{r close-price1}
-## closing price.
+## filtered bias closing price.
 cp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Cl')
 
 ## filter the dataset to know how many prediction sd < 0.1.
@@ -3087,7 +3123,7 @@ cp %>% mutate(diff = abs(Price.T1/Price),
 ```
 
 ```{r close-price2}
-## closing price.
+## selected models' filtered closing price.
 cp <- fx %>% dplyr::filter(Model %in% gmds2 & 
                            Date %in% united.dateID & 
                            !Date %in% ntimeID) %>% 
@@ -3121,7 +3157,7 @@ cp %>% mutate(diff = abs(Price.T1/Price),
 Here I compare the accuracy of highest price among all models.
 
 ```{r high-price1}
-## highest price.
+## filter bias highest price.
 hp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Hi')
 
 ## filter the dataset to know how many prediction sd < 0.1.
@@ -3147,7 +3183,7 @@ hp %>% mutate(diff = abs(Price.T1/Price),
 ```
 
 ```{r high-price2}
-## highest price.
+## selected models' filtered highest price.
 hp <- fx %>% dplyr::filter(Model %in% gmds2 & 
                            Date %in% united.dateID & 
                            !Date %in% ntimeID) %>% 
@@ -3179,7 +3215,7 @@ hp %>% mutate(diff = abs(Price.T1/Price),
 Then we look at the lowest price among all models.
 
 ```{r low-price}
-## lowest price.
+## filtered bias lowest price.
 lp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Lo')
 
 ## filter the dataset to know how many prediction sd < 0.1.
@@ -3205,7 +3241,7 @@ lp %>% mutate(diff = abs(Price.T1/Price),
 ```
 
 ```{r low-price2}
-## lowest price.
+## selected models' filtered lowest price.
 lp <- fx %>% dplyr::filter(Model %in% gmds2 & 
                            Date %in% united.dateID & 
                            !Date %in% ntimeID) %>% 
