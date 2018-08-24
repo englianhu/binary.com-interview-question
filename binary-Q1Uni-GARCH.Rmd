@@ -169,7 +169,7 @@ timeID <- timeID[timeID >= timeID0]
 .cl = FALSE
 ```
 
-# Expectation Maximization
+# Verify Expectation Maximization
 
 All my previous papers applied Markov theory which is $p(x_{n}|x_{n-1}...x_{1})$, here I try to test if the model maximised the likelihood of occurance. Here I iteration 100 times.
 
@@ -222,6 +222,8 @@ rm(x)
 # GARCH Models
 
 ## sGARCH
+
+### Method 1 : Resampling
 
 Below is the backtest simulation. The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'` which only apply Monte Carlo method to resampling the model.
 
@@ -278,6 +280,8 @@ mse.sGARCH %>%
 
 *Table 3.1.1A : MSE of basket currencies.*
 
+### Method 2 : Markov Chain
+
 By refer to below article, I use `ugarchroll()` which is a wrapper for `ugarchfit()` and `ugarchforecast()` which will made the thing use :
 
 - [estimation difference between ugarchroll and ugarchfit](http://r.789695.n4.nabble.com/estimation-difference-between-ugarchroll-and-ugarchfit-td4631122.html)
@@ -287,7 +291,7 @@ There has a concern to use it which is once there has an error during the course
 
 Below is the simulation . `n.start = ns` is the start point of simulation which is `ymd('2013-01-01')`, `forecast.length = nrow(x) - ns` is the length of forecast equal to the length from the n.start until the end of the dataset, `refit.every = 1` means re-estimate the fit value once only where `refit.window = 'moving'` where today's dataset only can predict 1 trading day in advance.
 
-```{r msesGARCH2, eval=FALSE}
+```{r msesGARCH2}
 ## --- eval=FALSE ---- Due to errors.
 if (!file.exists('data/fx/mse.sGARCH2.rds')) {
   mse.sGARCH2 <- ldply(mbase, function(x) {
@@ -346,6 +350,8 @@ if (!is.null(mse.sGARCH2)) {
 
 *Table 3.1.1B : MSE of basket currencies.*
 
+### Method 3 : Markov Chain 2
+
 Due to I am not statisfy and doubted onto the `AIC` result based on model comparison by using basic model above. Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q` to proof if my previous study^[gjrGARCH model generated highest ROI.] in **Binary.com Interview Q1** is correct.
 
 **Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>** directly use the mentioned gjrGARCH model but add another criteria which is the timing of daily High-Low price based on highest `bid` and lowest `ask` price within a day.
@@ -393,6 +399,8 @@ for (dt in timeID) {
 ## fGARCH
 
 ### GARCH
+
+#### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -448,6 +456,8 @@ mse.fGARCH.GARCH %>%
 ```
 
 *Table 3.2.1.1A : MSE of basket currencies.*
+
+#### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -509,6 +519,8 @@ if (!is.null(mse.fGARCH.GARCH2)) {
 
 *Table 3.2.1.1B : MSE of basket currencies.*
 
+#### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r msefGARCH-GARCH3, eval=FALSE, echo=FALSE}
@@ -553,6 +565,8 @@ for (dt in timeID) {
 ```
 
 ### TGARCH
+
+#### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -608,6 +622,8 @@ mse.fGARCH.TGARCH %>%
 ```
 
 *Table 3.2.2.1A : MSE of basket currencies.*
+
+#### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -669,6 +685,8 @@ if (!is.null(mse.fGARCH.TGARCH2)) {
 
 *Table 3.2.2.1B : MSE of basket currencies.*
 
+#### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r msefGARCH-TGARCH3, eval=FALSE, echo=FALSE}
@@ -713,6 +731,8 @@ for (dt in timeID) {
 ```
 
 ### AVGARCH
+
+#### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -768,6 +788,8 @@ mse.fGARCH.AVGARCH %>%
 ```
 
 *Table 3.2.3.1A : MSE of basket currencies.*
+
+#### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -829,6 +851,8 @@ if (!is.null(mse.fGARCH.AVGARCH2)) {
 
 *Table 3.2.3.1B : MSE of basket currencies.*
 
+#### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r msefGARCH-AVGARCH3, eval=FALSE, echo=FALSE}
@@ -873,6 +897,8 @@ for (dt in timeID) {
 ```
 
 ### NGARCH
+
+#### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -928,6 +954,8 @@ mse.fGARCH.NGARCH %>%
 ```
 
 *Table 3.2.4.1A : MSE of basket currencies.*
+
+#### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -989,6 +1017,8 @@ if (!is.null(mse.fGARCH.NGARCH2)) {
 
 *Table 3.2.4.1B : MSE of basket currencies.*
 
+#### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r msefGARCH-NGARCH3, eval=FALSE, echo=FALSE}
@@ -1033,6 +1063,8 @@ for (dt in timeID) {
 ```
 
 ### NAGARCH
+
+#### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -1088,6 +1120,8 @@ mse.fGARCH.NAGARCH %>%
 ```
 
 *Table 3.2.5.1A : MSE of basket currencies.*
+
+#### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -1149,6 +1183,8 @@ if (!is.null(mse.fGARCH.NAGARCH2)) {
 
 *Table 3.2.5.1B : MSE of basket currencies.*
 
+#### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r msefGARCH-NAGARCH3, eval=FALSE, echo=FALSE}
@@ -1193,6 +1229,8 @@ for (dt in timeID) {
 ```
 
 ### APARCH
+
+#### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -1248,6 +1286,8 @@ mse.fGARCH.APARCH %>%
 ```
 
 *Table 3.2.6.1A : MSE of basket currencies.*
+
+#### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -1309,6 +1349,8 @@ if (!is.null(mse.fGARCH.APARCH2)) {
 
 *Table 3.2.6.1B : MSE of basket currencies.*
 
+#### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r msefGARCH-APARCH3, eval=FALSE, echo=FALSE}
@@ -1353,6 +1395,8 @@ for (dt in timeID) {
 ```
 
 ### GJRGARCH
+
+#### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -1408,6 +1452,8 @@ mse.fGARCH.GJRGARCH %>%
 ```
 
 *Table 3.2.7.1A : MSE of basket currencies.*
+
+#### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -1469,6 +1515,8 @@ if (!is.null(mse.fGARCH.GJRGARCH2)) {
 
 *Table 3.2.7.1B : MSE of basket currencies.*
 
+#### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r msefGARCH-GJRGARCH3, eval=FALSE, echo=FALSE}
@@ -1513,6 +1561,8 @@ for (dt in timeID) {
 ```
 
 ### ALLGARCH
+
+#### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -1568,6 +1618,8 @@ mse.fGARCH.ALLGARCH %>%
 ```
 
 *Table 3.2.8.1A : MSE of basket currencies.*
+
+#### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -1629,6 +1681,8 @@ if (!is.null(mse.fGARCH.ALLGARCH2)) {
 
 *Table 3.2.8.1B : MSE of basket currencies.*
 
+#### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r msefGARCH-ALLGARCH3, eval=FALSE, echo=FALSE}
@@ -1673,6 +1727,8 @@ for (dt in timeID) {
 ```
 
 ## eGARCH
+
+### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -1728,6 +1784,8 @@ mse.eGARCH %>%
 ```
 
 *Table 3.3.1A : MSE of basket currencies.*
+
+### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -1789,6 +1847,8 @@ if (!is.null(mse.eGARCH2)) {
 
 *Table 3.3.1B : MSE of basket currencies.*
 
+### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r mseeGARCH3, eval=FALSE, echo=FALSE}
@@ -1833,6 +1893,8 @@ for (dt in timeID) {
 ```
 
 ## gjrGARCH
+
+### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -1888,6 +1950,8 @@ mse.gjrGARCH %>%
 ```
 
 *Table 3.4.1A : MSE of basket currencies.*
+
+### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -1949,6 +2013,8 @@ if (!is.null(mse.gjrGARCH2)) {
 
 *Table 3.4.1B : MSE of basket currencies.*
 
+### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 Here I do not execute this model but directly read the previous dataset due to it is the model `pred2` in **GARCH模型中的ARMA(p,d,q)参数最优化**.
@@ -1995,6 +2061,8 @@ for (dt in timeID) {
 ```
 
 ## apARCH
+
+### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -2050,6 +2118,8 @@ mse.apARCH %>%
 ```
 
 *Table 3.5.1A : MSE of basket currencies.*
+
+### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -2111,6 +2181,8 @@ if (!is.null(mse.apARCH2)) {
 
 *Table 3.5.1B : MSE of basket currencies.*
 
+### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r mseapARCH3, eval=FALSE, echo=FALSE}
@@ -2155,6 +2227,8 @@ for (dt in timeID) {
 ```
 
 ## iGARCH
+
+### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -2210,6 +2284,8 @@ mse.iGARCH %>%
 ```
 
 *Table 3.6.1A : MSE of basket currencies.*
+
+### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -2271,6 +2347,8 @@ if (!is.null(mse.iGARCH2)) {
 
 *Table 3.6.1B : MSE of basket currencies.*
 
+### Method 3 : Markov Chain 2
+
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
 ```{r mseiGARCH3, eval=FALSE, echo=FALSE}
@@ -2315,6 +2393,8 @@ for (dt in timeID) {
 ```
 
 ## csGARCH
+
+### Method 1 : Resampling
 
 The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
 
@@ -2370,6 +2450,8 @@ mse.csGARCH %>%
 ```
 
 *Table 3.7.1A : MSE of basket currencies.*
+
+### Method 2 : Markov Chain
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
@@ -2430,6 +2512,8 @@ if (!is.null(mse.csGARCH2)) {
 ```
 
 *Table 3.7.1B : MSE of basket currencies.*
+
+### Method 3 : Markov Chain 2
 
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
@@ -2781,6 +2865,11 @@ Due to some errors, the mse values is not accurate. Here I filtered all dataset 
 notID <- fx %>% mutate(diff = abs(Price.T1/Price), se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% dplyr::filter(se == 1)
 ntimeID <- notID %>% .$Date %>% unique
 
+notID %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+
 fx[,1:8] %>% dplyr::filter(!Date %in% ntimeID) %>% 
     ddply(.(Model), summarise, 
           MSE = mean((Price.T1 - Price)^2), 
@@ -2858,6 +2947,11 @@ united.fx <- ldply(names(cr_code), function(x) {
 ## filter all predictive error where sd >= 20%.
 notID <- united.fx %>% mutate(diff = abs(Price.T1/Price), se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% dplyr::filter(se == 1)
 ntimeID <- notID %>% .$Date %>% unique
+
+notID %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
 
 ## count the number of forecast `abs(Price.T1 - Price) >= Price` to know the 
 ##   precise of the prediction.
