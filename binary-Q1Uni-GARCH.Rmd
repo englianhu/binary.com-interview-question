@@ -169,9 +169,9 @@ timeID <- timeID[timeID >= timeID0]
 .cl = FALSE
 ```
 
-# Verify Expectation Maximization
+# Testing Prediction Result
 
-All my previous papers applied Markov theory which is $p(x_{n}|x_{n-1}...x_{1})$, here I try to test if the model maximised the likelihood of occurance. Here I iteration 100 times.
+All my previous papers applied Markov theory which is $p(x_{n}|x_{n-1}...x_{1})$, here I try to test if the model provides same result. Here I iteration 100 times.
 
 ```{r em, eval=FALSE}
 ## ================ eval=FALSE ====================
@@ -218,6 +218,8 @@ fc2 %<>% unique
 
 rm(x)
 ```
+
+From above test, we know that the prediction price is exactly same upon testing 100 times.
 
 # GARCH Models
 
@@ -3324,9 +3326,9 @@ The article **Does anything NOT beat the GARCH(1,1)?** using `hybrid` same with 
 - nloptr
 - hybrid
 
-# Review on binary-Q1
+# Review on Binary.com Interview Q1
 
-Here I try to review on paper **Binary.com Interview Q1** to compare the accuracy of prediction.
+**GARCH模型中的`ARMA(p,d,q)`参数最优化** compare the accuracy of the model and the paper **Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>** states the wrong of the staking model in **Binary.com Interview Q1**. I tried to review the coding and it is no wrong. Here I try to review on paper **Binary.com Interview Q1** to compare the accuracy of prediction.
 
 In order to validate the accuracy of prediction, here I added this section to compare among the models. I added a mean mse for Hi and Lo in order to know the long term accuracy between Hi-Lo since an order stand upon the accuracy of both Hi and Lo. **binary-Q1 Multivariate GARCH Models** will be another study for both punter and banker.
 
