@@ -13,7 +13,7 @@ output:
       smooth_scroll: yes
 ---
 
-```{r setup}
+```{r setup, include=FALSE}
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
@@ -2563,11 +2563,11 @@ for (dt in timeID) {
 
 # 1st Stage Model Comparison
 
-### MSE, AIC and BIC
+## MSE, AIC and BIC
 
 Due to some unknown reasons, the NGARCH and NAGARCH always bias to confuse the model selection. Here I try to look for some supportive methods.
 
-#### Calculate AIC for MSE
+### Calculate AIC for MSE
 
 By refer to [How to Choose a Forecast for Your Time Series](http://kourentzes.com/forecasting/2016/06/17/how-to-choose-a-forecast-for-your-time-series), here I calculated the AIC of MSE to choose the best fitted model.
 
@@ -2579,17 +2579,17 @@ $$MSE = \sum_{i=1}^{n}(x_{i}-\mu_{i})^2$$
 
 $$AIC = 2k+nlog(MSE)$$
 
-#### Using Bayes instead of AIC
+### Using Bayes instead of AIC
 
 Below picture shows the use of BIC for Markov model (as well as few parameters used in the model) while AIC for static model. For section [Resampling Method], we can refer to AIC while section [Markov Method] and section [Markov Method 2] we refer to BIC.
 
 ![](www/AIC-BIC.jpg)
 
-#### Calculate the MSE for AIC
+### Calculate the MSE for AIC
 
 In order to know the stability of AIC value, here I try to measure the mean squared error of AIC as well.
 
-#### Filter the Bias Data
+### Filter the Bias Data
 
 As states, due to some unknown reasons, there has some data bias more than 100 times which is totally wrong. Some prediction price became AIC value and somemore the currency became `NULL` values after calculation.
 
@@ -2597,7 +2597,7 @@ Here I also filter and count the number of bias to pick the best fit model.
 
 ## Resampling Method
 
-The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`.
+The default setting is `forecast.length = 500, refit.every = 25, refit.window = 'recursive'`. Below is the MSE summary for the models.
 
 ```{r pick-mse1A}
 ## remove all mse.*objects to save memory.
@@ -2672,9 +2672,11 @@ tagList(
 
 Set `n.start = ns`, `forecast.length = nrow(x) - ns`, `refit.every = 1`, `refit.window = 'moving'`.
 
-```{r pick-mse2A, warning=FALSE}
+```{r pick-mse2A, warning=FALSE, echo=FALSE}
 models <- llply(gmds, function(txt) {
-    dfm <- tryCatch(readRDS(paste0('data/fx/mse.', txt, '2.rds')), error = function(e) cat(paste0('data/fx/mse.', txt, '2.rds error!\n')))
+    dfm <- tryCatch(readRDS(paste0('data/fx/mse.', txt, '2.rds')), 
+                    error = function(e) 
+                      cat(paste0('data/fx/mse.', txt, '2.rds error!\n')))
     if(!is.null(dfm)) dfm %>% data.frame(Cat = txt, .)
   })
 names(models) <- gmds
@@ -2682,26 +2684,23 @@ names(models) <- gmds
 models <- suppressAll(bind_rows(models)) %>% tbl_df %>% 
     mutate(Cat = factor(Cat), .id = factor(.id))
 
-models %>% ddply(.(.id, Cat), summarise, MSE = mean(MSE, na.rm=TRUE)) %>% 
+models %>% 
+  ddply(.(.id, Cat), summarise, MSE = mean(MSE, na.rm=TRUE)) %>% 
   kable(caption = 'Summary') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-#  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
-#  group_rows('USD/CAD', 15, 25, label_row_css = 'background-color: #003399; color: #fff;') %>%
-#  group_rows('USD/CHF', 26, 38, label_row_css = 'background-color: #003399; color: #fff;') %>%
-#  group_rows('USD/CNY', 39, 49, label_row_css = 'background-color: #003399; color: #fff;') %>%
-#  group_rows('USD/EUR', 50, 63, label_row_css = 'background-color: #003399; color: #fff;') %>%
-#  group_rows('USD/GBP', 64, 76, label_row_css = 'background-color: #003399; color: #fff;') %>%
-#  group_rows('USD/JPY', 77, 88, label_row_css = 'background-color: #003399; color: #fff;') %>% 
   scroll_box(width = '100%', height = '400px')
 ```
 
 Due to some models unable produced a result, here I only filter and display the models with 7 currencies as below.
 
-```{r pick-mse2B}
+```{r pick-mse2B, echo=FALSE}
 #'@ dplyr::count(models, Cat) %>% dplyr::filter(n == 7)
-cats <- dplyr::count(models, Cat) %>% dplyr::filter(n == 7) %>% .[1] %>% unlist %>% factor
+cats <- dplyr::count(models, Cat) %>% 
+  dplyr::filter(n == 7) %>% 
+  .[1] %>% unlist %>% factor
 
-models %>% ddply(.(Cat), summarise, MSE = mean(MSE, na.rm=TRUE)) %>% 
+models %>% 
+  ddply(.(Cat), summarise, MSE = mean(MSE, na.rm=TRUE)) %>% 
     dplyr::filter(Cat %in% cats) %>% 
   kable(caption = 'Summary') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
@@ -2742,7 +2741,7 @@ tagList(
 
 Now, we look at the mse where I use `ugarchfit()` and `ugarchforecast`, actually it is same with above [Markov Method] but just seperate all prediction result as single file where we able to filter the error to find the most accurate model (as well as know he frequence of bias and precise among the models.).
 
-### MSE and AIC
+### Data Progress
 
 Below check the progress of the saved files.
 
@@ -2820,8 +2819,6 @@ missing <- ldply(names(cr_code), function(x) {
 miss.timeID <- missing$Date %>% unique %>% sort
 ```
 
-Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
-
 ```{r tidy-data1, echo=FALSE, eval=FALSE}
 ## read all available files.
 fx <- llply(gmds, function(x) {
@@ -2850,15 +2847,19 @@ fx <- suppressAll(
                   Date <= ymd('2017-08-30')))
 ```
 
+### MSE and AIC
+
 ```{r aic1}
 acc <- ddply(fx, .(.id, Model), summarise, 
-             mse = mean((Price.T1 - Price)^2), 
+             MSE = mean((Price.T1 - Price)^2), 
              n = length(Price), 
+             AIC.MSE = (-2*MSE)/n+2*4/n, 
+             MSE.AIC = mean((Akaike - mean(Akaike))^2), 
              Akaike = mean(Akaike), 
              Bayes = mean(Bayes), 
              Shibata = mean(Shibata), 
              Hannan.Quinn = mean(Hannan.Quinn)) %>% 
-  tbl_df %>% mutate(mse = round(mse, 6))
+  tbl_df %>% mutate(MSE = round(MSE, 7))
 
 acc %>% arrange(.id) %>% 
   kable(caption = 'Group Table Summary') %>% 
@@ -2877,12 +2878,13 @@ acc %>% arrange(.id) %>%
 acc <- ddply(fx, .(Model), summarise, 
              MSE = mean((Price.T1 - Price)^2), 
              n = length(Price), 
-             AIC.MSE = mean((Akaike - mean(Akaike))^2),
+             AIC.MSE = (-2*MSE)/n+2*4/n, 
+             MSE.AIC = mean((Akaike - mean(Akaike))^2), 
              Akaike = mean(Akaike), 
              Bayes = mean(Bayes), 
              Shibata = mean(Shibata), 
              Hannan.Quinn = mean(Hannan.Quinn)) %>% 
-    tbl_df %>% mutate(MSE = round(MSE, 6))
+  tbl_df %>% mutate(MSE = round(MSE, 7))
 
 acc %>% 
   kable(caption = 'Model Summary') %>% 
@@ -2892,128 +2894,458 @@ acc %>%
 
 ### Filtered MSE
 
+Here I put this section as next topic as [Markov Method 2 : Filtered MSE] due to I need to filter OHLC, Close and HiLo three sub-sections.
+
+# Markov Method 2 : Filtered MSE
+
+## OHLC
+
+### All Models
+
 Due to some errors, the MSE values is not accurate. I can either filter AIC and BIC values or MSE values. Since the standard deviation based on price, even though the AIC value does not bias, but finally we take price figure but not the AIC figure.
 
 - Normally we need to follow AIC and BIC figure, but some unknown errors cause the forecast price became AIC or BIC values etc
 - Some unknown error made the AIC values bias 100 times than mean AIC value in their currency accordingly.
 
-There is the solution for filter unknown error. Here I filtered all dataset which $\sigma^2_{i} >= \mu_{i}$ and the AIC, BIC values just for reference in order to know there has .
+There is the solution for filter unknown error. Here I filtered all dataset which $\sigma^2_{i} >= 0.2$ and the AIC, BIC values just for reference in order to know there has .
 
 ```{r tidy-data2}
 ## filter all predictive error.
 #'@ fx %>% mutate(diff = Price.T1 - Price, se = ifelse(abs(diff) > Price, 1, 0)) %>% .[,-c(8:10)] %>% dplyr::filter(se == 1) %>% data.frame
 
+fx %<>% mutate(diff = abs(Price.T1/Price), 
+               se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0))
+
 ## filter all predictive error where sd >= 20%.
-notID <- fx %>% mutate(diff = abs(Price.T1/Price), se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% dplyr::filter(se == 1)
-ntimeID <- notID %>% .$Date %>% unique
+notID <- fx %>% dplyr::filter(se == 1)
+ntimeID <- notID %>% .$Date %>% unique %>% sort
 
-notID %>% 
-  kable(caption = 'Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  scroll_box(width = '100%', height = '400px')
+## filter all date which contain OHLC of 7 currencies.
+ntimeID2 <- fx %>% dplyr::count(Date) %>% 
+    dplyr::filter(n == 392) %>% .$Date %>% sort #14 models x 7 currencies x OHLC 4 types = 392 observations per day.
 
-fx[,1:8] %>% dplyr::filter(!Date %in% ntimeID) %>% 
-    ddply(.(Model), summarise, 
-          MSE = mean((Price.T1 - Price)^2), 
-          n = length(Price), 
-          AIC.MSE = mean((Akaike - mean(Akaike))^2),
-          Akaike = mean(Akaike), 
-          Bayes = mean(Bayes)) %>% 
-  kable(caption = 'Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+acc <- fx %>% 
+  dplyr::filter(!Date %in% ntimeID) %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+      tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r ohlc-price1A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Group Table Summary of MSE') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 15, 28, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 29, 42, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 43, 56, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 57, 70, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 71, 84, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 85, 98, label_row_css = 'background-color: #003399; color: #fff;') %>% 
   scroll_box(width = '100%', height = '400px')
 ```
 
-```{r aic-mse}
+*6.1.1.1A : Table summary*
+
+```{r ohlc-price1B, echo=FALSE}
 fx %>% dplyr::filter(!Date %in% ntimeID) %>% 
     ddply(.(Model), summarise, 
-      mse = mean((Price.T1 - Price)^2), 
+      MSE = mean((Price.T1 - Price)^2), 
       n = length(Price), 
-      Akaike.mse = (-2*mse)/n+2*4/n, 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
       Akaike = mean(Akaike), 
       Bayes = mean(Bayes), 
       Shibata = mean(Shibata), 
       Hannan.Quinn = mean(Hannan.Quinn)) %>% 
-    tbl_df %>% mutate(mse = round(mse, 6)) %>% 
-  kable(caption = 'Summary') %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Table Summary of the Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   scroll_box(width = '100%', height = '400px')
 ```
 
-```{r filter-data, echo=FALSE, eval=FALSE}
+*6.1.1.1B : Table summary*
+
+```{r ohlc-price1C, echo=FALSE}
+fx %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Table Summary of Bias') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.1.1.1C : Table summary number of errors.*
+
+```{r ohlc-price1D, echo=FALSE}
+notID %>% 
+  kable(caption = 'Table Contains Bias') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.1.1D : Table Contain Bias dataset.*
+
+Now we try to filter the dataset which contain OHLC of 7 currecies.
+
+```{r tidy-data3}
+## Bias which contain OHLC of 7 currencies.
+acc <- fx %>% dplyr::filter(Date %in% ntimeID2) %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r ohlc-price2A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Group Table Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 15, 28, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 29, 42, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 43, 56, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 57, 70, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 71, 84, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 85, 98, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.1.2A : Table summary*
+
+```{r ohlc-price2B, echo=FALSE}
+## contain OHLC of 7 currencies.
+fx %>% dplyr::filter(Date %in% ntimeID2) %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Table Summary Contain OHLC of 7 Currencies') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.1.2B : Table summary*
+
+```{r ohlc-price2C, echo=FALSE}
+fx %>% dplyr::filter(Date %in% ntimeID2 & se == 1) %>% 
+  dplyr::count(Model) %>% 
+  kable(caption = 'Table Summary of Bias') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.1.1.2C : Table summary number of errors.*
+
+```{r ohlc-price2D, echo=FALSE}
+notID %>% dplyr::filter(Date %in% ntimeID2) %>% 
+  kable(caption = 'Table Contains Bias Contain OHLC of 7 Currencies') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.1.2D : Table Contain Bias dataset.*
+
+Lastly, we filter all bias data and look at the comparison of mse of OHLC of 7 currencies.
+
+```{r tidy-data4}
+## contain OHLC of 7 currencies without bias.
+acc <- fx %>% dplyr::filter(Date %in% ntimeID2 & !Date %in% ntimeID) %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r ohlc-price3A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Group Table Summary Contain OHLC of 7 Currencies without Bias') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 15, 28, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 29, 42, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 43, 56, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 57, 70, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 71, 84, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 85, 98, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.1.3A : Table summary*
+
+```{r ohlc-price3B, echo=FALSE}
+fx %>% dplyr::filter(Date %in% ntimeID2 & !Date %in% ntimeID) %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Table Summary Contain OHLC of 7 Currencies without Bias') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+
+```
+
+*6.1.1.3B : Table summary*
+
+### Selected Models
+
+Now I select 9 models which almost run all data from `r fx$Date %>% range %>% .[1]` to `r fx$Date %>% range %>% .[2]`. More observations will be able to know the best model. The models includes :
+
+- sGARCH
+- fGARCH.GARCH
+- fGARCH.TGARCH
+- fGARCH.NGARCH
+- fGARCH.NAGARCH
+- fGARCH.GJRGARCH
+- gjrGARCH
+- iGARCH
+- csGARCH
+
+```{r united-fx}
 ## filter gmds
 gmds2 <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.GJRGARCH', 'gjrGARCH', 'iGARCH', 'csGARCH')
 
 ## check completed dataset.
-mdate <- llply(gmds2, function(x) {
-  x2 <- ifelse(x == 'gjrGARCH', 'pred2', x)
-  task_progress(.pattern = paste0('^', x2, '.'), .loops = FALSE, 
-                .filter.completed.data = TRUE)
-  })
-names(mdate) <- gmds2
+mdate <- fx %>% dplyr::filter(Model %in% gmds2) %>% 
+  dplyr::count(Date, Model)
 
-## count all dateID must contain 7 currency in order to made all date in dataset united and completed.
-united.dateID <- ldply(mdate, dplyr::count, date) %>% 
-  tbl_df %>% 
-  dplyr::filter(n == 7) %>% 
-  arrange(date) %>% 
-  spread(.id, n) %>% 
-  dplyr::filter(sGARCH == 7 & fGARCH.GARCH == 7 & fGARCH.TGARCH == 7 & 
-         fGARCH.NGARCH == 7 & fGARCH.NAGARCH == 7 & 
-         fGARCH.GJRGARCH == 7 & 
-         gjrGARCH == 7 & iGARCH == 7 & csGARCH == 7) %>% 
-  .$date %>% unique %>% sort
+##filter 7 currency and OHLC data.
+united.dateID <- mdate %>% dplyr::filter(n == 28) %>% 
+  .$Date %>% unique %>% sort
 
-n.united.dateID <- ldply(mdate, dplyr::count, date) %>% tbl_df %>% dplyr::filter(n == 7) %>% ddply(.(.id), summarise, n = length(n))
-
-united.fx <- ldply(names(cr_code), function(x) {
-
-    dfm <- ldply(gmds2, function(y) {
-      y2 <- ifelse(y == 'gjrGARCH', 'pred2', y)
-      
-      tmID <- united.dateID
-      tmID <- tmID[tmID >= ymd('2013-01-01') & 
-                     tmID <= ymd('2017-08-30')]
-    
-      ldply(tmID, function(z) {
-        txt <- paste0('data/fx/', x, '/', y2, '.', z, '.rds')
-        tryCatch(readRDS(txt) %>% tbl_df, error = function(e) 
-          cat(paste(txt, 'error, no such file.\n')))
-            
-        }) %>% data.frame(Model = factor(y), .) %>% tbl_df
-      
-    }) %>% data.frame(.id = factor(x), .) %>% tbl_df
-    
-    names(dfm)[5:6] <- c('Price', 'Price.T1')
-    dfm
-  }) %>% tbl_df
+united.fx <- fx %>% dplyr::filter(Model %in% gmds2 & Date %in% united.dateID) %>% 
+  mutate(Model = factor(Model))
 
 ## filter all predictive error where sd >= 20%.
-notID <- united.fx %>% mutate(diff = abs(Price.T1/Price), se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% dplyr::filter(se == 1)
-ntimeID <- notID %>% .$Date %>% unique
+notID <- united.fx %>% 
+  mutate(diff = abs(Price.T1/Price), 
+         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+  dplyr::filter(se == 1)
 
+ntimeID <- notID %>% .$Date %>% unique %>% sort
+
+acc <- united.fx %>% dplyr::filter(!Date %in% ntimeID) %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r ohlc-price4A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Group Table Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.2.1A : Table summary*
+
+```{r ohlc-price4B, echo=FALSE}
+united.fx %>% dplyr::filter(!Date %in% ntimeID) %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.2.1B : Table summary*
+
+```{r ohlc-price4C, echo=FALSE}
+## number of prediction error.
+dplyr::count(notID, Model) %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.1.2.1C : Table summary*
+
+```{r ohlc-price4D, echo=FALSE}
+## prediction error details
 notID %>% 
   kable(caption = 'Summary') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   scroll_box(width = '100%', height = '400px')
-
-## count the number of forecast `abs(Price.T1 - Price) >= Price` to know the 
-##   precise of the prediction.
-## Corrected : `abs(diff)/Price >= 0.1` to made it more accurate. Only filter the price difference < 0.1, then the price difference >= 0.1 will be counted how many times.
-notID %>% dplyr::count(Model) %>% 
-  kable(caption = 'Count Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
-
-united.fx[,1:8] %>% dplyr::filter(!Date %in% ntimeID) %>% 
-    ddply(.(Model), summarise, 
-          MSE = mean((Price.T1 - Price)^2), 
-          n = length(Price), 
-          Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike), 
-          Bayes = mean(Bayes)) %>% 
-  kable(caption = 'Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
+
+*6.1.2.1D : Table summary*
+
+Now I try to filter the dataset again. Below table summarise all dataset which excludes bias but contain OHLC of 7 currencies.
+
+```{r united-fx2}
+## filter all date which contain OHLC of 7 currencies.
+ntimeID2 <- united.fx %>% dplyr::count(Date) %>% 
+    dplyr::filter(n == 252) %>% .$Date %>% sort #9 models x 7 currencies x OHLC 4 types = 252 observations per day.
+
+united.fx2 <- united.fx %>% dplyr::filter(Date %in% ntimeID2)
+
+## filter all predictive error where sd >= 20%.
+notID <- united.fx2 %>% 
+  mutate(diff = abs(Price.T1/Price), 
+         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
+  dplyr::filter(se == 1)
+
+acc <- united.fx2 %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r ohlc-price5A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Group Table Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.2.2A : Table summary*
+
+```{r ohlc-price5B, echo=FALSE}
+united.fx2 %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Summarised Table Excludes Bias and Contain OHLC of 7 Currencies') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.2.2B : Table summary*
+
+```{r ohlc-price5C, echo=FALSE}
+## prediction error details
+notID %>% 
+  kable(caption = 'Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.2.2C : Table summary*
+
+Lastly, we filter all bias data and look at the comparison of mse of OHLC of 7 currencies.
+
+```{r united-fx3}
+## filter all date which excludes bias and also contain OHLC of 7 currencies.
+united.fx3 <- united.fx2 %>% dplyr::filter(!Date %in% ntimeID)
+
+acc <- united.fx3 %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+*6.1.2.3A : Table summary*
+
+```{r ohlc-price6A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Group Table Summary Contain OHLC of 7 Currencies without Bias') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.2.3B : Table summary*
+
+```{r ohlc-price6B, echo=FALSE}
+united.fx3 %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Table Summary Contain OHLC of 7 Currencies without Bias') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.1.2.3C : Table summary*
 
 ```{r plot-data, echo=FALSE, eval=FALSE}
 ## here we convert to xts format to plot data to compare it.
@@ -3023,7 +3355,7 @@ united.fx[,1:8] %>% dplyr::filter(!Date %in% ntimeID) %>%
 #'@     llply(., function(x) xts(x[-c(1:2)], order.by = x$Date))
 
 ## here we keep as tibble format to plot data to compare it.
-price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
+price <- united.fx2[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
     spread(Model, Price.T1) %>% 
     split(.$Type)
 ```
@@ -3045,244 +3377,998 @@ llply(price, function(x) {
   })
 ```
 
-```{r filter-data2}
-## filter gmds
-gmds2 <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.GJRGARCH', 'gjrGARCH', 'iGARCH', 'csGARCH')
-
-## check completed dataset.
-mdate <- dplyr::count(fx, Date, Model) %>% tbl_df
-
-##filter 7 currency and OHLC data.
-united.dateID <- mdate %>% dplyr::filter(n == 28) %>% .$Date %>% unique
-
-## filter all predictive error where sd >= 20%.
-notID <- fx %>% dplyr::filter(Date %in% united.dateID) %>% 
-  mutate(diff = abs(Price.T1/Price), 
-         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-  dplyr::filter(se == 1)
-
-## prediction error details
-notID %>% 
-  kable(caption = 'Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  scroll_box(width = '100%', height = '400px')
-
-## number of prediction error.
-dplyr::count(notID, Model) %>% 
-  kable(caption = 'Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
-
-ntimeID <- notID %>% .$Date %>% unique
-
-fx[,1:8] %>% dplyr::filter(Date %in% united.dateID & !Date %in% ntimeID) %>% 
-    ddply(.(Model), summarise, 
-          MSE = mean((Price.T1 - Price)^2), 
-          n = length(Price), 
-          AIC.MSE = mean((Akaike - mean(Akaike))^2),
-          Akaike = mean(Akaike), 
-          Bayes = mean(Bayes)) %>% 
-  kable(caption = 'Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  scroll_box(width = '100%', height = '400px')
-```
-
-```{r aic-mseB}
-fx %>% dplyr::filter(Date %in% united.dateID & !Date %in% ntimeID) %>% 
-    ddply(.(Model), summarise, 
-      mse = mean((Price.T1 - Price)^2), 
-      n = length(Price), 
-      Akaike.mse = (-2*mse)/n+2*4/n, 
-      Akaike = mean(Akaike), 
-      Bayes = mean(Bayes), 
-      Shibata = mean(Shibata), 
-      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
-    tbl_df %>% mutate(mse = round(mse, 6)) %>% 
-  kable(caption = 'Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  scroll_box(width = '100%', height = '400px')
-```
-
-#### Close Price
-
-```{r close-price1}
-## filtered bias closing price.
-cp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Cl')
-
-## filter the dataset to know how many prediction sd < 0.1.
-cp %>% dplyr::filter(!Date %in% (
-  cp %>% mutate(diff = abs(Price.T1/Price), 
-                se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
-    ddply(.(Model), summarise, 
-          MSE = mean((Price.T1 - Price)^2), 
-          n = length(Price), 
-          Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike), 
-          Bayes = mean(Bayes)) %>% 
-  kable(caption = 'Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  scroll_box(width = '100%', height = '400px')
-
-cp %>% mutate(diff = abs(Price.T1/Price), 
-         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
-  kable(caption = 'Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
-```
-
-```{r close-price2}
-## selected models' filtered closing price.
-cp <- fx %>% dplyr::filter(Model %in% gmds2 & 
-                           Date %in% united.dateID & 
-                           !Date %in% ntimeID) %>% 
-  separate(Type, c('Cur', 'Type')) %>% 
-  dplyr::select(-Cur) %>% dplyr::filter(Type == 'Cl')
-
-## filter the dataset to know how many prediction sd < 0.1.
-cp %>% dplyr::filter(Model %in% gmds2 & !Date %in% (
-  cp %>% mutate(diff = abs(Price.T1/Price), 
-                se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
-    ddply(.(Model), summarise, 
-          MSE = mean((Price.T1 - Price)^2), 
-          n = length(Price), 
-          Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike), 
-          Bayes = mean(Bayes)) %>% 
-  kable(caption = 'Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  scroll_box(width = '100%', height = '400px')
-
-cp %>% mutate(diff = abs(Price.T1/Price), 
-         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
-  kable(caption = 'Summary') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
-```
-
-```{r plot-cp, echo=FALSE, eval=FALSE}
+```{r plot-data3, echo=FALSE, eval=FALSE}
 ## https://www.youtube.com/watch?v=go5Au01Jrvs
 price %>% ggplot(aes(Date, Price)) + 
   geom_line(aes(group = ), alpha = 1/10)
 ```
 
-#### Hi-Lo Price
+## Open Price
 
-Here I compare the accuracy of highest price among all models.
+### All Models
 
-```{r high-price1}
-## filter bias highest price.
-hp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Hi')
+```{r open-price1}
+## filtered bias closing price.
+op <- fx %>% separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Op') %>% 
+  dplyr::select(-Cur, -Type)
 
+ntmID <- op %>% dplyr::filter(se == 1) %>% .$Date %>% unlist %>% sort
+
+acc <- op %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r open-price1A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Open Price Summary : All Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 15, 28, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 29, 42, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 43, 56, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 57, 70, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 71, 84, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 85, 98, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.2.1.1 : Table summary*
+
+```{r open-price1B, echo=FALSE}
 ## filter the dataset to know how many prediction sd < 0.1.
-hp %>% dplyr::filter(!Date %in% (
-  hp %>% mutate(diff = abs(Price.T1/Price), 
-                se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+op %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
     ddply(.(Model), summarise, 
-          MSE = mean((Price.T1 - Price)^2), 
-          n = length(Price), 
-          Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike), 
-          Bayes = mean(Bayes)) %>% 
-  kable(caption = 'Summary') %>% 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Open Price Summary : All Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   scroll_box(width = '100%', height = '400px')
+```
 
-hp %>% mutate(diff = abs(Price.T1/Price), 
-              se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
-  kable(caption = 'Summary') %>% 
+*6.2.1.2 : Table summary*
+
+```{r open-price1C, echo=FALSE}
+op %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Open Price Summary : All Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
+
+*6.2.1.3 : Table summary*
+
+### Selected Models
+
+```{r open-price2}
+## selected models' filtered closing price.
+op <- united.fx2 %>% 
+  separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Op') %>% dplyr::select(-Cur, -Type)
+
+acc <- op %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r open-price2A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Open Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.2.2.1A : Table summary*
+
+```{r open-price2B, echo=FALSE}
+## filter the dataset to know how many prediction sd < 0.1.
+op %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Open Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.2.2.1B : Table summary*
+
+```{r open-price2C, echo=FALSE}
+op %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Open Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.2.2.1C : Table summary*
+
+```{r open-price3}
+## selected models' filtered closing price.
+op <- united.fx3 %>% 
+  separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Op') %>% dplyr::select(-Cur, -Type)
+
+acc <- op %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r open-price3A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Open Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.2.2.2A : Table summary*
+
+```{r open-price3B, echo=FALSE}
+## filter the dataset to know how many prediction sd < 0.1.
+op %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Open Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.2.2.2B : Table summary*
+
+```{r open-price3C, echo=FALSE}
+op %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Open Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.2.2.2C : Table summary*
+
+## High Price
+
+### All Models
+
+```{r high-price1}
+## filtered bias highest price.
+hp <- fx %>% separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Hi') %>% 
+  dplyr::select(-Cur, -Type)
+
+ntmID <- hp %>% dplyr::filter(se == 1) %>% .$Date %>% unlist %>% sort
+
+acc <- hp %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r high-price1A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'High Price Summary : All Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 15, 28, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 29, 42, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 43, 56, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 57, 70, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 71, 84, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 85, 98, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.3.1.1 : Table summary*
+
+```{r high-price1B, echo=FALSE}
+## filter the dataset to know how many prediction sd < 0.1.
+hp %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'High Price Summary : All Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.3.1.2 : Table summary*
+
+```{r high-price1C, echo=FALSE}
+hp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'High Price Summary : All Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.3.1.3 : Table summary*
+
+### Selected Models
 
 ```{r high-price2}
 ## selected models' filtered highest price.
-hp <- fx %>% dplyr::filter(Model %in% gmds2 & 
-                           Date %in% united.dateID & 
-                           !Date %in% ntimeID) %>% 
+hp <- united.fx2 %>% 
   separate(Type, c('Cur', 'Type')) %>% 
-  dplyr::select(-Cur) %>% dplyr::filter(Type == 'Hi')
+  dplyr::filter(Type == 'Hi') %>% dplyr::select(-Cur, -Type)
 
+acc <- hp %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r high-price2A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'High Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.3.2.1A : Table summary*
+
+```{r high-price2B, echo=FALSE}
 ## filter the dataset to know how many prediction sd < 0.1.
-hp %>% dplyr::filter(Model %in% gmds2 & !Date %in% (
-  hp %>% mutate(diff = abs(Price.T1/Price), 
-         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+hp %>% 
     ddply(.(Model), summarise, 
-          MSE = mean((Price.T1 - Price)^2), 
-          n = length(Price), 
-          Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike), 
-          Bayes = mean(Bayes)) %>% 
-  kable(caption = 'Summary') %>% 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'High Price Summary : Selected Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   scroll_box(width = '100%', height = '400px')
+```
 
-hp %>% mutate(diff = abs(Price.T1/Price), 
-         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
-  kable(caption = 'Summary') %>% 
+*6.3.2.1B : Table summary*
+
+```{r high-price2C, echo=FALSE}
+hp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'High Price Summary : Selected Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-Then we look at the lowest price among all models.
+*6.3.2.1C : Table summary*
 
-```{r low-price}
+```{r high-price3}
+## selected models' filtered highest price.
+hp <- united.fx3 %>% 
+  separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Hi') %>% dplyr::select(-Cur, -Type)
+
+acc <- hp %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r high-price3A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'High Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.3.2.2A : Table summary*
+
+```{r high-price3B, echo=FALSE}
+## filter the dataset to know how many prediction sd < 0.1.
+hp %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'High Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.3.2.2B : Table summary*
+
+```{r high-price3C, echo=FALSE}
+hp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'High Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.3.2.2C : Table summary*
+
+## Low Price
+
+### All Models
+
+```{r low-price1}
 ## filtered bias lowest price.
-lp <- fx %>% separate(Type, c('Cur', 'Type')) %>% dplyr::select(-Cur) %>% dplyr::filter(Type == 'Lo')
+lp <- fx %>% separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Lo') %>% 
+  dplyr::select(-Cur, -Type)
 
+ntmID <- lp %>% dplyr::filter(se == 1) %>% .$Date %>% unlist %>% sort
+
+acc <- lp %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r low-price1A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Low Price Summary : All Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 15, 28, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 29, 42, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 43, 56, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 57, 70, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 71, 84, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 85, 98, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.4.1.1 : Table summary*
+
+```{r low-price1B, echo=FALSE}
 ## filter the dataset to know how many prediction sd < 0.1.
-lp %>% dplyr::filter(!Date %in% (
-  lp %>% mutate(diff = abs(Price.T1/Price), 
-                se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+lp %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
     ddply(.(Model), summarise, 
-          MSE = mean((Price.T1 - Price)^2), 
-          n = length(Price), 
-          Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike), 
-          Bayes = mean(Bayes)) %>% 
-  kable(caption = 'Summary') %>% 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Low Price Summary : All Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   scroll_box(width = '100%', height = '400px')
+```
 
-lp %>% mutate(diff = abs(Price.T1/Price), 
-         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
-  kable(caption = 'Summary') %>% 
+*6.4.1.2 : Table summary*
+
+```{r low-price1C, echo=FALSE}
+lp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Low Price Summary : All Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
+
+*6.4.1.3 : Table summary*
+
+### Selected Models
 
 ```{r low-price2}
 ## selected models' filtered lowest price.
-lp <- fx %>% dplyr::filter(Model %in% gmds2 & 
-                           Date %in% united.dateID & 
-                           !Date %in% ntimeID) %>% 
+lp <- united.fx2 %>% 
   separate(Type, c('Cur', 'Type')) %>% 
-  dplyr::select(-Cur) %>% dplyr::filter(Type == 'Lo')
+  dplyr::filter(Type == 'Lo') %>% dplyr::select(-Cur, -Type)
 
+acc <- lp %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r low-price2A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Low Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.4.2.1A : Table summary*
+
+```{r low-price2B, echo=FALSE}
 ## filter the dataset to know how many prediction sd < 0.1.
-lp %>% dplyr::filter(Model %in% gmds2 & !Date %in% (
-  lp %>% mutate(diff = abs(Price.T1/Price), 
-         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-    dplyr::filter(se == 1) %>% .$Date %>% unique)) %>% 
+lp %>% 
     ddply(.(Model), summarise, 
-          MSE = mean((Price.T1 - Price)^2), 
-          n = length(Price), 
-          Akaike.MSE = (-2*MSE)/n+2*4/n, 
-          Akaike = mean(Akaike), 
-          Bayes = mean(Bayes)) %>% 
-  kable(caption = 'Summary') %>% 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Low Price Summary : Selected Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   scroll_box(width = '100%', height = '400px')
+```
 
-lp %>% mutate(diff = abs(Price.T1/Price), 
-         se = ifelse(diff <= 0.8 | diff >= 1.25, 1, 0)) %>% 
-  dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
-  kable(caption = 'Summary') %>% 
+*6.4.2.1B : Table summary*
+
+```{r low-price2C, echo=FALSE}
+lp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Low Price Summary : Selected Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
+
+*6.4.2.1C : Table summary*
+
+```{r low-price3}
+## selected models' filtered lowest price.
+lp <- united.fx3 %>% 
+  separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Lo') %>% dplyr::select(-Cur, -Type)
+
+acc <- lp %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r low-price3A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Low Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.4.2.2A : Table summary*
+
+```{r low-price3B, echo=FALSE}
+## filter the dataset to know how many prediction sd < 0.1.
+lp %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Low Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.4.2.2B : Table summary*
+
+```{r low-price3C, echo=FALSE}
+lp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Low Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.4.2.2C : Table summary*
+
+## Close Price
+
+### All Models
+
+```{r close-price1}
+## filtered bias closing price.
+cl <- fx %>% separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Cl') %>% 
+  dplyr::select(-Cur, -Type)
+
+ntmID <- cl %>% dplyr::filter(se == 1) %>% .$Date %>% unlist %>% sort
+
+acc <- cl %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r close-price1A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Close Price Summary : All Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 15, 28, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 29, 42, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 43, 56, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 57, 70, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 71, 84, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 85, 98, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.5.1.1 : Table summary*
+
+```{r close-price1B, echo=FALSE}
+## filter the dataset to know how many prediction sd < 0.1.
+cl %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Close Price Summary : All Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.5.1.2 : Table summary*
+
+```{r close-price1C, echo=FALSE}
+cl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Close Price Summary : All Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.5.1.3 : Table summary*
+
+### Selected Models
+
+```{r close-price2}
+## selected models' filtered closing price.
+cl <- united.fx2 %>% 
+  separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Cl') %>% dplyr::select(-Cur, -Type)
+
+acc <- cl %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r close-price2A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Close Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.5.2.1A : Table summary*
+
+```{r close-price2B, echo=FALSE}
+## filter the dataset to know how many prediction sd < 0.1.
+cl %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Close Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.5.2.1B : Table summary*
+
+```{r close-price2C, echo=FALSE}
+cl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Close Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.5.2.1C : Table summary*
+
+```{r close-price3}
+## selected models' filtered closing price.
+cl <- united.fx3 %>% 
+  separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Cl') %>% dplyr::select(-Cur, -Type)
+
+acc <- cl %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r close-price3A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Close Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.5.2.2A : Table summary*
+
+```{r close-price3B, echo=FALSE}
+## filter the dataset to know how many prediction sd < 0.1.
+cl %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Close Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.5.2.2B : Table summary*
+
+```{r close-price3C, echo=FALSE}
+cl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Close Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.5.2.2C : Table summary*
+
+## HiLo Price
+
+Here I also measure the accuracy of mean value of highest and lowest. It may need to compare with the multivariate models.
+
+### All Models
+
+```{r hilo-price1}
+## filtered bias hi-lo price.
+hl <- fx %>% separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Hi|Lo') %>% 
+  dplyr::select(-Cur, -Type)
+
+ntmID <- hl %>% dplyr::filter(se == 1) %>% .$Date %>% unlist %>% sort
+
+acc <- hl %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r hilo-price1A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Hi-Lo Price Summary : All Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 14, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 15, 28, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 29, 42, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 43, 56, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 57, 70, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 71, 84, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 85, 98, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.6.1.1 : Table summary*
+
+```{r hilo-price1B, echo=FALSE}
+## filter the dataset to know how many prediction sd < 0.1.
+hl %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Hi-Lo Price Summary : All Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.6.1.2 : Table summary*
+
+```{r hilo-price1C, echo=FALSE}
+hl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Hi-Lo Price Summary : All Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.6.1.3 : Table summary*
+
+### Selected Models
+
+```{r hilo-price2}
+## selected models' filtered hi-lo price.
+hl <- united.fx2 %>% 
+  separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Hi|Lo') %>% dplyr::select(-Cur, -Type)
+
+acc <- hl %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r hilo-price2A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.6.2.1A : Table summary*
+
+```{r hilo-price2B, echo=FALSE}
+## filter the dataset to know how many prediction sd < 0.1.
+hl %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.6.2.1B : Table summary*
+
+```{r hilo-price2C, echo=FALSE}
+hl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.6.2.1C : Table summary*
+
+```{r hilo-price3}
+## selected models' filtered hi-lo price.
+hl <- united.fx3 %>% 
+  separate(Type, c('Cur', 'Type')) %>% 
+  dplyr::filter(Type == 'Hi|Lo') %>% dplyr::select(-Cur, -Type)
+
+acc <- hl %>% 
+  ddply(.(.id, Model), summarise, 
+        MSE = mean((Price.T1 - Price)^2), 
+        n = length(Price), 
+        AIC.MSE = (-2*MSE)/n+2*4/n, 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE = round(MSE, 7))
+```
+
+```{r hilo-price3A, echo=FALSE}
+acc %>% arrange(.id) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  group_rows('USD/AUD', 1, 9, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CAD', 10, 18, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CHF', 19, 27, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/CNY', 28, 36, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/EUR', 37, 45, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/GBP', 46, 54, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('USD/JPY', 55, 63, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.6.2.2A : Table summary*
+
+```{r hilo-price3B, echo=FALSE}
+## filter the dataset to know how many prediction sd < 0.1.
+hl %>% 
+    ddply(.(Model), summarise, 
+      MSE = mean((Price.T1 - Price)^2), 
+      n = length(Price), 
+      AIC.MSE = (-2*MSE)/n+2*4/n, 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+    tbl_df %>% mutate(MSE = round(MSE, 7)) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.6.2.2B : Table summary*
+
+```{r hilo-price3C, echo=FALSE}
+hl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+*6.6.2.2C : Table summary*
 
 # GARCH(1,1)?
 
@@ -3338,7 +4424,7 @@ The article **Does anything NOT beat the GARCH(1,1)?** using `hybrid` same with 
 - nloptr
 - hybrid
 
-# Review on Binary.com Interview Q1
+# Review on Binary-Q1
 
 **GARCH模型中的`ARMA(p,d,q)`参数最优化** compare the accuracy of the model and the paper **Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>** states the wrong of the staking model in **Binary.com Interview Q1** as I use the price as odds price without calculate the loss.^[VaR or other risk amount, the loss amount will be 1 for the exchange rate since $\frac{100yen}{1}=100yen$ while I use the closed price as settled price if the forecast settled price has no within the range of Hi-Lo price within a trading day. There will be a leverage and slot unit required for financial market while a risk amount will be required for financial betting.] However, here I try to review on paper **Binary.com Interview Q1** to compare the accuracy of prediction.
 
@@ -3608,7 +4694,7 @@ Due to some unknown reason, the NGARCH and NAGARCH (and other models, some curre
 
 ## Future Works
 
-Perhaps the other day will compare the matrix models fit with distribution and solver. The multivariate GARCH model is also on going.
+Perhaps the other day will compare the matrix models fit with distribution and solver. The multivariate GARCH model is also on going. There will be perfect if I saved the VaR 1% and 5% since it will be required in order to test the efficiency of ROI with multivariate models.
 
 ```{r option, echo=FALSE}
 ## Set options back to original options
