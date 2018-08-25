@@ -3340,7 +3340,7 @@ The article **Does anything NOT beat the GARCH(1,1)?** using `hybrid` same with 
 
 # Review on Binary.com Interview Q1
 
-**GARCH模型中的`ARMA(p,d,q)`参数最优化** compare the accuracy of the model and the paper **Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>** states the wrong of the staking model in **Binary.com Interview Q1**. I tried to review the coding and it is no wrong. Here I try to review on paper **Binary.com Interview Q1** to compare the accuracy of prediction.
+**GARCH模型中的`ARMA(p,d,q)`参数最优化** compare the accuracy of the model and the paper **Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>** states the wrong of the staking model in **Binary.com Interview Q1** as I use the price as odds price without calculate the loss.^[VaR or other risk amount, the loss amount will be 1 for the exchange rate since $\frac{100yen}{1}=100yen$ while I use the closed price as settled price if the forecast settled price has no within the range of Hi-Lo price within a trading day. There will be a leverage and slot unit required for financial market while a risk amount will be required for financial betting.] However, here I try to review on paper **Binary.com Interview Q1** to compare the accuracy of prediction.
 
 In order to validate the accuracy of prediction, here I added this section to compare among the models. I added a mean mse for Hi and Lo in order to know the long term accuracy between Hi-Lo since an order stand upon the accuracy of both Hi and Lo. **binary-Q1 Multivariate GARCH Models** will be another study for both punter and banker.
 
