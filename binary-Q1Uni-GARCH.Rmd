@@ -22,7 +22,7 @@ pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
 
-funs <- c('uv_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'task_progress.R')
+funs <- c('uv_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'task_progress.R', 'read_umodels.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
 
 options(warn = -1)
@@ -2760,7 +2760,8 @@ l_ply(gmds, function(x) {
 #' @   })
 ```
 
-```{r read-models, warning=FALSE, message=FALSE}
+```{r read-models, echo=FALSE, warning=FALSE, message=FALSE, eval=FALSE}
+## ------ EVAL = FALSE -------
 ## read all files which contain in mbase, missing files will prompt message.
 if (!exists('fx')) {
   fx <- ldply(names(cr_code), function(x) {
@@ -2786,6 +2787,12 @@ if (!exists('fx')) {
 }
 ```
 
+```{r read-models2, warning=FALSE, message=FALSE}
+if (!exists('fx')) {
+  fx <- read_umodels(cr_code, gmds, mbase, .print = FALSE)
+}
+```
+
 ```{r missing-files, echo=FALSE, eval=FALSE}
 missing <- ldply(names(cr_code), function(x) {
     tmID <- index(mbase[[x]])
@@ -2800,20 +2807,17 @@ missing <- ldply(names(cr_code), function(x) {
         tryCatch({
           fm <- readRDS(txt) %>% tbl_df
           fm <- NULL
-          }, error = function(e) txt)
+          }, error = function(e) z)
           
         }) %>% data.frame(Model = factor(y), .) %>% tbl_df
       
     }) %>% data.frame(.id = factor(x), .) %>% tbl_df
 
-    names(dfm)[3] <- 'path'
+    names(dfm)[3] <- 'Date'
     dfm
   }) %>% tbl_df
 
-miss.timeID <- missing %>% .['path'] %>% 
-  apply(1, function(x) {
-    x %>% str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% unlist
-  }) %>% as.Date %>% sort %>% unique
+miss.timeID <- missing$Date %>% unique %>% sort
 ```
 
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
@@ -2936,7 +2940,7 @@ fx %>% dplyr::filter(!Date %in% ntimeID) %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
-```{r filter-data}
+```{r filter-data, echo=FALSE, eval=FALSE}
 ## filter gmds
 gmds2 <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.GJRGARCH', 'gjrGARCH', 'iGARCH', 'csGARCH')
 
@@ -2949,8 +2953,10 @@ mdate <- llply(gmds2, function(x) {
 names(mdate) <- gmds2
 
 ## count all dateID must contain 7 currency in order to made all date in dataset united and completed.
-united.dateID <- ldply(mdate, dplyr::count, date) %>% tbl_df %>% 
-  dplyr::filter(n == 7) %>% arrange(date) %>% 
+united.dateID <- ldply(mdate, dplyr::count, date) %>% 
+  tbl_df %>% 
+  dplyr::filter(n == 7) %>% 
+  arrange(date) %>% 
   spread(.id, n) %>% 
   dplyr::filter(sGARCH == 7 & fGARCH.GARCH == 7 & fGARCH.TGARCH == 7 & 
          fGARCH.NGARCH == 7 & fGARCH.NAGARCH == 7 & 
@@ -3009,7 +3015,7 @@ united.fx[,1:8] %>% dplyr::filter(!Date %in% ntimeID) %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-```{r plot-data}
+```{r plot-data, echo=FALSE, eval=FALSE}
 ## here we convert to xts format to plot data to compare it.
 #'@ price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>% 
 #'@     spread(Model, Price.T1) %>% 
@@ -3022,7 +3028,7 @@ price <- united.fx[c('Date', 'Model', 'Type', 'Price', 'Price.T1')] %>%
     split(.$Type)
 ```
 
-```{r plot-data2}
+```{r plot-data2, echo=FALSE, eval=FALSE}
 llply(price, function(x) {
   highchart() %>% 
     hc_xAxis(Time = x$Date) %>% 
@@ -3039,15 +3045,15 @@ llply(price, function(x) {
   })
 ```
 
-```{r filter-data2, eval=FALSE, echo=FALSE}
+```{r filter-data2}
 ## filter gmds
 gmds2 <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.GJRGARCH', 'gjrGARCH', 'iGARCH', 'csGARCH')
 
 ## check completed dataset.
-mdate <- dplyr::count(fx, Date, Type) %>% tbl_df
+mdate <- dplyr::count(fx, Date, Model) %>% tbl_df
 
 ##filter 7 currency and OHLC data.
-united.dateID <- mdate %>% dplyr::filter(n == 14) %>% .$Date %>% unique
+united.dateID <- mdate %>% dplyr::filter(n == 28) %>% .$Date %>% unique
 
 ## filter all predictive error where sd >= 20%.
 notID <- fx %>% dplyr::filter(Date %in% united.dateID) %>% 
@@ -3152,6 +3158,12 @@ cp %>% mutate(diff = abs(Price.T1/Price),
   dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
   kable(caption = 'Summary') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+```{r plot-cp, echo=FALSE, eval=FALSE}
+## https://www.youtube.com/watch?v=go5Au01Jrvs
+price %>% ggplot(aes(Date, Price)) + 
+  geom_line(aes(group = ), alpha = 1/10)
 ```
 
 #### Hi-Lo Price
