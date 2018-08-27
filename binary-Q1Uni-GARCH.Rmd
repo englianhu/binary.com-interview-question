@@ -2743,7 +2743,7 @@ Now, we look at the mse where I use `ugarchfit()` and `ugarchforecast`, actually
 
 ### Data Progress
 
-Below check the progress of the saved files.
+Below check the progress of the saved files. From below tables we can know how many day from date `r mbase$Date %>% range %>% .[1]` to date `r mbase$Date %>% range %>% .[2]` calculated. `x` indicate the number of days and `n` indicates the total number of trading days for that particular currency. One `x` contain OHLC 4 prices.
 
 ```{r check-progress}
 ## check how many data saved in progress.
@@ -2874,6 +2874,13 @@ acc %>% arrange(.id) %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
+Above table is the raw prediction dataset without any filter. You can compare the best model based on more `n` and lowest MSE and AIC/BIC. However there has bias and also not yet filter some date without prediction result. For example :
+
+- sGARCH does not has prediction result on AUDUSD on 2013-01-02.
+- The open price of fGARCH.ALLGARCH on USDGBP on 2014-06-08 bias.
+- The AIC and BIC value of eGARCH for currency USDJPY bias, hundred times than normal price.
+- The data source close price gather from Yahoo for USDCNY is 2.856 but open, highest, lowest is normal. We cannot judge if the lowest price on that particular date is true or wrong, but need to filter as well.
+
 ```{r aic2}
 acc <- ddply(fx, .(Model), summarise, 
              MSE = mean((Price.T1 - Price)^2), 
@@ -2891,6 +2898,8 @@ acc %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   scroll_box(width = '100%', height = '400px')
 ```
+
+Above models compare all prediction result includes all bias and all possible result from calculation.
 
 ### Filtered MSE
 
@@ -2954,6 +2963,8 @@ acc %>% arrange(.id) %>%
 
 *6.1.1.1A : Table summary*
 
+From above *table 6.1.1.1A*, we can compare the MSE of models which `n > 4000`. More number of observations, the testing of the prediction will be more accurate. For example, we try to look at the AIC and BIC values of the models, the `-6 < AIC < -8` and `-6 < BIC < -8` will be normal but `AIC < -10` and `BIC < -10` will be abnormal due to the MSE value is higher but AIC or BIC is lower.
+
 ```{r ohlc-price1B, echo=FALSE}
 fx %>% dplyr::filter(!Date %in% ntimeID) %>% 
     ddply(.(Model), summarise, 
@@ -2973,6 +2984,8 @@ fx %>% dplyr::filter(!Date %in% ntimeID) %>%
 
 *6.1.1.1B : Table summary*
 
+Similar with *table 6.1.1.1A* but *table 6.1.1.1B* shows model breakdown without differentiate currency.
+
 ```{r ohlc-price1C, echo=FALSE}
 fx %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
   kable(caption = 'Table Summary of Bias') %>% 
@@ -2980,6 +2993,8 @@ fx %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 ```
 
 *6.1.1.1C : Table summary number of errors.*
+
+Table above compare the numnber of bias among the models. Less number of bias will be more accurate.
 
 ```{r ohlc-price1D, echo=FALSE}
 notID %>% 
@@ -2989,6 +3004,8 @@ notID %>%
 ```
 
 *6.1.1.1D : Table Contain Bias dataset.*
+
+Above table shows the details of prediction result which bias. Based on above table, we can know every single wrong prediction result or wrong AIC/BIC. You can know which model predict which currency for which date is wrong or bias.
 
 Now we try to filter the dataset which contain OHLC of 7 currecies.
 
@@ -3023,6 +3040,8 @@ acc %>% arrange(.id) %>%
 
 *6.1.1.2A : Table summary*
 
+Due to different currency different standard deviation and mean value, therefore above *table 6.1.1.2A* compares the accuracy of the models which contain all currencies.
+
 ```{r ohlc-price2B, echo=FALSE}
 ## contain OHLC of 7 currencies.
 fx %>% dplyr::filter(Date %in% ntimeID2) %>% 
@@ -3043,6 +3062,8 @@ fx %>% dplyr::filter(Date %in% ntimeID2) %>%
 
 *6.1.1.2B : Table summary*
 
+*table 6.1.1.2B* same with *table 6.1.1.2A* but not breakdown the currency. The number of `n` will be `7xn` of *table 6.1.1.2A* due to 7 currencies.
+
 ```{r ohlc-price2C, echo=FALSE}
 fx %>% dplyr::filter(Date %in% ntimeID2 & se == 1) %>% 
   dplyr::count(Model) %>% 
@@ -3052,6 +3073,8 @@ fx %>% dplyr::filter(Date %in% ntimeID2 & se == 1) %>%
 
 *6.1.1.2C : Table summary number of errors.*
 
+Above table shows the number of bias.
+
 ```{r ohlc-price2D, echo=FALSE}
 notID %>% dplyr::filter(Date %in% ntimeID2) %>% 
   kable(caption = 'Table Contains Bias Contain OHLC of 7 Currencies') %>% 
@@ -3060,6 +3083,8 @@ notID %>% dplyr::filter(Date %in% ntimeID2) %>%
 ```
 
 *6.1.1.2D : Table Contain Bias dataset.*
+
+Table above list down all details which bias.
 
 Lastly, we filter all bias data and look at the comparison of mse of OHLC of 7 currencies.
 
@@ -3424,6 +3449,8 @@ acc %>% arrange(.id) %>%
 
 *6.2.1.1 : Table summary*
 
+Above table shows the `n` excludes the bias dataset. If the open price of particular currency on particular date is bias, then the highest, lowest and close preice will also not in count due to filter by date.
+
 ```{r open-price1B, echo=FALSE}
 ## filter the dataset to know how many prediction sd < 0.1.
 op %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
@@ -3444,6 +3471,8 @@ op %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>%
 
 *6.2.1.2 : Table summary*
 
+Similar with *tabl 6.2.1.1* but without breakdown the currency.
+
 ```{r open-price1C, echo=FALSE}
 op %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
   kable(caption = 'Open Price Summary : All Models') %>% 
@@ -3451,6 +3480,15 @@ op %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 ```
 
 *6.2.1.3 : Table summary*
+
+```{r open-price1D, echo=FALSE}
+op %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.2.1.4 : Table summary*
 
 ### Selected Models
 
@@ -3517,6 +3555,15 @@ op %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 
 *6.2.2.1C : Table summary*
 
+```{r open-price2D, echo=FALSE}
+op %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.2.2.1D : Table summary*
+
 ```{r open-price3}
 ## selected models' filtered closing price.
 op <- united.fx3 %>% 
@@ -3579,6 +3626,15 @@ op %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 ```
 
 *6.2.2.2C : Table summary*
+
+```{r open-price3D, echo=FALSE}
+op %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.2.2.2D : Table summary*
 
 ## High Price
 
@@ -3649,6 +3705,15 @@ hp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 
 *6.3.1.3 : Table summary*
 
+```{r high-price1D, echo=FALSE}
+hp %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.3.1.4 : Table summary*
+
 ### Selected Models
 
 ```{r high-price2}
@@ -3714,6 +3779,15 @@ hp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 
 *6.3.2.1C : Table summary*
 
+```{r high-price2D, echo=FALSE}
+hp %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.3.2.1D : Table summary*
+
 ```{r high-price3}
 ## selected models' filtered highest price.
 hp <- united.fx3 %>% 
@@ -3776,6 +3850,15 @@ hp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 ```
 
 *6.3.2.2C : Table summary*
+
+```{r high-price3D, echo=FALSE}
+hp %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.3.2.2D : Table summary*
 
 ## Low Price
 
@@ -3846,6 +3929,15 @@ lp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 
 *6.4.1.3 : Table summary*
 
+```{r low-price1D, echo=FALSE}
+lp %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.4.2.4 : Table summary*
+
 ### Selected Models
 
 ```{r low-price2}
@@ -3911,6 +4003,15 @@ lp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 
 *6.4.2.1C : Table summary*
 
+```{r low-price2D, echo=FALSE}
+lp %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.4.2.2C : Table summary*
+
 ```{r low-price3}
 ## selected models' filtered lowest price.
 lp <- united.fx3 %>% 
@@ -3974,19 +4075,28 @@ lp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 
 *6.4.2.2C : Table summary*
 
+```{r low-price3D, echo=FALSE}
+lp %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.4.2.2D : Table summary*
+
 ## Close Price
 
 ### All Models
 
 ```{r close-price1}
 ## filtered bias closing price.
-cl <- fx %>% separate(Type, c('Cur', 'Type')) %>% 
+cp <- fx %>% separate(Type, c('Cur', 'Type')) %>% 
   dplyr::filter(Type == 'Cl') %>% 
   dplyr::select(-Cur, -Type)
 
-ntmID <- cl %>% dplyr::filter(se == 1) %>% .$Date %>% unlist %>% sort
+ntmID <- cp %>% dplyr::filter(se == 1) %>% .$Date %>% unlist %>% sort
 
-acc <- cl %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
+acc <- cp %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
   ddply(.(.id, Model), summarise, 
         MSE = mean((Price.T1 - Price)^2), 
         n = length(Price), 
@@ -4017,7 +4127,7 @@ acc %>% arrange(.id) %>%
 
 ```{r close-price1B, echo=FALSE}
 ## filter the dataset to know how many prediction sd < 0.1.
-cl %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
+cp %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>% 
     ddply(.(Model), summarise, 
       MSE = mean((Price.T1 - Price)^2), 
       n = length(Price), 
@@ -4036,22 +4146,31 @@ cl %>% dplyr::filter(!Date %in% ntmID & Date %in% ntimeID2) %>%
 *6.5.1.2 : Table summary*
 
 ```{r close-price1C, echo=FALSE}
-cl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+cp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
   kable(caption = 'Close Price Summary : All Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 *6.5.1.3 : Table summary*
 
+```{r close-price1D, echo=FALSE}
+cp %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.5.1.4 : Table summary*
+
 ### Selected Models
 
 ```{r close-price2}
 ## selected models' filtered closing price.
-cl <- united.fx2 %>% 
+cp <- united.fx2 %>% 
   separate(Type, c('Cur', 'Type')) %>% 
   dplyr::filter(Type == 'Cl') %>% dplyr::select(-Cur, -Type)
 
-acc <- cl %>% 
+acc <- cp %>% 
   ddply(.(.id, Model), summarise, 
         MSE = mean((Price.T1 - Price)^2), 
         n = length(Price), 
@@ -4082,7 +4201,7 @@ acc %>% arrange(.id) %>%
 
 ```{r close-price2B, echo=FALSE}
 ## filter the dataset to know how many prediction sd < 0.1.
-cl %>% 
+cp %>% 
     ddply(.(Model), summarise, 
       MSE = mean((Price.T1 - Price)^2), 
       n = length(Price), 
@@ -4101,20 +4220,29 @@ cl %>%
 *6.5.2.1B : Table summary*
 
 ```{r close-price2C, echo=FALSE}
-cl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+cp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
   kable(caption = 'Close Price Summary : Selected Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 *6.5.2.1C : Table summary*
 
+```{r close-price2D, echo=FALSE}
+cp %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.5.2.1D : Table summary*
+
 ```{r close-price3}
 ## selected models' filtered closing price.
-cl <- united.fx3 %>% 
+cp <- united.fx3 %>% 
   separate(Type, c('Cur', 'Type')) %>% 
   dplyr::filter(Type == 'Cl') %>% dplyr::select(-Cur, -Type)
 
-acc <- cl %>% 
+acc <- cp %>% 
   ddply(.(.id, Model), summarise, 
         MSE = mean((Price.T1 - Price)^2), 
         n = length(Price), 
@@ -4145,7 +4273,7 @@ acc %>% arrange(.id) %>%
 
 ```{r close-price3B, echo=FALSE}
 ## filter the dataset to know how many prediction sd < 0.1.
-cl %>% 
+cp %>% 
     ddply(.(Model), summarise, 
       MSE = mean((Price.T1 - Price)^2), 
       n = length(Price), 
@@ -4164,12 +4292,21 @@ cl %>%
 *6.5.2.2B : Table summary*
 
 ```{r close-price3C, echo=FALSE}
-cl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
+cp %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>% 
   kable(caption = 'Close Price Summary : Selected Models') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 *6.5.2.2C : Table summary*
+
+```{r close-price3D, echo=FALSE}
+cp %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.5.2.2D : Table summary*
 
 ## HiLo Price
 
@@ -4180,7 +4317,7 @@ Here I also measure the accuracy of mean value of highest and lowest. It may nee
 ```{r hilo-price1}
 ## filtered bias hi-lo price.
 hl <- fx %>% separate(Type, c('Cur', 'Type')) %>% 
-  dplyr::filter(Type == 'Hi|Lo') %>% 
+  dplyr::filter(Type == 'Hi'|Type == 'Lo') %>% 
   dplyr::select(-Cur, -Type)
 
 ntmID <- hl %>% dplyr::filter(se == 1) %>% .$Date %>% unlist %>% sort
@@ -4242,13 +4379,22 @@ hl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 
 *6.6.1.3 : Table summary*
 
+```{r hilo-price1D, echo=FALSE}
+hl %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.6.1.4 : Table summary*
+
 ### Selected Models
 
 ```{r hilo-price2}
 ## selected models' filtered hi-lo price.
 hl <- united.fx2 %>% 
   separate(Type, c('Cur', 'Type')) %>% 
-  dplyr::filter(Type == 'Hi|Lo') %>% dplyr::select(-Cur, -Type)
+  dplyr::filter(Type == 'Hi'|Type == 'Lo') %>% dplyr::select(-Cur, -Type)
 
 acc <- hl %>% 
   ddply(.(.id, Model), summarise, 
@@ -4307,11 +4453,20 @@ hl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 
 *6.6.2.1C : Table summary*
 
+```{r hilo-price2D, echo=FALSE}
+hl %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.6.2.1D : Table summary*
+
 ```{r hilo-price3}
 ## selected models' filtered hi-lo price.
 hl <- united.fx3 %>% 
   separate(Type, c('Cur', 'Type')) %>% 
-  dplyr::filter(Type == 'Hi|Lo') %>% dplyr::select(-Cur, -Type)
+  dplyr::filter(Type == 'Hi'|Type == 'Lo') %>% dplyr::select(-Cur, -Type)
 
 acc <- hl %>% 
   ddply(.(.id, Model), summarise, 
@@ -4369,6 +4524,15 @@ hl %>% dplyr::filter(se == 1) %>% dplyr::count(Model) %>%
 ```
 
 *6.6.2.2C : Table summary*
+
+```{r hilo-price3D, echo=FALSE}
+hl %>% dplyr::filter(se == 1) %>% 
+  kable(caption = 'Hi-Lo Price Summary : Selected Models') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+*6.6.2.2D : Table summary*
 
 # GARCH(1,1)?
 
@@ -4688,13 +4852,18 @@ mds %>% mutate(mse.HiLo = (mse.Hi + mse.Lo)/2) %>%
 
 ## Conclusion Words
 
-Due to some unknown reason, the NGARCH and NAGARCH (and other models, some currencies as well.)^[Kindly refer to section [MSE, AIC and BIC].] always bias, therefore the AIC/BIC value and the mse value opposite site to made we hard to judge if it is good to fit. Fortunately I try to filter the bias where $\sigma ≥ 20\%$ and count the number of occurance to pick the model.
+Due to some unknown reason, the NGARCH and NAGARCH (and other models, some currencies as well.)^[Kindly refer to section [MSE, AIC and BIC].] always bias, therefore the AIC/BIC value and the mse value opposite site to made we hard to judge if it is good to fit. Fortunately I try to filter the bias where $\sigma ≥ 20\%$ and count the number of occurance to pick the model. You can compare the average MSE, AIC, BIC values of all models but skip the bias model(s) which bias hundred times or almost x2 of average of the rest of models. You can also refer to the number of bias or even look into the details of the bias observation.
+
+If we compare the model which most accurate for all currencies prediction, gjrGARCH still be the best model among all models however you can select other model for specific currency.
 
 ![](www/accuracy-precision.jpg)
 
 ## Future Works
 
 Perhaps the other day will compare the matrix models fit with distribution and solver. The multivariate GARCH model is also on going. There will be perfect if I saved the VaR 1% and 5% since it will be required in order to test the efficiency of ROI with multivariate models.
+
+We can use specific model for different currencies for multivariate models.
+
 
 ```{r option, echo=FALSE}
 ## Set options back to original options

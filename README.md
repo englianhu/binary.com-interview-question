@@ -21,9 +21,31 @@ I use daily OHLCV USDJPY data (from 2014-01-01 to 2017-01-20) and application of
 
 Kindly refer to [Binary.com Interview Q1](http://rpubs.com/englianhu/binary-Q1) ([Old link](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or [Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1) or [Alternate link 2 (Added MSE comparison)](http://rpubs.com/englianhu/binary-Q1-Added)) for more information.
 
-Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models <s>from minutes to</s> daily. You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)).
+Well, dataset for below papers daily OHLCV of 7 currencies from 2013-01-01 to 2017-08-31:
 
-Here I also find the optimal arma order for GARCH models as you can refer to [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH).
+- AUDUSD
+- EURUSD
+- GBPUSD
+- USDCAD
+- USDCHF
+- USDCNY
+- USDJPY
+
+1) Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models <s>from minutes to</s> daily. You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)).
+
+2) Here I also find the optimal arma order for GARCH models as you can refer to [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH).
+
+3) You can also refer to [binary.com Interview Question I - Comparison of Univariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Uni-GARCH) which compares the prediction accuracy of 14 GARCH models (not completed) and 9 models (mostly completed from 2013-01-01 to 2017-08-30).
+
+- sGARCH
+- fGARCH.GARCH
+- fGARCH.TGARCH
+- fGARCH.NGARCH
+- fGARCH.NAGARCH
+- fGARCH.GJRGARCH
+- gjrGARCH
+- iGARCH
+- csGARCH
 
 Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3073/) where [Q1App2](https://beta.rstudioconnect.com/content/3138/) is another app for financial value betting.
 
