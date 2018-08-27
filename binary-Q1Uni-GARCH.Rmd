@@ -4852,7 +4852,7 @@ mds %>% mutate(mse.HiLo = (mse.Hi + mse.Lo)/2) %>%
 
 ## Conclusion Words
 
-Due to some unknown reason, the NGARCH and NAGARCH (and other models, some currencies as well.)^[Kindly refer to section [MSE, AIC and BIC].] always bias, therefore the AIC/BIC value and the mse value opposite site to made we hard to judge if it is good to fit. Fortunately I try to filter the bias where $\sigma ≥ 20\%$ and count the number of occurance to pick the model. You can compare the average MSE, AIC, BIC values of all models but skip the bias model(s) which bias hundred times or almost x2 of average of the rest of models. You can also refer to the number of bias or even look into the details of the bias observation.
+Due to some unknown reason, the NGARCH and NAGARCH (and other models, some currencies as well.)^[Kindly refer to section [MSE, AIC and BIC].] always bias, therefore the AIC/BIC value and the mse value opposite site to made we hard to judge if it is good to fit. Fortunately I try to filter the bias where $\sigma \geq 20\%$ and count the number of occurance to pick the model. You can compare the average MSE, AIC, BIC values of all models but skip the bias model(s) which bias hundred times or almost x2 of average of the rest of models. You can also refer to the number of bias or even look into the details of the bias observation.
 
 If we compare the model which most accurate for all currencies prediction, gjrGARCH still be the best model among all models however you can select other model for specific currency.
 
