@@ -1,0 +1,32 @@
+data/fx/USDJPY/eGARCH.2015-01-28.rds saved!
+data/fx/USDJPY/eGARCH.2016-09-27.rds saved!
+data/fx/USDJPY/eGARCH.2017-02-13.rds saved!
+
+data/fx/USDGBP/fGARCH.ALLGARCH.2015-02-10.rds saved!
+data/fx/USDCNY/fGARCH.APARCH.2014-12-22.rds saved!
+
+fatal: Unable to create 'C:/Users/scibr/Documents/GitHub/englianhu/binary.com-interview-question/.git/index.lock': Permission denied
+warning: Clone succeeded, but checkout failed.
+You can inspect what was checked out with 'git status'
+and retry the checkout with 'git checkout -f HEAD'
+
+
+Multivariate GARCH model
+- https://eranraviv.com/multivariate-volatility-forecasting-2/
+- http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/
+
+
+VaR and Betting Strategy
+- http://rstudio-pubs-static.s3.amazonaws.com/241528_8cb5ef038484439cb106f3ef883329ac.html
+- http://www.grroups.com/blog/r-poisson-distribution-explanation-using-examples
+- https://rpubs.com/ggraham412/100906
+- http://www.r-tutor.com/elementary-statistics/probability-distributions/poisson-distribution
+- https://www.forexboat.com/kelly-criterion/#comment-2053452762
+- https://www.r-bloggers.com/the-kelly-criterion-in-applied-portfolio-selection-part-2/
+- https://www.r-bloggers.com/the-kelly-criterion-in-applied-portfolio-selection/
+- https://quantstrattrader.wordpress.com/2017/09/29/the-kelly-criterion-does-it-work/
+- http://srdas.github.io/MLBook/Gambling.html#linking-the-kelly-criterion-to-portfolio-optimization
+
+
+
+
