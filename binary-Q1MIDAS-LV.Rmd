@@ -1,0 +1,133 @@
+---
+title: "<img src='www/binary-logo-resize.jpg' width='240'>"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - MIDAS GARCH and Levy Process"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
+date: "`r lubridate::today('Asia/Tokyo')`"
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+---
+
+```{r setup}
+suppressPackageStartupMessages(library('BBmisc'))
+#'@ suppressPackageStartupMessages(library('rmsfuns'))
+
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'rugarch', 'ccgarch', 'mgarchBEKK', 'rmgarch', 'mfGARCH')
+
+# https://github.com/mpiktas/midasr
+# https://github.com/onnokleen/mfGARCH
+
+suppressAll(lib(pkgs))
+#'@ load_pkg(pkgs)
+
+funs <- c('calc_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R', 'read_umodels.R')
+l_ply(funs, function(x) source(paste0('./function/', x)))
+
+options(warn = -1)
+rm(pkgs)
+```
+
+# Introduction
+
+By refer to **GARCH模型中的ARMA(p,d,q)参数最优化** and **binary.com Interview Question I - Comparison of Univariate GARCH Models**, we know **Fractional Intergrated GJR-GARCH** is the best fit model. This paper we compare the MIDAS, GARCH-MIDAS and Levy Process models.
+
+# Data
+
+## Read Data
+
+Similar with **GARCH模型中的ARMA(p,d,q)参数最优化**, I use the dataset from [Binary-Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) for backtest to ease we compare the models.
+
+```{r read-data, warning=FALSE}
+cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
+             'CNY=X', 'JPY=X')
+
+#'@ names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 
+#'@                     'USDCNY', 'USDJPY')
+
+names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
+
+## Read presaved Yahoo data.
+mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
+```
+
+# Modelling
+
+## MIDAS
+
+## GARCH-MIDAS
+
+## Levy Process
+
+# Conclusion
+
+**High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers** introduce... suggest... DCC-MIDAS etc.
+
+
+```{r option, echo = FALSE}
+## Set options back to original options
+options(warn = 0)
+```
+
+# Appendix
+
+## Documenting File Creation 
+
+It's useful to record some information about how your file was created.
+
+- File creation date: 2018-08-28
+- File latest updated date: `r today('Asia/Tokyo')`
+- `r R.version.string`
+- R version (short form): `r getRversion()`
+- [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+- File version: 1.0.1
+- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
+- GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
+- Additional session information:
+
+```{r info, echo=FALSE, warning=FALSE, results='asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+
+sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+
+sys1 %<>% rbind(., data.frame(Category = 'Current time', session_info = paste(as.character(now('Asia/Tokyo')), 'JST')))
+
+sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
+names(sys2)[2] <- c('Sys.info')
+rownames(sys2) <- NULL
+
+cbind(sys1, sys2) %>% 
+  kable(caption = 'Additional session information:') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+rm(sys1, sys2)
+```
+
+## Reference
+
+01. [Mixed Frequency Data Sampling Regression Models The R Package midasr]()
+02. [binary.com Interview Question I - Comparison of Univariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Uni-GARCH)
+03. [GARCH模型中的ARMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+04. [Forecasting the Return Volatility of Energy Prices - A GARCH-MIDAS Approach]()
+05. [Levy Processes For Finance - An Intrudction in R]()
+06. [MIDAS Regressions - Further Results and New Directions]()
+07. [High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers]()
+08. [FracSim - An R Package to Simulate Multifractional Levy Motions]()
+09. [Volatility Models and Their Applications]()
+10. [Using Midas to estimate a Garch-Midas model](http://forums.eviews.com/viewtopic.php?t=18001)
+11. [A Comparison of GARCH-class Models and MIDAS Regression with Application in Volatility Prediction and Value at Risk Estimation]()
+12. [Importance of the Macroeconomic Variables for Variance Prediction - A GARCH-MIDAS Approach]()
+13. [Mixed Frequency Data Sampling Regression Models - The R Package midasr (paper)]()
+14. [Forecasting with `midasr` package: Inclusion of new high-frequency value](https://stackoverflow.com/questions/21114841/forecasting-with-midasr-package-inclusion-of-new-high-frequency-value?answertab=votes#tab-top)
+15. [Handbook of Volatility Models and Their Applications]()
+
+---
+
+**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
+

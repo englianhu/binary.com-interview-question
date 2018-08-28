@@ -17,19 +17,18 @@ output:
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'rlist', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'rmgarch')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'rlist', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'ccgarch', 'mgarchBEKK', 'rmgarch', 'mfGARCH')
+
+# https://github.com/mpiktas/midasr
+# https://github.com/onnokleen/mfGARCH
 
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
 
-funs <- c('calc_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R')
+funs <- c('calc_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R', 'read_umodels.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
 
-## Set option to below if you want to plot an independent webpage with graph 
-#'@ op <- options(gvis.plot.tag=NULL)
-op <- options(gvis.plot.tag = 'chart')
-options(gvis.plot.tag = 'chart', warn = -1)
-
+options(warn = -1)
 rm(pkgs)
 ```
 
@@ -166,7 +165,7 @@ From above tables, we know the univariate statistical modelling will facing stat
 
 ## Introduce Multivariate Garch Models
 
-  Multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH.
+Multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH, CCC and BEKK.
 
 ## DCC
 
@@ -539,12 +538,19 @@ names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[3]])$fit)
 ## Copula-GARCH
 
 
+## CCC
+
+
+## BEKK
+
+[[问答] 向各位朋友求助关于MGARCH-BEKK模型的问题！万分感谢！](http://bbs.pinggu.org/forum.php?mod=viewthread&tid=2263348)
+
+
 # Conclusion
 
 
-```{r stopPar, echo = FALSE}
+```{r option, echo = FALSE}
 ## Set options back to original options
-options(op)
 options(warn = 0)
 ```
 
@@ -564,7 +570,7 @@ It's useful to record some information about how your file was created.
 - GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
 - Additional session information:
 
-```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
+```{r info, echo=FALSE, warning=FALSE, results='asis'}
 suppressMessages(require('dplyr', quietly = TRUE))
 suppressMessages(require('formattable', quietly = TRUE))
 
@@ -613,6 +619,13 @@ rm(sys1, sys2)
 13. [Enhancing Trading Strategies with Order Book Signals](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Enhancing%20Trading%20Strategies%20with%20Order%20Book%20Signals.pdf)
 10. [Creating Optimal Portfolios of Stocks with Time-Varying Risk](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Creating%20Optimal%20Portfolios%20of%20Stocks%20with%20Time-Varying%20Risk.pdf)
 11. [Dynamic Portfolio Optimization using Generalized Dynamic Conditoinal Heteroskedastic Factor Models](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Dynamic%20Portfolio%20Optimization%20using%20Generalized%20Dynamic%20Conditional%20Heteroskedastic%20Factor%20Models.pdf)
+12. [Comparison of BEKK GARCH and DCC GARCH Models - An Empirical Study]()
+13. [Do We Really Need Both BEKK and DCC - A Tale of Two Multivariate GARCH Models]()
+14. [Forecasting Conditional Correlation for Exchange Rates using Multivariate GARCH Models with Historical Value-at-Risk Application]()
+15. [Volatility Spillover and Time-Varying Conditional Correlation between the European and US Stock Markets]()
+16. [Applying MGARCH Models in Finance]()
+17. [Comparison of Multivariate GARCH Models with Application to Zero-Coupon Bond Volatility]()
+18. [Forecasting the Daily Dynamic Hedge Ratios by GARCH Models - Evidence from the Agricultural Futures Markets]()
 
 ---
 
