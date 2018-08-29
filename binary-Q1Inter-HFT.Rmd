@@ -1,6 +1,6 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
-subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - MIDAS GARCH and Levy Process"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Interday High Frequency Trading"
 author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
@@ -13,24 +13,19 @@ output:
       smooth_scroll: yes
 ---
 
-```{r setup, message=FALSE, warning=FALSE}
+```{r setup}
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
 pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'rugarch', 'ccgarch', 'mgarchBEKK', 'rmgarch', 'mfGARCH')
 
+# https://github.com/mpiktas/midasr
+# https://github.com/onnokleen/mfGARCH
+
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
 
-# https://github.com/mpiktas/midasr
-# https://github.com/onnokleen/mfGARCH
-if(!require('midasr')) install_github('mpiktas/midasr')
-if(!require('mfGARCH')) install_github('onnokleen/mfGARCH')
-require('midasr')
-require('mfGARCH')
-
-## load functions
-funs <- c('calc_fx.R', 'opt_arma.R', 'filterFX.R', 'read_umodels.R')
+funs <- c('uv_fx.R', 'opt_arma.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R', 'task_progress.R', 'read_umodels.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
 
 options(warn = -1)
@@ -39,7 +34,11 @@ rm(pkgs)
 
 # Introduction
 
-By refer to **GARCH模型中的ARMA(p,d,q)参数最优化** and **binary.com Interview Question I - Comparison of Univariate GARCH Models**, we know **Fractional Intergrated GJR-GARCH** is the best fit model. This paper we compare the MIDAS, GARCH-MIDAS and Levy Process models.
+By refer to **GARCH模型中的ARMA(p,d,q)参数最优化** and **binary.com Interview Question I - Comparison of Univariate GARCH Models**, we know **Fractional Intergrated GJR-GARCH** is the best fit model. This paper we compare the MIDAS, GARCH-MIDAS and Levy Process models. Here I also test another high frequency trading model mcmcsGARCH. These paper might consider as comparison interday trading before start the high frequency trading via [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
+
+MIDAS and mcsGARCH are the models designate for high frequency trading.
+
+**A Comparison of GARCH-class Models and MIDAS Regression with Application in Volatility Prediction and Value at Risk Estimation** compares GARCH, eGARCH and MIDAS 3 models with normal and student distribution with matrix. The author concludes that the MIDAS model is the most accurate in volatility prediction but there is inconclusive for VaR 1% and 5%.
 
 # Data
 
@@ -58,16 +57,77 @@ names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 
 
 ## Read presaved Yahoo data.
 mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
+
+price_type <- c('Op', 'Hi', 'Lo', 'Cl')
+
+gmds <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.AVGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.APARCH', 'fGARCH.GJRGARCH', 'fGARCH.ALLGARCH', 'eGARCH', 'gjrGARCH', 'apARCH', 'iGARCH', 'csGARCH')
+
+timeID <- llply(mbase, function(x) as.character(index(x))) %>% 
+  unlist %>% unique %>% as.Date %>% sort
+timeID <- c(timeID, xts::last(timeID) + days(1)) #the last date + 1 in order to predict the next day of last date to make whole dataset completed.
+timeID0 <- ymd('2013-01-01')
+timeID <- timeID[timeID >= timeID0]
+
+.cl = FALSE
 ```
 
 # Modelling
 
 ## MIDAS
 
-
-
-
 ## GARCH-MIDAS
+
+## mcsGARCH
+
+I have just noticed there has another GARCH model in `rugarch` package and then I roughly read through below articles. This model is different with normal GARCH model due to it includes the effects of volatility within a day. It is designate for intraday dataset.
+
+- [High Frequency GARCH: The multiplicative component GARCH (mcmcsGARCH) model](http://www.unstarched.net/2013/03/20/high-frequency-garch-the-multiplicative-component-garch-mcmcsGARCH-model/)
+- [Simulating returns from ARMA(1,1) - MCmcsGARCH(1,1) model](https://stackoverflow.com/questions/45177126/simulating-returns-from-arma1-1-mcmcsGARCH1-1-model?answertab=votes#tab-top)
+- [Query about mcmcsGARCH (rugarch package)](http://r.789695.n4.nabble.com/Query-about-mcmcsGARCH-rugarch-package-td4692890.html)
+- [R语言改进高频GARCH模型：乘法分量GARCH（mcmcsGARCH）模型](https://blog.csdn.net/qq_19600291/article/details/79542442)
+
+```{r msemcsGARCH3, eval=FALSE}
+## ------------- Simulate uv_fx() ----------------------
+## uv_fx just made the model and some argument flexible.
+mcsGARCH <- list()
+
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- mbase[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      mcsGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = uv_fx(smp, .model = 'mcsGARCH', currency = cr_code[i], 
+                   price = y, .cluster = .cl)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(mcsGARCH[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(mcsGARCH[[i]])[3]))
+      
+      saveRDS(mcsGARCH[[i]], paste0(
+        'data/fx/', names(mcsGARCH[[i]])[3], '/mcsGARCH.', 
+        unique(mcsGARCH[[i]]$Date), '.rds'))
+    
+      cat(paste0(
+        'data/fx/', names(mcsGARCH[[i]])[3], '/mcsGARCH.', 
+        unique(mcsGARCH[[i]]$Date), '.rds saved!\n'))
+    }
+    }; rm(i)
+  }
+```
+
+
 
 ## Levy Process
 
@@ -119,21 +179,21 @@ rm(sys1, sys2)
 
 ## Reference
 
-01. [Mixed Frequency Data Sampling Regression Models The R Package midasr]()
+01. [Mixed Frequency Data Sampling Regression Models - The R Package midasr](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Mixed%20Frequency%20Data%20Sampling%20Regression%20Models%20-%20The%20R%20Package%20midasr.pdf)
 02. [binary.com Interview Question I - Comparison of Univariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Uni-GARCH)
 03. [GARCH模型中的ARMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
-04. [Forecasting the Return Volatility of Energy Prices - A GARCH-MIDAS Approach]()
-05. [Levy Processes For Finance - An Intrudction in R]()
-06. [MIDAS Regressions - Further Results and New Directions]()
-07. [High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers]()
-08. [FracSim - An R Package to Simulate Multifractional Levy Motions]()
-09. [Volatility Models and Their Applications]()
+04. [Forecasting the Return Volatility of Energy Prices - A GARCH-MIDAS Approach](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Forecasting%20the%20Return%20Volatility%20of%20Energy%20Prices%20-%20A%20GARCH-MIDAS%20Approach.pdf)
+05. [Levy Processes For Finance - An Intrudction in R](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Levy%20Processes%20For%20Finance%20-%20An%20Intrudction%20in%20R.pdf)
+06. [MIDAS Regressions - Further Results and New Directions](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/MIDAS%20Regressions%20-%20Further%20Results%20and%20New%20Directions.pdf)
+07. [High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/High-%20and%20Low-Frequency%20Correlations%20in%20European%20Government%20Bond%20Spreads%20and%20Their%20Macroeconomic%20Drivers.pdf)
+08. [FracSim - An R Package to Simulate Multifractional Levy Motions](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/FracSim%20-%20An%20R%20Package%20to%20Simulate%20Multifractional%20Levy%20Motions.pdf)
+09. [Volatility Models and Their Applications](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Volatility%20Models%20and%20Their%20Applications.pdf)
 10. [Using Midas to estimate a Garch-Midas model](http://forums.eviews.com/viewtopic.php?t=18001)
-11. [A Comparison of GARCH-class Models and MIDAS Regression with Application in Volatility Prediction and Value at Risk Estimation]()
-12. [Importance of the Macroeconomic Variables for Variance Prediction - A GARCH-MIDAS Approach]()
-13. [Mixed Frequency Data Sampling Regression Models - The R Package midasr (paper)]()
+11. [A Comparison of GARCH-class Models and MIDAS Regression with Application in Volatility Prediction and Value at Risk Estimation](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/A%20Comparison%20of%20GARCH-class%20Models%20and%20MIDAS%20Regression%20with%20Application%20in%20Volatility%20Prediction%20and%20Value%20at%20Risk%20Estimation.pdf)
+12. [Importance of the Macroeconomic Variables for Variance Prediction - A GARCH-MIDAS Approach](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Importance%20of%20the%20Macroeconomic%20Variables%20for%20Variance%20Prediction%20-%20A%20GARCH-MIDAS%20Approach.pdf)
+13. [Mixed Frequency Data Sampling Regression Models - The R Package midasr (paper)](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Mixed%20Frequency%20Data%20Sampling%20Regression%20Models%20-%20The%20R%20Package%20midasr%20(paper).pdf)
 14. [Forecasting with `midasr` package: Inclusion of new high-frequency value](https://stackoverflow.com/questions/21114841/forecasting-with-midasr-package-inclusion-of-new-high-frequency-value?answertab=votes#tab-top)
-15. [Handbook of Volatility Models and Their Applications]()
+15. [Handbook of Volatility Models and Their Applications](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Handbook%20of%20Volatility%20Models%20and%20Their%20Applications.pdf)
 
 ---
 
