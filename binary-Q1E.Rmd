@@ -1,7 +1,7 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
 subtitle: "[<span style='color:blue'>binary.com</span>](https://github.com/englianhu/binary.com-interview-question) Interview Question I (Extention)"
-author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>白戸則道®"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
 date: "`r Sys.Date()`"
 output:
   html_document:
@@ -24,7 +24,7 @@ output:
 link-citations: yes
 ---
 
-```{r setup, include = FALSE}
+```{r setup, include=FALSE}
 #'@ rm(list = ls(all = TRUE))
 
 ## load chunks `saveQ1E`.
@@ -70,7 +70,7 @@ rm(pkgs)
 
   I select the data from 2013-01-01 to 2017-08-31^[Only get 2013-01-01 to 2017-05-15 in csv format data.] via [**the Bonnot Gang** *1 Minute Historical Data Download*](http://thebonnotgang.com/tbg/historical-data/)^[Note: The CSV file is using ; (semicolon) as a separator and , (comma) as a decimal separator.].
 
-```{r read-data, eval = FALSE, include = FALSE}
+```{r read-data, eval=FALSE, include=FALSE}
 curr <- c('USDJPY', 'USDEUR', 'USDGBP', 'USDAUD', 'USDCAD', 'USDCHF')
 prd <- paste0(1:1500, 'd')
 
@@ -88,7 +88,7 @@ saveRDS(curr.minute, './data/USDJPY.Minute.rds')
 USDJPY.Minute3 <- to.minutes3(USDJPY.Minute)
 ```
 
-```{python, eval = FALSE, include = FALSE}
+```{python, eval=FALSE, include=FALSE}
 #!/usr/bin/env python 
 """
 Retrieve intraday stock data from Google Finance.
@@ -98,7 +98,7 @@ Retrieve intraday stock data from Google Finance.
 import './function/get_google_finance_intraday.py'
 ```
 
-```{r read-data2, eval = FALSE, include = FALSE}
+```{r read-data2, eval=FALSE, include=FALSE}
 ## Download the datasets from http://thebonnotgang.com/tbg/historical-data/ (2013-01-01 to 2017-08-31)
 fls <- dir('./data', pattern = 'USD+.+.csv') %>% str_replace_all('_1m.csv', '')
 
@@ -137,7 +137,7 @@ mbase <- llply(fls, function(fl) {
 names(mbase) <- fls %>% str_replace_all('_1m.csv', '')
 ```
 
-```{r read-data3, eval = FALSE, include = FALSE}
+```{r read-data3, eval=FALSE, include=FALSE}
 ## Due to minutes nor hours dataset not completed and always happen error, here only read daily data but not minutes, hours etc.
 fls <- dir('./data', pattern = 'USD+.+.csv') %>% str_replace_all('_1m.csv', '')
 
@@ -162,7 +162,7 @@ names(mbase) <- fls %>% str_replace_all('_1m.csv', '')
 save.image('./Q1E-read-data3.RData')
 ```
 
-```{r get-yahooData, eval = FALSE, include = FALSE}
+```{r get-yahooData, eval=FALSE, include=FALSE}
 ## Due to minutes nor hours dataset not completed and always happen error, here only read daily data but not minutes, hours etc.
 library(quantmod)
 getSymbols('AUD=X', src = 'yahoo', from = '2012-01-01', to = '2017-08-31')
@@ -199,7 +199,7 @@ saveRDS(USDCNY, './data/USDCNY.rds')
 saveRDS(USDJPY, './data/USDJPY.rds')
 ```
 
-```{r dateID, eval = FALSE, include = FALSE}
+```{r dateID, eval=FALSE, include=FALSE}
 ## dateID
 #'@ dateID <- llply(mbase, function(x) index(x) %>% as.character) %>% 
 #'@   unlist %>% unique %>% stringr::str_replace_all(':[0-9]{2}$', '') %>% 
@@ -214,12 +214,12 @@ saveRDS(USDJPY, './data/USDJPY.rds')
 #'@ dateID <- dateID[dateID > dateID0]
 ```
 
-```{r saveQ1E, eval = FALSE, include = FALSE}
+```{r saveQ1E, eval=FALSE, include=FALSE}
 ## Save read-data2 dataset.
 save.image('./Q1E.RData')
 ```
 
-```{r data-summ, warning = FALSE, echo = FALSE}
+```{r data-summ, warning=FALSE, echo=FALSE}
 ##  1 minute
 mbase_min1 <- mbase
 #'@ mbase_min1 <- llply(mbase, function(x) {
@@ -300,7 +300,10 @@ fx_1d <- ldply(mbase_day1, dim)
 names(fx_1d) <- c('Currency', 'Rows.1d', 'Cols.1d')
 
 do.call(cbind, list(fx_1m, fx_3m, fx_5m, fx_10m, fx_15m, fx_30m, 
-                    fx_1h, fx_1d)) %>% kable(width = 'auto')
+                    fx_1h, fx_1d)) %>% 
+  kable(caption = 'Data Summary of 1min, 3mins, 5mins, 10mins, 30mins, 1hr, 1d') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 
 llply(mbase_day1, summary)
 ```
@@ -329,7 +332,7 @@ llply(mbase, summary)
 
 ## Auto Arima Models
 
-```{r sparklyr, eval = FALSE, include = FALSE}
+```{r sparklyr, eval=FALSE, include=FALSE}
 ## http://bigdata-madesimple.com/tools-in-the-data-armoury-r-vs-spark/
 
 > sc <- sparkR.init(master="local")
@@ -347,7 +350,7 @@ Error in get_java(throws = TRUE) :
   Java is required to connect to Spark. JAVA_HOME is set but does not point to a valid version. Please fix JAVA_HOME or reinstall from: https://www.java.com/en/
 ```
 
-```{r minute1-AutoArima, eval = FALSE, include = FALSE}
+```{r minute1-AutoArima, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/AutoArima.min1.R')
 AUDUSD.AutoArima.min1 <- readRDS('./data/AUDUSD.AutoArima.min1.rds')
@@ -359,7 +362,7 @@ USDCNY.AutoArima.min1 <- readRDS('./data/USDCNY.AutoArima.min1.rds')
 USDJPY.AutoArima.min1 <- readRDS('./data/USDJPY.AutoArima.min1.rds')
 ```
 
-```{r minute3-AutoArima, eval = FALSE, include = FALSE}
+```{r minute3-AutoArima, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/AutoArima.min3.R')
 AUDUSD.AutoArima.min3 <- readRDS('./data/AUDUSD.AutoArima.min3.rds')
@@ -371,7 +374,7 @@ USDCNY.AutoArima.min3 <- readRDS('./data/USDCNY.AutoArima.min3.rds')
 USDJPY.AutoArima.min3 <- readRDS('./data/USDJPY.AutoArima.min3.rds')
 ```
 
-```{r minute5-AutoArima, eval = FALSE, include = FALSE}
+```{r minute5-AutoArima, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/AutoArima.min5.R')
 AUDUSD.AutoArima.min5 <- readRDS('./data/AUDUSD.AutoArima.min5.rds')
@@ -383,7 +386,7 @@ USDCNY.AutoArima.min5 <- readRDS('./data/USDCNY.AutoArima.min5.rds')
 USDJPY.AutoArima.min5 <- readRDS('./data/USDJPY.AutoArima.min5.rds')
 ```
 
-```{r minute10-AutoArima, eval = FALSE, include = FALSE}
+```{r minute10-AutoArima, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/AutoArima.min10.R')
 AUDUSD.AutoArima.min10 <- readRDS('./data/AUDUSD.AutoArima.min10.rds')
@@ -395,7 +398,7 @@ USDCNY.AutoArima.min10 <- readRDS('./data/USDCNY.AutoArima.min10.rds')
 USDJPY.AutoArima.min10 <- readRDS('./data/USDJPY.AutoArima.min10.rds')
 ```
 
-```{r minute15-AutoArima, eval = FALSE, include = FALSE}
+```{r minute15-AutoArima, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/AutoArima.min15.R')
 AUDUSD.AutoArima.min15 <- readRDS('./data/AUDUSD.AutoArima.min15.rds')
@@ -407,7 +410,7 @@ USDCNY.AutoArima.min15 <- readRDS('./data/USDCNY.AutoArima.min15.rds')
 USDJPY.AutoArima.min15 <- readRDS('./data/USDJPY.AutoArima.min15.rds')
 ```
 
-```{r minute30-AutoArima, eval = FALSE, include = FALSE}
+```{r minute30-AutoArima, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/AutoArima.min30.R')
 AUDUSD.AutoArima.min30 <- readRDS('./data/AUDUSD.AutoArima.min30.rds')
@@ -419,7 +422,7 @@ USDCNY.AutoArima.min30 <- readRDS('./data/USDCNY.AutoArima.min30.rds')
 USDJPY.AutoArima.min30 <- readRDS('./data/USDJPY.AutoArima.min30.rds')
 ```
 
-```{r hour1-AutoArima, eval = FALSE, include = FALSE}
+```{r hour1-AutoArima, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/AutoArima.h1.R')
 AUDUSD.AutoArima.h1 <- readRDS('./data/AUDUSD.AutoArima.h1.rds')
@@ -431,7 +434,7 @@ USDCNY.AutoArima.h1 <- readRDS('./data/USDCNY.AutoArima.h1.rds')
 USDJPY.AutoArima.h1 <- readRDS('./data/USDJPY.AutoArima.h1.rds')
 ```
 
-```{r day3m-AutoArima, eval = FALSE, include = FALSE}
+```{r day3m-AutoArima, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/AutoArima.d3m.R')
 AUDUSD.AutoArima.d3m <- readRDS('./data/AUDUSD.AutoArima.d3m.rds')
@@ -443,7 +446,7 @@ USDCNY.AutoArima.d3m <- readRDS('./data/USDCNY.AutoArima.d3m.rds')
 USDJPY.AutoArima.d3m <- readRDS('./data/USDJPY.AutoArima.d3m.rds')
 ```
 
-```{r day6m-AutoArima, eval = FALSE, include = FALSE}
+```{r day6m-AutoArima, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/AutoArima.d6m.R')
 AUDUSD.AutoArima.d6m <- readRDS('./data/AUDUSD.AutoArima.d6m.rds')
@@ -455,7 +458,7 @@ USDCNY.AutoArima.d6m <- readRDS('./data/USDCNY.AutoArima.d6m.rds')
 USDJPY.AutoArima.d6m <- readRDS('./data/USDJPY.AutoArima.d6m.rds')
 ```
 
-```{r day1y-AutoArima, eval = FALSE, include = FALSE}
+```{r day1y-AutoArima, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/AutoArima.d1y.R')
 AUDUSD.AutoArima.d1y <- readRDS('./data/AUDUSD.AutoArima.d1y.rds')
@@ -469,7 +472,7 @@ USDJPY.AutoArima.d1y <- readRDS('./data/USDJPY.AutoArima.d1y.rds')
 
   Below I use arima model to analyse Yahoo data.
 
-```{r yahooAutoArima, eval = FALSE}
+```{r yahooAutoArima, eval=FALSE}
 ## Using closing price to forecast.
 .baseDate = '2014-01-01 00:00:00'
 .baseDate = ymd(ymd_hms(.baseDate))
@@ -531,7 +534,7 @@ yahooD2Y <- llply(mbase, function(x) {
 
 ## Exponential Smoothing Models
 
-```{r multi-etsM, eval = FALSE, include = FALSE}
+```{r multi-etsM, eval=FALSE, include=FALSE}
 ## set all models provided by ets function.
 ets.m1 <- c('A', 'M', 'Z')
 ets.m2 <- c('N', 'A', 'M', 'Z')
@@ -540,7 +543,7 @@ ets.m <- do.call(paste0, expand.grid(ets.m1, ets.m2, ets.m3))
 rm(ets.m1, ets.m2, ets.m3)
 ```
 
-```{r multi-ETS, eval = FALSE, include = FALSE}
+```{r multi-ETS, eval=FALSE, include=FALSE}
 ## ----- Due to error, here I use simAutoArima -----------------------------
 ## Using closing price to forecast.
 .baseDate = '2014-01-01 00:00:00'
@@ -594,7 +597,7 @@ res <- llply(ets.m, function(x) {
 })
 ```
 
-```{r day3m-ETS, eval = FALSE, include = FALSE}
+```{r day3m-ETS, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/ETS.d3m.R')
 AUDUSD.ETS.d3m <- readRDS('./data/AUDUSD.ETS.d3m.rds')
@@ -606,7 +609,7 @@ USDCNY.ETS.d3m <- readRDS('./data/USDCNY.ETS.d3m.rds')
 USDJPY.ETS.d3m <- readRDS('./data/USDJPY.ETS.d3m.rds')
 ```
 
-```{r day6m-ETS, eval = FALSE, include = FALSE}
+```{r day6m-ETS, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/ETS.d6m.R')
 AUDUSD.ETS.d6m <- readRDS('./data/AUDUSD.ETS.d6m.rds')
@@ -618,7 +621,7 @@ USDCNY.ETS.d6m <- readRDS('./data/USDCNY.ETS.d6m.rds')
 USDJPY.ETS.d6m <- readRDS('./data/USDJPY.ETS.d6m.rds')
 ```
 
-```{r day1y-ETS, eval = FALSE, include = FALSE}
+```{r day1y-ETS, eval=FALSE, include=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/ETS.d1y.R')
 AUDUSD.ETS.d1y <- readRDS('./data/AUDUSD.ETS.d1y.rds')
@@ -632,7 +635,7 @@ USDJPY.ETS.d1y <- readRDS('./data/USDJPY.ETS.d1y.rds')
 
   Now I analyse the Yahoo data by using Exponential Time Series Smoothing models.
 
-```{r multi-yahooETS, eval = FALSE, include = FALSE}
+```{r multi-yahooETS, eval=FALSE, include=FALSE}
 ## ----- Due to error, here I use simAutoArima -----------------------------
 ## Using closing price to forecast.
 .baseDate = '2014-01-01 00:00:00'
@@ -720,7 +723,7 @@ res <- llply(ets.m, function(x) {
 
 ## Univariate Garch Models and EWMA
 
-```{r multi-garchM, eval = FALSE, include = FALSE}
+```{r multi-garchM, eval=FALSE, include=FALSE}
 ## Multiple Garch models inside `rugarch` package.
 .variance.model.par <- c('sGARCH', 'fGARCH', 'eGARCH', 'gjrGARCH', 'apARCH', 'iGARCH', 'csGARCH', 'realGARCH')
 
@@ -737,7 +740,7 @@ res <- llply(ets.m, function(x) {
 .boot.solver = c('solnp', 'nlminb')
 ```
 
-```{r multi-Garch, eval = FALSE, include = FALSE}
+```{r multi-Garch, eval=FALSE, include=FALSE}
 ## ----- Due to error, here I use simAutoArima -----------------------------
 ## Using closing price to forecast.
 .baseDate = '2014-01-01 00:00:00'
@@ -807,7 +810,7 @@ res <- llply(Garch.m, function(x) {
 })
 ```
 
-```{r day3m-Garch, eval = FALSE}
+```{r day3m-Garch, eval=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/Garch.d3m.R')
 AUDUSD.Garch.d3m <- readRDS('./data/AUDUSD.Garch.d3m.rds')
@@ -819,7 +822,7 @@ USDCNY.Garch.d3m <- readRDS('./data/USDCNY.Garch.d3m.rds')
 USDJPY.Garch.d3m <- readRDS('./data/USDJPY.Garch.d3m.rds')
 ```
 
-```{r day6m-Garch, eval = FALSE}
+```{r day6m-Garch, eval=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/Garch.d6m.R')
 AUDUSD.Garch.d6m <- readRDS('./data/AUDUSD.Garch.d6m.rds')
@@ -831,7 +834,7 @@ USDCNY.Garch.d6m <- readRDS('./data/USDCNY.Garch.d6m.rds')
 USDJPY.Garch.d6m <- readRDS('./data/USDJPY.Garch.d6m.rds')
 ```
 
-```{r day1y-Garch, eval = FALSE}
+```{r day1y-Garch, eval=FALSE}
 ## Using closing price to forecast.
 #'@ source('./function/Garch.d1y.R')
 AUDUSD.Garch.d1y <- readRDS('./data/AUDUSD.Garch.d1y.rds')
@@ -845,13 +848,15 @@ USDJPY.Garch.d1y <- readRDS('./data/USDJPY.Garch.d1y.rds')
 
 ## Multivariate Garch Models
 
+Kindly refer to paper [binary.com Interview Question I - Multivariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Multi-GARCH).
+
 # Mean Squared Error (MSE)
 
 ## Auto Arima Models
 
   Now we look at the accuracy of prediction.
 
-```{r res-AutoArima, warning = FALSE, echo = FALSE}
+```{r res-AutoArima, warning=FALSE, echo=FALSE}
 ## 3 months data for daily price.
 AutoArima.day.3m <- dir('./data/', pattern = '^[A-Z]{6}.AutoArima.d3m.rds$') %>% str_replace_all('.rds', '')
 d3m <- ldply(AutoArima.day.3m, function(x) {
@@ -890,7 +895,10 @@ mse.arima %<>% tbl_df %>% mutate(
   MSE.1Y = as.numeric(MSE.1Y))
 mse.arima$Currency[length(mse.arima$Currency)] <- 'Mean = '
 
-mse.arima %>% kable(width = 'auto')
+mse.arima %>% 
+  kable(caption = 'MSE Table') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 #|Currency         |    MSE.3M|    MSE.6M|    MSE.1Y|
 #|:----------------|---------:|---------:|---------:|
 #|AUDUSD.AutoArima | 0.0000252| 0.0000245| 0.0000243|
@@ -905,7 +913,7 @@ mse.arima %>% kable(width = 'auto')
 
   Below is the summary of Yahoo data.
 
-```{r res-yahooAutoArima, warning = FALSE, echo = FALSE}
+```{r res-yahooAutoArima, warning=FALSE, echo=FALSE}
 ## 3 months data for daily price.
 yahooAutoArima.day.3m <- dir('./data/', pattern = '^[A-Z]{6}.yahooAutoArima.d3m.rds$') %>% str_replace_all('.rds', '')
 d3m <- ldply(yahooAutoArima.day.3m, function(x) {
@@ -968,7 +976,10 @@ mse.arima %<>% tbl_df %>% mutate(
   MSE.2Y = as.numeric(MSE.2Y))
 mse.arima$Currency[length(mse.arima$Currency)] <- 'Mean = '
 
-mse.arima %>% kable(width = 'auto')
+mse.arima %>% 
+  kable(caption = 'MSE Table') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 #|Currency              |    MSE.3M|    MSE.6M|    MSE.1Y|   MSE.18M|    MSE.2Y|
 #|:---------------------|---------:|---------:|---------:|---------:|---------:|
 #|USDAUD.yahooAutoArima | 0.0000725| 0.0000691| 0.0000680| 0.0000683| 0.0000674|
@@ -985,7 +996,7 @@ mse.arima %>% kable(width = 'auto')
 
   Similar with univariate `auto.arima` model, here we try to compare the the accuracy of prediction of univariate `ets` models among the portfolios where each portfolio contains USD exchanged with other currencies.
 
-```{r res-ETS, warning = FALSE, echo = FALSE}
+```{r res-ETS, warning=FALSE, echo=FALSE}
 ## 3 months data for daily price.
 ETS.day.3m <- dir('./data/', pattern = '^[A-Z]{6}.[A-Z]{3}.Cl.d3m.rds$') %>% str_replace_all('.rds', '')
 d3m <- ldply(ETS.day.3m, function(x) {
@@ -1026,7 +1037,10 @@ mse.ETS %<>% separate(Currency, c('Currency', 'Model'))
 mse.ETS %<>% ddply(.(Model), summarise, MSE.3M = mean(MSE.3M), 
                                         MSE.6M = mean(MSE.6M), 
 										MSE.1Y = mean(MSE.1Y))
-mse.ETS %>% kable(width = 'auto')
+mse.ETS %>% 
+  kable(caption = 'MSE Table') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 #|Model |    MSE.3M|    MSE.6M|    MSE.1Y|
 #|:-----|---------:|---------:|---------:|
 #|AAN   | 0.0638216| 0.0602470| 0.0596556|
@@ -1055,7 +1069,7 @@ mse.ETS %>% kable(width = 'auto')
 
    Application of ETS models onto the Yahoo data as below.
 
-```{r res-yahooETS, warning = FALSE, echo = FALSE}
+```{r res-yahooETS, warning=FALSE, echo=FALSE}
 ## 3 months data for daily price.
 yahooETS.day.3m <- dir('./data/', pattern = '^[A-Z]{6}.yahoo.[A-Z]{3}.Cl.d3m.rds$') %>% str_replace_all('.rds', '')
 d3m <- ldply(yahooETS.day.3m, function(x) {
@@ -1122,7 +1136,10 @@ mse.ETS %<>% ddply(.(Model), summarise, MSE.3M = mean(MSE.3M),
 										MSE.1Y = mean(MSE.1Y), 
 										MSE.18M = mean(MSE.18M), 
 										MSE.2Y = mean(MSE.2Y))
-mse.ETS %>% kable(width = 'auto')
+mse.ETS %>% 
+  kable(caption = 'MSE Table') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 #|Model |    MSE.3M|    MSE.6M|    MSE.1Y|  MSE.18M|   MSE.2Y|
 #|:-----|---------:|---------:|---------:|--------:|--------:|
 #|AAN   | 0.1277581| 0.2158374| 0.7374775| 2.167684| 5.761272|
@@ -1136,7 +1153,7 @@ mse.ETS %>% kable(width = 'auto')
 
   Few forecasted data price had bias standard error to cause the result not accutate.
 
-```{r res-Garch, warning = FALSE, echo = FALSE}
+```{r res-Garch, warning=FALSE, echo=FALSE}
 ## 3 months data for daily price.
 Garch.day.3m <- dir('./data/', pattern = '^[A-Z]{6}.+GARCH+.Cl.snorm.hybrid.d3m.rds$') %>% str_replace_all('.rds', '')
 d3m <- ldply(Garch.day.3m, function(x) {
@@ -1193,11 +1210,15 @@ mse.Garch %<>% ddply(.(Model), summarise,
                      MSE.3M = mean(MSE.3M), 
                      MSE.6M = mean(MSE.6M), 
                      MSE.1Y = mean(MSE.1Y))
-mse.Garch %>% kable(width = 'auto')
+mse.Garch %>% 
+  kable(caption = 'MSE Table') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 ```
 
 ## Multivariate Garch Models
 
+Kindly refer to paper [binary.com Interview Question I - Multivariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Multi-GARCH).
 
 # Model Comparison
 
@@ -1218,7 +1239,7 @@ sub.garch.m <<- c('GARCH', 'TGARCH', 'AVGARCH', 'NGARCH', 'NAGARCH', 'APARCH', '
 dist.model <- c('norm', 'snorm', 'std', 'sstd', 'ged', 'sged', 'nig', 'ghyp', 'jsu')
 ```
 
-```{r comp, eval = FALSE}
+```{r comp, eval=FALSE}
 getSymbols('JPY=X', from = Sys.Date() %m-% years(1), to = Sys.Date())
 USDJPY <- `JPY=X` %>% Cl %>% na.omit; rm(`JPY=X`)
 names(USDJPY) %<>% str_replace_all('JPY=X', 'USDJPY')
@@ -1330,7 +1351,7 @@ pre3d <- readRDS('./data/pre3d.rds') %>% unlist
 names(pre3d) = paste0('gjrGARCH.', solver)
 ```
 
-```{r AIC, warning = FALSE}
+```{r AIC, warning=FALSE}
 aic1 <- data.frame(.id = 'Auto.Arima', V1 = AIC(pre1))
 aic2 <- ldply(pre2, AIC)
 aic3 <- ldply(pre3, function(x) infocriteria(x)[1])
@@ -1345,14 +1366,35 @@ aic.s %>% formattable(list(
     
     .id = color_tile('white', 'darkgoldenrod'), 
     
-    AIC = formatter('span', style = x ~ formattable::style(color = ifelse(rank(x) >= 3, 'gray', 'green')), x ~ paste0(round(x, 6), ' (rank: ', sprintf('%02d', rank(x)), ')'))))
+    AIC = formatter('span', style = x ~ formattable::style(
+        color = ifelse(rank(x) >= 3, 'gray', 'green')), 
+        x ~ sprintf("%.6f (rank: %01.0f)", x, rank(x)))))
 ```
 
 
 # Conclusion
 
+Due to the prediction result abnormal in [Univariate Garch Models and EWMA], here I unable to determine the best fit data size for GARCH model. Therefore I refer to auto.arima model and ETS models to choose `MSE.1Y` is the best fit data size.
 
-```{r stopPar, echo = FALSE}
+in order to cope with the problem. I compare the `AIC` value. Due to ETS and Arima model do not measure the volatility, there is totally different models and the `AIC` value thousands times GARCH models. The paper concludes that *gjrGARCH* is the best model.
+
+- gjrGARCH `2.037765 (rank: 19)` is the best GARCH model (without adjust arma order) among the rest.
+- gjrGARCH with order order `1.931967 (rank: 01)` is the best fit model.
+- gjrGARCH with `snorm` or `hybrid` or `solnp` distribution is the best among using other distributions.
+
+```
+gjrGARCH.optimalArmaPQ        1.931967 (rank: 01)
+fGARCH.NGARCH.optimalArmaPQ   1.941874 (rank: 02)
+gjrGARCH.snorm                2.00356 (rank: 13)
+gjrGARCH.hybrid               2.00356 (rank: 13)
+gjrGARCH.solnp                2.00356 (rank: 13)
+gjrGARCH                      2.037765 (rank: 19)
+fGARCH.NAGARCH                2.050824 (rank: 24)
+```
+
+[binary.com Interview Question I - Comparison of Univariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Uni-GARCH) is the next paper to adjust the `d` value for arma order which determine the best lag.
+
+```{r stopPar, echo=FALSE}
 ## Set options back to original options
 options(op)
 options(warn = 0)
@@ -1376,7 +1418,7 @@ stopCluster(cl)
   - GitHub: [<span style='color:blue'>Source Code</span>](https://github.com/englianhu/binary.com-interview-question)
   - Additional session information
   
-```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
+```{r info, echo=FALSE, warning=FALSE, results = 'asis'}
 suppressMessages(require('dplyr', quietly = TRUE))
 suppressMessages(require('formattable', quietly = TRUE))
 
