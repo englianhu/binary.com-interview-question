@@ -58,9 +58,9 @@ mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')
 
 Multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH, CCC and BEKK. Paper **Comparison of Multivariate GARCH Models with Application to Zero-Coupon Bond Volatility** compares DCC and BEKK model on bond market with maturities of 6 months, 1 year and 2 years. The thesis concludes that the fitting performance of the BEKK is better than DCC in their case, the difference might due to the number of the parameters of BEKK model is comparatively more, so that the BEKK has a better capanility in explaning the information hidden in the hostory data. In opposite, the DCC model has an advantage over the BEKK model in the area of forecasting as the DCC model is more parsimonious than BEKK model. From my understanding means that if we compare with deviance or AIC/BIC the DCC will be more accurate. However, this paper will compare as well since forex market is not bond market.
 
-**Currency Hedging Strategies Using Dynamic Multivariate GARCH** compares DCC, BEKK, CCC and VARMA-AGARCH models to examine the conditional volatilities among the spot and two distint futures maturities, namely near-month and next-to-near-month contracts. The estimated conditionl covariances matrices from these models were used to calculate the optimal portfolios weights and optimal hedge ratios. The empirical results in the paper reveal that there are not big differences either the near-month or next-to-near-month contract is used for hedge spot position on currencies. They also reveal that hedging ratios are lower for near-month contract when the USD/EUR and USD/JPY exchange rates are anlyzed. This result is explained in terms of the higher correlation between spot prices and the next-to-near-month future prices than that with near-month contract and additionally because of the lower volatility of the long maturity futures. Finally across all currencies and error densities, the CCC and VARMA-AGARCH models provide similar results in terms of hedging ratios, portfolio variance reduction and hedging effectiveness. Some difference might appear when the DCC and BEKK models are used. Below is the table summary of the paper.
+**Currency Hedging Strategies Using Dynamic Multivariate GARCH** compares DCC, BEKK, CCC and VARMA-AGARCH models to examine the conditional volatilities among the spot and two distint futures maturities, namely near-month and next-to-near-month contracts. The estimated conditionl covariances matrices from these models were used to calculate the optimal portfolios weights and optimal hedge ratios.^[Kindly refer to ] The empirical results in the paper reveal that there are not big differences either the near-month or next-to-near-month contract is used for hedge spot position on currencies. They also reveal that hedging ratios are lower for near-month contract when the USD/EUR and USD/JPY exchange rates are anlyzed. This result is explained in terms of the higher correlation between spot prices and the next-to-near-month future prices than that with near-month contract and additionally because of the lower volatility of the long maturity futures. Finally across all currencies and error densities, the CCC and VARMA-AGARCH models provide similar results in terms of hedging ratios, portfolio variance reduction and hedging effectiveness. Some difference might appear when the DCC and BEKK models are used. Below is the table summary of the paper.
 
-```{r}
+```{r, echo=FALSE}
 dfm1 <- data_frame(
   Model = c('CCC'), 
   Currency = c('EURS', 'GBPS', 'JPYS'), 
@@ -97,9 +97,9 @@ dfm %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
-*Table 3.1.1 : comparison of the models*
+*Table 3.1.1 : comparison of the models.*
 
-![](www/hedge-strategy.jpg)
+Table above shows DCC model is the best fit model.
 
 ## DCC
 
@@ -529,7 +529,7 @@ options(warn = 0)
 
 It's useful to record some information about how your file was created.
 
-- File creation date: 2017-10-17
+- File creation date: 2018-09-04
 - File latest updated date: `r today('Asia/Tokyo')`
 - `r R.version.string`
 - R version (short form): `r getRversion()`
@@ -542,11 +542,17 @@ It's useful to record some information about how your file was created.
 ```{r info, echo=FALSE, warning=FALSE, results='asis'}
 suppressMessages(require('dplyr', quietly = TRUE))
 suppressMessages(require('formattable', quietly = TRUE))
+suppressMessages(require('knitr', quietly = TRUE))
+suppressMessages(require('kableExtra', quietly = TRUE))
 
-sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+sys1 <- devtools::session_info()$platform %>% 
+  unlist %>% data.frame(Category = names(.), session_info = .)
 rownames(sys1) <- NULL
 
-sys1 %<>% rbind(., data.frame(Category = 'Current time', session_info = paste(as.character(now('Asia/Tokyo')), 'JST')))
+sys1 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST'))) %>% 
+  dplyr::filter(Category != 'os')
 
 sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
 names(sys2)[2] <- c('Sys.info')
@@ -578,10 +584,7 @@ rm(sys1, sys2)
 16. [Information Theory and Gambling or Economics](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Information%20Theory%20and%20Gambling%20or%20Economics.pdf)
 17. [Investment Portfolio Optimization with GARCH Models](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Investment%20Portfolio%20Optimization%20with%20GARCH%20Models.pdf)
 18. [Kelly Criterion Revisited - Optimal Bets](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Kelly%20Criterion%20Revisited%20-%20Optimal%20Bets.pdf)
-19. [Markov-Switching Autoregressive Models for Wind Times Series (ppt)](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Markov-Switching%20Autoregressive%20Models%20for%20Wind%20Time%20Series%20(ppt).pdf)
-20. [Markov-Switching Autoregressive Models for Wind Times Series](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Markov-Switching%20Autoregressive%20Models%20for%20Wind%20Time%20Series.pdf)
 21. [Medium Term Simulations of the Full Kelly and Fractional](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Medium%20Term%20Simulations%20of%20The%20Full%20Kelly%20and%20Fractional.pdf)
-22. [Modelling Exchange Rates using Regime Switching Models](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Modelling%20Exchange%20Rates%20using%20Regime%20Switching%20Models.pdf)
 23. [Money Management (V1)](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Money%20Management%20(V1).pdf)
 24. [Money Management (V2)](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Money%20Management%20(V2).pdf)
 25. [Optimal Betting under Parameter Uncertainty - Improving the Kelly Criterion](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Optimal%20Betting%20under%20Parameter%20Uncertainty%20-%20Improving%20the%20Kelly%20Criterion.pdf)
@@ -595,7 +598,7 @@ rm(sys1, sys2)
 16. [Applying MGARCH Models in Finance](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Applying%20MGARCH%20Models%20in%20Finance.pdf)
 17. [Comparison of Multivariate GARCH Models with Application to Zero-Coupon Bond Volatility](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Comparison%20of%20Multivariate%20GARCH%20Models%20with%20Application%20to%20Zero-Coupon%20Bond%20Volatility.pdf)
 18. [Forecasting the Daily Dynamic Hedge Ratios by GARCH Models - Evidence from the Agricultural Futures Markets](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Forecasting%20the%20Daily%20Dynamic%20Hedge%20Ratios%20by%20GARCH%20Models%20-%20Evidence%20from%20the%20Agricultural%20Futures%20Markets.pdf)
-19. [Currency Hedging Strategies Using Dynamic Multivariate GARCH]()
+19. [Currency Hedging Strategies Using Dynamic Multivariate GARCH](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Currency%20Hedging%20Strategies%20Using%20Dynamic%20Multivariate%20GARCH.pdf)
 
 ---
 
