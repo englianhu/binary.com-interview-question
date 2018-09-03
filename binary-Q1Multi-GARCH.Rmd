@@ -17,10 +17,7 @@ output:
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'rlist', 'memoise', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'DT', 'rugarch', 'ccgarch', 'mgarchBEKK', 'rmgarch', 'mfGARCH')
-
-# https://github.com/mpiktas/midasr
-# https://github.com/onnokleen/mfGARCH
+pkgs <- c('knitr', 'kableExtra', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'highcharter', 'formattable', 'DT', 'rugarch', 'ccgarch', 'mgarchBEKK', 'rmgarch')
 
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
@@ -55,117 +52,54 @@ names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 
 mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
 ```
 
-```{r tidy-data1}
-##数据1
-fx1 <- llply(names(cr_code), function(x) {
-    fls <- list.files(paste0('data/fx/', x), pattern = '^pred1')
-    dfm <- ldply(fls, function(y) {
-        readRDS(paste0('data/fx/', x, '/', y))
-    }) %>% data.frame(Cat = 'pred1', .) %>% tbl_df
-    names(dfm)[4:5] <- c('Price', 'Price.T1')
-    dfm
- })
-names(fx1) <- names(cr_code)
-
-##数据2
-fx2 <- llply(names(cr_code), function(x) {
-    fls <- list.files(paste0('data/fx/', x), pattern = '^pred2')
-    dfm <- ldply(fls, function(y) {
-        readRDS(paste0('data/fx/', x, '/', y))
-    }) %>% data.frame(Cat = 'pred2', .) %>% tbl_df
-    names(dfm)[4:5] <- c('Price', 'Price.T1')
-    dfm
- })
-names(fx2) <- names(cr_code)
-
-## Merge and tidy dataset.
-fx1 %<>% ldply %>% tbl_df
-fx2 %<>% ldply %>% tbl_df
-fx <- suppressAll(
-  bind_rows(fx1, fx2) %>% arrange(Date) %>% 
-    mutate(.id = factor(.id), Cat = factor(Cat), Price.T1 = lag(Price.T1, 56)) %>% 
-    dplyr::filter(Date >= ymd('2013-01-01') & Date <= ymd('2017-08-30')))
-
-rm(fx1, fx2)
-```
-
-## Univariaite Forecast Data Error
-
-Here I tried to look back the forecast data in previous paper **GARCH模型中的ARMA(p,d,q)参数最优化**.
-
-```{r tidy-data2}
-## Spread data.
-fxm <- fx %>% separate(Type, c('Type', 'PT')) %>% 
-    spread(PT, Price.T1) %>% 
-    select(-Type, -Price, -Akaike, -Bayes, -Shibata, -Hannan.Quinn) %>% 
-    ddply(.(.id, Cat, Date), summarise, 
-              Op = na.omit(Op), 
-              Hi = na.omit(Hi), 
-              Lo = na.omit(Lo), 
-              Cl = na.omit(Cl)) %>% tbl_df
-```
-
-```{r pred1-HiLo}
-fx1 <- fxm %>% 
-    mutate(diff = round(Hi - Lo, 3)) %>% 
-    dplyr::filter(diff <= 0 & Cat == 'pred1')
-
-fx1 %>% 
-  kable(caption = 'Preditive Error for Univariate gjrGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  scroll_box(width = '100%', height = '400px')
-```
-
-*Table 2.2.1A `r paste0('[', paste(dim(fx1), collapse = ' x '), ']')` : Preditive Error for Univariate gjrGARCH.*
-
-```{r pred2-HiLo}
-fx2 <- fxm %>% 
-    mutate(diff = round(Hi - Lo, 3)) %>% 
-    dplyr::filter(diff <= 0 & Cat == 'pred2')
-
-fx2 %>% 
-  kable(caption = 'Preditive Error for Univariate Fi-gjrGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  scroll_box(width = '100%', height = '400px')
-```
-
-*Table 2.2.1B `r paste0('[', paste(dim(fx2), collapse = ' x '), ']')` : Preditive Error for Univariate Fi-gjrGARCH.*
-
-Above *Table 2.2.1A* and *Table 2.2.1B* proof that the univariate GARCH might forecast error price due to both highest and lowest price are independence. Here I also filter the closed price as well in below tables.
-
-```{r pred1-Cl}
-fx1 <- fxm %>% 
-    mutate(Range = ifelse(Cl > Hi | Cl < Lo, 0, 1)) %>% 
-    dplyr::filter(Range == 0 & Cat == 'pred1')
-
-fx1 %>% 
-  kable(caption = 'Preditive Error for Univariate gjrGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  scroll_box(width = '100%', height = '400px')
-```
-
-*Table 2.2.2A `r paste0('[', paste(dim(fx1), collapse = ' x '), ']')` : Preditive Error for Univariate gjrGARCH.*
-
-```{r pred2-Cl}
-fx2 <- fxm %>% 
-    mutate(Range = ifelse(Cl > Hi | Cl < Lo, 0, 1)) %>% 
-    dplyr::filter(Range == 0 & Cat == 'pred2')
-
-fx2 %>% 
-  kable(caption = 'Preditive Error for Univariate Fi-gjrGARCH') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  scroll_box(width = '100%', height = '400px')
-```
-
-*Table 2.2.2B `r paste0('[', paste(dim(fx2), collapse = ' x '), ']')` : Preditive Error for Univariate Fi-gjrGARCH.*
-
-From above tables, we know the univariate statistical modelling will facing statistical preditive error. Here I use the multivariate methods for further modelling.
-
 # Modelling
 
 ## Introduce Multivariate Garch Models
 
-Multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH, CCC and BEKK.
+Multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH, CCC and BEKK. Paper **Comparison of Multivariate GARCH Models with Application to Zero-Coupon Bond Volatility** compares DCC and BEKK model on bond market with maturities of 6 months, 1 year and 2 years. The thesis concludes that the fitting performance of the BEKK is better than DCC in their case, the difference might due to the number of the parameters of BEKK model is comparatively more, so that the BEKK has a better capanility in explaning the information hidden in the hostory data. In opposite, the DCC model has an advantage over the BEKK model in the area of forecasting as the DCC model is more parsimonious than BEKK model. From my understanding means that if we compare with deviance or AIC/BIC the DCC will be more accurate. However, this paper will compare as well since forex market is not bond market.
+
+**Currency Hedging Strategies Using Dynamic Multivariate GARCH** compares DCC, BEKK, CCC and VARMA-AGARCH models to examine the conditional volatilities among the spot and two distint futures maturities, namely near-month and next-to-near-month contracts. The estimated conditionl covariances matrices from these models were used to calculate the optimal portfolios weights and optimal hedge ratios. The empirical results in the paper reveal that there are not big differences either the near-month or next-to-near-month contract is used for hedge spot position on currencies. They also reveal that hedging ratios are lower for near-month contract when the USD/EUR and USD/JPY exchange rates are anlyzed. This result is explained in terms of the higher correlation between spot prices and the next-to-near-month future prices than that with near-month contract and additionally because of the lower volatility of the long maturity futures. Finally across all currencies and error densities, the CCC and VARMA-AGARCH models provide similar results in terms of hedging ratios, portfolio variance reduction and hedging effectiveness. Some difference might appear when the DCC and BEKK models are used. Below is the table summary of the paper.
+
+```{r}
+dfm1 <- data_frame(
+  Model = c('CCC'), 
+  Currency = c('EURS', 'GBPS', 'JPYS'), 
+  AIC = c(2.738605, 2.247209, 2.827915))
+
+dfm2 <- data_frame(
+  Model = c('VARMA-AGARCH'), 
+  Currency = c('EURS', 'GBPS', 'JPYS'), 
+  AIC = c(2.734926, 2.241061, 2.828964))
+
+dfm3 <- data_frame(
+  Model = c('DCC'), 
+  Currency = c('EURS', 'GBPS', 'JPYS'), 
+  AIC = c(2.721337, 2.205663, 2.784974))
+
+dfm4 <- data_frame(
+  Model = c('BEKK'), 
+  Currency = c('EURS', 'GBPS', 'JPYS'), 
+  AIC = c(2.735964, 2.212324, 2.788730))
+
+dfm <- list(dfm1, dfm2, dfm3, dfm4) %>% 
+  bind_rows %>% 
+  mutate_if(is.character, as.factor) %>% 
+  arrange(Currency)
+
+rm(dfm1, dfm2, dfm3, dfm4)
+dfm %>% 
+  kable(caption = 'Comparison Summary') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  group_rows('EURS', 1, 4, label_row_css = 'background-color: #003399; color: #fff;') %>%
+  group_rows('GBPS', 5, 8, label_row_css = 'background-color: #003399; color: #fff;') %>% 
+  group_rows('JPYS', 9, 12, label_row_css = 'background-color: #003399; color: #fff;') %>%
+
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Table 3.1.1 : comparison of the models*
+
+![](www/hedge-strategy.jpg)
 
 ## DCC
 
@@ -545,6 +479,41 @@ names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[3]])$fit)
 
 [[问答] 向各位朋友求助关于MGARCH-BEKK模型的问题！万分感谢！](http://bbs.pinggu.org/forum.php?mod=viewthread&tid=2263348)
 
+# Model Comparison
+
+```{r tidy-data1}
+##数据1
+fx1 <- llply(names(cr_code), function(x) {
+    fls <- list.files(paste0('data/fx/', x), pattern = '^pred1')
+    dfm <- ldply(fls, function(y) {
+        readRDS(paste0('data/fx/', x, '/', y))
+    }) %>% data.frame(Cat = 'pred1', .) %>% tbl_df
+    names(dfm)[4:5] <- c('Price', 'Price.T1')
+    dfm
+ })
+names(fx1) <- names(cr_code)
+
+##数据2
+fx2 <- llply(names(cr_code), function(x) {
+    fls <- list.files(paste0('data/fx/', x), pattern = '^pred2')
+    dfm <- ldply(fls, function(y) {
+        readRDS(paste0('data/fx/', x, '/', y))
+    }) %>% data.frame(Cat = 'pred2', .) %>% tbl_df
+    names(dfm)[4:5] <- c('Price', 'Price.T1')
+    dfm
+ })
+names(fx2) <- names(cr_code)
+
+## Merge and tidy dataset.
+fx1 %<>% ldply %>% tbl_df
+fx2 %<>% ldply %>% tbl_df
+fx <- suppressAll(
+  bind_rows(fx1, fx2) %>% arrange(Date) %>% 
+    mutate(.id = factor(.id), Cat = factor(Cat), Price.T1 = lag(Price.T1, 56)) %>% 
+    dplyr::filter(Date >= ymd('2013-01-01') & Date <= ymd('2017-08-30')))
+
+rm(fx1, fx2)
+```
 
 # Conclusion
 
@@ -619,13 +588,14 @@ rm(sys1, sys2)
 13. [Enhancing Trading Strategies with Order Book Signals](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Enhancing%20Trading%20Strategies%20with%20Order%20Book%20Signals.pdf)
 10. [Creating Optimal Portfolios of Stocks with Time-Varying Risk](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Creating%20Optimal%20Portfolios%20of%20Stocks%20with%20Time-Varying%20Risk.pdf)
 11. [Dynamic Portfolio Optimization using Generalized Dynamic Conditoinal Heteroskedastic Factor Models](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Dynamic%20Portfolio%20Optimization%20using%20Generalized%20Dynamic%20Conditional%20Heteroskedastic%20Factor%20Models.pdf)
-12. [Comparison of BEKK GARCH and DCC GARCH Models - An Empirical Study]()
-13. [Do We Really Need Both BEKK and DCC - A Tale of Two Multivariate GARCH Models]()
-14. [Forecasting Conditional Correlation for Exchange Rates using Multivariate GARCH Models with Historical Value-at-Risk Application]()
-15. [Volatility Spillover and Time-Varying Conditional Correlation between the European and US Stock Markets]()
-16. [Applying MGARCH Models in Finance]()
-17. [Comparison of Multivariate GARCH Models with Application to Zero-Coupon Bond Volatility]()
-18. [Forecasting the Daily Dynamic Hedge Ratios by GARCH Models - Evidence from the Agricultural Futures Markets]()
+12. [Comparison of BEKK GARCH and DCC GARCH Models - An Empirical Study](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Comparison%20of%20BEKK%20GARCH%20and%20DCC%20GARCH%20Models%20-%20An%20Empirical%20Study.pdf)
+13. [Do We Really Need Both BEKK and DCC - A Tale of Two Multivariate GARCH Models](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Do%20We%20Really%20Need%20Both%20BEKK%20and%20DCC%20-%20A%20Tale%20of%20Two%20Multivariate%20GARCH%20Models.pdf)
+14. [Forecasting Conditional Correlation for Exchange Rates using Multivariate GARCH Models with Historical Value-at-Risk Application](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Forecasting%20Conditional%20Correlation%20for%20Exchange%20Rates%20using%20Multivariate%20GARCH%20Models%20with%20Historical%20Value-at-Risk%20Application.pdf)
+15. [Volatility Spillover and Time-Varying Conditional Correlation between the European and US Stock Markets](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Volatility%20Spillover%20and%20Time-Varying%20Conditional%20Correl%3Bation%20between%20the%20European%20and%20US%20Stock%20Markets.pdf)
+16. [Applying MGARCH Models in Finance](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Applying%20MGARCH%20Models%20in%20Finance.pdf)
+17. [Comparison of Multivariate GARCH Models with Application to Zero-Coupon Bond Volatility](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Comparison%20of%20Multivariate%20GARCH%20Models%20with%20Application%20to%20Zero-Coupon%20Bond%20Volatility.pdf)
+18. [Forecasting the Daily Dynamic Hedge Ratios by GARCH Models - Evidence from the Agricultural Futures Markets](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Forecasting%20the%20Daily%20Dynamic%20Hedge%20Ratios%20by%20GARCH%20Models%20-%20Evidence%20from%20the%20Agricultural%20Futures%20Markets.pdf)
+19. [Currency Hedging Strategies Using Dynamic Multivariate GARCH]()
 
 ---
 
