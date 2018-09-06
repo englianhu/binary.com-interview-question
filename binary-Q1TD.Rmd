@@ -299,6 +299,8 @@ Here I directly apply *GJR-GARCH*^[Kindly refer to [GJR-GARCH 模型](https://vl
 
 *Source presentation 3.1.1 : [Univariate Garch 2012 (powerpoint)](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Univariate%20Garch%202012%20powerpoint.pdf)*
 
+![](www/ARCH-family-formula.jpg)
+
 Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models from minutes to daily. You are feel free to browse over **Binary Q1 (Extention)**. The paper compare and get the optimal predictive model based on the various number of observations.
 
 ## GARCH Order

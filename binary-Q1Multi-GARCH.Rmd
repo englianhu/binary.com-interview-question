@@ -31,13 +31,13 @@ rm(pkgs)
 
 # Introduction
 
-From previous papers, I tried to apply few models for FOREX price forecasting and eventually got to know **Fractional Intergrated GJR-GARCH** is the best fit model as we can refer to [GARCH模型中的ARMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH). Today I am zooming into the multivariate GARCH models.
+From previous papers, I tried to apply few models for FOREX price forecasting and eventually got to know <span style='color:red'>Fractional Intergrated GJR-GARCH</span> is the best fit model as we can refer to [GARCH模型中的ARMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH). Today I am zooming into the multivariate GARCH models.
 
 # Data
 
 ## Read Data
 
-Similar with **GARCH模型中的ARMA(p,d,q)参数最优化**, I use the dataset from [Binary-Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E).
+Similar with *GARCH模型中的ARMA(p,d,q)参数最优化*, I use the dataset from [Binary-Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E).
 
 ```{r read-data, warning=FALSE}
 cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
@@ -56,9 +56,9 @@ mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')
 
 ## Introduce Multivariate Garch Models
 
-Multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH, CCC and BEKK. Paper **Comparison of Multivariate GARCH Models with Application to Zero-Coupon Bond Volatility** compares DCC and BEKK model on bond market with maturities of 6 months, 1 year and 2 years. The thesis concludes that the fitting performance of the BEKK is better than DCC in their case, the difference might due to the number of the parameters of BEKK model is comparatively more, so that the BEKK has a better capanility in explaning the information hidden in the hostory data. In opposite, the DCC model has an advantage over the BEKK model in the area of forecasting as the DCC model is more parsimonious than BEKK model. From my understanding means that if we compare with deviance or AIC/BIC the DCC will be more accurate. However, this paper will compare as well since forex market is not bond market.
+Multivariate GARCH models including DCC, GO-GARCH and Copula-GARCH, CCC and BEKK. Paper *Comparison of Multivariate GARCH Models with Application to Zero-Coupon Bond Volatility* compares DCC and BEKK model on bond market with maturities of 6 months, 1 year and 2 years. The thesis concludes that the fitting performance of the BEKK is better than DCC in their case, the difference might due to the number of the parameters of BEKK model is comparatively more, so that the BEKK has a better capanility in explaning the information hidden in the hostory data. In opposite, the DCC model has an advantage over the BEKK model in the area of forecasting as the DCC model is more parsimonious than BEKK model. From my understanding means that if we compare with deviance or AIC/BIC the DCC will be more accurate. However, this paper will compare as well since forex market is not bond market.
 
-**Currency Hedging Strategies Using Dynamic Multivariate GARCH** compares DCC, BEKK, CCC and VARMA-AGARCH models to examine the conditional volatilities among the spot and two distint futures maturities, namely near-month and next-to-near-month contracts. The estimated conditionl covariances matrices from these models were used to calculate the optimal portfolios weights and optimal hedge ratios.^[Kindly refer to ] The empirical results in the paper reveal that there are not big differences either the near-month or next-to-near-month contract is used for hedge spot position on currencies. They also reveal that hedging ratios are lower for near-month contract when the USD/EUR and USD/JPY exchange rates are anlyzed. This result is explained in terms of the higher correlation between spot prices and the next-to-near-month future prices than that with near-month contract and additionally because of the lower volatility of the long maturity futures. Finally across all currencies and error densities, the CCC and VARMA-AGARCH models provide similar results in terms of hedging ratios, portfolio variance reduction and hedging effectiveness. Some difference might appear when the DCC and BEKK models are used. Below is the table summary of the paper.
+*Currency Hedging Strategies Using Dynamic Multivariate GARCH* compares DCC, BEKK, CCC and VARMA-AGARCH models to examine the conditional volatilities among the spot and two distint futures maturities, namely near-month and next-to-near-month contracts. The estimated conditionl covariances matrices from these models were used to calculate the optimal portfolios weights and optimal hedge ratios.^[Kindly refer to ] The empirical results in the paper reveal that there are not big differences either the near-month or next-to-near-month contract is used for hedge spot position on currencies. They also reveal that hedging ratios are lower for near-month contract when the USD/EUR and USD/JPY exchange rates are anlyzed. This result is explained in terms of the higher correlation between spot prices and the next-to-near-month future prices than that with near-month contract and additionally because of the lower volatility of the long maturity futures. Finally across all currencies and error densities, the CCC and VARMA-AGARCH models provide similar results in terms of hedging ratios, portfolio variance reduction and hedging effectiveness. Some difference might appear when the DCC and BEKK models are used. Below is the table summary of the paper.
 
 ```{r, echo=FALSE}
 dfm1 <- data_frame(
@@ -101,13 +101,19 @@ dfm %>%
 
 Table above shows DCC model is the best fit model.
 
-## DCC
+*Do We Really Need Both BEKK and DCC - A Tale of Two Multivariate GARCH Models* compares few models and final model should be based on model performance within the appropriate framework in which they are used (such as covariance, correlation forecasting, risk monitoringm or portfolio allocation, to cite the most relevant), the paper concludes that the cDCC (constant DCC) model^[Similar with paper *Aielli (2010)* who suggest using cDCC model insted of the DCC model of *Engle (2002)*. Similar with papers *Engle et al. (2008)* and *Engle Engle and Kelly (2009)*.] and BEKK model.
 
-### Abtract of DDC
+*Forecasting the Daily Dynamic Hedge Ratios by GARCH Models - Evidence from the Agricultural Futures Markets* compares few models which are bivariate GARCH, BEKK GARCH, GARCH-X, BEKK-X, Q-GARCH and GARCH-GJR in agricultural futures markets. The paper reveals that the BEKK model dominates others models for storable wheat and soybean for both forecasting horizons, and the asymmetric GJR andQ-GARCH models does the best forecasting performance for the non-storable products, live cattle and live hogs.
 
-Due to article **The GARCH DCC Model and 2 Stage DCCMVT Estimation**^[Kindly refer to [Reference] for further reading.] compares the `model = c('DCC', 'aDCC')` but not `model = 'FDCC'` with all distributions and concludes that `aDCC` with `distribution = 'mvt'` is the best fit model and distribution for multivariate GARCH model. Here I directly use `mvt` but in different `solver` parameters.
+*Dynamic Portfolio Optimization using Generalized Dynamic Conditional Heteroskedastic Factor Models* compares . The paper studies the portfolio selection problem based on a generalized dynamic factor model (GDFM) with conditional heteroskedasticity in the idiosyncratic components. We propose a Generalized Smooth Transition Conditional Correlation (GSTCC) model for the idiosyncratic components combined with the GDFM. Among all the multivariate GARCH models that the authors propose, the generalized smooth transition conditional correlation provides the best result.
 
-The paper [Binary.com Interview Q1 - Comparison of Univariate GARCH Models](https://rpubs.com/englianhu/binary-Q1Uni-GARCH) describes the GARCH orders. [How to identify the ARCH and GARCH lag length in dynamic conditional correlation GARCH model?](https://stats.stackexchange.com/questions/136302/how-to-identify-the-arch-and-garch-lag-length-in-dynamic-conditional-correlation?answertab=votes#tab-top) describes the GARCH(1,1) and also DCC-GARCH as well.
+![](www/ROI-DPO-03.jpg)
+
+![](www/ROI-DPO-04.jpg)
+
+I try to surf over internet and the model has no yet widely use. Here I can only use the CCC, DCC models but the best performance GSTCC is not yet available in r packages. The `cccgarch` has STCC model but there has no examples to use it.
+
+## Parameter Selection
 
 ```{r dcc1, echo=FALSE, eval=FALSE}
 ### ========= using cluster for sampling ===============
@@ -433,9 +439,29 @@ pt.dcc <- llply(md, function(x) {
 names(pt.dcc) <- md
 ```
 
+#### Currency Basket
+
+Nested multivariate modelling for a basket of currencies will compares in following section.
+
+### Concludes Parameter Selection
+
+I initially wonder if I need to includes the open price in the models. Therefore I tried to compare above models. However the open price might not in use the my trading strategy. Therefore here I skip it.
+
+## DCC
+
+### Abtract of DDC
+
+Due to article *The GARCH DCC Model and 2 Stage DCCMVT Estimation*^[Kindly refer to [Reference] for further reading.] compares the `model = c('DCC', 'aDCC')` but not `model = 'FDCC'` with all distributions and concludes that `aDCC` with `distribution = 'mvt'` is the best fit model and distribution for multivariate GARCH model. Here I directly use `mvt` but in different `solver` parameters.
+
+The paper [Binary.com Interview Q1 - Comparison of Univariate GARCH Models](https://rpubs.com/englianhu/binary-Q1Uni-GARCH) describes the GARCH orders. [How to identify the ARCH and GARCH lag length in dynamic conditional correlation GARCH model?](https://stats.stackexchange.com/questions/136302/how-to-identify-the-arch-and-garch-lag-length-in-dynamic-conditional-correlation?answertab=votes#tab-top) describes the GARCH(1,1) and also DCC-GARCH as well.
+
 **VAR and Robust**
 
 Above models set `VAR=TRUE` and `robust=FALSE`, now I based on above best fitted model and adjust the parameter to test if it is more accurate.
+
+> If you have a multivariate conditional mean specification (i.e. VAR) then you cannot have a univariate conditional mean specification (arma model)...they are mutually exclusive. In short, do not enter anything for mean.model in ugarchspec (include.mean is automatically set to FALSE if VAR is selected).
+
+*source : [rmgarch:dccforecast() and mregfor](http://r.789695.n4.nabble.com/rmgarch-dccforecast-and-mregfor-td4675161.html)*
 
 ```{r dcc-var, eval=FALSE}
 .VARs = c(TRUE, FALSE)
@@ -444,10 +470,6 @@ Above models set `VAR=TRUE` and `robust=FALSE`, now I based on above best fitted
 
 ```
 
-
-#### Currency Basket
-
-Nested multivariate modelling for a basket of currencies.
 
 ## GO-GARCH
 

@@ -1,6 +1,6 @@
 mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE, 
                           .dist.model = 'mvnorm', .currency = 'JPY=X', 
-                          .ahead = 1, .include.Op = TRUE, .Cl.only = FALSE, 
+                          .ahead = 1, .include.Op = FALSE, .Cl.only = FALSE, 
                           .solver = 'solnp', .roll = FALSE, .cluster = FALSE) {
   
   require(plyr, quietly = TRUE)
