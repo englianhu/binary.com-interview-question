@@ -186,7 +186,12 @@ server <- shinyServer(function(input, output, session) {
         ))})
     
     output$transc <- DT::renderDataTable({
-        
+        ## Nested dataset table might be refer. For example : the table shows a column with the model, 
+        ##   you can click to know he details of the model (win/loss VaR and effects to whole fund shaope ratio etc.) 
+        ##   for that specific transaction, it will made the management to evaluate and trace the risk and P&L of 
+        ##   every single transaction. However it will be made the web application loading slow.
+        ##   Will need to use in the real-trading application.
+        ## https://stackoverflow.com/questions/43667791/expanding-and-collapsing-child-rows-in-shiny-datatable
         input$refresh
         
         if(length(dir('data', pattern = 'sell|buy')) > 0) {

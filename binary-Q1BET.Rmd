@@ -1,6 +1,6 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
-subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Trading Strategy (FOREX Market)"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Interday Betting Strategy Models Comparison (Financial Betting)"
 author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
@@ -51,7 +51,9 @@ rm(pkgs)
 
 ## Abstract
 
-  In order to test the timeline of daily highest and lowest price, here I created this file to read the high volume tick-data-history to test the efficiency of Kelly Criterion betting models. Kindly refer to [Reference] for further information.
+In order to test the timeline of daily highest and lowest price, here I created this file to read the high volume tick-data-history to test the efficiency of Kelly Criterion betting models. Kindly refer to [Reference] for further information.
+
+*binary.com Interview Question I - Tick-Data-HiLo For Daily Trading (Blooper)* descript that the VaR figure required in order to place orders. [What is the difference between Sharpe ratio and value at risk?](https://www.quora.com/What-is-the-difference-between-Sharpe-ratio-and-value-at-risk) states the difference between VaR and shape ratio where the shape ratio will be use in the future research.
 
 ## Intro Reference
 
@@ -260,7 +262,7 @@ dim(mbase)
 summary(mbase) %>% kable(width = 'auto')
 ```
 
-# Trading Strategy
+# Betting Strategy
 
 
 
@@ -376,9 +378,13 @@ rm(sys1, sys2)
 28. [Comparison of Multivariate GARCH Models with Application to Zero-Coupon Bond Volatility](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Comparison%20of%20Multivariate%20GARCH%20Models%20with%20Application%20to%20Zero-Coupon%20Bond%20Volatility.pdf)
 29. [Forecasting the Daily Dynamic Hedge Ratios by GARCH Models - Evidence from the Agricultural Futures Markets](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Forecasting%20the%20Daily%20Dynamic%20Hedge%20Ratios%20by%20GARCH%20Models%20-%20Evidence%20from%20the%20Agricultural%20Futures%20Markets.pdf)
 30. [Currency Hedging Strategies Using Dynamic Multivariate GARCH](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Currency%20Hedging%20Strategies%20Using%20Dynamic%20Multivariate%20GARCH.pdf)
+31. [Which GARCH model is best for Value-at-Risk](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Which%20GARCH%20Model%20is%20Best%20for%20Value-at-Risk.pdf)
+32. [Comparison of Value-at-Risk Estimates from GARCH Models](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Comparison%20of%20Value-at-Risk%20Estimates%20from%20GARCH%20Models.pdf)
+33. [Comparison of Value at Risk Models and Forecasting Realized Volatility by using Intraday Data](https://github.com/scibrokes/real-time-fxcm/blob/master/reference/Comparison%20of%20Value%20at%20Risk%20Models%20and%20Forecasting%20Realized%20Volatility%20by%20using%20Intraday%20Data.pdf)
+34. [binary.com Interview Question I - Tick-Data-HiLo For Daily Trading (Blooper)](http://rpubs.com/englianhu/binary-Q1TD)
+
+
 
 ---
 
 **Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
-
-

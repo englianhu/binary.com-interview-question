@@ -111,7 +111,13 @@ Table above shows DCC model is the best fit model.
 
 ![](www/ROI-DPO-04.jpg)
 
-I try to surf over internet and the model has no yet widely use. Here I can only use the CCC, DCC models but the best performance GSTCC is not yet available in r packages. The `cccgarch` has STCC model but there has no examples to use it.
+I try to surf over internet and the model has no yet widely use. Here I can only use the CCC, DCC models but the best performance GSTCC is not yet available in r packages. The `cccgarch` has STCC model but there has no examples to use it. I roughly read over the `ccgarch` package and noticed that all parameters required in matrix format which is only suitable for advance user use.
+
+*Forecasting Conditional Correlation for Exchange Rates using Multivariate GARCH Models with Historical Value-at-Risk Application* compares the VaR for trade in USDSEK in T+1 and T+10 with intraday 30 minutes time interval. When comparing the BEKK and DCC model, the BEKK seems to perform better than the DCC in both forecasting conditional correlation and predicting VaR. On the contrary, the BEKK is much more computationally demanding, which most certainly would be even more noticeable when the number of assets increase.
+
+![](www/USDSEK-VaR01.jpg)
+
+![](www/USDSEK-VaR02.jpg)
 
 ## Parameter Selection
 
@@ -445,7 +451,11 @@ Nested multivariate modelling for a basket of currencies will compares in follow
 
 ### Concludes Parameter Selection
 
-I initially wonder if I need to includes the open price in the models. Therefore I tried to compare above models. However the open price might not in use the my trading strategy. Therefore here I skip it.
+I initially wonder if I need to includes the open price in the models. Therefore I tried to compare above models. However the open price might not in use the my trading strategy. Therefore here I skip it. Here I seperates to 3 selection for trading:
+
+- Hi-Lo
+- Hi-Lo-Cl
+- Cl
 
 ## DCC
 
@@ -454,6 +464,8 @@ I initially wonder if I need to includes the open price in the models. Therefore
 Due to article *The GARCH DCC Model and 2 Stage DCCMVT Estimation*^[Kindly refer to [Reference] for further reading.] compares the `model = c('DCC', 'aDCC')` but not `model = 'FDCC'` with all distributions and concludes that `aDCC` with `distribution = 'mvt'` is the best fit model and distribution for multivariate GARCH model. Here I directly use `mvt` but in different `solver` parameters.
 
 The paper [Binary.com Interview Q1 - Comparison of Univariate GARCH Models](https://rpubs.com/englianhu/binary-Q1Uni-GARCH) describes the GARCH orders. [How to identify the ARCH and GARCH lag length in dynamic conditional correlation GARCH model?](https://stats.stackexchange.com/questions/136302/how-to-identify-the-arch-and-garch-lag-length-in-dynamic-conditional-correlation?answertab=votes#tab-top) describes the GARCH(1,1) and also DCC-GARCH as well.
+
+*Multivariate DCC-GARCH Model* introduce the DCC and CCC models. In all tests for marginal goodness of fit the DCC-GARCH with skew Student's t-distributed errors outperformed the DCC-GARCH with Gaussian and Student's t-distributed errors. Comparing the DCC-GARCH model with the CCC-GARCH model using the Kupiec test showed that the DCC-GARCH model gave a better fit to the data.
 
 **VAR and Robust**
 
@@ -496,6 +508,7 @@ names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[3]])$fit)
 
 ## CCC
 
+*Multivariate DCC-GARCH Model* introduce the DCC and CCC models. In all tests for marginal goodness of fit the DCC-GARCH with skew Student's t-distributed errors outperformed the DCC-GARCH with Gaussian and Student's t-distributed errors. Comparing the DCC-GARCH model with the CCC-GARCH model using the Kupiec test showed that the DCC-GARCH model gave a better fit to the data. Here I skip the `cccgarch` package.
 
 ## BEKK
 
@@ -621,6 +634,7 @@ rm(sys1, sys2)
 17. [Comparison of Multivariate GARCH Models with Application to Zero-Coupon Bond Volatility](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Comparison%20of%20Multivariate%20GARCH%20Models%20with%20Application%20to%20Zero-Coupon%20Bond%20Volatility.pdf)
 18. [Forecasting the Daily Dynamic Hedge Ratios by GARCH Models - Evidence from the Agricultural Futures Markets](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Forecasting%20the%20Daily%20Dynamic%20Hedge%20Ratios%20by%20GARCH%20Models%20-%20Evidence%20from%20the%20Agricultural%20Futures%20Markets.pdf)
 19. [Currency Hedging Strategies Using Dynamic Multivariate GARCH](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Currency%20Hedging%20Strategies%20Using%20Dynamic%20Multivariate%20GARCH.pdf)
+20. [Multivariate DCC-GARCH Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Multivariate%20DCC-GARCH%20Model.pdf)
 
 ---
 

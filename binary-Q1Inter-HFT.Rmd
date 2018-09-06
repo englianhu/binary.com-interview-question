@@ -1,6 +1,6 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
-subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Interday High Frequency Trading"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Interday High Frequency Trading Models Comparison"
 author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
