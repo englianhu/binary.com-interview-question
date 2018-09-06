@@ -1,6 +1,6 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
-subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) 面试试题 I - GARCH模型中的`ARMA(p,d,q)`参数最优化"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化"
 author: "[<span style='color:blue'>®γσ, Lian Hu</span>](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
@@ -723,6 +723,15 @@ acc %>%
 # 结论
 
 结果新的Fi-gjrGARCH函数pred2胜出，比旧的gjrGARCH的pred1更优秀，证明`p`值、`d`值与`q`值仨都可以优化。目前正在编写着[Q1App2](https://beta.rstudioconnect.com/content/3138/)自动交易应用。“商场如战场”，除了模式最优化以外，程序运作上分秒必争... `microbenchmark`测试效率，之前编写了个[DataCollection](https://beta.rstudioconnect.com/content/3153/)应用采集实时数据以方便之后的高频率交易自动化建模^[不过数据量多就会当机，得继续提升才行。]。欲知更多详情，请参阅[Real Time FXCM](https://github.com/scibrokes/real-time-fxcm)。
+
+[Generalised Autoregressive Conditional Heteroskedasticity GARCH(p, q) Models for Time Series Analysis](https://www.quantstart.com/articles/Generalised-Autoregressive-Conditional-Heteroskedasticity-GARCH-p-q-Models-for-Time-Series-Analysis): 
+
+- [Discrete White Noise and Random Walks](https://www.quantstart.com/articles/White-Noise-and-Random-Walks-in-Time-Series-Analysis)
+- [AR(p)](https://www.quantstart.com/articles/Autoregressive-Moving-Average-ARMA-p-q-Models-for-Time-Series-Analysis-Part-1)
+- [MA(q)](https://www.quantstart.com/articles/Autoregressive-Moving-Average-ARMA-p-q-Models-for-Time-Series-Analysis-Part-2)
+- [ARMA(p,q)](https://www.quantstart.com/articles/Autoregressive-Moving-Average-ARMA-p-q-Models-for-Time-Series-Analysis-Part-3)
+- [ARIMA(p,d,q)](https://www.quantstart.com/articles/Autoregressive-Integrated-Moving-Average-ARIMA-p-d-q-Models-for-Time-Series-Analysis)
+
 
 **投注模式**
 

@@ -36,7 +36,7 @@ There are quite some papers study on the GARCH models.
 - **EGARCH, GKR-GARCH, TGARCH, AVGARCH, NGARCH, IGARCH and APARCH Models for Pathogens at Marine Recreational Sites**
 - **Predictive Accuracy of GARCH, GJR and EGARCH Models Select Exchange Rates Application**
 
-From previous papers, I tried to apply couple models for FOREX price forecasting and eventually got to know *Fractional Intergrated GJR-GARCH* is the best fit model as we can refer to **GARCH模型中的ARMA(p,d,q)参数最优化**^[Kindly refer to paper in [Reference]]. Due to I simulate whole dataset to get the result in menmtioned paper is time consuming, I tried to apply `dccroll()` to know the mse by resampling but not only based on single `AIC`^[Only the `solver=solnp` stable but the other solvers not stable, the fluctuation of AIC value is quite high.]. I parse my `mv_fx()` function^[Due to some errors] and tested the **Binary-Q1 - Multivariate GARCH Models** and some additive parameters might probably need to be adjusted in the arguments of the function. [Arma Part Overfitting in Arma Garch Model fitting via fGarch Package](https://stackoverflow.com/questions/36312065/arma-part-overfitting-in-arma-garch-model-fitting-via-fgarch-package) is a similar study for models comparison in GARCH.
+From previous papers, I tried to apply couple models for FOREX price forecasting and eventually got to know *Fractional Intergrated GJR-GARCH* is the best fit model as we can refer to **GARCH模型中的ARIMA(p,d,q)参数最优化**^[Kindly refer to paper in [Reference]]. Due to I simulate whole dataset to get the result in menmtioned paper is time consuming, I tried to apply `dccroll()` to know the mse by resampling but not only based on single `AIC`^[Only the `solver=solnp` stable but the other solvers not stable, the fluctuation of AIC value is quite high.]. I parse my `mv_fx()` function^[Due to some errors] and tested the **Binary-Q1 - Multivariate GARCH Models** and some additive parameters might probably need to be adjusted in the arguments of the function. [Arma Part Overfitting in Arma Garch Model fitting via fGarch Package](https://stackoverflow.com/questions/36312065/arma-part-overfitting-in-arma-garch-model-fitting-via-fgarch-package) is a similar study for models comparison in GARCH.
 
 I try to use 3 methods to compare the GARCH models.
 
@@ -142,7 +142,7 @@ Due to the multivartiate models will not coped with every univariate models. Her
 
 ## Read Data
 
-Similar with **GARCH模型中的ARMA(p,d,q)参数最优化**, I use the dataset from **Binary-Q1 (Extention)**^[Kindly refer to paper in [Reference]] to ease the study.
+Similar with **GARCH模型中的ARIMA(p,d,q)参数最优化**, I use the dataset from **Binary-Q1 (Extention)**^[Kindly refer to paper in [Reference]] to ease the study.
 
 ```{r read-data, warning=FALSE}
 cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
@@ -2020,7 +2020,7 @@ if (!is.null(mse.gjrGARCH2)) {
 
 Below I compared the Fractional Intergrated model which optimised the arfima `q` and also adjusted arma order `p` and `q`.
 
-Here I do not execute this model but directly read the previous dataset due to it is the model `pred2` in **GARCH模型中的ARMA(p,d,q)参数最优化**.
+Here I do not execute this model but directly read the previous dataset due to it is the model `pred2` in **GARCH模型中的ARIMA(p,d,q)参数最优化**.
 
 ```{r msegjrGARCH3, eval=FALSE, echo=FALSE}
 ## ------------- Simulate uv_fx() ----------------------
@@ -4878,11 +4878,11 @@ There are a lot of time I waste just for verify and rerun the coding. `ugarchrol
 
 After get the MSE value and AIC value, I forced to debug the codes upon unexpected results especially bias. For example, the MSE value judge the best fit model but AIC and BIC judge as worst model. Here I also looking for some reference like AIC for MSE which applied AIC for compare the best MSE as introduced by a professor.
 
-Below are the blooper (behind the scene) for **GARCH模型中的ARMA(p,d,q)参数最优化** where I use almost a week to review and filter couple times.
+Below are the blooper (behind the scene) for **GARCH模型中的ARIMA(p,d,q)参数最优化** where I use almost a week to review and filter couple times.
 
 ![](www/blooper-01.jpg)
 
-This paper compares 14 models with 3 mthods but **GARCH模型中的ARMA(p,d,q)参数最优化** only compares 2 models.
+This paper compares 14 models with 3 mthods but **GARCH模型中的ARIMA(p,d,q)参数最优化** only compares 2 models.
 
 ## Documenting File Creation 
 

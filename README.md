@@ -33,7 +33,7 @@ Well, dataset for below papers daily OHLCV of 7 currencies from 2013-01-01 to 20
 
 1) Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models <s>from minutes to</s> daily. You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)).
 
-2) Here I also find the optimal arma order for GARCH models as you can refer to [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH).
+2) Here I also find the optimal arma order for GARCH models as you can refer to [GARCH模型中的`ARIMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH).
 
 3) You can also refer to [binary.com Interview Question I - Comparison of Univariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Uni-GARCH) which compares the prediction accuracy of 14 GARCH models (not completed) and 9 models (mostly completed from 2013-01-01 to 2017-08-30).
 
@@ -60,7 +60,7 @@ Initially, I wrote a shiny app (as showing in below gif file) but it is heavily 
 
 Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.com/content/3775/) trial version to test the real time trading, and a completed version is [Q1App2](https://beta.rstudioconnect.com/content/3138/).
 
-Due to the paper [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](http://rpubs.com/englianhu/binary-Q1TD) simulated the data and then only noticed I not yet updated the new function, then I wrote **GARCH模型中的`ARMA(p,d,q)`参数最优化** to compare the accuracy. However my later paper simulated dataset doesn't save the $fit$ in order to retrieve the $\sigma^2$ and VaR values for stop-loss pips when I got the idea. Here I put it as blooper and start **binary-Q1 Multivariate GARCH Models** and later on will write another **FOREX Day Trade Simulation** which will simulate all tick-data but not only HiLo data.
+Due to the paper [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](http://rpubs.com/englianhu/binary-Q1TD) simulated the data and then only noticed I not yet updated the new function, then I wrote **GARCH模型中的`ARIMA(p,d,q)`参数最优化** to compare the accuracy. However my later paper simulated dataset doesn't save the $fit$ in order to retrieve the $\sigma^2$ and VaR values for stop-loss pips when I got the idea. Here I put it as blooper and start **binary-Q1 Multivariate GARCH Models** and later on will write another **FOREX Day Trade Simulation** which will simulate all tick-data but not only HiLo data.
 
 #### Shiny Application
 

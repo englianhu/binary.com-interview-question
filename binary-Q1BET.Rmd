@@ -55,6 +55,10 @@ In order to test the timeline of daily highest and lowest price, here I created 
 
 *binary.com Interview Question I - Tick-Data-HiLo For Daily Trading (Blooper)* descript that the VaR figure required in order to place orders. [What is the difference between Sharpe ratio and value at risk?](https://www.quora.com/What-is-the-difference-between-Sharpe-ratio-and-value-at-risk) states the difference between VaR and shape ratio where the shape ratio will be use in the future research.
 
+[ARIMA+GARCH Trading Strategy on the S&P500 Stock Market Index Using R](https://www.quantstart.com/articles/ARIMA-GARCH-Trading-Strategy-on-the-SP500-Stock-Market-Index-Using-R) compares the ROI of buy and hold and application of ARIMA + GARCH model.
+
+[Systematic Investor Blog : Trading Strategies](https://systematicinvestor.wordpress.com/category/trading-strategies/) introduce various trading strategies.
+
 ## Intro Reference
 
 *Currency Hedging Strategies Using Dynamic Multivariate GARCH* compares DCC, BEKK, CCC and VARMA-AGARCH models to examine the conditional volatilities among the spot and two distint futures maturities, namely near-month and next-to-near-month contracts. The estimated conditionl covariances matrices from these models were used to calculate the optimal portfolios weights and optimal hedge ratios. The empirical results in the paper reveal that there are not big differences either the near-month or next-to-near-month contract is used for hedge spot position on currencies. They also reveal that hedging ratios are lower for near-month contract when the USD/EUR and USD/JPY exchange rates are anlyzed. This result is explained in terms of the higher correlation between spot prices and the next-to-near-month future prices than that with near-month contract and additionally because of the lower volatility of the long maturity futures. Finally across all currencies and error densities, the CCC and VARMA-AGARCH models provide similar results in terms of hedging ratios, portfolio variance reduction and hedging effectiveness. Some difference might appear when the DCC and BEKK models are used. Below is the table summary of the paper.

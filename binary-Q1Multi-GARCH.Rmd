@@ -31,13 +31,15 @@ rm(pkgs)
 
 # Introduction
 
-From previous papers, I tried to apply few models for FOREX price forecasting and eventually got to know <span style='color:red'>Fractional Intergrated GJR-GARCH</span> is the best fit model as we can refer to [GARCH模型中的ARMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH). Today I am zooming into the multivariate GARCH models.
+From previous papers, I tried to apply few models for FOREX price forecasting and eventually got to know <span style='color:red'>Fractional Intergrated GJR-GARCH</span> is the best fit model as we can refer to [GARCH模型中的ARIMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH). **The standalone ARFIMAX model and methods** in the [A short introduction to the rugarch package](http://www.unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/) describe the `autoarfima()` function where we can easily get the optimal MA and AR figure. [](https://stats.stackexchange.com/questions/176550/fitting-arima-garch-model-using-rugarch-package?answertab=votes#tab-top).
+
+Today I am zooming into the multivariate GARCH models.
 
 # Data
 
 ## Read Data
 
-Similar with *GARCH模型中的ARMA(p,d,q)参数最优化*, I use the dataset from [Binary-Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E).
+Similar with *GARCH模型中的ARIMA(p,d,q)参数最优化*, I use the dataset from [Binary-Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E).
 
 ```{r read-data, warning=FALSE}
 cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
@@ -482,6 +484,11 @@ Above models set `VAR=TRUE` and `robust=FALSE`, now I based on above best fitted
 
 ```
 
+### Hi-Lo
+
+### Hi-Lo-Cl
+
+### Cl
 
 ## GO-GARCH
 
@@ -512,43 +519,33 @@ names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[3]])$fit)
 
 ## BEKK
 
-[[问答] 向各位朋友求助关于MGARCH-BEKK模型的问题！万分感谢！](http://bbs.pinggu.org/forum.php?mod=viewthread&tid=2263348)
+[[问答] 向各位朋友求助关于MGARCH-BEKK模型的问题！万分感谢！](http://bbs.pinggu.org/forum.php?mod=viewthread&tid=2263348) discuss about the BEKK model.
+
+```{r}
+if (!((method == "Nelder-Mead") || (method == "BFGS") || 
+        (method == "CG") || (method == "L-BFGS-B") || (method == 
+        "SANN"))) {
+        stop("'", method, "' method is not available")
+    }
+```
+
+## mGJR (Bivariate GJR (bivariate asymmetric GARCH model))
+
+`mGJR(eps1, eps2, order = c(1, 1, 1), params = NULL, fixed = NULL, method = "BFGS")`
+
+```{r, eval=FALSE}
+if (!((method == "Nelder-Mead") || (method == "BFGS") || 
+        (method == "CG") || (method == "L-BFGS-B") || (method == 
+        "SANN"))) {
+        stop("'", method, "' method is not available")
+    }
+```
+
+The `mGJR()` function in `mgarchBEKK` use diversified optim function.
+
+
 
 # Model Comparison
-
-```{r tidy-data1}
-##数据1
-fx1 <- llply(names(cr_code), function(x) {
-    fls <- list.files(paste0('data/fx/', x), pattern = '^pred1')
-    dfm <- ldply(fls, function(y) {
-        readRDS(paste0('data/fx/', x, '/', y))
-    }) %>% data.frame(Cat = 'pred1', .) %>% tbl_df
-    names(dfm)[4:5] <- c('Price', 'Price.T1')
-    dfm
- })
-names(fx1) <- names(cr_code)
-
-##数据2
-fx2 <- llply(names(cr_code), function(x) {
-    fls <- list.files(paste0('data/fx/', x), pattern = '^pred2')
-    dfm <- ldply(fls, function(y) {
-        readRDS(paste0('data/fx/', x, '/', y))
-    }) %>% data.frame(Cat = 'pred2', .) %>% tbl_df
-    names(dfm)[4:5] <- c('Price', 'Price.T1')
-    dfm
- })
-names(fx2) <- names(cr_code)
-
-## Merge and tidy dataset.
-fx1 %<>% ldply %>% tbl_df
-fx2 %<>% ldply %>% tbl_df
-fx <- suppressAll(
-  bind_rows(fx1, fx2) %>% arrange(Date) %>% 
-    mutate(.id = factor(.id), Cat = factor(Cat), Price.T1 = lag(Price.T1, 56)) %>% 
-    dplyr::filter(Date >= ymd('2013-01-01') & Date <= ymd('2017-08-30')))
-
-rm(fx1, fx2)
-```
 
 # Conclusion
 
@@ -604,7 +601,7 @@ rm(sys1, sys2)
 
 01. [Betting Strategy and Model Validation - Part II](https://englianhu.github.io/2017/10/Betting_Strategy_and_Model_Validation_-_Part_02/)
 02. [**binary.com Job Application - Quantitative Analyst** *sample question*](https://github.com/englianhu/binary.com-interview-question)
-03. [GARCH模型中的`ARMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+03. [GARCH模型中的`ARIMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 04. [The `rmgarch` Models - Background and Properties](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/The%20rmgarch%20Models%20-%20Background%20and%20Properties.pdf)
 05. [Financial Econometrics Practical - Univariate Volatility Modelling](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Financial%20Econometrics%20Practical%20-%20Univariate%20Volatility%20Modelling.pdf)
 06. [The GARCH-DCC Model and 2-Stage DCC(MVT) Estimation](http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/)
@@ -635,6 +632,7 @@ rm(sys1, sys2)
 18. [Forecasting the Daily Dynamic Hedge Ratios by GARCH Models - Evidence from the Agricultural Futures Markets](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Forecasting%20the%20Daily%20Dynamic%20Hedge%20Ratios%20by%20GARCH%20Models%20-%20Evidence%20from%20the%20Agricultural%20Futures%20Markets.pdf)
 19. [Currency Hedging Strategies Using Dynamic Multivariate GARCH](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Currency%20Hedging%20Strategies%20Using%20Dynamic%20Multivariate%20GARCH.pdf)
 20. [Multivariate DCC-GARCH Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Multivariate%20DCC-GARCH%20Model.pdf)
+21. [Introduction to the `rugarch` Package](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Introduction%20to%20the%20rugarch%20Package.pdf)
 
 ---
 
