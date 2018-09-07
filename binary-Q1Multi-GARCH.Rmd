@@ -31,7 +31,7 @@ rm(pkgs)
 
 # Introduction
 
-From previous papers, I tried to apply few models for FOREX price forecasting and eventually got to know <span style='color:red'>Fractional Intergrated GJR-GARCH</span> is the best fit model as we can refer to [GARCH模型中的ARIMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH). **The standalone ARFIMAX model and methods** in the [A short introduction to the rugarch package](http://www.unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/) describe the `autoarfima()` function where we can easily get the optimal MA and AR figure. [](https://stats.stackexchange.com/questions/176550/fitting-arima-garch-model-using-rugarch-package?answertab=votes#tab-top).
+From previous papers, I tried to apply few models for FOREX price forecasting and eventually got to know <span style='color:red'>Fractional Intergrated GJR-GARCH</span> is the best fit model as we can refer to [GARCH模型中的ARIMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH). **The standalone ARFIMAX model and methods** in the [A short introduction to the rugarch package](http://www.unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/) describe the `autoarfima()` function where we can easily get the optimal MA and AR figure.
 
 Today I am zooming into the multivariate GARCH models.
 

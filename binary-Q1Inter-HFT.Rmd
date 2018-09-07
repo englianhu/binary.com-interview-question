@@ -40,6 +40,10 @@ MIDAS and mcsGARCH are the models designate for high frequency trading.
 
 **A Comparison of GARCH-class Models and MIDAS Regression with Application in Volatility Prediction and Value at Risk Estimation** compares GARCH, eGARCH and MIDAS 3 models with normal and student distribution with matrix. The author concludes that the MIDAS model is the most accurate in volatility prediction but there is inconclusive for VaR 1% and 5%.
 
+> Note that there does not seem to be an option to use SARMA models in the "rugarch" package, so you will have to let the "S" part go. But if there is a seasonal pattern (and that is quite likely when it comes to tourist arrivals), you will have to account for it somehow. Consider using exogenous seasonal variables (dummies or Fourier terms) in the conditional mean model via the argument external.regressors inside the argument mean.model in function ugarchspec. Alternatively, note that a SARMA model corresponds to a restricted ARMA model. An approximation of SARMA could thus be an ARMA with the appropriate lag order but without the SARMA-specific parameter restrictions (since those might not be available in "rugarch").
+
+The quotes above describe about the seasonal factors onto the model which is similar with MIDAS model, kindly refer to [Fitting ARIMA-GARCH model using “rugarch” package](https://stats.stackexchange.com/questions/176550/fitting-arima-garch-model-using-rugarch-package?answertab=votes#tab-top).
+
 # Data
 
 ## Read Data
