@@ -1,7 +1,7 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
 subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Multivariate GARCH Models"
-author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/RYO.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
   html_document: 
@@ -521,7 +521,7 @@ names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[3]])$fit)
 
 [[问答] 向各位朋友求助关于MGARCH-BEKK模型的问题！万分感谢！](http://bbs.pinggu.org/forum.php?mod=viewthread&tid=2263348) discuss about the BEKK model.
 
-```{r}
+```
 if (!((method == "Nelder-Mead") || (method == "BFGS") || 
         (method == "CG") || (method == "L-BFGS-B") || (method == 
         "SANN"))) {
@@ -533,7 +533,7 @@ if (!((method == "Nelder-Mead") || (method == "BFGS") ||
 
 `mGJR(eps1, eps2, order = c(1, 1, 1), params = NULL, fixed = NULL, method = "BFGS")`
 
-```{r, eval=FALSE}
+```
 if (!((method == "Nelder-Mead") || (method == "BFGS") || 
         (method == "CG") || (method == "L-BFGS-B") || (method == 
         "SANN"))) {

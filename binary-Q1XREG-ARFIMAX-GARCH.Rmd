@@ -1,7 +1,7 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
 subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) 面试试题 I - GARCH模型中的外部加权因素变量参数应用"
-author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/ENG.jpg' width='24'> <img src='www/RYO.jpg' width='24'>®"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/RYO.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
   html_document: 
@@ -77,6 +77,8 @@ $$
 ## Fi-GJR-GARCH(p,d,q)值最优化
 
 请参阅*GARCH模型中的ARIMA(p,d,q)参数最优化*。
+
+[R学习笔记（2）——SARIMA模型](https://blog.csdn.net/qqqqq1993qqqqq/article/details/51818718)和[`sarima`程序包](https://cran.r-project.org/web/packages/sarima/sarima.pdf)或许能基于季节性因素把原本的ARIMA(p,d,q)值，通过SARIMA(p,d,q)值更为精准。
 
 # 加权因子
 
