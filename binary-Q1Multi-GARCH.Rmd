@@ -31,59 +31,9 @@ rm(pkgs)
 
 # Introduction
 
-## VaR
-
 From previous papers, I tried to apply few models for FOREX price forecasting and eventually got to know <span style='color:red'>Fractional Intergrated GJR-GARCH</span> is the best fit model as we can refer to *GARCH模型中的ARIMA(p,d,q)参数最优化*. **The standalone ARFIMAX model and methods** in the [A short introduction to the rugarch package](http://www.unstarched.net/r-examples/rugarch/a-short-introduction-to-the-rugarch-package/) describe the `autoarfima()` function where we can easily get the optimal MA and AR figure.
 
-Today I am zooming into the multivariate GARCH models. Start from this paper, I will stored the forecast VaR value as well, kindly refer to *How Good Are Your VaR Estimates?*^ for more information. 
-
-- *ARMA(1,1)-GARCH(1,1)
-Estimation and forecast using rugarch 1.2-2*
-- [An Introduction to Value at Risk (VAR)](https://www.investopedia.com/articles/04/092904.asp)
-- [Multivariate GARCH with respect to Value at Risk](https://stats.stackexchange.com/questions/130227/multivariate-garch-with-respect-to-value-at-risk?answertab=votes#tab-top) is the another article about VaR in multivariate models.
-- [Difference between uGarchRoll Value at Risk and manual calculations](https://stats.stackexchange.com/questions/298381/difference-between-ugarchroll-value-at-risk-and-manual-calculations?answertab=votes#tab-top)
-- [ARMA(1,1)-GARCH(1,1)
-Estimation and forecast using rugarch 1.2-2](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/ARMA(1%2C1)-GARCH(1%2C1)%20Estimation%20and%20Forecast%20using%20rugarch%201.2-2.pdf)
-- [Issues in estimating VaR with GARCH](https://quant.stackexchange.com/questions/25946/issues-in-estimating-var-with-garch?answertab=votes#tab-top)
-- [Value-At-Risk (VaR) curve with Copula-GARCH model (R)](https://stackoverflow.com/questions/40174020/value-at-risk-var-curve-with-copula-garch-model-r)
-- [Calculation of VaR of a time series using a GARCH(1,1) ARMA(1,1) model](https://stats.stackexchange.com/questions/136958/calculation-of-var-of-a-time-series-using-a-garch1-1-arma1-1-model?answertab=votes#tab-top)
-- [Fitting and Predicting VaR based on an ARMA-GARCH Process](https://cran.r-project.org/web/packages/qrmtools/vignettes/ARMA_GARCH_VaR.html)
-
-```
-# conditional mean 
-cmu = as.numeric(as.data.frame(forecast, which = "series", 
-rollframe="all", aligned = FALSE)) 
-# conditional sigma 
-csigma = as.numeric(as.data.frame(forecast, which = "sigma", 
-rollframe="all", aligned = FALSE)) 
-
-I can calculate the VaR by using the property, that the normal distribution 
-is part of the location-scale distribution families 
-
-# use location+scaling transformation property of normal distribution: 
-VaR = qnorm(0.01)*csigma + cmu
-```
-
-*source : [rugarch VaR calculation "manually"](http://r.789695.n4.nabble.com/rugarch-VaR-calculation-quot-manually-quot-td4666462.html)*
-
-> For your purpose, you need a random variable with zero mean and unit variance. However, the variance of the Student-t distribution is νν−2 for ν>2 and not one, where ν are the degrees of freedom.
-> 
-> You get the correct VaR by multiplying the quantile of the Student-t distribution with ν−2ν−−−√:
-> 
-> 0.1262 + 1.059 * qt(0.05, 4.68) * sqrt((4.68-2) / 4.68)
-[1] -1.51334
-Alternatively, using the rugarch package which defaults to standardized distributions:
-> 
-> rugarch::qdist("std", 0.05, mu=0.1262, sigma=1.059, shape=4.68)
-[1] -1.51334
-
-*source : [Difference between uGarchRoll Value at Risk and manual calculations](https://stats.stackexchange.com/questions/298381/difference-between-ugarchroll-value-at-risk-and-manual-calculations?answertab=votes#tab-top)*
-
-## VaR for Long and Short
-
-- [Value-at-Risk for long and short trading positions - Evidence from developed and emerging equity markets]()
-- [Value-at-Risk for Long and Short Trading Positions]()
-- [Value at Risk for Long-Short Positions]()
+Today I am zooming into the multivariate GARCH models.
 
 # Data
 
@@ -564,7 +514,7 @@ VAR.fit = vfit)
 
 ```{r dcc-var, eval=FALSE}
 .VARs = c(TRUE, FALSE)
-.rb = c(TRUE, FALSE)
+#.rb = c(TRUE, FALSE)
 
 
 ```
@@ -765,7 +715,6 @@ rm(sys1, sys2)
 19. [Currency Hedging Strategies Using Dynamic Multivariate GARCH](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Currency%20Hedging%20Strategies%20Using%20Dynamic%20Multivariate%20GARCH.pdf)
 20. [Multivariate DCC-GARCH Model](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Multivariate%20DCC-GARCH%20Model.pdf)
 21. [Introduction to the `rugarch` Package](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Introduction%20to%20the%20rugarch%20Package.pdf)
-22. [How Good Are Your VaR Estimates?](http://www.unstarched.net/2012/12/26/how-good-are-your-var-estimates/)
 
 ---
 

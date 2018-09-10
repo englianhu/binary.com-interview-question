@@ -34,11 +34,11 @@ rm(pkgs)
 
 # Introduction
 
-By refer to **GARCH模型中的ARMA(p,d,q)参数最优化** and **binary.com Interview Question I - Comparison of Univariate GARCH Models**, we know **Fractional Intergrated GJR-GARCH** is the best fit model. This paper we compare the MIDAS, GARCH-MIDAS and Levy Process models. Here I also test another high frequency trading model mcmcsGARCH. These paper might consider as comparison interday trading before start the high frequency trading via [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
+By refer to *GARCH模型中的ARIMA(p,d,q)参数最优化* and *binary.com Interview Question I - Comparison of Univariate GARCH Models*, we know **Fractional Intergrated GJR-GARCH** is the best fit model. This paper we compare the MIDAS, GARCH-MIDAS and Levy Process models. Here I also test another high frequency trading model mcmcsGARCH. These paper might consider as comparison interday trading before start the high frequency trading via [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
 
 MIDAS and mcsGARCH are the models designate for high frequency trading.
 
-**A Comparison of GARCH-class Models and MIDAS Regression with Application in Volatility Prediction and Value at Risk Estimation** compares GARCH, eGARCH and MIDAS 3 models with normal and student distribution with matrix. The author concludes that the MIDAS model is the most accurate in volatility prediction but there is inconclusive for VaR 1% and 5%.
+*A Comparison of GARCH-class Models and MIDAS Regression with Application in Volatility Prediction and Value at Risk Estimation* compares GARCH, eGARCH and MIDAS 3 models with normal and student distribution with matrix. The author concludes that the MIDAS model is the most accurate in volatility prediction but there is inconclusive for VaR 1% and 5%.
 
 > Note that there does not seem to be an option to use SARMA models in the "rugarch" package, so you will have to let the "S" part go. But if there is a seasonal pattern (and that is quite likely when it comes to tourist arrivals), you will have to account for it somehow. Consider using exogenous seasonal variables (dummies or Fourier terms) in the conditional mean model via the argument external.regressors inside the argument mean.model in function ugarchspec. Alternatively, note that a SARMA model corresponds to a restricted ARMA model. An approximation of SARMA could thus be an ARMA with the appropriate lag order but without the SARMA-specific parameter restrictions (since those might not be available in "rugarch").
 
@@ -48,7 +48,7 @@ The quotes above describe about the seasonal factors onto the model which is sim
 
 ## Read Data
 
-Similar with **GARCH模型中的ARMA(p,d,q)参数最优化**, I use the dataset from [Binary-Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) for backtest to ease we compare the models.
+Similar with *GARCH模型中的ARIMA(p,d,q)参数最优化*, I use the dataset from [Binary-Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) for backtest to ease we compare the models.
 
 ```{r read-data, warning=FALSE}
 cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
@@ -185,7 +185,7 @@ rm(sys1, sys2)
 
 01. [Mixed Frequency Data Sampling Regression Models - The R Package midasr](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Mixed%20Frequency%20Data%20Sampling%20Regression%20Models%20-%20The%20R%20Package%20midasr.pdf)
 02. [binary.com Interview Question I - Comparison of Univariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Uni-GARCH)
-03. [GARCH模型中的ARMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+03. [GARCH模型中的ARIMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 04. [Forecasting the Return Volatility of Energy Prices - A GARCH-MIDAS Approach](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Forecasting%20the%20Return%20Volatility%20of%20Energy%20Prices%20-%20A%20GARCH-MIDAS%20Approach.pdf)
 05. [Levy Processes For Finance - An Intrudction in R](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Levy%20Processes%20For%20Finance%20-%20An%20Intrudction%20in%20R.pdf)
 06. [MIDAS Regressions - Further Results and New Directions](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/MIDAS%20Regressions%20-%20Further%20Results%20and%20New%20Directions.pdf)

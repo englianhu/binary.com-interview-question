@@ -59,6 +59,11 @@ In order to test the timeline of daily highest and lowest price, here I created 
 
 [Systematic Investor Blog : Trading Strategies](https://systematicinvestor.wordpress.com/category/trading-strategies/) introduce various trading strategies.
 
+> The Sharpe ratio can also help explain whether a portfolio's excess returns are due to smart investment decisions or a result of too much risk. Although one portfolio or fund can enjoy higher returns than its peers, it is only a good investment if those higher returns do not come with an excess of additional risk. The greater a portfolio's Sharpe ratio, the better its risk-adjusted performance. A negative Sharpe ratio indicates that a risk-less asset would perform better than the security being analyzed.
+
+*source : [Investopedia : Sharpe Ratio](https://www.investopedia.com/terms/s/sharperatio.asp)*
+
+
 ## Intro Reference
 
 *Currency Hedging Strategies Using Dynamic Multivariate GARCH* compares DCC, BEKK, CCC and VARMA-AGARCH models to examine the conditional volatilities among the spot and two distint futures maturities, namely near-month and next-to-near-month contracts. The estimated conditionl covariances matrices from these models were used to calculate the optimal portfolios weights and optimal hedge ratios. The empirical results in the paper reveal that there are not big differences either the near-month or next-to-near-month contract is used for hedge spot position on currencies. They also reveal that hedging ratios are lower for near-month contract when the USD/EUR and USD/JPY exchange rates are anlyzed. This result is explained in terms of the higher correlation between spot prices and the next-to-near-month future prices than that with near-month contract and additionally because of the lower volatility of the long maturity futures. Finally across all currencies and error densities, the CCC and VARMA-AGARCH models provide similar results in terms of hedging ratios, portfolio variance reduction and hedging effectiveness. Some difference might appear when the DCC and BEKK models are used. Below is the table summary of the paper.
@@ -102,6 +107,58 @@ In summary, the estimates based on both OHR and optimal weight values recommend 
 ![](www/ROI-DPO-04.jpg)
 
 I try to surf over internet and the model has no yet widely use. Here I can only use the CCC, DCC models but the best performance GSTCC is not yet available in r packages. The `cccgarch` has STCC model but there has no examples to use it.
+
+## VaR
+
+I stored the forecast VaR value as well, kindly refer to *How Good Are Your VaR Estimates?*^ for more information. 
+
+- *ARMA(1,1)-GARCH(1,1)
+Estimation and forecast using rugarch 1.2-2*
+- [An Introduction to Value at Risk (VAR)](https://www.investopedia.com/articles/04/092904.asp)
+- [Multivariate GARCH with respect to Value at Risk](https://stats.stackexchange.com/questions/130227/multivariate-garch-with-respect-to-value-at-risk?answertab=votes#tab-top) is the another article about VaR in multivariate models.
+- [Difference between uGarchRoll Value at Risk and manual calculations](https://stats.stackexchange.com/questions/298381/difference-between-ugarchroll-value-at-risk-and-manual-calculations?answertab=votes#tab-top)
+- [ARMA(1,1)-GARCH(1,1)
+Estimation and forecast using rugarch 1.2-2](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/ARMA(1%2C1)-GARCH(1%2C1)%20Estimation%20and%20Forecast%20using%20rugarch%201.2-2.pdf)
+- [Issues in estimating VaR with GARCH](https://quant.stackexchange.com/questions/25946/issues-in-estimating-var-with-garch?answertab=votes#tab-top)
+- [Value-At-Risk (VaR) curve with Copula-GARCH model (R)](https://stackoverflow.com/questions/40174020/value-at-risk-var-curve-with-copula-garch-model-r)
+- [Calculation of VaR of a time series using a GARCH(1,1) ARMA(1,1) model](https://stats.stackexchange.com/questions/136958/calculation-of-var-of-a-time-series-using-a-garch1-1-arma1-1-model?answertab=votes#tab-top)
+- [Fitting and Predicting VaR based on an ARMA-GARCH Process](https://cran.r-project.org/web/packages/qrmtools/vignettes/ARMA_GARCH_VaR.html)
+
+```
+# conditional mean 
+cmu = as.numeric(as.data.frame(forecast, which = "series", 
+rollframe="all", aligned = FALSE)) 
+# conditional sigma 
+csigma = as.numeric(as.data.frame(forecast, which = "sigma", 
+rollframe="all", aligned = FALSE)) 
+
+I can calculate the VaR by using the property, that the normal distribution 
+is part of the location-scale distribution families 
+
+# use location+scaling transformation property of normal distribution: 
+VaR = qnorm(0.01)*csigma + cmu
+```
+
+*source : [rugarch VaR calculation "manually"](http://r.789695.n4.nabble.com/rugarch-VaR-calculation-quot-manually-quot-td4666462.html)*
+
+> For your purpose, you need a random variable with zero mean and unit variance. However, the variance of the Student-t distribution is νν−2 for ν>2 and not one, where ν are the degrees of freedom.
+> 
+> You get the correct VaR by multiplying the quantile of the Student-t distribution with ν−2ν−−−√:
+> 
+> 0.1262 + 1.059 * qt(0.05, 4.68) * sqrt((4.68-2) / 4.68)
+[1] -1.51334
+Alternatively, using the rugarch package which defaults to standardized distributions:
+> 
+> rugarch::qdist("std", 0.05, mu=0.1262, sigma=1.059, shape=4.68)
+[1] -1.51334
+
+*source : [Difference between uGarchRoll Value at Risk and manual calculations](https://stats.stackexchange.com/questions/298381/difference-between-ugarchroll-value-at-risk-and-manual-calculations?answertab=votes#tab-top)*
+
+## VaR for Long and Short
+
+- [Value-at-Risk for long and short trading positions - Evidence from developed and emerging equity markets](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Value-at-Risk%20for%20long%20and%20short%20trading%20positions%20-%20Evidence%20from%20developed%20and%20emerging%20equity%20markets.pdf)
+- [Value-at-Risk for Long and Short Trading Positions](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Value-at-Risk%20for%20Long%20and%20Short%20Trading%20Positions.pdf)
+- [Value at Risk for Long-Short Positions](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Value%20at%20Risk%20for%20Long-Short%20Positions.pdf)
 
 # Data
 
@@ -386,8 +443,7 @@ rm(sys1, sys2)
 32. [Comparison of Value-at-Risk Estimates from GARCH Models](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Comparison%20of%20Value-at-Risk%20Estimates%20from%20GARCH%20Models.pdf)
 33. [Comparison of Value at Risk Models and Forecasting Realized Volatility by using Intraday Data](https://github.com/scibrokes/real-time-fxcm/blob/master/reference/Comparison%20of%20Value%20at%20Risk%20Models%20and%20Forecasting%20Realized%20Volatility%20by%20using%20Intraday%20Data.pdf)
 34. [binary.com Interview Question I - Tick-Data-HiLo For Daily Trading (Blooper)](http://rpubs.com/englianhu/binary-Q1TD)
-
-
+35. [How Good Are Your VaR Estimates?](http://www.unstarched.net/2012/12/26/how-good-are-your-var-estimates/)
 
 ---
 

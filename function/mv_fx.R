@@ -1,5 +1,5 @@
 mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE, 
-                          .dist.model = 'mvnorm', .currency = 'JPY=X', 
+                          .dist.model = 'mvnorm', .currency = 'JPY=X', .VAR.fit = FALSE, 
                           .ahead = 1, .include.Op = FALSE, .Cl.only = FALSE, 
                           .solver = 'solnp', .roll = FALSE, .cluster = FALSE) {
   
@@ -93,7 +93,18 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       #'@ fit <- dccfit(dccSpec, data = mbase, solver = .solver, fit = multf, 
       #'@               cluster = cl)
       #'@ cat('step 2/3 dccfit done!\n')
-      fit <- dccfit(dccSpec, data = mbase, solver = .solver, cluster = cl)
+      
+      ## http://r.789695.n4.nabble.com/how-to-test-significance-of-VAR-coefficients-in-DCC-GARCH-Fit-td4472274.html
+      if (.VAR == TRUE && .VAR.fit == TRUE) {
+        vfit = varxfit(X = mbase, p = 1, exogen = NULL, robust = FALSE, 
+                       gamma = 0.25, delta = 0.01, nc = 10, ns = 500, 
+                       postpad = 'constant')
+      } else {
+        vfit <- NULL
+      }
+      
+      fit <- dccfit(dccSpec, data = mbase, solver = .solver, cluster = cl, 
+                    VAR.fit = vfit)
       cat('step 1/2 dccfit done!\n')
       
       fc <- dccforecast(fit, n.ahead = .ahead, cluster = cl)
@@ -159,12 +170,24 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     latestPrice <- xts(latestPrice)
     #res <- as.xts(res)
     
+    ## retrieve the VaR value for forecast n.ahead = 1
+    VaR <- ldply(
+      list(T1.VaR_01 = qnorm(0.01) * as.data.frame(sigma(fc)) + as.data.frame(fitted(fc)), 
+           T1.VaR_05 = qnorm(0.05) * as.data.frame(sigma(fc)) + as.data.frame(fitted(fc)), 
+           T1.VaR_95 = qnorm(0.95) * as.data.frame(sigma(fc)) + as.data.frame(fitted(fc)), 
+           T1.VaR_99 = qnorm(0.99) * as.data.frame(sigma(fc)) + as.data.frame(fitted(fc)))) %>% 
+      mutate(mshape = attributes(fit)$mfit$coef['[Joint]mshape'])
+    
+    vm <- names(VaR) %>% 
+      grep('Open|High|Low|Close', ., value=TRUE) %>% 
+      substr(1, nchar(.) - 11)
+    names(VaR)[2:4] <- vm
+    
     tmp = list(latestPrice = latestPrice, forecastPrice = res, 
+               variance = sigma(fc), forecastVaR = VaR, 
                fit = fit, forecast = fc, AIC = infocriteria(fit))
     return(tmp)
   }
-  
-  
 })
 
 
