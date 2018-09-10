@@ -211,6 +211,8 @@ Alexios
 
 [[原]量化投资教程：用R语言打造量化分析Web平台](https://segmentfault.com/a/1190000004543727)介绍了许多交易实用的函数。
 
+[An Example Of A Trading Strategy Coded Using Quantmod Package In R](https://www.quantinsti.com/blog/an-example-of-a-trading-strategy-coded-in-r/)
+
 ```{r roc}
 
 ```
