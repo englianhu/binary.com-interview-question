@@ -1,7 +1,7 @@
 mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE, 
                           .dist.model = 'mvnorm', .currency = 'JPY=X', .VAR.fit = FALSE, 
-                          .ahead = 1, .include.Op = FALSE, .Cl.only = FALSE, 
-                          .solver = 'solnp', .roll = FALSE, .cluster = FALSE) {
+                          .ahead = 1, .price_type = 'OHLC', .solver = 'solnp', 
+                          .roll = FALSE, .cluster = FALSE) {
   
   require(plyr, quietly = TRUE)
   require(dplyr, quietly = TRUE)
@@ -28,19 +28,30 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
   #median     uq      max neval
   #270.577 280.84 1008.597   100
   
-  if (.include.Op == TRUE & .Cl.only == FALSE) { 
+  .price_types <- c('OHLC', 'HLC', 'HL', 'C')
+  
+  if(!.price_type %in% .price_types) {
+    stop(paste0('.price_type must be in \'', paste(.price_types, collapse = ', '), '\'.'))
+  }
+  
+  if (.price_type == 'OHLC') {
     mbase <- cbind(Op(mbase), Hi(mbase), Lo(mbase), Cl(mbase))
+    mbase %<>% na.omit
     
-  } else if (.include.Op == FALSE & .Cl.only == FALSE) {
+  } else if (.price_type == 'HLC') {
     mbase <- cbind(Hi(mbase), Lo(mbase), Cl(mbase))
+    mbase %<>% na.omit
     
-  } else if ((.include.Op == TRUE & .Cl.only == TRUE)|
-             (.include.Op == FALSE & .Cl.only == TRUE)) {
+  } else if (.price_type == 'HL') {
+    mbase <- cbind(Hi(mbase), Lo(mbase))
+    mbase %<>% na.omit
+    
+  } else if (.price_type == 'C') {
     mbase <- Cl(mbase)
     mbase %<>% na.omit
     
   } else {
-    stop(".Cl.only = TRUE will strictly only get closing price.")
+    stop(paste0('.price_type must be in \'', paste(.price_types, collapse = ', '), '\'.'))
   }
   
   if (.cluster == TRUE) {
@@ -48,7 +59,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
   } else {
     cl <- NULL
   }
-	
+  
   if (.mv.model == 'dcc') {
     
     sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
@@ -66,8 +77,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     }
     
     ## .dist.model = 'mvt' since mvt produced most accurate outcome.
-    speclist <- filter_spec(mbase, .currency = .currency, 
-                            .include.Op = .include.Op, .Cl.only = .Cl.only)
+    speclist <- filter_spec(mbase, .currency = .currency, .price_type = .price_type)
     mspec <- multispec(speclist)
     
     dccSpec <- dccspec(
@@ -76,8 +86,8 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       external.regressors = NULL, #external.regressors = VAREXO, 
       dccOrder = c(1, 1), model = .model, 
       distribution = 'mvt') # Below article compares distribution model and 
-                            #   concludes that the 'mvt' is the best.
-                            # http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/
+    #   concludes that the 'mvt' is the best.
+    # http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/
     
     if (.roll == TRUE) {
       mod = dccroll(dccSpec, data = mbase, solver = .solver, 
@@ -161,7 +171,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     return(report(mod, type = 'fpm'))
     
   } else {
-      
+    
     res = fitted(fc)
     colnames(res) = names(mbase)
     latestPrice = tail(mbase, 1)
@@ -181,7 +191,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     vm <- names(VaR) %>% 
       grep('Open|High|Low|Close', ., value=TRUE) %>% 
       substr(1, nchar(.) - 11)
-    names(VaR)[2:4] <- vm
+    names(VaR[,2:(ncol(VaR)-1)]) <- vm
     
     tmp = list(latestPrice = latestPrice, forecastPrice = res, 
                variance = sigma(fc), forecastVaR = VaR, 

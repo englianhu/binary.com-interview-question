@@ -1,5 +1,4 @@
-filter_spec <- function(mbase, .currency = 'JPY=X', .include.Op = TRUE, 
-                        .Cl.only = FALSE) {
+filter_spec <- function(mbase, .currency = 'JPY=X', .price_type = 'OHLC') {
   
   ## load libraries and functions.
   if (!require('BBmisc')) install.packages('BBmisc')
@@ -15,16 +14,19 @@ filter_spec <- function(mbase, .currency = 'JPY=X', .include.Op = TRUE,
   if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
   mbase %<>% na.omit
   
+  .price_types <- c('OHLC', 'HLC', 'HL', 'C')
+  if(!.price_type %in% .price_types) {
+    stop(paste0('.price_type must be in \'', paste(.price_types, collapse = ', '), '\'.'))
+  }
+  
   ## search optimal arma order.
-  if (.include.Op == TRUE) {
+  if (.price_type == 'OHLC') {
     mb.Op <- suppressWarnings(filterFX(mbase, currency = .currency, price = 'Op'))
     armaOrder.Op <- opt_arma(mb.Op)
     
-  } else {
+  } else if (.price_type == 'HLC') {
     armaOrder.Op <- NULL
-  }
-  
-  if (.Cl.only == FALSE) {
+    
     mb.Hi <- suppressWarnings(filterFX(mbase, currency = .currency, price = 'Hi'))
     armaOrder.Hi <- opt_arma(mb.Hi)
     
@@ -38,7 +40,21 @@ filter_spec <- function(mbase, .currency = 'JPY=X', .include.Op = TRUE,
                       armaOrder.Lo = armaOrder.Lo, armaOrder.Cl = armaOrder.Cl) %>% 
       filterNull
 
-  } else {
+  } else if (.price_type == 'HL') {
+    armaOrder.Op <- NULL
+    armaOrder.Cl <- NULL
+    
+    mb.Hi <- suppressWarnings(filterFX(mbase, currency = .currency, price = 'Hi'))
+    armaOrder.Hi <- opt_arma(mb.Hi)
+    
+    mb.Lo <- suppressWarnings(filterFX(mbase, currency = .currency, price = 'Lo'))
+    armaOrder.Lo <- opt_arma(mb.Lo)
+    
+    armaOrder <- list(armaOrder.Op = armaOrder.Op, armaOrder.Hi = armaOrder.Hi, 
+                      armaOrder.Lo = armaOrder.Lo, armaOrder.Cl = armaOrder.Cl) %>% 
+      filterNull
+    
+  } else if (.price_type == 'C') {
     armaOrder.Hi <- NULL
     armaOrder.Lo <- NULL
     
@@ -57,6 +73,8 @@ filter_spec <- function(mbase, .currency = 'JPY=X', .include.Op = TRUE,
                         armaOrder.Lo = armaOrder.Lo, armaOrder.Cl = armaOrder.Cl) %>% 
         filterNull
     }
+  } else {
+    stop(paste0('.price_type must be in \'', paste(.price_types, collapse = ', '), '\'.'))
   }
   
   speclist <- llply(armaOrder, function(x) {
