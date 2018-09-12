@@ -637,12 +637,15 @@ Lo.base <- llply(mbase['USDJPY'], Lo)
 HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
 
 #data/fx/USDJPY/aDCC.GARCH.USDJPY.2013-01-14.rds saved!
-#DCC.HL.solnp error.
+#aDCC.HL.solnp error.
 #Error in aDCC.GARCH.USDJPY[[i]] : subscript out of bounds
-#tmID <- c('2013-01-15', '2013-02-04', '2013-02-05') %>% 
+#tmID <- c('2013-01-15', '2013-02-04', '2013-02-05', '2013-04-09', '2013-04-14', 
+#          '2013-04-22', '2013-04-23', '2013-04-24', '2014-10-28', '2017-04-20', 
+#          '2017-04-21', '2017-04-22', '2017-05-17', '2017-05-18', '2017-05-19', 
+#          '2017-05-20') %>% 
 #  ymd
-timeID %<>% .[. > ymd('2013-02-23')]
-
+#timeID %<>% .[. > ymd('2017-05-21')]
+#timeID %<>% .[-1
 aDCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
   
@@ -686,6 +689,76 @@ for (dt in timeID) {
       cat(paste0(
         'data/fx/', subdir, '/aDCC.GARCH.USDJPY.', 
         unique(aDCC.GARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+`FDCC`
+
+```{r FDCC-HLVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+## Multivariate models.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp')#, 'gosolnp')
+
+## Hi-Lo.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
+
+#data/fx/USDJPY/FDCC.GARCH.USDJPY.2013-01-14.rds saved!
+#FDCC.HL.solnp error.
+#Error in FDCC.GARCH.USDJPY[[i]] : subscript out of bounds
+#tmID <- c('2013-01-15', '2013-02-04', '2013-02-05', '2013-04-09', '2013-04-14', 
+#          '2013-04-22', '2013-04-23', '2013-04-24', '', '') %>% 
+#  ymd
+#timeID %<>% .[. > ymd('2016-02-10')]
+
+FDCC.GARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLo.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      FDCC.GARCH.USDJPY[[i]] <- tryCatch({ldply(md[2], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[7],#[i], 
+                .price_type = 'HL', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.HL.', 'solnp', ' error.\n')))
+        
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC), 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(FDCC.GARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(FDCC.GARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(FDCC.GARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/FDCC.GARCH.USDJPY.', 
+        unique(FDCC.GARCH.USDJPY[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/FDCC.GARCH.USDJPY.', 
+        unique(FDCC.GARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
       }
     }; rm(i)
   }
