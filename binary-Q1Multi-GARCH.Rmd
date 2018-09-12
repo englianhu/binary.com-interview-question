@@ -636,8 +636,14 @@ Hi.base <- llply(mbase['USDJPY'], Hi)
 Lo.base <- llply(mbase['USDJPY'], Lo)
 HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
 
-aDCC.GARCH.USDJPY <- list()
+#data/fx/USDJPY/aDCC.GARCH.USDJPY.2013-01-14.rds saved!
+#DCC.HL.solnp error.
+#Error in aDCC.GARCH.USDJPY[[i]] : subscript out of bounds
+#tmID <- c('2013-01-15', '2013-02-04', '2013-02-05') %>% 
+#  ymd
+timeID %<>% .[. > ymd('2013-02-23')]
 
+aDCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
   
   for (i in seq(cr_code[7])) {
