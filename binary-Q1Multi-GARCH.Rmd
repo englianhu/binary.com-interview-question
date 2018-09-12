@@ -563,6 +563,9 @@ Hi.base <- llply(mbase['USDJPY'], Hi)
 Lo.base <- llply(mbase['USDJPY'], Lo)
 HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
 
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% index %>% .[. >= timeID0]
+
 #data/fx/USDJPY/DCC.GARCH.USDJPY.2013-02-01.rds saved!
 #DCC.HL.solnp error.
 #Error in DCC.GARCH.USDJPY[[i]] : subscript out of bounds
@@ -635,6 +638,9 @@ sv <- c('solnp')#, 'gosolnp')
 Hi.base <- llply(mbase['USDJPY'], Hi)
 Lo.base <- llply(mbase['USDJPY'], Lo)
 HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
+
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% index %>% .[. >= timeID0]
 
 #data/fx/USDJPY/aDCC.GARCH.USDJPY.2013-01-14.rds saved!
 #aDCC.HL.solnp error.
@@ -710,13 +716,17 @@ Hi.base <- llply(mbase['USDJPY'], Hi)
 Lo.base <- llply(mbase['USDJPY'], Lo)
 HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
 
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% index %>% .[. >= timeID0]
+
 #data/fx/USDJPY/FDCC.GARCH.USDJPY.2013-01-14.rds saved!
 #FDCC.HL.solnp error.
 #Error in FDCC.GARCH.USDJPY[[i]] : subscript out of bounds
-#tmID <- c('2013-01-15', '2013-02-04', '2013-02-05', '2013-04-09', '2013-04-14', 
-#          '2013-04-22', '2013-04-23', '2013-04-24', '', '') %>% 
+#tmID <- c('2013-02-04', '2013-02-05', '2013-02-25', '2013-04-11', '2013-04-14', 
+#          '2013-04-15', '2013-04-22', '2013-04-23', '2013-04-24', '2014-10-28', 
+#          '2014-10-29', '2014-10-30') %>% 
 #  ymd
-#timeID %<>% .[. > ymd('2016-02-10')]
+timeID %<>% .[. > ymd('2014-11-28')]
 
 FDCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
