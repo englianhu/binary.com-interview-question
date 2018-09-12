@@ -563,10 +563,11 @@ Lo.base <- llply(mbase['USDJPY'], Lo)
 HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
 
 ## only use USDJPY trading day.
-timeID <- HiLo.base %>% index %>% .[. >= timeID0] + days(1)
-
-timeID <- c('2013-02-04', '2013-02-05', '2013-02-25', '2013-03-20', '2013-04-14', '2013-04-15', '2013-04-22', '2013-04-23', '2013-04-24', '2014-06-16', '2014-10-28', '2014-12-22', '2017-04-19', '2017-04-20', '2017-04-21', '2017-04-22', '2017-05-17', '2017-05-18', '2017-05-19', '2017-05-20') %>% ymd
-#timeID %<>% .[. > ymd('2017-07-13')]
+timeID <- HiLo.base %>% index %>% .[. >= timeID0] %>% c(., last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', pattern = '^DCC') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% unlist %>% ymd
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
 
 DCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -621,7 +622,6 @@ for (dt in timeID) {
 ```{r aDCC-HLVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
-## Multivariate models.
 md <- c('DCC', 'aDCC', 'FDCC')
 sv <- c('solnp')#, 'gosolnp')
 
@@ -631,19 +631,11 @@ Lo.base <- llply(mbase['USDJPY'], Lo)
 HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
 
 ## only use USDJPY trading day.
-timeID <- HiLo.base %>% index %>% .[. >= timeID0] + days(1)
-
-#data/fx/USDJPY/aDCC.GARCH.USDJPY.2013-01-14.rds saved!
-#aDCC.HL.solnp error.
-#Error in aDCC.GARCH.USDJPY[[i]] : subscript out of bounds
-#tmID <- c('2013-02-04', '2013-02-05', 
-#          '2013-04-23', '2013-04-24', '2014-10-28', '2017-04-20', 
-#          '2017-04-21', '2017-04-22', '2017-05-17', '2017-05-18', '2017-05-19', 
-#          '2017-05-20') %>% 
-#  ymd
-#timeID %<>% .[. > ymd('2017-05-21')]
-#timeID %<>% .[-1]
-
+timeID <- HiLo.base %>% index %>% .[. >= timeID0] %>% c(., last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', pattern = '^aDCC') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% unlist %>% ymd
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
 
 aDCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -707,15 +699,12 @@ Lo.base <- llply(mbase['USDJPY'], Lo)
 HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
 
 ## only use USDJPY trading day.
-timeID <- HiLo.base %>% index %>% .[. >= timeID0] + days(1)
+timeID <- HiLo.base %>% index %>% .[. >= timeID0] %>% c(., last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', pattern = '^FDCC') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% unlist %>% ymd
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
 
-#tmID <- c('2013-02-04', '2013-02-05', '2013-02-25', '2013-04-11', 
-#          '2013-04-14', '2013-04-15', '2013-04-22', '2013-04-23', '2013-04-24', 
-#          '2014-10-28', '2014-10-29', '2014-10-30', '2017-04-20', '2017-04-21', 
-#          '2017-04-22', '2017-05-17', '2017-05-18', '2017-05-19', '2017-05-20', 
-#          ) %>% 
-#  ymd
-timeID %<>% .[. > ymd('2017-08-29')]
 FDCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
   
@@ -728,7 +717,7 @@ for (dt in timeID) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
-      FDCC.GARCH.USDJPY[[i]] <- tryCatch({ldply(md[2], function(y) {
+      FDCC.GARCH.USDJPY[[i]] <- tryCatch({ldply(md[3], function(y) {
         df = tryCatch(
           mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[7],#[i], 
                 .price_type = 'HL', .VAR = FALSE, .cluster = .cl), 
@@ -923,6 +912,39 @@ The `mGJR()` function in `mgarchBEKK` use diversified optim function.
 
 
 # Model Comparison
+
+## Hi-Lo
+
+```{r DCC-compare}
+fls <- list.files('data/fx/USDJPY', pattern = 'DCC')
+
+## get only MSE and AIC/BIC but ommit VaR.
+MSE <- ldply(fls, function(x) {
+  dfm <- readRDS(paste0('data/fx/USDJPY/', x))
+  names(dfm) %<>% str_replace_all('USDJPY', 'Price')
+  dfm %>% separate(Type, c('Cat', 'Type', 'Model')) %>% 
+      dplyr::select(Date, Cat, Model, Price.High, Price.Low, 
+                    Price.High.T1, Price.Low.T1, 
+                    Akaike, Bayes, Shibata, Hannan.Quinn) %>% 
+    unique
+  }) %>% tbl_df
+
+ddply(MSE, .(Model), summarise, 
+        MSE.High = mean((Price.High.T1 - Price.High)^2), 
+        MSE.Low = mean((Price.Low.T1 - Price.Low)^2), 
+        n = length(Model), 
+        MSE.AIC = mean((Akaike - mean(Akaike))^2),
+        Akaike = mean(Akaike), 
+        Bayes = mean(Bayes), 
+        Shibata = mean(Shibata), 
+        Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE.High = round(MSE.High, 7), 
+                    MSE.Low = round(MSE.Low, 7))
+```
+
+## Hi-Lo-Cl
+
+## Cl
 
 # Conclusion
 
