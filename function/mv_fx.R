@@ -1,5 +1,5 @@
 mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE, 
-                          .dist.model = 'mvnorm', .currency = 'JPY=X', .VAR.fit = FALSE, 
+                          .dist.model = 'mvnorm', .currency = 'ALL', .VAR.fit = FALSE, 
                           .ahead = 1, .price_type = 'OHLC', .solver = 'solnp', 
                           .roll = FALSE, .cluster = FALSE) {
   
@@ -10,8 +10,32 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
   funs <- c('filterFX.R', 'opt_arma.R', 'filter_spec.R')
   l_ply(funs, function(x) source(paste0('function/', x)))
   
-  if (!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
-  mbase %<>% na.omit
+  
+  ## verify data type.
+  if (.currency == 'ALL' && is.list(mbase) && all(sapply(mbase, function(x) !is.xts(x)))) {
+    mbase <- llply(mbase, function(x) {
+      y <- xts(x[, -1], order.by = x$Date)
+      y %<>% na.omit
+    })
+  }
+  
+  if (.currency != 'ALL' && !is.list(mbase) && !is.xts(mbase)) {
+    mbase <- xts(mbase[, -1], order.by = mbase$Date)
+    mbase %<>% na.omit
+  }
+  
+  cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
+               'CNY=X', 'JPY=X')
+  
+  #'@ names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 
+  #'@                     'USDCNY', 'USDJPY')
+  names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 
+                      'USDCAD', 'USDCNY', 'USDJPY')
+  cr_codes <- c('ALL', cr_code)
+  
+  if(!.currency %in% cr_codes) {
+    stop(paste0('.currency must be in \'', paste(cr_codes, collapse = ', '), '\'.'))
+  }
   
   ## Here I compare the efficiency of filtering dataset.
   ## 

@@ -6,6 +6,9 @@ filterFX <- function(mbase, currency = 'JPY=X', price = 'Cl') {
   cr_name <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 
                'USDCNY', 'USDJPY')
   
+  names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 
+                      'USDCAD', 'USDCNY', 'USDJPY')
+  
   price_type <- c('Op', 'Hi', 'Lo', 'Cl', 'Ad')
   
   if(!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
