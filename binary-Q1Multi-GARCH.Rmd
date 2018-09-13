@@ -555,7 +555,6 @@ VAR.fit = vfit)
 
 ### Hi-Lo
 
-
 #### VAR=FALSE
 
 `DCC`
