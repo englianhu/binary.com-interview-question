@@ -59,7 +59,7 @@ timeID <- llply(mbase, function(x) as.character(index(x))) %>%
   unlist %>% unique %>% as.Date %>% sort
 timeID <- c(timeID, xts::last(timeID) + days(1)) #the last date + 1 in order to predict the next day of last date to make whole dataset completed.
 timeID0 <- ymd('2013-01-01')
-timeID <- timeID[timeID >= timeID0]
+timeID %<>% .[. >= timeID0]
 
 .cl = TRUE
 ```
@@ -540,18 +540,18 @@ VAR.fit = vfit)
 ```{r dcc-var, eval=FALSE}
 .VARs = c(TRUE, FALSE)
 #.rb = c(TRUE, FALSE)
-
-
 ```
 
 ### Hi-Lo
 
+
 #### VAR=FALSE
 
-```{r DCC-HLVARF, warning=FALSE, eval=FALSE, echo=FALSE}
+`DCC`
+
+```{r DCC-HLVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
-## Multivariate models.
 md <- c('DCC', 'aDCC', 'FDCC')
 sv <- c('solnp')#, 'gosolnp')
 
@@ -560,8 +560,19 @@ Hi.base <- llply(mbase['USDJPY'], Hi)
 Lo.base <- llply(mbase['USDJPY'], Lo)
 HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
 
-DCC.GARCH.USDJPY <- list()
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% 
+  index %>% ymd %>% 
+  .[. >= timeID0] %>% 
+  c(., xts::last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.USDJPY.HL.') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
 
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+DCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
   
   for (i in seq(cr_code[7])) {
@@ -588,16 +599,168 @@ for (dt in timeID) {
         df
       })}, error = function(e) NULL)
       
-      if (!dir.exists(paste0('data/fx/', substr(names(DCC.GARCH.USDJPY[[i]])[3], 1, 6)))) 
-        dir.create(paste0('data/fx/', substr(names(DCC.GARCH.USDJPY[[i]])[3], 1, 6)))
+      if (is.null(DCC.GARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(DCC.GARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
       
       saveRDS(DCC.GARCH.USDJPY[[i]], paste0(
-        'data/fx/', substr(names(DCC.GARCH.USDJPY[[i]])[3], 1, 6), '/DCC.GARCH.USDJPY.', 
+        'data/fx/', subdir, '/DCC.GARCH.USDJPY.HL.', 
         unique(DCC.GARCH.USDJPY[[i]]$Date), '.rds'))
       
       cat(paste0(
-        'data/fx/', substr(names(DCC.GARCH.USDJPY[[i]])[3], 1, 6), '/DCC.GARCH.USDJPY.', 
+        'data/fx/', subdir, '/DCC.GARCH.USDJPY.HL.', 
         unique(DCC.GARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+`aDCC`
+
+```{r aDCC-HLVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp')#, 'gosolnp')
+
+## Hi-Lo.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
+
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% 
+  index %>% ymd %>% 
+  .[. >= timeID0] %>% 
+  c(., xts::last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', pattern = '^aDCC.GARCH.USDJPY.HL.') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+aDCC.GARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLo.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      aDCC.GARCH.USDJPY[[i]] <- tryCatch({ldply(md[2], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[7],#[i], 
+                .price_type = 'HL', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.HL.', 'solnp', ' error.\n')))
+        
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC), 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(aDCC.GARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(aDCC.GARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(aDCC.GARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/aDCC.GARCH.USDJPY.HL.', 
+        unique(aDCC.GARCH.USDJPY[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/aDCC.GARCH.USDJPY.HL.', 
+        unique(aDCC.GARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+`FDCC`
+
+```{r FDCC-HLVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp')#, 'gosolnp')
+
+## Hi-Lo.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
+
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% 
+  index %>% ymd %>% 
+  .[. >= timeID0] %>% 
+  c(., xts::last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', pattern = '^FDCC.GARCH.USDJPY.HL.') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+FDCC.GARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLo.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      FDCC.GARCH.USDJPY[[i]] <- tryCatch({ldply(md[3], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[7],#[i], 
+                .price_type = 'HL', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.HL.', 'solnp', ' error.\n')))
+        
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC), 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(FDCC.GARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(FDCC.GARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(FDCC.GARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/FDCC.GARCH.USDJPY.HL.', 
+        unique(FDCC.GARCH.USDJPY[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/FDCC.GARCH.USDJPY.HL.', 
+        unique(FDCC.GARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
       }
     }; rm(i)
   }
@@ -607,17 +770,444 @@ for (dt in timeID) {
 
 #### VAR=FALSE
 
-```{r dcc-HLCVARF, message=FALSE, warning=FALSE}
+`DCC`
 
+```{r DCC-HLCVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp')#, 'gosolnp')
+
+## Hi-Lo-Cl.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+Cl.base <- llply(mbase['USDJPY'], Cl)
+HiLoCl.base <- c(Hi.base, Lo.base, Cl.base) %>% 
+  do.call(cbind, .) %>% na.omit
+
+## only use USDJPY trading day.
+timeID <- HiLoCl.base %>% index %>% ymd %>% 
+  .[. >= timeID0] %>% c(., xts::last(.) + days(1))
+
+tmID <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.USDJPY.HLC.') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+DCC.GARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLoCl.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      DCC.GARCH.USDJPY[[i]] <- tryCatch({ldply(md[1], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[7],#[i], 
+                .price_type = 'HLC', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.HLC.', 'solnp', ' error.\n')))
+        
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC), 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(DCC.GARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(DCC.GARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(DCC.GARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/DCC.GARCH.USDJPY.HLC.', 
+        unique(DCC.GARCH.USDJPY[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/DCC.GARCH.USDJPY.HLC.', 
+        unique(DCC.GARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+`aDCC`
+
+```{r aDCC-HLCVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp')#, 'gosolnp')
+
+## Hi-Lo-Cl.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+Cl.base <- llply(mbase['USDJPY'], Cl)
+HiLoCl.base <- c(Hi.base, Lo.base, Cl.base) %>% 
+  do.call(cbind, .) %>% na.omit
+
+## only use USDJPY trading day.
+timeID <- HiLoCl.base %>% index %>% ymd %>% 
+  .[. >= timeID0] %>% c(., xts::last(.) + days(1))
+
+tmID <- list.files('data/fx/USDJPY', pattern = '^aDCC.GARCH.USDJPY.HLC.') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+aDCC.GARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLoCl.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      aDCC.GARCH.USDJPY[[i]] <- tryCatch({ldply(md[2], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[7],#[i], 
+                .price_type = 'HLC', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.HLC.', 'solnp', ' error.\n')))
+        
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC), 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(aDCC.GARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(aDCC.GARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(aDCC.GARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/aDCC.GARCH.USDJPY.HLC.', 
+        unique(aDCC.GARCH.USDJPY[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/aDCC.GARCH.USDJPY.HLC.', 
+        unique(aDCC.GARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+`FDCC`
+
+```{r FDCC-HLCVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp')#, 'gosolnp')
+
+## Hi-Lo-Cl.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+Cl.base <- llply(mbase['USDJPY'], Cl)
+HiLoCl.base <- c(Hi.base, Lo.base, Cl.base) %>% 
+  do.call(cbind, .) %>% na.omit
+
+## only use USDJPY trading day.
+timeID <- HiLoCl.base %>% index %>% ymd %>% 
+  .[. >= timeID0] %>% c(., xts::last(.) + days(1))
+
+tmID <- list.files('data/fx/USDJPY', pattern = '^FDCC.GARCH.USDJPY.HLC.') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+FDCC.GARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLoCl.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      FDCC.GARCH.USDJPY[[i]] <- tryCatch({ldply(md[3], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[7],#[i], 
+                .price_type = 'HLC', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.HLC.', 'solnp', ' error.\n')))
+        
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC), 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(FDCC.GARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(FDCC.GARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(FDCC.GARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/FDCC.GARCH.USDJPY.HLC.', 
+        unique(FDCC.GARCH.USDJPY[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/FDCC.GARCH.USDJPY.HLC.', 
+        unique(FDCC.GARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
 ```
 
 ### Cl
 
-#### VAR=FALSE
+`DCC`
 
-```{r dcc-CVARF, message=FALSE, warning=FALSE}
+```{r DCC-CVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp')#, 'gosolnp')
 
+## Cl.
+Cl.base <- llply(mbase, Cl)
+Cl.base %<>% do.call(cbind, .) %>% na.omit
+
+## all currencies trading day.
+timeID <- Cl.base %>% index %>% ymd %>% 
+  .[. >= timeID0] %>% c(., xts::last(.) + days(1))
+
+tmID <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.C.') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+DCC.GARCH <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- Cl.base[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      DCC.GARCH[[i]] <- tryCatch({ldply(md[1], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[i], 
+                .price_type = 'C', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.C.', 'solnp', ' error.\n')))
+        
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC), 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(DCC.GARCH[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(DCC.GARCH[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(DCC.GARCH[[i]], paste0(
+        'data/fx/', subdir, '/DCC.GARCH.C.', 
+        unique(DCC.GARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/DCC.GARCH.C.', 
+        unique(DCC.GARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
 ```
+
+`aDCC`
+
+```{r aDCC-CVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp')#, 'gosolnp')
+
+## Cl.
+Cl.base <- llply(mbase, Cl)
+Cl.base %<>% do.call(cbind, .) %>% na.omit
+
+## all currencies trading day.
+timeID <- Cl.base %>% index %>% ymd %>% 
+  .[. >= timeID0] %>% c(., xts::last(.) + days(1))
+
+tmID <- list.files('data/fx/USDJPY', pattern = '^aDCC.GARCH.C.') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+aDCC.GARCH <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- Cl.base[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      aDCC.GARCH[[i]] <- tryCatch({ldply(md[2], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[i], 
+                .price_type = 'C', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.C.', 'solnp', ' error.\n')))
+        
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC), 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(aDCC.GARCH[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(aDCC.GARCH[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(aDCC.GARCH[[i]], paste0(
+        'data/fx/', subdir, '/aDCC.GARCH.C.', 
+        unique(aDCC.GARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/aDCC.GARCH.C.', 
+        unique(aDCC.GARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+`FDCC`
+
+```{r FDCC-CVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp')#, 'gosolnp')
+
+## Cl.
+Cl.base <- llply(mbase, Cl)
+Cl.base %<>% do.call(cbind, .) %>% na.omit
+
+## all currencies trading day.
+timeID <- Cl.base %>% index %>% ymd %>% 
+  .[. >= timeID0] %>% c(., xts::last(.) + days(1))
+
+tmID <- list.files('data/fx/USDJPY', pattern = '^FDCC.GARCH.C.') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+FDCC.GARCH <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code)) {
+    
+    smp <- Cl.base[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      FDCC.GARCH[[i]] <- tryCatch({ldply(md[3], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[i], 
+                .price_type = 'C', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.C.', 'solnp', ' error.\n')))
+        
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC), 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(FDCC.GARCH[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(FDCC.GARCH[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(FDCC.GARCH[[i]], paste0(
+        'data/fx/', subdir, '/FDCC.GARCH.C.', 
+        unique(FDCC.GARCH[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/FDCC.GARCH.C.', 
+        unique(FDCC.GARCH[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+#### VAR=FALSE
 
 ## GO-GARCH
 
@@ -762,6 +1352,134 @@ The `mGJR()` function in `mgarchBEKK` use diversified optim function.
 
 
 # Model Comparison
+
+## Hi-Lo
+
+### Multivariate
+
+```{r DCC-compare}
+fls <- list.files('data/fx/USDJPY', pattern = 'DCC.GARCH.USDJPY.HL.')
+
+validate <- fls %>% 
+    str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+    unlist %>% 
+    plyr::count() %>% 
+    tbl_df
+validate %>% dplyr::filter(freq != 3) %>% 
+  kable(caption = 'Count missing observation') %>% 
+  kable_styling(
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+## A tibble: 3 x 2
+#  x           freq
+#  <fct>      <int>
+#1 2013-04-09     2
+#2 2013-04-24     2
+#3 2014-10-29     2
+
+#timeID <- c('2013-04-09', '2013-04-24', '2014-10-29')
+#
+# llply(timeID, function(x) {
+# 	grep(x, fls, value=TRUE)
+# })
+#[[1]]
+#[1] "DCC.GARCH.USDJPY.HL.2013-04-09.rds"  "FDCC.GARCH.USDJPY.HL.2013-04-09.rds"
+#
+#[[2]]
+#[1] "aDCC.GARCH.USDJPY.HL.2013-04-24.rds" "FDCC.GARCH.USDJPY.HL.2013-04-24.rds"
+#
+#[[3]]
+#[1] "aDCC.GARCH.USDJPY.HL.2014-10-29.rds" "DCC.GARCH.USDJPY.HL.2014-10-29.rds"
+td <- validate %>% dplyr::filter(freq != 3) %>% .$x %>% ymd
+
+## get only MSE and AIC/BIC but ommit VaR.
+MSE.mv <- ldply(fls, function(x) {
+  dfm <- readRDS(paste0('data/fx/USDJPY/', x))
+  names(dfm) %<>% str_replace_all('USDJPY', 'Price')
+  dfm %>% separate(Type, c('Cat', 'Type', 'Model')) %>% 
+      dplyr::select(Date, Cat, Model, Price.High, Price.Low, 
+                    Price.High.T1, Price.Low.T1, 
+                    Akaike, Bayes, Shibata, Hannan.Quinn) %>% 
+    unique
+  }) %>% tbl_df %>% 
+  dplyr::filter(!Date %in% td)
+```
+
+```{r, echo=FALSE}
+ddply(MSE.mv, .(Model), summarise, 
+      MSE.High = mean((Price.High.T1 - Price.High)^2), 
+      MSE.Low = mean((Price.Low.T1 - Price.Low)^2), 
+      Mean.MSE = (MSE.High + MSE.Low)/2, 
+      n = length(Model), 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      MSE.BIC = mean((Bayes - mean(Bayes))^2),
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE.High = round(MSE.High, 7), 
+                    MSE.Low = round(MSE.Low, 7)) %>% 
+  kable(caption = 'Hi-Lo Price MSE, AIC, BIC') %>% 
+  kable_styling(
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%')#, height = '400px')
+```
+
+In order to compare the models, I try to compare with :
+
+- MSE of High Price (know the accuracy of High Price)
+- MSE of Low Price (know the accuracy of Low Price)
+- Mean value of MSE for High and Low Price ($\frac{Hi+Lo}{2}$)
+- MSE of AIC (know the accuracy of AIC)
+- MSE of BIC (know the accuracy of BIC)
+- Mean of AIC (Mean value of AIC)
+- Mean of BIC (Mean value of BIC)
+
+### Compare with Univariate
+
+```{r uniGARCH}
+## Univariate
+td <- validate %>% dplyr::filter(freq == 3) %>% .$x %>% ymd
+
+## get only MSE and AIC/BIC but ommit VaR.
+MSE.uni <- ldply(td, function(x) {
+    dfm <- readRDS(paste0('data/fx/USDJPY/pred2.', x, '.rds'))
+    names(dfm) %<>% str_replace_all('USDJPY', 'Price')
+    dfm %>% separate(Type, c('Cat', 'Type')) %>% 
+      dplyr::filter(Type == 'Hi' | Type == 'Lo') %>% 
+      mutate(Type2 = Type) %>% 
+      spread(Type, Price) %>% 
+      dplyr::rename(Price.High = Hi, Price.Low = Lo) %>% 
+      spread(Type2, `Price.T+1`) %>% 
+      dplyr::rename(Price.High.T1 = Hi, Price.Low.T1 = Lo) %>% 
+      dplyr::select(Date, Cat, Price.High, Price.Low, 
+                    Price.High.T1, Price.Low.T1, 
+                    Akaike, Bayes, Shibata, Hannan.Quinn)
+  }) %>% tbl_df
+```
+
+```{r, echo=FALSE}
+ddply(MSE.uni, .(Cat), summarise, 
+      MSE.High = mean((Price.High.T1 - Price.High)^2, na.rm = TRUE), 
+      MSE.Low = mean((Price.Low.T1 - Price.Low)^2, na.rm = TRUE), 
+      Mean.MSE = (MSE.High + MSE.Low)/2, 
+      n = length(Price.High), 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2, na.rm = TRUE),
+      Akaike = mean(Akaike), 
+      MSE.BIC = mean((Bayes - mean(Bayes))^2, na.rm = TRUE),
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE.High = round(MSE.High, 7), 
+                    MSE.Low = round(MSE.Low, 7)) %>% 
+  kable(caption = 'Hi-Lo Price MSE, AIC, BIC') %>% 
+  kable_styling(
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%')#, height = '400px')
+```
+
+## Hi-Lo-Cl
+
+## Cl
 
 # Conclusion
 
