@@ -1,5 +1,5 @@
 mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE, 
-                          .dist.model = 'mvnorm', .currency = 'ALL', .VAR.fit = FALSE, 
+                          .dist.model = 'mvnorm', .currency = 'JPY=X', .VAR.fit = FALSE, 
                           .ahead = 1, .price_type = 'OHLC', .solver = 'solnp', 
                           .roll = FALSE, .cluster = FALSE) {
   
@@ -10,32 +10,8 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
   funs <- c('filterFX.R', 'opt_arma.R', 'filter_spec.R')
   l_ply(funs, function(x) source(paste0('function/', x)))
   
-  
-  ## verify data type.
-  if (.currency == 'ALL' && is.list(mbase) && all(sapply(mbase, function(x) !is.xts(x)))) {
-    mbase <- llply(mbase, function(x) {
-      y <- xts(x[, -1], order.by = x$Date)
-      y %<>% na.omit
-    })
-  }
-  
-  if (.currency != 'ALL' && !is.list(mbase) && !is.xts(mbase)) {
-    mbase <- xts(mbase[, -1], order.by = mbase$Date)
-    mbase %<>% na.omit
-  }
-  
-  cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
-               'CNY=X', 'JPY=X')
-  
-  #'@ names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 
-  #'@                     'USDCNY', 'USDJPY')
-  names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 
-                      'USDCAD', 'USDCNY', 'USDJPY')
-  cr_codes <- c('ALL', cr_code)
-  
-  if(!.currency %in% cr_codes) {
-    stop(paste0('.currency must be in \'', paste(cr_codes, collapse = ', '), '\'.'))
-  }
+  if (!is.xts(mbase)) mbase <- xts(mbase[, -1], order.by = mbase$Date)
+  mbase %<>% na.omit
   
   ## Here I compare the efficiency of filtering dataset.
   ## 
@@ -84,6 +60,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     cl <- NULL
   }
   
+  # --------------- DCC -------------------------------------
   if (.mv.model == 'dcc') {
     
     sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
@@ -145,10 +122,13 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       #'@ cat('step 3/3 dccforecast done!\n')
       cat('step 2/2 dccforecast done!\n')
     }
-    
+  
+  # --------------- go-GARCH ---------------------------------
   } else if (.mv.model == 'go-GARCH') {
     
-    armaOrder <- opt_arma(mbase)
+    ## I simply use the mean value of multivariate and round.
+    armaOrder <- ldply(mbase, opt_arma) %>% 
+      .[,-1] %>% colMeans %>% round(0)
     
     md <- c('constant', 'AR', 'VAR')
     if (!.model %in% md) {
@@ -163,6 +143,14 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     } else {
       stop(".dist.model must %in% c('mvnorm', 'manig', 'magh').")
     }
+    ## http://r.789695.n4.nabble.com/how-to-test-significance-of-VAR-coefficients-in-DCC-GARCH-Fit-td4472274.html
+    if (.VAR == TRUE && .VAR.fit == TRUE) {
+      vfit = varxfit(X = mbase, p = 1, exogen = NULL, robust = FALSE, 
+                     gamma = 0.25, delta = 0.01, nc = 10, ns = 500, 
+                     postpad = 'constant')
+    } else {
+      vfit <- NULL
+    }
     
     spec <- gogarchspec(
       variance.model = list(
@@ -173,7 +161,8 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
         model = .model, robust = FALSE), 
       distribution.model = .dist.model)
     
-    fit <- gogarchfit(spec, mbase, solver = 'hybrid', cluster = cl)
+    fit <- gogarchfit(spec, mbase, solver = 'hybrid', VAR.fit = vfit, 
+                      cluster = cl)
     cat('step 1/2 gogarchfit done!\n')
     
     if (.roll == TRUE) {
@@ -185,6 +174,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       cat('step 2/2 gogarchforecast done!\n')
     }
     
+    # --------------- copula-GARCH ------------------------------
   } else if (.mv.model == 'copula-GARCH') {
     ...
   } else {
@@ -204,6 +194,18 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     latestPrice <- xts(latestPrice)
     #res <- as.xts(res)
     
+    if (.mv.model == 'dcc') {
+      AIC = infocriteria(fit)
+      
+    } else if (.mv.model == 'go-GARCH') {
+      AIC = llply(attributes(attributes(fit)$mfit$ufit)$fit, infocriteria)
+      names(AIC) <- attributes(fit)$model$modeldata$asset.names
+      
+    } else if (.mv.model == 'copula-GARCH') {
+      AIC = infocriteria(fit)
+    }
+    
+    
     ## retrieve the VaR value for forecast n.ahead = 1
     VaR <- ldply(
       list(T1.VaR_01 = qnorm(0.01) * as.data.frame(sigma(fc)) + as.data.frame(fitted(fc)), 
@@ -219,7 +221,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     
     tmp = list(latestPrice = latestPrice, forecastPrice = res, 
                variance = sigma(fc), forecastVaR = VaR, 
-               fit = fit, forecast = fc, AIC = infocriteria(fit))
+               fit = fit, forecast = fc, AIC = AIC)
     return(tmp)
   }
 })
