@@ -804,7 +804,7 @@ tmID <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.USDJPY.HLC.') %>%
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
-timeID %<>% .[!. %in% tmID]
+timeID %<>% .[!. %in% tmID] %>% .[-1]
 timeID %<>% .[. > ymd('2013-01-01')]
 
 DCC.GARCH.USDJPY <- list()
@@ -881,7 +881,7 @@ tmID <- list.files('data/fx/USDJPY', pattern = '^aDCC.GARCH.USDJPY.HLC.') %>%
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
-timeID %<>% .[!. %in% tmID]
+timeID %<>% .[!. %in% tmID] %>% .[-1]
 timeID %<>% .[. > ymd('2013-01-01')]
 
 aDCC.GARCH.USDJPY <- list()
@@ -958,7 +958,7 @@ tmID <- list.files('data/fx/USDJPY', pattern = '^FDCC.GARCH.USDJPY.HLC.') %>%
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
-timeID %<>% .[!. %in% tmID]
+timeID %<>% .[!. %in% tmID] %>% .[-1]
 timeID %<>% .[. > ymd('2013-01-01')]
 
 FDCC.GARCH.USDJPY <- list()
