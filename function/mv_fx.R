@@ -1,5 +1,5 @@
 mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE, 
-                          .dist.model = 'mvnorm', .currency = 'JPY=X', .VAR.fit = FALSE, 
+                          .dist.model = 'mvnorm', .currency = 'JPY=X', 
                           .ahead = 1, .price_type = 'OHLC', .solver = 'solnp', 
                           .roll = FALSE, .cluster = FALSE) {
   
@@ -106,7 +106,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       #'@ cat('step 2/3 dccfit done!\n')
       
       ## http://r.789695.n4.nabble.com/how-to-test-significance-of-VAR-coefficients-in-DCC-GARCH-Fit-td4472274.html
-      if (.VAR == TRUE && .VAR.fit == TRUE) {
+      if (.VAR == TRUE) {
         vfit = varxfit(X = mbase, p = 1, exogen = NULL, robust = FALSE, 
                        gamma = 0.25, delta = 0.01, nc = 10, ns = 500, 
                        postpad = 'constant')
@@ -144,7 +144,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       stop(".dist.model must %in% c('mvnorm', 'manig', 'magh').")
     }
     ## http://r.789695.n4.nabble.com/how-to-test-significance-of-VAR-coefficients-in-DCC-GARCH-Fit-td4472274.html
-    if (.VAR == TRUE && .VAR.fit == TRUE) {
+    if (.VAR == TRUE) {
       vfit = varxfit(X = mbase, p = 1, exogen = NULL, robust = FALSE, 
                      gamma = 0.25, delta = 0.01, nc = 10, ns = 500, 
                      postpad = 'constant')
