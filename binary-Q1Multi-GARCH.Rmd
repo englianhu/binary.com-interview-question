@@ -1262,9 +1262,7 @@ names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[3]])$fit)
 
 ### Hi-Lo
 
-#### VAR=FALSE
-
-**Univariate**
+#### United ARIMA Order Multivariate
 
 `model = 'constant'`
 
@@ -1506,11 +1504,11 @@ for (dt in timeID) {
   }
 ```
 
-**Multivariate**
+#### Flexible ARIMA Order Multivariate
 
 `model = 'constant'`
 
-```{r goGARCH-HLCF, message=FALSE, warning=FALSE, eval=FALSE}
+```{r mvgoGARCH-HLCF, message=FALSE, warning=FALSE, eval=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
 .dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
@@ -1528,14 +1526,14 @@ timeID <- HiLo.base %>%
   .[. >= timeID0] %>% 
   c(., xts::last(.) + days(1))
 tmID <- list.files('data/fx/USDJPY', 
-                   pattern = '^goGARCH.USDJPY.HL.constant.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+                   pattern = '^mvgoGARCH.USDJPY.HL.constant.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
 timeID %<>% .[!. %in% tmID]
 timeID %<>% .[. > ymd('2013-01-01')]
 
-goGARCH.USDJPY <- list()
+mvgoGARCH.USDJPY <- list()
 for (dt in timeID) {
   
   for (i in seq(cr_code[7])) {
@@ -1547,9 +1545,9 @@ for (dt in timeID) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
-      goGARCH.USDJPY[[i]] <- tryCatch({ldply(md[1], function(y) {
+      mvgoGARCH.USDJPY[[i]] <- tryCatch({ldply(md[1], function(y) {
         df = tryCatch(
-          mv_fx(smp, .mv.model = 'go-GARCH', .model = y, .solver = 'solnp', 
+          mv_fx(smp, .mv.model = 'mv-goGARCH', .model = y, .solver = 'solnp', 
                 .currency = cr_code[7],#[i], 
                 .price_type = 'HL', .VAR = FALSE, .cluster = .cl), 
           error = function(e) cat(paste0('.HL.', y, 'solnp', ' error.\n')))
@@ -1565,24 +1563,24 @@ for (dt in timeID) {
         df
       })}, error = function(e) NULL)
       
-      if (is.null(goGARCH.USDJPY[[i]])) {
+      if (is.null(mvgoGARCH.USDJPY[[i]])) {
         subdir <- 'USDJPY'
       } else {
-        subdir <- substr(names(goGARCH.USDJPY[[i]])[3], 1, 6)
+        subdir <- substr(names(mvgoGARCH.USDJPY[[i]])[3], 1, 6)
       }
       
       if (!dir.exists(paste0('data/fx/', subdir))) 
         dir.create(paste0('data/fx/', subdir))
       
-      saveRDS(goGARCH.USDJPY[[i]], paste0(
-        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[1], '.', 
+      saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[1], '.', 
         .dist.models[1], '.', 
-        unique(goGARCH.USDJPY[[i]]$Date), '.rds'))
+        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
       
       cat(paste0(
-        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[1], '.', 
+        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[1], '.', 
         .dist.models[1], '.', 
-        unique(goGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
       }
     }; rm(i)
   }
@@ -1590,7 +1588,7 @@ for (dt in timeID) {
 
 `model = 'AR'`
 
-```{r goGARCH-HLARF, message=FALSE, warning=FALSE, eval=FALSE}
+```{r mvgoGARCH-HLARF, message=FALSE, warning=FALSE, eval=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
 .dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
@@ -1608,14 +1606,14 @@ timeID <- HiLo.base %>%
   .[. >= timeID0] %>% 
   c(., xts::last(.) + days(1))
 tmID <- list.files('data/fx/USDJPY', 
-                   pattern = '^goGARCH.USDJPY.HL.AR.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+                   pattern = '^mvgoGARCH.USDJPY.HL.AR.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
 timeID %<>% .[!. %in% tmID]
 timeID %<>% .[. > ymd('2013-01-01')]
 
-goGARCH.USDJPY <- list()
+mvgoGARCH.USDJPY <- list()
 for (dt in timeID) {
   
   for (i in seq(cr_code[7])) {
@@ -1627,9 +1625,9 @@ for (dt in timeID) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
-      goGARCH.USDJPY[[i]] <- tryCatch({ldply(md[2], function(y) {
+      mvgoGARCH.USDJPY[[i]] <- tryCatch({ldply(md[2], function(y) {
         df = tryCatch(
-          mv_fx(smp, .mv.model = 'go-GARCH', .model = y, .solver = 'solnp', 
+          mv_fx(smp, .mv.model = 'mv-goGARCH', .model = y, .solver = 'solnp', 
                 .currency = cr_code[7],#[i], 
                 .price_type = 'HL', .VAR = FALSE, .cluster = .cl), 
           error = function(e) cat(paste0('.HL.', y, 'solnp', ' error.\n')))
@@ -1645,24 +1643,24 @@ for (dt in timeID) {
         df
       })}, error = function(e) NULL)
       
-      if (is.null(goGARCH.USDJPY[[i]])) {
+      if (is.null(mvgoGARCH.USDJPY[[i]])) {
         subdir <- 'USDJPY'
       } else {
-        subdir <- substr(names(goGARCH.USDJPY[[i]])[3], 1, 6)
+        subdir <- substr(names(mvgoGARCH.USDJPY[[i]])[3], 1, 6)
       }
       
       if (!dir.exists(paste0('data/fx/', subdir))) 
         dir.create(paste0('data/fx/', subdir))
       
-      saveRDS(goGARCH.USDJPY[[i]], paste0(
-        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[2], '.', 
+      saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[2], '.', 
         .dist.models[1], '.', 
-        unique(goGARCH.USDJPY[[i]]$Date), '.rds'))
+        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
       
       cat(paste0(
-        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[2], '.', 
+        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[2], '.', 
         .dist.models[1], '.', 
-        unique(goGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
       }
     }; rm(i)
   }
@@ -1670,7 +1668,7 @@ for (dt in timeID) {
 
 `model = 'VAR'`
 
-```{r goGARCH-HLVARF, message=FALSE, warning=FALSE, eval=FALSE}
+```{r mvgoGARCH-HLVARF, message=FALSE, warning=FALSE, eval=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
 .dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
@@ -1688,14 +1686,14 @@ timeID <- HiLo.base %>%
   .[. >= timeID0] %>% 
   c(., xts::last(.) + days(1))
 tmID <- list.files('data/fx/USDJPY', 
-                   pattern = '^goGARCH.USDJPY.HL.VAR.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+                   pattern = '^mvgoGARCH.USDJPY.HL.VAR.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
 timeID %<>% .[!. %in% tmID]
 timeID %<>% .[. > ymd('2013-01-01')]
 
-goGARCH.USDJPY <- list()
+mvgoGARCH.USDJPY <- list()
 for (dt in timeID) {
   
   for (i in seq(cr_code[7])) {
@@ -1707,7 +1705,7 @@ for (dt in timeID) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
-      goGARCH.USDJPY[[i]] <- tryCatch({ldply(md[3], function(y) {
+      mvgoGARCH.USDJPY[[i]] <- tryCatch({ldply(md[3], function(y) {
         df = tryCatch(
           mv_fx(smp, .mv.model = 'go-GARCH', .model = y, .solver = 'solnp', 
                 .currency = cr_code[7],#[i], 
@@ -1725,43 +1723,27 @@ for (dt in timeID) {
         df
       })}, error = function(e) NULL)
       
-      if (is.null(goGARCH.USDJPY[[i]])) {
+      if (is.null(mvgoGARCH.USDJPY[[i]])) {
         subdir <- 'USDJPY'
       } else {
-        subdir <- substr(names(goGARCH.USDJPY[[i]])[3], 1, 6)
+        subdir <- substr(names(mvgoGARCH.USDJPY[[i]])[3], 1, 6)
       }
       
       if (!dir.exists(paste0('data/fx/', subdir))) 
         dir.create(paste0('data/fx/', subdir))
       
-      saveRDS(goGARCH.USDJPY[[i]], paste0(
-        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[3], '.', 
+      saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[3], '.', 
         .dist.models[1], '.', 
-        unique(goGARCH.USDJPY[[i]]$Date), '.rds'))
+        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
       
       cat(paste0(
-        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[3], '.', 
+        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[3], '.', 
         .dist.models[1], '.', 
-        unique(goGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
       }
     }; rm(i)
   }
-```
-
-### Hi-Lo-Cl
-
-#### VAR=FALSE
-
-```{r goGARCH-HLCVARF, message=FALSE, warning=FALSE}
-
-```
-
-### Cl
-
-#### VAR=FALSE
-
-```{r goGARCH-CVARF, message=FALSE, warning=FALSE}
-
 ```
 
 ## Copula-GARCH

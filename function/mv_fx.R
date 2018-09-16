@@ -60,9 +60,8 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     cl <- NULL
   }
   
-  # --------------- DCC -------------------------------------
   if (.mv.model == 'dcc') {
-    
+    # --------------------- DCC -----------------------------
     sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
     if (!.solver %in% sv) {
       stop(".solver must be %in% c('solnp', 'nlminb', 'lbfgs', 'gosolnp')")
@@ -123,8 +122,9 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       cat('step 2/2 dccforecast done!\n')
     }
     
-    # --------------- go-GARCH ---------------------------------
+
   } else if (.mv.model == 'go-GARCH') {
+    # -------------------go-GARCH ---------------------------
     
     ## I simply use the mean value of multivariate and round.
     armaOrder <- ldply(mbase, opt_arma) %>% 
@@ -174,8 +174,70 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       cat('step 2/2 gogarchforecast done!\n')
     }
     
-    # --------------- copula-GARCH ------------------------------
+  } else if (.mv.model == 'mv-goGARCH') {
+    # --------------- mv-goGARCH ---------------------------------
+    
+    md <- c('constant', 'AR', 'VAR')
+    if (!.model %in% md) {
+      stop(".model must be %in% c('constant', 'AR', 'VAR')")
+    } else {
+      .model <- .model
+    }
+    
+    .dist.models <- c('mvnorm', 'manig', 'magh')
+    if (.dist.model %in% .dist.models) {
+      .dist.model <- .dist.model
+    } else {
+      stop(".dist.model must %in% c('mvnorm', 'manig', 'magh').")
+    }
+    ## http://r.789695.n4.nabble.com/how-to-test-significance-of-VAR-coefficients-in-DCC-GARCH-Fit-td4472274.html
+    if (.VAR == TRUE) {
+      vfit = varxfit(X = mbase, p = 1, exogen = NULL, robust = FALSE, 
+                     gamma = 0.25, delta = 0.01, nc = 10, ns = 500, 
+                     postpad = 'constant')
+    } else {
+      vfit <- NULL
+    }
+    
+    ## .dist.model = 'mvt' since mvt produced most accurate outcome.
+    speclist <- filter_spec(mbase, .currency = .currency, .price_type = .price_type)
+    mspec <- multispec(speclist)
+    
+    goSpec <- gogarchspec(mspec, 
+                        variance.model = list(
+                          model = 'gjrGARCH', garchOrder = c(1, 1),    # Univariate Garch 2012 powerpoint.pdf
+                          submodel = NULL, external.regressors = NULL, #   compares the garchOrder and 
+                          variance.targeting = FALSE),                 #   concludes garch(1,1) is the best fit.
+                        mean.model = list(
+                          model = .model, robust = FALSE), 
+                        distribution.model = .dist.model)
+    
+    if (.roll == TRUE) {
+      mod = gogarchroll(goSpec, data = mbase, solver = .solver, 
+                    forecast.length = nrow(mbase), cluster = cl)
+      cat('step 1/1 gogarchroll done!\n')
+      
+    } else {
+      
+      ## http://r.789695.n4.nabble.com/how-to-test-significance-of-VAR-coefficients-in-DCC-GARCH-Fit-td4472274.html
+      if (.VAR == TRUE) {
+        vfit = varxfit(X = mbase, p = 1, exogen = NULL, robust = FALSE, 
+                       gamma = 0.25, delta = 0.01, nc = 10, ns = 500, 
+                       postpad = 'constant')
+      } else {
+        vfit <- NULL
+      }
+      
+      fit <- gogarchfit(dccSpec, data = mbase, solver = 'hybrid', cluster = cl, 
+                    VAR.fit = vfit)
+      cat('step 1/2 gogarchfit done!\n')
+      
+      fc <- gogarchforecast(fit, n.ahead = .ahead, cluster = cl)
+      cat('step 2/2 gogarchforecast done!\n')
+    }
+    
   } else if (.mv.model == 'copula-GARCH') {
+    # --------------- copula-GARCH ------------------------------
     
     sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
     if (!.solver %in% sv) {
@@ -261,7 +323,10 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       AIC = llply(attributes(attributes(fit)$mfit$ufit)$fit, infocriteria)
       names(AIC) <- attributes(fit)$model$modeldata$asset.names
       
-    } else if (.mv.model == 'copula-GARCH') {
+    } else if (.mv.model == 'mv-goGARCH') {
+      AIC = infocriteria(fit)
+      
+    }else if (.mv.model == 'copula-GARCH') {
       AIC = infocriteria(fit)
     }
     
