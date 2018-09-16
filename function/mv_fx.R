@@ -122,8 +122,8 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       #'@ cat('step 3/3 dccforecast done!\n')
       cat('step 2/2 dccforecast done!\n')
     }
-  
-  # --------------- go-GARCH ---------------------------------
+    
+    # --------------- go-GARCH ---------------------------------
   } else if (.mv.model == 'go-GARCH') {
     
     ## I simply use the mean value of multivariate and round.
@@ -176,7 +176,67 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     
     # --------------- copula-GARCH ------------------------------
   } else if (.mv.model == 'copula-GARCH') {
-    ...
+    
+    sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
+    if (!.solver %in% sv) {
+      stop(".solver must be %in% c('solnp', 'nlminb', 'lbfgs', 'gosolnp')")
+    } else {
+      .solver <- .solver
+    }
+    
+    md <- c('DCC', 'aDCC', 'FDCC')
+    if (!.model %in% md) {
+      stop(".model must be %in% c('DCC', 'aDCC', 'FDCC')")
+    } else {
+      .model <- .model
+    }
+    
+    ## .dist.model = 'mvt' since mvt produced most accurate outcome.
+    speclist <- filter_spec(mbase, .currency = .currency, .price_type = .price_type)
+    mspec <- multispec(speclist)
+    
+    cSpec <- cgarchspec(
+      mspec, VAR = .VAR, lag = 1, 
+      lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
+      external.regressors = NULL, #external.regressors = VAREXO, 
+      dccOrder = c(1, 1), model = .model, 
+      distribution = 'mvt') # Below article compares distribution model and 
+    #   concludes that the 'mvt' is the best.
+    # http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/
+    
+    if (.roll == TRUE) {
+      mod = dccroll(dccSpec, data = mbase, solver = .solver, 
+                    forecast.length = nrow(mbase), cluster = cl)
+      cat('step 1/1 dccroll done!\n')
+      
+    } else {
+      
+      ## No need multifit()
+      #'@ multf <- multifit(mspec, data = mbase, cluster = cl)
+      #'@ cat('step 1/3 multifit done!\n')
+      
+      #'@ fit <- dccfit(dccSpec, data = mbase, solver = .solver, fit = multf, 
+      #'@               cluster = cl)
+      #'@ cat('step 2/3 dccfit done!\n')
+      
+      ## http://r.789695.n4.nabble.com/how-to-test-significance-of-VAR-coefficients-in-DCC-GARCH-Fit-td4472274.html
+      if (.VAR == TRUE) {
+        vfit = varxfit(X = mbase, p = 1, exogen = NULL, robust = FALSE, 
+                       gamma = 0.25, delta = 0.01, nc = 10, ns = 500, 
+                       postpad = 'constant')
+      } else {
+        vfit <- NULL
+      }
+      
+      fit <- dccfit(dccSpec, data = mbase, solver = .solver, cluster = cl, 
+                    VAR.fit = vfit)
+      cat('step 1/2 dccfit done!\n')
+      
+      fc <- dccforecast(fit, n.ahead = .ahead, cluster = cl)
+      #'@ cat('step 3/3 dccforecast done!\n')
+      cat('step 2/2 dccforecast done!\n')
+    }
+    
   } else {
     stop("Kindly set .mv.model as 'dcc', 'go-GARCH' or 'copula-GARCH'.")
   }
@@ -225,5 +285,4 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     return(tmp)
   }
 })
-
 
