@@ -575,7 +575,8 @@ timeID <- HiLo.base %>%
   index %>% ymd %>% 
   .[. >= timeID0] %>% 
   c(., xts::last(.) + days(1))
-tmID <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.USDJPY.HL.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^DCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -648,7 +649,8 @@ timeID <- HiLo.base %>%
   index %>% ymd %>% 
   .[. >= timeID0] %>% 
   c(., xts::last(.) + days(1))
-tmID <- list.files('data/fx/USDJPY', pattern = '^aDCC.GARCH.USDJPY.HL.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^aDCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -721,7 +723,8 @@ timeID <- HiLo.base %>%
   index %>% ymd %>% 
   .[. >= timeID0] %>% 
   c(., xts::last(.) + days(1))
-tmID <- list.files('data/fx/USDJPY', pattern = '^FDCC.GARCH.USDJPY.HL.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^FDCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -800,7 +803,8 @@ rm(Hi.base, Lo.base, Cl.base)
 timeID <- HiLoCl.base %>% index %>% ymd %>% 
   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
 
-tmID <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.USDJPY.HLC.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^DCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -877,7 +881,8 @@ rm(Hi.base, Lo.base, Cl.base)
 timeID <- HiLoCl.base %>% index %>% ymd %>% 
   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
 
-tmID <- list.files('data/fx/USDJPY', pattern = '^aDCC.GARCH.USDJPY.HLC.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^aDCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -954,7 +959,8 @@ rm(Hi.base, Lo.base, Cl.base)
 timeID <- HiLoCl.base %>% index %>% ymd %>% 
   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
 
-tmID <- list.files('data/fx/USDJPY', pattern = '^FDCC.GARCH.USDJPY.HLC.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^FDCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -1030,7 +1036,8 @@ Cl.base <- llply(mbase, Cl)
 timeID <- Cl.base %>% do.call('cbind', .) %>% index %>% ymd %>% 
   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
 
-tmID <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.C.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^DCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -1098,7 +1105,8 @@ Cl.base <- llply(mbase, Cl)
 timeID <- Cl.base %>% do.call('cbind', .) %>% index %>% ymd %>% 
   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
 
-tmID <- list.files('data/fx/USDJPY', pattern = '^aDCC.GARCH.C.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^aDCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -1169,7 +1177,8 @@ Cl.base <- llply(mbase, Cl)
 timeID <- Cl.base %>% do.call('cbind', .) %>% index %>% ymd %>% 
   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
 
-tmID <- list.files('data/fx/USDJPY', pattern = '^FDCC.GARCH.C.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^FDCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -1227,7 +1236,7 @@ for (dt in timeID) {
 ## GO-GARCH
 
 ```{r go-garch1, eval=FALSE}
-
+# --------- draft ------------------
 .dist.models <- c('mvnorm', 'manig', 'magh')
 
 ## attributes of univariate stage 1
@@ -1250,7 +1259,7 @@ names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[3]])$fit)
 
 `model = 'constant'`
 
-```{r goGARCH-HLCF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+```{r goGARCH-HLCF, message=FALSE, warning=FALSE, eval=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
 .dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
@@ -1267,7 +1276,8 @@ timeID <- HiLo.base %>%
   index %>% ymd %>% 
   .[. >= timeID0] %>% 
   c(., xts::last(.) + days(1))
-tmID <- list.files('data/fx/USDJPY', pattern = '^goGARCH.USDJPY.HL.constant.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^goGARCH.USDJPY.HL.constant.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -1329,7 +1339,7 @@ for (dt in timeID) {
 
 `model = 'AR'`
 
-```{r goGARCH-HLARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+```{r goGARCH-HLARF, message=FALSE, warning=FALSE, eval=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
 .dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
@@ -1346,7 +1356,8 @@ timeID <- HiLo.base %>%
   index %>% ymd %>% 
   .[. >= timeID0] %>% 
   c(., xts::last(.) + days(1))
-tmID <- list.files('data/fx/USDJPY', pattern = '^goGARCH.USDJPY.HL.AR.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^goGARCH.USDJPY.HL.AR.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -1408,7 +1419,7 @@ for (dt in timeID) {
 
 `model = 'VAR'`
 
-```{r goGARCH-HLVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+```{r goGARCH-HLVARF, message=FALSE, warning=FALSE, eval=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
 .dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
@@ -1425,7 +1436,8 @@ timeID <- HiLo.base %>%
   index %>% ymd %>% 
   .[. >= timeID0] %>% 
   c(., xts::last(.) + days(1))
-tmID <- list.files('data/fx/USDJPY', pattern = '^goGARCH.USDJPY.HL.VAR.') %>% 
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^goGARCH.USDJPY.HL.VAR.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -1588,7 +1600,7 @@ The `mGJR()` function in `mgarchBEKK` use diversified optim function.
 ### Multivariate
 
 ```{r DCC-HLcompare}
-fls <- list.files('data/fx/USDJPY', pattern = 'DCC.GARCH.USDJPY.HL.')
+fls <- list.files('data/fx/USDJPY', pattern = 'DCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds')
 
 validate <- fls %>% 
     str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
@@ -1619,7 +1631,12 @@ validate %>% dplyr::filter(freq != 3) %>%
 #
 #[[3]]
 #[1] "aDCC.GARCH.USDJPY.HL.2014-10-29.rds" "DCC.GARCH.USDJPY.HL.2014-10-29.rds"
-td <- validate %>% dplyr::filter(freq != 3) %>% .$x %>% ymd
+
+if (nrow(validate) > 0) {
+  td <- validate %>% dplyr::filter(freq != 3) %>% .$x %>% ymd
+} else {
+  td <- NULL
+}
 
 ## get only MSE and AIC/BIC but ommit VaR.
 MSE.mv <- ldply(fls, function(x) {
@@ -1665,7 +1682,7 @@ In order to compare the models, I try to compare with :
 - Mean of BIC (Mean value of BIC)
 
 ```{r goGARCH-HLcompare}
-fls <- list.files('data/fx/USDJPY', pattern = 'goGARCH.USDJPY.HL.')
+fls <- list.files('data/fx/USDJPY', pattern = 'goGARCH.USDJPY.HL.+.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds')
 
 validate <- fls %>% 
     str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
@@ -1677,7 +1694,11 @@ validate %>% dplyr::filter(freq != 3) %>%
   kable_styling(
     bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 
-td <- validate %>% dplyr::filter(freq != 3) %>% .$x %>% ymd
+if (nrow(validate) > 0) {
+  td <- validate %>% dplyr::filter(freq != 3) %>% .$x %>% ymd
+} else {
+  td <- NULL
+}
 
 ## get only MSE and AIC/BIC but ommit VaR.
 MSE.mv <- ldply(fls, function(x) {
@@ -1760,7 +1781,7 @@ ddply(MSE.uni, .(Cat), summarise,
 ### Multivariate
 
 ```{r DCC-HLCcompare}
-fls <- list.files('data/fx/USDJPY', pattern = 'DCC.GARCH.USDJPY.HLC.')
+fls <- list.files('data/fx/USDJPY', pattern = 'DCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds')
 
 validate <- fls %>% 
     str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
