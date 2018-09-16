@@ -1027,7 +1027,7 @@ sv <- c('solnp')#, 'gosolnp')
 Cl.base <- llply(mbase, Cl)
 
 ## all currencies trading day.
-timeID <- Cl.base %>% index %>% ymd %>% 
+timeID <- Cl.base %>% do.call('cbind', .) %>% index %>% ymd %>% 
   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
 
 tmID <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.C.') %>% 
@@ -1095,7 +1095,7 @@ Cl.base <- llply(mbase, Cl)
 #Cl.base %<>% do.call(cbind, .) %>% na.omit
 
 ## all currencies trading day.
-timeID <- Cl.base %>% index %>% ymd %>% 
+timeID <- Cl.base %>% do.call('cbind', .) %>% index %>% ymd %>% 
   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
 
 tmID <- list.files('data/fx/USDJPY', pattern = '^aDCC.GARCH.C.') %>% 
@@ -1166,7 +1166,7 @@ Cl.base <- llply(mbase, Cl)
 #Cl.base %<>% do.call(cbind, .) %>% na.omit
 
 ## all currencies trading day.
-timeID <- Cl.base %>% index %>% ymd %>% 
+timeID <- Cl.base %>% do.call('cbind', .) %>% index %>% ymd %>% 
   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
 
 tmID <- list.files('data/fx/USDJPY', pattern = '^FDCC.GARCH.C.') %>% 
@@ -1250,7 +1250,7 @@ names(attributes(attributes(attributes(fit)$mfit$ufit)[[1]][[3]])$fit)
 
 `model = 'constant'`
 
-```{r goGARCH-HLVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+```{r goGARCH-HLCF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
 .dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
@@ -1267,7 +1267,7 @@ timeID <- HiLo.base %>%
   index %>% ymd %>% 
   .[. >= timeID0] %>% 
   c(., xts::last(.) + days(1))
-tmID <- list.files('data/fx/USDJPY', pattern = '^goGARCH.USDJPY.HL.') %>% 
+tmID <- list.files('data/fx/USDJPY', pattern = '^goGARCH.USDJPY.HL.constant.') %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
@@ -1314,12 +1314,170 @@ for (dt in timeID) {
         dir.create(paste0('data/fx/', subdir))
       
       saveRDS(goGARCH.USDJPY[[i]], paste0(
-        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', 
+        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[1], '.', 
         .dist.models[1], '.', 
         unique(goGARCH.USDJPY[[i]]$Date), '.rds'))
       
       cat(paste0(
-        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', 
+        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[1], '.', 
+        .dist.models[1], '.', 
+        unique(goGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+`model = 'AR'`
+
+```{r goGARCH-HLARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+.dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
+md <- c('constant', 'AR', 'VAR')
+sv <- c('solnp')#, 'gosolnp')
+
+## Hi-Lo.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
+
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% 
+  index %>% ymd %>% 
+  .[. >= timeID0] %>% 
+  c(., xts::last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', pattern = '^goGARCH.USDJPY.HL.AR.') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+goGARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLo.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      goGARCH.USDJPY[[i]] <- tryCatch({ldply(md[2], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .mv.model = 'go-GARCH', .model = y, .solver = 'solnp', 
+                .currency = cr_code[7],#[i], 
+                .price_type = 'HL', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0('.HL.', y, 'solnp', ' error.\n')))
+        aic = ldply(df$AIC, function(x) {
+          data.frame(t(x))
+          })
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, aic, 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(goGARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(goGARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(goGARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[2], '.', 
+        .dist.models[1], '.', 
+        unique(goGARCH.USDJPY[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[2], '.', 
+        .dist.models[1], '.', 
+        unique(goGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+`model = 'VAR'`
+
+```{r goGARCH-HLVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+.dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
+md <- c('constant', 'AR', 'VAR')
+sv <- c('solnp')#, 'gosolnp')
+
+## Hi-Lo.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
+
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% 
+  index %>% ymd %>% 
+  .[. >= timeID0] %>% 
+  c(., xts::last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', pattern = '^goGARCH.USDJPY.HL.VAR.') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+goGARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLo.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      goGARCH.USDJPY[[i]] <- tryCatch({ldply(md[3], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .mv.model = 'go-GARCH', .model = y, .solver = 'solnp', 
+                .currency = cr_code[7],#[i], 
+                .price_type = 'HL', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0('.HL.', y, 'solnp', ' error.\n')))
+        aic = ldply(df$AIC, function(x) {
+          data.frame(t(x))
+          })
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, aic, 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(goGARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(goGARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(goGARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[3], '.', 
+        .dist.models[1], '.', 
+        unique(goGARCH.USDJPY[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/goGARCH.USDJPY.HL.', md[3], '.', 
         .dist.models[1], '.', 
         unique(goGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
       }
@@ -1506,6 +1664,54 @@ In order to compare the models, I try to compare with :
 - Mean of AIC (Mean value of AIC)
 - Mean of BIC (Mean value of BIC)
 
+```{r goGARCH-HLcompare}
+fls <- list.files('data/fx/USDJPY', pattern = 'goGARCH.USDJPY.HL.')
+
+validate <- fls %>% 
+    str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+    unlist %>% 
+    plyr::count() %>% 
+    tbl_df
+validate %>% dplyr::filter(freq != 3) %>% 
+  kable(caption = 'Count missing observation') %>% 
+  kable_styling(
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+td <- validate %>% dplyr::filter(freq != 3) %>% .$x %>% ymd
+
+## get only MSE and AIC/BIC but ommit VaR.
+MSE.mv <- ldply(fls, function(x) {
+  dfm <- readRDS(paste0('data/fx/USDJPY/', x))
+  names(dfm) %<>% str_replace_all('USDJPY', 'Price')
+  dfm %>% separate(Type, c('Cat', 'Type', 'Model')) %>% 
+      dplyr::select(Date, Cat, Model, Price.High, Price.Low, 
+                    Price.High.T1, Price.Low.T1, 
+                    Akaike, Bayes, Shibata, Hannan.Quinn) %>% 
+    unique
+  }) %>% tbl_df %>% 
+  dplyr::filter(!Date %in% td)
+```
+
+```{r, echo=FALSE}
+ddply(MSE.mv, .(Model), summarise, 
+      MSE.High = mean((Price.High.T1 - Price.High)^2), 
+      MSE.Low = mean((Price.Low.T1 - Price.Low)^2), 
+      Mean.MSE = (MSE.High + MSE.Low)/2, 
+      n = length(Model), 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2),
+      Akaike = mean(Akaike), 
+      MSE.BIC = mean((Bayes - mean(Bayes))^2),
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE.High = round(MSE.High, 7), 
+                    MSE.Low = round(MSE.Low, 7)) %>% 
+  kable(caption = 'Hi-Lo Price MSE, AIC, BIC') %>% 
+  kable_styling(
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%')#, height = '400px')
+```
+
 ### Compare with Univariate
 
 ```{r uniGARCH-HL}
@@ -1565,26 +1771,7 @@ validate %>% dplyr::filter(freq != 3) %>%
   kable(caption = 'Count missing observation') %>% 
   kable_styling(
     bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
-## A tibble: 3 x 2
-#  x           freq
-#  <fct>      <int>
-#1 2013-04-09     2
-#2 2013-04-24     2
-#3 2014-10-29     2
 
-#timeID <- c('2013-04-09', '2013-04-24', '2014-10-29')
-#
-# llply(timeID, function(x) {
-# 	grep(x, fls, value=TRUE)
-# })
-#[[1]]
-#[1] "DCC.GARCH.USDJPY.HL.2013-04-09.rds"  "FDCC.GARCH.USDJPY.HL.2013-04-09.rds"
-#
-#[[2]]
-#[1] "aDCC.GARCH.USDJPY.HL.2013-04-24.rds" "FDCC.GARCH.USDJPY.HL.2013-04-24.rds"
-#
-#[[3]]
-#[1] "aDCC.GARCH.USDJPY.HL.2014-10-29.rds" "DCC.GARCH.USDJPY.HL.2014-10-29.rds"
 td <- validate %>% dplyr::filter(freq != 3) %>% .$x %>% ymd
 
 ## get only MSE and AIC/BIC but ommit VaR.
@@ -1643,14 +1830,14 @@ MSE.uni <- ldply(td, function(x) {
     dfm <- readRDS(paste0('data/fx/USDJPY/pred2.', x, '.rds'))
     names(dfm) %<>% str_replace_all('USDJPY', 'Price')
     dfm %>% separate(Type, c('Cat', 'Type')) %>% 
-      dplyr::filter(Type == 'Hi' | Type == 'Lo') %>% 
+      dplyr::filter(Type == 'Hi' | Type == 'Lo' | Type == 'Cl') %>% 
       mutate(Type2 = Type) %>% 
       spread(Type, Price) %>% 
-      dplyr::rename(Price.High = Hi, Price.Low = Lo) %>% 
+      dplyr::rename(Price.High = Hi, Price.Low = Lo, Price.Close = Cl) %>% 
       spread(Type2, `Price.T+1`) %>% 
-      dplyr::rename(Price.High.T1 = Hi, Price.Low.T1 = Lo) %>% 
-      dplyr::select(Date, Cat, Price.High, Price.Low, 
-                    Price.High.T1, Price.Low.T1, 
+      dplyr::rename(Price.High.T1 = Hi, Price.Low.T1 = Lo, Price.Close.T1 = Cl) %>% 
+      dplyr::select(Date, Cat, Price.High, Price.Low, Price.Close, 
+                    Price.High.T1, Price.Low.T1, Price.Close.T1, 
                     Akaike, Bayes, Shibata, Hannan.Quinn)
   }) %>% tbl_df
 ```
@@ -1659,7 +1846,8 @@ MSE.uni <- ldply(td, function(x) {
 ddply(MSE.uni, .(Cat), summarise, 
       MSE.High = mean((Price.High.T1 - Price.High)^2, na.rm = TRUE), 
       MSE.Low = mean((Price.Low.T1 - Price.Low)^2, na.rm = TRUE), 
-      Mean.MSE = (MSE.High + MSE.Low)/2, 
+      MSE.Close = mean((Price.Close.T1 - Price.Close)^2, na.rm = TRUE), 
+      Mean.MSE = (MSE.High + MSE.Low + MSE.Close)/2, 
       n = length(Price.High), 
       MSE.AIC = mean((Akaike - mean(Akaike))^2, na.rm = TRUE),
       Akaike = mean(Akaike), 
@@ -1668,8 +1856,9 @@ ddply(MSE.uni, .(Cat), summarise,
       Shibata = mean(Shibata), 
       Hannan.Quinn = mean(Hannan.Quinn)) %>% 
   tbl_df %>% mutate(MSE.High = round(MSE.High, 7), 
-                    MSE.Low = round(MSE.Low, 7)) %>% 
-  kable(caption = 'Hi-Lo Price MSE, AIC, BIC') %>% 
+                    MSE.Low = round(MSE.Low, 7), 
+                    MSE.Close = round(MSE.Close, 7)) %>% 
+  kable(caption = 'Hi-Lo-Cl Price MSE, AIC, BIC') %>% 
   kable_styling(
     bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   scroll_box(width = '100%')#, height = '400px')
