@@ -267,19 +267,11 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     # http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/
     
     if (.roll == TRUE) {
-      mod = dccroll(dccSpec, data = mbase, solver = .solver, 
+      mod = dccroll(cSpec, data = mbase, solver = .solver, 
                     forecast.length = nrow(mbase), cluster = cl)
       cat('step 1/1 dccroll done!\n')
       
     } else {
-      
-      ## No need multifit()
-      #'@ multf <- multifit(mspec, data = mbase, cluster = cl)
-      #'@ cat('step 1/3 multifit done!\n')
-      
-      #'@ fit <- dccfit(dccSpec, data = mbase, solver = .solver, fit = multf, 
-      #'@               cluster = cl)
-      #'@ cat('step 2/3 dccfit done!\n')
       
       ## http://r.789695.n4.nabble.com/how-to-test-significance-of-VAR-coefficients-in-DCC-GARCH-Fit-td4472274.html
       if (.VAR == TRUE) {
@@ -290,9 +282,9 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
         vfit <- NULL
       }
       
-      fit <- dccfit(dccSpec, data = mbase, solver = .solver, cluster = cl, 
+      fit <- cgarchfit(cSpec, data = mbase, solver = .solver, cluster = cl, 
                     VAR.fit = vfit)
-      cat('step 1/2 dccfit done!\n')
+      cat('step 1/2 cgarchfit done!\n')
       
       fc <- dccforecast(fit, n.ahead = .ahead, cluster = cl)
       #'@ cat('step 3/3 dccforecast done!\n')
@@ -300,7 +292,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     }
     
   } else {
-    stop("Kindly set .mv.model as 'dcc', 'go-GARCH' or 'copula-GARCH'.")
+    stop("Kindly set .mv.model as 'dcc', 'go-GARCH', 'mv-goGARCH' or 'copula-GARCH'.")
   }
   
   if (.roll == TRUE) {
