@@ -1,5 +1,5 @@
-mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE, 
-                          .dist.model = 'mvnorm', .currency = 'JPY=X', 
+mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'parametric', 
+                          .VAR = FALSE, .dist.model = 'mvnorm', .currency = 'JPY=X', 
                           .ahead = 1, .price_type = 'OHLC', .solver = 'solnp', 
                           .roll = FALSE, .cluster = FALSE) {
   
@@ -85,7 +85,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
       external.regressors = NULL, #external.regressors = VAREXO, 
       dccOrder = c(1, 1), model = .model, 
-      distribution = 'mvt') # Below article compares distribution model and 
+      distribution = .dist.model) # Below article compares distribution model and 
     #   concludes that the 'mvt' is the best.
     # http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/
     
@@ -122,7 +122,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       cat('step 2/2 dccforecast done!\n')
     }
     
-
+    
   } else if (.mv.model == 'go-GARCH') {
     # -------------------go-GARCH ---------------------------
     
@@ -204,17 +204,17 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
     mspec <- multispec(speclist)
     
     goSpec <- gogarchspec(mspec, 
-                        variance.model = list(
-                          model = 'gjrGARCH', garchOrder = c(1, 1),    # Univariate Garch 2012 powerpoint.pdf
-                          submodel = NULL, external.regressors = NULL, #   compares the garchOrder and 
-                          variance.targeting = FALSE),                 #   concludes garch(1,1) is the best fit.
-                        mean.model = list(
-                          model = .model, robust = FALSE), 
-                        distribution.model = .dist.model)
+                          variance.model = list(
+                            model = 'gjrGARCH', garchOrder = c(1, 1),    # Univariate Garch 2012 powerpoint.pdf
+                            submodel = NULL, external.regressors = NULL, #   compares the garchOrder and 
+                            variance.targeting = FALSE),                 #   concludes garch(1,1) is the best fit.
+                          mean.model = list(
+                            model = .model, robust = FALSE), 
+                          distribution.model = .dist.model)
     
     if (.roll == TRUE) {
       mod = gogarchroll(goSpec, data = mbase, solver = .solver, 
-                    forecast.length = nrow(mbase), cluster = cl)
+                        forecast.length = nrow(mbase), cluster = cl)
       cat('step 1/1 gogarchroll done!\n')
       
     } else {
@@ -229,7 +229,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       }
       
       fit <- gogarchfit(dccSpec, data = mbase, solver = 'hybrid', cluster = cl, 
-                    VAR.fit = vfit)
+                        VAR.fit = vfit)
       cat('step 1/2 gogarchfit done!\n')
       
       fc <- gogarchforecast(fit, n.ahead = .ahead, cluster = cl)
@@ -246,11 +246,18 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       .solver <- .solver
     }
     
-    md <- c('DCC', 'aDCC', 'FDCC')
+    md <- c('Kendall', 'ML')
     if (!.model %in% md) {
-      stop(".model must be %in% c('DCC', 'aDCC', 'FDCC')")
+      stop(".model must be %in% c('Kendall', 'ML')")
     } else {
       .model <- .model
+    }
+    
+    trams <- c('parametric', 'empirical', 'spd')
+    if (!.tram %in% trams) {
+      stop(".model must be %in% c('parametric', 'empirical', 'spd')")
+    } else {
+      .tram <- trams
     }
     
     ## .dist.model = 'mvt' since mvt produced most accurate outcome.
@@ -261,8 +268,11 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       mspec, VAR = .VAR, lag = 1, 
       lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
       external.regressors = NULL, #external.regressors = VAREXO, 
-      dccOrder = c(1, 1), model = .model, 
-      distribution = 'mvt') # Below article compares distribution model and 
+      dccOrder = c(1, 1), 
+      distribution.model = list(
+        copula = .dist.model, method = .model, transformation = .tram), 
+      start.pars = list(), fixed.pars = list())
+    # Below article compares distribution model and 
     #   concludes that the 'mvt' is the best.
     # http://www.unstarched.net/2013/01/03/the-garch-dcc-model-and-2-stage-dccmvt-estimation/
     
@@ -283,12 +293,12 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .VAR = FALSE
       }
       
       fit <- cgarchfit(cSpec, data = mbase, solver = .solver, cluster = cl, 
-                    VAR.fit = vfit)
+                       VAR.fit = vfit)
       cat('step 1/2 cgarchfit done!\n')
       
-      fc <- dccforecast(fit, n.ahead = .ahead, cluster = cl)
-      #'@ cat('step 3/3 dccforecast done!\n')
-      cat('step 2/2 dccforecast done!\n')
+      fc <- varxforecast(X = Dat, Bcoef = fit@mfit$vrmodel$Bcoef, p = 4, 
+                         out.sample = 0, n.ahead = .ahead, n.roll = 0, mregfor = NULL)
+      cat('step 2/2 varxforecast done!\n')
     }
     
   } else {
