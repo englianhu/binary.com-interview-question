@@ -1,11 +1,10 @@
 mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'parametric', 
                           .VAR = FALSE, .dist.model = 'mvnorm', .currency = 'JPY=X', 
                           .ahead = 1, .price_type = 'OHLC', .solver = 'solnp', 
-                          .roll = FALSE, .cluster = FALSE) {
+                          .var.target = FALSE, .roll = FALSE, .cluster = FALSE) {
   
-  require(plyr, quietly = TRUE)
-  require(dplyr, quietly = TRUE)
-  require(quantmod, quietly = TRUE)
+  require('BBmisc', quietly = TRUE)
+  suppressAll(lib('plyr', 'dplyr', 'matrixcalc', 'quantmod', 'MASS'))
   
   funs <- c('filterFX.R', 'opt_arma.R', 'filter_spec.R')
   l_ply(funs, function(x) source(paste0('function/', x)))
@@ -121,7 +120,6 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'par
       #'@ cat('step 3/3 dccforecast done!\n')
       cat('step 2/2 dccforecast done!\n')
     }
-    
     
   } else if (.mv.model == 'go-GARCH') {
     # -------------------go-GARCH ---------------------------
@@ -261,16 +259,18 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'par
     }
     
     ## .dist.model = 'mvt' since mvt produced most accurate outcome.
-    speclist <- filter_spec(mbase, .currency = .currency, .price_type = .price_type)
+    speclist <- filter_spec(mbase, .currency = .currency, .price_type = .price_type, 
+                            var.target = .var.target)
     mspec <- multispec(speclist)
     
     cSpec <- cgarchspec(
       mspec, VAR = .VAR, lag = 1, 
       lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
       external.regressors = NULL, #external.regressors = VAREXO, 
-      dccOrder = c(1, 1), 
+      dccOrder = c(1, 1), asymmetric = FALSE, ##wether use `aDCC` or normal `DCC` model.
       distribution.model = list(
-        copula = .dist.model, method = .model, transformation = .tram), 
+        time.varying = TRUE, copula = .dist.model, 
+        method = .model, transformation = .tram), 
       start.pars = list(), fixed.pars = list())
     # Below article compares distribution model and 
     #   concludes that the 'mvt' is the best.
@@ -288,17 +288,54 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'par
         vfit = varxfit(X = mbase, p = 1, exogen = NULL, robust = FALSE, 
                        gamma = 0.25, delta = 0.01, nc = 10, ns = 500, 
                        postpad = 'constant')
+        
+        fit <- cgarchfit(cSpec, data = mbase, solver = .solver, cluster = cl, 
+                         VAR.fit = vfit)
+        cat('step 1/2 cgarchfit done!\n')
+        
+        ## https://rdrr.io/rforge/rgarch/man/varxfilter.html
+        ## https://rdrr.io/rforge/rmgarch/src/R/rmgarch-tests.R
+        ## https://github.com/cran/rmgarch/blob/master/R/copula-postestimation.R
+        fc <- varxforecast(X = mbase, Bcoef = fit@mfit$stdresid, p = 4, 
+                           out.sample = 0, n.ahead = .ahead, n.roll = 0, mregfor = NULL)
+        cat('step 2/2 varxforecast done!\n')
       } else {
         vfit <- NULL
+        
+        fit <- cgarchfit(cSpec, data = mbase, solver = .solver, cluster = cl, 
+                         VAR.fit = vfit)
+        cat('step 1/2 cgarchfit done!\n')
+        
+        ## https://stackoverflow.com/questions/34855831/forecasting-for-dcc-copula-garch-model-in-r
+        ## http://r.789695.n4.nabble.com/copula-with-rmgarch-td4616138.html
+        fc <- cgarchsim(fit, n.sim = ncol(mbase), n.start = 0, m.sim = .ahead, 
+                        presigma = tail(sigma(fit), 1), startMethod = 'sample', 
+                        preR = rcor(fit), preQ = fit@mfit$Qt[[length(fit@mfit$Qt)]], 
+                        preZ = tail(fit@mfit$Z, 1), prereturns = tail(mbase, 1), 
+                        preresiduals = tail(fit@mfit$stdresid, 1), cluster = cl)#, rseed = 1)
+        
+        res <- matrix(fc@msim$simZ, nr = 1)# + sim1@msim$simX[[1]]
+        cat('step 2/2 cgarchsim done!\n')
+        
+        ## retrieve the VaR value for forecast n.ahead = 1
+        VaR <- ldply(
+          list(T1.VaR_01 = qnorm(0.01) * as.data.frame(sigma(fc)) + as.data.frame(fitted(fc)), 
+               T1.VaR_05 = qnorm(0.05) * as.data.frame(sigma(fc)) + as.data.frame(fitted(fc)), 
+               T1.VaR_95 = qnorm(0.95) * as.data.frame(sigma(fc)) + as.data.frame(fitted(fc)), 
+               T1.VaR_99 = qnorm(0.99) * as.data.frame(sigma(fc)) + as.data.frame(fitted(fc)))) %>% 
+          mutate(mshape = attributes(fit)$mfit$coef['[Joint]mshape'])
+        
+        vm <- names(VaR) %>% 
+          grep('Open|High|Low|Close', ., value=TRUE) %>% 
+          substr(1, nchar(.) - 11)
+        names(VaR[,2:(ncol(VaR)-1)]) <- vm
+        
+        tmp = list(latestPrice = latestPrice, forecastPrice = res, 
+                   variance = sigma(fc), forecastVaR = VaR, 
+                   fit = fit, forecast = fc, AIC = AIC)
+        return(tmp)
       }
       
-      fit <- cgarchfit(cSpec, data = mbase, solver = .solver, cluster = cl, 
-                       VAR.fit = vfit)
-      cat('step 1/2 cgarchfit done!\n')
-      
-      fc <- varxforecast(X = Dat, Bcoef = fit@mfit$vrmodel$Bcoef, p = 4, 
-                         out.sample = 0, n.ahead = .ahead, n.roll = 0, mregfor = NULL)
-      cat('step 2/2 varxforecast done!\n')
     }
     
   } else {
@@ -331,7 +368,6 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'par
     }else if (.mv.model == 'copula-GARCH') {
       AIC = infocriteria(fit)
     }
-    
     
     ## retrieve the VaR value for forecast n.ahead = 1
     VaR <- ldply(

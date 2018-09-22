@@ -58,7 +58,7 @@ mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')
 ## all currencies trading day.
 timeID <- llply(mbase, function(x) as.character(index(x))) %>% 
   unlist
-timeID %<>% count
+timeID %<>% plyr::count()
 #timeID %>% dplyr::count(freq)
 ## A tibble: 4 x 2
 #   freq     n
@@ -1229,12 +1229,173 @@ for (dt in timeID) {
   }
 ```
 
+### Op-Hi-Lo-Cl
+
+#### `DCC` and `VAR=FALSE`
+
+```{r DCC-OHLCVARF, message=FALSE, warning=FALSE, eval=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp')#, 'gosolnp')
+
+## Op-Hi-Lo-Cl.
+Op.base <- llply(mbase['USDJPY'], Op)
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+Cl.base <- llply(mbase['USDJPY'], Cl)
+OpHiLoCl.base <- c(Op.base, Hi.base, Lo.base, Cl.base) %>% 
+  do.call(cbind, .) %>% na.omit
+rm(Op.base, Hi.base, Lo.base, Cl.base)
+
+## only use USDJPY trading day.
+timeID <- OpHiLoCl.base %>% index %>% ymd %>% 
+  .[. >= timeID0] %>% c(., xts::last(.) + days(1))
+
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^DCC.GARCH.USDJPY.OHLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID] %>% .[-1]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+DCC.GARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- OpHiLoCl.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      DCC.GARCH.USDJPY[[i]] <- tryCatch({llply(md[1], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[7],#[i], 
+                .price_type = 'OHLC', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.OHLC.', 'solnp', ' error.\n')))
+        
+        res = suppressAll(data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC)))
+        VaR = df$forecastVaR
+        
+        names(res) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        names(VaR) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        
+        return(list(res = res, VaR = VaR))
+      })[[1]]}, error = function(e) NULL)
+      
+      if (is.null(DCC.GARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(DCC.GARCH.USDJPY[[i]]$res)[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(DCC.GARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/DCC.GARCH.USDJPY.OHLC.', 
+        unique(DCC.GARCH.USDJPY[[i]]$res$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/DCC.GARCH.USDJPY.OHLC.', 
+        unique(DCC.GARCH.USDJPY[[i]]$res$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+#### `aDCC` and `VAR=FALSE`
+
+```{r aDCC-OHLCVARF, message=FALSE, warning=FALSE, eval=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('DCC', 'aDCC', 'FDCC')
+sv <- c('solnp')#, 'gosolnp')
+
+## Op-Hi-Lo-Cl.
+Op.base <- llply(mbase['USDJPY'], Op)
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+Cl.base <- llply(mbase['USDJPY'], Cl)
+OpHiLoCl.base <- c(Op.base, Hi.base, Lo.base, Cl.base) %>% 
+  do.call(cbind, .) %>% na.omit
+rm(Op.base, Hi.base, Lo.base, Cl.base)
+
+## only use USDJPY trading day.
+timeID <- OpHiLoCl.base %>% index %>% ymd %>% 
+  .[. >= timeID0] %>% c(., xts::last(.) + days(1))
+
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^aDCC.GARCH.USDJPY.OHLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID] %>% .[-1]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+aDCC.GARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- OpHiLoCl.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      aDCC.GARCH.USDJPY[[i]] <- tryCatch({llply(md[2], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .model = y, .solver = 'solnp', .currency = cr_code[7],#[i], 
+                .price_type = 'OHLC', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.OHLC.', 'solnp', ' error.\n')))
+        
+        res = suppressAll(data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC)))
+        VaR = df$forecastVaR
+        
+        names(res) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        names(VaR) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        
+        return(list(res = res, VaR = VaR))
+      })[[1]]}, error = function(e) NULL)
+      
+      if (is.null(aDCC.GARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(aDCC.GARCH.USDJPY[[i]]$res)[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(aDCC.GARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/aDCC.GARCH.USDJPY.OHLC.', 
+        unique(aDCC.GARCH.USDJPY[[i]]$res$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/aDCC.GARCH.USDJPY.OHLC.', 
+        unique(aDCC.GARCH.USDJPY[[i]]$res$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
 ## GO-GARCH
 
 ### Abstract
 
 - [Higher Moment CAPM with the GO-GARCH (NIG) model.](http://www.unstarched.net/r-examples/rmgarch/higher-moment-capm-with-the-go-garch-nig-model/)
 - [VaR and Approximate VaR in the GO-GARCH (NIG) model.](http://www.unstarched.net/r-examples/rmgarch/var-and-approximate-var-in-the-go-garch-nig-model/)
+- [MGARCH Comparison using the Hong & Li Misspecification Test](http://www.unstarched.net/r-examples/rmgarch/mgarch-comparison-using-the-hong-li-misspecification-test/) compares few models in `M(1,1), M(2,2), M(3,3), M(4,4)` and concludes that the `go-GARCH` model will be better than normal DCC model in `M(3,3), M(4,4)` while normal DCC model better in `M(1,1)`.
 
 ```{r go-garch1, eval=FALSE}
 # --------- draft ------------------
@@ -1744,6 +1905,9 @@ for (dt in timeID) {
 
 ### Abtract
 
+[多元Copula-GARCH模型及其在金融风险分析上的应用](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/)
+[The Copula-GARCH Model of Conditional Dependencies - An International Stock Market](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/)
+
 - [The Copula GARCH Model](https://cran.r-project.org/web/packages/copula/vignettes/copula_GARCH.html)
 - [copula with rmgarch](http://r.789695.n4.nabble.com/copula-with-rmgarch-td4616138.html)
 - [dynamic copula using rmgarch package (ignore previous question, don't know how to delete it)](http://r.789695.n4.nabble.com/dynamic-copula-using-rmgarch-package-ignore-previous-question-don-t-know-how-to-delete-it-td4722071.html)
@@ -1760,29 +1924,29 @@ for (dt in timeID) {
 ![](www/Copula-GARCH-in-Bond-Market.jpg)
 
 The author concludes that different model suit for different stock and bond markets.
-
-> > library(rmgarch)
-> > data(dji30ret)
-> > Data <- dji30ret[, 1:3, drop = FALSE]
-> > uspec <- ugarchspec(mean.model = list(armaOrder = c(0,0), include.mean = FALSE), 
-> +          variance.model = list(garchOrder = c(1,1), model = 'sGARCH'), 
-> +          distribution.model = 'std')
-> > cspec <- cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, 
-> +                     robust = FALSE, lag = 1, lag.max = NULL, 
-> +                     lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
-> +                     external.regressors = NULL, 
-> +                     robust.control = list(gamma = 0.25, delta = 0.01, nc = 10, ns = 500), 
-> +                     dccOrder = c(1, 1), asymmetric = FALSE, 
-> +                     distribution.model = list(copula='mvt', method='ML', 
-> +                     time.varying = TRUE, transformation = 'parametric'), 
-> +                     start.pars = list(), fixed.pars = list()) 
-> > cfit <- cgarchfit(cspec, data =Data, 
-> +                   spd.control = list(lower=0.1, upper=0.9, type='pwm', kernel='epanech'), 
-> +                   fit.control = list(eval.se=TRUE, trace=TRUE, stationarity=TRUE), 
-> +                   solver = "solnp", solver.control = list(), out.sample = 0, parallel = FALSE, 
-> +                   parallel.control = list(pkg = c('multicore', 'snowfall'), cores = 2), 
-> +                   fit = NULL, VAR.fit = NULL) 
-> 
+```
+> library(rmgarch)
+> data(dji30ret)
+> Data <- dji30ret[, 1:3, drop = FALSE]
+> uspec <- ugarchspec(mean.model = list(armaOrder = c(0,0), include.mean = FALSE), 
++          variance.model = list(garchOrder = c(1,1), model = 'sGARCH'), 
++          distribution.model = 'std')
+> cspec <- cgarchspec(uspec = multispec( replicate(3, uspec) ), VAR = FALSE, 
++                     robust = FALSE, lag = 1, lag.max = NULL, 
++                     lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
++                     external.regressors = NULL, 
++                     robust.control = list(gamma = 0.25, delta = 0.01, nc = 10, ns = 500), 
++                     dccOrder = c(1, 1), asymmetric = FALSE, 
++                     distribution.model = list(copula='mvt', method='ML', 
++                     time.varying = TRUE, transformation = 'parametric'), 
++                     start.pars = list(), fixed.pars = list()) 
+> cfit <- cgarchfit(cspec, data =Data, 
++                   spd.control = list(lower=0.1, upper=0.9, type='pwm', kernel='epanech'), 
++                   fit.control = list(eval.se=TRUE, trace=TRUE, stationarity=TRUE), 
++                   solver = "solnp", solver.control = list(), out.sample = 0, parallel = FALSE, 
++                   parallel.control = list(pkg = c('multicore', 'snowfall'), cores = 2), 
++                   fit = NULL, VAR.fit = NULL) 
+```
 > my questions are: 
 > 1) (very silly) how to get the estimated parameters (incl. s.e. p-value)? 
 > 2) how to plot the dynamics of correlation? 
@@ -1792,36 +1956,38 @@ The author concludes that different model suit for different stock and bond mark
 > Can I do 1-step ahead forecasting using GARCH-Copula with the help of rmgarch package? for example I need to get the returns of each assets and their covariance at T+1 based on the parameters estimated using in-sample data until T?
 > I followed your Example in the help of cgarchsim. Please correct me if I am wrong: 
 1) the (mean) forecast returns should be the simmean1 in your example 
-2) I think rcov(sim1) only report the 1st cov out of 3500 simulations. Then how to get the mean forecast cov?   
-> 
-> I think the Example in ?cgarchsim has a copula of errors, although none of them is serious: 
-> > spec = cgarchspec(uspec = multispec(replicate(3, uspec)), VAR = TRUE, 
-> +                   VAR.opt = list(lag = 1, lag.max = 4, 
-> +                   lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
-> +                   external.regressors = NULL), dccOrder = c(1,1), 
-> +                   distribution.model = list(copula = c('mvnorm'), method = c('ML'), 
-> +                   time.varying = TRUE, transformation = 'parametric'), 
-> +                   start.pars = list(), fixed.pars = list()) 
-> VAR.opt = list(lag = 1, lag.max = 4,  lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
-> +              external.regressors = NULL)
-> 
-> > sim1 = cgarchsim(fit1, n.sim = 1, n.start = 0, m.sim = 3500, 
-> +                  presigma = tail(sigma(fit1), 1), 
-> +                  startMethod = 'sample', preR = preR, 
-> +                  prereturns = tail( as.matrix(Dat), 4), 
-> +                  preresiduals = tail(residuals(.fitlist), 1), rseed = 1:3500)
-> 
-> if I use prereturns = tail(as.matrix(Dat), 4), it will report error. So instead, I use prereturns = tail( as.matrix(Dat), 1) 
-> 
-> > forcmean = round(rgarch:::varxforecast(X = Dat, Bcoef = fit1@mfit$vrmodel$Bcoef, p = 4, 
-> +                                        out.sample = 0, n.ahead = 1, n.roll = 0, 
-> +                                        mregfor = NULL), 5) 
-> 
+2) I think rcov(sim1) only report the 1st cov out of 3500 simulations. Then how to get the mean forecast cov?
+
+```
+> #I think the Example in ?cgarchsim has a copula of errors, although none of them is serious: 
+> spec = cgarchspec(uspec = multispec(replicate(3, uspec)), VAR = TRUE, 
++                   VAR.opt = list(lag = 1, lag.max = 4, 
++                   lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
++                   external.regressors = NULL), dccOrder = c(1,1), 
++                   distribution.model = list(copula = c('mvnorm'), method = c('ML'), 
++                   time.varying = TRUE, transformation = 'parametric'), 
++                   start.pars = list(), fixed.pars = list()) 
+VAR.opt = list(lag = 1, lag.max = 4,  lag.criterion = c('AIC', 'HQ', 'SC', 'FPE'), 
++              external.regressors = NULL)
+>
+> sim1 = cgarchsim(fit1, n.sim = 1, n.start = 0, m.sim = 3500, 
++                  presigma = tail(sigma(fit1), 1), 
++                  startMethod = 'sample', preR = preR, 
++                  prereturns = tail( as.matrix(Dat), 4), 
++                  preresiduals = tail(residuals(.fitlist), 1), rseed = 1:3500)
+>
+> #if I use prereturns = tail(as.matrix(Dat), 4), it will report error. So instead, I use prereturns = tail( as.matrix(Dat), 1) 
+>
+> forcmean = round(rgarch:::varxforecast(X = Dat, Bcoef = fit1@mfit$vrmodel$Bcoef, p = 4, 
++                                        out.sample = 0, n.ahead = 1, n.roll = 0, 
++                                        mregfor = NULL), 5) 
+```
+
 > the rgarch package is offline. So can you suggest another way for this? 
 > 
 > Thank you again!
 
-> > 1. The code in the rmgarch.tests folder is up to date. The code below 
+> 1. The code in the rmgarch.tests folder is up to date. The code below 
 that you quote is an outdated example and not from the rmgarch.tests 
 folder but from the help page for cgarchsim (which I should update 
 anyway when I find the time). Please only use the examples from the 
@@ -1867,7 +2033,171 @@ code in the cgarchfit function.
 
 *Source : [copula with rmgarch](http://r.789695.n4.nabble.com/copula-with-rmgarch-td4616138.html)*
 
+> (there were some mistakes in the previous code, I've corrected it and I'm reposting) 
+I'm trying to simulate 1-step ahead returns 5000 times for a portfolio of 9 variables. After specifying their GJR-GARCH specifications with SPD marginals, I use the following code (which was inspired by the examples in the 'rmgarch.tests' folder). I use the first 571x9 observations for fitting and the last 570 for out-of-sample analysis. Moreover, I use a moving-window approach, in the sense that I always use the last 571 observations in the cgarchfilter rather than [1:(T+i)] as in the example. Once the simulated returns 'simx' are stored in 'simulatedreturns', I compute the return of an equally-weighted portfolio as a 570x5000 matrix, i.e. one series of return of each observation for each simulation. Last, I compute VaR (90%, 95%, 99%) as the respective quantile (0.10, 0.05, 0.01). 
+> 
+My problem is that, contrary to the literature I've found on the topic, VaR is severely underestimated, I obtain a number of violations which is way more than expected (should be 57 for 90%VaR, 28 for 95%VaR, 6 for 99%VaR). Is there any error in the code I have below? I've followed the example by the letter and cannot understand what went wrong. Anyone can help? Any hint is GREATLY appreciated! 
+>
+
+```
+library(rugarch) 
+library(rmgarch) 
+
+data(dji30retw) 
+Dat = dji30retw[, 1:9, drop = FALSE] 
+
+model <- ugarchspec(variance.model=list(model="gjrGARCH", garchOrder=c(1,1), 
+                                        variance.targeting=TRUE), 
+                    mean.model=list(armaOrder=c(0,0), include.mean=F, archm=F, archpow=1), 
+                    distribution.model="norm")
+spec = cgarchspec(uspec = multispec(replicate(9, model)), VAR = FALSE, robust = FALSE, 
+                  lag.criterion = "AIC", external.regressors = NULL, 
+                  dccOrder = c(1,1), asymmetric = TRUE, 
+                  distribution.model = list(copula = "mvt", method = "ML", 
+                  time.varying = TRUE, transformation = "spd"))
+fit = cgarchfit(spec, data = Dat, out.sample = 570, cluster = NULL, 
+                spd.control = list(lower = 0.1, upper = 0.9, type = "mle", kernel = "normal"), 
+                fit.control = list(eval.se=FALSE)) 
+T = dim(Dat)[1]-570 
+simMu = simS = filtMu = filtS = matrix(NA, ncol = 9, nrow = 570) 
+simCor = simC = filtC = filtCor = array(NA, dim = c(9,9,570)) 
+colSd = function(x) apply(x, 2, "sd") 
+specx = spec 
+for(i in 1:9) specx@umodel$fixed.pars[[i]] = as.list(fit@model$mpars[fit@model$midx[,i]==1,i]) 
+setfixed(specx)<-as.list(fit@model$mpars[fit@model$midx[,10]==1,10]) 
+
+simulatedreturns <- array(dim=c(570,9,5000)) 
+for(i in 1:570){ 
+  if(i==1){ 
+    presigma = matrix(tail(sigma(fit), 1), ncol = 9) 
+    prereturns = matrix(unlist(Dat[T, ]), ncol = 9, nrow = 1) 
+    preresiduals = matrix(tail(residuals(fit),1), ncol = 9, nrow = 1) 
+    preR = last(rcor(fit))[,,1] 
+    diag(preR) = 1 
+    preQ = fit@mfit$Qt[[length(fit@mfit$Qt)]] 
+    preZ = tail(fit@mfit$Z, 1) 
+    tmp = cgarchfilter(specx, Dat[2:(T+1), ], filter.control = list(n.old = T)) 
+    filtMu[i,] = tail(fitted(tmp), 1) 
+    filtS[i,] = tail(sigma(tmp), 1) 
+    filtC[,,i] = last(rcov(tmp))[,,1] 
+    filtCor[,,i] = last(rcor(tmp))[,,1] 
+  } else{ 
+    presigma = matrix(tail(sigma(tmp), 1), ncol = 9) 
+    prereturns = matrix(unlist(Dat[(T+i-1), ]), ncol = 9, nrow = 1) 
+    preresiduals = matrix(tail(residuals(tmp),1), ncol = 9, nrow = 1) 
+    preR = last(rcor(tmp))[,,1] 
+    diag(preR) = 1 
+    preQ = tmp@mfilter$Qt[[length(tmp@mfilter$Qt)]] 
+    preZ = tail(tmp@mfilter$Z, 1) 
+
+    tmp = cgarchfilter(specx, Dat[(i+1):(T+i), ], filter.control = list(n.old = T)) 
+    filtMu[i,] = tail(fitted(tmp), 1) 
+    filtS[i,] = tail(sigma(tmp), 1) 
+    filtC[,,i] = last(rcov(tmp))[,,1] 
+    filtCor[,,i] = last(rcor(tmp))[,,1] 
+  } 
+  sim = cgarchsim(fit, n.sim = 1, m.sim = 5000, startMethod = "sample", 
+                  preR = preR, preQ = preQ, preZ = preZ, 
+                  prereturns = prereturns, presigma = presigma, 
+                  preresiduals = preresiduals, cluster = NULL) 
+  simx = t(sapply(sim@msim$simX, FUN = function(x) x[1,])) 
+  simMu[i,] = colMeans(simx) 
+  simC[,,i] = sim@msim$simH[[1]][,,1] 
+  simCor[,,i] = sim@msim$simR[[1]][,,1] 
+  simS[i,] = sqrt(diag(simC[,,i])) 
+  simulatedreturns[i,,]=simx 
+} 
+```
+
+*Source : [dynamic copula using rmgarch package (ignore previous question, don't know how to delete it)](http://r.789695.n4.nabble.com/dynamic-copula-using-rmgarch-package-ignore-previous-question-don-t-know-how-to-delete-it-td4722071.html)*
+
+> Hi Robert, thank you for your reply (I apologize in advance if this is not the proper way to respond in the thread, I'm very new at this). 
+>
+i) Portfolio return is computed as equal-weighted sum of the nine series. Since in the examples in the 'rmgarchtests' folder these are directly used in the GARCH-GPD-copula specification, I assume these are log returns, and therefore transform them into simple daily returns since log returns are time-additive but not "portfolio"-additive; 
+>
+ii) In 'simulatedreturns' I have 570 predicted returns for 9 series simulated 5000 times. Like before, I first transform them in simple returns; 
+>
+iii) the simulated portfolio returns are then computed as before, as equal-weighted sum since simple returns are additive across assets; 
+>
+iv) for VaR estimation I don't using anything fancy, just the 'quantile' function. For each observation, I estimate the respective simulated quantile and subtract the actual return from it, and store the difference in vector 'a'. If 'a' is negative (meaning VaR is greater in absolute terms than returns) then 'b' equals 0, if 'a' is positive then 'b'=1. 
+>
+Since I haven't fixed the random number seed, it is possible that you obtain slightly different results. But the number of violations should be the approximately the same as mine, and nowhere close to the number expected. 
+>
+This is the rest of the code, with comments reported above. 
+>
+You have an idea what could have gone wrong? 
+
+```
+#comment i) 
+#from log to simple returns 
+Simple = exp(Dat)-1 
+
+#return of equally weighted portfolio as weighted sum 
+portfolioreturn <- (1/9)*rowSums(Simple) 
+#since I'm only interested in returns in the testing period, I only take the last 570 observations 
+portfolioreturn <- portfolioreturn[572:1141] #we're only interested in returns in the testing period 
+
+#comment ii) 
+#transform simulated log returns into simple returns 
+simplereturns=exp(simulatedreturns)-1 
+
+#comment iii) 
+#return series of simulated portfolio (for each observation from 1 to 570 I have 5000 portfolio returns) 
+portfolio <- matrix(nrow=570,ncol=5000) 
+for (i in 1:570){ 
+  for (j in 1:5000){ 
+    portfolio[i,j]=(1/9)*(simplereturns[i,1,j]+simplereturns[i,2,j]+simplereturns[i,3,j]+simplereturns[i,4,j] 
+                         +simplereturns[i,5,j]+simplereturns[i,6,j]+simplereturns[i,7,j]+simplereturns[i,8,j] 
+                         +simplereturns[i,9,j]) 
+  } 
+} 
+
+#comment iv) 
+#estimation of 90%, 95% and 99% VaR as respective 10%, 5% and 1% quantiles 
+#a is a vector containing the difference between quantile and actual loss 
+#b is a vector equal to 0 when a is negative (as it should) and 1 when loss is greater than VaR (thus when a is positive) 
+#number of violations is then computed as sum(b), summing all ones; 
+a90 <- c() 
+for (i in 1:570){ 
+  a90[i]=quantile(portfolio[i,],0.1)-portfolioreturn[i] 
+} 
+b90 <- c() 
+for (i in 1:570){ 
+  if (a90[i]>0){b90[i]=1} 
+  else {b90[i]=0} 
+} 
+sum(b90)#number of violations=171 (expected: 570*0.1=57) 
+
+a95 <- c() 
+for (i in 1:570){ 
+  a95[i]=quantile(portfolio[i,],0.05)-portfolioreturn[i] 
+} 
+b95 <- c() 
+for (i in 1:570){ 
+  if (a95[i]>0){b95[i]=1} 
+  else {b95[i]=0} 
+} 
+sum(b95)#number of violations=127 (expected: 570*0.05=29) 
+
+a99 <- c() 
+for (i in 1:570){ 
+  a99[i]=quantile(portfolio[i,],0.01)-portfolioreturn[i] 
+} 
+b99 <- c() 
+for (i in 1:570){ 
+  if (a99[i]>0){b99[i]=1} 
+  else {b99[i]=0} 
+} 
+sum(b99) #number of violations=69 (expected: 570*0.01=6)
+```
+
+*Source : [dynamic copula using rmgarch package (ignore previous question, don't know how to delete it)](http://r.789695.n4.nabble.com/dynamic-copula-using-rmgarch-package-ignore-previous-question-don-t-know-how-to-delete-it-td4722071.html)*
+
 ### Hi-Lo
+
+From above [DCC] section (or refer to [Comparison Summary]), we know the `DCC` model is more accurate than `aDCC` model, here I directly use normal `DCC` model by set `asymmetric = FALSE`.
+
+In order to forecast in Copula DCC model, just using `cGARCHsim` kindly refer to [Forecasting for DCC Copula GARCH model in R](https://stackoverflow.com/questions/34855831/forecasting-for-dcc-copula-garch-model-in-r).
 
 #### VAR=FALSE
 
@@ -1883,6 +2213,144 @@ sv <- c('solnp')#, 'gosolnp')
 Hi.base <- llply(mbase['USDJPY'], Hi)
 Lo.base <- llply(mbase['USDJPY'], Lo)
 HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
+rm(Hi.base, Lo.base)
+
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% 
+  index %>% ymd %>% 
+  .[. >= timeID0] %>% 
+  c(., xts::last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^copulaGARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+
+copulaGARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLo.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      copulaGARCH.USDJPY[[i]] <- tryCatch({ldply(md[1], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .mv.model = 'copula-GARCH', .model = y, .tram= trams[1], 
+                .solver = 'solnp', .currency = cr_code[7],#[i], 
+                .dist.model = .dist.models[2], 
+                .price_type = 'HL', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.HL.', 'solnp', ' error.\n')))
+        
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC), 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(copulaGARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(copulaGARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(copulaGARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/copulaGARCH.USDJPY.HL.', 
+        unique(copulaGARCH.USDJPY[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/copulaGARCH.USDJPY.HL.', 
+        unique(copulaGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
+```
+
+```{r, eval=FALSE}
+# ---------- eval = FALSE ------------
+> fit = cgarchfit(spec, data = Dat, out.sample = out, cluster = NULL, 
++                 spd.control = list(lower = 0.1, upper = 0.9, type = "mle", 
++                                    kernel = "normal"), 
++                 fit.control = list(eval.se=FALSE))
+Warning messages:
+1: In sqrt(ans$h) : NaNs produced
+2: In retval[sort.list(q)] <- val :
+  number of items to replace is not a multiple of replacement length
+3: In sqrt(ans$h) : NaNs produced
+4: In retval[sort.list(q)] <- val :
+  number of items to replace is not a multiple of replacement length
+> fit
+
+*-------------------------------------------------*
+*                  Copula GARCH Fit               *
+*-------------------------------------------------*
+
+Distribution		:  mvt
+DCC Order			:  1 1
+Asymmetric			:  TRUE
+No. of Parameters	:  14
+[VAR GARCH DCC UncQ]: [0+9+4+1]
+No. of Series		:  2
+No. of Observations	:  262
+Log-Likelihood		:  -371.1513
+Av.Log-Likelihood	:  -1.417 
+
+Optimal Parameters
+---------------------------------------------------
+                      Estimate  Std. Error  t value Pr(>|t|)
+[USDJPY.High].ma1     0.042109          NA       NA       NA
+[USDJPY.High].omega   0.115858          NA       NA       NA
+[USDJPY.High].alpha1  0.123774          NA       NA       NA
+[USDJPY.High].beta1   0.000267          NA       NA       NA
+[USDJPY.High].gamma1 -0.151096          NA       NA       NA
+[USDJPY.Low].omega    0.102946          NA       NA       NA
+[USDJPY.Low].alpha1   0.000000          NA       NA       NA
+[USDJPY.Low].beta1    0.000005          NA       NA       NA
+[USDJPY.Low].gamma1   0.000034          NA       NA       NA
+[Joint]dcca1          0.000000          NA       NA       NA
+[Joint]dccb1          0.659608          NA       NA       NA
+[Joint]dccg1          0.294882          NA       NA       NA
+[Joint]mshape         9.818608          NA       NA       NA
+
+Information Criteria
+---------------------
+                   
+Akaike       2.9325
+Bayes        3.1095
+Shibata      2.9278
+Hannan-Quinn 3.0036
+
+
+Elapsed time : 2.12783
+```
+
+#### VAR=TRUE
+
+```{r cGARCH-HLVART, message=FALSE, warning=FALSE, eval=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('Kendall', 'ML')                     ## choose `Kendall`
+trams <- c('parametric', 'empirical', 'spd') ## choose `parametric`
+.dist.models <- c('mvnorm', 'mvt')           ##choose `mvt`
+sv <- c('solnp')#, 'gosolnp')
+
+## Hi-Lo.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
+rm(Hi.base, Lo.base)
 
 ## only use USDJPY trading day.
 timeID <- HiLo.base %>% 
@@ -1955,17 +2423,109 @@ for (dt in timeID) {
 
 ```
 
+```{r, eval=FALSE}
+# ---------- eval = FALSE ------------
+> fit
+
+*-------------------------------------------------*
+*                  Copula GARCH Fit               *
+*-------------------------------------------------*
+
+Distribution		:  mvt
+DCC Order			:  1 1
+Asymmetric			:  TRUE
+No. of Parameters	:  22
+[VAR GARCH DCC UncQ]: [0+15+4+3]
+No. of Series		:  3
+No. of Observations	:  262
+Log-Likelihood		:  -543.0784
+Av.Log-Likelihood	:  -2.073 
+
+Optimal Parameters
+---------------------------------------------------
+                       Estimate  Std. Error  t value Pr(>|t|)
+[USDJPY.High].ma1      0.042109          NA       NA       NA
+[USDJPY.High].omega    0.115858          NA       NA       NA
+[USDJPY.High].alpha1   0.123774          NA       NA       NA
+[USDJPY.High].beta1    0.000267          NA       NA       NA
+[USDJPY.High].gamma1  -0.151096          NA       NA       NA
+[USDJPY.Low].omega     0.102946          NA       NA       NA
+[USDJPY.Low].alpha1    0.000000          NA       NA       NA
+[USDJPY.Low].beta1     0.000005          NA       NA       NA
+[USDJPY.Low].gamma1    0.000034          NA       NA       NA
+[USDJPY.Close].ar1     0.447653          NA       NA       NA
+[USDJPY.Close].ma1     0.003526          NA       NA       NA
+[USDJPY.Close].omega   0.120137          NA       NA       NA
+[USDJPY.Close].alpha1  0.413889          NA       NA       NA
+[USDJPY.Close].beta1   0.000000          NA       NA       NA
+[USDJPY.Close].gamma1  0.048600          NA       NA       NA
+[Joint]dcca1           0.046461          NA       NA       NA
+[Joint]dccb1           0.862936          NA       NA       NA
+[Joint]dccg1           0.091663          NA       NA       NA
+[Joint]mshape          6.327378          NA       NA       NA
+
+Information Criteria
+---------------------
+                   
+Akaike       4.2907
+Bayes        4.5494
+Shibata      4.2811
+Hannan-Quinn 4.3947
+
+
+Elapsed time : 4.823512
+
+traceback(cgarchsim(fit, n.sim = 1, m.sim = msm, startMethod = "sample", 
+                  preR = preR, preQ = preQ, preZ = preZ, 
+                  prereturns = prereturns, presigma = presigma, 
+                  preresiduals = preresiduals, cluster = NULL))
+Error in .custzdist(custom.dist, zmatrix, m.sim, n) : row dimension
+				of custom innovations
+ matrix must be equal to n.sim+n.start
+In addition: Warning message:
+In .gjrgarchpath1(spec = spec, n.sim = n.sim, n.start = n.start,  : 
+ugarchpath-->warning: n.start>=MA order for arfima model...automatically setting.
+```
+
+### Op-Hi-Lo-Cl
+
+#### VAR=FALSE
+
+```{r, eval=FALSE}
+# ---------- eval = FALSE ------------
+> fit = cgarchfit(spec, data = Dat, out.sample = out, cluster = NULL, 
++                 spd.control = list(lower = 0.1, upper = 0.9, type = "mle", 
++                                    kernel = "normal"), 
++                 fit.control = list(eval.se=FALSE))
+Error in optim(theta, negloglik, hessian = TRUE, ..., tmp = excess) : non-finite finite-difference value [1]
+```
+
 ### Cl
 
 #### VAR=FALSE
 
-```{r cGARCH-CVARF, message=FALSE, warning=FALSE}
-
+```{r cGARCH-CVARF, message=FALSE, warning=FALSE, eval=FALSE}
+# ---------- eval = FALSE ------------
+> fit = cgarchfit(spec, data = Dat, out.sample = out, cluster = NULL, 
++                 spd.control = list(lower = 0.1, upper = 0.9, type = "mle", 
++                                    kernel = "normal"), 
++                 fit.control = list(eval.se=FALSE))
+Error in UseMethod("convergence") : no applicable method for 'convergence' applied to an object of class "try-error"
+In addition: Warning messages:
+1: In lsfit(log10(M), log10(ABSVAL), wt) : 50 missing values deleted
+2: In lsfit(log10(M), log10(ABSVAL), wt) : 50 missing values deleted
 ```
 
 ## CCC
 
 *Multivariate DCC-GARCH Model* introduce the DCC and CCC models. In all tests for marginal goodness of fit the DCC-GARCH with skew Student's t-distributed errors outperformed the DCC-GARCH with Gaussian and Student's t-distributed errors. Comparing the DCC-GARCH model with the CCC-GARCH model using the Kupiec test showed that the DCC-GARCH model gave a better fit to the data. Here I skip the `cccgarch` package.
+
+> Because the restriction of constant conditional correlation may be unrealistic in practice, a class
+of models termed Dynamic Conditional Correlation (DCC) due to Engle (2002) and Tse and
+Tsui (2002) where introduced which allow for the correlation matrix to be time varying with
+motion dynamics...
+
+*Source : [The `rmgarch` models: Background and properties]*^[Kindly refer to [Reference] to read the paper.]
 
 ## BEKK
 
@@ -2152,6 +2712,9 @@ ddply(MSE.mv, .(Model), summarise,
 
 #### Copula-GARCH Model
 
+```{r}
+```
+
 ### Compare with Univariate
 
 ```{r uniGARCH-HL}
@@ -2315,10 +2878,214 @@ ctble %>%
   scroll_box(width = '100%')
 ```
 
+From above table, the observation number `n` for `double-goGARCH.VAR`, `multi-goGARCH.VAR` and `Uni-gjrGARCH` should be devided by 2 since the observation for `Hi` and `Lo` are seperated to `2` rows and `<NA>` value accordingly (Other models combine the `Hi-Lo` price in `1` row.).
+
+```{r, message=FALSE, warning=FALSE}
+fls <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^aDCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^FDCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|goGARCH.USDJPY.HL.VAR.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|pred2.+.rds|^DCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^aDCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^DCC.GARCH.USDJPY.OHLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds')
+
+## extract date
+validate <- fls %>% 
+    str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+    unlist %>% 
+    plyr::count() %>% 
+    tbl_df
+validate %>% dplyr::filter(freq != 9) %>% 
+  kable(caption = 'Count missing observation') %>% 
+  kable_styling(
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+## Univariate
+td <- validate %>% dplyr::filter(freq == 9) %>% .$x %>% ymd
+flv <- llply(td, grep, fls, value = TRUE) %>% unlist
+
+## get only MSE and AIC/BIC but ommit VaR.
+MSE.com <- ldply(flv, function(x) {
+    dfm <- readRDS(paste0('data/fx/USDJPY/', x))#[[1]]
+    
+    if (!is.data.frame(dfm)) {
+      dfm %<>% .$res
+    }
+    
+    names(dfm) %<>% str_replace_all('USDJPY', 'Price')
+    dfm %<>% separate(Type, c('Cat', 'Type', 'Model'))
+    
+    if (ncol(dfm) == 10) {
+      dfm %<>% dplyr::filter(Type == 'Hi' | Type == 'Lo') %>% 
+        mutate(Type2 = Type) %>% 
+        spread(Type, Price) %>% 
+        dplyr::rename(Price.High = Hi, Price.Low = Lo) %>% 
+        spread(Type2, `Price.T+1`) %>% 
+        dplyr::rename(Price.High.T1 = Hi, Price.Low.T1 = Lo) %>% 
+        dplyr::select(Date, Price.High, Price.Low, 
+                      Price.High.T1, Price.Low.T1, 
+                      Akaike, Bayes, Shibata, Hannan.Quinn)
+      dfm %<>% mutate(Model = 'gjrGARCH', Cat = 'HL')
+      
+    } else if (ncol(dfm) == 14) {
+      dfm %<>% dplyr::select(Date, Model, Price.High, Price.Low, #Price.Close, 
+                             Price.High.T1, Price.Low.T1, #Price.Close.T1, 
+                             Akaike, Bayes, Shibata, Hannan.Quinn) %>% 
+        unique
+      dfm %<>% mutate(Cat = 'HLC')
+      
+    } else if (ncol(dfm) == 16) {
+      
+      if('Price.Open' %in% names(dfm)) {
+        
+        dfm %<>% dplyr::select(Date, Model, Price.High, Price.Low, 
+                               Price.High.T1, Price.Low.T1, 
+                               Akaike, Bayes, Shibata, Hannan.Quinn) %>% 
+          mutate(Akaike = mean(Akaike), Bayes = mean(Bayes), 
+                 Shibata = mean(Shibata), Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+          unique
+        dfm %<>% mutate(Cat = 'OHLC')
+        
+      } else {
+        dfm %<>% dplyr::select(Date, Model, Price.High, Price.Low, 
+                             Price.High.T1, Price.Low.T1, 
+                             Akaike, Bayes, Shibata, Hannan.Quinn) %>% 
+        mutate(Akaike = mean(Akaike), Bayes = mean(Bayes), 
+               Shibata = mean(Shibata), Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+        unique
+      dfm %<>% mutate(Model = ifelse(Model == 'VAR', 'goGARCH.VAR', Model), Cat = 'HL')
+      }
+    } else {
+      dfm %<>% dfm
+    }
+    
+    return(dfm)
+  }) %>% tbl_df
+```
+
+```{r, echo=FALSE}
+ddply(MSE.com, .(Cat, Model), summarise, 
+      MSE.High = mean((Price.High.T1 - Price.High)^2, na.rm = TRUE), 
+      MSE.Low = mean((Price.Low.T1 - Price.Low)^2, na.rm = TRUE), 
+      Mean.MSE = (MSE.High + MSE.Low)/2, 
+      n = length(Price.High), 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2, na.rm = TRUE),
+      Akaike = mean(Akaike), 
+      MSE.BIC = mean((Bayes - mean(Bayes))^2, na.rm = TRUE),
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(MSE.High = round(MSE.High, 7), 
+                    MSE.Low = round(MSE.Low, 7)) %>% 
+  kable(caption = 'Hi-Lo Price MSE, AIC, BIC') %>% 
+  kable_styling(
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%')#, height = '400px')
+```
+
+Similar with previous table, the observation number `n` for `double-goGARCH.VAR`, `multi-goGARCH.VAR` and `Uni-gjrGARCH` should be devided by `2`.
+
+```{r, message=FALSE, warning=FALSE}
+fls <- list.files('data/fx/USDJPY', pattern = 'pred2.+.rds|^DCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^aDCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^DCC.GARCH.USDJPY.OHLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds')
+
+## extract date
+validate <- fls %>% 
+    str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+    unlist %>% 
+    plyr::count() %>% 
+    tbl_df
+validate %>% dplyr::filter(freq != 4) %>% 
+  kable(caption = 'Count missing observation') %>% 
+  kable_styling(
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+## Univariate
+td <- validate %>% dplyr::filter(freq == 4) %>% .$x %>% ymd
+flv <- llply(td, grep, fls, value = TRUE) %>% unlist
+
+## get only MSE and AIC/BIC but ommit VaR.
+MSE.com <- ldply(flv, function(x) {
+    dfm <- readRDS(paste0('data/fx/USDJPY/', x))#[[1]]
+    
+    if (!is.data.frame(dfm)) {
+      dfm %<>% .$res
+    }
+    
+    names(dfm) %<>% str_replace_all('USDJPY', 'Price')
+    dfm %<>% separate(Type, c('Cat', 'Type', 'Model'))
+    
+    if (ncol(dfm) == 10) {
+      dfm %<>% dplyr::filter(Type == 'Op' | Type == 'Hi' | 
+                             Type == 'Lo' | Type == 'Cl') %>% 
+        mutate(Type2 = Type) %>% 
+        spread(Type, Price) %>% 
+        dplyr::rename(Price.Open = Op, Price.High = Hi, 
+                      Price.Low = Lo, Price.Close = Cl) %>% 
+        spread(Type2, `Price.T+1`) %>% 
+        dplyr::rename(Price.Open.T1 = Op, Price.High.T1 = Hi, 
+                      Price.Low.T1 = Lo, Price.Close.T1 = Cl) %>% 
+        dplyr::select(Date, Price.Open, Price.High, Price.Low, Price.Close, 
+                      Price.Open.T1, Price.High.T1, Price.Low.T1, Price.Close.T1, 
+                      Akaike, Bayes, Shibata, Hannan.Quinn)
+      dfm %<>% mutate(Model = 'gjrGARCH', Cat = 'OHLC')
+      
+    } else if (ncol(dfm) == 14) {
+      dfm %<>% dplyr::select(Date, Model, Price.High, Price.Low, Price.Close, 
+                             Price.High.T1, Price.Low.T1, Price.Close.T1, 
+                             Akaike, Bayes, Shibata, Hannan.Quinn) %>% 
+        unique
+      dfm %<>% mutate(Cat = 'HLC')
+      
+    } else if (ncol(dfm) == 16) {
+      
+      dfm %<>% dplyr::select(Date, Model, 
+                               Price.Open, Price.High, Price.Low, Price.Close, 
+                               Price.Open.T1, Price.High.T1, Price.Low.T1, 
+                               Price.Close.T1, Akaike, Bayes, Shibata, Hannan.Quinn) %>% 
+          mutate(Akaike = mean(Akaike), Bayes = mean(Bayes), 
+                 Shibata = mean(Shibata), Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+          unique
+        dfm %<>% mutate(Cat = 'OHLC')
+      
+    } else {
+      dfm %<>% dfm
+    }
+    
+    return(dfm)
+  }) %>% tbl_df
+```
+
+```{r, echo=FALSE}
+ddply(MSE.com, .(Cat, Model), summarise, 
+      MSE.Open = mean((Price.Open.T1 - Price.Open)^2, na.rm = TRUE), 
+      MSE.High = mean((Price.High.T1 - Price.High)^2, na.rm = TRUE), 
+      MSE.Low = mean((Price.Low.T1 - Price.Low)^2, na.rm = TRUE), 
+      MSE.Close = mean((Price.Close.T1 - Price.Close)^2, na.rm = TRUE), 
+      Mean.MSE = (MSE.High + MSE.Low)/2, 
+      n = length(Price.High), 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2, na.rm = TRUE),
+      Akaike = mean(Akaike), 
+      MSE.BIC = mean((Bayes - mean(Bayes))^2, na.rm = TRUE),
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% mutate(
+    MSE.Open = round(MSE.Open, 7), 
+    MSE.High = round(MSE.High, 7), 
+    MSE.Low = round(MSE.Low, 7), 
+    MSE.Close = round(MSE.Close, 7)) %>% 
+  kable(caption = 'OHLC Price MSE, AIC, BIC') %>% 
+  kable_styling(
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%')#, height = '400px')
+```
+
+Similar with previous table, the observation number `n` for `Uni-gjrGARCH` should be devided by `2`.
+
 ## Cl
 
 # Conclusion
 
+> A comprehensive set of examples is available in the rmgarch.tests folder of the source. There
+are 5 main files, covering the Copula, DCC, FDCC and GO-GARCH models and the fScenario
+and fMoments methods for use in portfolio and risk management applications (see the parma
+package)...
+
+*Source : [The `rmgarch` models: Background and properties]*^[Kindly refer to [Reference] to read the paper.]
 
 ```{r option, echo = FALSE}
 ## Set options back to original options
