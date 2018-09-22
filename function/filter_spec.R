@@ -1,4 +1,4 @@
-filter_spec <- function(mbase, .currency = 'ALL', .price_type = 'OHLC') {
+filter_spec <- function(mbase, .currency = 'ALL', .price_type = 'OHLC', var.target = FALSE) {
   
   ## load libraries and functions.
   if (!require('BBmisc')) install.packages('BBmisc')
@@ -199,7 +199,7 @@ filter_spec <- function(mbase, .currency = 'ALL', .price_type = 'OHLC') {
           variance.model = list(
             model = 'gjrGARCH', garchOrder = c(1, 1), 
             submodel = NULL, external.regressors = NULL, 
-            variance.targeting = FALSE), 
+            variance.targeting = var.target), 
           mean.model = list(
             armaOrder = y[c('p', 'q')], 
             include.mean = TRUE, archm = FALSE, 
@@ -218,7 +218,7 @@ filter_spec <- function(mbase, .currency = 'ALL', .price_type = 'OHLC') {
         variance.model = list(
           model = 'gjrGARCH', garchOrder = c(1, 1), 
           submodel = NULL, external.regressors = NULL, 
-          variance.targeting = FALSE), 
+          variance.targeting = var.target), 
         mean.model = list(
           armaOrder = x[c('p', 'q')], 
           include.mean = TRUE, archm = FALSE, 
