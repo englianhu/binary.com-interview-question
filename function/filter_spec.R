@@ -167,7 +167,8 @@ filter_spec <- function(mbase, .currency = 'ALL', .price_type = 'OHLC', var.targ
         armaOrder.Hi <- NULL
         armaOrder.Lo <- NULL
         
-        mb.Cl <- suppressWarnings(filterFX(mbase[[names(cr)]], currency = x, price = 'Cl'))
+        mb.Cl <- suppressWarnings(filterFX(
+          mbase[,grep(names(cr), names(mbase), value = TRUE)], currency = x, price = 'Cl'))
         armaOrder.Cl <- opt_arma(mb.Cl)
         
         armaOrder <- list(armaOrder.Op = armaOrder.Op, armaOrder.Hi = armaOrder.Hi, 
