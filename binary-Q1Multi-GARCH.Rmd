@@ -580,8 +580,9 @@ tmID <- list.files('data/fx/USDJPY',
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
-timeID %<>% .[!. %in% tmID]
-timeID %<>% .[. > ymd('2013-01-01')]
+baseDT <- ymd('2013-01-01')
+timeID %<>% .[!. %in% tmID] %>% .[-1]
+timeID %<>% .[. > baseDT]
 
 DCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -593,6 +594,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       DCC.GARCH.USDJPY[[i]] <- tryCatch({ldply(md[1], function(y) {
@@ -654,8 +656,9 @@ tmID <- list.files('data/fx/USDJPY',
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
-timeID %<>% .[!. %in% tmID]
-timeID %<>% .[. > ymd('2013-01-01')]
+baseDT <- ymd('2013-01-01')
+timeID %<>% .[!. %in% tmID] %>% .[-1]
+timeID %<>% .[. > baseDT]
 
 aDCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -667,6 +670,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       aDCC.GARCH.USDJPY[[i]] <- tryCatch({ldply(md[2], function(y) {
@@ -728,8 +732,9 @@ tmID <- list.files('data/fx/USDJPY',
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
-timeID %<>% .[!. %in% tmID]
-timeID %<>% .[. > ymd('2013-01-01')]
+baseDT <- ymd('2013-01-01')
+timeID %<>% .[!. %in% tmID] %>% .[-1]
+timeID %<>% .[. > baseDT]
 
 FDCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -741,6 +746,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       FDCC.GARCH.USDJPY[[i]] <- tryCatch({ldply(md[3], function(y) {
@@ -806,8 +812,9 @@ tmID <- list.files('data/fx/USDJPY',
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
+baseDT <- ymd('2013-01-01')
 timeID %<>% .[!. %in% tmID] %>% .[-1]
-timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 DCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -819,6 +826,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       DCC.GARCH.USDJPY[[i]] <- tryCatch({llply(md[1], function(y) {
@@ -884,8 +892,9 @@ tmID <- list.files('data/fx/USDJPY',
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
+baseDT <- ymd('2013-01-01')
 timeID %<>% .[!. %in% tmID] %>% .[-1]
-timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 aDCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -897,6 +906,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       aDCC.GARCH.USDJPY[[i]] <- tryCatch({llply(md[2], function(y) {
@@ -962,8 +972,9 @@ tmID <- list.files('data/fx/USDJPY',
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
+baseDT <- ymd('2013-01-01')
 timeID %<>% .[!. %in% tmID] %>% .[-1]
-timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 FDCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -975,6 +986,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       FDCC.GARCH.USDJPY[[i]] <- tryCatch({llply(md[3], function(y) {
@@ -1043,8 +1055,9 @@ tmID <- list.files('data/fx/USDJPY',
 				   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
 				   unlist %>% ymd
 
-timeID %<>% .[!. %in% tmID]
-timeID %<>% .[. > ymd('2013-01-01')]
+baseDT <- ymd('2013-01-01')
+timeID %<>% .[!. %in% tmID] %>% .[-1]
+timeID %<>% .[. > baseDT]
 
 DCC.GARCH <- list()
 for (dt in timeID) {
@@ -1054,6 +1067,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       DCC.GARCH[[i]] <- tryCatch({ldply(md[1], function(y) {
@@ -1118,8 +1132,9 @@ tmID <- list.files('data/fx/USDJPY',
 				   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
 				   unlist %>% ymd
 
-timeID %<>% .[!. %in% tmID]
-timeID %<>% .[. > ymd('2013-01-01')]
+baseDT <- ymd('2013-01-01')
+timeID %<>% .[!. %in% tmID] %>% .[-1]
+timeID %<>% .[. > baseDT]
 
 aDCC.GARCH <- list()
 for (dt in timeID) {
@@ -1129,6 +1144,7 @@ for (dt in timeID) {
   
   if (dt %in% timeID2) {
     dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+    dtr %<>% .[. > baseDT]
     smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
     
     aDCC.GARCH[[i]] <- tryCatch({ldply(md[2], function(y) {
@@ -1193,8 +1209,9 @@ tmID <- list.files('data/fx/USDJPY',
 				   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
 				   unlist %>% ymd
 
-timeID %<>% .[!. %in% tmID]
-timeID %<>% .[. > ymd('2013-01-01')]
+baseDT <- ymd('2013-01-01')
+timeID %<>% .[!. %in% tmID] %>% .[-1]
+timeID %<>% .[. > baseDT]
 
 FDCC.GARCH <- list()
 for (dt in timeID) {
@@ -1203,6 +1220,7 @@ for (dt in timeID) {
   
   if (dt %in% timeID2) {
     dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+    dtr %<>% .[. > baseDT]
     smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
     
     FDCC.GARCH[[i]] <- tryCatch({ldply(md[3], function(y) {
@@ -1269,8 +1287,9 @@ tmID <- list.files('data/fx/USDJPY',
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
+baseDT <- ymd('2013-01-01')
 timeID %<>% .[!. %in% tmID] %>% .[-1]
-timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 DCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -1282,6 +1301,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       DCC.GARCH.USDJPY[[i]] <- tryCatch({llply(md[1], function(y) {
@@ -1348,8 +1368,9 @@ tmID <- list.files('data/fx/USDJPY',
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
+baseDT <- ymd('2013-01-01')
 timeID %<>% .[!. %in% tmID] %>% .[-1]
-timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 aDCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -1361,6 +1382,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       aDCC.GARCH.USDJPY[[i]] <- tryCatch({llply(md[2], function(y) {
@@ -1427,8 +1449,9 @@ tmID <- list.files('data/fx/USDJPY',
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% ymd
 
+baseDT <- ymd('2013-01-01')
 timeID %<>% .[!. %in% tmID] %>% .[-1]
-timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 FDCC.GARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -1440,6 +1463,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      baseDT %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       FDCC.GARCH.USDJPY[[i]] <- tryCatch({llply(md[3], function(y) {
@@ -2987,7 +3011,7 @@ validate %>% dplyr::filter(freq != 9) %>%
 
 ## Univariate
 td <- validate %>% dplyr::filter(freq == 9) %>% .$x %>% ymd
-flv <- llply(td, grep, fls, value = TRUE) %>% unlist
+flv <- llply(td, grep, fls, value = TRUE) %>% unlist %>% unique
 
 ## get only MSE and AIC/BIC but ommit VaR.
 MSE.com <- ldply(flv, function(x) {
@@ -3086,7 +3110,7 @@ validate %>% dplyr::filter(freq != 5) %>%
 
 ## Univariate
 td <- validate %>% dplyr::filter(freq == 5) %>% .$x %>% ymd
-flv <- llply(td, grep, fls, value = TRUE) %>% unlist
+flv <- llply(td, grep, fls, value = TRUE) %>% unlist %>% unique
 
 ## get only MSE and AIC/BIC but ommit VaR.
 MSE.com <- ldply(flv, function(x) {
@@ -3191,6 +3215,77 @@ ddply(MSE.com, .(Cat, Model), summarise,
 ```
 
 ## Cl
+
+```{r, message=FALSE, warning=FALSE}
+fls <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^aDCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds')
+
+fls2 <- llply(names(cr_code), function(x) {
+  list.files(paste0('data/fx/', x, '/'), pattern = 'pred2.+.rds')
+  }) %>% unlist
+
+flsc <- c(fls, fls2)
+
+## extract date
+validate <- flsc %>% 
+    str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+    unlist %>% 
+    plyr::count() %>% 
+    tbl_df
+validate %>% dplyr::filter(freq != 7) %>% 
+  kable(caption = 'Count missing observation') %>% 
+  kable_styling(
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+## Univariate
+td <- validate %>% dplyr::filter(freq == 7) %>% .$x %>% ymd
+flv <- llply(td, grep, flsc, value = TRUE) %>% unlist %>% unique
+
+## get only MSE and AIC/BIC but ommit VaR.
+MSE.com <- ldply(flv, function(x) {
+  
+  dfm <- llply(names(cr_code), function(y) {
+    readRDS(paste0('data/fx/', y, '/', x))#[[1]]
+  })
+  
+    
+    if (!is.data.frame(dfm)) {
+      dfm %<>% .$res
+    }
+    
+    names(dfm) %<>% str_replace_all('USDJPY', 'Price')
+    dfm %<>% separate(Type, c('Cat', 'Type', 'Model'))
+    
+    if (ncol(dfm) == 10) {
+      dfm %<>% dplyr::filter(Type == 'Op' | Type == 'Hi' | 
+                             Type == 'Lo' | Type == 'Cl') %>% 
+        mutate(Type2 = Type) %>% 
+        spread(Type, Price) %>% 
+        dplyr::rename(Price.Open = Op, Price.High = Hi, 
+                      Price.Low = Lo, Price.Close = Cl) %>% 
+        spread(Type2, `Price.T+1`) %>% 
+        dplyr::rename(Price.Open.T1 = Op, Price.High.T1 = Hi, 
+                      Price.Low.T1 = Lo, Price.Close.T1 = Cl) %>% 
+        dplyr::select(Date, Price.Open, Price.High, Price.Low, Price.Close, 
+                      Price.Open.T1, Price.High.T1, Price.Low.T1, Price.Close.T1, 
+                      Akaike, Bayes, Shibata, Hannan.Quinn)
+      dfm %<>% mutate(Model = 'gjrGARCH', Cat = 'OHLC')
+      
+    } else if (ncol(dfm) == 31) {
+      dfm %<>% dplyr::select(Date, Model, Price.High, Price.Low, Price.Close, 
+                             Price.High.T1, Price.Low.T1, Price.Close.T1, 
+                             Akaike, Bayes, Shibata, Hannan.Quinn) %>% 
+        unique
+      dfm %<>% mutate(Cat = 'C')
+
+    } else {
+      dfm %<>% dfm
+    }
+    
+    return(dfm)
+  }) %>% tbl_df
+```
+
+
 
 # Conclusion
 
