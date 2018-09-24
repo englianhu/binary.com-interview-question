@@ -25,7 +25,7 @@ suppressAll(lib(pkgs))
 funs <- c('calc_fx.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R', 'read_umodels.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
 
-options(warn = -1)
+options(warn=-1)#, 'scipen'=100, 'digits'=4)
 rm(pkgs)
 ```
 
@@ -359,6 +359,7 @@ names(bk.dcc) <- md
 Multivariate modelling for single currency. Here I tried to seperate to 2 type of forecasting dataset which are `OHLC` and `HLC` to know if includes the open price will be more accurate or not.
 
 ```{r pt-dcc, eval=FALSE}
+## ------------- eval ---------------
 ## Possible multivariate models.
 md <- c('DCC', 'aDCC', 'FDCC')
 sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
@@ -442,7 +443,8 @@ dcc.logLik %>%
 
 The model `r dcc.logLik %>% dplyr::filter(log.Likelihood == max(log.Likelihood)) %>% unite(.id, .id:includes.Op) %>% .$.id %>% str_replace_all('_', '.')` which highest logLik value `r dcc.logLik$log.Likelihood[which.max(dcc.logLik$log.Likelihood)]` is the best fitted model for correlation.
 
-```{r ptdcc-roll}
+```{r ptdcc-roll, eval=FALSE}
+## ------------- eval ---------------
 ## Possible multivariate models.
 md <- c('DCC', 'aDCC', 'FDCC')
 sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
@@ -2020,9 +2022,8 @@ for (dt in timeID) {
 
 ### Abtract
 
-[多元Copula-GARCH模型及其在金融风险分析上的应用](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/)
-[The Copula-GARCH Model of Conditional Dependencies - An International Stock Market](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/)
-
+- [多元Copula-GARCH模型及其在金融风险分析上的应用](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/)
+- [The Copula-GARCH Model of Conditional Dependencies - An International Stock Market](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/)
 - [The Copula GARCH Model](https://cran.r-project.org/web/packages/copula/vignettes/copula_GARCH.html)
 - [copula with rmgarch](http://r.789695.n4.nabble.com/copula-with-rmgarch-td4616138.html)
 - [dynamic copula using rmgarch package (ignore previous question, don't know how to delete it)](http://r.789695.n4.nabble.com/dynamic-copula-using-rmgarch-package-ignore-previous-question-don-t-know-how-to-delete-it-td4722071.html)
@@ -3231,61 +3232,81 @@ validate <- flsc %>%
     unlist %>% 
     plyr::count() %>% 
     tbl_df
-validate %>% dplyr::filter(freq != 7) %>% 
+validate %>% dplyr::filter(freq != 9) %>% 
   kable(caption = 'Count missing observation') %>% 
   kable_styling(
     bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 
 ## Univariate
-td <- validate %>% dplyr::filter(freq == 7) %>% .$x %>% ymd
+td <- validate %>% dplyr::filter(freq == 9) %>% .$x %>% ymd
 flv <- llply(td, grep, flsc, value = TRUE) %>% unlist %>% unique
 
 ## get only MSE and AIC/BIC but ommit VaR.
-MSE.com <- ldply(flv, function(x) {
+MSE.com <- llply(flv, function(x) {
   
   dfm <- llply(names(cr_code), function(y) {
-    readRDS(paste0('data/fx/', y, '/', x))#[[1]]
+      fm <- tryCatch(readRDS(paste0('data/fx/', y, '/', x)), error = function(e) NULL)
+      if (!is.null(fm)) {
+          fm %<>% tail(., 1)
+          
+          if (ncol(fm) == 29) {
+              fm %<>% .[,1:20]
+          } else if (ncol(fm) == 8) {
+              fm %<>% bind_rows
+          } else {
+              fm %<>% fm
+          }
+        }
+      fm
   })
   
-    
-    if (!is.data.frame(dfm)) {
-      dfm %<>% .$res
-    }
-    
-    names(dfm) %<>% str_replace_all('USDJPY', 'Price')
-    dfm %<>% separate(Type, c('Cat', 'Type', 'Model'))
-    
-    if (ncol(dfm) == 10) {
-      dfm %<>% dplyr::filter(Type == 'Op' | Type == 'Hi' | 
-                             Type == 'Lo' | Type == 'Cl') %>% 
-        mutate(Type2 = Type) %>% 
-        spread(Type, Price) %>% 
-        dplyr::rename(Price.Open = Op, Price.High = Hi, 
-                      Price.Low = Lo, Price.Close = Cl) %>% 
-        spread(Type2, `Price.T+1`) %>% 
-        dplyr::rename(Price.Open.T1 = Op, Price.High.T1 = Hi, 
-                      Price.Low.T1 = Lo, Price.Close.T1 = Cl) %>% 
-        dplyr::select(Date, Price.Open, Price.High, Price.Low, Price.Close, 
-                      Price.Open.T1, Price.High.T1, Price.Low.T1, Price.Close.T1, 
-                      Akaike, Bayes, Shibata, Hannan.Quinn)
-      dfm %<>% mutate(Model = 'gjrGARCH', Cat = 'OHLC')
-      
-    } else if (ncol(dfm) == 31) {
-      dfm %<>% dplyr::select(Date, Model, Price.High, Price.Low, Price.Close, 
-                             Price.High.T1, Price.Low.T1, Price.Close.T1, 
-                             Akaike, Bayes, Shibata, Hannan.Quinn) %>% 
-        unique
-      dfm %<>% mutate(Cat = 'C')
-
-    } else {
-      dfm %<>% dfm
-    }
-    
-    return(dfm)
-  }) %>% tbl_df
+  dfm %<>% bind_rows
+  names(dfm) %<>% str_replace_all('(Close.T1|T\\+1)', 'T1')
+  names(dfm) %<>% str_replace_all('.Close', '')
+  dfm$Type %<>% str_replace_all('.+.Cl', 'gjrGARCH') %>% factor
+  #if (ncol(dfm) == 20) {
+  #    dfm %<>% .[,c('Date', 'Type', 'USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 
+  #                 'USDCAD', 'USDCNY', 'USDJPY', 'USDAUD.T+1', 'USDEUR.T+1', 
+  #                 'USDGBP.T+1', 'USDCHF.T+1', 'USDCAD.T+1', 'USDCNY.T+1', 
+  #                 'USDJPY.T+1', 'Akaike', 'Bayes', 'Shibata', 'Hannan.Quinn')]
+  #}
+  dfm
+})
+MSE.com %<>% bind_rows %>% tbl_df
 ```
 
-
+```{r}
+ddply(MSE.com, .(Type), summarise, 
+      MSE.USDAUD = mean((USDAUD.T1 - USDAUD)^2, na.rm = TRUE), 
+      MSE.USDEUR = mean((USDEUR.T1 - USDEUR)^2, na.rm = TRUE), 
+      MSE.USDGBP = mean((USDGBP.T1 - USDGBP)^2, na.rm = TRUE), 
+      MSE.USDCHF = mean((USDCHF.T1 - USDCHF)^2, na.rm = TRUE), 
+      MSE.USDCAD = mean((USDCAD.T1 - USDCAD)^2, na.rm = TRUE), 
+      MSE.USDCNY = mean((USDCNY.T1 - USDCNY)^2, na.rm = TRUE), 
+      MSE.USDJPY = mean((USDJPY.T1 - USDJPY)^2, na.rm = TRUE), 
+      Mean.MSE = (MSE.USDAUD + MSE.USDEUR + MSE.USDGBP + 
+                  MSE.USDCHF + MSE.USDCAD + MSE.USDCNY + 
+                  MSE.USDJPY)/7, 
+      n = length(Type), 
+      MSE.AIC = mean((Akaike - mean(Akaike))^2, na.rm = TRUE),
+      Akaike = mean(Akaike), 
+      MSE.BIC = mean((Bayes - mean(Bayes))^2, na.rm = TRUE),
+      Bayes = mean(Bayes), 
+      Shibata = mean(Shibata), 
+      Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+  tbl_df %>% #mutate(
+  #  MSE.USDAUD = round(MSE.USDAUD, 7), 
+  #  MSE.USDEUR = round(MSE.USDEUR, 7), 
+  #  MSE.USDGBP = round(MSE.USDGBP, 7), 
+  #  MSE.USDCHF = round(MSE.USDCHF, 7), 
+  #  MSE.USDCAD = round(MSE.USDCAD, 7), 
+  #  MSE.USDCNY = round(MSE.USDCNY, 7), 
+  #  MSE.USDJPY = round(MSE.USDJPY, 7)) %>% 
+  kable(caption = 'Close Price MSE, AIC, BIC') %>% 
+  kable_styling(
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%')#, height = '400px')
+```
 
 # Conclusion
 
