@@ -147,6 +147,7 @@ I try to surf over internet and the model has no yet widely use. Here I can only
 ## Parameter Selection
 
 ```{r dcc1, echo=FALSE, eval=FALSE}
+## ---------- eval = FALSE --------------------
 ### ========= using cluster for sampling ===============
 fit <- llply(na.omit(Cl(mbase[['USDJPY']])), function(x){
   
@@ -245,6 +246,7 @@ dcc.logLik %>%
 ### Close Price
 
 ```{r bk-dcc, eval=FALSE}
+## ------- eval ----------
 ## Possible multivariate models.
 md <- c('DCC', 'aDCC', 'FDCC')
 sv <- c('solnp', 'nlminb', 'lbfgs', 'gosolnp')
@@ -350,7 +352,6 @@ bk.dcc <- llply(md, function(x) {
 })
 names(bk.dcc) <- md
 ```
-
 
 ### Hi-Lo Price
 
@@ -1033,7 +1034,7 @@ for (dt in timeID) {
 
 #### `DCC` and `VAR=FALSE`
 
-```{r DCC-CVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+```{r DCC-CVARF, message=FALSE, warning=FALSE, eval=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
 md <- c('DCC', 'aDCC', 'FDCC')
@@ -1110,7 +1111,7 @@ for (dt in timeID) {
 
 #### `aDCC` and `VAR=FALSE`
 
-```{r aDCC-CVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+```{r aDCC-CVARF, message=FALSE, warning=FALSE, eval=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
 md <- c('DCC', 'aDCC', 'FDCC')
@@ -1187,7 +1188,7 @@ for (dt in timeID) {
 
 #### `FDCC` and `VAR=FALSE`
 
-```{r FDCC-CVARF, message=FALSE, warning=FALSE, eval=FALSE, echo=FALSE}
+```{r FDCC-CVARF, message=FALSE, warning=FALSE, eval=FALSE}
 ## ------------- Simulate mv_fx() ----------------------
 ## mv_fx just made the model and some argument flexible.
 md <- c('DCC', 'aDCC', 'FDCC')
@@ -1562,6 +1563,7 @@ tmID <- list.files('data/fx/USDJPY',
 
 timeID %<>% .[!. %in% tmID]
 timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 goGARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -1573,6 +1575,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       goGARCH.USDJPY[[i]] <- tryCatch({ldply(md[1], function(y) {
@@ -1642,6 +1645,7 @@ tmID <- list.files('data/fx/USDJPY',
 
 timeID %<>% .[!. %in% tmID]
 timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 goGARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -1653,6 +1657,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       goGARCH.USDJPY[[i]] <- tryCatch({ldply(md[2], function(y) {
@@ -1722,6 +1727,7 @@ tmID <- list.files('data/fx/USDJPY',
 
 timeID %<>% .[!. %in% tmID]
 timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 goGARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -1733,6 +1739,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       goGARCH.USDJPY[[i]] <- tryCatch({ldply(md[3], function(y) {
@@ -1804,6 +1811,7 @@ tmID <- list.files('data/fx/USDJPY',
 
 timeID %<>% .[!. %in% tmID]
 timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 mvgoGARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -1815,6 +1823,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       mvgoGARCH.USDJPY[[i]] <- tryCatch({ldply(md[1], function(y) {
@@ -1884,6 +1893,7 @@ tmID <- list.files('data/fx/USDJPY',
 
 timeID %<>% .[!. %in% tmID]
 timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 mvgoGARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -1895,6 +1905,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       mvgoGARCH.USDJPY[[i]] <- tryCatch({ldply(md[2], function(y) {
@@ -1964,6 +1975,7 @@ tmID <- list.files('data/fx/USDJPY',
 
 timeID %<>% .[!. %in% tmID]
 timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 mvgoGARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -1975,6 +1987,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       mvgoGARCH.USDJPY[[i]] <- tryCatch({ldply(md[3], function(y) {
@@ -2343,6 +2356,7 @@ tmID <- list.files('data/fx/USDJPY',
 
 timeID %<>% .[!. %in% tmID]
 timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 copulaGARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -2354,6 +2368,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       copulaGARCH.USDJPY[[i]] <- tryCatch({ldply(md[1], function(y) {
@@ -2480,6 +2495,7 @@ tmID <- list.files('data/fx/USDJPY',
 
 timeID %<>% .[!. %in% tmID]
 timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
 
 copulaGARCH.USDJPY <- list()
 for (dt in timeID) {
@@ -2491,6 +2507,7 @@ for (dt in timeID) {
     
     if (dt %in% timeID2) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
       copulaGARCH.USDJPY[[i]] <- tryCatch({ldply(md[1], function(y) {
@@ -2535,8 +2552,87 @@ for (dt in timeID) {
 
 #### VAR=FALSE
 
-```{r cGARCH-HLCVARF, message=FALSE, warning=FALSE}
+```{r cGARCH-HLCVARF, message=FALSE, warning=FALSE, eval=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+md <- c('Kendall', 'ML')                     ## choose `Kendall`
+trams <- c('parametric', 'empirical', 'spd') ## choose `parametric`
+.dist.models <- c('mvnorm', 'mvt')           ##choose `mvt`
+sv <- c('solnp')#, 'gosolnp')
 
+## Hi-Lo-Cl.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+Cl.base <- llply(mbase['USDJPY'], Cl)
+HiLoCl.base <- c(Hi.base, Lo.base, Cl.base) %>% 
+  do.call(cbind, .) %>% na.omit
+rm(Hi.base, Lo.base, Cl.base)
+
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% 
+  index %>% ymd %>% 
+  .[. >= timeID0] %>% 
+  c(., xts::last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^copulaGARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
+
+copulaGARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLoCl.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      copulaGARCH.USDJPY[[i]] <- tryCatch({llply(md[1], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .mv.model = 'copula-GARCH', .model = y, .tram= trams[1], 
+                .solver = 'solnp', .currency = cr_code[7],#[i], 
+                .dist.model = .dist.models[2], 
+                .price_type = 'HLC', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0(y, '.HLC.', 'solnp', ' error.\n')))
+        
+        res = suppressAll(data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC)))
+        VaR = df$forecastVaR
+        
+        names(res) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        names(VaR) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        
+        return(list(res = res, VaR = VaR))
+      })[[1]]}, error = function(e) NULL)
+      
+      if (is.null(copulaGARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(copulaGARCH.USDJPY[[i]]$res)[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      saveRDS(copulaGARCH.USDJPY[[i]], paste0(
+        'data/fx/', subdir, '/copulaGARCH.USDJPY.HLC.', 
+        unique(copulaGARCH.USDJPY[[i]]$res$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/copulaGARCH.USDJPY.HLC.', 
+        unique(copulaGARCH.USDJPY[[i]]$res$Date), '.rds saved!\n'))
+      }
+    }; rm(i)
+  }
 ```
 
 ```{r, eval=FALSE}
@@ -2670,8 +2766,6 @@ if (!((method == "Nelder-Mead") || (method == "BFGS") ||
 
 The `mGJR()` function in `mgarchBEKK` use diversified optim function.
 
-
-
 # Model Comparison
 
 ## Hi-Lo
@@ -2737,7 +2831,7 @@ ddply(MSE.mv, .(Model), summarise,
       MSE.High = mean((Price.High.T1 - Price.High)^2), 
       MSE.Low = mean((Price.Low.T1 - Price.Low)^2), 
       Mean.MSE = (MSE.High + MSE.Low)/2, 
-      n = length(Model), 
+      n = length(Model[!is.na(Model)]), 
       MSE.AIC = mean((Akaike - mean(Akaike))^2),
       Akaike = mean(Akaike), 
       MSE.BIC = mean((Bayes - mean(Bayes))^2),
@@ -2806,7 +2900,7 @@ ddply(MSE.mv, .(Model), summarise,
       MSE.High = mean((Price.High.T1 - Price.High)^2), 
       MSE.Low = mean((Price.Low.T1 - Price.Low)^2), 
       Mean.MSE = (MSE.High + MSE.Low)/2, 
-      n = length(Model), 
+      n = length(Model[!is.na(Model)]), 
       MSE.AIC = mean((Akaike - mean(Akaike))^2),
       Akaike = mean(Akaike), 
       MSE.BIC = mean((Bayes - mean(Bayes))^2),
@@ -2831,7 +2925,7 @@ ddply(MSE.mv, .(Model), summarise,
 ```{r}
 ```
 
-### Compare with Univariate
+### Univariate
 
 ```{r uniGARCH-HL}
 ## Univariate
@@ -2859,7 +2953,7 @@ ddply(MSE.uni, .(Cat), summarise,
       MSE.High = mean((Price.High.T1 - Price.High)^2, na.rm = TRUE), 
       MSE.Low = mean((Price.Low.T1 - Price.Low)^2, na.rm = TRUE), 
       Mean.MSE = (MSE.High + MSE.Low)/2, 
-      n = length(Price.High), 
+      n = length(Price.High[!is.na(Price.High)]), 
       MSE.AIC = mean((Akaike - mean(Akaike))^2, na.rm = TRUE),
       Akaike = mean(Akaike), 
       MSE.BIC = mean((Bayes - mean(Bayes))^2, na.rm = TRUE),
@@ -2912,7 +3006,7 @@ ddply(MSE.mv, .(Model), summarise,
       MSE.Low = mean((Price.Low.T1 - Price.Low)^2), 
       MSE.Close = mean((Price.Close.T1 - Price.Close)^2), 
       Mean.MSE = (MSE.High + MSE.Low + MSE.Close)/3, 
-      n = length(Model), 
+      n = length(Model[!is.na(Model)]), 
       MSE.AIC = mean((Akaike - mean(Akaike))^2),
       Akaike = mean(Akaike), 
       MSE.BIC = mean((Bayes - mean(Bayes))^2),
@@ -2938,7 +3032,7 @@ In order to compare the models, I try to compare with :
 - Mean of AIC (Mean value of AIC)
 - Mean of BIC (Mean value of BIC)
 
-### Compare with Univariate
+### Univariate
 
 ```{r uniGARCH}
 ## Univariate
@@ -2967,7 +3061,7 @@ ddply(MSE.uni, .(Cat), summarise,
       MSE.Low = mean((Price.Low.T1 - Price.Low)^2, na.rm = TRUE), 
       MSE.Close = mean((Price.Close.T1 - Price.Close)^2, na.rm = TRUE), 
       Mean.MSE = (MSE.High + MSE.Low + MSE.Close)/2, 
-      n = length(Price.High), 
+      n = length(Price.High[!is.na(Price.High)]), 
       MSE.AIC = mean((Akaike - mean(Akaike))^2, na.rm = TRUE),
       Akaike = mean(Akaike), 
       MSE.BIC = mean((Bayes - mean(Bayes))^2, na.rm = TRUE),
@@ -3078,7 +3172,7 @@ ddply(MSE.com, .(Cat, Model), summarise,
       MSE.High = mean((Price.High.T1 - Price.High)^2, na.rm = TRUE), 
       MSE.Low = mean((Price.Low.T1 - Price.Low)^2, na.rm = TRUE), 
       Mean.MSE = (MSE.High + MSE.Low)/2, 
-      n = length(Price.High), 
+      n = length(Price.High[!is.na(Price.High)]), 
       MSE.AIC = mean((Akaike - mean(Akaike))^2, na.rm = TRUE),
       Akaike = mean(Akaike), 
       MSE.BIC = mean((Bayes - mean(Bayes))^2, na.rm = TRUE),
@@ -3172,7 +3266,7 @@ ddply(MSE.com, .(Cat, Model), summarise,
       MSE.Low = mean((Price.Low.T1 - Price.Low)^2, na.rm = TRUE), 
       MSE.Close = mean((Price.Close.T1 - Price.Close)^2, na.rm = TRUE), 
       Mean.MSE = mean(c(MSE.Open, MSE.High, MSE.Low, MSE.Close), na.rm = TRUE), 
-      n = length(Price.High), 
+      n = length(Price.High[!is.na(Price.High)]), 
       MSE.AIC = mean((Akaike - mean(Akaike))^2, na.rm = TRUE),
       Akaike = mean(Akaike), 
       MSE.BIC = mean((Bayes - mean(Bayes))^2, na.rm = TRUE),
@@ -3198,7 +3292,7 @@ ddply(MSE.com, .(Cat, Model), summarise,
       MSE.Low = mean((Price.Low.T1 - Price.Low)^2, na.rm = TRUE), 
       MSE.Close = mean((Price.Close.T1 - Price.Close)^2, na.rm = TRUE), 
       Mean.MSE = (MSE.High + MSE.Low + MSE.Close)/3, 
-      n = length(Price.High), 
+      n = length(Price.High[!is.na(Price.High)]), 
       MSE.AIC = mean((Akaike - mean(Akaike))^2, na.rm = TRUE),
       Akaike = mean(Akaike), 
       MSE.BIC = mean((Bayes - mean(Bayes))^2, na.rm = TRUE),
@@ -3287,7 +3381,7 @@ ddply(MSE.com, .(Type), summarise,
       Mean.MSE = (MSE.USDAUD + MSE.USDEUR + MSE.USDGBP + 
                   MSE.USDCHF + MSE.USDCAD + MSE.USDCNY + 
                   MSE.USDJPY)/7, 
-      n = length(Type), 
+      n = length(Type[!is.na(Type)]), 
       MSE.AIC = mean((Akaike - mean(Akaike))^2, na.rm = TRUE),
       Akaike = mean(Akaike), 
       MSE.BIC = mean((Bayes - mean(Bayes))^2, na.rm = TRUE),
@@ -3307,6 +3401,8 @@ ddply(MSE.com, .(Type), summarise,
     bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   scroll_box(width = '100%')#, height = '400px')
 ```
+
+*Table : The observation for univariate is `7 x n` since seven currencies.*
 
 # Conclusion
 

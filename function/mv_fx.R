@@ -299,6 +299,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'par
         fc <- varxforecast(X = mbase, Bcoef = fit@mfit$stdresid, p = 4, 
                            out.sample = 0, n.ahead = .ahead, n.roll = 0, mregfor = NULL)
         cat('step 2/2 varxforecast done!\n')
+        
       } else {
         vfit <- NULL
         
@@ -306,13 +307,20 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'par
                          VAR.fit = vfit)
         cat('step 1/2 cgarchfit done!\n')
         
+        preR <- last(rcor(fit))[,,1]
+        diag(preR)<- 1
+        presigma <- tail(sigma(fit), 1)
+        preQ <- fit@mfit$Qt[[length(fit@mfit$Qt)]]
+        preZ <- tail(fit@mfit$Z, 1)
+        prereturns <- tail(mbase, 1)
+        preresiduals = tail(fit@mfit$stdresid, 1)
+        
         ## https://stackoverflow.com/questions/34855831/forecasting-for-dcc-copula-garch-model-in-r
         ## http://r.789695.n4.nabble.com/copula-with-rmgarch-td4616138.html
         fc <- cgarchsim(fit, n.sim = ncol(mbase), n.start = 0, m.sim = .ahead, 
-                        presigma = tail(sigma(fit), 1), startMethod = 'sample', 
-                        preR = rcor(fit), preQ = fit@mfit$Qt[[length(fit@mfit$Qt)]], 
-                        preZ = tail(fit@mfit$Z, 1), prereturns = tail(mbase, 1), 
-                        preresiduals = tail(fit@mfit$stdresid, 1), cluster = cl)#, rseed = 1)
+                        presigma = presigma, startMethod = 'sample', preR = preR, 
+                        preQ = preQ, preZ = preZ, prereturns = prereturns, 
+                        preresiduals = preresiduals, cluster = cl)#, rseed = 1)
         
         res <- matrix(fc@msim$simZ, nr = 1)# + sim1@msim$simX[[1]]
         cat('step 2/2 cgarchsim done!\n')

@@ -4,13 +4,9 @@ pkgs <- c('rugarch', 'rmgarch', 'forecast', 'plyr', 'dplyr', 'quantmod', 'matrix
 suppressAll(lib(pkgs))
 rm(pkgs)
 
-<<<<<<< HEAD
 Dat <- HiLoCl.base[,, drop = FALSE]
-=======
-Dat <- llply(mbase, Cl)
-Dat %<>% do.call('cbind', .)
-#Dat <- HiLoCl.base[,, drop = FALSE]
->>>>>>> 0c1cfcdb0895dafe546d6f6ff8f367cdd7c938e4
+#Dat <- llply(mbase, Cl)
+#Dat %<>% do.call('cbind', .)
 #Dat <- do.call('cbind', list(Op(mbase[[7]]), Hi(mbase[[7]]), 
 #                             Lo(mbase[[7]]), Cl(mbase[[7]])))
 Dat %<>% .[,, drop = FALSE]
