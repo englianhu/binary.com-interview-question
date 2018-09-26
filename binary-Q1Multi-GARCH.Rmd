@@ -1018,13 +1018,15 @@ for (dt in timeID) {
       if (!dir.exists(paste0('data/fx/', subdir))) 
         dir.create(paste0('data/fx/', subdir))
       
-      saveRDS(FDCC.GARCH.USDJPY[[i]], paste0(
+      if (!is.null(FDCC.GARCH.USDJPY[[i]])) {
+        saveRDS(FDCC.GARCH.USDJPY[[i]], paste0(
         'data/fx/', subdir, '/FDCC.GARCH.USDJPY.HLC.', 
         unique(FDCC.GARCH.USDJPY[[i]]$res$Date), '.rds'))
       
       cat(paste0(
         'data/fx/', subdir, '/FDCC.GARCH.USDJPY.HLC.', 
         unique(FDCC.GARCH.USDJPY[[i]]$res$Date), '.rds saved!\n'))
+      }
       }
     }; rm(i)
   }
@@ -1042,6 +1044,7 @@ sv <- c('solnp')#, 'gosolnp')
 
 ## Cl.
 Cl.base <- llply(mbase, Cl) %>% do.call('cbind', .)
+Cl.base %<>% na.omit
 
 ## all currencies trading day.
 #'@ timeID <- Cl.base %>% do.call('cbind', .) %>% index %>% ymd %>% 
@@ -1120,6 +1123,7 @@ sv <- c('solnp')#, 'gosolnp')
 
 ## Cl.
 Cl.base <- llply(mbase, Cl) %>% do.call('cbind', .)
+Cl.base %<>% na.omit
 
 timeID <- Cl.base %>% index %>% ymd %>% 
    .[. >= timeID0] %>% c(., xts::last(.) + days(1))
@@ -1190,6 +1194,7 @@ sv <- c('solnp')#, 'gosolnp')
 
 ## Cl.
 Cl.base <- llply(mbase, Cl) %>% do.call('cbind', .)
+Cl.base %<>% na.omit
 
 timeID <- Cl.base %>% index %>% ymd %>% 
    .[. >= timeID0] %>% c(., xts::last(.) + days(1))
@@ -2772,7 +2777,8 @@ validate <- fls %>%
 validate %>% dplyr::filter(freq != 3) %>% 
   kable(caption = 'Count missing observation') %>% 
   kable_styling(
-    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(height = '400px')
 ## A tibble: 3 x 2
 #  x           freq
 #  <fct>      <int>
@@ -2856,7 +2862,8 @@ validate <- fls %>%
 validate %>% dplyr::filter(freq != 4) %>% 
   kable(caption = 'Count missing observation') %>% 
   kable_styling(
-    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(height = '400px')
 
 if (nrow(validate) > 0) {
   td <- validate %>% dplyr::filter(freq != 4) %>% .$x %>% ymd
@@ -2970,7 +2977,8 @@ validate <- fls %>%
 validate %>% dplyr::filter(freq != 2) %>% 
   kable(caption = 'Count missing observation') %>% 
   kable_styling(
-    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(height = '400px')
 
 td <- validate %>% dplyr::filter(freq != 2) %>% .$x %>% ymd
 
@@ -3089,7 +3097,8 @@ validate <- fls %>%
 validate %>% dplyr::filter(freq != 10) %>% 
   kable(caption = 'Count missing observation') %>% 
   kable_styling(
-    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(height = '400px')
 
 ## Univariate
 td <- validate %>% dplyr::filter(freq == 10) %>% .$x %>% ymd
@@ -3188,7 +3197,8 @@ validate <- fls %>%
 validate %>% dplyr::filter(freq != 5) %>% 
   kable(caption = 'Count missing observation') %>% 
   kable_styling(
-    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(height = '400px')
 
 ## Univariate
 td <- validate %>% dplyr::filter(freq == 5) %>% .$x %>% ymd
@@ -3316,7 +3326,8 @@ validate <- flsc %>%
 validate %>% dplyr::filter(freq != 9) %>% 
   kable(caption = 'Count missing observation') %>% 
   kable_styling(
-    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+    bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(height = '400px')
 
 ## Univariate
 td <- validate %>% dplyr::filter(freq == 9) %>% .$x %>% ymd
@@ -3433,14 +3444,18 @@ sys1 <- devtools::session_info()$platform %>%
   unlist %>% data.frame(Category = names(.), session_info = .)
 rownames(sys1) <- NULL
 
-sys1 %<>% rbind(., data.frame(
-  Category = 'Current time', 
-  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST'))) %>% 
-  dplyr::filter(Category != 'os')
+#sys1 %<>% rbind(., data.frame(
+#  Category = 'Current time', 
+#  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST'))) %>% 
+#  dplyr::filter(Category != 'os')
 
 sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
 names(sys2)[2] <- c('Sys.info')
 rownames(sys2) <- NULL
+
+sys2 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
 
 cbind(sys1, sys2) %>% 
   kable(caption = 'Additional session information:') %>% 
