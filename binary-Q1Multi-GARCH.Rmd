@@ -1056,13 +1056,12 @@ timeID <- Cl.base %>% index %>% ymd %>%
 tmID <- list.files('data/fx/USDJPY', 
                    pattern = '^DCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
 				   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
-				   unlist %>% ymd
+				   unlist %>% ymd %>% unique
 
 baseDT <- ymd('2013-01-01')
 timeID %<>% .[!. %in% tmID] %>% .[-1]
 timeID %<>% .[. > baseDT]
 
-DCC.GARCH <- list()
 for (dt in timeID) {
 
     smp <- Cl.base
@@ -1073,7 +1072,7 @@ for (dt in timeID) {
       dtr %<>% .[. > baseDT]
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
-      DCC.GARCH[[i]] <- tryCatch({ldply(md[1], function(y) {
+      DCC.GARCH <- tryCatch({ldply(md[1], function(y) {
         df = tryCatch(
           mv_fx(smp, .model = y, .solver = 'solnp', .currency = 'ALL', 
                 .price_type = 'C', .VAR = FALSE, .cluster = .cl), 
@@ -1088,24 +1087,26 @@ for (dt in timeID) {
         df
       })}, error = function(e) NULL)
       
-      if (is.null(DCC.GARCH[[i]])) {
+      if (is.null(DCC.GARCH)) {
         subdir <- 'USDJPY'
       } else {
-        #subdir <- substr(names(DCC.GARCH[[i]])[3], 1, 6)
+        #subdir <- substr(names(DCC.GARCH)[3], 1, 6)
         subdir <- 'USDJPY'
       }
       
       if (!dir.exists(paste0('data/fx/', subdir))) 
         dir.create(paste0('data/fx/', subdir))
       
-      saveRDS(DCC.GARCH[[i]], paste0(
+      if (!is.null(DCC.GARCH)) {
+        saveRDS(DCC.GARCH, paste0(
         'data/fx/', subdir, '/DCC.GARCH.C.', 
-        unique(DCC.GARCH[[i]]$Date), '.rds'))
+        unique(DCC.GARCH$Date), '.rds'))
       
       cat(paste0(
         'data/fx/', subdir, '/DCC.GARCH.C.', 
-        unique(DCC.GARCH[[i]]$Date), '.rds saved!\n'))
+        unique(DCC.GARCH$Date), '.rds saved!\n'))
       }
+    }
   }
 ```
 
@@ -1120,26 +1121,17 @@ sv <- c('solnp')#, 'gosolnp')
 ## Cl.
 Cl.base <- llply(mbase, Cl) %>% do.call('cbind', .)
 
-## all currencies trading day.
-#'@ timeID <- Cl.base %>% do.call('cbind', .) %>% index %>% ymd %>% 
-#'@   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
-
-#'@ tmID <- list.files('data/fx/USDJPY', 
-#'@                    pattern = '^DCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
-#'@   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
-#'@   unlist %>% ymd
 timeID <- Cl.base %>% index %>% ymd %>% 
    .[. >= timeID0] %>% c(., xts::last(.) + days(1))
 tmID <- list.files('data/fx/USDJPY', 
-                   pattern = '^DCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+                   pattern = '^aDCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
 				   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
-				   unlist %>% ymd
+				   unlist %>% ymd %>% unique
 
 baseDT <- ymd('2013-01-01')
 timeID %<>% .[!. %in% tmID] %>% .[-1]
 timeID %<>% .[. > baseDT]
 
-aDCC.GARCH <- list()
 for (dt in timeID) {
   
   smp <- Cl.base
@@ -1150,7 +1142,7 @@ for (dt in timeID) {
     dtr %<>% .[. > baseDT]
     smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
     
-    aDCC.GARCH[[i]] <- tryCatch({ldply(md[2], function(y) {
+    aDCC.GARCH <- tryCatch({ldply(md[2], function(y) {
       df = tryCatch(
         mv_fx(smp, .model = y, .solver = 'solnp', .currency = 'ALL', 
               .price_type = 'C', .VAR = FALSE, .cluster = .cl), 
@@ -1165,23 +1157,25 @@ for (dt in timeID) {
       df
     })}, error = function(e) NULL)
     
-    if (is.null(aDCC.GARCH[[i]])) {
+    if (is.null(aDCC.GARCH)) {
       subdir <- 'USDJPY'
     } else {
-      #subdir <- substr(names(aDCC.GARCH[[i]])[3], 1, 6)
+      #subdir <- substr(names(aDCC.GARCH)[3], 1, 6)
       subdir <- 'USDJPY'
     }
       
     if (!dir.exists(paste0('data/fx/', subdir))) 
       dir.create(paste0('data/fx/', subdir))
     
-    saveRDS(aDCC.GARCH[[i]], paste0(
-      'data/fx/', subdir, '/aDCC.GARCH.C.', 
-      unique(aDCC.GARCH[[i]]$Date), '.rds'))
-    
-    cat(paste0(
-      'data/fx/', subdir, '/aDCC.GARCH.C.', 
-      unique(aDCC.GARCH[[i]]$Date), '.rds saved!\n'))
+    if (!is.null(aDCC.GARCH)) {
+      saveRDS(aDCC.GARCH, paste0(
+        'data/fx/', subdir, '/aDCC.GARCH.C.', 
+        unique(aDCC.GARCH$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/aDCC.GARCH.C.', 
+        unique(aDCC.GARCH$Date), '.rds saved!\n'))
+      }
     }
   }
 ```
@@ -1197,18 +1191,10 @@ sv <- c('solnp')#, 'gosolnp')
 ## Cl.
 Cl.base <- llply(mbase, Cl) %>% do.call('cbind', .)
 
-## all currencies trading day.
-#'@ timeID <- Cl.base %>% do.call('cbind', .) %>% index %>% ymd %>% 
-#'@   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
-
-#'@ tmID <- list.files('data/fx/USDJPY', 
-#'@                    pattern = '^DCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
-#'@   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
-#'@   unlist %>% ymd
 timeID <- Cl.base %>% index %>% ymd %>% 
    .[. >= timeID0] %>% c(., xts::last(.) + days(1))
 tmID <- list.files('data/fx/USDJPY', 
-                   pattern = '^DCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+                   pattern = '^FDCC.GARCH.C.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
 				   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
 				   unlist %>% ymd
 
@@ -1216,7 +1202,6 @@ baseDT <- ymd('2013-01-01')
 timeID %<>% .[!. %in% tmID] %>% .[-1]
 timeID %<>% .[. > baseDT]
 
-FDCC.GARCH <- list()
 for (dt in timeID) {
   smp <- Cl.base
   timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
@@ -1226,7 +1211,7 @@ for (dt in timeID) {
     dtr %<>% .[. > baseDT]
     smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
     
-    FDCC.GARCH[[i]] <- tryCatch({ldply(md[3], function(y) {
+    FDCC.GARCH <- tryCatch({ldply(md[3], function(y) {
       df = tryCatch(
         mv_fx(smp, .model = y, .solver = 'solnp', .currency = 'ALL', 
               .price_type = 'C', .VAR = FALSE, .cluster = .cl), 
@@ -1241,23 +1226,25 @@ for (dt in timeID) {
       df
     })}, error = function(e) NULL)
     
-    if (is.null(FDCC.GARCH[[i]])) {
+    if (is.null(FDCC.GARCH)) {
       subdir <- 'USDJPY'
     } else {
-      #subdir <- substr(names(FDCC.GARCH[[i]])[3], 1, 6)
+      #subdir <- substr(names(FDCC.GARCH)[3], 1, 6)
       subdir <- 'USDJPY'
     }
     
     if (!dir.exists(paste0('data/fx/', subdir))) 
       dir.create(paste0('data/fx/', subdir))
-    
-    saveRDS(FDCC.GARCH[[i]], paste0(
-      'data/fx/', subdir, '/FDCC.GARCH.C.', 
-      unique(FDCC.GARCH[[i]]$Date), '.rds'))
-    
-    cat(paste0(
-      'data/fx/', subdir, '/FDCC.GARCH.C.', 
-      unique(FDCC.GARCH[[i]]$Date), '.rds saved!\n'))
+
+    if (!is.null(FDCC.GARCH)) {
+      saveRDS(FDCC.GARCH, paste0(
+        'data/fx/', subdir, '/FDCC.GARCH.C.', 
+        unique(FDCC.GARCH$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', subdir, '/FDCC.GARCH.C.', 
+        unique(FDCC.GARCH$Date), '.rds saved!\n'))
+      }
     }
   }
 ```
@@ -3091,7 +3078,7 @@ ctble %>%
 From above table, the observation number `n` for `double-goGARCH.VAR`, `multi-goGARCH.VAR` and `Uni-gjrGARCH` should be devided by 2 since the observation for `Hi` and `Lo` are seperated to `2` rows and `<NA>` value accordingly (Other models combine the `Hi-Lo` price in `1` row.).
 
 ```{r, message=FALSE, warning=FALSE}
-fls <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^aDCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^FDCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|goGARCH.USDJPY.HL.VAR.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|pred2.+.rds|^DCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^aDCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^DCC.GARCH.USDJPY.OHLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds')
+fls <- list.files('data/fx/USDJPY', pattern = '^DCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^aDCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^FDCC.GARCH.USDJPY.HL.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|goGARCH.USDJPY.HL.VAR.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|pred2.+.rds|^DCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^aDCC.GARCH.USDJPY.HLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^DCC.GARCH.USDJPY.OHLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds|^aDCC.GARCH.USDJPY.OHLC.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds')
 
 ## extract date
 validate <- fls %>% 
@@ -3099,13 +3086,13 @@ validate <- fls %>%
     unlist %>% 
     plyr::count() %>% 
     tbl_df
-validate %>% dplyr::filter(freq != 9) %>% 
+validate %>% dplyr::filter(freq != 10) %>% 
   kable(caption = 'Count missing observation') %>% 
   kable_styling(
     bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 
 ## Univariate
-td <- validate %>% dplyr::filter(freq == 9) %>% .$x %>% ymd
+td <- validate %>% dplyr::filter(freq == 10) %>% .$x %>% ymd
 flv <- llply(td, grep, fls, value = TRUE) %>% unlist %>% unique
 
 ## get only MSE and AIC/BIC but ommit VaR.
@@ -3411,7 +3398,9 @@ are 5 main files, covering the Copula, DCC, FDCC and GO-GARCH models and the fSc
 and fMoments methods for use in portfolio and risk management applications (see the parma
 package)...
 
-*Source : [The `rmgarch` models: Background and properties]*^[Kindly refer to [Reference] to read the paper.]
+*Source : The `rmgarch` models: Background and properties*^[Kindly refer to [Reference] to read the paper.]
+
+
 
 ```{r option, echo = FALSE}
 ## Set options back to original options
