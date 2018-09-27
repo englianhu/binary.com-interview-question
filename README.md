@@ -49,6 +49,14 @@ Well, dataset for below papers daily OHLCV of 7 currencies from 2013-01-01 to 20
 
 Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3073/) where [Q1App2](https://beta.rstudioconnect.com/content/3138/) is another app for financial value betting.
 
+[binary.com Interview Question I - Multivariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Multi-GARCH) introduce few multi-variate GARCH models.
+
+- symmetric DCC
+- asymmetric DCC
+- Flexible DCC
+- <s>GO-GARCH</s>
+- <s>Copula-GARCH</s>
+
 <span style='color:red'>**Blooper...**</span>
 
 Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) which contain the questions and answers of 3 questions. For the staking model, I simply forecast the highest and lowest price, and then : 

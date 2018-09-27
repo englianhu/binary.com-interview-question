@@ -1506,6 +1506,10 @@ for (dt in timeID) {
 - [Higher Moment CAPM with the GO-GARCH (NIG) model.](http://www.unstarched.net/r-examples/rmgarch/higher-moment-capm-with-the-go-garch-nig-model/)
 - [VaR and Approximate VaR in the GO-GARCH (NIG) model.](http://www.unstarched.net/r-examples/rmgarch/var-and-approximate-var-in-the-go-garch-nig-model/)
 - [MGARCH Comparison using the Hong & Li Misspecification Test](http://www.unstarched.net/r-examples/rmgarch/mgarch-comparison-using-the-hong-li-misspecification-test/) compares few models in `M(1,1), M(2,2), M(3,3), M(4,4)` and concludes that the `go-GARCH` model will be better than normal DCC model in `M(3,3), M(4,4)` while normal DCC model better in `M(1,1)`.
+- [`mGARCH` : Generalized Orthogonal GARCH model](http://web.sgh.waw.pl/~mrubas/EFzR/KodyR/mGARCH.R)
+
+From above example, the author .
+
 
 ```{r go-garch1, eval=FALSE}
 # --------- draft ------------------
@@ -1845,15 +1849,17 @@ for (dt in timeID) {
       if (!dir.exists(paste0('data/fx/', subdir))) 
         dir.create(paste0('data/fx/', subdir))
       
-      saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
-        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[1], '.', 
-        .dist.models[1], '.', 
-        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
-      
-      cat(paste0(
-        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[1], '.', 
-        .dist.models[1], '.', 
-        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      if (!is.null(mvgoGARCH.USDJPY[[i]])) {
+        saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[1], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
+        
+        cat(paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[1], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+        }
       }
     }; rm(i)
   }
@@ -1927,15 +1933,17 @@ for (dt in timeID) {
       if (!dir.exists(paste0('data/fx/', subdir))) 
         dir.create(paste0('data/fx/', subdir))
       
-      saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
-        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[2], '.', 
-        .dist.models[1], '.', 
-        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
-      
-      cat(paste0(
-        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[2], '.', 
-        .dist.models[1], '.', 
-        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      if (!is.null(mvgoGARCH.USDJPY[[i]])) {
+        saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[2], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
+        
+        cat(paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[2], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+        }
       }
     }; rm(i)
   }
@@ -2009,15 +2017,265 @@ for (dt in timeID) {
       if (!dir.exists(paste0('data/fx/', subdir))) 
         dir.create(paste0('data/fx/', subdir))
       
-      saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
-        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[3], '.', 
-        .dist.models[1], '.', 
-        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
+      if (!is.null(mvgoGARCH.USDJPY[[i]])) {
+        saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[3], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
+        
+        cat(paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[3], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+        }
+      }
+    }; rm(i)
+  }
+```
+
+### Cl
+
+`model = 'constant'`
+
+```{r mvgoGARCH-CCF, message=FALSE, warning=FALSE, eval=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+.dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
+md <- c('constant', 'AR', 'VAR')
+sv <- c('solnp')#, 'gosolnp')
+
+## Cl.
+Cl.base <- llply(mbase, Cl) %>% do.call('cbind', .)
+Cl.base %<>% na.omit
+
+timeID <- Cl.base %>% index %>% ymd %>% 
+   .[. >= timeID0] %>% c(., xts::last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^mvgoGARCH.USDJPY.C.constant.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+				   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+				   unlist %>% ymd %>% unique
+
+baseDT <- ymd('2013-01-01')
+timeID %<>% .[!. %in% tmID] %>% .[-1]
+timeID %<>% .[. > baseDT]
+
+mvgoGARCH.USDJPY <- list()
+for (dt in timeID) {
+
+    smp <- Cl.base
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
-      cat(paste0(
-        'data/fx/', subdir, '/mvgoGARCH.USDJPY.HL.', md[3], '.', 
-        .dist.models[1], '.', 
-        unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+      mvgoGARCH.USDJPY[[i]] <- tryCatch({ldply(md[1], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .mv.model = 'mv-goGARCH', .model = y, .solver = 'solnp', 
+                .currency = 'ALL', .price_type = 'C', .VAR = FALSE, 
+                .dist.model = .dist.models[2], .cluster = .cl), 
+          error = function(e) cat(paste0('.C.', y, 'solnp', ' error.\n')))
+        aic = ldply(df$AIC, function(x) {
+          data.frame(t(x))
+          })
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, aic, 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(mvgoGARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(mvgoGARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      if (!is.null(mvgoGARCH.USDJPY[[i]])) {
+        saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[1], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
+        
+        cat(paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[1], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+        }
+    }
+  }
+
+```
+
+`model = 'AR'`
+
+```{r mvgoGARCH-CARF, message=FALSE, warning=FALSE, eval=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+.dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
+md <- c('constant', 'AR', 'VAR')
+sv <- c('solnp')#, 'gosolnp')
+
+## Hi-Lo.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
+
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% 
+  index %>% ymd %>% 
+  .[. >= timeID0] %>% 
+  c(., xts::last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^mvgoGARCH.USDJPY.HL.AR.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
+
+mvgoGARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLo.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      mvgoGARCH.USDJPY[[i]] <- tryCatch({ldply(md[2], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .mv.model = 'mv-goGARCH', .model = y, .solver = 'solnp', 
+                .currency = 'ALL', .dist.model = .dist.models[2], 
+                .price_type = 'C', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0('.HL.', y, 'solnp', ' error.\n')))
+        aic = ldply(df$AIC, function(x) {
+          data.frame(t(x))
+          })
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, aic, 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(mvgoGARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(mvgoGARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      if (!is.null(mvgoGARCH.USDJPY[[i]])) {
+        saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[2], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
+        
+        cat(paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[2], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+        }
+      }
+    }; rm(i)
+  }
+```
+
+`model = 'VAR'`
+
+```{r mvgoGARCH-CVARF, message=FALSE, warning=FALSE, eval=FALSE}
+## ------------- Simulate mv_fx() ----------------------
+## mv_fx just made the model and some argument flexible.
+.dist.models <- c('mvnorm', 'manig', 'magh') #using default mvnorm
+md <- c('constant', 'AR', 'VAR')
+sv <- c('solnp')#, 'gosolnp')
+
+## Hi-Lo.
+Hi.base <- llply(mbase['USDJPY'], Hi)
+Lo.base <- llply(mbase['USDJPY'], Lo)
+HiLo.base <- c(Hi.base, Lo.base) %>% do.call(cbind, .) %>% na.omit
+
+## only use USDJPY trading day.
+timeID <- HiLo.base %>% 
+  index %>% ymd %>% 
+  .[. >= timeID0] %>% 
+  c(., xts::last(.) + days(1))
+tmID <- list.files('data/fx/USDJPY', 
+                   pattern = '^mvgoGARCH.USDJPY.HL.VAR.mvnorm.[0-9]{4}-[0-9]{2}-[0-9]{2}.rds') %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% ymd
+
+timeID %<>% .[!. %in% tmID]
+timeID %<>% .[. > ymd('2013-01-01')]
+timeID %<>% .[. > baseDT]
+
+mvgoGARCH.USDJPY <- list()
+for (dt in timeID) {
+  
+  for (i in seq(cr_code[7])) {
+    
+    smp <- HiLo.base#[[names(cr_code)[i]]]
+    timeID2 <- c(index(smp), xts::last(index(smp)) + days(1))
+    
+    if (dt %in% timeID2) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      dtr %<>% .[. > baseDT]
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      mvgoGARCH.USDJPY[[i]] <- tryCatch({ldply(md[3], function(y) {
+        df = tryCatch(
+          mv_fx(smp, .mv.model = 'go-GARCH', .model = y, .solver = 'solnp', 
+                .currency = 'ALL', .dist.model = .dist.models[2], 
+                .price_type = 'C', .VAR = FALSE, .cluster = .cl), 
+          error = function(e) cat(paste0('.HL.', y, 'solnp', ' error.\n')))
+        aic = ldply(df$AIC, function(x) {
+          data.frame(t(x))
+          })
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, aic, 
+                        VaR = df$forecastVaR)
+        
+        names(df) %<>% str_replace_all('[0-9]{4}.[0-9]{2}.[0-9]{2}', 'T1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (is.null(mvgoGARCH.USDJPY[[i]])) {
+        subdir <- 'USDJPY'
+      } else {
+        subdir <- substr(names(mvgoGARCH.USDJPY[[i]])[3], 1, 6)
+      }
+      
+      if (!dir.exists(paste0('data/fx/', subdir))) 
+        dir.create(paste0('data/fx/', subdir))
+      
+      if (!is.null(mvgoGARCH.USDJPY[[i]])) {
+        saveRDS(mvgoGARCH.USDJPY[[i]], paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[3], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds'))
+        
+        cat(paste0(
+          'data/fx/', subdir, '/mvgoGARCH.USDJPY.F.HL.', md[3], '.', 
+          .dist.models[1], '.', 
+          unique(mvgoGARCH.USDJPY[[i]]$Date), '.rds saved!\n'))
+        }
       }
     }; rm(i)
   }
@@ -3411,7 +3669,11 @@ package)...
 
 *Source : The `rmgarch` models: Background and properties*^[Kindly refer to [Reference] to read the paper.]
 
+Here I believed go-GARCH, Copula-GARCH will be more accurate than normal DCC models. Due to there are a lot of errors, here I force to use normal DCC models.
 
+*DCC.HLC* with `0.0078121` *aDCC.C* `0.0010308` is best fit models for trading.
+
+In order to moving forward, the [binary.com Interview Question I - Interday Betting Strategy Models Comparison (Financial Betting and Stock Market)](http://rpubs.com/englianhu/binary-Q1BET) and [binary.com Interview Question I - Interday High Frequency Trading Models Comparison](http://rpubs.com/englianhu/binary-Q1Inter-HFT).
 
 ```{r option, echo = FALSE}
 ## Set options back to original options

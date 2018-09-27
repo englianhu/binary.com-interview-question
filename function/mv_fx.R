@@ -150,7 +150,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'par
       vfit <- NULL
     }
     
-    spec <- gogarchspec(
+    goSpec <- gogarchspec(
       variance.model = list(
         model = 'gjrGARCH', garchOrder = c(1, 1),    # Univariate Garch 2012 powerpoint.pdf
         submodel = NULL, external.regressors = NULL, #   compares the garchOrder and 
@@ -159,12 +159,12 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'par
         model = .model, robust = FALSE), 
       distribution.model = .dist.model)
     
-    fit <- gogarchfit(spec, mbase, solver = 'hybrid', VAR.fit = vfit, 
+    fit <- gogarchfit(goSpec, mbase, solver = 'hybrid', VAR.fit = vfit, 
                       cluster = cl)
     cat('step 1/2 gogarchfit done!\n')
     
     if (.roll == TRUE) {
-      mod = gogarchroll(spec, data = mbase, solver = .solver, cluster = cl)
+      mod = gogarchroll(goSpec, data = mbase, solver = .solver, cluster = cl)
       cat('step 2/1 gogarchroll done!\n')
       
     } else {
@@ -208,7 +208,8 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'par
                             variance.targeting = FALSE),                 #   concludes garch(1,1) is the best fit.
                           mean.model = list(
                             model = .model, robust = FALSE), 
-                          distribution.model = .dist.model)
+                          distribution.model = .dist.model, 
+                          ica = 'fastica')
     
     if (.roll == TRUE) {
       mod = gogarchroll(goSpec, data = mbase, solver = .solver, 
@@ -226,7 +227,7 @@ mv_fx <- memoise(function(mbase, .mv.model = 'dcc', .model = 'DCC', .tram = 'par
         vfit <- NULL
       }
       
-      fit <- gogarchfit(dccSpec, data = mbase, solver = 'hybrid', cluster = cl, 
+      fit <- gogarchfit(goSpec, data = mbase, solver = 'hybrid', cluster = cl, 
                         VAR.fit = vfit)
       cat('step 1/2 gogarchfit done!\n')
       
