@@ -1,0 +1,88 @@
+18/09/28 12:30:37 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+18/09/28 12:30:41 INFO SparkContext: Running Spark version 2.3.0
+18/09/28 12:30:41 INFO SparkContext: Submitted application: sparklyr
+18/09/28 12:30:41 INFO SecurityManager: Changing view acls to: scibr
+18/09/28 12:30:41 INFO SecurityManager: Changing modify acls to: scibr
+18/09/28 12:30:41 INFO SecurityManager: Changing view acls groups to: 
+18/09/28 12:30:41 INFO SecurityManager: Changing modify acls groups to: 
+18/09/28 12:30:41 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(scibr); groups with view permissions: Set(); users  with modify permissions: Set(scibr); groups with modify permissions: Set()
+18/09/28 12:30:41 INFO Utils: Successfully started service 'sparkDriver' on port 58719.
+18/09/28 12:30:41 INFO SparkEnv: Registering MapOutputTracker
+18/09/28 12:30:41 INFO SparkEnv: Registering BlockManagerMaster
+18/09/28 12:30:41 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+18/09/28 12:30:41 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+18/09/28 12:30:41 INFO DiskBlockManager: Created local directory at C:\Users\scibr\AppData\Local\Temp\blockmgr-04d8bde3-6b14-4af5-8e0a-3f369b72ecfe
+18/09/28 12:30:42 INFO MemoryStore: MemoryStore started with capacity 366.3 MB
+18/09/28 12:30:42 INFO SparkEnv: Registering OutputCommitCoordinator
+18/09/28 12:30:42 INFO Utils: Successfully started service 'SparkUI' on port 4040.
+18/09/28 12:30:42 INFO SparkUI: Bound SparkUI to 127.0.0.1, and started at http://127.0.0.1:4040
+18/09/28 12:30:42 INFO SparkContext: Added JAR file:/C:/Users/scibr/Documents/R/win-library/3.5/sparklyr/java/sparklyr-2.3-2.11.jar at spark://127.0.0.1:58719/jars/sparklyr-2.3-2.11.jar with timestamp 1538105442402
+18/09/28 12:30:42 INFO Executor: Starting executor ID driver on host localhost
+18/09/28 12:30:42 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 58740.
+18/09/28 12:30:42 INFO NettyBlockTransferService: Server created on 127.0.0.1:58740
+18/09/28 12:30:42 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+18/09/28 12:30:42 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 127.0.0.1, 58740, None)
+18/09/28 12:30:42 INFO BlockManagerMasterEndpoint: Registering block manager 127.0.0.1:58740 with 366.3 MB RAM, BlockManagerId(driver, 127.0.0.1, 58740, None)
+18/09/28 12:30:42 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 127.0.0.1, 58740, None)
+18/09/28 12:30:42 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 127.0.0.1, 58740, None)
+18/09/28 12:30:43 INFO SharedState: loading hive config file: file:/C:/Users/scibr/AppData/Local/spark/spark-2.3.0-bin-hadoop2.7/conf/hive-site.xml
+18/09/28 12:30:43 INFO SharedState: Setting hive.metastore.warehouse.dir ('C:/Users/scibr/AppData/Local/spark/spark-2.3.0-bin-hadoop2.7/tmp/hive') to the value of spark.sql.warehouse.dir ('C:/Users/scibr/AppData/Local/spark/spark-2.3.0-bin-hadoop2.7/tmp/hive').
+18/09/28 12:30:43 INFO SharedState: Warehouse path is 'C:/Users/scibr/AppData/Local/spark/spark-2.3.0-bin-hadoop2.7/tmp/hive'.
+18/09/28 12:30:44 INFO StateStoreCoordinatorRef: Registered StateStoreCoordinator endpoint
+18/09/28 12:30:45 INFO HiveUtils: Initializing HiveMetastoreConnection version 1.2.1 using Spark classes.
+18/09/28 12:30:46 INFO HiveMetaStore: 0: Opening raw store with implemenation class:org.apache.hadoop.hive.metastore.ObjectStore
+18/09/28 12:30:46 INFO ObjectStore: ObjectStore, initialize called
+18/09/28 12:30:46 INFO Persistence: Property hive.metastore.integral.jdo.pushdown unknown - will be ignored
+18/09/28 12:30:46 INFO Persistence: Property datanucleus.cache.level2 unknown - will be ignored
+18/09/28 12:30:49 INFO ObjectStore: Setting MetaStore object pin classes with hive.metastore.cache.pinobjtypes="Table,StorageDescriptor,SerDeInfo,Partition,Database,Type,FieldSchema,Order"
+18/09/28 12:30:50 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MFieldSchema" is tagged as "embedded-only" so does not have its own datastore table.
+18/09/28 12:30:50 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MOrder" is tagged as "embedded-only" so does not have its own datastore table.
+18/09/28 12:30:51 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MFieldSchema" is tagged as "embedded-only" so does not have its own datastore table.
+18/09/28 12:30:51 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MOrder" is tagged as "embedded-only" so does not have its own datastore table.
+18/09/28 12:30:51 INFO MetaStoreDirectSql: Using direct SQL, underlying DB is DERBY
+18/09/28 12:30:51 INFO ObjectStore: Initialized ObjectStore
+18/09/28 12:30:51 WARN ObjectStore: Version information not found in metastore. hive.metastore.schema.verification is not enabled so recording the schema version 1.2.0
+18/09/28 12:30:52 WARN ObjectStore: Failed to get database default, returning NoSuchObjectException
+18/09/28 12:30:52 INFO HiveMetaStore: Added admin role in metastore
+18/09/28 12:30:52 INFO HiveMetaStore: Added public role in metastore
+18/09/28 12:30:52 INFO HiveMetaStore: No user is added in admin role, since config is empty
+18/09/28 12:30:52 INFO HiveMetaStore: 0: get_all_databases
+18/09/28 12:30:52 INFO audit: ugi=scibr	ip=unknown-ip-addr	cmd=get_all_databases	
+18/09/28 12:30:52 INFO HiveMetaStore: 0: get_functions: db=default pat=*
+18/09/28 12:30:52 INFO audit: ugi=scibr	ip=unknown-ip-addr	cmd=get_functions: db=default pat=*	
+18/09/28 12:30:52 INFO Datastore: The class "org.apache.hadoop.hive.metastore.model.MResourceUri" is tagged as "embedded-only" so does not have its own datastore table.
+18/09/28 12:30:53 INFO SessionState: Created HDFS directory: C:/Users/scibr/AppData/Local/spark/spark-2.3.0-bin-hadoop2.7/tmp/hive/scibr
+18/09/28 12:30:53 INFO SessionState: Created local directory: C:/Users/scibr/AppData/Local/Temp/942d0805-ece9-4d65-97f0-3108a796a1c9_resources
+18/09/28 12:30:53 INFO SessionState: Created HDFS directory: C:/Users/scibr/AppData/Local/spark/spark-2.3.0-bin-hadoop2.7/tmp/hive/scibr/942d0805-ece9-4d65-97f0-3108a796a1c9
+18/09/28 12:30:53 INFO SessionState: Created local directory: C:/Users/scibr/AppData/Local/spark/spark-2.3.0-bin-hadoop2.7/tmp/hive/942d0805-ece9-4d65-97f0-3108a796a1c9
+18/09/28 12:30:53 INFO SessionState: Created HDFS directory: C:/Users/scibr/AppData/Local/spark/spark-2.3.0-bin-hadoop2.7/tmp/hive/scibr/942d0805-ece9-4d65-97f0-3108a796a1c9/_tmp_space.db
+18/09/28 12:30:54 INFO HiveClientImpl: Warehouse location for Hive client (version 1.2.2) is C:/Users/scibr/AppData/Local/spark/spark-2.3.0-bin-hadoop2.7/tmp/hive
+18/09/28 12:30:54 INFO HiveMetaStore: 0: get_database: default
+18/09/28 12:30:54 INFO audit: ugi=scibr	ip=unknown-ip-addr	cmd=get_database: default	
+18/09/28 12:30:54 INFO HiveMetaStore: 0: get_database: global_temp
+18/09/28 12:30:54 INFO audit: ugi=scibr	ip=unknown-ip-addr	cmd=get_database: global_temp	
+18/09/28 12:30:54 WARN ObjectStore: Failed to get database global_temp, returning NoSuchObjectException
+18/09/28 12:30:56 INFO HiveMetaStore: 0: get_database: default
+18/09/28 12:30:56 INFO audit: ugi=scibr	ip=unknown-ip-addr	cmd=get_database: default	
+18/09/28 12:30:56 INFO HiveMetaStore: 0: get_database: default
+18/09/28 12:30:56 INFO audit: ugi=scibr	ip=unknown-ip-addr	cmd=get_database: default	
+18/09/28 12:30:56 INFO HiveMetaStore: 0: get_tables: db=default pat=*
+18/09/28 12:30:56 INFO audit: ugi=scibr	ip=unknown-ip-addr	cmd=get_tables: db=default pat=*	
+18/09/28 12:30:57 INFO CodeGenerator: Code generated in 771.797594 ms
+18/09/28 12:30:57 INFO HiveMetaStore: 0: get_database: default
+18/09/28 12:30:57 INFO audit: ugi=scibr	ip=unknown-ip-addr	cmd=get_database: default	
+18/09/28 12:30:57 INFO HiveMetaStore: 0: get_database: default
+18/09/28 12:30:57 INFO audit: ugi=scibr	ip=unknown-ip-addr	cmd=get_database: default	
+18/09/28 12:30:57 INFO HiveMetaStore: 0: get_tables: db=default pat=*
+18/09/28 12:30:57 INFO audit: ugi=scibr	ip=unknown-ip-addr	cmd=get_tables: db=default pat=*	
+18/09/28 18:03:08 INFO SparkContext: Invoking stop() from shutdown hook
+18/09/28 18:03:08 INFO SparkUI: Stopped Spark web UI at http://127.0.0.1:4040
+18/09/28 18:03:08 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+18/09/28 18:03:08 INFO MemoryStore: MemoryStore cleared
+18/09/28 18:03:08 INFO BlockManager: BlockManager stopped
+18/09/28 18:03:08 INFO BlockManagerMaster: BlockManagerMaster stopped
+18/09/28 18:03:08 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+18/09/28 18:03:08 INFO SparkContext: Successfully stopped SparkContext
+18/09/28 18:03:08 INFO ShutdownHookManager: Shutdown hook called
+18/09/28 18:03:08 INFO ShutdownHookManager: Deleting directory C:\Users\scibr\AppData\Local\Temp\spark-32abbc28-f82f-4696-8a3c-a7cad7275c3f
+18/09/28 18:03:08 INFO ShutdownHookManager: Deleting directory C:\Users\scibr\AppData\Local\Temp\spark-5fb56337-b989-46a1-b3ff-db4eb77c4143

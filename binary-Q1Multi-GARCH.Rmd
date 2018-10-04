@@ -11,6 +11,7 @@ output:
     toc_float:
       collapsed: yes
       smooth_scroll: yes
+    code_folding: hide
 ---
 
 ```{r setup}

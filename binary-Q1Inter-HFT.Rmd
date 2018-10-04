@@ -11,13 +11,14 @@ output:
     toc_float:
       collapsed: yes
       smooth_scroll: yes
+    code_folding: hide
 ---
 
-```{r setup}
+```{r, warning=FALSE}
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'rugarch', 'ccgarch', 'mgarchBEKK', 'rmgarch', 'mfGARCH')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'seasonal', 'seasonalview', 'rugarch', 'ccgarch', 'mgarchBEKK', 'rmgarch', 'mfGARCH', 'sparklyr')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -25,8 +26,12 @@ pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
 
-funs <- c('uv_fx.R', 'opt_arma.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R', 'task_progress.R', 'read_umodels.R')
+funs <- c('uv_fx.R', 'opt_arma.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R', 'task_progress.R', 'read_umodels.R', 'convertOHLC.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
+spark_install()
+sc <- spark_connect(master = 'local')
+
+.cl = FALSE
 
 options(warn = -1)
 rm(pkgs)
@@ -35,6 +40,8 @@ rm(pkgs)
 # Introduction
 
 By refer to *GARCH模型中的ARIMA(p,d,q)参数最优化* and *binary.com Interview Question I - Comparison of Univariate GARCH Models*, we know **Fractional Intergrated GJR-GARCH** is the best fit model. This paper we compare the MIDAS, GARCH-MIDAS and Levy Process models. Here I also test another high frequency trading model mcmcsGARCH. These paper might consider as comparison interday trading before start the high frequency trading via [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
+
+*High Frequency Financial Time Series Prediction - Machine Learning Approach* introduce multilayer modelling for high-frequency-trading.
 
 MIDAS and mcsGARCH are the models designate for high frequency trading.
 
@@ -46,38 +53,272 @@ The quotes above describe about the seasonal factors onto the model which is sim
 
 # Data
 
+## Get Data
+
+Due to the dataset gather via `getSymbols('JPY=X', src='av', api.key=api, periodicity='intraday')` is tidied but only 100 observations. Moreover I cannot select the time period from few years ago, therefore here I omit it and use the intraday data gather from [`real-time-fxcm/data/USDJPY/`](https://github.com/scibrokes/real-time-fxcm/tree/master/data/USDJPY) from `Y2015W1` to `Y2018W27`, due to the dataset is tick-data-base and more than 1 million observation per file (per week) and there has 4 years dataset where. Here I need to backtest day-by-day. There will be spent a long time to do.
+
+- [Chapter 7 Importing Financial Data from the Internet](https://msperlin.github.io/pafdR/importingInternet.html) introduce few packages where provides api service.
+- [High Frequency Data Price (Sample)](https://raw.githubusercontent.com/DavisVaughan/fin-econ-project-bitcoin/master/data/cleaned/cleaned-bitstamp-minutely.csv) is an example for intraday high-frequency-trading.
+
+```{r warning=FALSE}
+cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'CNY=X', 'JPY=X')
+
+names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
+#'@ names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
+
+## Read presaved FXCM data.
+#'@ mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
+fls <- sapply(names(cr_code), function(x) {
+    dtr <- 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/'
+    fls <- list.files(paste0(dtr, x), pattern = '^Y[0-9]{4}W[0-9]{1,2}.rds$')
+    if (length(fls) > 0) paste0(dtr, x, '/', fls)
+  })
+
+#'@ AUDUSD <- sapply(fls[[1]], readRDS)
+#'@ EURUSD <- sapply(fls[[2]], readRDS)
+#'@ GBPUSD <- sapply(fls[[3]], readRDS)
+#'@ USDCHF <- sapply(fls[[4]], readRDS)
+#'@ USDCAD <- sapply(fls[[5]], readRDS)
+#'@ USDCNY <- sapply(fls[[6]], readRDS)
+#'@ mbase <- llply(as.list(fls[[7]]), readRDS) #185 files where 1 files contains 1 million observation.
+fs <- list.files('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY', pattern = '^Y[0-9]{4}W[0-9]{1,2}.rds$') %>% str_replace_all('.rds', '')
+#'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% tbl_df")))
+
+t.unit <- c('seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'quarters', 'quarters')
+## https://www.alphavantage.co/
+## https://www.alphavantage.co/support/#api-key
+#'@ api = 'UL7EPVVEGDVC3TXC'
+#'@ getSymbols('JPY=X', src='av', api.key=api, periodicity='intraday')
+```
+
+[binary.com Interview Question I - Multivariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Multi-GARCH) concludes that the multivariate will be more accurate but due to save time, here I only use univariate for models comparison.
+
+Due to high volume of dataset, here I only use `USDJPY` since the variance is higher than the rest of currencies.
+
+```{r}
+## Read raw dataset.
+eval(parse(text = paste0(fs[1], "<- readRDS('", fls[[7]][1], "') %>% tbl_df")))
+
+## raw dataset
+Y2015W1
+```
+
+Above table shows the raw tick-dataset (shows price flutuation in mili-seconds). As we know that the variance in unit `mili-second` is almost 0. Therefore I refer to *High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model* and use 1 minute as 1 time unit, convert from univariate `ask` and univariate `bid` to be OHLC dataset.
+
+```{r}
+## Convert the univariate price to be OHLC price in `minutes` unit.
+Y2015W1 %<>% convertOHLC(.unit = t.unit[2]) %>% 
+  bind_rows #combined `ask/bid` price
+
+## Combined `ask/bid` price and measure the mean value.
+Y2015W1 %<>% ddply(.(index), summarise, 
+                   open = mean(open), 
+                   high = mean(high), 
+                   low = mean(low), 
+                   close = mean(close)) %>% tbl_df
+Y2015W1
+```
+
+Now, above tidied dataset will be the dataset for this paper.
+
+```{r, eval=FALSE}
+## -------- eval=FALSE --------------
+## Now I simply tidy all datasets and save it prior to start the statistical modelling.
+llply(fls[[7]], function(x) {
+    mbase <- readRDS(x) %>% tbl_df
+    
+    ## Convert the univariate price to be OHLC price in `minutes` unit.
+    mbase %<>% convertOHLC(.unit = t.unit[2]) %>% 
+        bind_rows #combined `ask/bid` price
+    
+    ## Combined `ask/bid` price and measure the mean value.
+    mbase %<>% ddply(.(index), summarise, 
+                     open = mean(open), 
+                     high = mean(high), 
+                     low = mean(low), 
+                     close = mean(close)) %>% tbl_df
+    
+    y <- x %>% str_replace_all('.rds$', '_min1.rds')
+    
+    saveRDS(mbase, y)
+    cat(y, 'saved!\n')
+    })
+```
+
 ## Read Data
 
-Similar with *GARCH模型中的ARIMA(p,d,q)参数最优化*, I use the dataset from [Binary-Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) for backtest to ease we compare the models.
+```{r, warning=FALSE}
+fls <- sapply(names(cr_code), function(x) {
+    dtr <- 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/'
+    fls <- list.files(paste0(dtr, x), pattern = '^Y[0-9]{4}W[0-9]{1,2}_min[0-9]{1,2}.rds$')
+    if (length(fls) > 0) paste0(dtr, x, '/', fls)
+  })
 
-```{r read-data, warning=FALSE}
-cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 
-             'CNY=X', 'JPY=X')
+fs <- list.files('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY', pattern = '^Y[0-9]{4}W[0-9]{1,2}_min[0-9]{1,2}.rds$') %>% str_replace_all('.rds', '')
 
-#'@ names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 
-#'@                     'USDCNY', 'USDJPY')
-
-names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
-
-## Read presaved Yahoo data.
-mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
-
-price_type <- c('Op', 'Hi', 'Lo', 'Cl')
-
-gmds <- c('sGARCH', 'fGARCH.GARCH', 'fGARCH.TGARCH', 'fGARCH.AVGARCH', 'fGARCH.NGARCH', 'fGARCH.NAGARCH', 'fGARCH.APARCH', 'fGARCH.GJRGARCH', 'fGARCH.ALLGARCH', 'eGARCH', 'gjrGARCH', 'apARCH', 'iGARCH', 'csGARCH')
-
-timeID <- llply(mbase, function(x) as.character(index(x))) %>% 
-  unlist %>% unique %>% as.Date %>% sort
-timeID <- c(timeID, xts::last(timeID) + days(1)) #the last date + 1 in order to predict the next day of last date to make whole dataset completed.
-timeID0 <- ymd('2013-01-01')
-timeID <- timeID[timeID >= timeID0]
-
-.cl = FALSE
+## Read raw dataset.
+#'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% tbl_df")))
 ```
+
+Due to the files preload all before simulate the statistical modelling will occupy the space. Here I directly read the files and simulate the algorithmic prediction in following sections.
 
 # Modelling
 
+## Seasonal ARIMA
+
+### Introduce SARIMA
+
+- [Seasonal model with auto.arima](https://stats.stackexchange.com/questions/355839/seasonal-model-with-auto-arima)
+- [Seasonality not taken account of in `auto.arima()`](https://stats.stackexchange.com/questions/213201/seasonality-not-taken-account-of-in-auto-arima) ask about why there has no 
+- [8.5 Non-seasonal ARIMA models](https://otexts.org/fpp2/non-seasonal-arima.html) introduce a non-seasonal ARIMA model.
+- [8.9 Seasonal ARIMA models](https://otexts.org/fpp2/seasonal-arima.html) introduce the arima and also sarima models, teach we how to get the `P,D,Q`.
+- [Seasonality in `auto.arima()` from forecast package](https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package) ask the question which is what I am trying to know (normal arima model only get `(p,d,q)` but not `(P,D,Q)`). The answer is do NOT set both `approximation` and `stepwise` to `FALSE`.
+- [Is there a way to force seasonality from `auto.arima`](https://stackoverflow.com/questions/37046275/is-there-a-way-to-force-seasonality-from-auto-arima) ask about how to model a force-seasonal-ARIMA. The topic talk about the `D` parameter in `auto.arima` which governs seasonal differencing. The example shows that `D=1` will get a smaller AIC/BIC figures than default `D=NULL`.
+- [Why does `auto.arima` drop my seasonality component when `stepwise=FALSE` and `approximation=FALSE`](https://stackoverflow.com/questions/24390859/why-does-auto-arima-drop-my-seasonality-component-when-stepwise-false-and-approx) ask about why the `stepwise=FALSE` and `approximation=FALSE` got the better AIC than default model. The answer describe that normally `max.order=5` where we can get a better truly seasonal model, just increase the `max.order=10`. There is not too much gained using `approximation=FALSE`. What that does is force it to evaluate the likelihood more accurately for each model, but the approximation is quite good and much faster, so is usually acceptable.
+- [How to read p,d and q of `auto.arima()`?](https://stats.stackexchange.com/questions/178577/how-to-read-p-d-and-q-of-auto-arima) ask about what is the meaning of `a$arma` and somebody answer the help page in `auto.arima()` has descibe that `a$arma` is `(p, q, P, Q, s, d, D)`.
+- [In R, `auto.arima` fails to capture seasonality](https://stackoverflow.com/questions/43600827/in-r-auto.arima-fails-to-capture-seasonality) simulate an annual dataset with set `trace=TRUE`, `stepwise=FALSE` and `D=1` but didn't provides the answer to get optimal `P,D,Q`.
+- [How I can get best arima model in R (closed)](https://stats.stackexchange.com/questions/160343/how-i-can-get-best-arima-model-in-r) only say the `auto.arima()` able get the best model, however does not provides the answer how to get the optimal `P,D,Q` instead of only `p,d,q`.
+- [how to extract integration order (d) from auto.arima](https://stackoverflow.com/questions/19483952/how-to-extract-integration-order-d-from-auto-arima) ask that the `ndiffs()` sometimes give the different resukt than best model, describe the `a$arma`. More generally, the order `(d)` is the next to last element; the seasonal order `(D)` is the last. So
+  - `a$arma[length(a$arma)-1]` is the order d
+  - `a$arma[length(a$arma)]` is the seasonal order
+- [How to read p,d and q of `auto.arima()`?](https://stats.stackexchange.com/questions/178577/how-to-read-p-d-and-q-of-auto-arima) describe the help page in `auto.arima()` has descibe that `a$arma` is `(p, q, P, Q, d, D)`.
+- [How to interpret the second part of an auto arima result in R?](https://stackoverflow.com/questions/47119765/how-to-interpret-the-second-part-of-an-auto-arima-result-in-r) interpret the seasonal arima model.
+- [extract ARIMA specificaiton](https://stackoverflow.com/questions/23617662/extract-arima-specificaiton) provides a function how to extract the `a$arma[c(1, 6, 2, 3, 7, 4, 5)]` from an `auto.arima()`.
+
+> If you look at the help file of auto.arima and navigate to the section "Value", you are directed to the help file of arima function and there you find the following (under the section "Value") regarding the arma slot:
+A compact form of the specification, as a vector giving the number of AR, MA, seasonal AR and seasonal MA coefficients, plus the period and the number of non-seasonal and seasonal differences.
+That is what the seven elements you reported correspond to. In your case, you have a non-seasonal `ARIMA(1,2,0)`.
+
+*Source : How to read p,d and q of `auto.arima()`? (which is 1 among the reference link above.)*
+
+> So far, we have restricted our attention to non-seasonal data and non-seasonal ARIMA models. However, ARIMA models are also capable of modelling a wide range of seasonal data.
+A seasonal ARIMA model is formed by including additional seasonal terms in the ARIMA models we have seen so far. It is written as follows:
+
+| ARIMA   | $\underbrace{(p, d, q)}$       | $\underbrace{(P, D, Q)_{m}}$  |
+|:-------:|:------------------------------:|:-----------------------------:|
+|         |             ↑                  |             ↑                 |
+|         | Non-seasonal part	of the model | Seasonal part of the model    |
+
+where m = number of observations per year. We use uppercase notation for the seasonal parts of the model, and lowercase notation for the non-seasonal parts of the model.
+
+The seasonal part of the model consists of terms that are similar to the non-seasonal components of the model, but involve backshifts of the seasonal period. For example, an $ARIMA(1,1,1)(1,1,1)_{4}$ model (without a constant) is for quarterly data (m = 4), and can be written as
+
+$$(1 - \phi_{1}B)~(1 - \Phi_{1}B^{4}) (1 - B) (1 - B^{4})y_{t} = (1 + \theta_{1}B)~ (1 + \Theta_{1}B^{4})\varepsilon_{t}$$
+
+The additional seasonal terms are simply multiplied by the non-seasonal terms.
+
+`auto.arima(euretail, stepwise=FALSE, approximation=FALSE)` is better than `auto.arima(euretail)`.
+
+> The `auto.arima()` function uses `nsdiffs()` to determine D (the number of seasonal differences to use), and `ndiffs()` to determine d (the number of ordinary differences to use). The selection of the other model parameters `(p, q, P and Q)` are all determined by minimizing the AICc, as with non-seasonal ARIMA models.
+ 
+*Source : 8.9 Seasonal ARIMA models (which is 1 among the reference link above.)*
+
+Above *8.5 Non-seasonal ARIMA models* reference link describe the `auto.arima()` and the default setting is `seasonal=TRUE` where it will automatically model^[help of `auto.arima()` describe the `seasonal : If FALSE, restricts search to non-seasonal models.`] .
+
+> The default arguments are designed for rapid estimation of models for many time series. If you are analysing just one time series, and can afford to take some more time, it is recommended that you set stepwise=FALSE and approximation=FALSE.
+Non-stepwise selection can be slow, especially for seasonal data. The stepwise algorithm outlined in Hyndman & Khandakar (2008) is used except that the default method for selecting seasonal differences is now based on an estimate of seasonal strength (Wang, Smith & Hyndman, 2006) rather than the Canova-Hansen test. There are also some other minor variations to the algorithm described in Hyndman and Khandakar (2008).
+
+*Source : help section of `auto.arima()`.*
+
+>`ARIMA(2,1,1)(1,0,0)[12]` is seasonal ARIMA. `[12]` stands for number of periods in season, i.e. months in year in this case. `(1,0,0)` stands for seasonal part of model. Take a look at [this](https://onlinecourses.science.psu.edu/stat510/node/67).
+
+*Source : extract ARIMA specificaiton (which is 1 among the reference link above.)*
+
+> You can force a seasonal model by setting `D=1`, although `auto.arima()` runs for quite some time with forced seasonality. (Note that the information criteria are not comparable between the original and the differenced series.)
+$$
+\begin{array}{l,l,l}
+&\text{Training} & \text{Test}\\
+\mathrm{ARIMA}(2,1,1) & 5.729 & 7.657\\
+\mathrm{SARIMA}(1,1,0)_{52}\text{ with drift} & 6.481 & 7.390\\
+\text{3 harmonics, }\mathrm{ARIMA}(2,1,0) & 5.578 & 5.151\\
+\text{4 harmonics, }\mathrm{ARIMA}(2,1,1) & 5.219 & 5.188
+\end{array}
+$$
+
+*Source : Seasonality not taken account of in `auto.arima()` (which is 1 among the reference link above.)*
+
+```{r, warning=FALSE, eval=FALSE}
+suppressWarnings(<- tbl %>% dplyr::select(date, close) %>% tk_xts %>% auto.arima(seasonal = FALSE))
+
+## Count the observation in order to model seasonal frequency model.
+Y2015W1 %>% 
+    dplyr::select(index, close) %>% 
+    ddply(.(as.Date(index)), summarise, n = length(index)) %>% 
+    tbl_df
+```
+
+### Modelling
+
+- [*Seasonality not taken account of in `auto.arima()`*](https://stats.stackexchange.com/a/213455/68357) compares few models and concludes that the harmonics ARIMA is the best fit model.
+- Non-stepwise model will slow down the seasonal model.
+- `a$arma[c(1, 6, 2, 3, 7, 4, 5)]` is $(p,d,q)(P,D,Q)_{s}$.
+- [How does R's auto.arima() function determine the order of differencing when estimating a regression with seasonal ARIMA errors?](https://stats.stackexchange.com/questions/30220/how-does-rs-auto-arima-function-determine-the-order-of-differencing-when-esti?answertab=votes#tab-top) talk about the OCSB test where [Major changes to the forecast package](https://robjhyndman.com/hyndsight/forecast3/) describe the improvement in `forecast` package.
+
+>**Improved auto.arima()**
+The `auto.arima()` function is widely used for automatically selecting ARIMA models. It works quite well, except that selection of $D$, the order of seasonal differencing, has always been poor. Up until now, the default has been to use the Canova-Hansen test to select $D$. Because the CH test has a null hypothesis of deterministic seasonality based on dummy variables, the function will often select $D=0$. So I’ve now switched to using the OCSB test for selecting $D$ which has a null hypothesis involving a seasonal difference, so it is much more likely to choose $D=1$ than previously. I’ve done extensive testing of the forecasts obtained under the two methods, and the OCSB test leads to better forecasts. Hence it is now the default. This means that the function may return a different ARIMA model than previously when the data are seasonal.
+A separate function for selecting the seasonal order has also been made visible. So you can now call `nsdiffs()` to find the recommended number of seasonal differences without calling auto.arima(). There is also a `ndiffs()` function for selecting the number of first differences. Within `auto.arima()`, `nsdiffs()` is called first to select $D$, and then `ndiffs()` is applied to `diff(x,D)` if $D > 0$ or to $x$ if $D=0$.
+
+> **Double-seasonal Holt-Winters**
+The new dshw() function implements *Taylor’s (2003)* double-seasonal Holt-Winters method. This allows for two levels of seasonality. For example, with hourly data, there is often a daily period of 24 and a weekly period of 168. These are modelled separately in the `dshw()` function.
+
+> I am planning some major new functionality to extend this to the various types of complex seasonality discussed in my recent JASA paper. Hopefully that will be ready in the next few weeks – I have a research assistant working on the new code.
+
+*Source : Major changes to the forecast package*
+
+Now we start modelling harmonics model (which is using `xreg`).
+
+#### Model 1
+
+```{r, eval=FALSE}
+> suppressWarnings(Y2015W1 %>% 
++     tk_xts %>% 
++     to.daily %>% 
++     Cl %>% opt_arma(arma=TRUE))
+Using column `index` for date_var.
+p d q P D Q s 
+0 0 0 0 0 0 1
+```
+
+```{r, warning=FALSE, eval=FALSE}
+#'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% tbl_df")))
+
+sarima <- list()
+for(i in seq(fs)) {
+    smp <- readRDS(fls[[7]][i])
+    timeID <- c(smp$index, xts::last(smp$index) + minutes(1))
+    
+    if (dt %in% timeID) {
+      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
+      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      
+      sarima[[i]] <- tryCatch({ldply(price_type, function(y) {
+        df = auto.arima(, parallel=FALSE, num.cores = 2)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      })}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(sarima[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(sarima[[i]])[3]))
+      
+      saveRDS(sarima[[i]], paste0(
+        'data/fx/', names(sarima[[i]])[3], '/sarima.', 
+        unique(sarima[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(sarima[[i]])[3], '/sarima.', 
+        unique(sarima[[i]]$Date), '.rds saved!\n'))
+      }
+  }
+```
+
+#### Model 2
+
 ## MIDAS
+
+*Mixed Frequency Data Sampling Regression Models - The R Package midasr*
 
 ## GARCH-MIDAS
 
@@ -208,6 +449,8 @@ rm(sys1, sys2)
 13. [Mixed Frequency Data Sampling Regression Models - The R Package midasr (paper)](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Mixed%20Frequency%20Data%20Sampling%20Regression%20Models%20-%20The%20R%20Package%20midasr%20(paper).pdf)
 14. [Forecasting with `midasr` package: Inclusion of new high-frequency value](https://stackoverflow.com/questions/21114841/forecasting-with-midasr-package-inclusion-of-new-high-frequency-value?answertab=votes#tab-top)
 15. [Handbook of Volatility Models and Their Applications](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Handbook%20of%20Volatility%20Models%20and%20Their%20Applications.pdf)
+16. [High Frequency Financial Time Series Prediction - Machine Learning Approach](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/High%20Frequency%20Financial%20Time%20Series%20Prediction%20-%20Machine%20Learning%20Approach.pdf)
+17. [High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model](http://www.unstarched.net/2013/03/20/high-frequency-garch-the-multiplicative-component-garch-mcsgarch-model/)
 
 ---
 
