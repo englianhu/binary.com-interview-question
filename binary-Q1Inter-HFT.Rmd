@@ -18,7 +18,7 @@ output:
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'seasonal', 'seasonalview', 'rugarch', 'ccgarch', 'mgarchBEKK', 'rmgarch', 'mfGARCH', 'sparklyr')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -43,7 +43,11 @@ By refer to *GARCH模型中的ARIMA(p,d,q)参数最优化* and *binary.com Inter
 
 *High Frequency Financial Time Series Prediction - Machine Learning Approach* introduce multilayer modelling for high-frequency-trading.
 
-MIDAS and mcsGARCH are the models designate for high frequency trading.
+> I noticed that buying early in the morning, around 5am eastern time, tends to give lower prices and selling around 10pm eastern time gives you the highest prices. The wording is weird but i want to know your opinions on how time of day affects the bitcoin trading market. Thank you.
+
+*Source : [Time of day affects trading prices](https://www.reddit.com/r/Bitcoin/comments/7hdtnw/time_of_day_affects_trading_prices/)*
+
+From above quotes, we can know the seasonality of price trend daily, weekly, monthly or annually etc. MIDAS and mcsGARCH are the models designate for high frequency trading.
 
 *A Comparison of GARCH-class Models and MIDAS Regression with Application in Volatility Prediction and Value at Risk Estimation* compares GARCH, eGARCH and MIDAS 3 models with normal and student distribution with matrix. The author concludes that the MIDAS model is the most accurate in volatility prediction but there is inconclusive for VaR 1% and 5%.
 
@@ -121,6 +125,127 @@ Y2015W1
 
 Now, above tidied dataset will be the dataset for this paper.
 
+```{r, warning=FALSE}
+#suppressWarnings(Y2015W1 <- tbl %>% dplyr::select(date, close) %>% tk_xts %>% auto.arima(seasonal = FALSE))
+
+## Count the observation in order to model seasonal frequency model.
+Y2015W1 %>% 
+    dplyr::select(index, close) %>% 
+    ddply(.(as.Date(index)), summarise, n = length(index)) %>% 
+    tbl_df
+```
+
+Above table shows the frequency of the dataset is not tally. Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) to know the seasonality dataset.
+
+## Tidy Data
+
+![](www/seasonality.jpg)
+
+> For example, the `taylor` data set from the `forecast` package contains half-hourly electricity demand data from England and Wales over about 3 months in 2000. It was defined as `taylor <- msts(x, seasonal.periods=c(48,336)`.
+
+*Source [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/)*
+
+*A Review of Literature on Time Zone Difference and Trade* study about trading across timezone and different country, if the timezone difference will affect the trading.
+
+> I would like to use R for time series analysis. I want to make a time-series model and use functions from the packages timeDate and forecast.
+I have intraday data in the CET time zone (15 minutes data, 4 data points per hour). On March 31st daylight savings time is implemented and I am missing 4 data points of the 96 that I usually have. On October 28th I have 4 data points too many as time is switched back.
+For my time series model I always need 96 data points, as otherwise the intraday seasonality gets messed up.
+Do you have any experiences with this? Do you know an R function or a package that would be of help to automat such data handling - something elegant? Thank you!
+
+> I had a similar problem with hydrological data from a sensor. My timestamps were in UTC+1 (CET) and did not switch to daylight saving time (UTC+2, CEST). As I didn't want my data to be one hour off (which would be the case if UTC were used) I took the %z conversion specification of strptime. In ?strptime you'll find:
+`%z` Signed offset in hours and minutes from UTC, so -0800 is 8 hours behind UTC.
+For example: In 2012, the switch from Standard Time to DST occured on 2012-03-25, so there is no 02:00 on this day. If you try to convert "2012-03-25 02:00:00" to a POSIXct-Object,
+
+```{r}
+## https://stackoverflow.com/questions/13865172/handling-data-on-the-days-when-we-switch-to-daylight-savings-time-and-back-in-r
+#> as.POSIXct("2012-03-25 02:00:00", tz="Europe/Vienna")
+#[1] "2012-03-25 CET"
+#
+## you don't get an error or a warning, you just get date without the time (this behavior is documented).
+## Using `format = "%z"` gives the desired result:
+#
+#> as.POSIXct("2012-03-25 02:00:00 +0100", format="%F %T %z", tz="Europe/Vienna")
+#[1] "2012-03-25 03:00:00 CEST"
+
+## function
+as.POSIXct.no.dst <- function (x, tz = '', 
+                               format='%Y-%m-%d %H:%M', offset='+0100', ...) {
+  x <- paste(x, offset)
+  format <- paste(format, "%z")
+  as.POSIXct(x, tz, format=format, ...)
+  }
+```
+
+*Source : [Handling data on the days when we switch to daylight savings time and back in R](https://stackoverflow.com/questions/13865172/handling-data-on-the-days-when-we-switch-to-daylight-savings-time-and-back-in-r)*
+
+[Why is this xts frequency always 1?](https://stackoverflow.com/questions/34454947/why-is-this-xts-frequency-always-1) talk about the frequency of `xts` dataset and we need to use `zoo` to convert it.
+
+> So far, we have considered relatively simple seasonal patterns such as quarterly and monthly data. However, higher frequency time series often exhibit more complicated seasonal patterns. For example, daily data may have a weekly pattern as well as an annual pattern. Hourly data usually has three types of seasonality: a daily pattern, a weekly pattern, and an annual pattern. Even weekly data can be challenging to forecast as it typically has an annual pattern with seasonal period of `365.25/7≈52.179` on average.
+...
+The top panel of Figure 11.1 shows the number of retail banking call arrivals per 5-minute interval between 7:00am and 9:05pm each weekday over a 33 week period. The bottom panel shows the first three weeks of the same time series. There is a strong daily seasonal pattern with frequency 169 (there are 169 5-minute intervals per day), and a weak weekly seasonal pattern with frequency `169 × 5 = 845`. (Call volumes on Mondays tend to be higher than the rest of the week.) If a longer series of data were available, we may also have observed an annual seasonal pattern.
+
+*Source : [11.1 Complex seasonality](https://otexts.org/fpp2/complexseasonality.html)*
+
+```{r}
+## convert timezone, however the daylight-saving need to consider.
+Y2015W1 %<>% mutate(
+    index = format(index, tz='Europe/Athens',usetz=TRUE) %>% 
+        as.POSIXct(tz='Europe/Athens'))
+```
+
+```{r, warning=FALSE}
+#suppressWarnings(Y2015W1 <- tbl %>% dplyr::select(date, close) %>% tk_xts %>% auto.arima(seasonal = FALSE))
+
+## Count the observation in order to model seasonal frequency model.
+Y2015W1 %>% 
+  dplyr::select(index, close) %>% 
+  mutate(index = as.Date(index, tz='Europe/Athens')) %>% 
+  ddply(.(index), summarise, n = length(index)) %>% 
+  tbl_df
+```
+
+```{r}
+## https://stackoverflow.com/questions/29202021/r-how-to-extract-dates-from-a-time-series
+getTStime <- function(ats){
+  start <- start(ats)
+  end <- end(ats)
+  time <- list()
+  time[[1]] <- start
+  m <- 2
+  while(!(identical(start, end))){
+    start[2] <- start[2] + 1
+    if (start[2]==1441){ #mins per day
+      start[1] <- start[1] + 1
+      start[2] <- 1
+    }
+    time[[m]] <- start
+    m <- m + 1
+  }
+  return(time)
+}
+```
+
+```{r}
+## https://stackoverflow.com/questions/34454947/why-is-this-xts-frequency-always-1
+## https://www.stat.berkeley.edu/~s133/dates.html
+## https://stackoverflow.com/questions/45070078/convert-forecast-time-produced-by-arima-into-standard-date-time
+#How to extract below index to datetime
+#Y2015W1 %>% tk_ts(end = c(1440, 10080), frequency = 1440) %>% attributes %>% .$index %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01') %>% force_tz(tz = 'Europe/Athens')
+Y2015W1 %>% tk_ts(end = c(3, 10080), frequency = 1440) %>% .[,1:ncol(.)] %>% head
+
+Y2015W1 %>% head %>% zooreg(frequency = 1440)
+
+#Y2015W1 %>% tk_ts(end = c(1440, 10080), frequency = 1440) %>% index %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01')
+
+## https://stats.stackexchange.com/questions/144158/daily-time-series-analysis
+## http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/
+#How to extract below index to datetime
+#Y2015W1 %>% msts(seasonal.periods=c(1440, 10080)) %>% .[,1] %>% as.numeric %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01') %>% force_tz(tz = 'Europe/Athens')
+Y2015W1 %>% head %>% msts(seasonal.periods=c(1440, 10080))
+```
+
+Now I convert all dataset again from `UTC` to `UTC+2` to be a constant weekly seasonal dataset. Due to the trading day is 5 days and 2 rest days, therefore I set a weekly seasonal period instead of daily.
+
 ```{r, eval=FALSE}
 ## -------- eval=FALSE --------------
 ## Now I simply tidy all datasets and save it prior to start the statistical modelling.
@@ -131,12 +256,19 @@ llply(fls[[7]], function(x) {
     mbase %<>% convertOHLC(.unit = t.unit[2]) %>% 
         bind_rows #combined `ask/bid` price
     
+    mbase %<>% mutate(
+      index = ymd_hm(substr(index, 1, nchar(index) + 6)), 
+      index = format(index, tz='Europe/Athens',usetz=TRUE) %>% 
+        as.POSIXct(tz='Europe/Athens'))
+    
     ## Combined `ask/bid` price and measure the mean value.
     mbase %<>% ddply(.(index), summarise, 
                      open = mean(open), 
                      high = mean(high), 
                      low = mean(low), 
                      close = mean(close)) %>% tbl_df
+    
+    #mbase %<>% msts(seasonal.periods = c(1440, 10080))
     
     y <- x %>% str_replace_all('.rds$', '_min1.rds')
     
@@ -157,7 +289,7 @@ fls <- sapply(names(cr_code), function(x) {
 fs <- list.files('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY', pattern = '^Y[0-9]{4}W[0-9]{1,2}_min[0-9]{1,2}.rds$') %>% str_replace_all('.rds', '')
 
 ## Read raw dataset.
-#'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% tbl_df")))
+#'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "')")))
 ```
 
 Due to the files preload all before simulate the statistical modelling will occupy the space. Here I directly read the files and simulate the algorithmic prediction in following sections.
@@ -178,12 +310,13 @@ Due to the files preload all before simulate the statistical modelling will occu
 - [How to read p,d and q of `auto.arima()`?](https://stats.stackexchange.com/questions/178577/how-to-read-p-d-and-q-of-auto-arima) ask about what is the meaning of `a$arma` and somebody answer the help page in `auto.arima()` has descibe that `a$arma` is `(p, q, P, Q, s, d, D)`.
 - [In R, `auto.arima` fails to capture seasonality](https://stackoverflow.com/questions/43600827/in-r-auto.arima-fails-to-capture-seasonality) simulate an annual dataset with set `trace=TRUE`, `stepwise=FALSE` and `D=1` but didn't provides the answer to get optimal `P,D,Q`.
 - [How I can get best arima model in R (closed)](https://stats.stackexchange.com/questions/160343/how-i-can-get-best-arima-model-in-r) only say the `auto.arima()` able get the best model, however does not provides the answer how to get the optimal `P,D,Q` instead of only `p,d,q`.
-- [how to extract integration order (d) from auto.arima](https://stackoverflow.com/questions/19483952/how-to-extract-integration-order-d-from-auto-arima) ask that the `ndiffs()` sometimes give the different resukt than best model, describe the `a$arma`. More generally, the order `(d)` is the next to last element; the seasonal order `(D)` is the last. So
-  - `a$arma[length(a$arma)-1]` is the order d
-  - `a$arma[length(a$arma)]` is the seasonal order
+- [how to extract integration order (d) from auto.arima](https://stackoverflow.com/questions/19483952/how-to-extract-integration-order-d-from-auto-arima) ask that the `ndiffs()` sometimes give the different resukt than best model, describe the `a$arma`. More generally, the order `(d)` is the next to last element; the seasonal order `(D)` is the last. So `a$arma[length(a$arma)-1]` is the order d and `a$arma[length(a$arma)]` is the seasonal order.
 - [How to read p,d and q of `auto.arima()`?](https://stats.stackexchange.com/questions/178577/how-to-read-p-d-and-q-of-auto-arima) describe the help page in `auto.arima()` has descibe that `a$arma` is `(p, q, P, Q, d, D)`.
 - [How to interpret the second part of an auto arima result in R?](https://stackoverflow.com/questions/47119765/how-to-interpret-the-second-part-of-an-auto-arima-result-in-r) interpret the seasonal arima model.
 - [extract ARIMA specificaiton](https://stackoverflow.com/questions/23617662/extract-arima-specificaiton) provides a function how to extract the `a$arma[c(1, 6, 2, 3, 7, 4, 5)]` from an `auto.arima()`.
+- [How to include seasonality in auto arima with regressors in R?](https://stats.stackexchange.com/questions/295004/how-to-include-seasonality-in-auto-arima-with-regressors-in-r) use a `xreg` for seasonal model.
+- [Step-by-Step Graphic Guide to Forecasting through ARIMA Modeling using R – Manufacturing Case Study Example (Part 4)](http://ucanalytics.com/blogs/step-by-step-graphic-guide-to-forecasting-through-arima-modeling-in-r-manufacturing-case-study-example/) forecast seasonal sales by using `auto.arima()`.
+- [Frequency parameter and its impact on auto.arima results](https://stats.stackexchange.com/questions/187304/frequency-parameter-and-its-impact-on-auto-arima-results)^[[Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) describe very details on the `seasonal period` parameters determination.] ask about the determination of frequency parameter for `seasonal period` where the author of `forecast` package provides a details and concise answer.
 
 > If you look at the help file of auto.arima and navigate to the section "Value", you are directed to the help file of arima function and there you find the following (under the section "Value") regarding the arma slot:
 A compact form of the specification, as a vector giving the number of AR, MA, seasonal AR and seasonal MA coefficients, plus the period and the number of non-seasonal and seasonal differences.
@@ -237,22 +370,21 @@ $$
 
 *Source : Seasonality not taken account of in `auto.arima()` (which is 1 among the reference link above.)*
 
-```{r, warning=FALSE, eval=FALSE}
-suppressWarnings(<- tbl %>% dplyr::select(date, close) %>% tk_xts %>% auto.arima(seasonal = FALSE))
+> The problem with fitting seasonal ARIMA to daily data is that the "seasonal component" may only operate on the weekends or maybe just the weekdays thus overall there is a non-significnat "seasonal component". Now what you have to do is to augment your data set with 6 dummies representing the days of the week and perhaps monthly indicators to represent annual effects. Now consider incorporating events such as holidays and include any lead, contemoraneous or lag effect around these known variables. No there may be unusual values (pulses) or level shifts or local time trends in the data. Furthermore the day-of-the-week effects may have changed over time e.g. there was no Saturday effect for the first 20 weeks but a Saturday effect for the last 50 weeks.If you wish to post tour daily data I will give it a try and maybe other readers of the list might also contribute their analysis to help guide you through this.
 
-## Count the observation in order to model seasonal frequency model.
-Y2015W1 %>% 
-    dplyr::select(index, close) %>% 
-    ddply(.(as.Date(index)), summarise, n = length(index)) %>% 
-    tbl_df
-```
+*Source : Auto.arima with daily data: how to capture seasonality/periodicity?*
 
-### Modelling
+### Modelling SARIMA
+
+#### Seasonal Data
 
 - [*Seasonality not taken account of in `auto.arima()`*](https://stats.stackexchange.com/a/213455/68357) compares few models and concludes that the harmonics ARIMA is the best fit model.
 - Non-stepwise model will slow down the seasonal model.
 - `a$arma[c(1, 6, 2, 3, 7, 4, 5)]` is $(p,d,q)(P,D,Q)_{s}$.
 - [How does R's auto.arima() function determine the order of differencing when estimating a regression with seasonal ARIMA errors?](https://stats.stackexchange.com/questions/30220/how-does-rs-auto-arima-function-determine-the-order-of-differencing-when-esti?answertab=votes#tab-top) talk about the OCSB test where [Major changes to the forecast package](https://robjhyndman.com/hyndsight/forecast3/) describe the improvement in `forecast` package.
+- [Frequency parameter and its impact on auto.arima results](https://stats.stackexchange.com/questions/187304/frequency-parameter-and-its-impact-on-auto-arima-results) talk about the frequency parameter for `seasonal period` while the author of `forecast` package provides [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) where describe very details on the `seasonal period` parameters determination.
+- [Auto.arima with daily data: how to capture seasonality/periodicity?](https://stats.stackexchange.com/questions/14742/auto-arima-with-daily-data-how-to-capture-seasonality-periodicity), the author of `forecast` package answered `salests <- ts(data,start=2010,frequency=7)` and `modArima <- auto.arima(salests)` for weekly seasonality determination.
+- [Why is this xts frequency always 1?](https://stackoverflow.com/questions/34454947/why-is-this-xts-frequency-always-1)
 
 >**Improved auto.arima()**
 The `auto.arima()` function is widely used for automatically selecting ARIMA models. It works quite well, except that selection of $D$, the order of seasonal differencing, has always been poor. Up until now, the default has been to use the Canova-Hansen test to select $D$. Because the CH test has a null hypothesis of deterministic seasonality based on dummy variables, the function will often select $D=0$. So I’ve now switched to using the OCSB test for selecting $D$ which has a null hypothesis involving a seasonal difference, so it is much more likely to choose $D=1$ than previously. I’ve done extensive testing of the forecasts obtained under the two methods, and the OCSB test leads to better forecasts. Hence it is now the default. This means that the function may return a different ARIMA model than previously when the data are seasonal.
@@ -283,7 +415,7 @@ p d q P D Q s
 #'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% tbl_df")))
 
 sarima <- list()
-for(i in seq(fs)) {
+for(i in (1:length(fs))) {
     smp <- readRDS(fls[[7]][i])
     timeID <- c(smp$index, xts::last(smp$index) + minutes(1))
     
@@ -324,12 +456,12 @@ for(i in seq(fs)) {
 
 ## mcsGARCH
 
-I have just noticed there has another GARCH model in `rugarch` package and then I roughly read through below articles. This model is different with normal GARCH model due to it includes the effects of volatility within a day. It is designate for intraday dataset.
+I have just noticed there has another GARCH model in `rugarch` package and then I roughly read through below articles. This `multiplicative component GARCH` model is different with normal GARCH model due to it includes the effects of volatility within a day. It is designate for intraday dataset.
 
-- [High Frequency GARCH: The multiplicative component GARCH (mcmcsGARCH) model](http://www.unstarched.net/2013/03/20/high-frequency-garch-the-multiplicative-component-garch-mcmcsGARCH-model/)
-- [Simulating returns from ARMA(1,1) - MCmcsGARCH(1,1) model](https://stackoverflow.com/questions/45177126/simulating-returns-from-arma1-1-mcmcsGARCH1-1-model?answertab=votes#tab-top)
-- [Query about mcmcsGARCH (rugarch package)](http://r.789695.n4.nabble.com/Query-about-mcmcsGARCH-rugarch-package-td4692890.html)
-- [R语言改进高频GARCH模型：乘法分量GARCH（mcmcsGARCH）模型](https://blog.csdn.net/qq_19600291/article/details/79542442)
+- [High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model](http://www.unstarched.net/2013/03/20/high-frequency-garch-the-multiplicative-component-garch-mcmcsGARCH-model/)
+- [Simulating returns from ARMA(1,1) - mcsGARCH(1,1) model](https://stackoverflow.com/questions/45177126/simulating-returns-from-arma1-1-mcmcsGARCH1-1-model?answertab=votes#tab-top)
+- [Query about mcsGARCH (rugarch package)](http://r.789695.n4.nabble.com/Query-about-mcmcsGARCH-rugarch-package-td4692890.html)
+- [R语言改进高频GARCH模型：乘法分量GARCH（mcsGARCH）模型](https://blog.csdn.net/qq_19600291/article/details/79542442)
 
 ```{r msemcsGARCH3, eval=FALSE}
 ## ------------- Simulate uv_fx() ----------------------
@@ -451,6 +583,7 @@ rm(sys1, sys2)
 15. [Handbook of Volatility Models and Their Applications](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Handbook%20of%20Volatility%20Models%20and%20Their%20Applications.pdf)
 16. [High Frequency Financial Time Series Prediction - Machine Learning Approach](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/High%20Frequency%20Financial%20Time%20Series%20Prediction%20-%20Machine%20Learning%20Approach.pdf)
 17. [High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model](http://www.unstarched.net/2013/03/20/high-frequency-garch-the-multiplicative-component-garch-mcsgarch-model/)
+18. [A Review of Literature on Time Zone Difference and Trade](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/A%20Review%20of%20Literature%20on%20Time%20Zone%20Difference%20and%20Trade.pdf)
 
 ---
 

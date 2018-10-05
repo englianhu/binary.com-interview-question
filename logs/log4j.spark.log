@@ -1,11 +1,11 @@
-18/10/03 01:38:30 INFO SparkContext: Invoking stop() from shutdown hook
-18/10/03 01:38:30 INFO SparkUI: Stopped Spark web UI at http://127.0.0.1:4040
-18/10/03 01:38:30 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
-18/10/03 01:38:30 INFO MemoryStore: MemoryStore cleared
-18/10/03 01:38:30 INFO BlockManager: BlockManager stopped
-18/10/03 01:38:30 INFO BlockManagerMaster: BlockManagerMaster stopped
-18/10/03 01:38:30 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
-18/10/03 01:38:30 INFO SparkContext: Successfully stopped SparkContext
-18/10/03 01:38:30 INFO ShutdownHookManager: Shutdown hook called
-18/10/03 01:38:30 INFO ShutdownHookManager: Deleting directory C:\Users\scibr\AppData\Local\Temp\spark-aba0ac2b-bc34-4af3-8758-5d906b01350c
-18/10/03 01:38:30 INFO ShutdownHookManager: Deleting directory C:\Users\scibr\AppData\Local\Temp\spark-ba54bf3f-0fff-4e1e-b5e3-2e8e5de7622b
+18/10/05 04:05:12 INFO SparkContext: Invoking stop() from shutdown hook
+18/10/05 04:05:12 INFO SparkUI: Stopped Spark web UI at http://127.0.0.1:4040
+18/10/05 04:05:12 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+18/10/05 04:05:12 INFO MemoryStore: MemoryStore cleared
+18/10/05 04:05:12 INFO BlockManager: BlockManager stopped
+18/10/05 04:05:12 INFO BlockManagerMaster: BlockManagerMaster stopped
+18/10/05 04:05:12 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+18/10/05 04:05:12 INFO SparkContext: Successfully stopped SparkContext
+18/10/05 04:05:12 INFO ShutdownHookManager: Shutdown hook called
+18/10/05 04:05:12 INFO ShutdownHookManager: Deleting directory C:\Users\scibr\AppData\Local\Temp\spark-964ac9ca-8bfa-443f-9fc5-47362ea2dd34
+18/10/05 04:05:12 INFO ShutdownHookManager: Deleting directory C:\Users\scibr\AppData\Local\Temp\spark-2af8832e-ecaf-453d-b3ce-2da36bed0587
