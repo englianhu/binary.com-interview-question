@@ -57,7 +57,9 @@ The quotes above describe about the seasonal factors onto the model which is sim
 
 # Data
 
-## Get Data
+## Tick Data
+
+### Get Data
 
 Due to the dataset gather via `getSymbols('JPY=X', src='av', api.key=api, periodicity='intraday')` is tidied but only 100 observations. Moreover I cannot select the time period from few years ago, therefore here I omit it and use the intraday data gather from [`real-time-fxcm/data/USDJPY/`](https://github.com/scibrokes/real-time-fxcm/tree/master/data/USDJPY) from `Y2015W1` to `Y2018W27`, due to the dataset is tick-data-base and more than 1 million observation per file (per week) and there has 4 years dataset where. Here I need to backtest day-by-day. There will be spent a long time to do.
 
@@ -109,35 +111,7 @@ Y2015W1
 
 Above table shows the raw tick-dataset (shows price flutuation in mili-seconds). As we know that the variance in unit `mili-second` is almost 0. Therefore I refer to *High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model* and use 1 minute as 1 time unit, convert from univariate `ask` and univariate `bid` to be OHLC dataset.
 
-```{r}
-## Convert the univariate price to be OHLC price in `minutes` unit.
-Y2015W1 %<>% convertOHLC(.unit = t.unit[2]) %>% 
-  bind_rows #combined `ask/bid` price
-
-## Combined `ask/bid` price and measure the mean value.
-Y2015W1 %<>% ddply(.(index), summarise, 
-                   open = mean(open), 
-                   high = mean(high), 
-                   low = mean(low), 
-                   close = mean(close)) %>% tbl_df
-Y2015W1
-```
-
-Now, above tidied dataset will be the dataset for this paper.
-
-```{r, warning=FALSE}
-#suppressWarnings(Y2015W1 <- tbl %>% dplyr::select(date, close) %>% tk_xts %>% auto.arima(seasonal = FALSE))
-
-## Count the observation in order to model seasonal frequency model.
-Y2015W1 %>% 
-    dplyr::select(index, close) %>% 
-    ddply(.(as.Date(index)), summarise, n = length(index)) %>% 
-    tbl_df
-```
-
-Above table shows the frequency of the dataset is not tally. Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) to know the seasonality dataset.
-
-## Tidy Data
+### Tidy Data
 
 ![](www/seasonality.jpg)
 
@@ -155,54 +129,6 @@ Do you have any experiences with this? Do you know an R function or a package th
 > I had a similar problem with hydrological data from a sensor. My timestamps were in UTC+1 (CET) and did not switch to daylight saving time (UTC+2, CEST). As I didn't want my data to be one hour off (which would be the case if UTC were used) I took the %z conversion specification of strptime. In ?strptime you'll find:
 `%z` Signed offset in hours and minutes from UTC, so -0800 is 8 hours behind UTC.
 For example: In 2012, the switch from Standard Time to DST occured on 2012-03-25, so there is no 02:00 on this day. If you try to convert "2012-03-25 02:00:00" to a POSIXct-Object,
-
-```{r}
-## https://stackoverflow.com/questions/13865172/handling-data-on-the-days-when-we-switch-to-daylight-savings-time-and-back-in-r
-#> as.POSIXct("2012-03-25 02:00:00", tz="Europe/Vienna")
-#[1] "2012-03-25 CET"
-#
-## you don't get an error or a warning, you just get date without the time (this behavior is documented).
-## Using `format = "%z"` gives the desired result:
-#
-#> as.POSIXct("2012-03-25 02:00:00 +0100", format="%F %T %z", tz="Europe/Vienna")
-#[1] "2012-03-25 03:00:00 CEST"
-
-## function
-as.POSIXct.no.dst <- function (x, tz = '', 
-                               format='%Y-%m-%d %H:%M', offset='+0100', ...) {
-  x <- paste(x, offset)
-  format <- paste(format, "%z")
-  as.POSIXct(x, tz, format=format, ...)
-  }
-```
-
-*Source : [Handling data on the days when we switch to daylight savings time and back in R](https://stackoverflow.com/questions/13865172/handling-data-on-the-days-when-we-switch-to-daylight-savings-time-and-back-in-r)*
-
-[Why is this xts frequency always 1?](https://stackoverflow.com/questions/34454947/why-is-this-xts-frequency-always-1) talk about the frequency of `xts` dataset and we need to use `zoo` to convert it.
-
-> So far, we have considered relatively simple seasonal patterns such as quarterly and monthly data. However, higher frequency time series often exhibit more complicated seasonal patterns. For example, daily data may have a weekly pattern as well as an annual pattern. Hourly data usually has three types of seasonality: a daily pattern, a weekly pattern, and an annual pattern. Even weekly data can be challenging to forecast as it typically has an annual pattern with seasonal period of `365.25/7≈52.179` on average.
-...
-The top panel of Figure 11.1 shows the number of retail banking call arrivals per 5-minute interval between 7:00am and 9:05pm each weekday over a 33 week period. The bottom panel shows the first three weeks of the same time series. There is a strong daily seasonal pattern with frequency 169 (there are 169 5-minute intervals per day), and a weak weekly seasonal pattern with frequency `169 × 5 = 845`. (Call volumes on Mondays tend to be higher than the rest of the week.) If a longer series of data were available, we may also have observed an annual seasonal pattern.
-
-*Source : [11.1 Complex seasonality](https://otexts.org/fpp2/complexseasonality.html)*
-
-```{r}
-## convert timezone, however the daylight-saving need to consider.
-Y2015W1 %<>% mutate(
-    index = format(index, tz='Europe/Athens',usetz=TRUE) %>% 
-        as.POSIXct(tz='Europe/Athens'))
-```
-
-```{r, warning=FALSE}
-#suppressWarnings(Y2015W1 <- tbl %>% dplyr::select(date, close) %>% tk_xts %>% auto.arima(seasonal = FALSE))
-
-## Count the observation in order to model seasonal frequency model.
-Y2015W1 %>% 
-  dplyr::select(index, close) %>% 
-  mutate(index = as.Date(index, tz='Europe/Athens')) %>% 
-  ddply(.(index), summarise, n = length(index)) %>% 
-  tbl_df
-```
 
 ```{r}
 ## https://stackoverflow.com/questions/29202021/r-how-to-extract-dates-from-a-time-series
@@ -226,6 +152,79 @@ getTStime <- function(ats){
 ```
 
 ```{r}
+## https://stackoverflow.com/questions/13865172/handling-data-on-the-days-when-we-switch-to-daylight-savings-time-and-back-in-r
+#> as.POSIXct("2012-03-25 02:00:00", tz="Europe/Vienna")
+#[1] "2012-03-25 CET"
+#
+## you don't get an error or a warning, you just get date without the time (this behavior is documented).
+## Using `format = "%z"` gives the desired result:
+#
+#> as.POSIXct("2012-03-25 02:00:00 +0100", format="%F %T %z", tz="Europe/Vienna")
+#[1] "2012-03-25 03:00:00 CEST"
+
+## function
+as.POSIXct.no.dst <- function (
+  x, tz = '', format='%Y-%m-%d %H:%M', offset='+0100', ...) {
+  x <- paste(x, offset)
+  format <- paste(format, '%z')
+  res <- as.POSIXct(x, tz, format=format, ...)
+  return(res)
+  }
+```
+
+*Source : [Handling data on the days when we switch to daylight savings time and back in R](https://stackoverflow.com/questions/13865172/handling-data-on-the-days-when-we-switch-to-daylight-savings-time-and-back-in-r)*
+
+[Why is this xts frequency always 1?](https://stackoverflow.com/questions/34454947/why-is-this-xts-frequency-always-1) talk about the frequency of `xts` dataset and we need to use `zoo` to convert it.
+
+> So far, we have considered relatively simple seasonal patterns such as quarterly and monthly data. However, higher frequency time series often exhibit more complicated seasonal patterns. For example, daily data may have a weekly pattern as well as an annual pattern. Hourly data usually has three types of seasonality: a daily pattern, a weekly pattern, and an annual pattern. Even weekly data can be challenging to forecast as it typically has an annual pattern with seasonal period of `365.25/7≈52.179` on average.
+...
+The top panel of Figure 11.1 shows the number of retail banking call arrivals per 5-minute interval between 7:00am and 9:05pm each weekday over a 33 week period. The bottom panel shows the first three weeks of the same time series. There is a strong daily seasonal pattern with frequency 169 (there are 169 5-minute intervals per day), and a weak weekly seasonal pattern with frequency `169 × 5 = 845`. (Call volumes on Mondays tend to be higher than the rest of the week.) If a longer series of data were available, we may also have observed an annual seasonal pattern.
+
+*Source : [11.1 Complex seasonality](https://otexts.org/fpp2/complexseasonality.html)*
+
+```{r}
+## Convert the univariate price to be OHLC price in `minutes` unit.
+Y2015W1_min1 <- Y2015W1 %>% 
+  convertOHLC(combine = TRUE, mean = TRUE, .unit = t.unit[2]) %>% 
+  bind_rows #combined `ask/bid` price
+Y2015W1_min1
+```
+
+```{r, warning=FALSE}
+#suppressWarnings(Y2015W1 <- tbl %>% dplyr::select(date, close) %>% tk_xts %>% auto.arima(seasonal = FALSE))
+
+## Count the observation in order to model seasonal frequency model.
+Y2015W1 %>% 
+    dplyr::select(index, close) %>% 
+    ddply(.(as.Date(index)), summarise, n = length(index)) %>% 
+    tbl_df
+```
+
+Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) to know the seasonality dataset.
+
+```{r}
+# tsz <- llply(fls[[7]], function(x) {
+#     y <- readRDS(x) %>% 
+#       convertOHLC(combine = TRUE, mean = TRUE, .unit = t.unit[2]) %>% 
+#         bind_rows %>% 
+#         dplyr::filter(index == head(index, 1) | 
+#                       index == tail(index, 1)) %>% 
+#       mutate(diff = difftime(index, lag(index, 1), units = 'mins'))
+#     }) %>% bind_rows %>% tbl_df %>% arrange(index)
+# saveRDS(tsz, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
+
+## The daylight saving convertion in not tally.
+tsz <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
+tsz
+
+## count the frequency of weekly observation.
+tsz %>% dplyr::count(diff)
+
+## missing observation.
+tsz %>% dplyr::filter(diff <= 6000)
+```
+
+```{r}
 ## https://stackoverflow.com/questions/34454947/why-is-this-xts-frequency-always-1
 ## https://www.stat.berkeley.edu/~s133/dates.html
 ## https://stackoverflow.com/questions/45070078/convert-forecast-time-produced-by-arima-into-standard-date-time
@@ -244,7 +243,18 @@ Y2015W1 %>% head %>% zooreg(frequency = 1440)
 Y2015W1 %>% head %>% msts(seasonal.periods=c(1440, 10080))
 ```
 
-Now I convert all dataset again from `UTC` to `UTC+2` to be a constant weekly seasonal dataset. Due to the trading day is 5 days and 2 rest days, therefore I set a weekly seasonal period instead of daily.
+`ts()` only can build a year-month seasonal dataset, otherwise need to decimal numeric to figure out what date within a month accordingly. `msts()` will be more user friendly which is modelling intra-and-inter seasonal dataset. <s>Now I convert all dataset again from `UTC` to `UTC+2` to be a constant weekly seasonal dataset. Due to the trading day is 5 days and 2 rest days, therefore I set a weekly seasonal period instead of daily.</s>
+
+[2018 Time Zones - UTC](https://www.timeanddate.com/time/zone/timezone/utc) shows that has no change in *No changes, UTC all of the period* from 2010 to 2019.
+
+> From the [Wikipedia UTC page](http://en.wikipedia.org/wiki/Coordinated_Universal_Time):
+> UTC does not change with a change of seasons, but local time or civil time may change if a time zone jurisdiction observes daylight saving time or summer time. For example, UTC is 5 hours ahead of local time on the east coast of the United States during winter, but 4 hours ahead during summer.
+In other words, when a time zone observes DST, its offset from UTC changes when there's a DST transition, but that's that time zone observing DST, not UTC.
+Without knowing much about PHP time zone handling, it seems strange to me that you can specify "with DST" or "without DST" in a conversion - the time zones themselves specify when DST kicks in... it shouldn't have to be something you specify yourself.
+
+*Source : [Does UTC observe daylight saving time?](https://stackoverflow.com/questions/5495803/does-utc-observe-daylight-saving-time)*
+
+Due to the `UTC` timezone has no daylight saving issue, therefore the initial trading time will be a problem where I need to cope with.
 
 ```{r, eval=FALSE}
 ## -------- eval=FALSE --------------
@@ -277,20 +287,114 @@ llply(fls[[7]], function(x) {
     })
 ```
 
-## Read Data
+## 1 Minute Data
+
+### Get and Tidy Data
+
+Due to [fxcm/MarketData](https://github.com/fxcm/MarketData) updated and provides 1 minute, 1 hour, 1 day datasets recently, here I directly download 1 minute dataset and tidy it.
+
+> time is based on EST, because our server is in New Jersey USA.
+it is 5:00PM at the end of the day, which is shown in GMT as 21:00 day light saving or 22:00 without day light saving.
+
+*Source : [Inconsistency of trading date time #1](https://github.com/fxcm/MarketData/issues/1#issuecomment-427464344)*
+
+From above quote, we can know even the `EST` converted to `UTC` will not be `00:00:00`, therefore I refer to [Handling data on the days when we switch to daylight savings time and back in R](https://stackoverflow.com/questions/13865172/handling-data-on-the-days-when-we-switch-to-daylight-savings-time-and-back-in-r) as my solution as `UTC+2` (daylight saving `UTC+3`) will get the desired result.
 
 ```{r, warning=FALSE}
-fls <- sapply(names(cr_code), function(x) {
+cr_code <- c('EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'JPY=X')
+names(cr_code) <- c('EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDJPY') 
+
+fls1 <- llply(names(cr_code), function(x) {
     dtr <- 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/'
-    fls <- list.files(paste0(dtr, x), pattern = '^Y[0-9]{4}W[0-9]{1,2}_min[0-9]{1,2}.rds$')
+    fls <- list.files(paste0(dtr, x), pattern = '^Y[0-9]{4}W[0-9]{1,2}_m[0-9]{1,2}.rds$')
     if (length(fls) > 0) paste0(dtr, x, '/', fls)
   })
+names(fls1) <- names(cr_code)
 
-fs <- list.files('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY', pattern = '^Y[0-9]{4}W[0-9]{1,2}_min[0-9]{1,2}.rds$') %>% str_replace_all('.rds', '')
+fs1 <- list.files('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY', pattern = '^Y[0-9]{4}W[0-9]{1,2}_m[0-9]{1,2}.rds$') %>% str_replace_all('.rds', '')
 
 ## Read raw dataset.
 #'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "')")))
 ```
+
+```{r}
+## Read raw dataset.
+eval(parse(text = paste0(fs[1], "<- readRDS('", fls[[5]][1], "') %>% tbl_df")))
+
+## raw dataset
+Y2015W1_m1
+```
+
+Now I try to validate the daylight saving date.
+
+```{r, warning=FALSE}
+tsz2 <- llply(fls[[5]], function(x) {
+    readRDS(x) %>% dplyr::filter(DateTime == head(DateTime, 1)|
+                                 DateTime == tail(DateTime, 1)) %>% 
+        .$DateTime %>% mdy_hms %>% .POSIXct(tz = 'Europe/Athens') %>% 
+        as_data_frame
+    }) %>% bind_rows %>% tbl_df %>% arrange(value)
+
+## The daylight saving convertion in not tally.
+tsz2
+
+# saveRDS(tsz2, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
+
+## The daylight saving convertion in not tally.
+tsz2 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
+
+## https://stackoverflow.com/questions/6668963/how-to-prevent-ifelse-from-turning-date-objects-into-numeric-objects
+tsz2 %>% mutate(nch = substr(value, nchar(value)+2, nchar(value)+3), 
+               value = if_else(nch == '23', value + hours(1), value)) %>% 
+  dplyr::select(-nch)
+
+# tsz <- llply(fls[[7]], function(x) {
+#     y <- readRDS(x) %>% 
+#       convertOHLC(combine = TRUE, mean = TRUE, .unit = t.unit[2]) %>% 
+#         bind_rows %>% 
+#         dplyr::filter(index == head(index, 1) | 
+#                       index == tail(index, 1)) %>% 
+#       mutate(diff = difftime(index, lag(index, 1), units = 'mins'))
+#     }) %>% bind_rows %>% tbl_df %>% arrange(index)
+
+## count the frequency of weekly observation.
+tsz2 %>% dplyr::count(diff)
+
+## missing observation.
+tsz2 %>% dplyr::filter(diff <= 6000)
+```
+
+From above tables, we can know the daylight saving detection and `datetime` auto convertion is not tally. Here I united all intial observation started from `00:00:00`.
+
+## Completion of Data
+
+### Data Selection
+
+From previous section [Get and Tidy Data], we know that the .
+
+```{r, warning=FALSE}
+## Execute below codes and save it to save the time.
+
+# dc <- llply(fls[[7]], function(x) {
+#     y <- readRDS(x) %>% convertOHLC(combine = TRUE, mean = TRUE, .unit = t.unit[2])
+#     y %>% dplyr::count(index)
+# })
+# 
+# saveRDS(dc, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/count_tick_data_1min.rds')
+dc <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/count_tick_data_1min.rds')
+dc %>% ldply(nrow) %>% tbl_df
+dc %>% ldply(nrow) %>% tbl_df %>% .[. < 6000]
+```
+
+```{r}
+tsz <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
+
+tsz2 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
+
+```
+
+### Read Data
+
 
 Due to the files preload all before simulate the statistical modelling will occupy the space. Here I directly read the files and simulate the algorithmic prediction in following sections.
 
@@ -423,14 +527,14 @@ for(i in (1:length(fs))) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
-      sarima[[i]] <- tryCatch({ldply(price_type, function(y) {
+      sarima[[i]] <- tryCatch({llply(price_type, function(y) {
         df = auto.arima(, parallel=FALSE, num.cores = 2)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
         names(df)[4] %<>% str_replace_all('1', 'T+1')
         df
-      })}, error = function(e) NULL)
+      }) %>% tbl_df %>% bind_rows}, error = function(e) NULL)
       
       if (!dir.exists(paste0('data/fx/', names(sarima[[i]])[3]))) 
         dir.create(paste0('data/fx/', names(sarima[[i]])[3]))
@@ -479,7 +583,7 @@ for (dt in timeID) {
       dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
       smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
       
-      mcsGARCH[[i]] <- tryCatch({ldply(price_type, function(y) {
+      mcsGARCH[[i]] <- tryCatch({llply(price_type, function(y) {
         df = uv_fx(smp, .model = 'mcsGARCH', currency = cr_code[i], 
                    price = y, .cluster = .cl)
         df = data.frame(Date = index(df$latestPrice[1]), 
@@ -487,7 +591,7 @@ for (dt in timeID) {
                         df$latestPrice, df$forecastPrice, t(df$AIC))
         names(df)[4] %<>% str_replace_all('1', 'T+1')
         df
-      })}, error = function(e) NULL)
+      }) %>% tbl_df %>% bind_rows}, error = function(e) NULL)
       
       if (!dir.exists(paste0('data/fx/', names(mcsGARCH[[i]])[3]))) 
         dir.create(paste0('data/fx/', names(mcsGARCH[[i]])[3]))
