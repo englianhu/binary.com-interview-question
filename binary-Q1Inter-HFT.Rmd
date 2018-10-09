@@ -191,13 +191,15 @@ Y2015W1_min1
 ```
 
 ```{r, warning=FALSE}
-#suppressWarnings(Y2015W1 <- tbl %>% dplyr::select(date, close) %>% tk_xts %>% auto.arima(seasonal = FALSE))
+#suppressWarnings(Y2015W1 <- tbl %>% 
+#       dplyr::select(date, close) %>% tk_xts %>% 
+#       auto.arima(seasonal = FALSE))
 
 ## Count the observation in order to model seasonal frequency model.
-Y2015W1 %>% 
-    dplyr::select(index, close) %>% 
-    ddply(.(as.Date(index)), summarise, n = length(index)) %>% 
-    tbl_df
+Y2015W1_min1 %>% 
+  dplyr::select(index, close) %>% 
+  ddply(.(as.Date(index)), summarise, n = length(index)) %>% 
+  tbl_df
 ```
 
 Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) to know the seasonality dataset.
@@ -218,7 +220,10 @@ tsz <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/US
 tsz
 
 ## count the frequency of weekly observation.
-tsz %>% dplyr::count(diff)
+tsz %>% dplyr::count(diff) %>% 
+  kable(caption = 'Count data point') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 
 ## missing observation.
 tsz %>% dplyr::filter(diff <= 6000)
@@ -230,17 +235,17 @@ tsz %>% dplyr::filter(diff <= 6000)
 ## https://stackoverflow.com/questions/45070078/convert-forecast-time-produced-by-arima-into-standard-date-time
 #How to extract below index to datetime
 #Y2015W1 %>% tk_ts(end = c(1440, 10080), frequency = 1440) %>% attributes %>% .$index %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01') %>% force_tz(tz = 'Europe/Athens')
-Y2015W1 %>% tk_ts(end = c(3, 10080), frequency = 1440) %>% .[,1:ncol(.)] %>% head
+Y2015W1_min1 %>% tk_ts(end = c(3, 10080), frequency = 1440) %>% .[,1:ncol(.)] %>% head
 
-Y2015W1 %>% head %>% zooreg(frequency = 1440)
+Y2015W1_min1 %>% head %>% zooreg(frequency = 1440)
 
-#Y2015W1 %>% tk_ts(end = c(1440, 10080), frequency = 1440) %>% index %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01')
+#Y2015W1_min1 %>% tk_ts(end = c(1440, 10080), frequency = 1440) %>% index %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01')
 
 ## https://stats.stackexchange.com/questions/144158/daily-time-series-analysis
 ## http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/
 #How to extract below index to datetime
-#Y2015W1 %>% msts(seasonal.periods=c(1440, 10080)) %>% .[,1] %>% as.numeric %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01') %>% force_tz(tz = 'Europe/Athens')
-Y2015W1 %>% head %>% msts(seasonal.periods=c(1440, 10080))
+#Y2015W1_min1 %>% msts(seasonal.periods=c(1440, 10080)) %>% .[,1] %>% as.numeric %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01') %>% force_tz(tz = 'Europe/Athens')
+Y2015W1_min1 %>% head %>% msts(seasonal.periods=c(1440, 10080))
 ```
 
 `ts()` only can build a year-month seasonal dataset, otherwise need to decimal numeric to figure out what date within a month accordingly. `msts()` will be more user friendly which is modelling intra-and-inter seasonal dataset. <s>Now I convert all dataset again from `UTC` to `UTC+2` to be a constant weekly seasonal dataset. Due to the trading day is 5 days and 2 rest days, therefore I set a weekly seasonal period instead of daily.</s>
@@ -306,12 +311,12 @@ names(cr_code) <- c('EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDJPY')
 
 fls1 <- llply(names(cr_code), function(x) {
     dtr <- 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/'
-    fls <- list.files(paste0(dtr, x), pattern = '^Y[0-9]{4}W[0-9]{1,2}_m[0-9]{1,2}.rds$')
+    fls <- list.files(paste0(dtr, x), pattern = '^Y[0-9]{4}W[0-9]{1,2}_m1.rds$')
     if (length(fls) > 0) paste0(dtr, x, '/', fls)
   })
 names(fls1) <- names(cr_code)
 
-fs1 <- list.files('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY', pattern = '^Y[0-9]{4}W[0-9]{1,2}_m[0-9]{1,2}.rds$') %>% str_replace_all('.rds', '')
+fs1 <- list.files('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY', pattern = '^Y[0-9]{4}W[0-9]{1,2}_m1.rds$') %>% str_replace_all('.rds', '')
 
 ## Read raw dataset.
 #'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "')")))
@@ -319,7 +324,7 @@ fs1 <- list.files('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data
 
 ```{r}
 ## Read raw dataset.
-eval(parse(text = paste0(fs[1], "<- readRDS('", fls[[5]][1], "') %>% tbl_df")))
+eval(parse(text = paste0(fs1[1], "<- readRDS('", fls1[[5]][1], "') %>% tbl_df")))
 
 ## raw dataset
 Y2015W1_m1
@@ -328,37 +333,30 @@ Y2015W1_m1
 Now I try to validate the daylight saving date.
 
 ```{r, warning=FALSE}
-tsz2 <- llply(fls[[5]], function(x) {
-    readRDS(x) %>% dplyr::filter(DateTime == head(DateTime, 1)|
-                                 DateTime == tail(DateTime, 1)) %>% 
-        .$DateTime %>% mdy_hms %>% .POSIXct(tz = 'Europe/Athens') %>% 
-        as_data_frame
-    }) %>% bind_rows %>% tbl_df %>% arrange(value)
-
-## The daylight saving convertion in not tally.
-tsz2
-
+# tsz2 <- llply(fls1[[5]], function(x) {
+#    y <- readRDS(x) %>% dplyr::filter(DateTime == head(DateTime, 1)|
+#                                      DateTime == tail(DateTime, 1)) %>% 
+#        mutate(DateTime = DateTime %>% mdy_hms %>% 
+#                 .POSIXct(tz = 'Europe/Athens'), 
+#               diff = difftime(DateTime, lag(DateTime, 1), units = 'mins'))
+#    
+#    nch <- y$DateTime[1] %>% substr(nchar(.)+2, nchar(.)+3)
+#    y %<>% mutate(
+#        nch = nch, DateTime = if_else(
+#          nch == '23', DateTime + hours(1), DateTime)) %>% 
+#        dplyr::select(-nch)
+#    }) %>% bind_rows %>% tbl_df %>% arrange(DateTime)
 # saveRDS(tsz2, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
 
 ## The daylight saving convertion in not tally.
 tsz2 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
-
-## https://stackoverflow.com/questions/6668963/how-to-prevent-ifelse-from-turning-date-objects-into-numeric-objects
-tsz2 %>% mutate(nch = substr(value, nchar(value)+2, nchar(value)+3), 
-               value = if_else(nch == '23', value + hours(1), value)) %>% 
-  dplyr::select(-nch)
-
-# tsz <- llply(fls[[7]], function(x) {
-#     y <- readRDS(x) %>% 
-#       convertOHLC(combine = TRUE, mean = TRUE, .unit = t.unit[2]) %>% 
-#         bind_rows %>% 
-#         dplyr::filter(index == head(index, 1) | 
-#                       index == tail(index, 1)) %>% 
-#       mutate(diff = difftime(index, lag(index, 1), units = 'mins'))
-#     }) %>% bind_rows %>% tbl_df %>% arrange(index)
+tsz2
 
 ## count the frequency of weekly observation.
-tsz2 %>% dplyr::count(diff)
+tsz2 %>% dplyr::count(diff) %>% 
+  kable(caption = 'Count data point') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 
 ## missing observation.
 tsz2 %>% dplyr::filter(diff <= 6000)
@@ -370,7 +368,7 @@ From above tables, we can know the daylight saving detection and `datetime` auto
 
 ### Data Selection
 
-From previous section [Get and Tidy Data], we know that the .
+[binary.com 面试试题 I - 数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value) compares the missing values dataset and refill the missing value, the paper concludes that the repaired dataset is workable since the MSE is very low. The paper compares tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM.
 
 ```{r, warning=FALSE}
 ## Execute below codes and save it to save the time.
@@ -383,20 +381,55 @@ From previous section [Get and Tidy Data], we know that the .
 # saveRDS(dc, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/count_tick_data_1min.rds')
 dc <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/count_tick_data_1min.rds')
 dc %>% ldply(nrow) %>% tbl_df
-dc %>% ldply(nrow) %>% tbl_df %>% .[. < 6000]
+dc %>% ldply(nrow) %>% tbl_df %>% 
+  dplyr::filter(V1 < 6000)
+dc %>% ldply(nrow) %>% tbl_df %>% 
+  dplyr::count(V1) %>% 
+  kable(caption = 'Count data point') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+
 ```
 
 ```{r}
+## tick-data to minute 1 dataset
 tsz <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
+tsz %>% dplyr::count(diff) %>% 
+  kable(caption = 'Count data point') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 
+## minute 1 dataset
 tsz2 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
-
+tsz2 %>% dplyr::count(diff) %>% 
+  kable(caption = 'Count data point') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 ```
+
+Above tables show the dataset is incompleted.
+
+```{r}
+mean(tsz$diff, na.rm=TRUE)
+mean(tsz2$diff, na.rm=TRUE)
+```
+
+- [How to fill in missing data in time series?](https://stats.stackexchange.com/questions/245615/how-to-fill-in-missing-data-in-time-series) talk about the missing data.
+- [4.1 Seasonal ARIMA models](https://onlinecourses.science.psu.edu/stat510/node/67/)
+- [How to fill in missing data in time series?](https://stats.stackexchange.com/questions/245615/how-to-fill-in-missing-data-in-time-series)
+- [How to Handle Missing Data](https://towardsdatascience.com/how-to-handle-missing-data-8646b18db0d4)
+
+Here I compare the mean and get to know the downloaded min1 dataset from FXCM is better than downloaded tick-dataset (converted to min1) from FXCM.
 
 ### Read Data
 
 
 Due to the files preload all before simulate the statistical modelling will occupy the space. Here I directly read the files and simulate the algorithmic prediction in following sections.
+
+```{r}
+rm(list = ls()[grep('Y2015W|tsz|tsz2|dc', ls())])
+
+```
 
 # Modelling
 
@@ -691,5 +724,4 @@ rm(sys1, sys2)
 
 ---
 
-**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
-
+<span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of [<img src='www/scb_logo.jpg' width='64'>®](http://www.scibrokes.com)個人の経営企業**</span>
