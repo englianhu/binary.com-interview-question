@@ -20,7 +20,7 @@ convertOHLC <- function(mbase, combine = FALSE, mean = FALSE,
       dplyr::select(DateTime, Ask) %>% 
       mutate(DateTime = .POSIXct(mdy_hms(DateTime), tz = tz)) %>% 
       tk_xts(.) %>% to.period(period = .unit) %>% tk_tbl() %>% 
-      mutate(index = round_date(index, .unit2)) %>% 
+      mutate(index = round_date(index, .unit2)) %>% #floor_date
       dplyr::rename_all(str_replace_all, '\\.', '') %>% 
       dplyr::rename_all(tolower))
   
@@ -34,7 +34,7 @@ convertOHLC <- function(mbase, combine = FALSE, mean = FALSE,
       dplyr::select(DateTime, Bid) %>% 
       mutate(DateTime = .POSIXct(mdy_hms(DateTime), tz = tz)) %>% 
       tk_xts(.) %>% to.period(period = .unit) %>% tk_tbl() %>% 
-      mutate(index = round_date(index, .unit2)) %>% 
+      mutate(index = round_date(index, .unit2)) %>% #floor_date
       dplyr::rename_all(str_replace_all, '\\.', '') %>% 
       dplyr::rename_all(tolower))
   
@@ -44,18 +44,26 @@ convertOHLC <- function(mbase, combine = FALSE, mean = FALSE,
     dplyr::select(-nch)
   
   if (combine == TRUE) {
-    mbaseA %<>% cbind(Type = 'Ask', .)
-    mbaseB %<>% cbind(Type = 'Bid', .)
-    tmp <- rbind(mbaseA, mbaseB) %>% tbl_df %>% 
-      dplyr::select(index, Type, open, high, low, close) %>% 
-      arrange(index)
     
     if (mean == TRUE) {
+      mbaseA %<>% cbind(Type = 'Ask', .)
+      mbaseB %<>% cbind(Type = 'Bid', .)
+      tmp <- rbind(mbaseA, mbaseB) %>% tbl_df %>% 
+        dplyr::select(index, Type, open, high, low, close) %>% 
+        arrange(index)
+      
       tmp %<>% ddply(.(index), summarise, 
                      open = mean(open, na.rm=TRUE), 
                      high = mean(high, na.rm=TRUE), 
                      low = mean(low, na.rm=TRUE), 
                      close = mean(close, na.rm=TRUE)) %>% tbl_df
+    } else {
+      
+      tmp <- data_frame(
+        open = (mbaseA$open + mbaseB$open)/2, 
+        high = mbaseB$high, 
+        low = mbaseA$low, 
+        close = (mbaseA$open + mbaseB$open)/2) %>% tbl_df
     }
     
   } else {

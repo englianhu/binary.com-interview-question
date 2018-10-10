@@ -664,9 +664,23 @@ mseAll %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
-以上比较均方误差，而边缘误差为`0.0000084`至`0.0000160`，故此弥补来的数据还是可行的。
+以上比较均方误差，而边缘误差为`0.0000084`至`0.0000160`，故此弥补来的数据还是可行的，那目前还得查阅数据才能知晓。
 
-僕们可以通过`auto.arima`、`ETS`、`GARCH`或者其它方式回测数据和弥补缺失值，不过那就比较费时了。根据以上的`imputeTS::na.seadec()`弥补来的数据的误差是`0`至`0.0001`，基本上还算可行。
+```{r}
+Y2015W1_m1_filled %>% mutate(
+  VA = if_else(AskOpen <= AskHigh & AskOpen >= AskLow & 
+               AskClose <= AskHigh & AskClose >= AskLow & 
+               AskHigh >= AskLow, 1, 0), 
+  VB = if_else(BidOpen <= BidHigh & BidOpen >= BidLow & 
+               BidClose <= BidHigh & BidClose >= BidLow & 
+               BidHigh >= BidLow, 1, 0)) %>% 
+  dplyr::filter(VA == 0|VB == 0) %>% data.frame %>% 
+  kable(caption = '数据误差') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
+```
+
+从以上数据证明，弥补来的数据确实有误，如之前单变量的误差（开市或闭市价高于最高价、低于最低价）。僕们可以通过`auto.arima`、`ETS`、`GARCH`或者其它方式回测数据和弥补缺失值<s>，不过那就比较费时了。根据以上的`imputeTS::na.seadec()`弥补来的数据的误差是`0`至`0.0001`，基本上还算可行</s>，不过最有效的方法就是使用多变量`DCC`模式弥补缺失值，不过会非常耗时。
 
 # 附录
 

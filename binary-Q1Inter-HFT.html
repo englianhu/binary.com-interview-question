@@ -488,17 +488,16 @@ Y2015W1_min1</code></pre>
 ## Count the observation in order to model seasonal frequency model.
 Y2015W1_min1 %&gt;% 
   dplyr::select(index, close) %&gt;% 
-  ddply(.(as.Date(index)), summarise, n = length(index)) %&gt;% 
+  ddply(.(date(index)), summarise, n = length(index)) %&gt;% 
   tbl_df</code></pre>
-<pre><code>## # A tibble: 6 x 2
-##   `as.Date(index)`     n
-##   &lt;date&gt;           &lt;int&gt;
-## 1 2015-01-04         119
-## 2 2015-01-05        1439
-## 3 2015-01-06        1439
-## 4 2015-01-07        1439
-## 5 2015-01-08        1437
-## 6 2015-01-09        1319</code></pre>
+<pre><code>## # A tibble: 5 x 2
+##   `date(index)`     n
+##   &lt;date&gt;        &lt;int&gt;
+## 1 2015-01-05     1438
+## 2 2015-01-06     1439
+## 3 2015-01-07     1439
+## 4 2015-01-08     1439
+## 5 2015-01-09     1437</code></pre>
 <p>Kindly refer to section <a href="#seasonal-data">Seasonal Data</a> or <a href="https://robjhyndman.com/hyndsight/seasonal-periods/">Seasonal periods</a> to know the seasonality dataset.</p>
 <pre class="r"><code># tsz &lt;- llply(fls[[7]], function(x) {
 #     y &lt;- readRDS(x) %&gt;% 
@@ -511,22 +510,23 @@ Y2015W1_min1 %&gt;%
 # saveRDS(tsz, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
 
 ## The daylight saving convertion in not tally.
-tsz &lt;- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
+tsz &lt;- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds') %&gt;% 
+  dplyr::filter(index &gt;= ymd_hms('2015-01-05 00:00:00', tz = 'Europe/Athens'))
 tsz</code></pre>
-<pre><code>## # A tibble: 370 x 6
+<pre><code>## # A tibble: 368 x 6
 ##    index                open  high   low close diff       
 ##    &lt;dttm&gt;              &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;time&gt;     
-##  1 2014-12-29 00:01:00  120.  120.  120.  120. &quot;  NA mins&quot;
-##  2 2015-01-02 23:59:00  120.  120.  120.  120. 7198 mins  
-##  3 2015-01-05 00:01:00  121.  121.  120.  121. &quot;  NA mins&quot;
-##  4 2015-01-09 23:59:00  119.  119.  119.  119. 7198 mins  
-##  5 2015-01-12 00:01:00  118.  118.  118.  118. &quot;  NA mins&quot;
-##  6 2015-01-16 23:57:00  117.  118.  117.  118. 7196 mins  
-##  7 2015-01-19 00:01:00  117.  117.  117.  117. &quot;  NA mins&quot;
-##  8 2015-01-23 23:59:00  118.  118.  118.  118. 7198 mins  
-##  9 2015-01-26 00:01:00  118.  118.  117.  118. &quot;  NA mins&quot;
-## 10 2015-01-30 23:59:00  118.  118.  117.  118. 7198 mins  
-## # ... with 360 more rows</code></pre>
+##  1 2015-01-05 00:01:00  121.  121.  120.  121. &quot;  NA mins&quot;
+##  2 2015-01-09 23:59:00  119.  119.  119.  119. 7198 mins  
+##  3 2015-01-12 00:01:00  118.  118.  118.  118. &quot;  NA mins&quot;
+##  4 2015-01-16 23:57:00  117.  118.  117.  118. 7196 mins  
+##  5 2015-01-19 00:01:00  117.  117.  117.  117. &quot;  NA mins&quot;
+##  6 2015-01-23 23:59:00  118.  118.  118.  118. 7198 mins  
+##  7 2015-01-26 00:01:00  118.  118.  117.  118. &quot;  NA mins&quot;
+##  8 2015-01-30 23:59:00  118.  118.  117.  118. 7198 mins  
+##  9 2015-02-02 00:01:00  117.  117.  117.  117. &quot;  NA mins&quot;
+## 10 2015-02-06 23:59:00  119.  119.  119.  119. 7198 mins  
+## # ... with 358 more rows</code></pre>
 <pre class="r"><code>## count the frequency of weekly observation.
 tsz %&gt;% dplyr::count(diff) %&gt;% 
   kable(caption = 'Count data point') %&gt;% 
@@ -801,7 +801,7 @@ n
 7198 mins
 </td>
 <td style="text-align:right;">
-104
+103
 </td>
 </tr>
 <tr>
@@ -817,7 +817,7 @@ n
 NA
 </td>
 <td style="text-align:right;">
-185
+184
 </td>
 </tr>
 </tbody>
@@ -986,10 +986,11 @@ Y2015W1_m1</code></pre>
 # saveRDS(tsz2, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
 
 ## The daylight saving convertion in not tally.
-tsz2 &lt;- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
+tsz2 &lt;- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds') %&gt;% dplyr::rename(index = DateTime) %&gt;% 
+  dplyr::filter(index &gt;= ymd_hms('2015-01-05 00:00:00', tz = 'Europe/Athens'))
 tsz2</code></pre>
 <pre><code>## # A tibble: 366 x 10
-##    DateTime            BidOpen BidHigh BidLow BidClose AskOpen AskHigh
+##    index               BidOpen BidHigh BidLow BidClose AskOpen AskHigh
 ##    &lt;dttm&gt;                &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
 ##  1 2015-01-05 00:00:00    120.    121.   120.     121.    121.    121.
 ##  2 2015-01-09 23:59:00    119.    119.   118.     118.    119.    119.
@@ -1166,7 +1167,7 @@ NA
 <pre class="r"><code>## missing observation.
 tsz2 %&gt;% dplyr::filter(diff &lt;= 6000)</code></pre>
 <pre><code>## # A tibble: 6 x 10
-##   DateTime            BidOpen BidHigh BidLow BidClose AskOpen AskHigh
+##   index               BidOpen BidHigh BidLow BidClose AskOpen AskHigh
 ##   &lt;dttm&gt;                &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
 ## 1 2015-12-24 20:01:00    120.    120.   120.     120.    120.    120.
 ## 2 2015-12-31 20:02:00    120.    120.   120.     120.    120.    120.
@@ -1184,7 +1185,7 @@ tsz2 %&gt;% dplyr::filter(diff &lt;= 6000)</code></pre>
 <h3><span class="header-section-number">2.3.1</span> Data Selection</h3>
 <p><a href="http://rpubs.com/englianhu/handle-missing-value">binary.com 面试试题 I - 数据缺失值管理</a> compares the missing values dataset and refill the missing value, the paper concludes that the repaired dataset is workable since the MSE is very low. The paper compares tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM.</p>
 <pre class="r"><code>## Execute below codes and save it to save the time.
-
+## read tick-data and convert to 1 min dataset.
 # dc &lt;- llply(fls[[7]], function(x) {
 #     y &lt;- readRDS(x) %&gt;% convertOHLC(combine = TRUE, mean = TRUE, .unit = t.unit[2])
 #     y %&gt;% dplyr::count(index)
@@ -2200,7 +2201,7 @@ n
 </table>
 </div>
 <pre class="r"><code>## tick-data to minute 1 dataset
-tsz &lt;- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
+#tsz &lt;- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
 tsz %&gt;% dplyr::count(diff) %&gt;% 
   kable(caption = 'Count data point') %&gt;% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %&gt;%
@@ -2474,7 +2475,7 @@ n
 7198 mins
 </td>
 <td style="text-align:right;">
-104
+103
 </td>
 </tr>
 <tr>
@@ -2490,14 +2491,14 @@ n
 NA
 </td>
 <td style="text-align:right;">
-185
+184
 </td>
 </tr>
 </tbody>
 </table>
 </div>
 <pre class="r"><code>## minute 1 dataset
-tsz2 &lt;- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
+#tsz2 &lt;- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
 tsz2 %&gt;% dplyr::count(diff) %&gt;% 
   kable(caption = 'Count data point') %&gt;% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %&gt;%
@@ -2659,9 +2660,41 @@ NA
 </div>
 <p>Above tables show the dataset is incompleted.</p>
 <pre class="r"><code>mean(tsz$diff, na.rm=TRUE)</code></pre>
-<pre><code>## Time difference of 6887.984 mins</code></pre>
+<pre><code>## Time difference of 6886.299 mins</code></pre>
 <pre class="r"><code>mean(tsz2$diff, na.rm=TRUE)</code></pre>
 <pre><code>## Time difference of 7144.601 mins</code></pre>
+<pre class="r"><code>left_join(tsz[c(1, ncol(tsz))], tsz2[c(1, ncol(tsz2))])</code></pre>
+<pre><code>## Joining, by = c(&quot;index&quot;, &quot;diff&quot;)</code></pre>
+<pre><code>## # A tibble: 368 x 2
+##    index               diff       
+##    &lt;dttm&gt;              &lt;time&gt;     
+##  1 2015-01-05 00:01:00 &quot;  NA mins&quot;
+##  2 2015-01-09 23:59:00 7198 mins  
+##  3 2015-01-12 00:01:00 &quot;  NA mins&quot;
+##  4 2015-01-16 23:57:00 7196 mins  
+##  5 2015-01-19 00:01:00 &quot;  NA mins&quot;
+##  6 2015-01-23 23:59:00 7198 mins  
+##  7 2015-01-26 00:01:00 &quot;  NA mins&quot;
+##  8 2015-01-30 23:59:00 7198 mins  
+##  9 2015-02-02 00:01:00 &quot;  NA mins&quot;
+## 10 2015-02-06 23:59:00 7198 mins  
+## # ... with 358 more rows</code></pre>
+<pre class="r"><code>right_join(tsz[c(1, ncol(tsz))], tsz2[c(1, ncol(tsz2))])</code></pre>
+<pre><code>## Joining, by = c(&quot;index&quot;, &quot;diff&quot;)</code></pre>
+<pre><code>## # A tibble: 366 x 2
+##    index               diff       
+##    &lt;dttm&gt;              &lt;time&gt;     
+##  1 2015-01-05 00:00:00 &quot;  NA mins&quot;
+##  2 2015-01-09 23:59:00 7199 mins  
+##  3 2015-01-12 00:00:00 &quot;  NA mins&quot;
+##  4 2015-01-16 23:56:00 7196 mins  
+##  5 2015-01-19 00:00:00 &quot;  NA mins&quot;
+##  6 2015-01-23 23:58:00 7198 mins  
+##  7 2015-01-26 00:00:00 &quot;  NA mins&quot;
+##  8 2015-01-30 23:58:00 7198 mins  
+##  9 2015-02-02 00:00:00 &quot;  NA mins&quot;
+## 10 2015-02-06 23:59:00 7199 mins  
+## # ... with 356 more rows</code></pre>
 <ul>
 <li><a href="https://stats.stackexchange.com/questions/245615/how-to-fill-in-missing-data-in-time-series">How to fill in missing data in time series?</a> talk about the missing data.</li>
 <li><a href="https://onlinecourses.science.psu.edu/stat510/node/67/">4.1 Seasonal ARIMA models</a></li>
@@ -3060,7 +3093,7 @@ date
 Current time
 </td>
 <td style="text-align:left;">
-2018-10-10 02:49:01 JST
+2018-10-10 23:45:44 JST
 </td>
 </tr>
 </tbody>

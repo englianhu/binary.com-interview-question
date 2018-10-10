@@ -57,6 +57,8 @@ Besides, I wrote a shinyApp which display the real-time price through API. Kindl
 - <s>GO-GARCH</s>
 - <s>Copula-GARCH</s>
 
+In order to started the high-frequency-trading statistical modelling, I inspect the dataset via [binary.com面试试题 I - 数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value). 
+
 <span style='color:red'>**Blooper...**</span>
 
 Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) which contain the questions and answers of 3 questions. For the staking model, I simply forecast the highest and lowest price, and then : 

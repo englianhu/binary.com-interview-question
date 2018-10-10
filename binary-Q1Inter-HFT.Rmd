@@ -101,7 +101,7 @@ t.unit <- c('seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'quarters'
 
 Due to high volume of dataset, here I only use `USDJPY` since the variance is higher than the rest of currencies.
 
-```{r}
+```{r warning=FALSE}
 ## Read raw dataset.
 eval(parse(text = paste0(fs[1], "<- readRDS('", fls[[7]][1], "') %>% tbl_df")))
 
@@ -130,7 +130,7 @@ Do you have any experiences with this? Do you know an R function or a package th
 `%z` Signed offset in hours and minutes from UTC, so -0800 is 8 hours behind UTC.
 For example: In 2012, the switch from Standard Time to DST occured on 2012-03-25, so there is no 02:00 on this day. If you try to convert "2012-03-25 02:00:00" to a POSIXct-Object,
 
-```{r}
+```{r warning=FALSE}
 ## https://stackoverflow.com/questions/29202021/r-how-to-extract-dates-from-a-time-series
 getTStime <- function(ats){
   start <- start(ats)
@@ -151,7 +151,7 @@ getTStime <- function(ats){
 }
 ```
 
-```{r}
+```{r warning=FALSE}
 ## https://stackoverflow.com/questions/13865172/handling-data-on-the-days-when-we-switch-to-daylight-savings-time-and-back-in-r
 #> as.POSIXct("2012-03-25 02:00:00", tz="Europe/Vienna")
 #[1] "2012-03-25 CET"
@@ -182,7 +182,7 @@ The top panel of Figure 11.1 shows the number of retail banking call arrivals pe
 
 *Source : [11.1 Complex seasonality](https://otexts.org/fpp2/complexseasonality.html)*
 
-```{r}
+```{r warning=FALSE}
 ## Convert the univariate price to be OHLC price in `minutes` unit.
 Y2015W1_min1 <- Y2015W1 %>% 
   convertOHLC(combine = TRUE, mean = TRUE, .unit = t.unit[2]) %>% 
@@ -198,13 +198,13 @@ Y2015W1_min1
 ## Count the observation in order to model seasonal frequency model.
 Y2015W1_min1 %>% 
   dplyr::select(index, close) %>% 
-  ddply(.(as.Date(index)), summarise, n = length(index)) %>% 
+  ddply(.(date(index)), summarise, n = length(index)) %>% 
   tbl_df
 ```
 
 Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) to know the seasonality dataset.
 
-```{r}
+```{r warning=FALSE}
 # tsz <- llply(fls[[7]], function(x) {
 #     y <- readRDS(x) %>% 
 #       convertOHLC(combine = TRUE, mean = TRUE, .unit = t.unit[2]) %>% 
@@ -216,7 +216,8 @@ Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndma
 # saveRDS(tsz, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
 
 ## The daylight saving convertion in not tally.
-tsz <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
+tsz <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds') %>% 
+  dplyr::filter(index >= ymd_hms('2015-01-05 00:00:00', tz = 'Europe/Athens'))
 tsz
 
 ## count the frequency of weekly observation.
@@ -229,7 +230,7 @@ tsz %>% dplyr::count(diff) %>%
 tsz %>% dplyr::filter(diff <= 6000)
 ```
 
-```{r}
+```{r warning=FALSE}
 ## https://stackoverflow.com/questions/34454947/why-is-this-xts-frequency-always-1
 ## https://www.stat.berkeley.edu/~s133/dates.html
 ## https://stackoverflow.com/questions/45070078/convert-forecast-time-produced-by-arima-into-standard-date-time
@@ -322,7 +323,7 @@ fs1 <- list.files('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data
 #'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "')")))
 ```
 
-```{r}
+```{r warning=FALSE}
 ## Read raw dataset.
 eval(parse(text = paste0(fs1[1], "<- readRDS('", fls1[[5]][1], "') %>% tbl_df")))
 
@@ -349,7 +350,8 @@ Now I try to validate the daylight saving date.
 # saveRDS(tsz2, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
 
 ## The daylight saving convertion in not tally.
-tsz2 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
+tsz2 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds') %>% dplyr::rename(index = DateTime) %>% 
+  dplyr::filter(index >= ymd_hms('2015-01-05 00:00:00', tz = 'Europe/Athens'))
 tsz2
 
 ## count the frequency of weekly observation.
@@ -372,7 +374,7 @@ From above tables, we can know the daylight saving detection and `datetime` auto
 
 ```{r, warning=FALSE}
 ## Execute below codes and save it to save the time.
-
+## read tick-data and convert to 1 min dataset.
 # dc <- llply(fls[[7]], function(x) {
 #     y <- readRDS(x) %>% convertOHLC(combine = TRUE, mean = TRUE, .unit = t.unit[2])
 #     y %>% dplyr::count(index)
@@ -391,16 +393,16 @@ dc %>% ldply(nrow) %>% tbl_df %>%
 
 ```
 
-```{r}
+```{r warning=FALSE}
 ## tick-data to minute 1 dataset
-tsz <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
+#tsz <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
 tsz %>% dplyr::count(diff) %>% 
   kable(caption = 'Count data point') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
 
 ## minute 1 dataset
-tsz2 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
+#tsz2 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
 tsz2 %>% dplyr::count(diff) %>% 
   kable(caption = 'Count data point') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
@@ -409,9 +411,14 @@ tsz2 %>% dplyr::count(diff) %>%
 
 Above tables show the dataset is incompleted.
 
-```{r}
+```{r warning=FALSE}
 mean(tsz$diff, na.rm=TRUE)
 mean(tsz2$diff, na.rm=TRUE)
+```
+
+```{r warning=FALSE}
+left_join(tsz[c(1, ncol(tsz))], tsz2[c(1, ncol(tsz2))])
+right_join(tsz[c(1, ncol(tsz))], tsz2[c(1, ncol(tsz2))])
 ```
 
 - [How to fill in missing data in time series?](https://stats.stackexchange.com/questions/245615/how-to-fill-in-missing-data-in-time-series) talk about the missing data.
@@ -426,7 +433,7 @@ Here I compare the mean and get to know the downloaded min1 dataset from FXCM is
 
 Due to the files preload all before simulate the statistical modelling will occupy the space. Here I directly read the files and simulate the algorithmic prediction in following sections.
 
-```{r}
+```{r warning=FALSE}
 rm(list = ls()[grep('Y2015W|tsz|tsz2|dc', ls())])
 
 ```
