@@ -18,7 +18,7 @@ output:
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'tidyr', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -235,8 +235,8 @@ tsz %>% dplyr::filter(diff <= 6000)
 ## https://www.stat.berkeley.edu/~s133/dates.html
 ## https://stackoverflow.com/questions/45070078/convert-forecast-time-produced-by-arima-into-standard-date-time
 #How to extract below index to datetime
-#Y2015W1 %>% tk_ts(end = c(1440, 10080), frequency = 1440) %>% attributes %>% .$index %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01') %>% force_tz(tz = 'Europe/Athens')
-Y2015W1_min1 %>% tk_ts(end = c(3, 10080), frequency = 1440) %>% .[,1:ncol(.)] %>% head
+#Y2015W1 %>% tk_ts(end = c(1440, 7200), frequency = 1440) %>% attributes %>% .$index %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01') %>% force_tz(tz = 'Europe/Athens')
+Y2015W1_min1 %>% tk_ts(end = c(3, 7200), frequency = 1440) %>% .[,1:ncol(.)] %>% head #1440 * 5 = 7200
 
 Y2015W1_min1 %>% head %>% zooreg(frequency = 1440)
 
@@ -337,7 +337,7 @@ Now I try to validate the daylight saving date.
 
 ## The daylight saving convertion in not tally.
 tsz2 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds') %>% dplyr::rename(index = DateTime) %>% 
-  dplyr::filter(index >= ymd_hms('2015-01-05 00:00:00', tz = 'Europe/Athens'))
+  dplyr::filter(index >= ymd_hms('2015-01-05 00:01:00', tz = 'Europe/Athens'))
 tsz2
 
 ## count the frequency of weekly observation.
@@ -350,7 +350,7 @@ tsz2 %>% dplyr::count(diff) %>%
 tsz2 %>% dplyr::filter(diff <= 6000)
 ```
 
-From above tables, we can know the daylight saving detection and `datetime` auto convertion is not tally. Here I united all intial observation started from `00:00:00`.
+From above tables, we can know the daylight saving detection and `datetime` auto convertion is not tally. Here I united all intial observation started from `00:01:00`.
 
 ## Completion of Data
 
@@ -395,8 +395,94 @@ right_join(tsz[c(1, ncol(tsz))], tsz2[c(1, ncol(tsz2))])
 
 Here I compare the mean and get to know the downloaded min1 dataset from FXCM is better than downloaded tick-dataset (converted to min1) from FXCM.
 
-### Read Data
+```{r warning=FALSE, eval=FALSE}
+# -------- eval=FALSE -----------
+## weekly 1st day
+dtm <- tsz2$index %>% date %>% .[seq(1, length(.), by = 2)]
+#dtm <- seq(ymd_hms('2015-01-01 00:00:00'), ymd_hms('2017-08-31 00:00:00'), by = 60)
 
+## create a seq of datetime to complete the  data point.
+dttm <- llply(dtm, function(x) {
+  x1 <- as.POSIXct(x) %>% 
+      with_tz(tz = 'UTC') %>% 
+      force_tz('Europe/Athens')
+  
+  x2 <- x1 + days(5)#days(4) + hours(23) + minutes(59)
+  
+  seq.POSIXt(from = x1, to = x2, by = '1 min')
+  })
+
+dttm %<>% data_frame(index = .) %>% unnest
+```
+
+Above chunk created a sequence of `datetime`.
+
+```{r warning=FALSE, eval=FALSE}
+# -------- eval=FALSE -----------
+data_m1 <- llply(fls1[[5]], function(x) {
+    y <- readRDS(x) %>% dplyr::rename(index = DateTime) %>% 
+        mutate(index = index %>% mdy_hms %>% 
+                   .POSIXct(tz = 'Europe/Athens'))
+    
+    nch <- y$index[1] %>% substr(nchar(.)+2, nchar(.)+3)
+    y %<>% mutate(
+        nch = nch, index = if_else(
+          nch == '23', index + hours(1), index)) %>% 
+        dplyr::select(-nch)
+    }) %>% bind_rows %>% tbl_df %>% arrange(index)
+#saveRDS(data_m1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds')
+```
+
+Then read the datasets as we can know from above and below chunks.
+
+```{r warning=FALSE, eval=FALSE}
+# -------- eval=FALSE -----------
+data_tm1 <- llply(fls[[7]], function(x) {
+    y <- readRDS(x) %>% convertOHLC(combine = TRUE)
+    }) %>% bind_rows %>% tbl_df %>% arrange(index)
+#saveRDS(data_tm1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
+```
+
+```{r warning=FALSE, eval=FALSE}
+data_tm1 <- left_join(dttm, data_tm1) %>% tbl_df %>% unique
+data_m1 <- left_join(dttm, data_m1) %>% tbl_df %>% unique
+
+saveRDS(data_m1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds')
+
+saveRDS(data_tm1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
+
+data_comp <- merge(data_m1, data_tm1, all = TRUE) %>% 
+  tbl_df %>% arrange(index)
+data_comp <- data_comp[!duplicated(data_comp$index),]
+data_comp <- llply(data_comp, na_locf) %>% bind_rows
+```
+
+```{r warning=FALSE, eval=FALSE}
+#> data_tm1 %>% mice::md.pattern()
+#        index AskOpen AskHigh AskLow AskClose BidOpen BidHigh BidLow BidClose       
+#1257400     1       1       1      1        1       1       1      1        1      0
+#60383       1       0       0      0        0       0       0      0        0      8
+#            0   60383   60383  60383    60383   60383   60383  60383    60383 483064
+#> data_m1 %>% mice::md.pattern()
+#        index BidOpen BidHigh BidLow BidClose AskOpen AskHigh AskLow AskClose       
+#1303354     1       1       1      1        1       1       1      1        1      0
+#14429       1       0       0      0        0       0       0      0        0      8
+#            0   14429   14429  14429    14429   14429   14429  14429    14429 115432
+
+#https://www.rdocumentation.org/packages/dendextend/versions/1.8.0/topics/na_locf
+data_comp <- join(data_tm1, data_m1) %>% tbl_df# %>% map(na_locf)
+#> data_comp %>% mice::md.pattern()
+#        index AskOpen AskHigh AskLow AskClose BidOpen BidHigh BidLow BidClose       
+#1303354     1       1       1      1        1       1       1      1        1      0
+#14429       1       0       0      0        0       0       0      0        0      8
+#            0   14429   14429  14429    14429   14429   14429  14429    14429 115432
+
+setDT(data_m1)[setDT(data_tm1), on = "index", `:=` 
+               (AskOpen = i.AskOpen, AskHigh = i.AskHigh, AskLow = i.AskLow, AskClose = i.AskClose, 
+                   BidOpen = i.BidOpen, BidHigh = i.BidHigh, BidLow = i.BidLow, BidClose = i.BidClose)]
+```
+
+### Read Data
 
 Due to the files preload all before simulate the statistical modelling will occupy the space. Here I directly read the files and simulate the algorithmic prediction in following sections.
 
