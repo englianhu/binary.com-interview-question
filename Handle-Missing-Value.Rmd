@@ -1,6 +1,6 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
-subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) 面试试题 I - 数据缺失值管理"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) 面试试题 I - 单变量数据缺失值管理"
 author: "[®γσ, Lian Hu（黄联富）](https://englianhu.github.io/) <img src='www/RYO.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:

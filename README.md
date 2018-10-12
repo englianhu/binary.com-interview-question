@@ -3,11 +3,13 @@
 
 # Job Application - Quantitative Analyst
 
-## Interview Sample Question
+## 0) Interview Sample Question
 
 The sample question for Interview a job in Binary.com. Here I try to write a web application which is automatically gather data, calculate, forecast, place orders, settlement and also P&L report from tip-to-toe. Here I also conducting few research tasks to test the efficiency of some statistical models, and also refer to a [Master Degree level quantitave assignment](https://github.com/englianhu/Quant-Strategies-HFT) as my studies. Hope that I can be shortlisted to be a member of Binary.com.
 
-### Question I
+## 1) Question I
+
+### 1.1) Answer
 
 I use daily OHLCV USDJPY data (from 2014-01-01 to 2017-01-20) and application of some models to forecast the highest and lowest price :
 
@@ -57,9 +59,9 @@ Besides, I wrote a shinyApp which display the real-time price through API. Kindl
 - <s>GO-GARCH</s>
 - <s>Copula-GARCH</s>
 
-In order to started the high-frequency-trading statistical modelling, I inspect the dataset via [binary.com面试试题 I - 数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value). 
+In order to started the high-frequency-trading statistical modelling, I inspect the dataset via [binary.com面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value) and also [binary.com面试试题 I - 单变量数据缺失值管理 II](http://rpubs.com/englianhu/428318) but the univariate modelling caused some statistical error.
 
-<span style='color:red'>**Blooper...**</span>
+### 1.2) <span style='color:red'>Blooper</span>
 
 Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) which contain the questions and answers of 3 questions. For the staking model, I simply forecast the highest and lowest price, and then : 
   
@@ -72,28 +74,30 @@ Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.c
 
 Due to the paper [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](http://rpubs.com/englianhu/binary-Q1TD) simulated the data and then only noticed I not yet updated the new function, then I wrote **GARCH模型中的`ARIMA(p,d,q)`参数最优化** to compare the accuracy. However my later paper simulated dataset doesn't save the $fit$ in order to retrieve the $\sigma^2$ and VaR values for stop-loss pips when I got the idea. Here I put it as blooper and start **binary-Q1 Multivariate GARCH Models** and later on will write another **FOREX Day Trade Simulation** which will simulate all tick-data but not only HiLo data.
 
-#### Shiny Application
+### 1.3) Shiny Application
 
 - **shinyApp** : `shiny::runGitHub('englianhu/binary.com-interview-question')` - Application which compare the accuracy of multiple `lasso`, `ridge` and `elastic net` models (blooper).
 - **Q1App** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q1')` - the application gather, calculate and forecast price. Once the user select currency and the forecast day, the system will auto calculate and plot the graph.
 - **testRealTimeTransc** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'testRealTimeTransc')` - real time trading system which auto gather, calculate the forecast price, and also place orders, as well as settlement and plot P&L everyday.
 - **Q1App2** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q1App2')` - The application contain the Banker and Punter section which applied aboved statistical modelling.
 
-### Question II
+## 2) Question II
+
+### 2.1) Answer
 
 For question 2, I simply write an app, kindly use [Q2App](https://beta.rstudioconnect.com/content/3089/). The bivariate or trivariate poisson model might useful for analyse the probability of fund-in and fund-out by investors in order to manage whole investment pool. Unfortunately there has no such dataset avaiable for fund pool management modelling.
 
-#### Shiny Application
+### 2.2) Shiny Application
 
 - **Q2** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q2')` - An application which applied queuing theory.
 
-### Question III
+## 3) Question III
 
 For question 3, due to the question doesn't states we only bet on the matches which overcame a certain edge, therefore I just simply list the scenario. Kindly refer to [Betting strategy](http://rpubs.com/englianhu/317677) for more informtion.
 
-## Reference
+## 4) Reference
 
-### Question I
+### 4.1) Question I
 
 01. [**Stock Market Forecasting Using LASSO Linear Regression Model** *by Sanjiban Sekhar Roy, Dishant Mital, Avik Basu, Ajith Abraham (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
 02. [**Using LASSO from lars (or glmnet) package in R for variable selection** *by Juancentro (2014)*](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
@@ -119,7 +123,7 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 22. [**Financial Risk Modelling and Portfolio Optimization with R (2nd Edt)** *by Bernhard Praff (2016)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Financial%20Risk%20Modelling%20and%20Portfolio%20Optimization%20with%20R%20(2nd%20Edt).pdf) <img src='www/hot.jpg' width='20'>
 23. [**Analyzing Financial Data and Implementing Financial Models using R** *by Clifford S.Ang (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/eec3bbe99c61b4e2e2f4a2b1c47e7a2fca6106c4/reference/Analyzing%20Financial%20Data%20and%20Implementing%20Financial%20Models%20using%20R.pdf) <img src='www/hot.jpg' width='20'>
 
-### Question II
+### 4.2) Question II
 
 01. [Queueing model 534 in Excel](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Queue-534.xls) <img src='www/hot.jpg' width='20'>
 02. [Queueing model macro in Excel](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/QueueMacros.xls) <img src='www/hot.jpg' width='20'>
@@ -135,12 +139,11 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 12. [Waiting-Line Models](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Waiting-Line%20Models.pdf)
 13. [Queues with Breakdowns and Customer Discouragement](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Queues%20with%20Breakdowns%20and%20Customer%20Discouragement.pdf)
 
-### Question III
+### 4.3) Question III
 
 01. [Data APIs/feeds available as packages in R](http://stats.stackexchange.com/questions/12670/data-apis-feeds-available-as-packages-in-r)
 02. [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion)
 
 ---
 
-**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
-
+<span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of [<img src='www/scb_logo.jpg' width='64'>®](http://www.scibrokes.com)個人の経営企業**</span>

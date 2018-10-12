@@ -1,4 +1,4 @@
-convertOHLC <- function(mbase, combine = FALSE, mean = FALSE, 
+convertOHLC <- function(mbase, combine = FALSE, trade = FALSE, 
                         tz = 'Europe/Athens', .unit = 'minute') {
   
   require('BBmisc')
@@ -19,8 +19,8 @@ convertOHLC <- function(mbase, combine = FALSE, mean = FALSE,
     mbase %>% 
       dplyr::select(DateTime, Ask) %>% 
       mutate(DateTime = .POSIXct(mdy_hms(DateTime), tz = tz)) %>% 
-      tk_xts(.) %>% to.period(period = .unit) %>% tk_tbl() %>% 
-      mutate(index = round_date(index, .unit2)) %>% #floor_date
+      tk_xts %>% to.period(period = .unit) %>% tk_tbl %>% 
+      mutate(index = ceiling_date(index, .unit2)) %>% #floor_date #round_date
       dplyr::rename_all(str_replace_all, '\\.', '') %>% 
       dplyr::rename_all(tolower))
   
@@ -33,8 +33,8 @@ convertOHLC <- function(mbase, combine = FALSE, mean = FALSE,
     mbase %>% 
       dplyr::select(DateTime, Bid) %>% 
       mutate(DateTime = .POSIXct(mdy_hms(DateTime), tz = tz)) %>% 
-      tk_xts(.) %>% to.period(period = .unit) %>% tk_tbl() %>% 
-      mutate(index = round_date(index, .unit2)) %>% #floor_date
+      tk_xts %>% to.period(period = .unit) %>% tk_tbl %>% 
+      mutate(index = ceiling_date(index, .unit2)) %>% #floor_date #round_date
       dplyr::rename_all(str_replace_all, '\\.', '') %>% 
       dplyr::rename_all(tolower))
   
@@ -45,21 +45,28 @@ convertOHLC <- function(mbase, combine = FALSE, mean = FALSE,
   
   if (combine == TRUE) {
     
-    if (mean == TRUE) {
-      mbaseA %<>% cbind(Type = 'Ask', .)
-      mbaseB %<>% cbind(Type = 'Bid', .)
-      tmp <- rbind(mbaseA, mbaseB) %>% tbl_df %>% 
-        dplyr::select(index, Type, open, high, low, close) %>% 
-        arrange(index)
+    if (trade == FALSE) {
+      #mbaseA %<>% cbind(Type = 'Ask', .)
+      #mbaseB %<>% cbind(Type = 'Bid', .)
+      #tmp <- rbind(mbaseA, mbaseB) %>% tbl_df %>% 
+      #  dplyr::select(index, Type, open, high, low, close) %>% 
+      #  arrange(index)
+      #
+      #tmp %<>% ddply(.(index), summarise, 
+      #               Type = Type, 
+      #               open = mean(open, na.rm=TRUE), 
+      #               high = mean(high, na.rm=TRUE), 
+      #               low = mean(low, na.rm=TRUE), 
+      #               close = mean(close, na.rm=TRUE)) %>% tbl_df
       
-      tmp %<>% ddply(.(index), summarise, 
-                     open = mean(open, na.rm=TRUE), 
-                     high = mean(high, na.rm=TRUE), 
-                     low = mean(low, na.rm=TRUE), 
-                     close = mean(close, na.rm=TRUE)) %>% tbl_df
+      mbaseA %<>% dplyr::rename(AskOpen = open, AskHigh = high, AskLow = low, AskClose = close)
+      mbaseB %<>% dplyr::rename(BidOpen = open, BidHigh = high, BidLow = low, BidClose = close)
+      tmp <- merge(mbaseA, mbaseB) %>% tbl_df
+      
     } else {
       
       tmp <- data_frame(
+        index = c(mbaseA$index, mbaseB$index) %>% unique %>% sort, 
         open = (mbaseA$open + mbaseB$open)/2, 
         high = mbaseB$high, 
         low = mbaseA$low, 

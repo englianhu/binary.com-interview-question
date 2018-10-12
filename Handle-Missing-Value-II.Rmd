@@ -1,0 +1,743 @@
+---
+title: "<img src='www/binary-logo-resize.jpg' width='240'>"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) 面试试题 I - 多变量数据缺失值管理 II"
+author: "[®γσ, Lian Hu（黄联富）](https://englianhu.github.io/) <img src='www/RYO.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>®"
+date: "`r lubridate::today('Asia/Tokyo')`"
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+    code_folding: hide
+---
+
+```{r setup}
+suppressPackageStartupMessages(require('BBmisc'))
+
+## 读取程序包
+pkg <- c('tidyverse', 'timetk', 'lubridate', 'plyr', 'dplyr', 'magrittr', 'purrr', 'stringr', 'reshape', 'formattable', 'microbenchmark', 'knitr', 'kableExtra', 'VIM', 'mice', 'miceAdds', 'mi', 'mitools', 'Amelia', 'missForest', 'Hmisc', 'DMwR', 'imputeTS', 'tidyimpute', 'mtsdi', 'xts', 'forecast', 'marima')
+
+suppressAll(lib(pkg))
+algo <- c('interpolation', 'locf', 'mean', 'random', 'kalman', 'ma')
+rm(pkg)
+```
+
+# 简介
+
+由于在科研[binary.com Interview Question I - Interday High Frequency Trading Models Comparison](https://rpubs.com/englianhu/binary-Q1Inter-HFT)测试高频率量化交易时，从[fxcm/MarketData](https://github.com/fxcm/MarketData)下载的数据并不完整^[欲知更多详情，请查阅[binary.com Interview Question I - Interday High Frequency Trading Models Comparison](https://rpubs.com/englianhu/binary-Q1Inter-HFT)。]，[binary.com 面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value)尝试弥补缺失值不果，单变量无法辨认开市价、最高价、最低价和闭市价之间的关系。
+
+- [How to use auto.arima to impute missing values](https://stats.stackexchange.com/questions/104565/how-to-use-auto-arima-to-impute-missing-values)使用`auto.arima()`来弥补缺失值。
+- [What should be the allowed percentage of Missing Values?](https://discuss.analyticsvidhya.com/t/what-should-be-the-allowed-percentage-of-missing-values/2456)讨论着一个数据最多可以允许20%~30%的缺失值，过多的缺失值的话，该数据基本上就无法使用了。一些统计学家有本事将50%缺失值的数据复原，不过是基于许多附属变量和数据才能弥补回数据。
+- [Principled Missing Data Methods for Researchers](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC3701793/)讲述许多弥补数据缺失值的方法与数学模式。
+- [Imputation methods for time series data](https://stats.stackexchange.com/questions/261271/imputation-methods-for-time-series-data)
+- [Imputing Missing Observation in Multivariate Time Series](https://stats.stackexchange.com/questions/103968/imputing-missing-observation-in-multivariate-time-series)
+- [`imputeTS`: Time Series Missing Value Imputation in R](https://journal.r-project.org/archive/2017/RJ-2017-009/index.html)
+- [How to Handle Missing Data](https://towardsdatascience.com/how-to-handle-missing-data-8646b18db0d4)
+
+# 数据
+
+## 读取数据
+
+### 1分钟数据
+
+和之前的单变量一样，首先僕随机导入每分钟为1个时间单位的数据。
+
+```{r warning=FALSE}
+Y2015W1_m1 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/Y2015W1_m1.rds')
+
+Y2015W1_m1 %<>% mutate(DateTime = mdy_hms(DateTime)) %>% 
+  dplyr::rename(index = DateTime)
+dim(Y2015W1_m1)
+
+Y2015W1_m1
+```
+
+### Tick数据转为1分钟数据
+
+接着，导入Tick数据^[欲知更多详情，请参阅[一、什么是Tick Data](https://www.fmz.com/bbs-topic/457)。]，并且转为每分钟为1时间单位。
+
+```{r, warning=FALSE}
+Y2015W1 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/Y2015W1.rds')
+
+Y2015W1 %<>% mutate(DateTime = mdy_hms(DateTime))
+dim(Y2015W1)
+
+Y2015W1
+
+Y2015W1_tm1A <- Y2015W1 %>% 
+  dplyr::select(DateTime, Ask) %>% tk_xts %>% 
+  to.period(period = 'minute') %>% 
+  tk_tbl %>% 
+  mutate(index = round_date(index, 'minutes')) %>% 
+  dplyr::rename_all(str_replace_all, '^\\.{2}', 'Ask')
+
+Y2015W1_tm1B <- Y2015W1 %>% 
+  dplyr::select(DateTime, Bid) %>% tk_xts %>% 
+  to.period(period = 'minute') %>% 
+  tk_tbl %>% 
+  mutate(index = round_date(index, 'minutes')) %>% 
+  dplyr::rename_all(str_replace_all, '^\\.{2}', 'Bid')
+
+Y2015W1_tm1 <- merge(Y2015W1_tm1B, Y2015W1_tm1A) %>% tbl_df
+rm(Y2015W1, Y2015W1_tm1A, Y2015W1_tm1B)
+Y2015W1_tm1
+```
+
+## 设置缺失值
+
+### 1分钟数据
+
+现在尝试随机设置缺失值。
+
+```{r warning=FALSE}
+Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.01)
+Y2015W1_m1_NA
+
+Y2015W1_m1_NA %>% md.pattern
+Y2015W1_m1_NA %>% md.pairs
+```
+
+### Tick数据转为1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.01)
+Y2015W1_tm1_NA
+
+Y2015W1_tm1_NA %>% md.pattern
+Y2015W1_tm1_NA %>% md.pairs
+```
+
+# 统计模式
+
+## 弥补缺失值
+
+- [Imputing missing data with R; MICE package](https://www.r-bloggers.com/imputing-missing-data-with-r-mice-package/)
+- [mice - Multivariate Imputation by Chained Equations in R](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/mice%20Multivariate%20Imputation%20by%20Chained%20Equations%20in%20R.pdf)
+- [mice : Multivariate Imputation by Chained Equations](https://github.com/stefvanbuuren/mice)
+- [HOW DO I PERFORM MULTIPLE IMPUTATION USING PREDICTIVE MEAN MATCHING IN R? | R FAQ](https://stats.idre.ucla.edu/r/faq/how-do-i-perform-multiple-imputation-using-predictive-mean-matching-in-r/)
+- [Imputing missing observation in multivariate time series](https://stats.stackexchange.com/questions/103968/imputing-missing-observation-in-multivariate-time-series)
+- [arima method in mtsdi](https://stackoverflow.com/questions/29472532/arima-method-in-mtsdi)
+- [Dealing with Missing Data using R](https://medium.com/coinmonks/dealing-with-missing-data-using-r-3ae428da2d17)
+- [How to use auto.arima to impute missing values](https://stats.stackexchange.com/questions/104565/how-to-use-auto-arima-to-impute-missing-values)
+- [How to Fill in Missing Data in Time Series?](https://stats.stackexchange.com/questions/245615/how-to-fill-in-missing-data-in-time-series)
+- [Forecasting Multivariate Data with `auto.arima`](https://stackoverflow.com/questions/15495465/forecasting-multivariate-data-with-auto-arima)
+- [Multivariate Time Series Model](https://stackoverflow.com/questions/44376808/multivariate-time-series-model)
+- [`auto.arima` using `xreg` and Forecasting Several ts Together](https://stackoverflow.com/questions/25036986/auto-arima-using-xreg-and-forecasting-several-ts-together)
+- [`auto.arima` Forecast with Multivariate `xreg` - unexpected Results](https://stackoverflow.com/questions/15054800/auto-arima-forecast-with-multivariate-xreg-unexpected-results)
+- [`auto.arima` Warns `NaNs` Produced on Std Error](https://stats.stackexchange.com/questions/26999/auto-arima-warns-nans-produced-on-std-error)
+- [Arima time series forecast (auto.arima) with multiple exogeneous variables in R](https://stats.stackexchange.com/questions/122803/arima-time-series-forecast-auto-arima-with-multiple-exogeneous-variables-in-r)
+- [Multivariate ARIMA with regression](https://stats.stackexchange.com/questions/45993/multivariate-arima-with-regression)
+- [I am trying to do a multivariate time series analysis on r. how to use auto.arima with Xreg?](https://www.researchgate.net/post/I_am_trying_to_do_a_multivariate_time_series_analysis_on_r_how_to_use_autoarima_with_Xreg)
+
+```{r warning=FALSE}
+tttt <- Y2015W1_m1_NA[-1] %>% amelia
+
+llply(tttt$imputations, function(x) {
+    x %>% mutate(
+  VA = if_else(AskOpen <= AskHigh & AskOpen >= AskLow & 
+               AskClose <= AskHigh & AskClose >= AskLow & 
+               AskHigh >= AskLow, 1, 0), 
+  VB = if_else(BidOpen <= BidHigh & BidOpen >= BidLow & 
+               BidClose <= BidHigh & BidClose >= BidLow & 
+               BidHigh >= BidLow, 1, 0)) %>% 
+  dplyr::filter(VA == 0|VB == 0)
+})
+```
+
+经过测试以上数据，结果发现`amelia`也是单变量数据弥补。
+
+## 1% 缺失值
+
+### 1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.01)
+Y2015W1_m1_1 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_m1_1) <- algo
+Y2015W1_m1_1 %<>% ldply %>% tbl_df
+
+Y2015W1_m1_1 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_m1_1 %>% 
+  kable(caption = 'MSE') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+### Tick数据转为1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.01)
+Y2015W1_tm1_1 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_tm1_1) <- algo
+Y2015W1_tm1_1 %<>% ldply %>% tbl_df
+
+Y2015W1_tm1_1 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_tm1_1 %>% 
+  kable(caption = 'MSE') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+## 10% 缺失值
+
+### 1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.1)
+Y2015W1_m1_10 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_m1_10) <- algo
+Y2015W1_m1_10 %<>% ldply %>% tbl_df
+
+Y2015W1_m1_10 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_m1_10 %>% 
+  kable(caption = 'MSE 10% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+### Tick数据转为1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.1)
+Y2015W1_tm1_10 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_tm1_10) <- algo
+Y2015W1_tm1_10 %<>% ldply %>% tbl_df
+
+Y2015W1_tm1_10 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_tm1_10 %>% 
+  kable(caption = 'MSE 10% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+## 20% 缺失值
+
+### 1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.2)
+Y2015W1_m1_20 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_m1_20) <- algo
+Y2015W1_m1_20 %<>% ldply %>% tbl_df
+
+Y2015W1_m1_20 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_m1_20 %>% 
+  kable(caption = 'MSE 20% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+### Tick数据转为1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.2)
+Y2015W1_tm1_20 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_tm1_20) <- algo
+Y2015W1_tm1_20 %<>% ldply %>% tbl_df
+
+Y2015W1_tm1_20 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_tm1_20 %>% 
+  kable(caption = 'MSE 20% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+## 30% 缺失值
+
+### 1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.3)
+Y2015W1_m1_30 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_m1_30) <- algo
+Y2015W1_m1_30 %<>% ldply %>% tbl_df
+
+Y2015W1_m1_30 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_m1_30 %>% 
+  kable(caption = 'MSE 30% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+### Tick数据转为1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.3)
+Y2015W1_tm1_30 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_tm1_30) <- algo
+Y2015W1_tm1_30 %<>% ldply %>% tbl_df
+
+Y2015W1_tm1_30 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_tm1_30 %>% 
+  kable(caption = 'MSE 30% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+## 50% 缺失值
+
+### 1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.5)
+Y2015W1_m1_50 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_m1_50) <- algo
+Y2015W1_m1_50 %<>% ldply %>% tbl_df
+
+Y2015W1_m1_50 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_m1_50 %>% 
+  kable(caption = 'MSE 50% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+### Tick数据转为1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.5)
+Y2015W1_tm1_50 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_tm1_50) <- algo
+Y2015W1_tm1_50 %<>% ldply %>% tbl_df
+
+Y2015W1_tm1_50 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_tm1_50 %>% 
+  kable(caption = 'MSE 50% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+## 65% 缺失值
+
+### 1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.65)
+Y2015W1_m1_65 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_m1_65) <- algo
+Y2015W1_m1_65 %<>% ldply %>% tbl_df
+
+Y2015W1_m1_65 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_m1_65 %>% 
+  kable(caption = 'MSE 65% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+### Tick数据转为1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.65)
+Y2015W1_tm1_65 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_tm1_65) <- algo
+Y2015W1_tm1_65 %<>% ldply %>% tbl_df
+
+Y2015W1_tm1_65 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_tm1_65 %>% 
+  kable(caption = 'MSE 65% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+## 70% 缺失值
+
+### 1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.7)
+Y2015W1_m1_70 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_m1_70) <- algo
+Y2015W1_m1_70 %<>% ldply %>% tbl_df
+
+Y2015W1_m1_70 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_m1_70 %>% 
+  kable(caption = 'MSE 70% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+### Tick数据转为1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.7)
+Y2015W1_tm1_70 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_tm1_70) <- algo
+Y2015W1_tm1_70 %<>% ldply %>% tbl_df
+
+Y2015W1_tm1_70 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_tm1_70 %>% 
+  kable(caption = 'MSE 70% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+## 80% 缺失值
+
+### 1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.8)
+Y2015W1_m1_80 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_m1_80) <- algo
+Y2015W1_m1_80 %<>% ldply %>% tbl_df
+
+Y2015W1_m1_80 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_m1_80 %>% 
+  kable(caption = 'MSE 80% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+### Tick数据转为1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.8)
+Y2015W1_tm1_80 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_tm1_80) <- algo
+Y2015W1_tm1_80 %<>% ldply %>% tbl_df
+
+Y2015W1_tm1_80 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_tm1_80 %>% 
+  kable(caption = 'MSE 80% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+## 85% 缺失值
+
+### 1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.85)
+Y2015W1_m1_85 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_m1_85) <- algo
+Y2015W1_m1_85 %<>% ldply %>% tbl_df
+
+Y2015W1_m1_85 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_m1_85 %>% 
+  kable(caption = 'MSE 85% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+### Tick数据转为1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.85)
+Y2015W1_tm1_85 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_tm1_85) <- algo
+Y2015W1_tm1_85 %<>% ldply %>% tbl_df
+
+Y2015W1_tm1_85 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_tm1_85 %>% 
+  kable(caption = 'MSE 85% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+## 90% 缺失值
+
+### 1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.9)
+Y2015W1_m1_90 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_m1_90) <- algo
+Y2015W1_m1_90 %<>% ldply %>% tbl_df
+
+Y2015W1_m1_90 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_m1_90 %>% 
+  kable(caption = 'MSE 90% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+### Tick数据转为1分钟数据
+
+```{r warning=FALSE}
+Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.9)
+Y2015W1_tm1_90 <- llply(algo, function(x) {
+  Y2015W1_m1_NA %>% 
+    dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
+    map(na.seadec, algorithm = x) %>% as.tibble
+  })
+names(Y2015W1_tm1_90) <- algo
+Y2015W1_tm1_90 %<>% ldply %>% tbl_df
+
+Y2015W1_tm1_90 %<>% 
+  ddply(.(.id), summarise, 
+        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
+        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2)) %>% tbl_df
+
+Y2015W1_tm1_90 %>% 
+  kable(caption = 'MSE 90% 缺失值') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+# 结论
+
+从以上数据证明，弥补来的数据确实有误，如之前单变量的误差（开市或闭市价高于最高价、低于最低价）。僕们可以通过`auto.arima`、`ETS`、`GARCH`或者其它方式回测数据和弥补缺失值，不过那就比较费时了。根据以上的`imputeTS::na.seadec()`弥补来的数据[binary.com 面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value)，`algorithm ='kalman'`或`algorithm ='interpolation'`俩的误差率最低。
+
+最有效的方法就是使用多变量`DCC`模式弥补缺失值，不过会非常耗时。
+
+# 附录
+
+## 文件与系统资讯
+
+以下乃此文献资讯：
+
+- 文件建立日期：2018-10-10
+- 文件最新更新日期：`r today('Asia/Tokyo')`
+- `r R.version.string`
+- R语言版本：`r getRversion()`
+- [**rmarkdown** 程序包](https://github.com/rstudio/rmarkdown)版本：`r packageVersion('rmarkdown')`
+- 文件版本：1.0.1
+- 作者简历：[®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
+- GitHub：[源代码](https://github.com/englianhu/binary.com-interview-question)
+- 其它系统资讯：
+
+```{r info, echo=FALSE, warning=FALSE, results='asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+suppressMessages(require('knitr', quietly = TRUE))
+suppressMessages(require('kableExtra', quietly = TRUE))
+
+sys1 <- devtools::session_info()$platform %>% 
+  unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+
+#sys1 %<>% rbind(., data.frame(
+#  Category = 'Current time', 
+#  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST'))) %>% 
+#  dplyr::filter(Category != 'os')
+
+sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
+names(sys2)[2] <- c('Sys.info')
+rownames(sys2) <- NULL
+
+sys2 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
+
+cbind(sys1, sys2) %>% 
+  kable(caption = 'Additional session information:') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+rm(sys1, sys2)
+```
+
+## 参考文献
+
+1. [R语言缺失值处理](https://zhuanlan.zhihu.com/p/27312695)
+2. [R语言中缺失值NA的处理](https://blog.csdn.net/Ssxysxy123/article/details/51774472)
+3. [R语言处理缺失数据的高级方法](https://blog.csdn.net/lilanfeng1991/article/details/36467891)
+4. [HTML Color Names](https://www.w3schools.com/tags/ref_colornames.asp)
+5. [Missing Values, Data Science and R](https://rviews.rstudio.com/2016/11/30/missing-values-data-science-and-r/)
+6. [Imputing Missing Data with R; MICE package](https://datascienceplus.com/imputing-missing-data-with-r-mice-package/)
+7. [Markov Chain process - Missing values](https://stats.stackexchange.com/questions/47965/markov-chain-process-missing-values)
+8. [Randomly insert NAs into dataframe proportionaly](https://stackoverflow.com/questions/27454265/randomly-insert-nas-into-dataframe-proportionaly)
+9. [Insert random NAs in a vector in R](https://paleocave.sciencesortof.com/2014/07/insert-random-nas-in-a-vector-in-r/)
+10. [[R] Fill in missing times in a timeseries with NA](https://stat.ethz.ch/pipermail/r-help/2010-October/257749.html)
+11. [How to Replace NA's in a Date Column](https://stackoverflow.com/questions/39899997/how-to-replace-nas-in-a-date-column)
+12. [How to Fill NAs with `na.locf` by factors in data frame split by country](https://stackoverflow.com/questions/13616965/how-to-fill-nas-with-locf-by-factors-in-data-frame-split-by-country)
+13. [数据预处理之缺失值插补 — 基于R语言](https://blog.csdn.net/qq_31584157/article/details/52562830)
+14. [imputeTS - Time Series Missing Value Imputation in R](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/imputeTS%20-%20Time%20Series%20Missing%20Value%20Imputation%20in%20R)
+
+---
+
+<span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of [<img src='www/scb_logo.jpg' width='64'>®](http://www.scibrokes.com)個人の経営企業**</span>
