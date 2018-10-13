@@ -18,7 +18,7 @@ output:
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'quantmod', 'tidyquant', 'tidyr', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'feather', 'quantmod', 'tidyquant', 'tidyr', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -397,98 +397,141 @@ Here I compare the mean and get to know the downloaded min1 dataset from FXCM is
 
 ```{r warning=FALSE, eval=FALSE}
 # -------- eval=FALSE -----------
-## weekly 1st day
-dtm <- tsz2$index %>% date %>% .[seq(1, length(.), by = 2)]
-#dtm <- seq(ymd_hms('2015-01-01 00:00:00'), ymd_hms('2017-08-31 00:00:00'), by = 60)
-
-## create a seq of datetime to complete the  data point.
-dttm <- llply(dtm, function(x) {
-  x1 <- as.POSIXct(x) %>% 
-      with_tz(tz = 'UTC') %>% 
-      force_tz('Europe/Athens')
-  
-  x2 <- x1 + days(5)#days(4) + hours(23) + minutes(59)
-  
-  seq.POSIXt(from = x1, to = x2, by = '1 min')
-  })
-
-dttm %<>% data_frame(index = .) %>% unnest
-```
-
-Above chunk created a sequence of `datetime`.
-
-```{r warning=FALSE, eval=FALSE}
-# -------- eval=FALSE -----------
+## min-1 dataset
 data_m1 <- llply(fls1[[5]], function(x) {
     y <- readRDS(x) %>% dplyr::rename(index = DateTime) %>% 
         mutate(index = index %>% mdy_hms %>% 
                    .POSIXct(tz = 'Europe/Athens'))
     
+    yw <- x %>% str_extract_all('Y[0-9]{4}W[0-9]{1,2}') %>% 
+      str_split_fixed('[A-Z]{1}', 3) %>% .[,-1]
+    
     nch <- y$index[1] %>% substr(nchar(.)+2, nchar(.)+3)
     y %<>% mutate(
-        nch = nch, index = if_else(
-          nch == '23', index + hours(1), index)) %>% 
-        dplyr::select(-nch)
+      year = as.numeric(yw[1]), week = as.numeric(yw[2]), 
+      nch = nch, index = if_else(
+        nch == '23', index + hours(1), index)) %>% 
+      dplyr::select(-nch)
     }) %>% bind_rows %>% tbl_df %>% arrange(index)
-#saveRDS(data_m1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds')
-```
 
-Then read the datasets as we can know from above and below chunks.
+## tick-data to min-1 dataset
+data_tm1 <- llply(fls[[7]], function(x) {
+    y <- readRDS(x) %>% convertOHLC(combine = TRUE)
+    
+    yw <- x %>% str_extract_all('Y[0-9]{4}W[0-9]{1,2}') %>% 
+      str_split_fixed('[A-Z]{1}', 3) %>% .[,-1]
+    y %<>% mutate(
+      year = as.numeric(yw[1]), week = as.numeric(yw[2]), .)
+    }) %>% bind_rows %>% tbl_df %>% arrange(index)
+```
 
 ```{r warning=FALSE, eval=FALSE}
 # -------- eval=FALSE -----------
-data_tm1 <- llply(fls[[7]], function(x) {
-    y <- readRDS(x) %>% convertOHLC(combine = TRUE)
-    }) %>% bind_rows %>% tbl_df %>% arrange(index)
-#saveRDS(data_tm1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
+#dtm <- seq(ymd_hms('2015-01-01 00:00:00'), ymd_hms('2017-08-31 00:00:00'), by = 'minutes')
+#dtm <- seq(from = ymd('2015-01-05'), to = ymd('2018-07-10'), by = 'weeks')
+dtm <- data_tm1 %>% 
+  dplyr::select(index, year ,week) %>% 
+  mutate(index = date(index)) %>% 
+  ddply(.(year, week), head, 1)
+
+## create a seq of datetime to complete the  data point.
+dttm <- llply(1:nrow(dtm), function(i) {
+  x1 <- as.POSIXct(dtm$index[i]) %>% 
+      with_tz(tz = 'UTC') %>% 
+      force_tz('Europe/Athens')
+  
+  x2 <- x1 + days(4) + hours(23) + minutes(59)
+  #x2 <- x1 + days(5)
+  
+  res <- seq.POSIXt(from = x1, to = x2, by = '1 min')
+  data_frame(index = res[-1]) %>% cbind(., dtm[i,-1])
+  }) %>% bind_rows %>% tbl_df
 ```
 
+Above chunk created a sequence of `datetime`.
+
 ```{r warning=FALSE, eval=FALSE}
+## merge dataset
 data_tm1 <- left_join(dttm, data_tm1) %>% tbl_df %>% unique
 data_m1 <- left_join(dttm, data_m1) %>% tbl_df %>% unique
 
+## https://gist.github.com/christophsax/3db87a48596768b232a26dfce87c3299
+## http://steve-chen.tw/?p=555
 saveRDS(data_m1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds')
-
 saveRDS(data_tm1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
-
-data_comp <- merge(data_m1, data_tm1, all = TRUE) %>% 
-  tbl_df %>% arrange(index)
-data_comp <- data_comp[!duplicated(data_comp$index),]
-data_comp <- llply(data_comp, na_locf) %>% bind_rows
 ```
 
 ```{r warning=FALSE, eval=FALSE}
-#> data_tm1 %>% mice::md.pattern()
-#        index AskOpen AskHigh AskLow AskClose BidOpen BidHigh BidLow BidClose       
-#1257400     1       1       1      1        1       1       1      1        1      0
-#60383       1       0       0      0        0       0       0      0        0      8
-#            0   60383   60383  60383    60383   60383   60383  60383    60383 483064
-#> data_m1 %>% mice::md.pattern()
-#        index BidOpen BidHigh BidLow BidClose AskOpen AskHigh AskLow AskClose       
-#1303354     1       1       1      1        1       1       1      1        1      0
-#14429       1       0       0      0        0       0       0      0        0      8
-#            0   14429   14429  14429    14429   14429   14429  14429    14429 115432
+data_m1 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds')
+data_tm1 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
 
-#https://www.rdocumentation.org/packages/dendextend/versions/1.8.0/topics/na_locf
-data_comp <- join(data_tm1, data_m1) %>% tbl_df# %>% map(na_locf)
-#> data_comp %>% mice::md.pattern()
-#        index AskOpen AskHigh AskLow AskClose BidOpen BidHigh BidLow BidClose       
-#1303354     1       1       1      1        1       1       1      1        1      0
-#14429       1       0       0      0        0       0       0      0        0      8
-#            0   14429   14429  14429    14429   14429   14429  14429    14429 115432
+data_m1_fill <- merge(data_m1, data_tm1, all = TRUE) %>% 
+  tbl_df %>% arrange(index)
+data_m1_fill <- data_m1_fill[!duplicated(data_m1_fill$index),]
+rm(data_m1, data_tm1)
 
-setDT(data_m1)[setDT(data_tm1), on = "index", `:=` 
-               (AskOpen = i.AskOpen, AskHigh = i.AskHigh, AskLow = i.AskLow, AskClose = i.AskClose, 
-                   BidOpen = i.BidOpen, BidHigh = i.BidHigh, BidLow = i.BidLow, BidClose = i.BidClose)]
+## https://stackoverflow.com/questions/43212308/na-locf-using-group-by-from-dplyr
+## https://stackoverflow.com/questions/23340150/replace-missing-values-na-with-most-recent-non-na-by-group
+## https://stackoverflow.com/questions/40040834/replace-na-with-previous-or-next-value-by-group-using-dplyr/40041172
+## https://stackoverflow.com/questions/47242643/na-at-the-end-of-column-using-na-locf-function
+## https://stackoverflow.com/questions/49578085/na-locf-function-is-changing-data-frame-values-from-int-to-char-in-r
+## https://stackoverflow.com/questions/13616965/how-to-fill-nas-with-locf-by-factors-in-data-frame-split-by-country
+## https://stackoverflow.com/questions/23340150/replace-missing-values-na-with-most-recent-non-na-by-group
+
+# data_m1_fill %>% 
+#     group_by(index, week) %>% 
+#     mutate_all(funs(na.locf(., na.rm = FALSE)))
+
+# data_m1_fill %>% split(data_m1_fill$index) %>% 
+#   llply(function(x) {
+#     na.locf(na.locf(x), fromLast = TRUE)
+#   }) %>% do.call(rbind, .)
+
+# data_m1_fill %<>% ddply(.(index, week), na_locf) %>% tbl_df
+#> data_m1_fill %>% anyNA
+#[1] FALSE
+
+## Time consuming and didn't fill up the NA columns.
+#data_m1_fill %<>% 
+#  group_by(index, week) %>% 
+#  fill(BidOpen, BidHigh, BidLow, BidClose, 
+#       AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
+#  fill(BidOpen, BidHigh, BidLow, BidClose, 
+#       AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
+
+data_m1_fill %<>% 
+  ddply(.(year, week), function(x) {
+       x %>% fill(BidOpen, BidHigh, BidLow, BidClose, 
+                  AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
+             fill(BidOpen, BidHigh, BidLow, BidClose, 
+                  AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
+    }) %>% tbl_df
+#> data_m1_fill %>% anyNA
+#[1] FALSE
+
+saveRDS(data_m1_fill, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1_fill.rds')
 ```
+
+I don't use the `data.table` and `feather` because of the storage concerns. Kindly refer to [[问答] 对大数据如何用R高效处理](http://bbs.pinggu.org/forum.php?mod=redirect&goto=findpost&ptid=6685427&pid=53936462&fromuid=5794471)和[[问答] 对大数据如何用R高效处理](http://bbs.pinggu.org/forum.php?mod=redirect&goto=findpost&ptid=6685427&pid=53936861&fromuid=5794471).
+
+- [christophsax/feather-fwrite.R](https://gist.github.com/christophsax/3db87a48596768b232a26dfce87c3299)
+- [比較 save/load, saveRDS/readRDS, feather, 與 data.table 套件的讀寫速度](http://steve-chen.tw/?p=555)
+
+Finally, I filled-up the NA section by `data_tm1` and eventually filled up by `na_locf` function.
 
 ### Read Data
 
 Due to the files preload all before simulate the statistical modelling will occupy the space. Here I directly read the files and simulate the algorithmic prediction in following sections.
 
 ```{r warning=FALSE}
-rm(list = ls()[grep('Y2015W|tsz|tsz2|dc', ls())])
+rm(list = ls()[grep('i|j|tz|nch|yw|dtm|dttm|form|data|Y2015W|tsz|tsz2|dc', ls())])
 
+data_m1_fill <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1_fill.rds')
+
+data_m1_fill %>% ddply(.(year, week), head, 1) %>% 
+  kable(caption = 'Weekly Initial Data Point') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 ```
 
 # Modelling
@@ -600,21 +643,23 @@ Now we start modelling harmonics model (which is using `xreg`).
 #### Model 1
 
 ```{r, eval=FALSE}
+# --------- eval=FALSE ---------
 > suppressWarnings(Y2015W1 %>% 
-+     tk_xts %>% 
-+     to.daily %>% 
-+     Cl %>% opt_arma(arma=TRUE))
+     tk_xts %>% 
+     to.daily %>% 
+     Cl %>% opt_arma(arma=TRUE))
 Using column `index` for date_var.
 p d q P D Q s 
 0 0 0 0 0 0 1
 ```
 
 ```{r, warning=FALSE, eval=FALSE}
+# --------- eval=FALSE ---------
 #'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% tbl_df")))
 
 sarima <- list()
 for(i in (1:length(fs))) {
-    smp <- readRDS(fls[[7]][i])
+    smp <- data_m1_fill
     timeID <- c(smp$index, xts::last(smp$index) + minutes(1))
     
     if (dt %in% timeID) {
@@ -751,9 +796,15 @@ sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
 names(sys2)[2] <- c('Sys.info')
 rownames(sys2) <- NULL
 
-sys2 %<>% rbind(., data.frame(
+if (nrow(sys1) == 7 & nrow(sys2) == 8) {
+  sys1 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
+} else {
+  sys2 %<>% rbind(., data.frame(
   Category = 'Current time', 
   Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
+}
 
 cbind(sys1, sys2) %>% 
   kable(caption = 'Additional session information:') %>% 

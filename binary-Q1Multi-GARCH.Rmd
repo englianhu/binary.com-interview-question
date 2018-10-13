@@ -2286,8 +2286,8 @@ for (dt in timeID) {
 
 ### Abtract
 
-- [多元Copula-GARCH模型及其在金融风险分析上的应用](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/)
-- [The Copula-GARCH Model of Conditional Dependencies - An International Stock Market](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/)
+- [多元Copula-GARCH模型及其在金融风险分析上的应用](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/%0A%E5%A4%9A%E5%85%83Copula-GARCH%E6%A8%A1%E5%9E%8B%E5%8F%8A%E5%85%B6%E5%9C%A8%E9%87%91%E8%9E%8D%E9%A3%8E%E9%99%A9%E5%88%86%E6%9E%90%E4%B8%8A%E7%9A%84%E5%BA%94%E7%94%A8.pdf)
+- [The Copula-GARCH Model of Conditional Dependencies - An International Stock Market](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/The%20Copula-GARCH%20Model%20of%20Conditional%20Dependencies%20-%20An%20International%20Stock%20Market.pdf)
 - [The Copula GARCH Model](https://cran.r-project.org/web/packages/copula/vignettes/copula_GARCH.html)
 - [copula with rmgarch](http://r.789695.n4.nabble.com/copula-with-rmgarch-td4616138.html)
 - [dynamic copula using rmgarch package (ignore previous question, don't know how to delete it)](http://r.789695.n4.nabble.com/dynamic-copula-using-rmgarch-package-ignore-previous-question-don-t-know-how-to-delete-it-td4722071.html)
@@ -3716,9 +3716,15 @@ sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
 names(sys2)[2] <- c('Sys.info')
 rownames(sys2) <- NULL
 
-sys2 %<>% rbind(., data.frame(
+if (nrow(sys1) == 7 & nrow(sys2) == 8) {
+  sys1 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
+} else {
+  sys2 %<>% rbind(., data.frame(
   Category = 'Current time', 
   Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
+}
 
 cbind(sys1, sys2) %>% 
   kable(caption = 'Additional session information:') %>% 
