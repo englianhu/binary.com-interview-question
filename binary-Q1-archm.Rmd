@@ -22,7 +22,7 @@ output:
 suppressPackageStartupMessages(require('BBmisc'))
 
 ## 读取程序包
-pkg <- c('lubridate', 'plyr', 'dplyr', 'magrittr', 'stringr', 'rugarch', 'forecast', 'quantmod', 'microbenchmark', 'knitr', 'kableExtra', 'formattable')
+pkg <- c('lubridate', 'plyr', 'dplyr', 'magrittr', 'stringr', 'rugarch', 'forecast', 'quantmod', 'memoise', 'microbenchmark', 'knitr', 'kableExtra', 'formattable')
 suppressAll(lib(pkg))
 rm(pkg)
 ```
@@ -72,7 +72,7 @@ opt_arma <- function(mbase){
 再来就设置Garch模型中的`arfima`参数，将原本固定的`d`值浮动化。
 
 ```{r garch-model2, warning = FALSE}
-calc_fx <- function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
+calc_fx <- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
   
   source('function/filterFX.R')
   source('function/opt_arma.R') #rename the function best.ARMA()
@@ -106,7 +106,7 @@ calc_fx <- function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
   tmp = list(latestPrice = latestPrice, forecastPrice = res, 
              AIC = infocriteria(fit))
   return(tmp)
-  }
+  })
 ```
 
 # 模拟数据
