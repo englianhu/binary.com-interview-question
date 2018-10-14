@@ -35,7 +35,7 @@ Well, dataset for below papers daily OHLCV of 7 currencies from 2013-01-01 to 20
 
 1) Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models <s>from minutes to</s> daily. You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)).
 
-2) Here I also find the optimal arma order for GARCH models as you can refer to [GARCH模型中的`ARIMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH).
+2) Here I also find the optimal arma order for GARCH models as you can refer to [GARCH模型中的`ARIMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH). [binary.com 面试试题 I - GARCH模型中的`ARCH in Mean`](http://rpubs.com/englianhu/binary-Q1-archm) compares the ARCHM with Non-ARCHM models.
 
 3) You can also refer to [binary.com Interview Question I - Comparison of Univariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Uni-GARCH) which compares the prediction accuracy of 14 GARCH models (not completed) and 9 models (mostly completed from 2013-01-01 to 2017-08-30).
 
@@ -59,7 +59,7 @@ Besides, I wrote a shinyApp which display the real-time price through API. Kindl
 - <s>GO-GARCH</s>
 - <s>Copula-GARCH</s>
 
-In order to started the high-frequency-trading statistical modelling, I inspect the dataset via [binary.com面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value) and also [binary.com面试试题 I - 单变量数据缺失值管理 II](http://rpubs.com/englianhu/428318) but the univariate modelling caused some statistical error.
+In order to started the high-frequency-trading statistical modelling, I inspect the dataset via [binary.com面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value) and also [binary.com面试试题 I - 单变量数据缺失值管理 II](http://rpubs.com/englianhu/428318) but the univariate modelling caused some statistical error. The [binary.com Interview Question I - Interday High Frequency Trading Models Comparison](http://rpubs.com/englianhu/binary-Q1Inter-HFT) compares SARIMA, mcsGARCH, <s>midasr, midas-garch, Levy process</s> models.
 
 ### 1.2) <span style='color:red'>Blooper</span>
 

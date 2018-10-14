@@ -166,7 +166,7 @@ for (dt in timeID) {
 查询模拟测试进度的函数`task_progress()`如下。
 
 ```{r check-progress}
-task_progress <- function(scs = 60, .pattern = '^pred1', .loops = TRUE) {
+task_progress <- function(scs = 60, .pattern = '^pred3', .loops = TRUE) {
   ## ------------- 定时查询进度 ----------------------
   ## 每分钟自动查询与更新以上模拟calC()预测汇价进度（储存文件量）。
   
@@ -234,7 +234,7 @@ dts <- sapply(mbase, function(x) {
 sapply(mbase, function(x) as.character(index(x)) %>% as.Date %>% sort)
 
 fls <- sapply(names(cr_code), function(x) {
-   list.files(paste0('./data/fx/', x), pattern = '^pred1') %>% 
+   list.files(paste0('./data/fx/', x), pattern = '^pred3') %>% 
      str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
 	 unlist %>% as.Date %>% sort
    })
@@ -249,9 +249,6 @@ timeID %<>% unique
 模拟完毕后，再来就查看数据结果。
 
 ```{r data-error}
-## calC()模拟数据误差率
-task_progress(.pattern = '^pred1', .loops = FALSE)
-
 ## calc_fx()模拟数据误差率
 task_progress(.pattern = '^pred3', .loops = FALSE)
 ```
@@ -261,10 +258,10 @@ task_progress(.pattern = '^pred3', .loops = FALSE)
 ```{r tidy-data2}
 ##数据1
 fx1 <- llply(names(cr_code), function(x) {
-    fls <- list.files(paste0('data/fx/', x), pattern = '^pred1')
+    fls <- list.files(paste0('data/fx/', x), pattern = '^pred2')
     dfm <- ldply(fls, function(y) {
         readRDS(paste0('data/fx/', x, '/', y))
-    }) %>% data.frame(Cat = 'pred1', .) %>% tbl_df
+    }) %>% data.frame(Cat = 'pred2', .) %>% tbl_df
     names(dfm)[4:5] <- c('Price', 'Price.T1')
     dfm
  })
@@ -316,13 +313,13 @@ fx %<>% dplyr::filter(!Date %in% ntimeID)
 
 ```{r aic1}
 acc <- ddply(fx, .(Cat, Type), summarise, 
-             mse = mean((Price.T1 - Price)^2), 
+             mse = mean((Price.T1 - Price)^2, na.rm = TRUE), 
              n = length(Price), 
              Akaike.mse = (-2*mse)/n+2*4/n, 
-             Akaike = mean(Akaike), 
-             Bayes = mean(Bayes), 
-             Shibata = mean(Shibata), 
-             Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+             Akaike = mean(Akaike, na.rm = TRUE), 
+             Bayes = mean(Bayes, na.rm = TRUE), 
+             Shibata = mean(Shibata, na.rm = TRUE), 
+             Hannan.Quinn = mean(Hannan.Quinn, na.rm = TRUE)) %>% 
   tbl_df %>% mutate(mse = round(mse, 6)) %>% 
   arrange(Type)
 
@@ -362,13 +359,13 @@ acc %>%
 
 ```{r aic2}
 acc <- ddply(fx, .(Cat, .id), summarise, 
-             mse = mean((Price.T1 - Price)^2), 
+             mse = mean((Price.T1 - Price)^2, na.rm = TRUE), 
              n = length(Price), 
              Akaike.mse = (-2*mse)/n+2*4/n, 
-             Akaike = mean(Akaike), 
-             Bayes = mean(Bayes), 
-             Shibata = mean(Shibata), 
-             Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+             Akaike = mean(Akaike, na.rm = TRUE), 
+             Bayes = mean(Bayes, na.rm = TRUE), 
+             Shibata = mean(Shibata, na.rm = TRUE), 
+             Hannan.Quinn = mean(Hannan.Quinn, na.rm = TRUE)) %>% 
   tbl_df %>% mutate(mse = round(mse, 6)) %>% 
   arrange(.id)
 
@@ -387,13 +384,13 @@ acc %>%
 
 ```{r aic3}
 acc <- ddply(fx, .(Cat), summarise, 
-             mse = mean((Price.T1 - Price)^2), 
+             mse = mean((Price.T1 - Price)^2, na.rm = TRUE), 
              n = length(Price), 
              Akaike.mse = (-2*mse)/n+2*4/n, 
-             Akaike = mean(Akaike), 
-             Bayes = mean(Bayes), 
-             Shibata = mean(Shibata), 
-             Hannan.Quinn = mean(Hannan.Quinn)) %>% 
+             Akaike = mean(Akaike, na.rm = TRUE), 
+             Bayes = mean(Bayes, na.rm = TRUE), 
+             Shibata = mean(Shibata, na.rm = TRUE), 
+             Hannan.Quinn = mean(Hannan.Quinn, na.rm = TRUE)) %>% 
   tbl_df %>% mutate(mse = round(mse, 6))
 
 acc %>% 
@@ -411,7 +408,7 @@ acc %>%
 
 以下乃此文献资讯：
 
-- 文件建立日期：2018-08-07
+- 文件建立日期：2018-10-14
 - 文件最新更新日期：`r today('Asia/Tokyo')`
 - `r R.version.string`
 - R语言版本：`r getRversion()`
