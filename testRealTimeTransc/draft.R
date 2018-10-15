@@ -832,5 +832,5 @@ pred.data <- plyr::join(pred.data, Closed, by = 'LatestDate.GMT')
 #260 10398.43 0.000000 10398.43
 
 
-
+## https://datascienceplus.com/extract-twitter-data-automatically-using-scheduler-r-package/
 
