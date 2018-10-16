@@ -314,7 +314,10 @@ div.tocify {
 ## 读取程序包
 pkg &lt;- c('lubridate', 'plyr', 'dplyr', 'magrittr', 'stringr', 'rugarch', 'forecast', 'quantmod', 'memoise', 'microbenchmark', 'knitr', 'kableExtra', 'formattable')
 suppressAll(lib(pkg))
-rm(pkg)</code></pre>
+
+funs &lt;- c('task_progress.R') %&gt;% paste0('function/', .)
+l_ply(funs, source)
+rm(pkg, funs)</code></pre>
 </div>
 <div class="section level1">
 <h1><span class="header-section-number">2</span> 数据</h1>
@@ -1344,11 +1347,11 @@ Max. :125.63
   fit &lt;- auto.arima(mbase)
   arimaorder(fit)
   }</code></pre>
-<p>再来就设置Garch模型中的<code>arfima</code>参数，将原本固定的<code>d</code>值浮动化。</p>
+<p>再来就设置<code>mean.model</code>模型中的参数为<code>archm = TRUE</code>。</p>
 <pre class="r"><code>calc_fx &lt;- memoise(function(mbase, currency = 'JPY=X', ahead = 1, price = 'Cl') {
   
   source('function/filterFX.R')
-  source('function/opt_arma.R') #rename the function best.ARMA()
+  source('function/opt_arma.R')
   
   mbase = suppressWarnings(filterFX(mbase, currency = currency, price = price))
   armaOrder = opt_arma(mbase)
@@ -1376,9 +1379,8 @@ Max. :125.63
 
   latestPrice &lt;- xts(latestPrice)
 
-  tmp = list(latestPrice = latestPrice, forecastPrice = res, 
-             AIC = infocriteria(fit))
-  return(tmp)
+  return(list(latestPrice = latestPrice, forecastPrice = res, 
+             AIC = infocriteria(fit)))
   })</code></pre>
 </div>
 </div>
@@ -1430,83 +1432,84 @@ for (dt in timeID) {
 <div class="section level2">
 <h2><span class="header-section-number">4.2</span> 查询进度</h2>
 <p>查询模拟测试进度的函数<code>task_progress()</code>如下。</p>
-<pre class="r"><code>task_progress &lt;- function(scs = 60, .pattern = '^pred3', .loops = TRUE) {
-  ## ------------- 定时查询进度 ----------------------
-  ## 每分钟自动查询与更新以上模拟calC()预测汇价进度（储存文件量）。
+<pre class="r"><code>## ------------- 查询缺失文件 ----------------------
+## 查询缺失文件。
+dts &lt;- sapply(mbase, function(x) {
+  y = index(x)
+  y[y &gt;= timeID0]
+  })
+
+#'@ sapply(mbase, function(x) as.character(index(x)) %&gt;% as.Date %&gt;% sort)
+
+fls &lt;- sapply(names(cr_code), function(x) {
+   fls &lt;- list.files(paste0('./data/fx/', x), pattern = '^pred3') %&gt;% 
+     str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %&gt;% 
+     unlist %&gt;% as.Date %&gt;% sort
+   dts[[x]][!dts[[x]] %in% fls] %&gt;% sort
+   })
+
+#'@ timeID &lt;- sapply(fls, function(x) timeID[!timeID %in% x] %&gt;% sort)
+
+#'@ timeID &lt;- llply(fls, function(x) timeID[!timeID %in% x] %&gt;% sort) %&gt;% unlist %&gt;% as.Date %&gt;% sort
+#'@ names(timeID) &lt;- NULL
+#'@ timeID %&lt;&gt;% unique</code></pre>
+<pre class="r"><code>## ------------- 模拟calc_fx()预测汇价 ----------------------
+pred3 &lt;- list()
+
+for (i in seq(cr_code)) {
   
-  if (.loops == TRUE) {
-    while(1) {
-      cat('Current Tokyo Time :', as.character(now('Asia/Tokyo')), '\n\n')
-      
-      z &lt;- ldply(mbase, function(dtm) {
-        y = index(dtm)
-        y = y[y &gt;= timeID0]
-        
-        cr = as.character(unique(substr(names(dtm), 1, 6)))
-        x = list.files(paste0('./data/fx/', cr), pattern = .pattern) %&gt;% 
-          str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %&gt;% 
-          unlist %&gt;% as.Date %&gt;% sort
-        x = x[x &gt;= y[1] &amp; x &lt;= xts::last(y)]
-        
-        data.frame(.id = cr, x = length(x), n = length(y)) %&gt;% 
-        mutate(progress = percent(x/n))
-      })# %&gt;% tbl_df
-      
-      print(z)
-      
-      prg = sum(z$x)/sum(z$n)
-      cat('\n================', as.character(percent(prg)), '================\n\n')
-      
-      if (prg == 1) break #倘若进度达到100%就停止更新。
-      
-      Sys.sleep(scs) #以上ldply()耗时3~5秒，而休息时间60秒。
+  timeIDi &lt;- fls[[names(cr_code)[i]]]
+  for (dt in timeIDi) {
+    
+    smp &lt;- mbase[[names(cr_code)[i]]]
+    dtr &lt;- xts::last(index(smp[index(smp) &lt; dt]), 1)
+    smp &lt;- smp[paste0(dtr %m-% years(1), '/', dtr)]
+    
+    pred3[[i]] &lt;- ldply(price_type, function(y) {
+      df = calc_fx(smp, currency = cr_code[i], price = y)
+      df = data.frame(Date = index(df[[1]][1]), 
+                      Type = paste0(names(df[[1]]), '.', y), 
+                      df[[1]], df[[2]], t(df[[3]]))
+      names(df)[4] %&lt;&gt;% str_replace_all('1', 'T+1')
+      df
+    })
+    
+    if (!dir.exists(paste0('data/fx/', names(pred3[[i]])[3]))) 
+      dir.create(paste0('data/fx/', names(pred3[[i]])[3]))
+    
+    saveRDS(pred3[[i]], paste0(
+      'data/fx/', names(pred3[[i]])[3], '/pred3.', 
+      unique(pred3[[i]]$Date), '.rds'))
+    
+    cat(paste0(
+      'data/fx/', names(pred3[[i]])[3], '/pred3.', 
+      unique(pred3[[i]]$Date), '.rds saved!\n'))
+    
     }
-  } else {
-    
-    cat('Current Tokyo Time :', as.character(now('Asia/Tokyo')), '\n\n')
-      
-    z &lt;- ldply(mbase, function(dtm) {
-      y = index(dtm)
-      y = y[y &gt;= timeID0]
-      
-      cr = as.character(unique(substr(names(dtm), 1, 6)))
-      x = list.files(paste0('./data/fx/', cr), pattern = .pattern) %&gt;% 
-          str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %&gt;% 
-          unlist %&gt;% as.Date %&gt;% sort
-      x = x[x &gt;= y[1] &amp; x &lt;= xts::last(y)]
-      
-      data.frame(.id = cr, x = length(x), n = length(y)) %&gt;% 
-        mutate(progress = percent(x/n))
-      })# %&gt;% tbl_df
-    
-    print(z)
-    
-    prg = sum(z$x)/sum(z$n)
-    cat('\n================', as.character(percent(prg)), '================\n\n')
-    }
-  }</code></pre>
+  }; rm(i)</code></pre>
 <p>模拟完毕后，再来就查看数据结果。</p>
 <pre class="r"><code>## calc_fx()模拟数据误差率
 task_progress(.pattern = '^pred3', .loops = FALSE)</code></pre>
-<pre><code>## Current Tokyo Time : 2018-10-16 15:40:17 
+<pre><code>## Current Tokyo Time : 2018-10-16 21:06:41 
+## ^pred3 
 ## 
 ##      .id    x    n progress
-## 1 USDAUD 1000 1215   82.30%
-## 2 USDEUR  926 1215   76.21%
-## 3 USDGBP  863 1216   70.97%
-## 4 USDCHF  848 1215   69.79%
-## 5 USDCAD  817 1214   67.30%
-## 6 USDCNY  746 1215   61.40%
-## 7 USDJPY  678 1215   55.80%
+## 1 USDAUD 1088 1215   89.55%
+## 2 USDEUR 1018 1215   83.79%
+## 3 USDGBP  932 1216   76.64%
+## 4 USDCHF  901 1215   74.16%
+## 5 USDCAD  892 1214   73.48%
+## 6 USDCNY  795 1215   65.43%
+## 7 USDJPY  722 1215   59.42%
 ## 
-## ================ 69.11% ================</code></pre>
-<p>以上结果显示，模拟后的数据的误差率非常渺小<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>。以下筛选<code>pred2</code>与<code>pred3</code>同样日期的有效数据。</p>
+## ================ 74.64% ================</code></pre>
+<p>以上结果显示，模拟后的数据的误差率非常渺小<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>。以下筛选<code>pred1</code>、<code>pred2</code>与<code>pred3</code>同样日期的有效数据。</p>
 <pre class="r"><code>##数据1
 fx1 &lt;- llply(names(cr_code), function(x) {
-    fls &lt;- list.files(paste0('data/fx/', x), pattern = '^pred2')
+    fls &lt;- list.files(paste0('data/fx/', x), pattern = '^pred1')
     dfm &lt;- ldply(fls, function(y) {
         readRDS(paste0('data/fx/', x, '/', y))
-    }) %&gt;% data.frame(Cat = 'pred2', .) %&gt;% tbl_df
+    }) %&gt;% data.frame(Cat = 'pred1', .) %&gt;% tbl_df
     names(dfm)[4:5] &lt;- c('Price', 'Price.T1')
     dfm
  })
@@ -1514,6 +1517,17 @@ names(fx1) &lt;- names(cr_code)
 
 ##数据2
 fx2 &lt;- llply(names(cr_code), function(x) {
+    fls &lt;- list.files(paste0('data/fx/', x), pattern = '^pred2')
+    dfm &lt;- ldply(fls, function(y) {
+        readRDS(paste0('data/fx/', x, '/', y))
+    }) %&gt;% data.frame(Cat = 'pred2', .) %&gt;% tbl_df
+    names(dfm)[4:5] &lt;- c('Price', 'Price.T1')
+    dfm
+ })
+names(fx2) &lt;- names(cr_code)
+
+##数据3
+fx3 &lt;- llply(names(cr_code), function(x) {
     fls &lt;- list.files(paste0('data/fx/', x), pattern = '^pred3')
     dfm &lt;- ldply(fls, function(y) {
         readRDS(paste0('data/fx/', x, '/', y))
@@ -1521,19 +1535,20 @@ fx2 &lt;- llply(names(cr_code), function(x) {
     names(dfm)[4:5] &lt;- c('Price', 'Price.T1')
     dfm
  })
-names(fx2) &lt;- names(cr_code)
+names(fx3) &lt;- names(cr_code)
 
 #合并，并且整理数据。
 fx1 %&lt;&gt;% ldply %&gt;% tbl_df
 fx2 %&lt;&gt;% ldply %&gt;% tbl_df
-fx &lt;- suppressAll(bind_rows(fx1, fx2) %&gt;% arrange(Date) %&gt;% 
+fx3 %&lt;&gt;% ldply %&gt;% tbl_df
+fx &lt;- suppressAll(bind_rows(fx1, fx2, fx3) %&gt;% arrange(Date) %&gt;% 
   mutate(.id = factor(.id), Cat = factor(Cat)) %&gt;% 
   ddply(.(Cat, Type), function(x) {
     x %&gt;% mutate(Price.T1 = lag(Price.T1, 1))
   }) %&gt;% tbl_df %&gt;% 
     dplyr::filter(Date &gt;= ymd('2013-01-01') &amp; Date &lt;= ymd('2017-08-30')))
 
-rm(fx1, fx2)</code></pre>
+rm(fx1, fx2, fx3)</code></pre>
 <pre class="r"><code>## filter all predictive error where sd &gt;= 20%.
 notID &lt;- fx %&gt;% mutate(diff = abs(Price.T1/Price), se = ifelse(diff &lt;= 0.8 | diff &gt;= 1.25, 1, 0)) %&gt;% dplyr::filter(se == 1)
 ntimeID &lt;- notID %&gt;% .$Date %&gt;% unique
@@ -1592,6 +1607,690 @@ se
 USDCHF
 </td>
 <td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2015-07-28
+</td>
+<td style="text-align:left;">
+USDCHF.Op
+</td>
+<td style="text-align:right;">
+0.96200
+</td>
+<td style="text-align:right;">
+-1.674244e+03
+</td>
+<td style="text-align:right;">
+-6.8550360
+</td>
+<td style="text-align:right;">
+-6.6916003
+</td>
+<td style="text-align:right;">
+-6.8589917
+</td>
+<td style="text-align:right;">
+-6.7893476
+</td>
+<td style="text-align:right;">
+1.740378e+03
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDCHF
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2015-01-15
+</td>
+<td style="text-align:left;">
+USDCHF.Lo
+</td>
+<td style="text-align:right;">
+0.73300
+</td>
+<td style="text-align:right;">
+1.016502e+00
+</td>
+<td style="text-align:right;">
+-5.7998611
+</td>
+<td style="text-align:right;">
+-5.7181433
+</td>
+<td style="text-align:right;">
+-5.8008790
+</td>
+<td style="text-align:right;">
+-5.7670169
+</td>
+<td style="text-align:right;">
+1.386770e+00
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDCNY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2014-07-10
+</td>
+<td style="text-align:left;">
+USDCNY.Lo
+</td>
+<td style="text-align:right;">
+2.20100
+</td>
+<td style="text-align:right;">
+6.186397e+00
+</td>
+<td style="text-align:right;">
+-2.7132659
+</td>
+<td style="text-align:right;">
+-2.6313229
+</td>
+<td style="text-align:right;">
+-2.7142915
+</td>
+<td style="text-align:right;">
+-2.6803275
+</td>
+<td style="text-align:right;">
+2.810721e+00
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDCNY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2014-07-14
+</td>
+<td style="text-align:left;">
+USDCNY.Lo
+</td>
+<td style="text-align:right;">
+6.19600
+</td>
+<td style="text-align:right;">
+1.294872e+00
+</td>
+<td style="text-align:right;">
+-3.1503936
+</td>
+<td style="text-align:right;">
+-3.0138219
+</td>
+<td style="text-align:right;">
+-3.1531877
+</td>
+<td style="text-align:right;">
+-3.0954962
+</td>
+<td style="text-align:right;">
+2.089852e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-06-27
+</td>
+<td style="text-align:left;">
+USDJPY.Op
+</td>
+<td style="text-align:right;">
+98.46800
+</td>
+<td style="text-align:right;">
+7.839498e+01
+</td>
+<td style="text-align:right;">
+4.7132866
+</td>
+<td style="text-align:right;">
+4.7950044
+</td>
+<td style="text-align:right;">
+4.7122687
+</td>
+<td style="text-align:right;">
+4.7461308
+</td>
+<td style="text-align:right;">
+7.961468e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-06-30
+</td>
+<td style="text-align:left;">
+USDJPY.Op
+</td>
+<td style="text-align:right;">
+99.41100
+</td>
+<td style="text-align:right;">
+7.839644e+01
+</td>
+<td style="text-align:right;">
+4.7356084
+</td>
+<td style="text-align:right;">
+4.8175514
+</td>
+<td style="text-align:right;">
+4.7345828
+</td>
+<td style="text-align:right;">
+4.7685468
+</td>
+<td style="text-align:right;">
+7.886093e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-07-01
+</td>
+<td style="text-align:left;">
+USDJPY.Op
+</td>
+<td style="text-align:right;">
+99.65400
+</td>
+<td style="text-align:right;">
+7.839575e+01
+</td>
+<td style="text-align:right;">
+4.7442829
+</td>
+<td style="text-align:right;">
+4.8260007
+</td>
+<td style="text-align:right;">
+4.7432649
+</td>
+<td style="text-align:right;">
+4.7771270
+</td>
+<td style="text-align:right;">
+7.866794e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-07-02
+</td>
+<td style="text-align:left;">
+USDJPY.Op
+</td>
+<td style="text-align:right;">
+100.75900
+</td>
+<td style="text-align:right;">
+7.839261e+01
+</td>
+<td style="text-align:right;">
+1.7915659
+</td>
+<td style="text-align:right;">
+1.9277623
+</td>
+<td style="text-align:right;">
+1.7887926
+</td>
+<td style="text-align:right;">
+1.8463062
+</td>
+<td style="text-align:right;">
+7.780210e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-07-08
+</td>
+<td style="text-align:left;">
+USDJPY.Op
+</td>
+<td style="text-align:right;">
+100.84200
+</td>
+<td style="text-align:right;">
+7.838671e+01
+</td>
+<td style="text-align:right;">
+4.8397137
+</td>
+<td style="text-align:right;">
+4.9214315
+</td>
+<td style="text-align:right;">
+4.8386958
+</td>
+<td style="text-align:right;">
+4.8725579
+</td>
+<td style="text-align:right;">
+7.773220e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-07-09
+</td>
+<td style="text-align:left;">
+USDJPY.Op
+</td>
+<td style="text-align:right;">
+101.15100
+</td>
+<td style="text-align:right;">
+7.838619e+01
+</td>
+<td style="text-align:right;">
+4.8622946
+</td>
+<td style="text-align:right;">
+4.9440124
+</td>
+<td style="text-align:right;">
+4.8612766
+</td>
+<td style="text-align:right;">
+4.8951387
+</td>
+<td style="text-align:right;">
+7.749423e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-07-10
+</td>
+<td style="text-align:left;">
+USDJPY.Op
+</td>
+<td style="text-align:right;">
+98.55200
+</td>
+<td style="text-align:right;">
+7.838294e+01
+</td>
+<td style="text-align:right;">
+4.8830765
+</td>
+<td style="text-align:right;">
+4.9647943
+</td>
+<td style="text-align:right;">
+4.8820585
+</td>
+<td style="text-align:right;">
+4.9159206
+</td>
+<td style="text-align:right;">
+7.953460e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-07-11
+</td>
+<td style="text-align:left;">
+USDJPY.Op
+</td>
+<td style="text-align:right;">
+99.04400
+</td>
+<td style="text-align:right;">
+7.838286e+01
+</td>
+<td style="text-align:right;">
+6.2292809
+</td>
+<td style="text-align:right;">
+6.3109987
+</td>
+<td style="text-align:right;">
+6.2282630
+</td>
+<td style="text-align:right;">
+6.2621251
+</td>
+<td style="text-align:right;">
+7.913943e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-06-27
+</td>
+<td style="text-align:left;">
+USDJPY.Cl
+</td>
+<td style="text-align:right;">
+98.47600
+</td>
+<td style="text-align:right;">
+7.837708e+01
+</td>
+<td style="text-align:right;">
+4.7137633
+</td>
+<td style="text-align:right;">
+4.7954811
+</td>
+<td style="text-align:right;">
+4.7127453
+</td>
+<td style="text-align:right;">
+4.7466074
+</td>
+<td style="text-align:right;">
+7.959003e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-06-30
+</td>
+<td style="text-align:left;">
+USDJPY.Cl
+</td>
+<td style="text-align:right;">
+99.38000
+</td>
+<td style="text-align:right;">
+7.838315e+01
+</td>
+<td style="text-align:right;">
+1.7831265
+</td>
+<td style="text-align:right;">
+1.9196981
+</td>
+<td style="text-align:right;">
+1.7803324
+</td>
+<td style="text-align:right;">
+1.8380238
+</td>
+<td style="text-align:right;">
+7.887216e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-07-08
+</td>
+<td style="text-align:left;">
+USDJPY.Cl
+</td>
+<td style="text-align:right;">
+100.85000
+</td>
+<td style="text-align:right;">
+7.837327e+01
+</td>
+<td style="text-align:right;">
+4.8404863
+</td>
+<td style="text-align:right;">
+4.9222042
+</td>
+<td style="text-align:right;">
+4.8394684
+</td>
+<td style="text-align:right;">
+4.8733305
+</td>
+<td style="text-align:right;">
+7.771272e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-07-09
+</td>
+<td style="text-align:left;">
+USDJPY.Cl
+</td>
+<td style="text-align:right;">
+101.15300
+</td>
+<td style="text-align:right;">
+7.837277e+01
+</td>
+<td style="text-align:right;">
+4.8630598
+</td>
+<td style="text-align:right;">
+4.9447776
+</td>
+<td style="text-align:right;">
+4.8620419
+</td>
+<td style="text-align:right;">
+4.8959040
+</td>
+<td style="text-align:right;">
+7.747944e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-07-10
+</td>
+<td style="text-align:left;">
+USDJPY.Cl
+</td>
+<td style="text-align:right;">
+98.55100
+</td>
+<td style="text-align:right;">
+7.836954e+01
+</td>
+<td style="text-align:right;">
+1.8879646
+</td>
+<td style="text-align:right;">
+2.0241610
+</td>
+<td style="text-align:right;">
+1.8851913
+</td>
+<td style="text-align:right;">
+1.9427049
+</td>
+<td style="text-align:right;">
+7.952181e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:left;">
+2013-07-14
+</td>
+<td style="text-align:left;">
+USDJPY.Cl
+</td>
+<td style="text-align:right;">
+99.19700
+</td>
+<td style="text-align:right;">
+7.836681e+01
+</td>
+<td style="text-align:right;">
+5.8363249
+</td>
+<td style="text-align:right;">
+5.9182679
+</td>
+<td style="text-align:right;">
+5.8352993
+</td>
+<td style="text-align:right;">
+5.8692633
+</td>
+<td style="text-align:right;">
+7.900119e-01
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDCHF
+</td>
+<td style="text-align:left;">
 pred2
 </td>
 <td style="text-align:left;">
@@ -1607,16 +2306,16 @@ USDCHF.Lo
 1.015055e+00
 </td>
 <td style="text-align:right;">
--7.984062
+-7.9840623
 </td>
 <td style="text-align:right;">
--7.902344
+-7.9023445
 </td>
 <td style="text-align:right;">
--7.985080
+-7.9850802
 </td>
 <td style="text-align:right;">
--7.951218
+-7.9512181
 </td>
 <td style="text-align:right;">
 1.384795e+00
@@ -1645,16 +2344,16 @@ USDCHF.Lo
 1.187461e+00
 </td>
 <td style="text-align:right;">
--6.799206
+-6.7992062
 </td>
 <td style="text-align:right;">
--6.703606
+-6.7036061
 </td>
 <td style="text-align:right;">
--6.800595
+-6.8005954
 </td>
 <td style="text-align:right;">
--6.760778
+-6.7607781
 </td>
 <td style="text-align:right;">
 1.385603e+00
@@ -1683,16 +2382,16 @@ USDCHF.Lo
 5.503465e-01
 </td>
 <td style="text-align:right;">
--7.919913
+-7.9199131
 </td>
 <td style="text-align:right;">
--7.824576
+-7.8245756
 </td>
 <td style="text-align:right;">
--7.921292
+-7.9212918
 </td>
 <td style="text-align:right;">
--7.881595
+-7.8815949
 </td>
 <td style="text-align:right;">
 6.333102e-01
@@ -1721,16 +2420,16 @@ USDCNY.Lo
 6.185327e+00
 </td>
 <td style="text-align:right;">
--4.702450
+-4.7024502
 </td>
 <td style="text-align:right;">
--4.606850
+-4.6068501
 </td>
 <td style="text-align:right;">
--4.703839
+-4.7038394
 </td>
 <td style="text-align:right;">
--4.664022
+-4.6640221
 </td>
 <td style="text-align:right;">
 2.810235e+00
@@ -1759,16 +2458,16 @@ USDCNY.Lo
 2.894085e+00
 </td>
 <td style="text-align:right;">
--7.083597
+-7.0835967
 </td>
 <td style="text-align:right;">
--6.974037
+-6.9740372
 </td>
 <td style="text-align:right;">
--7.085416
+-7.0854159
 </td>
 <td style="text-align:right;">
--7.039552
+-7.0395523
 </td>
 <td style="text-align:right;">
 4.672400e-01
@@ -1797,16 +2496,16 @@ USDAUD.Op
 2.149825e+08
 </td>
 <td style="text-align:right;">
--7.791074
+-7.7910736
 </td>
 <td style="text-align:right;">
--7.654124
+-7.6541243
 </td>
 <td style="text-align:right;">
--7.793889
+-7.7938887
 </td>
 <td style="text-align:right;">
--7.736018
+-7.7360182
 </td>
 <td style="text-align:right;">
 2.071122e+08
@@ -1823,31 +2522,31 @@ USDAUD
 pred3
 </td>
 <td style="text-align:left;">
-2013-05-20
+2013-06-19
 </td>
 <td style="text-align:left;">
 USDAUD.Hi
 </td>
 <td style="text-align:right;">
-1.02500
+1.09100
 </td>
 <td style="text-align:right;">
-1.308408e+62
+-2.849556e+92
 </td>
 <td style="text-align:right;">
--7.929306
+-7.8462592
 </td>
 <td style="text-align:right;">
--7.765420
+-7.6823732
 </td>
 <td style="text-align:right;">
--7.933291
+-7.8502445
 </td>
 <td style="text-align:right;">
--7.863429
+-7.7803824
 </td>
 <td style="text-align:right;">
-1.276496e+62
+2.611875e+92
 </td>
 <td style="text-align:right;">
 1
@@ -1873,16 +2572,16 @@ USDEUR.Op
 -2.200873e+86
 </td>
 <td style="text-align:right;">
--7.580418
+-7.5804181
 </td>
 <td style="text-align:right;">
--7.416982
+-7.4169825
 </td>
 <td style="text-align:right;">
--7.584374
+-7.5843739
 </td>
 <td style="text-align:right;">
--7.514730
+-7.5147298
 </td>
 <td style="text-align:right;">
 2.475673e+86
@@ -1911,16 +2610,16 @@ USDEUR.Op
 -1.560483e+60
 </td>
 <td style="text-align:right;">
--7.516438
+-7.5164378
 </td>
 <td style="text-align:right;">
--7.421100
+-7.4211004
 </td>
 <td style="text-align:right;">
--7.517817
+-7.5178166
 </td>
 <td style="text-align:right;">
--7.478120
+-7.4781196
 </td>
 <td style="text-align:right;">
 1.767252e+60
@@ -1949,16 +2648,16 @@ USDEUR.Op
 5.314573e+81
 </td>
 <td style="text-align:right;">
--7.618419
+-7.6184189
 </td>
 <td style="text-align:right;">
--7.454533
+-7.4545329
 </td>
 <td style="text-align:right;">
--7.622404
+-7.6224041
 </td>
 <td style="text-align:right;">
--7.552542
+-7.5525420
 </td>
 <td style="text-align:right;">
 6.011960e+81
@@ -1987,16 +2686,16 @@ USDEUR.Hi
 6.561433e+87
 </td>
 <td style="text-align:right;">
--8.354802
+-8.3548021
 </td>
 <td style="text-align:right;">
--8.231888
+-8.2318876
 </td>
 <td style="text-align:right;">
--8.357076
+-8.3570762
 </td>
 <td style="text-align:right;">
--8.305394
+-8.3053944
 </td>
 <td style="text-align:right;">
 8.554672e+87
@@ -2025,16 +2724,16 @@ USDEUR.Lo
 9.628148e+10
 </td>
 <td style="text-align:right;">
--9.297161
+-9.2971615
 </td>
 <td style="text-align:right;">
--9.187602
+-9.1876021
 </td>
 <td style="text-align:right;">
--9.298981
+-9.2989807
 </td>
 <td style="text-align:right;">
--9.253117
+-9.2531172
 </td>
 <td style="text-align:right;">
 1.248787e+11
@@ -2060,22 +2759,22 @@ USDEUR.Cl
 0.77200
 </td>
 <td style="text-align:right;">
-1.839388e+130
+4.397289e+66
 </td>
 <td style="text-align:right;">
--9.168516
+-9.1685158
 </td>
 <td style="text-align:right;">
--9.045261
+-9.0452614
 </td>
 <td style="text-align:right;">
--9.170807
+-9.1708071
 </td>
 <td style="text-align:right;">
--9.118966
+-9.1189659
 </td>
 <td style="text-align:right;">
-2.382627e+130
+5.695970e+66
 </td>
 <td style="text-align:right;">
 1
@@ -2101,19 +2800,57 @@ USDEUR.Cl
 -1.467838e+61
 </td>
 <td style="text-align:right;">
--7.601173
+-7.6011727
 </td>
 <td style="text-align:right;">
--7.436833
+-7.4368335
 </td>
 <td style="text-align:right;">
--7.605188
+-7.6051877
 </td>
 <td style="text-align:right;">
--7.535106
+-7.5351061
 </td>
 <td style="text-align:right;">
 1.658387e+61
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDEUR
+</td>
+<td style="text-align:left;">
+pred3
+</td>
+<td style="text-align:left;">
+2017-08-15
+</td>
+<td style="text-align:left;">
+USDEUR.Cl
+</td>
+<td style="text-align:right;">
+0.85170
+</td>
+<td style="text-align:right;">
+1.175697e+130
+</td>
+<td style="text-align:right;">
+-7.9843501
+</td>
+<td style="text-align:right;">
+-7.8477785
+</td>
+<td style="text-align:right;">
+-7.9871442
+</td>
+<td style="text-align:right;">
+-7.9294528
+</td>
+<td style="text-align:right;">
+1.380413e+130
 </td>
 <td style="text-align:right;">
 1
@@ -2139,16 +2876,16 @@ USDGBP.Op
 6.371246e+96
 </td>
 <td style="text-align:right;">
--8.701587
+-8.7015868
 </td>
 <td style="text-align:right;">
--8.551358
+-8.5513580
 </td>
 <td style="text-align:right;">
--8.704951
+-8.7049515
 </td>
 <td style="text-align:right;">
--8.641200
+-8.6411997
 </td>
 <td style="text-align:right;">
 1.056591e+97
@@ -2177,19 +2914,57 @@ USDGBP.Op
 -2.147650e+73
 </td>
 <td style="text-align:right;">
--8.702401
+-8.7024014
 </td>
 <td style="text-align:right;">
--8.552172
+-8.5521725
 </td>
 <td style="text-align:right;">
--8.705766
+-8.7057660
 </td>
 <td style="text-align:right;">
--8.642014
+-8.6420142
 </td>
 <td style="text-align:right;">
 3.503507e+73
+</td>
+<td style="text-align:right;">
+1
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+USDGBP
+</td>
+<td style="text-align:left;">
+pred3
+</td>
+<td style="text-align:left;">
+2013-02-18
+</td>
+<td style="text-align:left;">
+USDGBP.Hi
+</td>
+<td style="text-align:right;">
+0.64800
+</td>
+<td style="text-align:right;">
+8.111759e+90
+</td>
+<td style="text-align:right;">
+-9.2937837
+</td>
+<td style="text-align:right;">
+-9.1435549
+</td>
+<td style="text-align:right;">
+-9.2971484
+</td>
+<td style="text-align:right;">
+-9.2333966
+</td>
+<td style="text-align:right;">
+1.251815e+91
 </td>
 <td style="text-align:right;">
 1
@@ -2215,16 +2990,16 @@ USDGBP.Lo
 4.417575e+121
 </td>
 <td style="text-align:right;">
--9.304628
+-9.3046283
 </td>
 <td style="text-align:right;">
--9.168057
+-9.1680567
 </td>
 <td style="text-align:right;">
--9.307422
+-9.3074224
 </td>
 <td style="text-align:right;">
--9.249731
+-9.2497310
 </td>
 <td style="text-align:right;">
 7.412038e+121
@@ -2253,16 +3028,16 @@ USDGBP.Cl
 4.106476e+120
 </td>
 <td style="text-align:right;">
--9.184169
+-9.1841693
 </td>
 <td style="text-align:right;">
--9.089093
+-9.0890929
 </td>
 <td style="text-align:right;">
--9.185538
+-9.1855377
 </td>
 <td style="text-align:right;">
--9.145960
+-9.1459604
 </td>
 <td style="text-align:right;">
 6.671772e+120
@@ -2291,16 +3066,16 @@ USDCHF.Cl
 1.399989e+05
 </td>
 <td style="text-align:right;">
--8.047400
+-8.0474002
 </td>
 <td style="text-align:right;">
--7.897584
+-7.8975842
 </td>
 <td style="text-align:right;">
--8.050740
+-8.0507399
 </td>
 <td style="text-align:right;">
--7.987186
+-7.9871859
 </td>
 <td style="text-align:right;">
 1.451066e+05
@@ -2329,16 +3104,16 @@ USDCAD.Op
 -2.544890e+129
 </td>
 <td style="text-align:right;">
--8.166908
+-8.1669079
 </td>
 <td style="text-align:right;">
--8.071043
+-8.0710434
 </td>
 <td style="text-align:right;">
--8.168307
+-8.1683075
 </td>
 <td style="text-align:right;">
--8.128369
+-8.1283691
 </td>
 <td style="text-align:right;">
 2.300986e+129
@@ -2367,16 +3142,16 @@ USDCAD.Op
 -3.773474e+136
 </td>
 <td style="text-align:right;">
--8.093404
+-8.0934038
 </td>
 <td style="text-align:right;">
--7.997804
+-7.9978037
 </td>
 <td style="text-align:right;">
--8.094793
+-8.0947930
 </td>
 <td style="text-align:right;">
--8.054976
+-8.0549757
 </td>
 <td style="text-align:right;">
 3.424205e+136
@@ -2405,16 +3180,16 @@ USDCAD.Op
 -9.813572e+66
 </td>
 <td style="text-align:right;">
-178.585716
+178.5857162
 </td>
 <td style="text-align:right;">
-178.804231
+178.8042308
 </td>
 <td style="text-align:right;">
-178.578763
+178.5787630
 </td>
 <td style="text-align:right;">
-178.673552
+178.6735520
 </td>
 <td style="text-align:right;">
 7.832060e+66
@@ -2443,16 +3218,16 @@ USDCAD.Op
 -1.119022e+52
 </td>
 <td style="text-align:right;">
--6.906188
+-6.9061880
 </td>
 <td style="text-align:right;">
--6.769992
+-6.7699917
 </td>
 <td style="text-align:right;">
--6.908961
+-6.9089613
 </td>
 <td style="text-align:right;">
--6.851448
+-6.8514477
 </td>
 <td style="text-align:right;">
 8.811193e+51
@@ -2481,16 +3256,16 @@ USDCAD.Hi
 -6.913764e+115
 </td>
 <td style="text-align:right;">
--7.131569
+-7.1315694
 </td>
 <td style="text-align:right;">
--6.995373
+-6.9953731
 </td>
 <td style="text-align:right;">
--7.134343
+-7.1343427
 </td>
 <td style="text-align:right;">
--7.076829
+-7.0768291
 </td>
 <td style="text-align:right;">
 5.508975e+115
@@ -2519,16 +3294,16 @@ USDCAD.Hi
 -2.485373e+77
 </td>
 <td style="text-align:right;">
--7.216438
+-7.2164382
 </td>
 <td style="text-align:right;">
--7.053003
+-7.0530026
 </td>
 <td style="text-align:right;">
--7.220394
+-7.2203939
 </td>
 <td style="text-align:right;">
--7.150750
+-7.1507498
 </td>
 <td style="text-align:right;">
 1.863098e+77
@@ -2557,16 +3332,16 @@ USDCAD.Cl
 1.007990e+99
 </td>
 <td style="text-align:right;">
--7.162652
+-7.1626518
 </td>
 <td style="text-align:right;">
--6.999216
+-6.9992162
 </td>
 <td style="text-align:right;">
--7.166607
+-7.1666075
 </td>
 <td style="text-align:right;">
--7.096963
+-7.0969634
 </td>
 <td style="text-align:right;">
 7.462831e+98
@@ -2595,16 +3370,16 @@ USDCNY.Op
 -2.161076e+130
 </td>
 <td style="text-align:right;">
--7.742846
+-7.7428458
 </td>
 <td style="text-align:right;">
--7.619931
+-7.6199313
 </td>
 <td style="text-align:right;">
--7.745120
+-7.7451200
 </td>
 <td style="text-align:right;">
--7.693438
+-7.6934382
 </td>
 <td style="text-align:right;">
 3.488983e+129
@@ -2633,16 +3408,16 @@ USDCNY.Op
 4.637545e+41
 </td>
 <td style="text-align:right;">
--7.617412
+-7.6174117
 </td>
 <td style="text-align:right;">
--7.494497
+-7.4944972
 </td>
 <td style="text-align:right;">
--7.619686
+-7.6196859
 </td>
 <td style="text-align:right;">
--7.568004
+-7.5680041
 </td>
 <td style="text-align:right;">
 7.561626e+40
@@ -2671,16 +3446,16 @@ USDCNY.Hi
 -1.408030e+108
 </td>
 <td style="text-align:right;">
--6.568740
+-6.5687395
 </td>
 <td style="text-align:right;">
--6.418511
+-6.4185107
 </td>
 <td style="text-align:right;">
--6.572104
+-6.5721042
 </td>
 <td style="text-align:right;">
--6.508352
+-6.5083524
 </td>
 <td style="text-align:right;">
 2.197300e+107
@@ -2709,16 +3484,16 @@ USDCNY.Lo
 6.184813e+00
 </td>
 <td style="text-align:right;">
--4.711652
+-4.7116519
 </td>
 <td style="text-align:right;">
--4.602394
+-4.6023945
 </td>
 <td style="text-align:right;">
--4.713457
+-4.7134574
 </td>
 <td style="text-align:right;">
--4.667734
+-4.6677339
 </td>
 <td style="text-align:right;">
 2.810002e+00
@@ -2747,16 +3522,16 @@ USDCNY.Lo
 2.922895e+00
 </td>
 <td style="text-align:right;">
--5.199164
+-5.1991644
 </td>
 <td style="text-align:right;">
--5.103564
+-5.1035642
 </td>
 <td style="text-align:right;">
--5.200553
+-5.2005535
 </td>
 <td style="text-align:right;">
--5.160736
+-5.1607362
 </td>
 <td style="text-align:right;">
 4.718914e-01
@@ -2785,16 +3560,16 @@ USDCNY.Cl
 -4.395002e+125
 </td>
 <td style="text-align:right;">
--6.612804
+-6.6128037
 </td>
 <td style="text-align:right;">
--6.476607
+-6.4766073
 </td>
 <td style="text-align:right;">
--6.615577
+-6.6155770
 </td>
 <td style="text-align:right;">
--6.558063
+-6.5580634
 </td>
 <td style="text-align:right;">
 7.072969e+124
@@ -2823,16 +3598,16 @@ USDCNY.Cl
 -3.942912e+117
 </td>
 <td style="text-align:right;">
--6.514168
+-6.5141681
 </td>
 <td style="text-align:right;">
--6.404911
+-6.4049108
 </td>
 <td style="text-align:right;">
--6.515974
+-6.5159737
 </td>
 <td style="text-align:right;">
--6.470250
+-6.4702502
 </td>
 <td style="text-align:right;">
 6.388179e+116
@@ -2861,16 +3636,16 @@ USDJPY.Op
 1.168959e+70
 </td>
 <td style="text-align:right;">
-1.486512
+1.4865118
 </td>
 <td style="text-align:right;">
-1.623461
+1.6234611
 </td>
 <td style="text-align:right;">
-1.483697
+1.4836967
 </td>
 <td style="text-align:right;">
-1.541567
+1.5415672
 </td>
 <td style="text-align:right;">
 1.144838e+68
@@ -2887,31 +3662,31 @@ USDJPY
 pred3
 </td>
 <td style="text-align:left;">
-2013-03-19
+2013-02-06
 </td>
 <td style="text-align:left;">
 USDJPY.Lo
 </td>
 <td style="text-align:right;">
-94.77000
+93.30800
 </td>
 <td style="text-align:right;">
 -3.423249e+39
 </td>
 <td style="text-align:right;">
-1.833475
+0.7655411
 </td>
 <td style="text-align:right;">
-2.024150
+0.9013645
 </td>
 <td style="text-align:right;">
-1.828142
+0.7627884
 </td>
 <td style="text-align:right;">
-1.910112
+0.8201253
 </td>
 <td style="text-align:right;">
-3.612166e+37
+3.668763e+37
 </td>
 <td style="text-align:right;">
 1
@@ -2937,16 +3712,16 @@ USDJPY.Lo
 -2.563847e+64
 </td>
 <td style="text-align:right;">
-584.434560
+584.4345597
 </td>
 <td style="text-align:right;">
-584.584789
+584.5847886
 </td>
 <td style="text-align:right;">
-584.431195
+584.4311950
 </td>
 <td style="text-align:right;">
-584.494947
+584.4949468
 </td>
 <td style="text-align:right;">
 2.518266e+62
@@ -2975,16 +3750,16 @@ USDJPY.Cl
 -3.808324e+02
 </td>
 <td style="text-align:right;">
-1.444176
+1.4441756
 </td>
 <td style="text-align:right;">
-1.581125
+1.5811249
 </td>
 <td style="text-align:right;">
-1.441361
+1.4413605
 </td>
 <td style="text-align:right;">
-1.499231
+1.4992310
 </td>
 <td style="text-align:right;">
 3.729629e+00
@@ -2997,53 +3772,60 @@ USDJPY.Cl
 </table>
 </div>
 <p>僕尝试运行好几次，<code>USDCHF</code>都是获得同样的结果。然后将默认的<code>snorm</code>分布更换为<code>norm</code>就没有出现错误。至于<code>USDCNY</code>原始数据有误就不是统计模型的问题了。</p>
-<pre class="r"><code>fx %&lt;&gt;% dplyr::filter(!Date %in% ntimeID)</code></pre>
+<pre class="r"><code>## timeID which contains 3 prediction models.
+utimeID &lt;- fx %&gt;% 
+  ddply(.(Date, .id), summarize, 
+        n = length(Type)) %&gt;% 
+  dplyr::filter(n == 12) %&gt;% 
+  tbl_df %&gt;% .$Date
+
+fx %&lt;&gt;% dplyr::filter(Date %in% utimeID, !Date %in% ntimeID)</code></pre>
 </div>
 <div class="section level2">
 <h2><span class="header-section-number">4.3</span> 精准度</h2>
 <p>现在就比较下双方的MSE值与AIC值。</p>
 <pre class="r"><code>acc &lt;- ddply(fx, .(Cat, Type), summarise, 
-             mse = mean((Price.T1 - Price)^2, na.rm = TRUE), 
+             MSE = mean((Price.T1 - Price)^2, na.rm = TRUE), 
              n = length(Price), 
-             Akaike.mse = (-2*mse)/n+2*4/n, 
+             Akaike.MSE = (-2*MSE)/n+2*4/n, 
              Akaike = mean(Akaike, na.rm = TRUE), 
              Bayes = mean(Bayes, na.rm = TRUE), 
              Shibata = mean(Shibata, na.rm = TRUE), 
              Hannan.Quinn = mean(Hannan.Quinn, na.rm = TRUE)) %&gt;% 
-  tbl_df %&gt;% mutate(mse = round(mse, 6)) %&gt;% 
+  tbl_df %&gt;% mutate(MSE = round(MSE, 6)) %&gt;% 
   arrange(Type)
 
 acc %&gt;% 
   kable(caption = 'Group Table Summary') %&gt;% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %&gt;% 
-  group_rows('USD/AUD Open', 1, 2, label_row_css = 'background-color: #e68a00; color: #fff;') %&gt;%
-  group_rows('USD/AUD High', 3, 4, label_row_css = 'background-color: #e68a00; color: #fff;') %&gt;%
-  group_rows('USD/AUD Low', 5, 6, label_row_css = 'background-color: #e68a00; color: #fff;') %&gt;%
-  group_rows('USD/AUD Close', 7, 8, label_row_css = 'background-color: #e68a00; color: #fff;') %&gt;%
-  group_rows('USD/EUR Open', 9, 10, label_row_css = 'background-color: #6666ff; color: #fff;') %&gt;%
-  group_rows('USD/EUR High', 11, 12, label_row_css = 'background-color: #6666ff; color: #fff;') %&gt;%
-  group_rows('USD/EUR Low', 13, 14, label_row_css = 'background-color:#6666ff; color: #fff;') %&gt;%
-  group_rows('USD/EUR Close', 15, 16, label_row_css = 'background-color: #6666ff; color: #fff;') %&gt;%
-  group_rows('USD/GBP Open', 17, 18, label_row_css = 'background-color: #339966; color: #fff;') %&gt;%
-  group_rows('USD/GBP High', 19, 20, label_row_css = 'background-color: #339966; color: #fff;') %&gt;%
-  group_rows('USD/GBP Low', 21, 22, label_row_css = 'background-color: #339966; color: #fff;') %&gt;%
-  group_rows('USD/GBP Close', 23, 24, label_row_css = 'background-color: #339966; color: #fff;') %&gt;%
-  group_rows('USD/CHF Open', 25, 26, label_row_css = 'background-color: #808000; color: #fff;') %&gt;%
-  group_rows('USD/CHF High', 27, 28, label_row_css = 'background-color: #808000; color: #fff;') %&gt;%
-  group_rows('USD/CHF Low', 29, 30, label_row_css = 'background-color: #808000; color: #fff;') %&gt;%
-  group_rows('USD/CHF Close', 31, 32, label_row_css = 'background-color: #808000; color: #fff;') %&gt;%
-  group_rows('USD/CAD Open', 33, 34, label_row_css = 'background-color: #666; color: #fff;') %&gt;%
-  group_rows('USD/CAD High', 35, 36, label_row_css = 'background-color: #666; color: #fff;') %&gt;%
-  group_rows('USD/CAD Low', 37, 38, label_row_css = 'background-color: #666; color: #fff;') %&gt;%
-  group_rows('USD/CAD Close', 39, 40, label_row_css = 'background-color: #666; color: #fff;') %&gt;%
-  group_rows('USD/CNY Open', 41, 42, label_row_css = 'background-color: #e60000; color: #fff;') %&gt;%
-  group_rows('USD/CNY High', 43, 44, label_row_css = 'background-color: #e60000; color: #fff;') %&gt;%
-  group_rows('USD/CNY Low', 45, 46, label_row_css = 'background-color: #e60000; color: #fff;') %&gt;%
-  group_rows('USD/CNY Close', 47, 48, label_row_css = 'background-color: #e60000; color: #fff;') %&gt;%
-  group_rows('USD/JPY Open', 49, 50, label_row_css = 'background-color: #ff3377; color: #fff;') %&gt;%
-  group_rows('USD/JPY High', 51, 52, label_row_css = 'background-color: #ff3377; color: #fff;') %&gt;%
-  group_rows('USD/JPY Low', 53, 54, label_row_css = 'background-color: #ff3377; color: #fff;') %&gt;%
-  group_rows('USD/JPY Close', 55, 56, label_row_css = 'background-color: #ff3377; color: #fff;') %&gt;%
+  group_rows('USD/AUD Open', 1, 3, label_row_css = 'background-color: #e68a00; color: #fff;') %&gt;%
+  group_rows('USD/AUD High', 4, 6, label_row_css = 'background-color: #e68a00; color: #fff;') %&gt;%
+  group_rows('USD/AUD Low', 7, 9, label_row_css = 'background-color: #e68a00; color: #fff;') %&gt;%
+  group_rows('USD/AUD Close', 10, 12, label_row_css = 'background-color: #e68a00; color: #fff;') %&gt;%
+  group_rows('USD/EUR Open', 13, 15, label_row_css = 'background-color: #6666ff; color: #fff;') %&gt;%
+  group_rows('USD/EUR High', 16, 18, label_row_css = 'background-color: #6666ff; color: #fff;') %&gt;%
+  group_rows('USD/EUR Low', 19, 21, label_row_css = 'background-color:#6666ff; color: #fff;') %&gt;%
+  group_rows('USD/EUR Close', 22, 24, label_row_css = 'background-color: #6666ff; color: #fff;') %&gt;%
+  group_rows('USD/GBP Open', 25, 27, label_row_css = 'background-color: #339966; color: #fff;') %&gt;%
+  group_rows('USD/GBP High', 28, 30, label_row_css = 'background-color: #339966; color: #fff;') %&gt;%
+  group_rows('USD/GBP Low', 31, 33, label_row_css = 'background-color: #339966; color: #fff;') %&gt;%
+  group_rows('USD/GBP Close', 34, 36, label_row_css = 'background-color: #339966; color: #fff;') %&gt;%
+  group_rows('USD/CHF Open', 37, 39, label_row_css = 'background-color: #808000; color: #fff;') %&gt;%
+  group_rows('USD/CHF High', 40, 42, label_row_css = 'background-color: #808000; color: #fff;') %&gt;%
+  group_rows('USD/CHF Low', 43, 45, label_row_css = 'background-color: #808000; color: #fff;') %&gt;%
+  group_rows('USD/CHF Close', 46, 48, label_row_css = 'background-color: #808000; color: #fff;') %&gt;%
+  group_rows('USD/CAD Open', 49, 51, label_row_css = 'background-color: #666; color: #fff;') %&gt;%
+  group_rows('USD/CAD High', 52, 54, label_row_css = 'background-color: #666; color: #fff;') %&gt;%
+  group_rows('USD/CAD Low', 55, 57, label_row_css = 'background-color: #666; color: #fff;') %&gt;%
+  group_rows('USD/CAD Close', 58, 60, label_row_css = 'background-color: #666; color: #fff;') %&gt;%
+  group_rows('USD/CNY Open', 61, 63, label_row_css = 'background-color: #e60000; color: #fff;') %&gt;%
+  group_rows('USD/CNY High', 64, 66, label_row_css = 'background-color: #e60000; color: #fff;') %&gt;%
+  group_rows('USD/CNY Low', 67, 69, label_row_css = 'background-color: #e60000; color: #fff;') %&gt;%
+  group_rows('USD/CNY Close', 70, 72, label_row_css = 'background-color: #e60000; color: #fff;') %&gt;%
+  group_rows('USD/JPY Open', 73, 75, label_row_css = 'background-color: #ff3377; color: #fff;') %&gt;%
+  group_rows('USD/JPY High', 76, 78, label_row_css = 'background-color: #ff3377; color: #fff;') %&gt;%
+  group_rows('USD/JPY Low', 79, 81, label_row_css = 'background-color: #ff3377; color: #fff;') %&gt;%
+  group_rows('USD/JPY Close', 82, 84, label_row_css = 'background-color: #ff3377; color: #fff;') %&gt;%
   scroll_box(width = '100%', height = '400px')</code></pre>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
@@ -3059,13 +3841,13 @@ Cat
 Type
 </th>
 <th style="text-align:right;">
-mse
+MSE
 </th>
 <th style="text-align:right;">
 n
 </th>
 <th style="text-align:right;">
-Akaike.mse
+Akaike.MSE
 </th>
 <th style="text-align:right;">
 Akaike
@@ -3082,38 +3864,67 @@ Hannan.Quinn
 </tr>
 </thead>
 <tbody>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #e68a00; color: #fff;">
 <strong>USD/AUD Open</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDAUD.Op
+</td>
+<td style="text-align:right;">
+0.001327
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075234
+</td>
+<td style="text-align:right;">
+-6.2292509
+</td>
+<td style="text-align:right;">
+-6.1078447
+</td>
+<td style="text-align:right;">
+-6.2317118
+</td>
+<td style="text-align:right;">
+-6.1804509
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDAUD.Op
 </td>
 <td style="text-align:right;">
-0.000064
+0.000061
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075187
 </td>
 <td style="text-align:right;">
--7.014750
+-6.9806022
 </td>
 <td style="text-align:right;">
--6.920366
+-6.8880784
 </td>
 <td style="text-align:right;">
--7.016146
+-6.9819415
 </td>
 <td style="text-align:right;">
--6.976812
+-6.9434118
 </td>
 </tr>
 <tr>
@@ -3124,59 +3935,88 @@ pred3
 USDAUD.Op
 </td>
 <td style="text-align:right;">
-0.000071
+0.000067
 </td>
 <td style="text-align:right;">
-971
+1050
 </td>
 <td style="text-align:right;">
-0.0082388
+0.0076189
 </td>
 <td style="text-align:right;">
--6.886177
+-6.7707450
 </td>
 <td style="text-align:right;">
--6.780662
+-6.6649022
 </td>
 <td style="text-align:right;">
--6.887896
+-6.7724759
 </td>
 <td style="text-align:right;">
--6.843765
+-6.7282010
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #e68a00; color: #fff;">
 <strong>USD/AUD High</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDAUD.Hi
+</td>
+<td style="text-align:right;">
+0.001688
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075227
+</td>
+<td style="text-align:right;">
+-6.3257951
+</td>
+<td style="text-align:right;">
+-6.1985779
+</td>
+<td style="text-align:right;">
+-6.3284991
+</td>
+<td style="text-align:right;">
+-6.2746597
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDAUD.Hi
 </td>
 <td style="text-align:right;">
-0.000053
+0.000050
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075187
 </td>
 <td style="text-align:right;">
--7.176276
+-7.1409647
 </td>
 <td style="text-align:right;">
--7.085046
+-7.0511697
 </td>
 <td style="text-align:right;">
--7.177582
+-7.1422284
 </td>
 <td style="text-align:right;">
--7.139606
+-7.1048711
 </td>
 </tr>
 <tr>
@@ -3187,59 +4027,88 @@ pred3
 USDAUD.Hi
 </td>
 <td style="text-align:right;">
-0.000059
+0.000056
 </td>
 <td style="text-align:right;">
-971
+1050
 </td>
 <td style="text-align:right;">
-0.0082388
+0.0076189
 </td>
 <td style="text-align:right;">
--6.049788
+-5.8911348
 </td>
 <td style="text-align:right;">
--5.947798
+-5.7879269
 </td>
 <td style="text-align:right;">
--6.051395
+-5.8927837
 </td>
 <td style="text-align:right;">
--6.008793
+-5.8496499
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #e68a00; color: #fff;">
 <strong>USD/AUD Low</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDAUD.Lo
+</td>
+<td style="text-align:right;">
+0.001618
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075228
+</td>
+<td style="text-align:right;">
+-6.5826946
+</td>
+<td style="text-align:right;">
+-6.4542512
+</td>
+<td style="text-align:right;">
+-6.5853970
+</td>
+<td style="text-align:right;">
+-6.5310659
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDAUD.Lo
 </td>
 <td style="text-align:right;">
-0.000054
+0.000050
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075187
 </td>
 <td style="text-align:right;">
--7.187879
+-7.1541315
 </td>
 <td style="text-align:right;">
--7.095247
+-7.0627417
 </td>
 <td style="text-align:right;">
--7.189226
+-7.1554405
 </td>
 <td style="text-align:right;">
--7.150645
+-7.1173969
 </td>
 </tr>
 <tr>
@@ -3250,59 +4119,88 @@ pred3
 USDAUD.Lo
 </td>
 <td style="text-align:right;">
-0.000060
+0.000057
 </td>
 <td style="text-align:right;">
-971
+1050
 </td>
 <td style="text-align:right;">
-0.0082388
+0.0076189
 </td>
 <td style="text-align:right;">
--6.002960
+-6.1050918
 </td>
 <td style="text-align:right;">
--5.898815
+-6.0002288
 </td>
 <td style="text-align:right;">
--6.004638
+-6.1067940
 </td>
 <td style="text-align:right;">
--5.961099
+-6.0629415
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #e68a00; color: #fff;">
 <strong>USD/AUD Close</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDAUD.Cl
+</td>
+<td style="text-align:right;">
+0.001596
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075229
+</td>
+<td style="text-align:right;">
+-6.1567926
+</td>
+<td style="text-align:right;">
+-6.0361500
+</td>
+<td style="text-align:right;">
+-6.1592244
+</td>
+<td style="text-align:right;">
+-6.1082996
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDAUD.Cl
 </td>
 <td style="text-align:right;">
-0.000064
+0.000060
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075187
 </td>
 <td style="text-align:right;">
--7.025491
+-6.9910488
 </td>
 <td style="text-align:right;">
--6.931212
+-6.8985642
 </td>
 <td style="text-align:right;">
--7.026885
+-6.9923872
 </td>
 <td style="text-align:right;">
--6.987596
+-6.9538742
 </td>
 </tr>
 <tr>
@@ -3313,59 +4211,88 @@ pred3
 USDAUD.Cl
 </td>
 <td style="text-align:right;">
-0.000071
+0.000067
 </td>
 <td style="text-align:right;">
-971
+1050
 </td>
 <td style="text-align:right;">
-0.0082388
+0.0076189
 </td>
 <td style="text-align:right;">
--6.940800
+-6.5017943
 </td>
 <td style="text-align:right;">
--6.835132
+-6.3959261
 </td>
 <td style="text-align:right;">
--6.942525
+-6.5035266
 </td>
 <td style="text-align:right;">
--6.898326
+-6.4592401
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #6666ff; color: #fff;">
 <strong>USD/EUR Open</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDEUR.Op
+</td>
+<td style="text-align:right;">
+0.000431
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075251
+</td>
+<td style="text-align:right;">
+-7.3711642
+</td>
+<td style="text-align:right;">
+-7.2396364
+</td>
+<td style="text-align:right;">
+-7.3740422
+</td>
+<td style="text-align:right;">
+-7.3182959
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDEUR.Op
 </td>
 <td style="text-align:right;">
-0.000024
+0.000021
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075188
 </td>
 <td style="text-align:right;">
--8.038937
+-7.9972301
 </td>
 <td style="text-align:right;">
--7.943634
+-7.9029044
 </td>
 <td style="text-align:right;">
--8.040362
+-7.9986266
 </td>
 <td style="text-align:right;">
--8.000630
+-7.9593154
 </td>
 </tr>
 <tr>
@@ -3376,59 +4303,88 @@ pred3
 USDEUR.Op
 </td>
 <td style="text-align:right;">
-0.000037
+0.000035
 </td>
 <td style="text-align:right;">
-896
+975
 </td>
 <td style="text-align:right;">
-0.0089285
+0.0082051
 </td>
 <td style="text-align:right;">
--6.409082
+-4.0096643
 </td>
 <td style="text-align:right;">
--6.303374
+-3.9035604
 </td>
 <td style="text-align:right;">
--6.410805
+-4.0114036
 </td>
 <td style="text-align:right;">
--6.366592
+-3.9670152
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #6666ff; color: #fff;">
 <strong>USD/EUR High</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDEUR.Hi
+</td>
+<td style="text-align:right;">
+0.000564
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075248
+</td>
+<td style="text-align:right;">
+-7.2431196
+</td>
+<td style="text-align:right;">
+-7.1178015
+</td>
+<td style="text-align:right;">
+-7.2457522
+</td>
+<td style="text-align:right;">
+-7.1927468
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDEUR.Hi
 </td>
 <td style="text-align:right;">
-0.000018
+0.000017
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075188
 </td>
 <td style="text-align:right;">
--8.231608
+-8.1883064
 </td>
 <td style="text-align:right;">
--8.136837
+-8.0947113
 </td>
 <td style="text-align:right;">
--8.233016
+-8.1896769
 </td>
 <td style="text-align:right;">
--8.193514
+-8.1506853
 </td>
 </tr>
 <tr>
@@ -3439,59 +4395,88 @@ pred3
 USDEUR.Hi
 </td>
 <td style="text-align:right;">
-0.000032
+0.000030
 </td>
 <td style="text-align:right;">
-896
+975
 </td>
 <td style="text-align:right;">
-0.0089285
+0.0082051
 </td>
 <td style="text-align:right;">
--5.140129
+-5.3707009
 </td>
 <td style="text-align:right;">
--5.034422
+-5.2643736
 </td>
 <td style="text-align:right;">
--5.141855
+-5.3724484
 </td>
 <td style="text-align:right;">
--5.097640
+-5.3279620
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color:#6666ff; color: #fff;">
 <strong>USD/EUR Low</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDEUR.Lo
+</td>
+<td style="text-align:right;">
+0.000110
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075257
+</td>
+<td style="text-align:right;">
+-7.8756354
+</td>
+<td style="text-align:right;">
+-7.7347548
+</td>
+<td style="text-align:right;">
+-7.8787801
+</td>
+<td style="text-align:right;">
+-7.8190076
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDEUR.Lo
 </td>
 <td style="text-align:right;">
-0.000021
+0.000019
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075188
 </td>
 <td style="text-align:right;">
--8.198016
+-8.1525334
 </td>
 <td style="text-align:right;">
--8.102947
+-8.0577619
 </td>
 <td style="text-align:right;">
--8.199447
+-8.1539554
 </td>
 <td style="text-align:right;">
--8.159802
+-8.1144395
 </td>
 </tr>
 <tr>
@@ -3502,59 +4487,88 @@ pred3
 USDEUR.Lo
 </td>
 <td style="text-align:right;">
-0.000036
+0.000034
 </td>
 <td style="text-align:right;">
-896
+975
 </td>
 <td style="text-align:right;">
-0.0089285
+0.0082051
 </td>
 <td style="text-align:right;">
--5.659427
+-5.8603588
 </td>
 <td style="text-align:right;">
--5.553556
+-5.7536009
 </td>
 <td style="text-align:right;">
--5.661170
+-5.8621335
 </td>
 <td style="text-align:right;">
--5.616872
+-5.8174469
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #6666ff; color: #fff;">
 <strong>USD/EUR Close</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDEUR.Cl
+</td>
+<td style="text-align:right;">
+0.000567
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075248
+</td>
+<td style="text-align:right;">
+-7.3829409
+</td>
+<td style="text-align:right;">
+-7.2511829
+</td>
+<td style="text-align:right;">
+-7.3858277
+</td>
+<td style="text-align:right;">
+-7.3299801
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDEUR.Cl
 </td>
 <td style="text-align:right;">
-0.000024
+0.000021
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075188
 </td>
 <td style="text-align:right;">
--8.044830
+-8.0012923
 </td>
 <td style="text-align:right;">
--7.949435
+-7.9069151
 </td>
 <td style="text-align:right;">
--8.046260
+-8.0026919
 </td>
 <td style="text-align:right;">
--8.006486
+-7.9633569
 </td>
 </tr>
 <tr>
@@ -3565,30 +4579,59 @@ pred3
 USDEUR.Cl
 </td>
 <td style="text-align:right;">
-0.000037
+0.000034
 </td>
 <td style="text-align:right;">
-896
+975
 </td>
 <td style="text-align:right;">
-0.0089285
+0.0082051
 </td>
 <td style="text-align:right;">
--6.038565
+-4.3804623
 </td>
 <td style="text-align:right;">
--5.932628
+-4.2742747
 </td>
 <td style="text-align:right;">
--6.040298
+-4.3822067
 </td>
 <td style="text-align:right;">
--5.995983
+-4.3377795
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #339966; color: #fff;">
 <strong>USD/GBP Open</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDGBP.Op
+</td>
+<td style="text-align:right;">
+0.000145
+</td>
+<td style="text-align:right;">
+1064
+</td>
+<td style="text-align:right;">
+0.0075185
+</td>
+<td style="text-align:right;">
+-8.1176231
+</td>
+<td style="text-align:right;">
+-7.9782450
+</td>
+<td style="text-align:right;">
+-8.1207294
+</td>
+<td style="text-align:right;">
+-8.0616019
 </td>
 </tr>
 <tr>
@@ -3602,22 +4645,22 @@ USDGBP.Op
 0.000017
 </td>
 <td style="text-align:right;">
-1181
+1065
 </td>
 <td style="text-align:right;">
-0.0067739
+0.0075117
 </td>
 <td style="text-align:right;">
--8.584627
+-8.5263160
 </td>
 <td style="text-align:right;">
--8.484380
+-8.4261913
 </td>
 <td style="text-align:right;">
--8.586235
+-8.5279217
 </td>
 <td style="text-align:right;">
--8.544334
+-8.4860724
 </td>
 </tr>
 <tr>
@@ -3631,27 +4674,56 @@ USDGBP.Op
 0.000020
 </td>
 <td style="text-align:right;">
-834
+895
 </td>
 <td style="text-align:right;">
-0.0095923
+0.0089385
 </td>
 <td style="text-align:right;">
--4.939395
+-4.6393202
 </td>
 <td style="text-align:right;">
--4.826272
+-4.5266541
 </td>
 <td style="text-align:right;">
--4.941410
+-4.6413171
 </td>
 <td style="text-align:right;">
--4.893927
+-4.5940358
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #339966; color: #fff;">
 <strong>USD/GBP High</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDGBP.Hi
+</td>
+<td style="text-align:right;">
+0.000525
+</td>
+<td style="text-align:right;">
+1064
+</td>
+<td style="text-align:right;">
+0.0075178
+</td>
+<td style="text-align:right;">
+-7.3687132
+</td>
+<td style="text-align:right;">
+-7.2537955
+</td>
+<td style="text-align:right;">
+-7.3709197
+</td>
+<td style="text-align:right;">
+-7.3225241
 </td>
 </tr>
 <tr>
@@ -3665,22 +4737,22 @@ USDGBP.Hi
 0.000013
 </td>
 <td style="text-align:right;">
-1181
+1065
 </td>
 <td style="text-align:right;">
-0.0067739
+0.0075117
 </td>
 <td style="text-align:right;">
--8.694147
+-8.6367225
 </td>
 <td style="text-align:right;">
--8.598403
+-8.5411067
 </td>
 <td style="text-align:right;">
--8.695593
+-8.6381634
 </td>
 <td style="text-align:right;">
--8.655664
+-8.5982912
 </td>
 </tr>
 <tr>
@@ -3691,30 +4763,59 @@ pred3
 USDGBP.Hi
 </td>
 <td style="text-align:right;">
-0.000017
+0.000016
 </td>
 <td style="text-align:right;">
-834
+895
 </td>
 <td style="text-align:right;">
-0.0095923
+0.0089385
 </td>
 <td style="text-align:right;">
--7.155804
+-6.7477688
 </td>
 <td style="text-align:right;">
--7.047327
+-6.6394175
 </td>
 <td style="text-align:right;">
--7.157629
+-6.7495920
 </td>
 <td style="text-align:right;">
--7.112203
+-6.7042187
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #339966; color: #fff;">
 <strong>USD/GBP Low</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDGBP.Lo
+</td>
+<td style="text-align:right;">
+0.000389
+</td>
+<td style="text-align:right;">
+1064
+</td>
+<td style="text-align:right;">
+0.0075181
+</td>
+<td style="text-align:right;">
+-7.8193047
+</td>
+<td style="text-align:right;">
+-7.6936588
+</td>
+<td style="text-align:right;">
+-7.8219090
+</td>
+<td style="text-align:right;">
+-7.7688032
 </td>
 </tr>
 <tr>
@@ -3728,22 +4829,22 @@ USDGBP.Lo
 0.000014
 </td>
 <td style="text-align:right;">
-1181
+1065
 </td>
 <td style="text-align:right;">
-0.0067739
+0.0075117
 </td>
 <td style="text-align:right;">
--8.772865
+-8.7192993
 </td>
 <td style="text-align:right;">
--8.676763
+-8.6229143
 </td>
 <td style="text-align:right;">
--8.774313
+-8.7207549
 </td>
 <td style="text-align:right;">
--8.734238
+-8.6805588
 </td>
 </tr>
 <tr>
@@ -3757,27 +4858,56 @@ USDGBP.Lo
 0.000018
 </td>
 <td style="text-align:right;">
-834
+895
 </td>
 <td style="text-align:right;">
-0.0095923
+0.0089385
 </td>
 <td style="text-align:right;">
--5.948700
+-6.0157922
 </td>
 <td style="text-align:right;">
--5.839110
+-5.9062969
 </td>
 <td style="text-align:right;">
--5.950555
+-6.0176448
 </td>
 <td style="text-align:right;">
--5.904652
+-5.9717823
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #339966; color: #fff;">
 <strong>USD/GBP Close</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDGBP.Cl
+</td>
+<td style="text-align:right;">
+0.000160
+</td>
+<td style="text-align:right;">
+1064
+</td>
+<td style="text-align:right;">
+0.0075185
+</td>
+<td style="text-align:right;">
+-7.9163904
+</td>
+<td style="text-align:right;">
+-7.7849435
+</td>
+<td style="text-align:right;">
+-7.9191984
+</td>
+<td style="text-align:right;">
+-7.8635571
 </td>
 </tr>
 <tr>
@@ -3791,22 +4921,22 @@ USDGBP.Cl
 0.000017
 </td>
 <td style="text-align:right;">
-1181
+1065
 </td>
 <td style="text-align:right;">
-0.0067739
+0.0075117
 </td>
 <td style="text-align:right;">
--8.595974
+-8.5357748
 </td>
 <td style="text-align:right;">
--8.499299
+-8.4394313
 </td>
 <td style="text-align:right;">
--8.597470
+-8.5372612
 </td>
 <td style="text-align:right;">
--8.557117
+-8.4970510
 </td>
 </tr>
 <tr>
@@ -3817,59 +4947,88 @@ pred3
 USDGBP.Cl
 </td>
 <td style="text-align:right;">
-0.000020
+0.000019
 </td>
 <td style="text-align:right;">
-834
+895
 </td>
 <td style="text-align:right;">
-0.0095923
+0.0089385
 </td>
 <td style="text-align:right;">
--5.133146
+-5.3317899
 </td>
 <td style="text-align:right;">
--5.023985
+-5.2228307
 </td>
 <td style="text-align:right;">
--5.135021
+-5.3336573
 </td>
 <td style="text-align:right;">
--5.089271
+-5.2879955
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #808000; color: #fff;">
 <strong>USD/CHF Open</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCHF.Op
+</td>
+<td style="text-align:right;">
+0.000133
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075256
+</td>
+<td style="text-align:right;">
+-7.2604769
+</td>
+<td style="text-align:right;">
+-7.1154763
+</td>
+<td style="text-align:right;">
+-7.2638020
+</td>
+<td style="text-align:right;">
+-7.2021931
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCHF.Op
 </td>
 <td style="text-align:right;">
-0.000051
+0.000026
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075187
 </td>
 <td style="text-align:right;">
--7.576570
+-7.5968390
 </td>
 <td style="text-align:right;">
--7.484273
+-7.5042710
 </td>
 <td style="text-align:right;">
--7.577915
+-7.5981923
 </td>
 <td style="text-align:right;">
--7.539471
+-7.5596306
 </td>
 </tr>
 <tr>
@@ -3880,59 +5039,88 @@ pred3
 USDCHF.Op
 </td>
 <td style="text-align:right;">
-0.000031
+0.000030
 </td>
 <td style="text-align:right;">
-818
+865
 </td>
 <td style="text-align:right;">
-0.0097799
+0.0092485
 </td>
 <td style="text-align:right;">
--7.500887
+-6.7730373
 </td>
 <td style="text-align:right;">
--7.394408
+-6.6672004
 </td>
 <td style="text-align:right;">
--7.502654
+-6.7747810
 </td>
 <td style="text-align:right;">
--7.458087
+-6.7304953
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #808000; color: #fff;">
 <strong>USD/CHF High</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCHF.Hi
+</td>
+<td style="text-align:right;">
+0.000374
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075252
+</td>
+<td style="text-align:right;">
+-7.2636599
+</td>
+<td style="text-align:right;">
+-7.1226489
+</td>
+<td style="text-align:right;">
+-7.2668978
+</td>
+<td style="text-align:right;">
+-7.2069792
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCHF.Hi
 </td>
 <td style="text-align:right;">
-0.000040
+0.000021
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075188
 </td>
 <td style="text-align:right;">
--7.748370
+-7.7623751
 </td>
 <td style="text-align:right;">
--7.652418
+-7.6659213
 </td>
 <td style="text-align:right;">
--7.749815
+-7.7638351
 </td>
 <td style="text-align:right;">
--7.709801
+-7.7236048
 </td>
 </tr>
 <tr>
@@ -3943,59 +5131,88 @@ pred3
 USDCHF.Hi
 </td>
 <td style="text-align:right;">
-0.000026
+0.000025
 </td>
 <td style="text-align:right;">
-818
+865
 </td>
 <td style="text-align:right;">
-0.0097799
+0.0092485
 </td>
 <td style="text-align:right;">
--5.363864
+-5.5026271
 </td>
 <td style="text-align:right;">
--5.253049
+-5.3923893
 </td>
 <td style="text-align:right;">
--5.365767
+-5.5045103
 </td>
 <td style="text-align:right;">
--5.319321
+-5.4583161
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #808000; color: #fff;">
 <strong>USD/CHF Low</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCHF.Lo
+</td>
+<td style="text-align:right;">
+0.000369
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075252
+</td>
+<td style="text-align:right;">
+-6.9157342
+</td>
+<td style="text-align:right;">
+-6.7944387
+</td>
+<td style="text-align:right;">
+-6.9181574
+</td>
+<td style="text-align:right;">
+-6.8669786
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCHF.Lo
 </td>
 <td style="text-align:right;">
-0.000040
+0.000027
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075187
 </td>
 <td style="text-align:right;">
--7.734433
+-7.7172916
 </td>
 <td style="text-align:right;">
--7.641023
+-7.6243983
 </td>
 <td style="text-align:right;">
--7.735800
+-7.7186442
 </td>
 <td style="text-align:right;">
--7.696887
+-7.6799525
 </td>
 </tr>
 <tr>
@@ -4006,30 +5223,59 @@ pred3
 USDCHF.Lo
 </td>
 <td style="text-align:right;">
-0.000035
+0.000034
 </td>
 <td style="text-align:right;">
-818
+865
 </td>
 <td style="text-align:right;">
-0.0097799
+0.0092485
 </td>
 <td style="text-align:right;">
--7.609085
+-7.6262022
 </td>
 <td style="text-align:right;">
--7.502582
+-7.5198850
 </td>
 <td style="text-align:right;">
--7.610839
+-7.6279517
 </td>
 <td style="text-align:right;">
--7.566275
+-7.5834673
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #808000; color: #fff;">
 <strong>USD/CHF Close</strong>
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCHF.Cl
+</td>
+<td style="text-align:right;">
+0.000151
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075256
+</td>
+<td style="text-align:right;">
+-7.2391218
+</td>
+<td style="text-align:right;">
+-7.0953260
+</td>
+<td style="text-align:right;">
+-7.2424109
+</td>
+<td style="text-align:right;">
+-7.1813222
 </td>
 </tr>
 <tr>
@@ -4040,25 +5286,25 @@ pred2
 USDCHF.Cl
 </td>
 <td style="text-align:right;">
-0.000051
+0.000026
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0067796
+0.0075187
 </td>
 <td style="text-align:right;">
--7.586612
+-7.6058197
 </td>
 <td style="text-align:right;">
--7.493479
+-7.5122736
 </td>
 <td style="text-align:right;">
--7.587977
+-7.6071988
 </td>
 <td style="text-align:right;">
--7.549176
+-7.5682181
 </td>
 </tr>
 <tr>
@@ -4072,56 +5318,85 @@ USDCHF.Cl
 0.000030
 </td>
 <td style="text-align:right;">
-818
+865
 </td>
 <td style="text-align:right;">
-0.0097799
+0.0092485
 </td>
 <td style="text-align:right;">
--4.960213
+-5.1277223
 </td>
 <td style="text-align:right;">
--4.852662
+-5.0206349
 </td>
 <td style="text-align:right;">
--4.962012
+-5.1295051
 </td>
 <td style="text-align:right;">
--4.916982
+-5.0846776
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #666; color: #fff;">
 <strong>USD/CAD Open</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCAD.Op
+</td>
+<td style="text-align:right;">
+0.001057
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075239
+</td>
+<td style="text-align:right;">
+-7.2446913
+</td>
+<td style="text-align:right;">
+-7.1019012
+</td>
+<td style="text-align:right;">
+-7.2479600
+</td>
+<td style="text-align:right;">
+-7.1872958
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCAD.Op
 </td>
 <td style="text-align:right;">
-0.000036
+0.000033
 </td>
 <td style="text-align:right;">
-1179
+1063
 </td>
 <td style="text-align:right;">
-0.0067854
+0.0075258
 </td>
 <td style="text-align:right;">
--7.647028
+-7.6218111
 </td>
 <td style="text-align:right;">
--7.553152
+-7.5288648
 </td>
 <td style="text-align:right;">
--7.648428
+-7.6231845
 </td>
 <td style="text-align:right;">
--7.609294
+-7.5844505
 </td>
 </tr>
 <tr>
@@ -4132,59 +5407,88 @@ pred3
 USDCAD.Op
 </td>
 <td style="text-align:right;">
-0.000053
+0.000052
 </td>
 <td style="text-align:right;">
-787
+855
 </td>
 <td style="text-align:right;">
-0.0101650
+0.0093566
 </td>
 <td style="text-align:right;">
--4.825995
+-5.0520809
 </td>
 <td style="text-align:right;">
--4.718939
+-4.9455904
 </td>
 <td style="text-align:right;">
--4.827793
+-5.0538573
 </td>
 <td style="text-align:right;">
--4.782963
+-5.0092760
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #666; color: #fff;">
 <strong>USD/CAD High</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCAD.Hi
+</td>
+<td style="text-align:right;">
+0.000319
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075253
+</td>
+<td style="text-align:right;">
+-7.3622823
+</td>
+<td style="text-align:right;">
+-7.2158045
+</td>
+<td style="text-align:right;">
+-7.3657508
+</td>
+<td style="text-align:right;">
+-7.3034049
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCAD.Hi
 </td>
 <td style="text-align:right;">
-0.000034
+0.000033
 </td>
 <td style="text-align:right;">
-1179
+1063
 </td>
 <td style="text-align:right;">
-0.0067854
+0.0075258
 </td>
 <td style="text-align:right;">
--7.789925
+-7.7558858
 </td>
 <td style="text-align:right;">
--7.687654
+-7.6543965
 </td>
 <td style="text-align:right;">
--7.791570
+-7.7575054
 </td>
 <td style="text-align:right;">
--7.748817
+-7.7150914
 </td>
 </tr>
 <tr>
@@ -4195,59 +5499,88 @@ pred3
 USDCAD.Hi
 </td>
 <td style="text-align:right;">
-0.000051
+0.000049
 </td>
 <td style="text-align:right;">
-787
+855
 </td>
 <td style="text-align:right;">
-0.0101651
+0.0093566
 </td>
 <td style="text-align:right;">
--2.698578
+-3.0976066
 </td>
 <td style="text-align:right;">
--2.583240
+-2.9834124
 </td>
 <td style="text-align:right;">
--2.700640
+-3.0996302
 </td>
 <td style="text-align:right;">
--2.652217
+-3.0517053
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #666; color: #fff;">
 <strong>USD/CAD Low</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCAD.Lo
+</td>
+<td style="text-align:right;">
+0.001102
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075238
+</td>
+<td style="text-align:right;">
+-7.1493858
+</td>
+<td style="text-align:right;">
+-7.0033817
+</td>
+<td style="text-align:right;">
+-7.1528296
+</td>
+<td style="text-align:right;">
+-7.0906981
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCAD.Lo
 </td>
 <td style="text-align:right;">
-0.000032
+0.000029
 </td>
 <td style="text-align:right;">
-1179
+1063
 </td>
 <td style="text-align:right;">
-0.0067854
+0.0075258
 </td>
 <td style="text-align:right;">
--7.728660
+-7.6956597
 </td>
 <td style="text-align:right;">
--7.636104
+-7.6035217
 </td>
 <td style="text-align:right;">
--7.730013
+-7.6970004
 </td>
 <td style="text-align:right;">
--7.691457
+-7.6586242
 </td>
 </tr>
 <tr>
@@ -4258,59 +5591,88 @@ pred3
 USDCAD.Lo
 </td>
 <td style="text-align:right;">
-0.000050
+0.000048
 </td>
 <td style="text-align:right;">
-787
+855
 </td>
 <td style="text-align:right;">
-0.0101651
+0.0093566
 </td>
 <td style="text-align:right;">
--5.042750
+-5.2559175
 </td>
 <td style="text-align:right;">
--4.936246
+-5.1498556
 </td>
 <td style="text-align:right;">
--5.044515
+-5.2576687
 </td>
 <td style="text-align:right;">
--4.999940
+-5.2132851
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #666; color: #fff;">
 <strong>USD/CAD Close</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCAD.Cl
+</td>
+<td style="text-align:right;">
+0.000784
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075244
+</td>
+<td style="text-align:right;">
+-7.2789677
+</td>
+<td style="text-align:right;">
+-7.1368084
+</td>
+<td style="text-align:right;">
+-7.2822076
+</td>
+<td style="text-align:right;">
+-7.2218258
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCAD.Cl
 </td>
 <td style="text-align:right;">
-0.000036
+0.000033
 </td>
 <td style="text-align:right;">
-1179
+1063
 </td>
 <td style="text-align:right;">
-0.0067854
+0.0075258
 </td>
 <td style="text-align:right;">
--7.658619
+-7.6338304
 </td>
 <td style="text-align:right;">
--7.564292
+-7.5404603
 </td>
 <td style="text-align:right;">
--7.660032
+-7.6352158
 </td>
 <td style="text-align:right;">
--7.620703
+-7.5962994
 </td>
 </tr>
 <tr>
@@ -4321,59 +5683,88 @@ pred3
 USDCAD.Cl
 </td>
 <td style="text-align:right;">
-0.000053
+0.000051
 </td>
 <td style="text-align:right;">
-787
+855
 </td>
 <td style="text-align:right;">
-0.0101651
+0.0093566
 </td>
 <td style="text-align:right;">
--4.361401
+-4.6254090
 </td>
 <td style="text-align:right;">
--4.254155
+-4.5187592
 </td>
 <td style="text-align:right;">
--4.363202
+-4.6271882
 </td>
 <td style="text-align:right;">
--4.318293
+-4.5825401
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #e60000; color: #fff;">
 <strong>USD/CNY Open</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCNY.Op
+</td>
+<td style="text-align:right;">
+0.003932
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075185
+</td>
+<td style="text-align:right;">
+-5.5185070
+</td>
+<td style="text-align:right;">
+-5.3815037
+</td>
+<td style="text-align:right;">
+-5.5214885
+</td>
+<td style="text-align:right;">
+-5.4634394
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCNY.Op
 </td>
 <td style="text-align:right;">
-0.000968
+0.001057
 </td>
 <td style="text-align:right;">
-1177
+1061
 </td>
 <td style="text-align:right;">
-0.0067953
+0.0075381
 </td>
 <td style="text-align:right;">
--6.219056
+-6.1661430
 </td>
 <td style="text-align:right;">
--6.119106
+-6.0656063
 </td>
 <td style="text-align:right;">
--6.220604
+-6.1677074
 </td>
 <td style="text-align:right;">
--6.178881
+-6.1257326
 </td>
 </tr>
 <tr>
@@ -4384,59 +5775,88 @@ pred3
 USDCNY.Op
 </td>
 <td style="text-align:right;">
-0.001691
+0.001637
 </td>
 <td style="text-align:right;">
-719
+763
 </td>
 <td style="text-align:right;">
-0.0111219
+0.0104806
 </td>
 <td style="text-align:right;">
--3.485364
+-3.5030858
 </td>
 <td style="text-align:right;">
--3.371571
+-3.3895755
 </td>
 <td style="text-align:right;">
--3.487346
+-3.5050566
 </td>
 <td style="text-align:right;">
--3.439625
+-3.4574606
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #e60000; color: #fff;">
 <strong>USD/CNY High</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCNY.Hi
+</td>
+<td style="text-align:right;">
+0.005304
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075159
+</td>
+<td style="text-align:right;">
+-5.6179600
+</td>
+<td style="text-align:right;">
+-5.4775771
+</td>
+<td style="text-align:right;">
+-5.6210259
+</td>
+<td style="text-align:right;">
+-5.5615337
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCNY.Hi
 </td>
 <td style="text-align:right;">
-0.000810
+0.000872
 </td>
 <td style="text-align:right;">
-1177
+1061
 </td>
 <td style="text-align:right;">
-0.0067956
+0.0075384
 </td>
 <td style="text-align:right;">
--6.002110
+-5.9455134
 </td>
 <td style="text-align:right;">
--5.896353
+-5.8403460
 </td>
 <td style="text-align:right;">
--6.003851
+-5.9472312
 </td>
 <td style="text-align:right;">
--5.959601
+-5.9032416
 </td>
 </tr>
 <tr>
@@ -4447,59 +5867,88 @@ pred3
 USDCNY.Hi
 </td>
 <td style="text-align:right;">
-0.000787
+0.000789
 </td>
 <td style="text-align:right;">
-719
+763
 </td>
 <td style="text-align:right;">
-0.0111244
+0.0104829
 </td>
 <td style="text-align:right;">
--4.562549
+0.3706113
 </td>
 <td style="text-align:right;">
--4.443403
+0.4897748
 </td>
 <td style="text-align:right;">
--4.564732
+0.3684288
 </td>
 <td style="text-align:right;">
--4.514659
+0.4185089
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #e60000; color: #fff;">
 <strong>USD/CNY Low</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCNY.Lo
+</td>
+<td style="text-align:right;">
+0.008912
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075091
+</td>
+<td style="text-align:right;">
+-5.5092562
+</td>
+<td style="text-align:right;">
+-5.3760322
+</td>
+<td style="text-align:right;">
+-5.5121723
+</td>
+<td style="text-align:right;">
+-5.4557071
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCNY.Lo
 </td>
 <td style="text-align:right;">
-0.001174
+0.000602
 </td>
 <td style="text-align:right;">
-1177
+1061
 </td>
 <td style="text-align:right;">
-0.0067949
+0.0075389
 </td>
 <td style="text-align:right;">
--6.060980
+-6.2005357
 </td>
 <td style="text-align:right;">
--5.963545
+-6.1020441
 </td>
 <td style="text-align:right;">
--6.062454
+-6.2020407
 </td>
 <td style="text-align:right;">
--6.021817
+-6.1609473
 </td>
 </tr>
 <tr>
@@ -4510,59 +5959,88 @@ pred3
 USDCNY.Lo
 </td>
 <td style="text-align:right;">
-0.000294
+0.000300
 </td>
 <td style="text-align:right;">
-719
+763
 </td>
 <td style="text-align:right;">
-0.0111257
+0.0104841
 </td>
 <td style="text-align:right;">
--5.471046
+-5.4554660
 </td>
 <td style="text-align:right;">
--5.359059
+-5.3432279
 </td>
 <td style="text-align:right;">
--5.472971
+-5.4573995
 </td>
 <td style="text-align:right;">
--5.426034
+-5.4103522
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #e60000; color: #fff;">
 <strong>USD/CNY Close</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCNY.Cl
+</td>
+<td style="text-align:right;">
+0.002791
+</td>
+<td style="text-align:right;">
+1063
+</td>
+<td style="text-align:right;">
+0.0075206
+</td>
+<td style="text-align:right;">
+-5.7520634
+</td>
+<td style="text-align:right;">
+-5.6111527
+</td>
+<td style="text-align:right;">
+-5.7552335
+</td>
+<td style="text-align:right;">
+-5.6954253
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCNY.Cl
 </td>
 <td style="text-align:right;">
-0.000185
+0.000189
 </td>
 <td style="text-align:right;">
-1177
+1061
 </td>
 <td style="text-align:right;">
-0.0067966
+0.0075397
 </td>
 <td style="text-align:right;">
--6.474105
+-6.4417019
 </td>
 <td style="text-align:right;">
--6.368936
+-6.3354908
 </td>
 <td style="text-align:right;">
--6.475824
+-6.4434515
 </td>
 <td style="text-align:right;">
--6.431833
+-6.3990107
 </td>
 </tr>
 <tr>
@@ -4573,59 +6051,88 @@ pred3
 USDCNY.Cl
 </td>
 <td style="text-align:right;">
-0.000227
+0.000251
 </td>
 <td style="text-align:right;">
-719
+763
 </td>
 <td style="text-align:right;">
-0.0111259
+0.0104843
 </td>
 <td style="text-align:right;">
-2.968548
+3.1297273
 </td>
 <td style="text-align:right;">
-3.086183
+3.2488793
 </td>
 <td style="text-align:right;">
-2.966427
+3.1275488
 </td>
 <td style="text-align:right;">
-3.015831
+3.1776201
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #ff3377; color: #fff;">
 <strong>USD/JPY Open</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDJPY.Op
+</td>
+<td style="text-align:right;">
+2.048856
+</td>
+<td style="text-align:right;">
+1062
+</td>
+<td style="text-align:right;">
+0.0036745
+</td>
+<td style="text-align:right;">
+1.9819480
+</td>
+<td style="text-align:right;">
+2.1454992
+</td>
+<td style="text-align:right;">
+1.9778455
+</td>
+<td style="text-align:right;">
+2.0476866
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDJPY.Op
 </td>
 <td style="text-align:right;">
-0.486788
+0.463056
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0059546
+0.0066484
 </td>
 <td style="text-align:right;">
-1.886715
+1.9181711
 </td>
 <td style="text-align:right;">
-1.985236
+2.0163025
 </td>
 <td style="text-align:right;">
-1.885171
+1.9166365
 </td>
 <td style="text-align:right;">
-1.926315
+1.9576147
 </td>
 </tr>
 <tr>
@@ -4636,59 +6143,88 @@ pred3
 USDJPY.Op
 </td>
 <td style="text-align:right;">
-0.748813
+0.723559
 </td>
 <td style="text-align:right;">
-656
+694
 </td>
 <td style="text-align:right;">
-0.0099122
+0.0094422
 </td>
 <td style="text-align:right;">
-3.335345
+3.2704568
 </td>
 <td style="text-align:right;">
-3.443627
+3.3792025
 </td>
 <td style="text-align:right;">
-3.333515
+3.2686084
 </td>
 <td style="text-align:right;">
-3.378869
+3.3141671
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #ff3377; color: #fff;">
 <strong>USD/JPY High</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDJPY.Hi
+</td>
+<td style="text-align:right;">
+4.558360
+</td>
+<td style="text-align:right;">
+1062
+</td>
+<td style="text-align:right;">
+-0.0010515
+</td>
+<td style="text-align:right;">
+2.1487619
+</td>
+<td style="text-align:right;">
+2.2870979
+</td>
+<td style="text-align:right;">
+2.1456833
+</td>
+<td style="text-align:right;">
+2.2043655
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDJPY.Hi
 </td>
 <td style="text-align:right;">
-0.374390
+0.368412
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0061451
+0.0068263
 </td>
 <td style="text-align:right;">
-1.645393
+1.6779794
 </td>
 <td style="text-align:right;">
-1.748459
+1.7802278
 </td>
 <td style="text-align:right;">
-1.643715
+1.6763267
 </td>
 <td style="text-align:right;">
-1.686820
+1.7190778
 </td>
 </tr>
 <tr>
@@ -4699,59 +6235,88 @@ pred3
 USDJPY.Hi
 </td>
 <td style="text-align:right;">
-0.813080
+0.733592
 </td>
 <td style="text-align:right;">
-656
+694
 </td>
 <td style="text-align:right;">
-0.0097162
+0.0094133
 </td>
 <td style="text-align:right;">
-5.636833
+5.4417047
 </td>
 <td style="text-align:right;">
-5.752520
+5.5568602
 </td>
 <td style="text-align:right;">
-5.634750
+5.4396377
 </td>
 <td style="text-align:right;">
-5.683334
+5.4879914
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #ff3377; color: #fff;">
 <strong>USD/JPY Low</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDJPY.Lo
+</td>
+<td style="text-align:right;">
+6.642743
+</td>
+<td style="text-align:right;">
+1062
+</td>
+<td style="text-align:right;">
+-0.0049769
+</td>
+<td style="text-align:right;">
+2.2528015
+</td>
+<td style="text-align:right;">
+2.4036671
+</td>
+<td style="text-align:right;">
+2.2491731
+</td>
+<td style="text-align:right;">
+2.3134413
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDJPY.Lo
 </td>
 <td style="text-align:right;">
-0.480193
+0.458632
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0059658
+0.0066567
 </td>
 <td style="text-align:right;">
-1.809612
+1.8460027
 </td>
 <td style="text-align:right;">
-1.904121
+1.9406834
 </td>
 <td style="text-align:right;">
-1.808201
+1.8445847
 </td>
 <td style="text-align:right;">
-1.847599
+1.8840592
 </td>
 </tr>
 <tr>
@@ -4762,59 +6327,88 @@ pred3
 USDJPY.Lo
 </td>
 <td style="text-align:right;">
-0.843509
+0.799664
 </td>
 <td style="text-align:right;">
-656
+694
 </td>
 <td style="text-align:right;">
-0.0096234
+0.0092229
 </td>
 <td style="text-align:right;">
-2.584697
+3.4968382
 </td>
 <td style="text-align:right;">
-2.689464
+3.6016706
 </td>
 <td style="text-align:right;">
-2.582997
+3.4951343
 </td>
 <td style="text-align:right;">
-2.626808
+3.5389755
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #ff3377; color: #fff;">
 <strong>USD/JPY Close</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDJPY.Cl
+</td>
+<td style="text-align:right;">
+1.445657
+</td>
+<td style="text-align:right;">
+1062
+</td>
+<td style="text-align:right;">
+0.0048104
+</td>
+<td style="text-align:right;">
+1.9709677
+</td>
+<td style="text-align:right;">
+2.1359965
+</td>
+<td style="text-align:right;">
+1.9668003
+</td>
+<td style="text-align:right;">
+2.0373003
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDJPY.Cl
 </td>
 <td style="text-align:right;">
-0.488909
+0.465761
 </td>
 <td style="text-align:right;">
-1180
+1064
 </td>
 <td style="text-align:right;">
-0.0059510
+0.0066433
 </td>
 <td style="text-align:right;">
-1.894815
+1.9255104
 </td>
 <td style="text-align:right;">
-1.993417
+2.0236924
 </td>
 <td style="text-align:right;">
-1.893270
+1.9239769
 </td>
 <td style="text-align:right;">
-1.934448
+1.9649743
 </td>
 </tr>
 <tr>
@@ -4825,51 +6419,51 @@ pred3
 USDJPY.Cl
 </td>
 <td style="text-align:right;">
-0.749960
+0.729299
 </td>
 <td style="text-align:right;">
-656
+694
 </td>
 <td style="text-align:right;">
-0.0099087
+0.0094257
 </td>
 <td style="text-align:right;">
-2.999228
+2.9501402
 </td>
 <td style="text-align:right;">
-3.107821
+3.0594739
 </td>
 <td style="text-align:right;">
-2.997388
+2.9482692
 </td>
 <td style="text-align:right;">
-3.042877
+2.9940868
 </td>
 </tr>
 </tbody>
 </table>
 </div>
 <pre class="r"><code>acc &lt;- ddply(fx, .(Cat, .id), summarise, 
-             mse = mean((Price.T1 - Price)^2, na.rm = TRUE), 
+             MSE = mean((Price.T1 - Price)^2, na.rm = TRUE), 
              n = length(Price), 
-             Akaike.mse = (-2*mse)/n+2*4/n, 
+             Akaike.MSE = (-2*MSE)/n+2*4/n, 
              Akaike = mean(Akaike, na.rm = TRUE), 
              Bayes = mean(Bayes, na.rm = TRUE), 
              Shibata = mean(Shibata, na.rm = TRUE), 
              Hannan.Quinn = mean(Hannan.Quinn, na.rm = TRUE)) %&gt;% 
-  tbl_df %&gt;% mutate(mse = round(mse, 6)) %&gt;% 
+  tbl_df %&gt;% mutate(MSE = round(MSE, 6)) %&gt;% 
   arrange(.id)
 
 acc %&gt;% 
   kable(caption = 'Group Table Summary') %&gt;% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %&gt;%
-  group_rows('USD/AUD', 1, 2, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
-  group_rows('USD/CAD', 3, 4, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
-  group_rows('USD/CHF', 5, 6, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
-  group_rows('USD/CNY', 7, 8, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
-  group_rows('USD/EUR', 9, 10, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
-  group_rows('USD/GBP', 11, 12, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
-  group_rows('USD/JPY', 13, 14, label_row_css = 'background-color: #003399; color: #fff;') %&gt;% 
+  group_rows('USD/AUD', 1, 3, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
+  group_rows('USD/CAD', 4, 6, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
+  group_rows('USD/CHF', 7, 9, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
+  group_rows('USD/CNY', 10, 12, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
+  group_rows('USD/EUR', 13, 15, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
+  group_rows('USD/GBP', 16, 18, label_row_css = 'background-color: #003399; color: #fff;') %&gt;%
+  group_rows('USD/JPY', 19, 21, label_row_css = 'background-color: #003399; color: #fff;') %&gt;% 
   scroll_box(width = '100%', height = '400px')</code></pre>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
@@ -4885,13 +6479,13 @@ Cat
 .id
 </th>
 <th style="text-align:right;">
-mse
+MSE
 </th>
 <th style="text-align:right;">
 n
 </th>
 <th style="text-align:right;">
-Akaike.mse
+Akaike.MSE
 </th>
 <th style="text-align:right;">
 Akaike
@@ -4908,38 +6502,67 @@ Hannan.Quinn
 </tr>
 </thead>
 <tbody>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #003399; color: #fff;">
 <strong>USD/AUD</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDAUD
+</td>
+<td style="text-align:right;">
+0.001557
+</td>
+<td style="text-align:right;">
+4252
+</td>
+<td style="text-align:right;">
+0.0018807
+</td>
+<td style="text-align:right;">
+-6.323633
+</td>
+<td style="text-align:right;">
+-6.199206
+</td>
+<td style="text-align:right;">
+-6.326208
+</td>
+<td style="text-align:right;">
+-6.273619
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDAUD
 </td>
 <td style="text-align:right;">
-0.000059
+0.000055
 </td>
 <td style="text-align:right;">
-4720
+4256
 </td>
 <td style="text-align:right;">
-0.0016949
+0.0018797
 </td>
 <td style="text-align:right;">
--7.101099
+-7.066687
 </td>
 <td style="text-align:right;">
--7.007968
+-6.975138
 </td>
 <td style="text-align:right;">
--7.102460
+-7.067999
 </td>
 <td style="text-align:right;">
--7.063665
+-7.029889
 </td>
 </tr>
 <tr>
@@ -4950,59 +6573,88 @@ pred3
 USDAUD
 </td>
 <td style="text-align:right;">
-0.000065
+0.000062
 </td>
 <td style="text-align:right;">
-3884
+4200
 </td>
 <td style="text-align:right;">
-0.0020597
+0.0019047
 </td>
 <td style="text-align:right;">
--6.469931
+-6.317191
 </td>
 <td style="text-align:right;">
--6.365602
+-6.212246
 </td>
 <td style="text-align:right;">
--6.471614
+-6.318895
 </td>
 <td style="text-align:right;">
--6.427995
+-6.275008
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #003399; color: #fff;">
 <strong>USD/CAD</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCAD
+</td>
+<td style="text-align:right;">
+0.000816
+</td>
+<td style="text-align:right;">
+4252
+</td>
+<td style="text-align:right;">
+0.0018811
+</td>
+<td style="text-align:right;">
+-7.258832
+</td>
+<td style="text-align:right;">
+-7.114474
+</td>
+<td style="text-align:right;">
+-7.262187
+</td>
+<td style="text-align:right;">
+-7.200806
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCAD
 </td>
 <td style="text-align:right;">
-0.000034
+0.000032
 </td>
 <td style="text-align:right;">
-4716
+4252
 </td>
 <td style="text-align:right;">
-0.0016963
+0.0018815
 </td>
 <td style="text-align:right;">
--7.706058
+-7.676797
 </td>
 <td style="text-align:right;">
--7.610301
+-7.581811
 </td>
 <td style="text-align:right;">
--7.707511
+-7.678227
 </td>
 <td style="text-align:right;">
--7.667568
+-7.638616
 </td>
 </tr>
 <tr>
@@ -5013,59 +6665,88 @@ pred3
 USDCAD
 </td>
 <td style="text-align:right;">
-0.000052
+0.000050
 </td>
 <td style="text-align:right;">
-3148
+3420
 </td>
 <td style="text-align:right;">
-0.0025413
+0.0023392
 </td>
 <td style="text-align:right;">
--4.232181
+-4.507753
 </td>
 <td style="text-align:right;">
--4.123145
+-4.399404
 </td>
 <td style="text-align:right;">
--4.234038
+-4.509586
 </td>
 <td style="text-align:right;">
--4.188353
+-4.464202
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #003399; color: #fff;">
 <strong>USD/CHF</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCHF
+</td>
+<td style="text-align:right;">
+0.000257
+</td>
+<td style="text-align:right;">
+4252
+</td>
+<td style="text-align:right;">
+0.0018813
+</td>
+<td style="text-align:right;">
+-7.169748
+</td>
+<td style="text-align:right;">
+-7.031973
+</td>
+<td style="text-align:right;">
+-7.172817
+</td>
+<td style="text-align:right;">
+-7.114368
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCHF
 </td>
 <td style="text-align:right;">
-0.000046
+0.000025
 </td>
 <td style="text-align:right;">
-4720
+4256
 </td>
 <td style="text-align:right;">
-0.0016949
+0.0018797
 </td>
 <td style="text-align:right;">
--7.661496
+-7.670581
 </td>
 <td style="text-align:right;">
--7.567798
+-7.576716
 </td>
 <td style="text-align:right;">
--7.662877
+-7.671968
 </td>
 <td style="text-align:right;">
--7.623834
+-7.632852
 </td>
 </tr>
 <tr>
@@ -5076,59 +6757,88 @@ pred3
 USDCHF
 </td>
 <td style="text-align:right;">
-0.000031
+0.000030
 </td>
 <td style="text-align:right;">
-3272
+3460
 </td>
 <td style="text-align:right;">
-0.0024450
+0.0023121
 </td>
 <td style="text-align:right;">
--6.358512
+-6.257397
 </td>
 <td style="text-align:right;">
--6.250675
+-6.150027
 </td>
 <td style="text-align:right;">
--6.360318
+-6.259187
 </td>
 <td style="text-align:right;">
--6.315166
+-6.214239
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #003399; color: #fff;">
 <strong>USD/CNY</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDCNY
+</td>
+<td style="text-align:right;">
+0.005235
+</td>
+<td style="text-align:right;">
+4252
+</td>
+<td style="text-align:right;">
+0.0018790
+</td>
+<td style="text-align:right;">
+-5.599447
+</td>
+<td style="text-align:right;">
+-5.461566
+</td>
+<td style="text-align:right;">
+-5.602480
+</td>
+<td style="text-align:right;">
+-5.544026
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDCNY
 </td>
 <td style="text-align:right;">
-0.000784
+0.000680
 </td>
 <td style="text-align:right;">
-4708
+4244
 </td>
 <td style="text-align:right;">
-0.0016989
+0.0018847
 </td>
 <td style="text-align:right;">
--6.189063
+-6.188473
 </td>
 <td style="text-align:right;">
--6.086985
+-6.085872
 </td>
 <td style="text-align:right;">
--6.190683
+-6.190108
 </td>
 <td style="text-align:right;">
--6.148033
+-6.147233
 </td>
 </tr>
 <tr>
@@ -5139,59 +6849,88 @@ pred3
 USDCNY
 </td>
 <td style="text-align:right;">
-0.000769
+0.000760
 </td>
 <td style="text-align:right;">
-2876
+3052
 </td>
 <td style="text-align:right;">
-0.0027811
+0.0026207
 </td>
 <td style="text-align:right;">
--2.637603
+-1.364553
 </td>
 <td style="text-align:right;">
--2.521962
+-1.248537
 </td>
 <td style="text-align:right;">
--2.639656
+-1.366620
 </td>
 <td style="text-align:right;">
--2.591122
+-1.317921
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #003399; color: #fff;">
 <strong>USD/EUR</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDEUR
+</td>
+<td style="text-align:right;">
+0.000418
+</td>
+<td style="text-align:right;">
+4252
+</td>
+<td style="text-align:right;">
+0.0018813
+</td>
+<td style="text-align:right;">
+-7.468215
+</td>
+<td style="text-align:right;">
+-7.335844
+</td>
+<td style="text-align:right;">
+-7.471101
+</td>
+<td style="text-align:right;">
+-7.415008
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDEUR
 </td>
 <td style="text-align:right;">
-0.000022
+0.000020
 </td>
 <td style="text-align:right;">
-4720
+4256
 </td>
 <td style="text-align:right;">
-0.0016949
+0.0018797
 </td>
 <td style="text-align:right;">
--8.128348
+-8.084841
 </td>
 <td style="text-align:right;">
--8.033213
+-7.990573
 </td>
 <td style="text-align:right;">
--8.129771
+-8.086238
 </td>
 <td style="text-align:right;">
--8.090108
+-8.046949
 </td>
 </tr>
 <tr>
@@ -5202,59 +6941,88 @@ pred3
 USDEUR
 </td>
 <td style="text-align:right;">
-0.000035
+0.000033
 </td>
 <td style="text-align:right;">
-3584
+3900
 </td>
 <td style="text-align:right;">
-0.0022321
+0.0020513
 </td>
 <td style="text-align:right;">
--5.811801
+-4.905297
 </td>
 <td style="text-align:right;">
--5.705995
+-4.798952
 </td>
 <td style="text-align:right;">
--5.813532
+-4.907048
 </td>
 <td style="text-align:right;">
--5.769272
+-4.862551
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #003399; color: #fff;">
 <strong>USD/GBP</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDGBP
+</td>
+<td style="text-align:right;">
+0.000305
+</td>
+<td style="text-align:right;">
+4256
+</td>
+<td style="text-align:right;">
+0.0018796
+</td>
+<td style="text-align:right;">
+-7.805508
+</td>
+<td style="text-align:right;">
+-7.677661
+</td>
+<td style="text-align:right;">
+-7.808189
+</td>
+<td style="text-align:right;">
+-7.754122
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDGBP
 </td>
 <td style="text-align:right;">
-0.000015
+0.000016
 </td>
 <td style="text-align:right;">
-4724
+4260
 </td>
 <td style="text-align:right;">
-0.0016935
+0.0018779
 </td>
 <td style="text-align:right;">
--8.661903
+-8.604528
 </td>
 <td style="text-align:right;">
--8.564711
+-8.507411
 </td>
 <td style="text-align:right;">
--8.663403
+-8.606025
 </td>
 <td style="text-align:right;">
--8.622838
+-8.565493
 </td>
 </tr>
 <tr>
@@ -5265,59 +7033,88 @@ pred3
 USDGBP
 </td>
 <td style="text-align:right;">
-0.000019
+0.000018
 </td>
 <td style="text-align:right;">
-3336
+3580
 </td>
 <td style="text-align:right;">
-0.0023981
+0.0022346
 </td>
 <td style="text-align:right;">
--5.794261
+-5.683668
 </td>
 <td style="text-align:right;">
--5.684174
+-5.573800
 </td>
 <td style="text-align:right;">
--5.796154
+-5.685553
 </td>
 <td style="text-align:right;">
--5.750013
+-5.639508
 </td>
 </tr>
-<tr grouplength="2">
+<tr grouplength="3">
 <td colspan="9" style="background-color: #003399; color: #fff;">
 <strong>USD/JPY</strong>
 </td>
 </tr>
 <tr>
 <td style="text-align:left; padding-left: 2em;" indentlevel="1">
+pred1
+</td>
+<td style="text-align:left;">
+USDJPY
+</td>
+<td style="text-align:right;">
+3.673904
+</td>
+<td style="text-align:right;">
+4248
+</td>
+<td style="text-align:right;">
+0.0001535
+</td>
+<td style="text-align:right;">
+2.088620
+</td>
+<td style="text-align:right;">
+2.243065
+</td>
+<td style="text-align:right;">
+2.084876
+</td>
+<td style="text-align:right;">
+2.150698
+</td>
+</tr>
+<tr>
+<td style="text-align:left; padding-left: 2em;" indentlevel="1">
 pred2
 </td>
 <td style="text-align:left;">
 USDJPY
 </td>
 <td style="text-align:right;">
-0.457570
+0.438965
 </td>
 <td style="text-align:right;">
-4720
+4256
 </td>
 <td style="text-align:right;">
-0.0015010
+0.0016734
 </td>
 <td style="text-align:right;">
-1.809134
+1.841916
 </td>
 <td style="text-align:right;">
-1.907808
+1.940227
 </td>
 <td style="text-align:right;">
-1.807589
+1.840381
 </td>
 <td style="text-align:right;">
-1.848795
+1.881431
 </td>
 </tr>
 <tr>
@@ -5328,39 +7125,39 @@ pred3
 USDJPY
 </td>
 <td style="text-align:right;">
-0.788227
+0.746922
 </td>
 <td style="text-align:right;">
-2624
+2776
 </td>
 <td style="text-align:right;">
-0.0024480
+0.0023437
 </td>
 <td style="text-align:right;">
-3.639026
+3.789785
 </td>
 <td style="text-align:right;">
-3.748358
+3.899302
 </td>
 <td style="text-align:right;">
-3.637163
+3.787912
 </td>
 <td style="text-align:right;">
-3.682972
+3.833805
 </td>
 </tr>
 </tbody>
 </table>
 </div>
 <pre class="r"><code>acc &lt;- ddply(fx, .(Cat), summarise, 
-             mse = mean((Price.T1 - Price)^2, na.rm = TRUE), 
+             MSE = mean((Price.T1 - Price)^2, na.rm = TRUE), 
              n = length(Price), 
-             Akaike.mse = (-2*mse)/n+2*4/n, 
+             Akaike.MSE = (-2*MSE)/n+2*4/n, 
              Akaike = mean(Akaike, na.rm = TRUE), 
              Bayes = mean(Bayes, na.rm = TRUE), 
              Shibata = mean(Shibata, na.rm = TRUE), 
              Hannan.Quinn = mean(Hannan.Quinn, na.rm = TRUE)) %&gt;% 
-  tbl_df %&gt;% mutate(mse = round(mse, 6))
+  tbl_df %&gt;% mutate(MSE = round(MSE, 6))
 
 acc %&gt;% 
   kable(caption = 'Group Table Summary') %&gt;% 
@@ -5375,13 +7172,13 @@ Group Table Summary
 Cat
 </th>
 <th style="text-align:right;">
-mse
+MSE
 </th>
 <th style="text-align:right;">
 n
 </th>
 <th style="text-align:right;">
-Akaike.mse
+Akaike.MSE
 </th>
 <th style="text-align:right;">
 Akaike
@@ -5400,28 +7197,54 @@ Hannan.Quinn
 <tbody>
 <tr>
 <td style="text-align:left;">
+pred1
+</td>
+<td style="text-align:right;">
+0.525577
+</td>
+<td style="text-align:right;">
+29764
+</td>
+<td style="text-align:right;">
+0.0002335
+</td>
+<td style="text-align:right;">
+-5.649439
+</td>
+<td style="text-align:right;">
+-5.512427
+</td>
+<td style="text-align:right;">
+-5.652488
+</td>
+<td style="text-align:right;">
+-5.594367
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
 pred2
 </td>
 <td style="text-align:right;">
-0.065528
+0.062853
 </td>
 <td style="text-align:right;">
-33028
+29780
 </td>
 <td style="text-align:right;">
-0.0002383
+0.0002644
 </td>
 <td style="text-align:right;">
--6.234251
+-6.207274
 </td>
 <td style="text-align:right;">
--6.137729
+-6.111177
 </td>
 <td style="text-align:right;">
--6.235720
+-6.208730
 </td>
 <td style="text-align:right;">
--6.195454
+-6.168647
 </td>
 </tr>
 <tr>
@@ -5429,25 +7252,25 @@ pred2
 pred3
 </td>
 <td style="text-align:right;">
-0.091163
+0.085239
 </td>
 <td style="text-align:right;">
-22724
+24388
 </td>
 <td style="text-align:right;">
-0.0003440
+0.0003210
 </td>
 <td style="text-align:right;">
--4.288561
+-3.965954
 </td>
 <td style="text-align:right;">
--4.179987
+-3.857335
 </td>
 <td style="text-align:right;">
--4.290392
+-3.967786
 </td>
 <td style="text-align:right;">
--4.244920
+-3.922294
 </td>
 </tr>
 </tbody>
@@ -5456,7 +7279,7 @@ pred3
 </div>
 <div class="section level1">
 <h1><span class="header-section-number">5</span> 结论</h1>
-<p>结果新的Fi-gjrGARCH函数pred3胜出，比旧的gjrGARCH的pred1更优秀，证明<code>p</code>值、<code>d</code>值与<code>q</code>值仨都可以优化。目前正在编写着<a href="https://beta.rstudioconnect.com/content/3138/">Q1App2</a>自动交易应用。“商场如战场”，除了模式最优化以外，程序运作上分秒必争… <code>microbenchmark</code>测试效率，之前编写了个<a href="https://beta.rstudioconnect.com/content/3153/">DataCollection</a>应用采集实时数据以方便之后的高频率交易自动化建模<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>。欲知更多详情，请参阅<a href="https://github.com/scibrokes/real-time-fxcm">Real Time FXCM</a>。</p>
+<p>结果证明。目前正在编写着<a href="https://beta.rstudioconnect.com/content/3138/">Q1App2</a>自动交易应用。“商场如战场”，除了模式最优化以外，程序运作上分秒必争… <code>microbenchmark</code>测试效率，之前编写了个<a href="https://beta.rstudioconnect.com/content/3153/">DataCollection</a>应用采集实时数据以方便之后的高频率交易自动化建模<a href="#fn2" class="footnoteRef" id="fnref2"><sup>2</sup></a>。欲知更多详情，请参阅<a href="https://github.com/scibrokes/real-time-fxcm">Real Time FXCM</a>。</p>
 </div>
 <div class="section level1">
 <h1><span class="header-section-number">6</span> 附录</h1>
@@ -5598,7 +7421,7 @@ scibr
 Current time
 </td>
 <td style="text-align:left;">
-2018-10-16 15:40:28 JST
+2018-10-16 21:07:10 JST
 </td>
 <td style="text-align:left;">
 effective_user
