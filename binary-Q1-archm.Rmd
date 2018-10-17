@@ -300,9 +300,9 @@ notID %>%
 ```{r warning=FALSE}
 ## timeID which contains 3 prediction models.
 utimeID <- fx %>% 
-  ddply(.(Date, .id), summarize, 
-        n = length(Type)) %>% 
-  dplyr::filter(n == 12) %>% 
+  ddply(.(Date), summarize, 
+        n = n()) %>% 
+  dplyr::filter(n == 84) %>% 
   tbl_df %>% .$Date
 
 fx %<>% dplyr::filter(Date %in% utimeID, !Date %in% ntimeID)
@@ -401,7 +401,7 @@ acc %>%
 
 # 结论
 
-结果证明。目前正在编写着[Q1App2](https://beta.rstudioconnect.com/content/3138/)自动交易应用。“商场如战场”，除了模式最优化以外，程序运作上分秒必争... `microbenchmark`测试效率，之前编写了个[DataCollection](https://beta.rstudioconnect.com/content/3153/)应用采集实时数据以方便之后的高频率交易自动化建模^[不过数据量多就会当机，得继续提升才行。]。欲知更多详情，请参阅[Real Time FXCM](https://github.com/scibrokes/real-time-fxcm)。
+结果证明`pred2`的`archm=FALSE`最为精准。目前正在编写着[Q1App2](https://beta.rstudioconnect.com/content/3138/)自动交易应用。“商场如战场”，除了模式最优化以外，程序运作上分秒必争... `microbenchmark`测试效率，之前编写了个[DataCollection](https://beta.rstudioconnect.com/content/3153/)应用采集实时数据以方便之后的高频率交易自动化建模^[不过数据量多就会当机，得继续提升才行。]。欲知更多详情，请参阅[Real Time FXCM](https://github.com/scibrokes/real-time-fxcm)。
 
 # 附录
 

@@ -638,7 +638,7 @@ The new dshw() function implements *Taylor’s (2003)* double-seasonal Holt-Wint
 
 *Source : Major changes to the forecast package*
 
-Now we start modelling harmonics model (which is using `xreg`).
+[Forecasting Daily Data with Multiple Seasonality in R](http://www.dbenson.co.uk/Rparts/subpages/forecastR/) provides the example for seasonal modelling. Now we start modelling harmonics model (which is using `xreg`).
 
 #### Model 1
 
