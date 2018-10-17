@@ -41,7 +41,7 @@ rm(pkgs)
 
 By refer to *GARCH模型中的ARIMA(p,d,q)参数最优化* and *binary.com Interview Question I - Comparison of Univariate GARCH Models*, we know **Fractional Intergrated GJR-GARCH** is the best fit model. This paper we compare the MIDAS, GARCH-MIDAS and Levy Process models. Here I also test another high frequency trading model mcmcsGARCH. These paper might consider as comparison interday trading before start the high frequency trading via [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
 
-*High Frequency Financial Time Series Prediction - Machine Learning Approach* introduce multilayer modelling for high-frequency-trading.
+*High Frequency Financial Time Series Prediction - Machine Learning Approach* introduce multilayer modelling for high-frequency-trading. *binary.com Interview Question I - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>* tried to use Hi-Lo daily dataset for modelling but failed. The paper recommend to use complete itraday dataset.
 
 > I noticed that buying early in the morning, around 5am eastern time, tends to give lower prices and selling around 10pm eastern time gives you the highest prices. The wording is weird but i want to know your opinions on how time of day affects the bitcoin trading market. Thank you.
 
@@ -240,13 +240,13 @@ Y2015W1_min1 %>% tk_ts(end = c(3, 7200), frequency = 1440) %>% .[,1:ncol(.)] %>%
 
 Y2015W1_min1 %>% head %>% zooreg(frequency = 1440)
 
-#Y2015W1_min1 %>% tk_ts(end = c(1440, 10080), frequency = 1440) %>% index %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01')
+#Y2015W1_min1 %>% tk_ts(end = c(1440, 7200), frequency = 1440) %>% index %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01')
 
 ## https://stats.stackexchange.com/questions/144158/daily-time-series-analysis
 ## http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/
 #How to extract below index to datetime
-#Y2015W1_min1 %>% msts(seasonal.periods=c(1440, 10080)) %>% .[,1] %>% as.numeric %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01') %>% force_tz(tz = 'Europe/Athens')
-Y2015W1_min1 %>% head %>% msts(seasonal.periods=c(1440, 10080))
+#Y2015W1_min1 %>% msts(seasonal.periods=c(1440, 7200)) %>% .[,1] %>% as.numeric %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01') %>% force_tz(tz = 'Europe/Athens')
+Y2015W1_min1 %>% head %>% msts(seasonal.periods=c(1440, 7200))
 ```
 
 `ts()` only can build a year-month seasonal dataset, otherwise need to decimal numeric to figure out what date within a month accordingly. `msts()` will be more user friendly which is modelling intra-and-inter seasonal dataset. <s>Now I convert all dataset again from `UTC` to `UTC+2` to be a constant weekly seasonal dataset. Due to the trading day is 5 days and 2 rest days, therefore I set a weekly seasonal period instead of daily.</s>
@@ -401,7 +401,8 @@ Here I compare the mean and get to know the downloaded min1 dataset from FXCM is
 data_m1 <- llply(fls1[[5]], function(x) {
     y <- readRDS(x) %>% dplyr::rename(index = DateTime) %>% 
         mutate(index = index %>% mdy_hms %>% 
-                   .POSIXct(tz = 'Europe/Athens'))
+                   .POSIXct(tz = 'Europe/Athens') %>% 
+                 force_tz())
     
     yw <- x %>% str_extract_all('Y[0-9]{4}W[0-9]{1,2}') %>% 
       str_split_fixed('[A-Z]{1}', 3) %>% .[,-1]
@@ -428,23 +429,24 @@ data_tm1 <- llply(fls[[7]], function(x) {
 ```{r warning=FALSE, eval=FALSE}
 # -------- eval=FALSE -----------
 #dtm <- seq(ymd_hms('2015-01-01 00:00:00'), ymd_hms('2017-08-31 00:00:00'), by = 'minutes')
-#dtm <- seq(from = ymd('2015-01-05'), to = ymd('2018-07-10'), by = 'weeks')
+#dtm <- seq(from = ymd('2015-01-05'), to = ymd('2018-07-07'), by = 'weeks')
 dtm <- data_tm1 %>% 
   dplyr::select(index, year ,week) %>% 
   mutate(index = date(index)) %>% 
-  ddply(.(year, week), head, 1)
+  ddply(.(year, week), head, 1) %>% 
+  .[-nrow(.),]
 
 ## create a seq of datetime to complete the  data point.
 dttm <- llply(1:nrow(dtm), function(i) {
-  x1 <- as.POSIXct(dtm$index[i]) %>% 
+  x1 <- dtm$index[i] %>% as.POSIXct %>% 
       with_tz(tz = 'UTC') %>% 
-      force_tz('Europe/Athens')
+      force_tz()
   
-  x2 <- x1 + days(4) + hours(23) + minutes(59)
-  #x2 <- x1 + days(5)
+  #x2 <- x1 + days(4) + hours(23) + minutes(59)
+  x2 <- x1 + days(5)
   
-  res <- seq.POSIXt(from = x1, to = x2, by = '1 min')
-  data_frame(index = res[-1]) %>% cbind(., dtm[i,-1])
+  data_frame(index = seq.POSIXt(from = x1 + minutes(1), to = x2, by = '1 min'), 
+             year = dtm[i,2], week = dtm[i,3])
   }) %>% bind_rows %>% tbl_df
 ```
 
@@ -452,23 +454,8 @@ Above chunk created a sequence of `datetime`.
 
 ```{r warning=FALSE, eval=FALSE}
 ## merge dataset
-data_tm1 <- left_join(dttm, data_tm1) %>% tbl_df %>% unique
-data_m1 <- left_join(dttm, data_m1) %>% tbl_df %>% unique
-
-## https://gist.github.com/christophsax/3db87a48596768b232a26dfce87c3299
-## http://steve-chen.tw/?p=555
-saveRDS(data_m1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds')
-saveRDS(data_tm1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
-```
-
-```{r warning=FALSE, eval=FALSE}
-data_m1 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds')
-data_tm1 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
-
-data_m1_fill <- merge(data_m1, data_tm1, all = TRUE) %>% 
-  tbl_df %>% arrange(index)
-data_m1_fill <- data_m1_fill[!duplicated(data_m1_fill$index),]
-rm(data_m1, data_tm1)
+data_tm1 <- left_join(dttm, data_tm1) %>% tbl_df %>% unique %>% arrange(index)
+data_m1 <- left_join(dttm, data_m1) %>% tbl_df %>% unique %>% arrange(index)
 
 ## https://stackoverflow.com/questions/43212308/na-locf-using-group-by-from-dplyr
 ## https://stackoverflow.com/questions/23340150/replace-missing-values-na-with-most-recent-non-na-by-group
@@ -478,38 +465,66 @@ rm(data_m1, data_tm1)
 ## https://stackoverflow.com/questions/13616965/how-to-fill-nas-with-locf-by-factors-in-data-frame-split-by-country
 ## https://stackoverflow.com/questions/23340150/replace-missing-values-na-with-most-recent-non-na-by-group
 
-# data_m1_fill %>% 
+# data_m1 %>% 
 #     group_by(index, week) %>% 
 #     mutate_all(funs(na.locf(., na.rm = FALSE)))
 
-# data_m1_fill %>% split(data_m1_fill$index) %>% 
+# data_m1 %>% split(data_m1_fill$index) %>% 
 #   llply(function(x) {
 #     na.locf(na.locf(x), fromLast = TRUE)
 #   }) %>% do.call(rbind, .)
 
-# data_m1_fill %<>% ddply(.(index, week), na_locf) %>% tbl_df
-#> data_m1_fill %>% anyNA
+# data_m1 %<>% ddply(.(index, week), na_locf) %>% tbl_df
+#> data_m1 %>% anyNA
 #[1] FALSE
 
-## Time consuming and didn't fill up the NA columns.
-#data_m1_fill %<>% 
-#  group_by(index, week) %>% 
-#  fill(BidOpen, BidHigh, BidLow, BidClose, 
-#       AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
-#  fill(BidOpen, BidHigh, BidLow, BidClose, 
-#       AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
-
-data_m1_fill %<>% 
+data_m1 %<>% 
   ddply(.(year, week), function(x) {
-       x %>% fill(BidOpen, BidHigh, BidLow, BidClose, 
+       x %>% fill(year, week, BidOpen, BidHigh, BidLow, BidClose, 
                   AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
-             fill(BidOpen, BidHigh, BidLow, BidClose, 
+             fill(year, week, BidOpen, BidHigh, BidLow, BidClose, 
                   AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
     }) %>% tbl_df
-#> data_m1_fill %>% anyNA
-#[1] FALSE
 
-saveRDS(data_m1_fill, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1_fill.rds')
+data_tm1 %<>% 
+  ddply(.(year, week), function(x) {
+       x %>% fill(year, week, BidOpen, BidHigh, BidLow, BidClose, 
+                  AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
+             fill(year, week, BidOpen, BidHigh, BidLow, BidClose, 
+                  AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
+    }) %>% tbl_df
+#> data_m1 %>% anyNA
+#[1] TRUE
+#> data_m1 %>% filter_all(any_vars(is.na(.)))
+## A tibble: 7,200 x 11
+#   index                year  week BidOpen BidHigh BidLow BidClose AskOpen AskHigh AskLow AskClose
+#   <dttm>              <dbl> <dbl>   <dbl>   <dbl>  <dbl>    <dbl>   <dbl>   <dbl>  <dbl>    <dbl>
+# 1 2018-01-02 00:01:00  2017    53      NA      NA     NA       NA      NA      NA     NA       NA
+# 2 2018-01-02 00:02:00  2017    53      NA      NA     NA       NA      NA      NA     NA       NA
+# 3 2018-01-02 00:03:00  2017    53      NA      NA     NA       NA      NA      NA     NA       NA
+# 4 2018-01-02 00:04:00  2017    53      NA      NA     NA       NA      NA      NA     NA       NA
+# 5 2018-01-02 00:05:00  2017    53      NA      NA     NA       NA      NA      NA     NA       NA
+# 6 2018-01-02 00:06:00  2017    53      NA      NA     NA       NA      NA      NA     NA       NA
+# 7 2018-01-02 00:07:00  2017    53      NA      NA     NA       NA      NA      NA     NA       NA
+# 8 2018-01-02 00:08:00  2017    53      NA      NA     NA       NA      NA      NA     NA       NA
+# 9 2018-01-02 00:09:00  2017    53      NA      NA     NA       NA      NA      NA     NA       NA
+#10 2018-01-02 00:10:00  2017    53      NA      NA     NA       NA      NA      NA     NA       NA
+## ... with 7,190 more rows
+
+#> data_tm1 %>% anyNA
+#[1] FALSE
+#> data_tm1 %>% filter_all(any_vars(is.na(.)))
+## A tibble: 0 x 11
+## ... with 11 variables: index <dttm>, year <dbl>, week <dbl>, AskOpen <dbl>, AskHigh <dbl>, AskLow <dbl>,
+##   AskClose <dbl>, BidOpen <dbl>, BidHigh <dbl>, BidLow <dbl>, BidClose <dbl>
+
+saveRDS(data_m1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds')
+saveRDS(data_tm1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
+```
+
+```{r warning=FALSE}
+data_m1 %>% anyNA
+data_tm1 %>% anyNA
 ```
 
 I don't use the `data.table` and `feather` because of the storage concerns. Kindly refer to [[问答] 对大数据如何用R高效处理](http://bbs.pinggu.org/forum.php?mod=redirect&goto=findpost&ptid=6685427&pid=53936462&fromuid=5794471)和[[问答] 对大数据如何用R高效处理](http://bbs.pinggu.org/forum.php?mod=redirect&goto=findpost&ptid=6685427&pid=53936861&fromuid=5794471).
@@ -517,7 +532,7 @@ I don't use the `data.table` and `feather` because of the storage concerns. Kind
 - [christophsax/feather-fwrite.R](https://gist.github.com/christophsax/3db87a48596768b232a26dfce87c3299)
 - [比較 save/load, saveRDS/readRDS, feather, 與 data.table 套件的讀寫速度](http://steve-chen.tw/?p=555)
 
-Finally, I filled-up the NA section by `data_tm1` and eventually filled up by `na_locf` function.
+Finally, I filled-up the `NA` section of `data_m1` and `data_tm1` and eventually filled up by `tidyr::fill` function.
 
 ### Read Data
 
@@ -526,12 +541,27 @@ Due to the files preload all before simulate the statistical modelling will occu
 ```{r warning=FALSE}
 rm(list = ls()[grep('i|j|tz|nch|yw|dtm|dttm|form|data|Y2015W|tsz|tsz2|dc', ls())])
 
-data_m1_fill <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1_fill.rds')
+data_tm1 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
 
-data_m1_fill %>% ddply(.(year, week), head, 1) %>% 
+data_tm1 %>% ddply(.(year, week), head, 1) %>% 
   kable(caption = 'Weekly Initial Data Point') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
+```
+
+```{r echo=FALSE}
+data_tm1 %>% ddply(.(year, week), tail, 1) %>% 
+  kable(caption = 'Weekly Final Data Point') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+```{r warning=FALSE}
+## Tidy dataset for modelling.
+data_tm1 %<>% 
+  mutate(open = (BidOpen + AskOpen)/2, close = (BidClose + AskClose)/2) %>% 
+  dplyr::rename(high = BidHigh, low = AskLow) %>%  #use bid price for sell.
+  dplyr::select(index, open, high, low, close)     # and ask price for buy.
 ```
 
 # Modelling
@@ -638,11 +668,13 @@ The new dshw() function implements *Taylor’s (2003)* double-seasonal Holt-Wint
 
 *Source : Major changes to the forecast package*
 
-[Forecasting Daily Data with Multiple Seasonality in R](http://www.dbenson.co.uk/Rparts/subpages/forecastR/) provides the example for seasonal modelling. Now we start modelling harmonics model (which is using `xreg`).
+- [Forecasting Daily Data with Multiple Seasonality in R](http://www.dbenson.co.uk/Rparts/subpages/forecastR/) provides the example for seasonal modelling. Now we start modelling harmonics model (which is using `xreg`).
+- [R/msts.R](https://rdrr.io/cran/forecast/src/R/msts.R) introduced a multi seasonal time series objects, intended to be used for models that support multiple seasonal periods. The msts class inherits from the ts class and has an additional "msts" attribute which contains the vector of seasonal periods. All methods that work on a ts class, should also work on a msts class.
+- [Multiseasonal models for multivariate time series](https://stats.stackexchange.com/questions/355746/multiseasonal-models-for-multivariate-time-series) and [Forecast double seasonal time series with multiple linear regression in R](https://petolau.github.io/Forecast-double-seasonal-time-series-with-multiple-linear-regression-in-R/) provides example for multi-seasonal modelling.
 
 #### Model 1
 
-```{r, eval=FALSE}
+```{r eval=FALSE}
 # --------- eval=FALSE ---------
 > suppressWarnings(Y2015W1 %>% 
      tk_xts %>% 
@@ -653,21 +685,21 @@ p d q P D Q s
 0 0 0 0 0 0 1
 ```
 
-```{r, warning=FALSE, eval=FALSE}
+```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
 #'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% tbl_df")))
 
 sarima <- list()
 for(i in (1:length(fs))) {
-    smp <- data_m1_fill
-    timeID <- c(smp$index, xts::last(smp$index) + minutes(1))
+    smp <- data_m1_fill %>% tk_xts(silent = TRUE)
+    timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
+      .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
     
     if (dt %in% timeID) {
-      dtr <- xts::last(index(smp[index(smp) < dt]), 1) #tail(..., 1)
-      smp <- smp[paste0(dtr %m-% years(1), '/', dtr)]
+      smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - minutes(1))]
       
       sarima[[i]] <- tryCatch({llply(price_type, function(y) {
-        df = auto.arima(, parallel=FALSE, num.cores = 2)
+        df = auto.arima(smp, parallel=FALSE, num.cores = 2)
         df = data.frame(Date = index(df$latestPrice[1]), 
                         Type = paste0(names(df$latestPrice), '.', y), 
                         df$latestPrice, df$forecastPrice, t(df$AIC))
@@ -833,6 +865,7 @@ rm(sys1, sys2)
 16. [High Frequency Financial Time Series Prediction - Machine Learning Approach](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/High%20Frequency%20Financial%20Time%20Series%20Prediction%20-%20Machine%20Learning%20Approach.pdf)
 17. [High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model](http://www.unstarched.net/2013/03/20/high-frequency-garch-the-multiplicative-component-garch-mcsgarch-model/)
 18. [A Review of Literature on Time Zone Difference and Trade](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/A%20Review%20of%20Literature%20on%20Time%20Zone%20Difference%20and%20Trade.pdf)
+19. [binary.com Interview Question I - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](https://rpubs.com/englianhu/binary-Q1TD)
 
 ---
 

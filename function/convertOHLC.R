@@ -1,5 +1,5 @@
 convertOHLC <- function(mbase, combine = FALSE, trade = FALSE, 
-                        tz = 'Europe/Athens', .unit = 'minute') {
+                        tz = 'Europe/Athens', force_tz = TRUE, .unit = 'minute') {
   
   require('BBmisc')
   pkgs <- c('magrittr', 'lubridate', 'tidyverse', 'tidyquant')
@@ -61,7 +61,8 @@ convertOHLC <- function(mbase, combine = FALSE, trade = FALSE,
       
       mbaseA %<>% dplyr::rename(AskOpen = open, AskHigh = high, AskLow = low, AskClose = close)
       mbaseB %<>% dplyr::rename(BidOpen = open, BidHigh = high, BidLow = low, BidClose = close)
-      tmp <- merge(mbaseA, mbaseB) %>% tbl_df
+      tmp <- merge(mbaseB, mbaseA) %>% tbl_df %>% 
+        mutate(index = force_tz(index))
       
     } else {
       
@@ -70,11 +71,13 @@ convertOHLC <- function(mbase, combine = FALSE, trade = FALSE,
         open = (mbaseA$open + mbaseB$open)/2, 
         high = mbaseB$high, 
         low = mbaseA$low, 
-        close = (mbaseA$open + mbaseB$open)/2) %>% tbl_df
+        close = (mbaseA$open + mbaseB$open)/2) %>% tbl_df %>% 
+        mutate(index = force_tz(index))
     }
     
   } else {
-    tmp <- list(Ask = mbaseA, Bid = mbaseB)
+    tmp <- list(Bid = mbaseB %>% mutate(index = force_tz(index)), 
+                Ask = mbaseA %>% mutate(index = force_tz(index)))
   }
   
   return(tmp)
