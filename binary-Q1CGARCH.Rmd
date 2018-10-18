@@ -1,0 +1,108 @@
+---
+title: "<img src='www/binary-logo-resize.jpg' width='240'>"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Copula DCC GARCH"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/RYO.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>®"
+date: "`r lubridate::today('Asia/Tokyo')`"
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+    code_folding: hide
+---
+
+```{r, warning=FALSE}
+suppressPackageStartupMessages(library('BBmisc'))
+#'@ suppressPackageStartupMessages(library('rmsfuns'))
+
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'feather', 'quantmod', 'tidyquant', 'tidyr', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend')
+
+# https://github.com/mpiktas/midasr
+# https://github.com/onnokleen/mfGARCH
+
+suppressAll(lib(pkgs))
+#'@ load_pkg(pkgs)
+
+funs <- c('uv_fx.R', 'opt_arma.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R', 'task_progress.R', 'read_umodels.R', 'convertOHLC.R')
+l_ply(funs, function(x) source(paste0('./function/', x)))
+spark_install()
+sc <- spark_connect(master = 'local')
+
+.cl = FALSE
+
+options(warn = -1)
+rm(pkgs)
+```
+
+# Introduction
+
+<span style='color:ForestGreen'>Enjoy the Joy of Copulas - With a Package copula</span>
+
+
+# Conclusion
+
+```{r option, echo = FALSE}
+## Set options back to original options
+options(warn = 0)
+```
+
+# Appendix
+
+## Documenting File Creation 
+
+It's useful to record some information about how your file was created.
+
+- File creation date: 2018-10-18
+- File latest updated date: `r today('Asia/Tokyo')`
+- `r R.version.string`
+- R version (short form): `r getRversion()`
+- [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+- File version: 1.0.1
+- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
+- GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
+- Additional session information:
+
+```{r info, echo=FALSE, warning=FALSE, results='asis'}
+sys1 <- devtools::session_info()$platform %>% 
+  unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+
+#sys1 %<>% rbind(., data.frame(
+#  Category = 'Current time', 
+#  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST'))) %>% 
+#  dplyr::filter(Category != 'os')
+
+sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
+names(sys2)[2] <- c('Sys.info')
+rownames(sys2) <- NULL
+
+if (nrow(sys1) == 7 & nrow(sys2) == 8) {
+  sys1 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
+} else {
+  sys2 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
+}
+
+cbind(sys1, sys2) %>% 
+  kable(caption = 'Additional session information:') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+rm(sys1, sys2)
+```
+
+## Reference
+
+01. [Enjoy the Joy of Copulas - With a Package copula](Enjoy the Joy of Copulas - With a Package copula.pdf)
+02. [Modeling Multivariate Count Data using Copulas](Modeling Multivariate Count Data using Copulas.pdf)
+03. [Modeling Multivariate Distributions using Copulas](Modeling Multivariate Distributions using Copulas.pdf)
+
+---
+
+<span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of [<img src='www/scb_logo.jpg' width='64'>®](http://www.scibrokes.com)個人の経営企業**</span>
+

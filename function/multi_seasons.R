@@ -9,6 +9,3 @@ multi_seasons <- function(mbase, seasonal_periods = c(1440, 7200), auto_arima = 
   }
   forecast(fit, ahead = 1)
   }
-
-
-

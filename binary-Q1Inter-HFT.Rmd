@@ -26,15 +26,15 @@ pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
 
-funs <- c('uv_fx.R', 'opt_arma.R', 'opt_arma.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R', 'task_progress.R', 'read_umodels.R', 'convertOHLC.R')
+funs <- c('uv_fx.R', 'opt_arma.R', 'multi_seasons.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R', 'task_progress.R', 'read_umodels.R', 'convertOHLC.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
 spark_install()
 sc <- spark_connect(master = 'local')
 
 .cl = FALSE
 
-options(warn = -1)
-rm(pkgs)
+options(warn = -1)#, digits.secs = 6)
+rm(pkgs, funs)
 ```
 
 # Introduction
@@ -469,7 +469,7 @@ data_m1 <- left_join(dttm, data_m1) %>% tbl_df %>% unique %>% arrange(index)
 #     group_by(index, week) %>% 
 #     mutate_all(funs(na.locf(., na.rm = FALSE)))
 
-# data_m1 %>% split(data_m1_fill$index) %>% 
+# data_m1 %>% split(data_m1$index) %>% 
 #   llply(function(x) {
 #     na.locf(na.locf(x), fromLast = TRUE)
 #   }) %>% do.call(rbind, .)
@@ -522,11 +522,6 @@ saveRDS(data_m1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/
 saveRDS(data_tm1, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
 ```
 
-```{r warning=FALSE}
-data_m1 %>% anyNA
-data_tm1 %>% anyNA
-```
-
 I don't use the `data.table` and `feather` because of the storage concerns. Kindly refer to [[问答] 对大数据如何用R高效处理](http://bbs.pinggu.org/forum.php?mod=redirect&goto=findpost&ptid=6685427&pid=53936462&fromuid=5794471)和[[问答] 对大数据如何用R高效处理](http://bbs.pinggu.org/forum.php?mod=redirect&goto=findpost&ptid=6685427&pid=53936861&fromuid=5794471).
 
 - [christophsax/feather-fwrite.R](https://gist.github.com/christophsax/3db87a48596768b232a26dfce87c3299)
@@ -540,6 +535,10 @@ Due to the files preload all before simulate the statistical modelling will occu
 
 ```{r warning=FALSE}
 rm(list = ls()[grep('i|j|tz|nch|yw|dtm|dttm|form|data|Y2015W|tsz|tsz2|dc', ls())])
+
+cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'CNY=X', 'JPY=X')
+
+names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
 
 data_tm1 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
 
@@ -565,6 +564,217 @@ data_tm1 %<>%
 ```
 
 # Modelling
+
+## Seasonal ETS
+
+### ETS `ts()`
+
+The `forecast.ets()` will automatically use the optimal `ets()` which is similar with `auto.arima()`.
+
+### Weekly >> Daily
+
+```{r warning=FALSE, eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_tm1$index), by = 1440)
+#sets <- list()
+timeID <- data_tm1$index %>% as_date %>% unique %>% sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_tm1 %>% tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  
+  sets <- smp %>% 
+    tk_ts(frequency = 1440) %>% 
+    forecast(h=1440) %>% 
+    llply(tk_tbl)
+  
+  if(is.double(sets$forecast$index[1])){
+    sq <- smp %>% tail(1) %>% index
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    sets$forecast$index <- sq
+    
+  } else {
+    sets$forecast$index <- data_tm1$index[
+    (which(data_tm1$index == smp %>% index %>% xts::last()) + 1):(
+     which(data_tm1$index == smp %>% index %>% xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.wk.1440.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.wk.1440.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Monthly >> Daily
+
+```{r warning=FALSE, eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_tm1$index), by = 1440)
+#sets <- list()
+timeID <- data_tm1$index %>% as_date %>% unique %>% sort + days(1)
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_tm1 %>% tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% months(1) + seconds(59), '/', dt + seconds(59))]
+  
+  sets <- smp %>% 
+    tk_ts(frequency = 1440) %>% 
+    forecast(h=1440) %>% 
+    llply(tk_tbl)
+  
+  if(is.double(sets$forecast$index[1])){
+    sq <- smp %>% tail(1) %>% index
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    sets$forecast$index <- sq
+    
+  } else {
+    sets$forecast$index <- data_tm1$index[
+    (which(data_tm1$index == smp %>% index %>% xts::last()) + 1):(
+     which(data_tm1$index == smp %>% index %>% xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.mo.1440.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.mo.1440.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Quarterly >> Daily
+
+```{r warning=FALSE, eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_tm1$index), by = 1440)
+#sets <- list()
+timeID <- data_tm1$index %>% as_date %>% unique %>% sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_tm1 %>% tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% quarters(1) + seconds(59), '/', dt + seconds(59))]
+  
+  sets <- smp %>% 
+    tk_ts(frequency = 1440) %>% 
+    forecast(h=1440) %>% 
+    llply(tk_tbl)
+  
+  if(is.double(sets$forecast$index[1])){
+    sq <- smp %>% tail(1) %>% index
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    sets$forecast$index <- sq
+    
+  } else {
+    sets$forecast$index <- data_tm1$index[
+    (which(data_tm1$index == smp %>% index %>% xts::last()) + 1):(
+     which(data_tm1$index == smp %>% index %>% xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.qt.1440.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.qt.1440.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Yearly >> Daily
+
+```{r warning=FALSE, eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_tm1$index), by = 1440)
+#sets <- list()
+timeID <- data_tm1$index %>% as_date %>% unique %>% sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_tm1 %>% tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% years(1) + seconds(59), '/', dt + seconds(59))]
+  
+  sets <- smp %>% 
+    tk_ts(frequency = 1440) %>% 
+    forecast(h=1440) %>% 
+    llply(tk_tbl)
+  
+  if(is.double(sets$forecast$index[1])){
+    sq <- smp %>% tail(1) %>% index
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    sets$forecast$index <- sq
+    
+  } else {
+    sets$forecast$index <- data_tm1$index[
+    (which(data_tm1$index == smp %>% index %>% xts::last()) + 1):(
+     which(data_tm1$index == smp %>% index %>% xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.yr.1440.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.yr.1440.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Weekly
+
+```{r warning=FALSE, eval=FALSE}
+# --------- eval=FALSE ---------
+sq <- seq(1 , length(data_tm1$index), by = 7200)
+sets <- list()
+for(i in (1:length(fs))) {
+    smp <- data_tm1 %>% tk_xts(silent = TRUE)
+    timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
+      .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
+    
+    if (dt %in% timeID) {
+      smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - seconds(59))]
+      
+      sets <- smp %>% tk_ts(start = index(index)[1], 
+                            frequency = 7200) %>% 
+        forecast(h=7200) %>% 
+        llply(tk_tbl)
+      
+      wh <- which(data_tm1$index == smp %>% index %>% xts::last())
+      sets$forecast$index = data_tm1$index[
+        (which(data_tm1$index == smp %>% index %>% xts::last()) + 1):(
+          which(data_tm1$index == smp %>% index %>% xts::last()) + 7200)]
+
+      if (!dir.exists(paste0('data/fx/USDJPY'))) 
+        dir.create(paste0('data/fx/USDJPY'))
+      
+      saveRDS(sets, paste0('data/fx/USDJPY/sets.7200.', 
+                           as_date(sets$forecast$index[1]), '.rds'))
+      
+      cat(paste0(
+        'data/fx/USDJPY/sets.7200.', 
+        as_date(sets$forecast$index[1]), '.rds saved!\n'))
+      }
+  }
+```
 
 ## Seasonal ARIMA
 
@@ -671,8 +881,63 @@ The new dshw() function implements *Taylor’s (2003)* double-seasonal Holt-Wint
 - [Forecasting Daily Data with Multiple Seasonality in R](http://www.dbenson.co.uk/Rparts/subpages/forecastR/) provides the example for seasonal modelling. Now we start modelling harmonics model (which is using `xreg`).
 - [R/msts.R](https://rdrr.io/cran/forecast/src/R/msts.R) introduced a multi seasonal time series objects, intended to be used for models that support multiple seasonal periods. The msts class inherits from the ts class and has an additional "msts" attribute which contains the vector of seasonal periods. All methods that work on a ts class, should also work on a msts class.
 - [Multiseasonal models for multivariate time series](https://stats.stackexchange.com/questions/355746/multiseasonal-models-for-multivariate-time-series) and [Forecast double seasonal time series with multiple linear regression in R](https://petolau.github.io/Forecast-double-seasonal-time-series-with-multiple-linear-regression-in-R/) provides example for multi-seasonal modelling.
+- [How to setup `xreg` argument in `auto.arima()` in R? [closed]](https://stats.stackexchange.com/questions/41070/how-to-setup-xreg-argument-in-auto-arima-in-r) using `xreg` for multivariate modelling.
+- [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re) introduced 3 seasonal modelling.
+- [R - Putting time series with frequency of 20 min into the function `stl()`](https://stackoverflow.com/questions/17738746/r-putting-time-series-with-frequency-of-20-min-into-the-function-stl)
+- ["Frequency" value for seconds/minutes intervals data in R](https://stats.stackexchange.com/questions/120806/frequency-value-for-seconds-minutes-intervals-data-in-r)
+- [Time series and forecasting using R](http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/)
 
-#### Model 1
+```
+library(forecast)
+# create some artifical data
+modelfitsample <- data.frame(Customer_Visit=rpois(49,3000),Weekday=rep(1:7,7),
+                             Christmas=c(rep(0,40),1,rep(0,8)),Day=1:49)
+
+# Create matrix of numeric predictors
+xreg <- cbind(Weekday=model.matrix(~as.factor(modelfitsample$Weekday)), 
+                  Day=modelfitsample$Day,
+              Christmas=modelfitsample$Christmas)
+
+# Remove intercept
+xreg <- xreg[,-1]
+
+# Rename columns
+colnames(xreg) <- c("Mon","Tue","Wed","Thu","Fri","Sat","Day","Christmas")
+
+# Variable to be modelled
+visits <- ts(modelfitsample$Customer_Visit, frequency=7)
+
+# Find ARIMAX model
+modArima <- auto.arima(visits, xreg=xreg)
+```
+
+*Source : [How to setup `xreg` argument in `auto.arima()` in R? [closed]](https://stats.stackexchange.com/questions/41070/how-to-setup-xreg-argument-in-auto-arima-in-r)*
+
+```
+library(forecast)
+ts_ <- ts(PaulsData$Temperature, frequency = 1)
+msts_ <- msts(ts_, c(7,30,365))
+fit <- auto.arima(ts_, seasonal=F, xreg=fourier(msts_, K=c(3,5,10)))  # i,j,k
+```
+
+*Source : [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re)*
+
+```{r warning=FALSE, eval=FALSE}
+ts_ <- data_tm1$close %>% ts()
+mts_ <- data_tm1 %>% msts(seasonal.periods = c(1440, 7200), start = index(.)[1])
+fit1 <- auto.arima(ts_, seasonal = FALSE, xreg=fourier(mts_, K=c(3,5,10)))
+fit2 <- auto.arima(ts_, seasonal = FALSE, xreg=mts_)
+fit3 <- auto.arima(ts_, D = 1, xreg=mts_)
+
+## https://stackoverflow.com/questions/12161984/how-to-elegantly-convert-datetime-from-decimal-to-d-m-y-hms
+## https://stackoverflow.com/questions/17738746/r-putting-time-series-with-frequency-of-20-min-into-the-function-stl
+## https://stats.stackexchange.com/questions/120806/frequency-value-for-seconds-minutes-intervals-data-in-r
+## http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/
+smp %>% tk_ts(start = index(index)[1], frequency = c(1440, 7200)) %>% forecast %>% llply(tk_tbl)
+
+```
+
+#### Nested Daily-Weekly Model
 
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
@@ -691,12 +956,12 @@ p d q P D Q s
 
 sarima <- list()
 for(i in (1:length(fs))) {
-    smp <- data_m1_fill %>% tk_xts(silent = TRUE)
+    smp <- data_tm1 %>% tk_xts(silent = TRUE)
     timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
       .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
     
     if (dt %in% timeID) {
-      smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - minutes(1))]
+      smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - seconds(59))]
       
       sarima[[i]] <- tryCatch({llply(price_type, function(y) {
         df = auto.arima(smp, parallel=FALSE, num.cores = 2)
@@ -721,7 +986,97 @@ for(i in (1:length(fs))) {
   }
 ```
 
-#### Model 2
+```{r eval=FALSE}
+smp <- data_tm1 %>% tk_xts(silent = TRUE)
+timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
+  .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
+dt <- timeID[1]
+smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - seconds(59))]
+
+smp %>% tk_ts %>% forecast %>% llply(tk_tbl)
+
+mts <- multi_seasons(smp)
+aar <- multi_seasons(smp, auto_arima=TRUE)
+
+```
+
+#### Nested Daily-Weekly-Monthly Model
+
+## TBATS
+
+### Modelling
+
+- [R/msts.R](https://rdrr.io/cran/forecast/src/R/msts.R) introduced a multi seasonal time series objects, intended to be used for models that support multiple seasonal periods. The msts class inherits from the ts class and has an additional "msts" attribute which contains the vector of seasonal periods. All methods that work on a ts class, should also work on a msts class.
+- [About `tbats`](https://stats.stackexchange.com/tags/tbats/info) talk about the model `tbats`.
+- [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re) introduced 3 seasonal modelling.
+- [How to store forecasted values using 'forecast' library in R into a CSV file?](https://stackoverflow.com/questions/37818975/how-to-store-forecasted-values-using-forecast-library-in-r-into-a-csv-file) talk about how to retrieve the forecasted values.
+
+### Nested Daily-Weekly Model
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+> suppressWarnings(Y2015W1 %>% 
+     tk_xts %>% 
+     to.daily %>% 
+     Cl %>% opt_arma(arma=TRUE))
+Using column `index` for date_var.
+p d q P D Q s 
+0 0 0 0 0 0 1
+```
+
+```{r warning=FALSE, eval=FALSE}
+# --------- eval=FALSE ---------
+#'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% tbl_df")))
+
+sarima <- list()
+for(i in (1:length(fs))) {
+    smp <- data_tm1 %>% tk_xts(silent = TRUE)
+    timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
+      .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
+    
+    if (dt %in% timeID) {
+      smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - seconds(59))]
+      
+      sarima[[i]] <- tryCatch({llply(price_type, function(y) {
+        df = auto.arima(smp, parallel=FALSE, num.cores = 2)
+        df = data.frame(Date = index(df$latestPrice[1]), 
+                        Type = paste0(names(df$latestPrice), '.', y), 
+                        df$latestPrice, df$forecastPrice, t(df$AIC))
+        names(df)[4] %<>% str_replace_all('1', 'T+1')
+        df
+      }) %>% tbl_df %>% bind_rows}, error = function(e) NULL)
+      
+      if (!dir.exists(paste0('data/fx/', names(sarima[[i]])[3]))) 
+        dir.create(paste0('data/fx/', names(sarima[[i]])[3]))
+      
+      saveRDS(sarima[[i]], paste0(
+        'data/fx/', names(sarima[[i]])[3], '/sarima.', 
+        unique(sarima[[i]]$Date), '.rds'))
+      
+      cat(paste0(
+        'data/fx/', names(sarima[[i]])[3], '/sarima.', 
+        unique(sarima[[i]]$Date), '.rds saved!\n'))
+      }
+  }
+```
+
+```{r eval=FALSE}
+smp <- data_tm1 %>% tk_xts(silent = TRUE)
+timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
+  .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
+dt <- timeID[1]
+smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - seconds(59))]
+
+smp %>% tk_ts %>% forecast %>% llply(tk_tbl)
+
+mts <- multi_seasons(smp)
+aar <- multi_seasons(smp, auto_arima=TRUE)
+
+```
+
+### Nested Daily-Weekly-Monthly Model
+
+
 
 ## MIDAS
 
