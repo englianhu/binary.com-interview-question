@@ -176,3 +176,43 @@
 18/10/18 18:24:53 INFO SharedState: Warehouse path is 'C:/Users/scibr/AppData/Local/spark/spark-2.3.1-bin-hadoop2.7/tmp/hive'.
 18/10/18 18:24:54 INFO StateStoreCoordinatorRef: Registered StateStoreCoordinator endpoint
 18/10/18 18:24:57 INFO CodeGenerator: Code generated in 244.203476 ms
+18/10/19 00:35:54 WARN NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+18/10/19 00:35:55 INFO SparkContext: Running Spark version 2.3.1
+18/10/19 00:35:55 INFO SparkContext: Submitted application: sparklyr
+18/10/19 00:35:55 INFO SecurityManager: Changing view acls to: scibr
+18/10/19 00:35:55 INFO SecurityManager: Changing modify acls to: scibr
+18/10/19 00:35:55 INFO SecurityManager: Changing view acls groups to: 
+18/10/19 00:35:55 INFO SecurityManager: Changing modify acls groups to: 
+18/10/19 00:35:55 INFO SecurityManager: SecurityManager: authentication disabled; ui acls disabled; users  with view permissions: Set(scibr); groups with view permissions: Set(); users  with modify permissions: Set(scibr); groups with modify permissions: Set()
+18/10/19 00:35:56 INFO Utils: Successfully started service 'sparkDriver' on port 57104.
+18/10/19 00:35:56 INFO SparkEnv: Registering MapOutputTracker
+18/10/19 00:35:56 INFO SparkEnv: Registering BlockManagerMaster
+18/10/19 00:35:56 INFO BlockManagerMasterEndpoint: Using org.apache.spark.storage.DefaultTopologyMapper for getting topology information
+18/10/19 00:35:56 INFO BlockManagerMasterEndpoint: BlockManagerMasterEndpoint up
+18/10/19 00:35:56 INFO DiskBlockManager: Created local directory at C:\Users\scibr\AppData\Local\Temp\blockmgr-9bd498bc-9275-4ace-9383-43309c2dc7f1
+18/10/19 00:35:56 INFO MemoryStore: MemoryStore started with capacity 366.3 MB
+18/10/19 00:35:56 INFO SparkEnv: Registering OutputCommitCoordinator
+18/10/19 00:35:56 WARN Utils: Service 'SparkUI' could not bind on port 4040. Attempting port 4041.
+18/10/19 00:35:56 INFO Utils: Successfully started service 'SparkUI' on port 4041.
+18/10/19 00:35:56 INFO SparkUI: Bound SparkUI to 127.0.0.1, and started at http://127.0.0.1:4041
+18/10/19 00:35:56 INFO SparkContext: Added JAR file:/C:/Users/scibr/Documents/R/win-library/3.5/sparklyr/java/sparklyr-2.3-2.11.jar at spark://127.0.0.1:57104/jars/sparklyr-2.3-2.11.jar with timestamp 1539876956524
+18/10/19 00:35:56 INFO Executor: Starting executor ID driver on host localhost
+18/10/19 00:35:56 INFO Utils: Successfully started service 'org.apache.spark.network.netty.NettyBlockTransferService' on port 57125.
+18/10/19 00:35:56 INFO NettyBlockTransferService: Server created on 127.0.0.1:57125
+18/10/19 00:35:56 INFO BlockManager: Using org.apache.spark.storage.RandomBlockReplicationPolicy for block replication policy
+18/10/19 00:35:56 INFO BlockManagerMaster: Registering BlockManager BlockManagerId(driver, 127.0.0.1, 57125, None)
+18/10/19 00:35:56 INFO BlockManagerMasterEndpoint: Registering block manager 127.0.0.1:57125 with 366.3 MB RAM, BlockManagerId(driver, 127.0.0.1, 57125, None)
+18/10/19 00:35:56 INFO BlockManagerMaster: Registered BlockManager BlockManagerId(driver, 127.0.0.1, 57125, None)
+18/10/19 00:35:56 INFO BlockManager: Initialized BlockManager: BlockManagerId(driver, 127.0.0.1, 57125, None)
+18/10/19 00:35:57 WARN SparkContext: Using an existing SparkContext; some configuration may not take effect.
+18/10/19 14:25:15 INFO SparkContext: Invoking stop() from shutdown hook
+18/10/19 14:25:15 INFO SparkUI: Stopped Spark web UI at http://127.0.0.1:4040
+18/10/19 14:25:15 INFO MapOutputTrackerMasterEndpoint: MapOutputTrackerMasterEndpoint stopped!
+18/10/19 14:25:15 INFO MemoryStore: MemoryStore cleared
+18/10/19 14:25:15 INFO BlockManager: BlockManager stopped
+18/10/19 14:25:15 INFO BlockManagerMaster: BlockManagerMaster stopped
+18/10/19 14:25:15 INFO OutputCommitCoordinator$OutputCommitCoordinatorEndpoint: OutputCommitCoordinator stopped!
+18/10/19 14:25:15 INFO SparkContext: Successfully stopped SparkContext
+18/10/19 14:25:15 INFO ShutdownHookManager: Shutdown hook called
+18/10/19 14:25:15 INFO ShutdownHookManager: Deleting directory C:\Users\scibr\AppData\Local\Temp\spark-2c1d5d05-2208-41cc-a9b4-2d0ca16c969b
+18/10/19 14:25:15 INFO ShutdownHookManager: Deleting directory C:\Users\scibr\AppData\Local\Temp\spark-4d7ab76f-a77a-48fb-ad2d-6218d60f10ee
