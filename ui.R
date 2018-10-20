@@ -614,6 +614,10 @@ ui <- shinyUI(fluidPage(
                           p('18. ', HTML("<a href='https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/'>Size Matters - Kelly Optimization</a>"), 
                             tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
                                    tags$img(height = '20px', alt='hot', #align='right', 
+                                            src='hot.jpg'))), 
+                          p('19. ', HTML("<a href='https://zhuanlan.zhihu.com/p/42122611'>Statistical Learning:Paramters Selection for Lasso (Chinese Version)</a>"), 
+                            tags$a(href='https://github.com/scibrokes/owner', target='_blank', 
+                                   tags$img(height = '20px', alt='hot', #align='right', 
                                             src='hot.jpg')))), 
                  
                  tabPanel('Applicant', 
