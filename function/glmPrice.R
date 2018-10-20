@@ -743,7 +743,8 @@ glmPrice <- function(mbase, family = 'gaussian', xy.matrix = 'h1', setform = 'l1
   ## evaluate all yhat0 to yhat10
   eval(parse(text = paste(
     paste0('yhat', alpha, ' <- predict(fit', alpha, ', s = fit', alpha, '$', s, 
-           ', newx = x, type = \'', pred.type, '\')'), collapse ='; ')))
+           ', newx = x, type = \'', pred.type, '\')'), 
+    collapse ='; ')))
   
   #'@ mse0  <- mean((y - yhat0 )^2)
   #'@ mse1  <- mean((y - yhat1 )^2)

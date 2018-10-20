@@ -1,0 +1,180 @@
+---
+title: "<img src='www/binary-logo-resize.jpg' width='240'>"
+subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Lasso, Elastic-Net and Ridge Regression"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/RYO.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>®"
+date: "`r lubridate::today('Asia/Tokyo')`"
+output:
+  html_document: 
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+    code_folding: hide
+---
+
+```{r warning=FALSE}
+suppressPackageStartupMessages(library('BBmisc'))
+#'@ suppressPackageStartupMessages(library('rmsfuns'))
+
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'feather', 'quantmod', 'tidyquant', 'tidyr', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast')
+
+suppressAll(lib(pkgs))
+#'@ load_pkg(pkgs)
+
+funs <- c('glmPrice.R')
+l_ply(funs, function(x) source(paste0('./function/', x)))
+.cl = FALSE
+
+options(warn = -1)#, digits.secs = 6)
+rm(pkgs, funs)
+```
+
+# Introduction
+
+Today, I am trying to recall the `Lasso`, `Elastic-Net` and also `Ridge` models. That was the initial models I built in order to predict the stock price of [`LAD`](https://finance.yahoo.com/quote/LAD/) since few years ago. 
+
+[Stock Prediction with R glmnet and tm packages](https://www.kaggle.com/captcalculator/stock-prediction-with-r-glmnet-and-tm-packages) applied `Lasso` regression for stock price prediction.
+
+![*Source :* [*shinyApp*](https://beta.rstudioconnect.com/content/2367/)](www/20170113_104005.gif)
+
+You are feel free to browse over [*shinyApp*](https://beta.rstudioconnect.com/content/2367/).
+
+# Data
+
+```{r warning=FALSE}
+mbase <- readRDS('data/LAD.rds') %>% 
+  tk_tbl
+```
+
+# Modelling
+
+```{r warning=FALSE, eval=FALSE}
+# ----------- eval=FALSE --------------
+#'@ pr <- glmPrice(mbase, fordate = xts::last(mbase$Date)+days(1))
+timeID <- mbase$index
+timeID0 <- timeID %>% xts::first() %m+% years(1)
+timeID %<>% .[. > timeID0]
+fit <- list()
+prd <- list()
+
+for(dt in timeID) {
+  for(i in 1:10) {
+    smp <- mbase %>% dplyr::filter(index <= dt)
+    x <- as.matrix(smp[c('USDJPY.Open', 'USDJPY.High', 'USDJPY.Low')])
+    y <- smp$USDJPY.Close
+    fit[[i]] <- cv.glmnet(x, y, alpha = i/10, parallel=TRUE)
+    prd[[i]] <- predict(fit[[i]], newx = y, type='response', s='lambda.min')
+    }
+  }
+
+```
+
+```{r warning=FALSE}
+dr <- dir('data', pattern = '[0-9]{8}')
+md <- llply(dr, function(x) {
+    pth <- paste0('data/', x, '/fitgaum.best.rds')
+    readRDS(pth) %>% 
+      head(1)
+  })
+names(md) <- dr
+
+#'@ md$`20160201`[[1]]$yhat[[1]] %>% tail
+```
+
+# MSE
+
+```{r warning=FALSE}
+dr <- dir('data', pattern = '[0-9]{8}')
+comp <- llply(dr, function(x) {
+    pth <- paste0('data/', x, '/fitgaum.mse1.rds')
+    readRDS(pth) %>% 
+      head(1) %>% 
+      dplyr::rename(Submodel = model, Model = .id)
+  })
+names(comp) <- dr
+
+comp %<>% 
+    ldply %>% 
+    tbl_df %>% 
+    dplyr::rename(index = .id, MSE.1 = mse) %>% 
+    mutate(index = ymd(index), 
+           Model = factor(Model), 
+           Submodel = factor(Submodel))
+comp
+
+## MSE
+data.frame(Model = 'Elastic-Net', MSE = mean(comp$MSE.1)) %>% 
+  kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
+# Conclusion
+
+
+```{r option, echo = FALSE}
+## Set options back to original options
+options(warn = 0)
+```
+
+# Appendix
+
+## Documenting File Creation 
+
+It's useful to record some information about how your file was created.
+
+- File creation date: 2018-10-20
+- File latest updated date: `r today('Asia/Tokyo')`
+- `r R.version.string`
+- R version (short form): `r getRversion()`
+- [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+- File version: 1.0.1
+- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
+- GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
+- Additional session information:
+
+```{r info, echo=FALSE, warning=FALSE, results='asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+suppressMessages(require('knitr', quietly = TRUE))
+suppressMessages(require('kableExtra', quietly = TRUE))
+
+sys1 <- devtools::session_info()$platform %>% 
+  unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+
+#sys1 %<>% rbind(., data.frame(
+#  Category = 'Current time', 
+#  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST'))) %>% 
+#  dplyr::filter(Category != 'os')
+
+sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
+names(sys2)[2] <- c('Sys.info')
+rownames(sys2) <- NULL
+
+if (nrow(sys1) == 7 & nrow(sys2) == 8) {
+  sys1 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
+} else {
+  sys2 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
+}
+
+cbind(sys1, sys2) %>% 
+  kable(caption = 'Additional session information:') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+rm(sys1, sys2)
+```
+
+## Reference
+
+01. [Shrinkage Estimation of Linear Regression Models with GARCH Errors](Shrinkag%20Estimation%20of%20Linear%20Regression%20Models%20with%20GARCH%20Errors.pdf)
+02. [Iteratively Reweighted Adaptive Lasso for Conditional Heteroscedastic Time Series with Applications to AR-ARCH Type Processes](Iteratively%20Reweighted%20Adaptive%20Lasso%20for%20Conditional%20Heteroscedastic%20Time%20Series with%20Applications%20to%20AR-ARCH%20Type%20Processes.pdf)
+
+---
+
+<span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of [<img src='www/scb_logo.jpg' width='64'>®](http://www.scibrokes.com)個人の経営企業**</span>

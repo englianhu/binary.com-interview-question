@@ -14,7 +14,7 @@ output:
     code_folding: hide
 ---
 
-```{r, warning=FALSE}
+```{r warning=FALSE}
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
@@ -573,6 +573,8 @@ The `forecast.ets()` will automatically use the optimal `ets()` which is similar
 
 ### Weekly >> Daily
 
+I set the length of dataset as weekly but the frequency set as 1440 minutes (per day).
+
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_tm1$index), by = 1440)
@@ -614,6 +616,8 @@ for (dt in timeID) {
 ```
 
 ### Monthly >> Daily
+
+I set the length of dataset as monthly but the frequency set as 1440 minutes (per day).
 
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
@@ -657,6 +661,8 @@ for (dt in timeID) {
 
 ### Quarterly >> Daily
 
+I set the length of dataset as quarterly but the frequency set as 1440 minutes (per day).
+
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_tm1$index), by = 1440)
@@ -699,6 +705,8 @@ for (dt in timeID) {
 
 ### Yearly >> Daily
 
+I set the length of dataset as yearly but the frequency set as 1440 minutes (per day).
+
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_tm1$index), by = 1440)
@@ -736,43 +744,6 @@ for (dt in timeID) {
   cat(paste0(
     'data/fx/USDJPY/sets.yr.1440.', 
     as_date(sets$forecast$index[1]), '.rds saved!\n'))
-  }
-```
-
-### Weekly
-
-```{r warning=FALSE, eval=FALSE}
-# --------- eval=FALSE ---------
-sq <- seq(1 , length(data_tm1$index), by = 7200)
-sets <- list()
-for(i in (1:length(fs))) {
-    smp <- data_tm1 %>% tk_xts(silent = TRUE)
-    timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
-      .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
-    
-    if (dt %in% timeID) {
-      smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - seconds(59))]
-      
-      sets <- smp %>% tk_ts(start = index(index)[1], 
-                            frequency = 7200) %>% 
-        forecast(h=7200) %>% 
-        llply(tk_tbl)
-      
-      wh <- which(data_tm1$index == smp %>% index %>% xts::last())
-      sets$forecast$index = data_tm1$index[
-        (which(data_tm1$index == smp %>% index %>% xts::last()) + 1):(
-          which(data_tm1$index == smp %>% index %>% xts::last()) + 7200)]
-
-      if (!dir.exists(paste0('data/fx/USDJPY'))) 
-        dir.create(paste0('data/fx/USDJPY'))
-      
-      saveRDS(sets, paste0('data/fx/USDJPY/sets.7200.', 
-                           as_date(sets$forecast$index[1]), '.rds'))
-      
-      cat(paste0(
-        'data/fx/USDJPY/sets.7200.', 
-        as_date(sets$forecast$index[1]), '.rds saved!\n'))
-      }
   }
 ```
 
@@ -937,7 +908,9 @@ smp %>% tk_ts(start = index(index)[1], frequency = c(1440, 7200)) %>% forecast %
 
 ```
 
-#### Nested Daily-Weekly Model
+#### Weekly >> Daily
+
+I set the length of dataset as nested seasonal dataset as weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
 
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
@@ -1000,7 +973,13 @@ aar <- multi_seasons(smp, auto_arima=TRUE)
 
 ```
 
-#### Nested Daily-Weekly-Monthly Model
+#### Monthly >> Weekly >> Daily
+
+I set the length of dataset as 3 level nested seasonal dataset as monthly (), weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
+
+#### Yearly >> Weekly >> Daily
+
+I set the length of dataset as 3 level nested seasonal dataset as monthly (1 year = ), weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
 
 ## TBATS
 
@@ -1137,6 +1116,201 @@ for (dt in timeID) {
 
 
 ## Levy Process
+
+# Comparison
+
+## Exponential Time Series
+
+### Seasonal ETS
+
+```{r warning=FALSE}
+fls <- paste0('data/fx/USDJPY/', list.files(
+  'data/fx/USDJPY/', pattern = 'sets\\.[a-z]{2}\\.'))
+readRDS(fls[1])
+
+comp <- llply(fls, function(x) {
+  if(grepl('sets.wk', x)) {
+    readRDS(x)$forecast %>% mutate(Period = factor('wk'))
+    
+  } else if(grepl('sets.mo', x)) {
+    readRDS(x)$forecast %>% mutate(Period = factor('mo'))
+    
+  } else if(grepl('sets.qt', x)) {
+    readRDS(x)$forecast %>% mutate(Period = factor('qt'))
+    
+  }else if(grepl('sets.yr', x)) {
+    readRDS(x)$forecast %>% mutate(Period = factor('yr'))
+    
+  } else {
+    stop('No suach files.')
+  }
+  }) %>% bind_rows %>% tbl_df
+
+comp <- join(data_tm1, comp) %>% 
+  tbl_df %>% na.omit
+```
+
+```{r warning=FALSE}
+comp %>% ddply(.(Period), summarise, 
+               MSE.Open = mean((open.Point.Forecast - open)^2), 
+               MSE.high = mean((high.Point.Forecast - high)^2), 
+               MSE.low = mean((low.Point.Forecast - low)^2), 
+               MSE.close = mean((close.Point.Forecast - close)^2)) %>% 
+  tbl_df
+```
+
+### ETS
+
+Below I recall the `ETS` models in previous paper for comparison.
+
+```{r warning=FALSE}
+ets.fls <- list.files('data', pattern = '^[A-Z]{3}\\.[A-Za-z]{4}')
+ETS.MSE <- llply(ets.fls, function(x) {
+    nm <- x %>% 
+      str_replace_all('.rds', '') %>% 
+      str_split_fixed('\\.', 2) %>% 
+      as_data_frame
+    names(nm) <- c('Model', 'Type')
+    
+    y <- paste0('data/', x) %>% 
+      readRDS
+    
+    data.frame(nm, y) %>% tbl_df
+  }) %>% bind_rows %>% 
+  dplyr::select(Date, Model,Type, Point.Forecast, forClose, 
+                USDJPY.Open, USDJPY.High, USDJPY.Low, USDJPY.Close)
+
+ETS.MSE %<>% mutate(
+    MSE.1 = case_when(
+        substr(Type, 1, 2) == 'Op' ~ mean((Point.Forecast - USDJPY.Open)^2), 
+        substr(Type, 1, 2) == 'Hi' ~ mean((Point.Forecast - USDJPY.High)^2), 
+        substr(Type, 1, 2) == 'Mn' ~ mean((Point.Forecast - (USDJPY.High + USDJPY.Low)/2)^2), 
+        substr(Type, 1, 2) == 'Lo' ~ mean((Point.Forecast - USDJPY.Low)^2), 
+        substr(Type, 1, 2) == 'Cl' ~ mean((Point.Forecast - USDJPY.Close)^2)), 
+    MSE.2 = case_when(
+        substr(Type, 3, 4) == 'Op' ~ mean((Point.Forecast - USDJPY.Open)^2), 
+        substr(Type, 3, 4) == 'Hi' ~ mean((Point.Forecast - USDJPY.High)^2), 
+        substr(Type, 3, 4) == 'Mn' ~ mean((Point.Forecast - (USDJPY.High + USDJPY.Low)/2)^2), 
+        substr(Type, 3, 4) == 'Lo' ~ mean((Point.Forecast - USDJPY.Low)^2), 
+        substr(Type, 3, 4) == 'Cl' ~ mean((Point.Forecast - USDJPY.Close)^2)))
+
+ETS.MSE %>% 
+    ddply(.(Model, Type), summarise, 
+          MSE.1 = mean(MSE.1, na.rm=TRUE), 
+          MSE.2 = mean(MSE.2, na.rm=TRUE)) %>% 
+  kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  group_rows('AAN', 1, 25, label_row_css = 'background-color: #e68a00; color: #fff;') %>%
+  group_rows('AAZ', 26, 50, label_row_css = 'background-color: #ff0000; color: #fff;') %>%
+  group_rows('ANN', 51, 75, label_row_css = 'background-color: #bf80ff; color: #fff;') %>%
+  group_rows('ANZ', 76, 100, label_row_css = 'background-color: #66ff33; color: #fff;') %>%
+  group_rows('AZN', 101, 125, label_row_css = 'background-color: #6666ff; color: #fff;') %>%
+  group_rows('AZZ', 126, 150, label_row_css = 'background-color: #66e0ff; color: #fff;') %>%
+  group_rows('MAN', 151, 175, label_row_css = 'background-color:#0066ff; color: #fff;') %>%
+  group_rows('MAZ', 176, 200, label_row_css = 'background-color: #ff9900; color: #fff;') %>%
+  group_rows('MMN', 201, 225, label_row_css = 'background-color: #33ff33; color: #fff;') %>%
+  group_rows('MMZ', 226, 250, label_row_css = 'background-color: #339966; color: #fff;') %>%
+  group_rows('MNN', 251, 275, label_row_css = 'background-color: #5900b3; color: #fff;') %>%
+  group_rows('MNZ', 276, 300, label_row_css = 'background-color: #269900; color: #fff;') %>%
+  group_rows('MZN', 301, 325, label_row_css = 'background-color: #808000; color: #fff;') %>%
+  group_rows('MZZ', 326, 350, label_row_css = 'background-color: #3399ff; color: #fff;') %>%
+  group_rows('ZAN', 351, 375, label_row_css = 'background-color: #003380; color: #fff;') %>%
+  group_rows('ZAZ', 376, 400, label_row_css = 'background-color: #804d00; color: #fff;') %>%
+  group_rows('ZMN', 401, 425, label_row_css = 'background-color: #d279d2; color: #fff;') %>%
+  group_rows('ZMZ', 426, 450, label_row_css = 'background-color: #666; color: #fff;') %>%
+  group_rows('ZNN', 451, 475, label_row_css = 'background-color: #ff3377; color: #fff;') %>%
+  group_rows('ZNZ', 476, 500, label_row_css = 'background-color: #993399; color: #fff;') %>%
+  group_rows('ZZN', 501, 525, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
+  group_rows('ZZZ', 526, 550, label_row_css = 'background-color: #e60000; color: #fff;') %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+*Source : [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E)*
+
+From above `MSE` comparison with intraday-dataset, we know that the intraday data will be more accurate than just daily dataset.
+
+```{r warning=FALSE}
+ETS.MSE %>% 
+    ddply(.(Model, Type), summarise, 
+          MSE.1 = mean(MSE.1, na.rm=TRUE), 
+          MSE.2 = mean(MSE.2, na.rm=TRUE)) %>% 
+  arrange(MSE.1, MSE.2) %>% 
+  kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  group_rows('OpOp', 1, 22, label_row_css = 'background-color: #e68a00; color: #fff;') %>%
+  group_rows('OpCl', 23, 44, label_row_css = 'background-color: #ff0000; color: #fff;') %>%
+  group_rows('ANN', 45, 66, label_row_css = 'background-color: #bf80ff; color: #fff;') %>%
+  group_rows('ANZ', 67, 88, label_row_css = 'background-color: #66ff33; color: #fff;') %>%
+  group_rows('AZN', 89, 110, label_row_css = 'background-color: #6666ff; color: #fff;') %>%
+  group_rows('AZZ', 111, 132, label_row_css = 'background-color: #66e0ff; color: #fff;') %>%
+  group_rows('MAN', 133, 154, label_row_css = 'background-color:#0066ff; color: #fff;') %>%
+  group_rows('MAZ', 155, 176, label_row_css = 'background-color: #ff9900; color: #fff;') %>%
+  group_rows('MMN', 177, 198, label_row_css = 'background-color: #33ff33; color: #fff;') %>%
+  group_rows('MMZ', 199, 220, label_row_css = 'background-color: #339966; color: #fff;') %>%
+  group_rows('MNN', 221, 242, label_row_css = 'background-color: #5900b3; color: #fff;') %>%
+  group_rows('MNZ', 243, 264, label_row_css = 'background-color: #269900; color: #fff;') %>%
+  group_rows('MZN', 265, 286, label_row_css = 'background-color: #808000; color: #fff;') %>%
+  group_rows('MZZ', 287, 308, label_row_css = 'background-color: #3399ff; color: #fff;') %>%
+  group_rows('ZAN', 309, 330, label_row_css = 'background-color: #003380; color: #fff;') %>%
+  group_rows('ZAZ', 331, 352, label_row_css = 'background-color: #804d00; color: #fff;') %>%
+  group_rows('ZMN', 353, 374, label_row_css = 'background-color: #d279d2; color: #fff;') %>%
+  group_rows('ZMZ', 375, 396, label_row_css = 'background-color: #666; color: #fff;') %>%
+  group_rows('ZNN', 397, 418, label_row_css = 'background-color: #ff3377; color: #fff;') %>%
+  group_rows('ZNZ', 419, 440, label_row_css = 'background-color: #993399; color: #fff;') %>%
+  group_rows('ZZN', 441, 462, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
+  group_rows('ZZZ', 463, 484, label_row_css = 'background-color: #e60cc0; color: #fff;') %>%
+  group_rows('ZZN', 485, 506, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
+  group_rows('ZZZ', 507, 528, label_row_css = 'background-color: #e56000; color: #fff;') %>%
+  group_rows('ZZZ', 529, 550, label_row_css = 'background-color: #e33000; color: #fff;') %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
+## Seasonal ARIMA
+
+### SARIMA
+
+### AUTO ARIMA
+
+```{r warning=FALSE}
+ar.fls <- list.files('data', pattern = '^fundAutoArima')
+ARIMA.MSE <- llply(ar.fls, function(x) {
+    nm <- x %>% 
+      str_replace_all('.rds', '') %>% 
+      substring(nchar(.) - 3)
+    
+    y <- paste0('data/', x) %>% 
+      readRDS
+    
+    data.frame(Model = 'auto.arima', Type = nm, y) %>% tbl_df
+  }) %>% bind_rows %>% 
+  mutate(index = Date) %>% 
+  dplyr::select(index, Model, Type, Point.Forecast, forClose, 
+                USDJPY.Open, USDJPY.High, USDJPY.Low, USDJPY.Close, 
+                -Date)
+
+ARIMA.MSE %<>% mutate(
+  MSE.1 = case_when(
+    substr(Type, 1, 2) == 'OP' ~ mean((Point.Forecast - USDJPY.Open)^2), 
+    substr(Type, 1, 2) == 'HI' ~ mean((Point.Forecast - USDJPY.High)^2), 
+    substr(Type, 1, 2) == 'MN' ~ mean((Point.Forecast - (USDJPY.High + USDJPY.Low)/2)^2), 
+    substr(Type, 1, 2) == 'LO' ~ mean((Point.Forecast - USDJPY.Low)^2), 
+    substr(Type, 1, 2) == 'CL' ~ mean((Point.Forecast - USDJPY.Close)^2)), 
+  MSE.2 = case_when(
+    substr(Type, 3, 4) == 'OP' ~ mean((Point.Forecast - USDJPY.Open)^2), 
+    substr(Type, 3, 4) == 'HI' ~ mean((Point.Forecast - USDJPY.High)^2), 
+    substr(Type, 3, 4) == 'MN' ~ mean((Point.Forecast - (USDJPY.High + USDJPY.Low)/2)^2), 
+    substr(Type, 3, 4) == 'LO' ~ mean((Point.Forecast - USDJPY.Low)^2), 
+    substr(Type, 3, 4) == 'CL' ~ mean((Point.Forecast - USDJPY.Close)^2)))
+
+ARIMA.MSE %>% 
+    ddply(.(Model), summarise, 
+          MSE.1 = mean(MSE.1, na.rm=TRUE), 
+          MSE.2 = mean(MSE.2, na.rm=TRUE)) %>% 
+  arrange(MSE.1, MSE.2) %>% 
+  kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+```
+
 
 # Conclusion
 
