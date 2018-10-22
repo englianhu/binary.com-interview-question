@@ -18,10 +18,12 @@ output:
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'feather', 'quantmod', 'tidyquant', 'tidyr', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend')
+pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
+#'@ devtools::install_github("business-science/tibbletime")
+#'@ devtools::install_github("DavisVaughan/furrr")
 
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
@@ -39,9 +41,9 @@ rm(pkgs, funs)
 
 # Introduction
 
-By refer to *GARCH模型中的ARIMA(p,d,q)参数最优化* and *binary.com Interview Question I - Comparison of Univariate GARCH Models*, we know **Fractional Intergrated GJR-GARCH** is the best fit model. This paper we compare the MIDAS, GARCH-MIDAS and Levy Process models. Here I also test another high frequency trading model mcmcsGARCH. These paper might consider as comparison interday trading before start the high frequency trading via [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
+By refer to <span style='color:goldenrod'>*GARCH模型中的ARIMA(p,d,q)参数最优化*</span> and <span style='color:goldenrod'>*binary.com Interview Question I - Comparison of Univariate GARCH Models*</span>, we know **Fractional Intergrated GJR-GARCH** is the best fit model. This paper we compare the MIDAS, GARCH-MIDAS and Levy Process models. Here I also test another high frequency trading model mcmcsGARCH. These paper might consider as comparison interday trading before start the high frequency trading via [Real Time FXCM](https://github.com/scibrokes/real-time-fxcm).
 
-*High Frequency Financial Time Series Prediction - Machine Learning Approach* introduce multilayer modelling for high-frequency-trading. *binary.com Interview Question I - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>* tried to use Hi-Lo daily dataset for modelling but failed. The paper recommend to use complete itraday dataset.
+<span style='color:goldenrod'>*High Frequency Financial Time Series Prediction - Machine Learning Approach*</span> introduce multilayer modelling for high-frequency-trading. <span style='color:goldenrod'>*binary.com Interview Question I - Tick-Data-HiLo For Daily Trading </span><span style='color:red'>(Blooper)</span>* tried to use Hi-Lo daily dataset for modelling but failed. The paper recommend to use complete itraday dataset.
 
 > I noticed that buying early in the morning, around 5am eastern time, tends to give lower prices and selling around 10pm eastern time gives you the highest prices. The wording is weird but i want to know your opinions on how time of day affects the bitcoin trading market. Thank you.
 
@@ -109,7 +111,7 @@ eval(parse(text = paste0(fs[1], "<- readRDS('", fls[[7]][1], "') %>% tbl_df")))
 Y2015W1
 ```
 
-Above table shows the raw tick-dataset (shows price flutuation in mili-seconds). As we know that the variance in unit `mili-second` is almost 0. Therefore I refer to *High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model* and use 1 minute as 1 time unit, convert from univariate `ask` and univariate `bid` to be OHLC dataset.
+Above table shows the raw tick-dataset (shows price flutuation in mili-seconds). As we know that the variance in unit `mili-second` is almost 0. Therefore I refer to <span style='color:goldenrod'>*High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model*</span> and use 1 minute as 1 time unit, convert from univariate `ask` and univariate `bid` to be OHLC dataset.
 
 ### Tidy Data
 
@@ -119,7 +121,7 @@ Above table shows the raw tick-dataset (shows price flutuation in mili-seconds).
 
 *Source [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/)*
 
-*A Review of Literature on Time Zone Difference and Trade* study about trading across timezone and different country, if the timezone difference will affect the trading.
+<span style='color:goldenrod'>*A Review of Literature on Time Zone Difference and Trade*</span> study about trading across timezone and different country, if the timezone difference will affect the trading.
 
 > I would like to use R for time series analysis. I want to make a time-series model and use functions from the packages timeDate and forecast.
 I have intraday data in the CET time zone (15 minutes data, 4 data points per hour). On March 31st daylight savings time is implemented and I am missing 4 data points of the 96 that I usually have. On October 28th I have 4 data points too many as time is switched back.
@@ -202,7 +204,7 @@ Y2015W1_min1 %>%
   tbl_df
 ```
 
-Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) to know the seasonality dataset. *High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model* use the dataset start from `00:01:00` but not `00:00:00`, therefore above dataset shows the last observation will be the start of next day.
+Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) to know the seasonality dataset. <span style='color:goldenrod'>*High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model*</span> use the dataset start from `00:01:00` but not `00:00:00`, therefore above dataset shows the last observation will be the start of next day.
 
 ```{r warning=FALSE}
 # tsz <- llply(fls[[7]], function(x) {
@@ -356,7 +358,16 @@ From above tables, we can know the daylight saving detection and `datetime` auto
 
 ### Data Selection
 
-[binary.com 面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value) and [binary.com面试试题 I - 单变量数据缺失值管理 II](http://rpubs.com/englianhu/428318) compares the missing values dataset and refill the missing value, the paper concludes that the repaired dataset is workable since the MSE is very low. The paper compares tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM.
+[binary.com 面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value) and [binary.com面试试题 I - 单变量数据缺失值管理 II](http://rpubs.com/englianhu/428318) compares the missing values dataset and refill the missing value with `imputeTS::na.seadec()`: 
+
+- interpolation
+- kalman
+- locf
+- ma
+- mean
+- random
+
+The paper concludes that the repaired dataset is workable since the MSE is very low. The paper compares tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM.
 
 ```{r warning=FALSE}
 ## tick-data to minute 1 dataset
@@ -563,6 +574,19 @@ data_tm1 %<>%
   dplyr::select(index, open, high, low, close)     # and ask price for buy.
 ```
 
+Here I try to check if the filled dataset bias or not.
+
+```{r warning=FALSE}
+data_tm1 %>% mutate(
+  bias.open = if_else(open>high|open<low, 1, 0), 
+  bias.high = if_else(high<open|high<low|high<close, 1, 0), 
+  bias.low = if_else(low>open|low>high|low>close, 1, 0), 
+  bias.close = if_else(close>high|close<low, 1, 0)) %>% dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1) %>% 
+  kable(caption = 'Bias Imputation') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+```
+
 # Modelling
 
 ## Seasonal ETS
@@ -617,7 +641,7 @@ for (dt in timeID) {
 
 ### Monthly >> Daily
 
-I set the length of dataset as monthly but the frequency set as 1440 minutes (per day).
+I set the length of dataset as monthly but the frequency set as 1440 minutes (per day). Initial forecast will be based on weekly dataset and then accumulated date-by-date until a monthly dataset.
 
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
@@ -661,7 +685,7 @@ for (dt in timeID) {
 
 ### Quarterly >> Daily
 
-I set the length of dataset as quarterly but the frequency set as 1440 minutes (per day).
+I set the length of dataset as quarterly but the frequency set as 1440 minutes (per day). Initial forecast will be based on weekly dataset and then accumulated date-by-date until a quarterly dataset.
 
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
@@ -705,7 +729,7 @@ for (dt in timeID) {
 
 ### Yearly >> Daily
 
-I set the length of dataset as yearly but the frequency set as 1440 minutes (per day).
+I set the length of dataset as yearly but the frequency set as 1440 minutes (per day). Initial forecast will be based on weekly dataset and then accumulated date-by-date until a yearly dataset.
 
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
@@ -1059,7 +1083,7 @@ aar <- multi_seasons(smp, auto_arima=TRUE)
 
 ## MIDAS
 
-*Mixed Frequency Data Sampling Regression Models - The R Package midasr*
+<span style='color:goldenrod'>*Mixed Frequency Data Sampling Regression Models - The R Package midasr*</span> introduce a midas model.
 
 ## GARCH-MIDAS
 
@@ -1152,11 +1176,66 @@ comp <- join(data_tm1, comp) %>%
 
 ```{r warning=FALSE}
 comp %>% ddply(.(Period), summarise, 
-               MSE.Open = mean((open.Point.Forecast - open)^2), 
+               MSE.open = mean((open.Point.Forecast - open)^2), 
                MSE.high = mean((high.Point.Forecast - high)^2), 
                MSE.low = mean((low.Point.Forecast - low)^2), 
-               MSE.close = mean((close.Point.Forecast - close)^2)) %>% 
-  tbl_df
+               MSE.close = mean((close.Point.Forecast - close)^2), 
+               MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
+               MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
+               n = length(index)) %>% 
+  tbl_df %>% 
+  kable(caption = 'MSE of Seasonal ETS Model (Accumulated Period from Weekly)') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%')#, height = '400px')
+```
+
+```{r warning=FALSE}
+tmID <- fls %>% 
+  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
+  unlist %>% 
+  plyr::count() %>% 
+  dplyr::filter(freq == 4)
+tmID %<>% .$x
+fls2 <- llply(tmID, function(x) {
+    paste0('data/fx/USDJPY/sets.', c('wk', 'mo', 'qt', 'yr'), 
+           '.1440.', x, '.rds')
+    }) %>% unlist
+
+comp2 <- llply(fls2, function(x) {
+  if(grepl('sets.wk', x)) {
+    readRDS(x)$forecast %>% mutate(Period = factor('wk'))
+    
+  } else if(grepl('sets.mo', x)) {
+    readRDS(x)$forecast %>% mutate(Period = factor('mo'))
+    
+  } else if(grepl('sets.qt', x)) {
+    readRDS(x)$forecast %>% mutate(Period = factor('qt'))
+    
+  }else if(grepl('sets.yr', x)) {
+    readRDS(x)$forecast %>% mutate(Period = factor('yr'))
+    
+  } else {
+    stop('No suach files.')
+  }
+  }) %>% bind_rows %>% tbl_df
+
+comp2 <- join(data_tm1, comp2) %>% 
+  tbl_df %>% na.omit
+```
+
+```{r warning=FALSE}
+comp2 %>% ddply(.(Period), summarise, 
+               MSE.open = mean((open.Point.Forecast - open)^2), 
+               MSE.high = mean((high.Point.Forecast - high)^2), 
+               MSE.low = mean((low.Point.Forecast - low)^2), 
+               MSE.close = mean((close.Point.Forecast - close)^2), 
+               MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
+               MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
+               n = length(index)) %>% 
+  tbl_df %>% 
+  kable(caption = 'MSE of Seasonal ETS Model (Completed Period)') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%')#, height = '400px')
 ```
 
 ### ETS
@@ -1314,7 +1393,7 @@ ARIMA.MSE %>%
 
 # Conclusion
 
-**High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers** introduce... suggest... DCC-MIDAS etc.
+<span style='color:goldenrod'>*High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers*</span> introduce... suggest... DCC-MIDAS etc.
 
 
 ```{r option, echo = FALSE}
@@ -1339,21 +1418,13 @@ It's useful to record some information about how your file was created.
 - Additional session information:
 
 ```{r info, echo=FALSE, warning=FALSE, results='asis'}
-suppressMessages(require('dplyr', quietly = TRUE))
-suppressMessages(require('formattable', quietly = TRUE))
-suppressMessages(require('knitr', quietly = TRUE))
-suppressMessages(require('kableExtra', quietly = TRUE))
-
-sys1 <- devtools::session_info()$platform %>% 
+sys1 <- session_info()$platform %>% 
   unlist %>% data.frame(Category = names(.), session_info = .)
 rownames(sys1) <- NULL
 
-#sys1 %<>% rbind(., data.frame(
-#  Category = 'Current time', 
-#  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST'))) %>% 
-#  dplyr::filter(Category != 'os')
-
-sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
+sys2 <- data.frame(Sys.info()) %>% 
+  mutate(Category = rownames(.)) %>% 
+  .[2:1]
 names(sys2)[2] <- c('Sys.info')
 rownames(sys2) <- NULL
 

@@ -18,7 +18,7 @@ output:
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'feather', 'quantmod', 'tidyquant', 'tidyr', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast')
+pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'feather', 'quantmod', 'tidyquant', 'tidyr', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'glmnet')
 
 suppressAll(lib(pkgs))
 #'@ load_pkg(pkgs)
@@ -35,7 +35,10 @@ rm(pkgs, funs)
 
 Today, I am trying to recall the `Lasso`, `Elastic-Net` and also `Ridge` models. That was the initial models I built in order to predict the stock price of [`LAD`](https://finance.yahoo.com/quote/LAD/) since few years ago. 
 
-[Stock Prediction with R glmnet and tm packages](https://www.kaggle.com/captcalculator/stock-prediction-with-r-glmnet-and-tm-packages) applied `Lasso` regression for stock price prediction.
+[Glmnet Vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html) provides examples for statistical modelling while [Stock Prediction with R glmnet and tm packages](https://www.kaggle.com/captcalculator/stock-prediction-with-r-glmnet-and-tm-packages) applied `Lasso` regression for stock price prediction.
+
+- [热门数据挖掘模型应用入门（一）: LASSO 回归](https://cosx.org/2016/10/data-mining-1-lasso/)
+- 
 
 ![*Source :* [*shinyApp*](https://beta.rstudioconnect.com/content/2367/)](www/20170113_104005.gif)
 
@@ -44,7 +47,7 @@ You are feel free to browse over [*shinyApp*](https://beta.rstudioconnect.com/co
 # Data
 
 ```{r warning=FALSE}
-mbase <- readRDS('data/LAD.rds') %>% 
+mbase <- readRDS('data/LAD_Full.rds') %>% 
   tk_tbl
 ```
 
@@ -58,16 +61,26 @@ timeID0 <- timeID %>% xts::first() %m+% years(1)
 timeID %<>% .[. > timeID0]
 fit <- list()
 prd <- list()
+prc <- vector('list', length(timeID))
 
-for(dt in timeID) {
-  for(i in 1:10) {
-    smp <- mbase %>% dplyr::filter(index <= dt)
-    x <- as.matrix(smp[c('USDJPY.Open', 'USDJPY.High', 'USDJPY.Low')])
-    y <- smp$USDJPY.Close
-    fit[[i]] <- cv.glmnet(x, y, alpha = i/10, parallel=TRUE)
-    prd[[i]] <- predict(fit[[i]], newx = y, type='response', s='lambda.min')
-    }
+for(d in (1:length(timeID))) {
+  for(i in 0:10) {
+    smp <- mbase %>% dplyr::filter(index <= timeID[d])
+    x <- as.matrix(smp[c('LAD.Open', 'LAD.High', 'LAD.Low')])
+    y <- as.matrix(smp['LAD.Close'])
+    #'@ y <- as.matrix(lead(smp$LAD.Close))
+    fit[[i+1]] <- cv.glmnet(x = x, y = y, alpha = i/10, 
+                            type.measure = 'mse', maxit = 100)
+    prd[[i+1]] <- predict(fit[[i+1]], newx = tail(x, 1), n.ahead = 1, 
+                          type='link', s='lambda.1se')
   }
+  prc[[d]] <- prd %>% cbind %>% 
+    data.frame(index = tail(smp$index, 1), alpha = 0:10) %>% 
+    .[, 1:3] %>% 
+    tbl_df %>% 
+    unnest %>% 
+    dplyr::rename(Price = '.')
+}
 
 ```
 
