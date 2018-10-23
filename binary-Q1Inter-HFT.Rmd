@@ -358,7 +358,7 @@ From above tables, we can know the daylight saving detection and `datetime` auto
 
 ### Data Selection
 
-[binary.com 面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value) and [binary.com面试试题 I - 单变量数据缺失值管理 II](http://rpubs.com/englianhu/428318) compares the missing values dataset and refill the missing value with `imputeTS::na.seadec()`: 
+[binary.com 面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value) and [binary.com面试试题 I - 单变量数据缺失值管理 II](http://rpubs.com/englianhu/handle-multivariate-missing-value) compares the missing values dataset and refill the missing value with `imputeTS::na.seadec()`: 
 
 - interpolation
 - kalman
@@ -367,7 +367,7 @@ From above tables, we can know the daylight saving detection and `datetime` auto
 - mean
 - random
 
-The paper concludes that the repaired dataset is workable since the MSE is very low. The paper compares tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM.
+The papers concludes that the `imputeTS::na.seadec(algorithm = 'interpolation')` or `imputeTS::na.seadec(algorithm = 'kalman')` repaired dataset no matter how much of portion of missing value is workable since the MSE and bias is very low. The `Amelia::amelia` is accurate and the bias is small compare to `imputeTS::sea.dec` when the portion of missing value is small. The papers compare tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM. It is very weird that the `tidyr::fill` and `na.locf` both are not too accurate. However, in this paper I use `tidy::fill()` method to fill the missing value.
 
 ```{r warning=FALSE}
 ## tick-data to minute 1 dataset
@@ -581,10 +581,10 @@ data_tm1 %>% mutate(
   bias.open = if_else(open>high|open<low, 1, 0), 
   bias.high = if_else(high<open|high<low|high<close, 1, 0), 
   bias.low = if_else(low>open|low>high|low>close, 1, 0), 
-  bias.close = if_else(close>high|close<low, 1, 0)) %>% dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1) %>% 
-  kable(caption = 'Bias Imputation') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
-  scroll_box(width = '100%', height = '400px')
+  bias.close = if_else(close>high|close<low, 1, 0)) %>% dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)# %>% 
+#  kable(caption = 'Bias Imputation') %>% 
+#  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+#  scroll_box(width = '100%', height = '400px')
 ```
 
 # Modelling
