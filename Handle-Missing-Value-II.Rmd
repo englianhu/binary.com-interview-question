@@ -21,8 +21,11 @@ suppressPackageStartupMessages(require('BBmisc'))
 pkg <- c('devtools', 'tidyverse', 'timetk', 'lubridate', 'plyr', 'dplyr', 'magrittr', 'purrr', 'stringr', 'reshape', 'formattable', 'microbenchmark', 'knitr', 'kableExtra', 'VIM', 'mice', 'miceAdds', 'mi', 'mitools', 'Amelia', 'missForest', 'Hmisc', 'DMwR', 'imputeTS', 'tidyimpute', 'mtsdi', 'xts', 'forecast', 'marima', 'missMDA')
 
 suppressAll(lib(pkg))
+funs <- c('convertOHLC.R')
+l_ply(funs, function(x) source(paste0('./function/', x)))
+
 algo <- c('interpolation', 'locf', 'mean', 'random', 'kalman', 'ma')
-rm(pkg)
+rm(pkg, funs)
 ```
 
 # 简介
@@ -101,23 +104,37 @@ rm(pkg)
 ```{r warning=FALSE}
 pth <- 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/'
 fls <- list.files(pth, pattern = '^Y[0-9]{4}W[1-9]{1,2}_m1.rds$')
-Y2015W1_m1 <- llply(fls, function(x) {
-    readRDS(paste0(pth, x))
-  }) %>% bind_rows
 
-Y2015W1_m1 %<>% mutate(DateTime = mdy_hms(DateTime)) %>% 
-  dplyr::rename(index = DateTime)
-dim(Y2015W1_m1)
+## 1分钟数据
+data_m1 <- llply(fls, function(x) {
+    y <- readRDS(paste0(pth, x)) %>% 
+      dplyr::rename(index = DateTime) %>% 
+      mutate(index = index %>% mdy_hms %>% 
+               .POSIXct(tz = 'Europe/Athens') %>% 
+               force_tz())
+    
+    yw <- x %>% str_extract_all('Y[0-9]{4}W[0-9]{1,2}') %>% 
+      str_split_fixed('[A-Z]{1}', 3) %>% .[,-1]
+    
+    nch <- y$index[1] %>% substr(nchar(.)+2, nchar(.)+3)
+    y %<>% mutate(
+      year = as.numeric(yw[1]), week = as.numeric(yw[2]), 
+      nch = nch, index = if_else(
+        nch == '23', index + hours(1), index)) %>% 
+      dplyr::select(-nch)
+    }) %>% bind_rows %>% tbl_df %>% arrange(index)
+dim(data_m1)
 
-Y2015W1_m1
+data_m1
 
-Y2015W1_m1 %<>% mutate(
+## 检验原始数据是否存在偏差。
+data_m1 %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1 %>% 
+data_m1 %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1) %>% 
   kable(caption = 'Bias Imputation') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
@@ -132,40 +149,29 @@ Y2015W1_m1 %>%
 ```{r, warning=FALSE}
 pth <- 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/'
 fls <- list.files(pth, pattern = '^Y[0-9]{4}W[1-9]{1,2}.rds$')
-Y2015W1 <- llply(fls, function(x) {
-    readRDS(paste0(pth, x))
-  }) %>% bind_rows
 
-Y2015W1 %<>% mutate(DateTime = mdy_hms(DateTime))
-dim(Y2015W1)
+## Tick数据转为1分钟数据
+data_tm1 <- llply(fls, function(x) {
+    y <- readRDS(paste0(pth, x)) %>% 
+      convertOHLC(combine = TRUE)
+    
+    yw <- x %>% str_extract_all('Y[0-9]{4}W[0-9]{1,2}') %>% 
+      str_split_fixed('[A-Z]{1}', 3) %>% .[,-1]
+    y %<>% mutate(
+      year = as.numeric(yw[1]), week = as.numeric(yw[2]), .)
+    }) %>% bind_rows %>% tbl_df %>% arrange(index)
+dim(data_tm1)
 
-Y2015W1
+data_tm1
 
-Y2015W1_tm1A <- Y2015W1 %>% 
-  dplyr::select(DateTime, Ask) %>% tk_xts %>% 
-  to.period(period = 'minute') %>% 
-  tk_tbl %>% 
-  mutate(index = round_date(index, 'minutes')) %>% 
-  dplyr::rename_all(str_replace_all, '^\\.{2}', 'Ask')
-
-Y2015W1_tm1B <- Y2015W1 %>% 
-  dplyr::select(DateTime, Bid) %>% tk_xts %>% 
-  to.period(period = 'minute') %>% 
-  tk_tbl %>% 
-  mutate(index = round_date(index, 'minutes')) %>% 
-  dplyr::rename_all(str_replace_all, '^\\.{2}', 'Bid')
-
-Y2015W1_tm1 <- merge(Y2015W1_tm1B, Y2015W1_tm1A) %>% tbl_df
-rm(Y2015W1, Y2015W1_tm1A, Y2015W1_tm1B)
-Y2015W1_tm1
-
-Y2015W1_tm1 %<>% mutate(
+## 检验原始数据是否存在偏差。
+data_tm1 %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1 %>% 
+data_tm1 %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1) %>% 
   kable(caption = 'Bias Imputation') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
@@ -179,25 +185,25 @@ Y2015W1_tm1 %>%
 现在尝试随机设置缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
+data_m1_NA <- data_m1 %>% 
   dplyr::select(index, BidOpen, BidHigh, BidLow, BidClose, AskOpen, AskHigh, AskLow,  AskClose) %>% 
   prodNA(noNA = 0.01)
-Y2015W1_m1_NA
+data_m1_NA
 
-Y2015W1_m1_NA %>% md.pattern
-Y2015W1_m1_NA %>% md.pairs
+data_m1_NA %>% md.pattern
+data_m1_NA %>% md.pairs
 ```
 
 ### Tick数据转为1分钟数据
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
+data_tm1_NA <- data_tm1 %>% 
   dplyr::select(index, BidOpen, BidHigh, BidLow, BidClose, AskOpen, AskHigh, AskLow,  AskClose) %>% 
   prodNA(noNA = 0.01)
-Y2015W1_tm1_NA
+data_tm1_NA
 
-Y2015W1_tm1_NA %>% md.pattern
-Y2015W1_tm1_NA %>% md.pairs
+data_tm1_NA %>% md.pattern
+data_tm1_NA %>% md.pairs
 ```
 
 # 统计模式
@@ -223,7 +229,7 @@ Y2015W1_tm1_NA %>% md.pairs
 - [I am trying to do a multivariate time series analysis on r. how to use auto.arima with Xreg?](https://www.researchgate.net/post/I_am_trying_to_do_a_multivariate_time_series_analysis_on_r_how_to_use_autoarima_with_Xreg)
 
 ```{r warning=FALSE}
-tttt <- Y2015W1_m1_NA[-1] %>% amelia
+tttt <- data_m1_NA[-1] %>% amelia
 
 llply(tttt$imputations, function(x) {
     x %>% mutate(
@@ -259,34 +265,35 @@ llply(tttt$imputations, function(x) {
 以下使用`imputeTS::na.seadec()`弥补1%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(index, BidOpen, BidHigh, BidLow, BidClose, 
+data_m1_NA <- data_m1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
                 AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.01)
+  prodNA(noNA = 0.01) %>% 
+  cbind(data_m1[1], .) %>% tbl_df
 
-Y2015W1_m1_1_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_m1_1_impTS <- llply(algo, function(x) {
+  data_m1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_m1_1_impTS) <- algo
-Y2015W1_m1_1_impTS %<>% ldply %>% tbl_df
+names(data_m1_1_impTS) <- algo
+data_m1_1_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_m1_1_impTS %<>% mutate(
+data_m1_1_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_1_impTS %>% 
+data_m1_1_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_1_impTS %<>% 
+data_m1_1_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -294,7 +301,7 @@ Y2015W1_m1_1_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_1_impTS %>% 
+data_m1_1_impTS %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -303,34 +310,28 @@ Y2015W1_m1_1_impTS %>%
 以下使用`Amelia::amelia()`弥补1%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.01) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_1_amelia <- Y2015W1_m1_NA %>% 
+data_m1_1_amelia <- data_m1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_m1_1_amelia %>% anyNA
+data_m1_1_amelia %>% anyNA
 
-Y2015W1_m1_1_amelia %<>% mutate(
+data_m1_1_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_1_amelia %>% 
+data_m1_1_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_1_amelia %<>% 
+data_m1_1_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -338,7 +339,7 @@ Y2015W1_m1_1_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_1_amelia %>% 
+data_m1_1_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -347,35 +348,29 @@ Y2015W1_m1_1_amelia %>%
 以下使用`tidyr::fill()`弥补1%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.01) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_1_tidyr <- Y2015W1_m1_NA %>% 
+data_m1_1_tidyr <- data_m1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_m1_1_tidyr %>% anyNA
+data_m1_1_tidyr %>% anyNA
 
-Y2015W1_m1_1_tidyr %<>% mutate(
+data_m1_1_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_1_tidyr %>% 
+data_m1_1_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_1_tidyr %<>% 
+data_m1_1_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -383,7 +378,7 @@ Y2015W1_m1_1_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_1_tidyr %>% 
+data_m1_1_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -394,30 +389,35 @@ Y2015W1_m1_1_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补1%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.01)
-Y2015W1_tm1_1_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_tm1_NA <- data_tm1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.01) %>% 
+  cbind(data_tm1[1], .) %>% tbl_df
+
+data_tm1_1_impTS <- llply(algo, function(x) {
+  data_tm1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_tm1_1_impTS) <- algo
-Y2015W1_tm1_1_impTS %<>% ldply %>% tbl_df
+names(data_tm1_1_impTS) <- algo
+data_tm1_1_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_tm1_1_impTS %<>% mutate(
+data_tm1_1_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_1_impTS %>% 
+data_tm1_1_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_1_impTS %<>% 
+data_tm1_1_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -425,7 +425,7 @@ Y2015W1_tm1_1_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_1_impTS %>% 
+data_tm1_1_impTS %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -434,34 +434,28 @@ Y2015W1_tm1_1_impTS %>%
 以下使用`Amelia::amelia()`弥补1%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.01) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_1_amelia <- Y2015W1_tm1_NA %>% 
+data_tm1_1_amelia <- data_tm1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_tm1_1_amelia %>% anyNA
+data_tm1_1_amelia %>% anyNA
 
-Y2015W1_tm1_1_amelia %<>% mutate(
+data_tm1_1_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_1_amelia %>% 
+data_tm1_1_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_1_amelia %<>% 
+data_tm1_1_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -469,7 +463,7 @@ Y2015W1_tm1_1_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_1_amelia %>% 
+data_tm1_1_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -478,35 +472,29 @@ Y2015W1_tm1_1_amelia %>%
 以下使用`tidyr::fill()`弥补1%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.01) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_1_tidyr <- Y2015W1_tm1_NA %>% 
+data_tm1_1_tidyr <- data_tm1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_tm1_1_tidyr %>% anyNA
+data_tm1_1_tidyr %>% anyNA
 
-Y2015W1_tm1_1_tidyr %<>% mutate(
+data_tm1_1_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_1_tidyr %>% 
+data_tm1_1_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_1_tidyr %<>% 
+data_tm1_1_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -514,7 +502,7 @@ Y2015W1_tm1_1_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_1_tidyr %>% 
+data_tm1_1_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -527,30 +515,35 @@ Y2015W1_tm1_1_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补10%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.1)
-Y2015W1_m1_10_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_m1_NA <- data_m1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.1) %>% 
+  cbind(data_m1[1], .) %>% tbl_df
+
+data_m1_10_impTS <- llply(algo, function(x) {
+  data_m1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_m1_10_impTS) <- algo
-Y2015W1_m1_10_impTS %<>% ldply %>% tbl_df
+names(data_m1_10_impTS) <- algo
+data_m1_10_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_m1_10_impTS %<>% mutate(
+data_m1_10_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_10_impTS %>% 
+data_m1_10_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_10_impTS %<>% 
+data_m1_10_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -558,7 +551,7 @@ Y2015W1_m1_10_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_10_impTS %>% 
+data_m1_10_impTS %>% 
   kable(caption = 'MSE 10% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -567,34 +560,28 @@ Y2015W1_m1_10_impTS %>%
 以下使用`Amelia::amelia()`弥补10%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.1) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_10_amelia <- Y2015W1_m1_NA %>% 
+data_m1_10_amelia <- data_m1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_m1_10_amelia %>% anyNA
+data_m1_10_amelia %>% anyNA
 
-Y2015W1_m1_10_amelia %<>% mutate(
+data_m1_10_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_10_amelia %>% 
+data_m1_10_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_10_amelia %<>% 
+data_m1_10_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -602,7 +589,7 @@ Y2015W1_m1_10_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_10_amelia %>% 
+data_m1_10_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -611,35 +598,29 @@ Y2015W1_m1_10_amelia %>%
 以下使用`tidyr::fill()`弥补10%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.1) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_10_tidyr <- Y2015W1_m1_NA %>% 
+data_m1_10_tidyr <- data_m1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_m1_10_tidyr %>% anyNA
+data_m1_10_tidyr %>% anyNA
 
-Y2015W1_m1_10_tidyr %<>% mutate(
+data_m1_10_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_10_tidyr %>% 
+data_m1_10_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_10_tidyr %<>% 
+data_m1_10_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -647,7 +628,7 @@ Y2015W1_m1_10_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_10_tidyr %>% 
+data_m1_10_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -658,30 +639,35 @@ Y2015W1_m1_10_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补10%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.1)
-Y2015W1_tm1_10_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_tm1_NA <- data_tm1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.1) %>% 
+  cbind(data_tm1[1], .) %>% tbl_df
+
+data_tm1_10_impTS <- llply(algo, function(x) {
+  data_tm1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_tm1_10_impTS) <- algo
-Y2015W1_tm1_10_impTS %<>% ldply %>% tbl_df
+names(data_tm1_10_impTS) <- algo
+data_tm1_10_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_tm1_10_impTS %<>% mutate(
+data_tm1_10_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_10_impTS %>% 
+data_tm1_10_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_10_impTS %<>% 
+data_tm1_10_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -689,7 +675,7 @@ Y2015W1_tm1_10_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_10_impTS %>% 
+data_tm1_10_impTS %>% 
   kable(caption = 'MSE 10% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -698,34 +684,28 @@ Y2015W1_tm1_10_impTS %>%
 以下使用`Amelia::amelia()`弥补10%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.1) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_10_amelia <- Y2015W1_tm1_NA %>% 
+data_tm1_10_amelia <- data_tm1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_tm1_10_amelia %>% anyNA
+data_tm1_10_amelia %>% anyNA
 
-Y2015W1_tm1_10_amelia %<>% mutate(
+data_tm1_10_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_10_amelia %>% 
+data_tm1_10_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_10_amelia %<>% 
+data_tm1_10_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -733,7 +713,7 @@ Y2015W1_tm1_10_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_10_amelia %>% 
+data_tm1_10_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -742,35 +722,29 @@ Y2015W1_tm1_10_amelia %>%
 以下使用`tidyr::fill()`弥补10%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.1) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_10_tidyr <- Y2015W1_tm1_NA %>% 
+data_tm1_10_tidyr <- data_tm1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_tm1_10_tidyr %>% anyNA
+data_tm1_10_tidyr %>% anyNA
 
-Y2015W1_tm1_10_tidyr %<>% mutate(
+data_tm1_10_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_10_tidyr %>% 
+data_tm1_10_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_10_tidyr %<>% 
+data_tm1_10_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -778,7 +752,7 @@ Y2015W1_tm1_10_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_10_tidyr %>% 
+data_tm1_10_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -791,30 +765,35 @@ Y2015W1_tm1_10_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补20%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.2)
-Y2015W1_m1_20_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_m1_NA <- data_m1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.2) %>% 
+  cbind(data_m1[1], .) %>% tbl_df
+
+data_m1_20_impTS <- llply(algo, function(x) {
+  data_m1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_m1_20_impTS) <- algo
-Y2015W1_m1_20_impTS %<>% ldply %>% tbl_df
+names(data_m1_20_impTS) <- algo
+data_m1_20_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_m1_20_impTS %<>% mutate(
+data_m1_20_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_20_impTS %>% 
+data_m1_20_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_20_impTS %<>% 
+data_m1_20_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -822,7 +801,7 @@ Y2015W1_m1_20_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_20_impTS %>% 
+data_m1_20_impTS %>% 
   kable(caption = 'MSE 20% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -831,34 +810,28 @@ Y2015W1_m1_20_impTS %>%
 以下使用`Amelia::amelia()`弥20%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.2) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_20_amelia <- Y2015W1_m1_NA %>% 
+data_m1_20_amelia <- data_m1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_m1_20_amelia %>% anyNA
+data_m1_20_amelia %>% anyNA
 
-Y2015W1_m1_20_amelia %<>% mutate(
+data_m1_20_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_20_amelia %>% 
+data_m1_20_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_20_amelia %<>% 
+data_m1_20_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -866,7 +839,7 @@ Y2015W1_m1_20_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_20_amelia %>% 
+data_m1_20_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -875,35 +848,29 @@ Y2015W1_m1_20_amelia %>%
 以下使用`tidyr::fill()`弥补20%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.2) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_20_tidyr <- Y2015W1_m1_NA %>% 
+data_m1_20_tidyr <- data_m1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_m1_20_tidyr %>% anyNA
+data_m1_20_tidyr %>% anyNA
 
-Y2015W1_m1_20_tidyr %<>% mutate(
+data_m1_20_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_20_tidyr %>% 
+data_m1_20_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_20_tidyr %<>% 
+data_m1_20_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -911,7 +878,7 @@ Y2015W1_m1_20_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_20_tidyr %>% 
+data_m1_20_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -922,30 +889,35 @@ Y2015W1_m1_20_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补20%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.2)
-Y2015W1_tm1_20_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_tm1_NA <- data_tm1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.2) %>% 
+  cbind(data_tm1[1], .) %>% tbl_df
+
+data_tm1_20_impTS <- llply(algo, function(x) {
+  data_tm1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_tm1_20_impTS) <- algo
-Y2015W1_tm1_20_impTS %<>% ldply %>% tbl_df
+names(data_tm1_20_impTS) <- algo
+data_tm1_20_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_tm1_20_impTS %<>% mutate(
+data_tm1_20_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_20_impTS %>% 
+data_tm1_20_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_20_impTS %<>% 
+data_tm1_20_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -953,7 +925,7 @@ Y2015W1_tm1_20_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_20_impTS %>% 
+data_tm1_20_impTS %>% 
   kable(caption = 'MSE 20% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -962,34 +934,28 @@ Y2015W1_tm1_20_impTS %>%
 以下使用`Amelia::amelia()`弥补20%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.2) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_20_amelia <- Y2015W1_tm1_NA %>% 
+data_tm1_20_amelia <- data_tm1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_tm1_20_amelia %>% anyNA
+data_tm1_20_amelia %>% anyNA
 
-Y2015W1_tm1_20_amelia %<>% mutate(
+data_tm1_20_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_20_amelia %>% 
+data_tm1_20_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_20_amelia %<>% 
+data_tm1_20_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -997,7 +963,7 @@ Y2015W1_tm1_20_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_20_amelia %>% 
+data_tm1_20_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1006,35 +972,29 @@ Y2015W1_tm1_20_amelia %>%
 以下使用`tidyr::fill()`弥补20%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.2) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_20_tidyr <- Y2015W1_tm1_NA %>% 
+data_tm1_20_tidyr <- data_tm1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_tm1_20_tidyr %>% anyNA
+data_tm1_20_tidyr %>% anyNA
 
-Y2015W1_tm1_20_tidyr %<>% mutate(
+data_tm1_20_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_20_tidyr %>% 
+data_tm1_20_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_20_tidyr %<>% 
+data_tm1_20_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -1042,7 +1002,7 @@ Y2015W1_tm1_20_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_20_tidyr %>% 
+data_tm1_20_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1055,30 +1015,35 @@ Y2015W1_tm1_20_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补30%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.3)
-Y2015W1_m1_30_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_m1_NA <- data_m1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.3) %>% 
+  cbind(data_m1[1], .) %>% tbl_df
+
+data_m1_30_impTS <- llply(algo, function(x) {
+  data_m1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_m1_30_impTS) <- algo
-Y2015W1_m1_30_impTS %<>% ldply %>% tbl_df
+names(data_m1_30_impTS) <- algo
+data_m1_30_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_m1_30_impTS %<>% mutate(
+data_m1_30_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_30_impTS %>% 
+data_m1_30_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_30_impTS %<>% 
+data_m1_30_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1086,7 +1051,7 @@ Y2015W1_m1_30_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_30_impTS %>% 
+data_m1_30_impTS %>% 
   kable(caption = 'MSE 30% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1095,34 +1060,28 @@ Y2015W1_m1_30_impTS %>%
 以下使用`Amelia::amelia()`弥补30%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.3) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_30_amelia <- Y2015W1_m1_NA %>% 
+data_m1_30_amelia <- data_m1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_m1_30_amelia %>% anyNA
+data_m1_30_amelia %>% anyNA
 
-Y2015W1_m1_30_amelia %<>% mutate(
+data_m1_30_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_30_amelia %>% 
+data_m1_30_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_30_amelia %<>% 
+data_m1_30_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1130,7 +1089,7 @@ Y2015W1_m1_30_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_30_amelia %>% 
+data_m1_30_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1139,35 +1098,29 @@ Y2015W1_m1_30_amelia %>%
 以下使用`tidyr::fill()`弥补30%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.3) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_30_tidyr <- Y2015W1_m1_NA %>% 
+data_m1_30_tidyr <- data_m1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_m1_30_tidyr %>% anyNA
+data_m1_30_tidyr %>% anyNA
 
-Y2015W1_m1_30_tidyr %<>% mutate(
+data_m1_30_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_30_tidyr %>% 
+data_m1_30_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_30_tidyr %<>% 
+data_m1_30_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -1175,7 +1128,7 @@ Y2015W1_m1_30_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_30_tidyr %>% 
+data_m1_30_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1186,30 +1139,35 @@ Y2015W1_m1_30_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补30%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.3)
-Y2015W1_tm1_30_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_tm1_NA <- data_tm1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.3) %>% 
+  cbind(data_tm1[1], .) %>% tbl_df
+
+data_tm1_30_impTS <- llply(algo, function(x) {
+  data_tm1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_tm1_30_impTS) <- algo
-Y2015W1_tm1_30_impTS %<>% ldply %>% tbl_df
+names(data_tm1_30_impTS) <- algo
+data_tm1_30_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_tm1_30_impTS %<>% mutate(
+data_tm1_30_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_30_impTS %>% 
+data_tm1_30_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_30_impTS %<>% 
+data_tm1_30_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1217,7 +1175,7 @@ Y2015W1_tm1_30_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_30_impTS %>% 
+data_tm1_30_impTS %>% 
   kable(caption = 'MSE 30% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1226,34 +1184,28 @@ Y2015W1_tm1_30_impTS %>%
 以下使用`Amelia::amelia()`弥补30%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.3) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_30_amelia <- Y2015W1_tm1_NA %>% 
+data_tm1_30_amelia <- data_tm1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_tm1_30_amelia %>% anyNA
+data_tm1_30_amelia %>% anyNA
 
-Y2015W1_tm1_30_amelia %<>% mutate(
+data_tm1_30_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_30_amelia %>% 
+data_tm1_30_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_30_amelia %<>% 
+data_tm1_30_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1261,7 +1213,7 @@ Y2015W1_tm1_30_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_30_amelia %>% 
+data_tm1_30_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1270,35 +1222,29 @@ Y2015W1_tm1_30_amelia %>%
 以下使用`tidyr::fill()`弥补30%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.3) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_30_tidyr <- Y2015W1_tm1_NA %>% 
+data_tm1_30_tidyr <- data_tm1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_tm1_30_tidyr %>% anyNA
+data_tm1_30_tidyr %>% anyNA
 
-Y2015W1_tm1_30_tidyr %<>% mutate(
+data_tm1_30_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_30_tidyr %>% 
+data_tm1_30_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_30_tidyr %<>% 
+data_tm1_30_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -1306,7 +1252,7 @@ Y2015W1_tm1_30_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_30_tidyr %>% 
+data_tm1_30_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1319,30 +1265,35 @@ Y2015W1_tm1_30_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补50%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.5)
-Y2015W1_m1_50_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_m1_NA <- data_m1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.5) %>% 
+  cbind(data_m1[1], .) %>% tbl_df
+
+data_m1_50_impTS <- llply(algo, function(x) {
+  data_m1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_m1_50_impTS) <- algo
-Y2015W1_m1_50_impTS %<>% ldply %>% tbl_df
+names(data_m1_50_impTS) <- algo
+data_m1_50_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_m1_50_impTS %<>% mutate(
+data_m1_50_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_50_impTS %>% 
+data_m1_50_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_50_impTS %<>% 
+data_m1_50_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1350,7 +1301,7 @@ Y2015W1_m1_50_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_50_impTS %>% 
+data_m1_50_impTS %>% 
   kable(caption = 'MSE 50% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1359,34 +1310,28 @@ Y2015W1_m1_50_impTS %>%
 以下使用`Amelia::amelia()`弥补50%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.5) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_50_amelia <- Y2015W1_m1_NA %>% 
+data_m1_50_amelia <- data_m1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_m1_50_amelia %>% anyNA
+data_m1_50_amelia %>% anyNA
 
-Y2015W1_m1_50_amelia %<>% mutate(
+data_m1_50_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_50_amelia %>% 
+data_m1_50_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_50_amelia %<>% 
+data_m1_50_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1394,7 +1339,7 @@ Y2015W1_m1_50_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_50_amelia %>% 
+data_m1_50_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1403,35 +1348,29 @@ Y2015W1_m1_50_amelia %>%
 以下使用`tidyr::fill()`弥补50%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.5) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_50_tidyr <- Y2015W1_m1_NA %>% 
+data_m1_50_tidyr <- data_m1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_m1_50_tidyr %>% anyNA
+data_m1_50_tidyr %>% anyNA
 
-Y2015W1_m1_50_tidyr %<>% mutate(
+data_m1_50_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_50_tidyr %>% 
+data_m1_50_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_50_tidyr %<>% 
+data_m1_50_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -1439,7 +1378,7 @@ Y2015W1_m1_50_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_50_tidyr %>% 
+data_m1_50_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1450,30 +1389,35 @@ Y2015W1_m1_50_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补50%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.5)
-Y2015W1_tm1_50_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_tm1_NA <- data_tm1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.5) %>% 
+  cbind(data_tm1[1], .) %>% tbl_df
+
+data_tm1_50_impTS <- llply(algo, function(x) {
+  data_tm1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_tm1_50_impTS) <- algo
-Y2015W1_tm1_50_impTS %<>% ldply %>% tbl_df
+names(data_tm1_50_impTS) <- algo
+data_tm1_50_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_tm1_50_impTS %<>% mutate(
+data_tm1_50_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_50_impTS %>% 
+data_tm1_50_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_50_impTS %<>% 
+data_tm1_50_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1481,7 +1425,7 @@ Y2015W1_tm1_50_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_50_impTS %>% 
+data_tm1_50_impTS %>% 
   kable(caption = 'MSE 50% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1490,34 +1434,28 @@ Y2015W1_tm1_50_impTS %>%
 以下使用`Amelia::amelia()`弥补50%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.5) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_50_amelia <- Y2015W1_tm1_NA %>% 
+data_tm1_50_amelia <- data_tm1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_tm1_50_amelia %>% anyNA
+data_tm1_50_amelia %>% anyNA
 
-Y2015W1_tm1_50_amelia %<>% mutate(
+data_tm1_50_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_50_amelia %>% 
+data_tm1_50_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_50_amelia %<>% 
+data_tm1_50_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1525,7 +1463,7 @@ Y2015W1_tm1_50_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_50_amelia %>% 
+data_tm1_50_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1534,35 +1472,29 @@ Y2015W1_tm1_50_amelia %>%
 以下使用`tidyr::fill()`弥补50%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.5) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_50_tidyr <- Y2015W1_tm1_NA %>% 
+data_tm1_50_tidyr <- data_tm1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_tm1_50_tidyr %>% anyNA
+data_tm1_50_tidyr %>% anyNA
 
-Y2015W1_tm1_50_tidyr %<>% mutate(
+data_tm1_50_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_50_tidyr %>% 
+data_tm1_50_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_50_tidyr %<>% 
+data_tm1_50_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -1570,7 +1502,7 @@ Y2015W1_tm1_50_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_50_tidyr %>% 
+data_tm1_50_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1583,30 +1515,35 @@ Y2015W1_tm1_50_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补65%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.65)
-Y2015W1_m1_65_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_m1_NA <- data_m1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.65) %>% 
+  cbind(data_m1[1], .) %>% tbl_df
+
+data_m1_65_impTS <- llply(algo, function(x) {
+  data_m1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_m1_65_impTS) <- algo
-Y2015W1_m1_65_impTS %<>% ldply %>% tbl_df
+names(data_m1_65_impTS) <- algo
+data_m1_65_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_m1_65_impTS %<>% mutate(
+data_m1_65_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_65_impTS %>% 
+data_m1_65_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_65_impTS %<>% 
+data_m1_65_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1614,7 +1551,7 @@ Y2015W1_m1_65_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_65_impTS %>% 
+data_m1_65_impTS %>% 
   kable(caption = 'MSE 65% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1623,34 +1560,28 @@ Y2015W1_m1_65_impTS %>%
 以下使用`Amelia::amelia()`弥补65%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.65) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_65_amelia <- Y2015W1_m1_NA %>% 
+data_m1_65_amelia <- data_m1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_m1_65_amelia %>% anyNA
+data_m1_65_amelia %>% anyNA
 
-Y2015W1_m1_65_amelia %<>% mutate(
+data_m1_65_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_65_amelia %>% 
+data_m1_65_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_65_amelia %<>% 
+data_m1_65_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1658,7 +1589,7 @@ Y2015W1_m1_65_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_65_amelia %>% 
+data_m1_65_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1667,35 +1598,29 @@ Y2015W1_m1_65_amelia %>%
 以下使用`tidyr::fill()`弥补65%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.65) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_65_tidyr <- Y2015W1_m1_NA %>% 
+data_m1_65_tidyr <- data_m1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_m1_65_tidyr %>% anyNA
+data_m1_65_tidyr %>% anyNA
 
-Y2015W1_m1_65_tidyr %<>% mutate(
+data_m1_65_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_65_tidyr %>% 
+data_m1_65_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_65_tidyr %<>% 
+data_m1_65_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -1703,7 +1628,7 @@ Y2015W1_m1_65_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_65_tidyr %>% 
+data_m1_65_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1714,30 +1639,35 @@ Y2015W1_m1_65_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补65%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.65)
-Y2015W1_tm1_65_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_tm1_NA <- data_tm1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.65) %>% 
+  cbind(data_tm1[1], .) %>% tbl_df
+
+data_tm1_65_impTS <- llply(algo, function(x) {
+  data_tm1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_tm1_65_impTS) <- algo
-Y2015W1_tm1_65_impTS %<>% ldply %>% tbl_df
+names(data_tm1_65_impTS) <- algo
+data_tm1_65_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_tm1_65_impTS %<>% mutate(
+data_tm1_65_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_65_impTS %>% 
+data_tm1_65_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_65_impTS %<>% 
+data_tm1_65_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1745,7 +1675,7 @@ Y2015W1_tm1_65_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_65_impTS %>% 
+data_tm1_65_impTS %>% 
   kable(caption = 'MSE 65% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1754,34 +1684,28 @@ Y2015W1_tm1_65_impTS %>%
 以下使用`Amelia::amelia()`弥补65%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.65) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_65_amelia <- Y2015W1_tm1_NA %>% 
+data_tm1_65_amelia <- data_tm1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_tm1_65_amelia %>% anyNA
+data_tm1_65_amelia %>% anyNA
 
-Y2015W1_tm1_65_amelia %<>% mutate(
+data_tm1_65_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_65_amelia %>% 
+data_tm1_65_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_65_amelia %<>% 
+data_tm1_65_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1789,7 +1713,7 @@ Y2015W1_tm1_65_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_65_amelia %>% 
+data_tm1_65_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1798,35 +1722,29 @@ Y2015W1_tm1_65_amelia %>%
 以下使用`tidyr::fill()`弥补65%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.65) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_65_tidyr <- Y2015W1_tm1_NA %>% 
+data_tm1_65_tidyr <- data_tm1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_tm1_65_tidyr %>% anyNA
+data_tm1_65_tidyr %>% anyNA
 
-Y2015W1_tm1_65_tidyr %<>% mutate(
+data_tm1_65_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_65_tidyr %>% 
+data_tm1_65_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_65_tidyr %<>% 
+data_tm1_65_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -1834,7 +1752,7 @@ Y2015W1_tm1_65_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_65_tidyr %>% 
+data_tm1_65_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1847,30 +1765,35 @@ Y2015W1_tm1_65_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补70%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.7)
-Y2015W1_m1_70_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_m1_NA <- data_m1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.7) %>% 
+  cbind(data_m1[1], .) %>% tbl_df
+
+data_m1_70_impTS <- llply(algo, function(x) {
+  data_m1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_m1_70_impTS) <- algo
-Y2015W1_m1_70_impTS %<>% ldply %>% tbl_df
+names(data_m1_70_impTS) <- algo
+data_m1_70_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_m1_70_impTS %<>% mutate(
+data_m1_70_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_70_impTS %>% 
+data_m1_70_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_70_impTS %<>% 
+data_m1_70_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1878,7 +1801,7 @@ Y2015W1_m1_70_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_70_impTS %>% 
+data_m1_70_impTS %>% 
   kable(caption = 'MSE 70% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1887,34 +1810,28 @@ Y2015W1_m1_70_impTS %>%
 以下使用`Amelia::amelia()`弥补70%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.7) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_70_amelia <- Y2015W1_m1_NA %>% 
+data_m1_70_amelia <- data_m1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_m1_70_amelia %>% anyNA
+data_m1_70_amelia %>% anyNA
 
-Y2015W1_m1_70_amelia %<>% mutate(
+data_m1_70_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_70_amelia %>% 
+data_m1_70_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_70_amelia %<>% 
+data_m1_70_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -1922,7 +1839,7 @@ Y2015W1_m1_70_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_70_amelia %>% 
+data_m1_70_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1931,35 +1848,29 @@ Y2015W1_m1_70_amelia %>%
 以下使用`tidyr::fill()`弥补70%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.7) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_70_tidyr <- Y2015W1_m1_NA %>% 
+data_m1_70_tidyr <- data_m1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_m1_70_tidyr %>% anyNA
+data_m1_70_tidyr %>% anyNA
 
-Y2015W1_m1_70_tidyr %<>% mutate(
+data_m1_70_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_70_tidyr %>% 
+data_m1_70_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_70_tidyr %<>% 
+data_m1_70_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -1967,7 +1878,7 @@ Y2015W1_m1_70_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_70_tidyr %>% 
+data_m1_70_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -1978,30 +1889,35 @@ Y2015W1_m1_70_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补70%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.7)
-Y2015W1_tm1_70_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_tm1_NA <- data_tm1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.7) %>% 
+  cbind(data_tm1[1], .) %>% tbl_df
+
+data_tm1_70_impTS <- llply(algo, function(x) {
+  data_tm1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_tm1_70_impTS) <- algo
-Y2015W1_tm1_70_impTS %<>% ldply %>% tbl_df
+names(data_tm1_70_impTS) <- algo
+data_tm1_70_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_tm1_70_impTS %<>% mutate(
+data_tm1_70_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_70_impTS %>% 
+data_tm1_70_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_70_impTS %<>% 
+data_tm1_70_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2009,7 +1925,7 @@ Y2015W1_tm1_70_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_70_impTS %>% 
+data_tm1_70_impTS %>% 
   kable(caption = 'MSE 70% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2018,34 +1934,28 @@ Y2015W1_tm1_70_impTS %>%
 以下使用`Amelia::amelia()`弥补70%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.7) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_70_amelia <- Y2015W1_tm1_NA %>% 
+data_tm1_70_amelia <- data_tm1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_tm1_70_amelia %>% anyNA
+data_tm1_70_amelia %>% anyNA
 
-Y2015W1_tm1_70_amelia %<>% mutate(
+data_tm1_70_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_70_amelia %>% 
+data_tm1_70_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_70_amelia %<>% 
+data_tm1_70_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2053,7 +1963,7 @@ Y2015W1_tm1_70_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_70_amelia %>% 
+data_tm1_70_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2062,35 +1972,29 @@ Y2015W1_tm1_70_amelia %>%
 以下使用`tidyr::fill()`弥补70%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.7) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_70_tidyr <- Y2015W1_tm1_NA %>% 
+data_tm1_70_tidyr <- data_tm1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_tm1_70_tidyr %>% anyNA
+data_tm1_70_tidyr %>% anyNA
 
-Y2015W1_tm1_70_tidyr %<>% mutate(
+data_tm1_70_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_70_tidyr %>% 
+data_tm1_70_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_70_tidyr %<>% 
+data_tm1_70_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -2098,7 +2002,7 @@ Y2015W1_tm1_70_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_70_tidyr %>% 
+data_tm1_70_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2111,30 +2015,35 @@ Y2015W1_tm1_70_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补80%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.8)
-Y2015W1_m1_80_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_m1_NA <- data_m1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.8) %>% 
+  cbind(data_m1[1], .) %>% tbl_df
+
+data_m1_80_impTS <- llply(algo, function(x) {
+  data_m1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_m1_80_impTS) <- algo
-Y2015W1_m1_80_impTS %<>% ldply %>% tbl_df
+names(data_m1_80_impTS) <- algo
+data_m1_80_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_m1_80_impTS %<>% mutate(
+data_m1_80_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_80_impTS %>% 
+data_m1_80_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_80_impTS %<>% 
+data_m1_80_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2142,7 +2051,7 @@ Y2015W1_m1_80_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_80_impTS %>% 
+data_m1_80_impTS %>% 
   kable(caption = 'MSE 80% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2151,34 +2060,28 @@ Y2015W1_m1_80_impTS %>%
 以下使用`Amelia::amelia()`弥补80%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.8) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_80_amelia <- Y2015W1_m1_NA %>% 
+data_m1_80_amelia <- data_m1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_m1_80_amelia %>% anyNA
+data_m1_80_amelia %>% anyNA
 
-Y2015W1_m1_80_amelia %<>% mutate(
+data_m1_80_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_80_amelia %>% 
+data_m1_80_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_80_amelia %<>% 
+data_m1_80_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2186,7 +2089,7 @@ Y2015W1_m1_80_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_80_amelia %>% 
+data_m1_80_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2195,35 +2098,29 @@ Y2015W1_m1_80_amelia %>%
 以下使用`tidyr::fill()`弥补80%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.8) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_80_tidyr <- Y2015W1_m1_NA %>% 
+data_m1_80_tidyr <- data_m1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_m1_80_tidyr %>% anyNA
+data_m1_80_tidyr %>% anyNA
 
-Y2015W1_m1_80_tidyr %<>% mutate(
+data_m1_80_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_80_tidyr %>% 
+data_m1_80_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_80_tidyr %<>% 
+data_m1_80_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -2231,7 +2128,7 @@ Y2015W1_m1_80_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_80_tidyr %>% 
+data_m1_80_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2242,30 +2139,35 @@ Y2015W1_m1_80_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补80%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.8)
-Y2015W1_tm1_80_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_tm1_NA <- data_tm1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.8) %>% 
+  cbind(data_tm1[1], .) %>% tbl_df
+
+data_tm1_80_impTS <- llply(algo, function(x) {
+  data_tm1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_tm1_80_impTS) <- algo
-Y2015W1_tm1_80_impTS %<>% ldply %>% tbl_df
+names(data_tm1_80_impTS) <- algo
+data_tm1_80_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_tm1_80_impTS %<>% mutate(
+data_tm1_80_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_80_impTS %>% 
+data_tm1_80_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_80_impTS %<>% 
+data_tm1_80_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2273,7 +2175,7 @@ Y2015W1_tm1_80_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_80_impTS %>% 
+data_tm1_80_impTS %>% 
   kable(caption = 'MSE 80% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2282,34 +2184,28 @@ Y2015W1_tm1_80_impTS %>%
 以下使用`Amelia::amelia()`弥补80%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.8) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_80_amelia <- Y2015W1_tm1_NA %>% 
+data_tm1_80_amelia <- data_tm1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_tm1_80_amelia %>% anyNA
+data_tm1_80_amelia %>% anyNA
 
-Y2015W1_tm1_80_amelia %<>% mutate(
+data_tm1_80_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_80_amelia %>% 
+data_tm1_80_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_80_amelia %<>% 
+data_tm1_80_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2317,7 +2213,7 @@ Y2015W1_tm1_80_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_80_amelia %>% 
+data_tm1_80_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2326,35 +2222,29 @@ Y2015W1_tm1_80_amelia %>%
 以下使用`tidyr::fill()`弥补80%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.8) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_80_tidyr <- Y2015W1_tm1_NA %>% 
+data_tm1_80_tidyr <- data_tm1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_tm1_80_tidyr %>% anyNA
+data_tm1_80_tidyr %>% anyNA
 
-Y2015W1_tm1_80_tidyr %<>% mutate(
+data_tm1_80_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_80_tidyr %>% 
+data_tm1_80_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_80_tidyr %<>% 
+data_tm1_80_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -2362,7 +2252,7 @@ Y2015W1_tm1_80_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_80_tidyr %>% 
+data_tm1_80_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2375,30 +2265,35 @@ Y2015W1_tm1_80_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补85%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.85)
-Y2015W1_m1_85_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_m1_NA <- data_m1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.85) %>% 
+  cbind(data_m1[1], .) %>% tbl_df
+
+data_m1_85_impTS <- llply(algo, function(x) {
+  data_m1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_m1_85_impTS) <- algo
-Y2015W1_m1_85_impTS %<>% ldply %>% tbl_df
+names(data_m1_85_impTS) <- algo
+data_m1_85_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_m1_85_impTS %<>% mutate(
+data_m1_85_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_85_impTS %>% 
+data_m1_85_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_85_impTS %<>% 
+data_m1_85_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2406,7 +2301,7 @@ Y2015W1_m1_85_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_85_impTS %>% 
+data_m1_85_impTS %>% 
   kable(caption = 'MSE 85% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2415,34 +2310,28 @@ Y2015W1_m1_85_impTS %>%
 以下使用`Amelia::amelia()`弥补85%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.85) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_85_amelia <- Y2015W1_m1_NA %>% 
+data_m1_85_amelia <- data_m1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_m1_85_amelia %>% anyNA
+data_m1_85_amelia %>% anyNA
 
-Y2015W1_m1_85_amelia %<>% mutate(
+data_m1_85_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_85_amelia %>% 
+data_m1_85_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_85_amelia %<>% 
+data_m1_85_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2450,7 +2339,7 @@ Y2015W1_m1_85_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_85_amelia %>% 
+data_m1_85_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2459,35 +2348,29 @@ Y2015W1_m1_85_amelia %>%
 以下使用`tidyr::fill()`弥补85%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.85) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_85_tidyr <- Y2015W1_m1_NA %>% 
+data_m1_85_tidyr <- data_m1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_m1_85_tidyr %>% anyNA
+data_m1_85_tidyr %>% anyNA
 
-Y2015W1_m1_85_tidyr %<>% mutate(
+data_m1_85_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_85_tidyr %>% 
+data_m1_85_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_85_tidyr %<>% 
+data_m1_85_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -2495,7 +2378,7 @@ Y2015W1_m1_85_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_85_tidyr %>% 
+data_m1_85_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2506,30 +2389,35 @@ Y2015W1_m1_85_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补85%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.85)
-Y2015W1_tm1_85_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_tm1_NA <- data_tm1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.85) %>% 
+  cbind(data_tm1[1], .) %>% tbl_df
+
+data_tm1_85_impTS <- llply(algo, function(x) {
+  data_tm1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_tm1_85_impTS) <- algo
-Y2015W1_tm1_85_impTS %<>% ldply %>% tbl_df
+names(data_tm1_85_impTS) <- algo
+data_tm1_85_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_tm1_85_impTS %<>% mutate(
+data_tm1_85_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_85_impTS %>% 
+data_tm1_85_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_85_impTS %<>% 
+data_tm1_85_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2537,7 +2425,7 @@ Y2015W1_tm1_85_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_85_impTS %>% 
+data_tm1_85_impTS %>% 
   kable(caption = 'MSE 85% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2546,34 +2434,28 @@ Y2015W1_tm1_85_impTS %>%
 以下使用`Amelia::amelia()`弥补85%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.85) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_85_amelia <- Y2015W1_tm1_NA %>% 
+data_tm1_85_amelia <- data_tm1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_tm1_85_amelia %>% anyNA
+data_tm1_85_amelia %>% anyNA
 
-Y2015W1_tm1_85_amelia %<>% mutate(
+data_tm1_85_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_85_amelia %>% 
+data_tm1_85_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_85_amelia %<>% 
+data_tm1_85_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2581,7 +2463,7 @@ Y2015W1_tm1_85_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_85_amelia %>% 
+data_tm1_85_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2590,35 +2472,29 @@ Y2015W1_tm1_85_amelia %>%
 以下使用`tidyr::fill()`弥补85%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.85) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_85_tidyr <- Y2015W1_tm1_NA %>% 
+data_tm1_85_tidyr <- data_tm1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_tm1_85_tidyr %>% anyNA
+data_tm1_85_tidyr %>% anyNA
 
-Y2015W1_tm1_85_tidyr %<>% mutate(
+data_tm1_85_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_85_tidyr %>% 
+data_tm1_85_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_85_tidyr %<>% 
+data_tm1_85_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -2626,7 +2502,7 @@ Y2015W1_tm1_85_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_85_tidyr %>% 
+data_tm1_85_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2639,30 +2515,35 @@ Y2015W1_tm1_85_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补90%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% prodNA(noNA = 0.9)
-Y2015W1_m1_90_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_m1_NA <- data_m1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.9) %>% 
+  cbind(data_m1[1], .) %>% tbl_df
+
+data_m1_90_impTS <- llply(algo, function(x) {
+  data_m1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_m1_90_impTS) <- algo
-Y2015W1_m1_90_impTS %<>% ldply %>% tbl_df
+names(data_m1_90_impTS) <- algo
+data_m1_90_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_m1_90_impTS %<>% mutate(
+data_m1_90_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_90_impTS %>% 
+data_m1_90_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_90_impTS %<>% 
+data_m1_90_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2670,7 +2551,7 @@ Y2015W1_m1_90_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_90_impTS %>% 
+data_m1_90_impTS %>% 
   kable(caption = 'MSE 90% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2679,34 +2560,28 @@ Y2015W1_m1_90_impTS %>%
 以下使用`Amelia::amelia()`弥补90%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.9) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_90_amelia <- Y2015W1_m1_NA %>% 
+data_m1_90_amelia <- data_m1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_m1_90_amelia %>% anyNA
+data_m1_90_amelia %>% anyNA
 
-Y2015W1_m1_90_amelia %<>% mutate(
+data_m1_90_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_90_amelia %>% 
+data_m1_90_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_90_amelia %<>% 
+data_m1_90_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2714,7 +2589,7 @@ Y2015W1_m1_90_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_90_amelia %>% 
+data_m1_90_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2723,35 +2598,29 @@ Y2015W1_m1_90_amelia %>%
 以下使用`tidyr::fill()`弥补90%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_m1_NA <- Y2015W1_m1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.9) %>% 
-  cbind(Y2015W1_m1[1], .) %>% tbl_df
-
-Y2015W1_m1_90_tidyr <- Y2015W1_m1_NA %>% 
+data_m1_90_tidyr <- data_m1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_m1_90_tidyr %>% anyNA
+data_m1_90_tidyr %>% anyNA
 
-Y2015W1_m1_90_tidyr %<>% mutate(
+data_m1_90_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_m1_90_tidyr %>% 
+data_m1_90_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_m1_90_tidyr %<>% 
+data_m1_90_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -2759,7 +2628,7 @@ Y2015W1_m1_90_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_m1_90_tidyr %>% 
+data_m1_90_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2770,30 +2639,35 @@ Y2015W1_m1_90_tidyr %>%
 以下使用`imputeTS::na.seadec()`弥补90%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% prodNA(noNA = 0.9)
-Y2015W1_tm1_90_impTS <- llply(algo, function(x) {
-  Y2015W1_m1_NA %>% 
+data_tm1_NA <- data_tm1 %>% 
+  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
+                AskOpen, AskHigh, AskLow,  AskClose) %>% 
+  prodNA(noNA = 0.9) %>% 
+  cbind(data_tm1[1], .) %>% tbl_df
+
+data_tm1_90_impTS <- llply(algo, function(x) {
+  data_tm1_NA %>% 
     dplyr::select(starts_with('Ask'), starts_with('Bid')) %>% 
     map(na.seadec, algorithm = x) %>% as.tibble
   })
-names(Y2015W1_tm1_90_impTS) <- algo
-Y2015W1_tm1_90_impTS %<>% ldply %>% tbl_df
+names(data_tm1_90_impTS) <- algo
+data_tm1_90_impTS %<>% ldply %>% tbl_df
 
-Y2015W1_tm1_90_impTS %<>% mutate(
+data_tm1_90_impTS %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_90_impTS %>% 
+data_tm1_90_impTS %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_90_impTS %<>% 
+data_tm1_90_impTS %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2801,7 +2675,7 @@ Y2015W1_tm1_90_impTS %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_90_impTS %>% 
+data_tm1_90_impTS %>% 
   kable(caption = 'MSE 90% 缺失值') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2810,34 +2684,28 @@ Y2015W1_tm1_90_impTS %>%
 以下使用`Amelia::amelia()`弥补90%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.9) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_90_amelia <- Y2015W1_tm1_NA %>% 
+data_tm1_90_amelia <- data_tm1_NA %>% 
   amelia %>% 
   .$imputations %>% 
   ldply %>% tbl_df
 
-Y2015W1_tm1_90_amelia %>% anyNA
+data_tm1_90_amelia %>% anyNA
 
-Y2015W1_tm1_90_amelia %<>% mutate(
+data_tm1_90_amelia %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_90_amelia %>% 
+data_tm1_90_amelia %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_90_amelia %<>% 
+data_tm1_90_amelia %<>% 
   ddply(.(.id), summarise, 
-        AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-        AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-        AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-        AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+        AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+        AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+        AskLow = mean((AskLow - data_m1$AskLow)^2), 
+        AskClose = mean((AskClose - data_m1$AskClose)^2), 
         Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
         Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
         bias.open = sum(bias.open)/length(bias.open), 
@@ -2845,7 +2713,7 @@ Y2015W1_tm1_90_amelia %<>%
         bias.low = sum(bias.low)/length(bias.low), 
         bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_90_amelia %>% 
+data_tm1_90_amelia %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2854,35 +2722,29 @@ Y2015W1_tm1_90_amelia %>%
 以下使用`tidyr::fill()`弥补90%数据缺失值。
 
 ```{r warning=FALSE}
-Y2015W1_tm1_NA <- Y2015W1_tm1 %>% 
-  dplyr::select(BidOpen, BidHigh, BidLow, BidClose, 
-                AskOpen, AskHigh, AskLow,  AskClose) %>% 
-  prodNA(noNA = 0.9) %>% 
-  cbind(Y2015W1_tm1[1], .) %>% tbl_df
-
-Y2015W1_tm1_90_tidyr <- Y2015W1_tm1_NA %>% 
+data_tm1_90_tidyr <- data_tm1_NA %>% 
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
   fill(BidOpen, BidHigh, BidLow, BidClose, 
        AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
 
-Y2015W1_tm1_90_tidyr %>% anyNA
+data_tm1_90_tidyr %>% anyNA
 
-Y2015W1_tm1_90_tidyr %<>% mutate(
+data_tm1_90_tidyr %<>% mutate(
   bias.open = if_else(AskOpen>AskHigh|AskOpen<AskLow, 1, 0), 
   bias.high = if_else(AskHigh<AskOpen|AskHigh<AskLow|AskHigh<AskClose, 1, 0), 
   bias.low = if_else(AskLow>AskOpen|AskLow>AskHigh|AskLow>AskClose, 1, 0), 
   bias.close = if_else(AskClose>AskHigh|AskClose<AskLow, 1, 0))
 
-Y2015W1_tm1_90_tidyr %>% 
+data_tm1_90_tidyr %>% 
   dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
 
-Y2015W1_tm1_90_tidyr %<>% 
+data_tm1_90_tidyr %<>% 
   summarise(
-    AskOpen = mean((AskOpen - Y2015W1_m1$AskOpen)^2), 
-    AskHigh = mean((AskHigh - Y2015W1_m1$AskHigh)^2), 
-    AskLow = mean((AskLow - Y2015W1_m1$AskLow)^2), 
-    AskClose = mean((AskClose - Y2015W1_m1$AskClose)^2), 
+    AskOpen = mean((AskOpen - data_m1$AskOpen)^2), 
+    AskHigh = mean((AskHigh - data_m1$AskHigh)^2), 
+    AskLow = mean((AskLow - data_m1$AskLow)^2), 
+    AskClose = mean((AskClose - data_m1$AskClose)^2), 
     Mean.HLC = (AskHigh + AskLow + AskClose)/3, 
     Mean.OHLC = (AskOpen + AskHigh + AskLow + AskClose)/4, 
     bias.open = sum(bias.open)/length(bias.open), 
@@ -2890,7 +2752,7 @@ Y2015W1_tm1_90_tidyr %<>%
     bias.low = sum(bias.low)/length(bias.low), 
     bias.close = sum(bias.close)/length(bias.close)) %>% tbl_df
 
-Y2015W1_tm1_90_tidyr %>% 
+data_tm1_90_tidyr %>% 
   kable(caption = 'MSE') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
@@ -2903,17 +2765,17 @@ Y2015W1_tm1_90_tidyr %>%
 以下日内数据比较出在指定的缺失值占有数，该数据弥补得来后的误差与偏差会有多高。
 
 ```{r warning=FALSE}
-dfm1_impTS <- list(`1%` = Y2015W1_m1_1_impTS, `10%` = Y2015W1_m1_10_impTS, 
-                   `20%` = Y2015W1_m1_20_impTS, `30%` = Y2015W1_m1_30_impTS, 
-                   `50%` = Y2015W1_m1_50_impTS, `65%` = Y2015W1_m1_65_impTS, 
-                   `70%` = Y2015W1_m1_70_impTS, `80%` = Y2015W1_m1_80_impTS, 
-                   `85%` = Y2015W1_m1_85_impTS, `90%` = Y2015W1_m1_90_impTS)
+dfm1_impTS <- list(`1%` = data_m1_1_impTS, `10%` = data_m1_10_impTS, 
+                   `20%` = data_m1_20_impTS, `30%` = data_m1_30_impTS, 
+                   `50%` = data_m1_50_impTS, `65%` = data_m1_65_impTS, 
+                   `70%` = data_m1_70_impTS, `80%` = data_m1_80_impTS, 
+                   `85%` = data_m1_85_impTS, `90%` = data_m1_90_impTS)
 
-dfm2_impTS <- list(`1%` = Y2015W1_tm1_1_impTS, `10%` = Y2015W1_tm1_10_impTS, 
-                   `20%` = Y2015W1_tm1_20_impTS, `30%` = Y2015W1_tm1_30_impTS, 
-                   `50%` = Y2015W1_tm1_50_impTS, `65%` = Y2015W1_tm1_65_impTS, 
-                   `70%` = Y2015W1_tm1_70_impTS, `80%` = Y2015W1_tm1_80_impTS, 
-                   `85%` = Y2015W1_tm1_85_impTS, `90%` = Y2015W1_tm1_90_impTS)
+dfm2_impTS <- list(`1%` = data_tm1_1_impTS, `10%` = data_tm1_10_impTS, 
+                   `20%` = data_tm1_20_impTS, `30%` = data_tm1_30_impTS, 
+                   `50%` = data_tm1_50_impTS, `65%` = data_tm1_65_impTS, 
+                   `70%` = data_tm1_70_impTS, `80%` = data_tm1_80_impTS, 
+                   `85%` = data_tm1_85_impTS, `90%` = data_tm1_90_impTS)
 
 ## Summarise
 dfm1_impTS %<>% ldply(function(x) x %>% dplyr::rename(Model = .id)) %>% 
@@ -2939,17 +2801,17 @@ dfm2_impTS %>%
 ## 多变量弥补数据偏差比较
 
 ```{r warning=FALSE}
-dfm1_amelia <- list(`1%` = Y2015W1_m1_1_amelia, `10%` = Y2015W1_m1_10_amelia, 
-                    `20%` = Y2015W1_m1_20_amelia, `30%` = Y2015W1_m1_30_amelia, 
-                    `50%` = Y2015W1_m1_50_amelia, `65%` = Y2015W1_m1_65_amelia, 
-                    `70%` = Y2015W1_m1_70_amelia, `80%` = Y2015W1_m1_80_amelia, 
-                    `85%` = Y2015W1_m1_85_amelia, `90%` = Y2015W1_m1_90_amelia)
+dfm1_amelia <- list(`1%` = data_m1_1_amelia, `10%` = data_m1_10_amelia, 
+                    `20%` = data_m1_20_amelia, `30%` = data_m1_30_amelia, 
+                    `50%` = data_m1_50_amelia, `65%` = data_m1_65_amelia, 
+                    `70%` = data_m1_70_amelia, `80%` = data_m1_80_amelia, 
+                    `85%` = data_m1_85_amelia, `90%` = data_m1_90_amelia)
 
-dfm2_amelia <- list(`1%` = Y2015W1_tm1_1_amelia, `10%` = Y2015W1_tm1_10_amelia, 
-                    `20%` = Y2015W1_tm1_20_amelia, `30%` = Y2015W1_tm1_30_amelia, 
-                    `50%` = Y2015W1_tm1_50_amelia, `65%` = Y2015W1_tm1_65_amelia, 
-                    `70%` = Y2015W1_tm1_70_amelia, `80%` = Y2015W1_tm1_80_amelia, 
-                    `85%` = Y2015W1_tm1_85_amelia, `90%` = Y2015W1_tm1_90_amelia)
+dfm2_amelia <- list(`1%` = data_tm1_1_amelia, `10%` = data_tm1_10_amelia, 
+                    `20%` = data_tm1_20_amelia, `30%` = data_tm1_30_amelia, 
+                    `50%` = data_tm1_50_amelia, `65%` = data_tm1_65_amelia, 
+                    `70%` = data_tm1_70_amelia, `80%` = data_tm1_80_amelia, 
+                    `85%` = data_tm1_85_amelia, `90%` = data_tm1_90_amelia)
 
 ## Summarise
 dfm1_amelia %<>% ldply(function(x) x %>% dplyr::rename(Model = .id)) %>% 
@@ -2975,17 +2837,17 @@ dfm2_amelia %>%
 ## `tidyr::fill`弥补数据偏差比较
 
 ```{r warning=FALSE}
-dfm1_tidyr <- list(`1%` = Y2015W1_m1_1_tidyr, `10%` = Y2015W1_m1_10_tidyr, 
-                   `20%` = Y2015W1_m1_20_tidyr, `30%` = Y2015W1_m1_30_tidyr, 
-                   `50%` = Y2015W1_m1_50_tidyr, `65%` = Y2015W1_m1_65_tidyr, 
-                   `70%` = Y2015W1_m1_70_tidyr, `80%` = Y2015W1_m1_80_tidyr, 
-                   `85%` = Y2015W1_m1_85_tidyr, `90%` = Y2015W1_m1_90_tidyr)
+dfm1_tidyr <- list(`1%` = data_m1_1_tidyr, `10%` = data_m1_10_tidyr, 
+                   `20%` = data_m1_20_tidyr, `30%` = data_m1_30_tidyr, 
+                   `50%` = data_m1_50_tidyr, `65%` = data_m1_65_tidyr, 
+                   `70%` = data_m1_70_tidyr, `80%` = data_m1_80_tidyr, 
+                   `85%` = data_m1_85_tidyr, `90%` = data_m1_90_tidyr)
 
-dfm2_tidyr <- list(`1%` = Y2015W1_tm1_1_tidyr, `10%` = Y2015W1_tm1_10_tidyr, 
-                   `20%` = Y2015W1_tm1_20_tidyr, `30%` = Y2015W1_tm1_30_tidyr, 
-                   `50%` = Y2015W1_tm1_50_tidyr, `65%` = Y2015W1_tm1_65_tidyr, 
-                   `70%` = Y2015W1_tm1_70_tidyr, `80%` = Y2015W1_tm1_80_tidyr, 
-                   `85%` = Y2015W1_tm1_85_tidyr, `90%` = Y2015W1_tm1_90_tidyr)
+dfm2_tidyr <- list(`1%` = data_tm1_1_tidyr, `10%` = data_tm1_10_tidyr, 
+                   `20%` = data_tm1_20_tidyr, `30%` = data_tm1_30_tidyr, 
+                   `50%` = data_tm1_50_tidyr, `65%` = data_tm1_65_tidyr, 
+                   `70%` = data_tm1_70_tidyr, `80%` = data_tm1_80_tidyr, 
+                   `85%` = data_tm1_85_tidyr, `90%` = data_tm1_90_tidyr)
 
 ## Summarise
 dfm1_tidyr %<>% ldply(function(x) x %>% mutate(Model = factor('tidyr_fill'))) %>% 
@@ -3200,7 +3062,8 @@ bias %>% ddply(.(Model, Cat), summarise,
 
 ```{r info, echo=FALSE, warning=FALSE, results='asis'}
 sys1 <- session_info()$platform %>% 
-  unlist %>% data.frame(Category = names(.), session_info = .)
+  unlist %>% 
+  data.frame(Category = names(.), session_info = .)
 rownames(sys1) <- NULL
 
 sys2 <- data.frame(Sys.info()) %>% 
