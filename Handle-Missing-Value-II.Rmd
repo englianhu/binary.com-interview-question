@@ -101,12 +101,36 @@ rm(pkg, funs)
 
 和之前的单变量一样，首先僕随机导入每分钟为1个时间单位的数据。
 
-```{r warning=FALSE}
+```
+Error in optim(init[mask], getLike, method = "L-BFGS-B", lower = rep(0, : L-BFGS-B needs finite values of 'fn'
+17. optim(init[mask], getLike, method = "L-BFGS-B", lower = rep(0, np + 1L), upper = rep(Inf, np + 1L), control = optim.control)
+16. StructTS(data, ...)
+15. na.kalman(data, ...)
+14. apply.base.algorithm(data, algorithm = algorithm, ...)
+13. .f(.x[[i]], ...)
+12. map(., na.seadec, algorithm = x)
+11. function_list[[i]](value)
+10. freduce(value, `_function_list`)
+9. `_fseq`(`_lhs`)
+8. eval(quote(`_fseq`(`_lhs`)), env, env)
+7. eval(quote(`_fseq`(`_lhs`)), env, env)
+6. withVisible(eval(quote(`_fseq`(`_lhs`)), env, env))
+5. data_m1_NA %>% dplyr::select(starts_with("Ask"), starts_with("Bid")) %>% map(na.seadec, algorithm = x) %>% as.tibble
+4. FUN(X[[i]], ...)
+3. lapply(pieces, .fun, ...)
+2. structure(lapply(pieces, .fun, ...), dim = dim(pieces))
+1. llply(algo, function(x) { data_m1_NA %>% dplyr::select(starts_with("Ask"), starts_with("Bid")) %>% map(na.seadec, algorithm = x) %>% as.tibble })
+```
+
+由于频频出现错误信息[#imputeTS/issues/26](https://github.com/SteffenMoritz/imputeTS/issues/26)，于此僕使用sort(sample(length(fls), 1))随机筛选1个文件。
+
+```{r warning=FALSE, message=FALSE}
 pth <- 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/'
 fls <- list.files(pth, pattern = '^Y[0-9]{4}W[1-9]{1,2}_m1.rds$')
 
 ## 1分钟数据
-data_m1 <- llply(fls, function(x) {
+## 由于频频出现错误信息，于此僕使用sort(sample(length(fls), 1))随机筛选4个文件。
+data_m1 <- llply(fls[sort(sample(length(fls), 1))], function(x) {
     y <- readRDS(paste0(pth, x)) %>% 
       dplyr::rename(index = DateTime) %>% 
       mutate(index = index %>% mdy_hms %>% 
@@ -146,12 +170,13 @@ data_m1 %>%
 
 接着，导入Tick数据^[欲知更多详情，请参阅[一、什么是Tick Data](https://www.fmz.com/bbs-topic/457)。]，并且转为每分钟为1时间单位。
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
 pth <- 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/'
 fls <- list.files(pth, pattern = '^Y[0-9]{4}W[1-9]{1,2}.rds$')
 
 ## Tick数据转为1分钟数据
-data_tm1 <- llply(fls, function(x) {
+## 由于频频出现错误信息，于此僕使用sort(sample(length(fls), 1))随机筛选2个文件。
+data_tm1 <- llply(fls[sort(sample(length(fls), 1))], function(x) {
     y <- readRDS(paste0(pth, x)) %>% 
       convertOHLC(combine = TRUE)
     
