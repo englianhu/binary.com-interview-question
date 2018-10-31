@@ -33,12 +33,11 @@ rm(pkgs, funs)
 
 # Introduction
 
-Today, I am trying to recall the `Lasso`, `Elastic-Net` and also `Ridge` models. That was the initial models I built in order to predict the stock price of [`LAD`](https://finance.yahoo.com/quote/LAD/) since few years ago. 
+Due to I don't know if my initial models in these studies are effective or not. Today, I am trying to recall the `Lasso`, `Elastic-Net` and also `Ridge` models and compare with ARIMA model. That was the initial models I built in order to predict the stock price of [`LAD`](https://finance.yahoo.com/quote/LAD/) since few years ago. 
 
 [Glmnet Vignette](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html) provides examples for statistical modelling while [Stock Prediction with R glmnet and tm packages](https://www.kaggle.com/captcalculator/stock-prediction-with-r-glmnet-and-tm-packages) applied `Lasso` regression for stock price prediction.
 
 - [热门数据挖掘模型应用入门（一）: LASSO 回归](https://cosx.org/2016/10/data-mining-1-lasso/)
-- 
 
 ![*Source :* [*shinyApp*](https://beta.rstudioconnect.com/content/2367/)](www/20170113_104005.gif)
 
@@ -49,9 +48,18 @@ You are feel free to browse over [*shinyApp*](https://beta.rstudioconnect.com/co
 ```{r warning=FALSE}
 mbase <- readRDS('data/LAD_Full.rds') %>% 
   tk_tbl
+
+mbase %>% 
+  kable(caption = 'OHLCVA of LAD') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
 ```
 
 # Modelling
+
+## Lasso, Elastic-Net and Ridge
+
+Below I tried to model Lasso, Elastic-Net and also Ridge models.
 
 ```{r warning=FALSE, eval=FALSE}
 # ----------- eval=FALSE --------------
@@ -85,9 +93,9 @@ for(d in (1:length(timeID))) {
 ```
 
 ```{r warning=FALSE}
-dr <- dir('data', pattern = '[0-9]{8}')
+dr <- dir('C:/Users/scibr/Documents/GitHub/englianhu/data (binary.com-interview-question excludes fx subfolder)', pattern = '[0-9]{8}')
 md <- llply(dr, function(x) {
-    pth <- paste0('data/', x, '/fitgaum.best.rds')
+    pth <- paste0('C:/Users/scibr/Documents/GitHub/englianhu/data (binary.com-interview-question excludes fx subfolder)/', x, '/fitgaum.best.rds')
     readRDS(pth) %>% 
       head(1)
   })
@@ -96,12 +104,37 @@ names(md) <- dr
 #'@ md$`20160201`[[1]]$yhat[[1]] %>% tail
 ```
 
+## Auto ARIMA
+
+[Transforming subsets of data in R with by, ddply and data.table](https://magesblog.com/post/2012-06-12-transforming-subsets-of-data-in-r-with/) compares the efficiency of `transform` dataset.
+
+Here I try to use `auto.arima` to compare with the models states at previous section.
+
+```{r warning=FALSE, message=FALSE}
+tmID <- mbase$index
+tmID %<>% .[. > ymd('2015-01-02')]
+
+at.ar <- llply(tmID, function(dt) {
+  smp <- mbase[c('index', 'LAD.Close')] %>% 
+    dplyr::filter((index < dt) & (index >= dt %m-% years(1)))
+  dat <- smp %>% 
+    tk_xts %>% 
+    auto.arima %>% 
+    forecast(h=1)
+  data.frame(index = xts::last(smp$index), Price.T1 = dat)
+  }) %>% 
+  bind_rows %>% 
+  tbl_df
+```
+
 # MSE
 
+Here I compare the Lasso/Elastic-net/Ridge models with Auto.Arima model.
+
 ```{r warning=FALSE}
-dr <- dir('data', pattern = '[0-9]{8}')
+dr <- dir('C:/Users/scibr/Documents/GitHub/englianhu/data (binary.com-interview-question excludes fx subfolder)', pattern = '[0-9]{8}')
 comp <- llply(dr, function(x) {
-    pth <- paste0('data/', x, '/fitgaum.mse1.rds')
+    pth <- paste0('C:/Users/scibr/Documents/GitHub/englianhu/data (binary.com-interview-question excludes fx subfolder)/', x, '/fitgaum.mse1.rds')
     readRDS(pth) %>% 
       head(1) %>% 
       dplyr::rename(Submodel = model, Model = .id)
@@ -115,16 +148,34 @@ comp %<>%
     mutate(index = ymd(index), 
            Model = factor(Model), 
            Submodel = factor(Submodel))
-comp
+comp %>% 
+  kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '400px')
+
+comp2 <- join_all(list(mbase[c('index', 'LAD.Close')], 
+                      at.ar[c('index', 'Price.T1.Point.Forecast')], 
+                      comp)) %>% 
+  na.omit %>% 
+  tbl_df
 
 ## MSE
-data.frame(Model = 'Elastic-Net', MSE = mean(comp$MSE.1)) %>% 
+comp2 %>% mutate(
+    MSE.AR = mean((Price.T1.Point.Forecast - LAD.Close)^2), 
+    MSE.Lasso = mean(MSE.1)) %>% 
+  dplyr::select(MSE.AR, MSE.Lasso) %>% 
+  unique %>% 
   kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
 # Conclusion
 
+From above table, we know that `r comp2 %>% mutate(
+    MSE.AR = mean((Price.T1.Point.Forecast - LAD.Close)^2), 
+    MSE.Lasso = mean(MSE.1)) %>% 
+  dplyr::select(MSE.AR, MSE.Lasso) %>% 
+  unique %>% unlist %>% which.min %>% names` model is better model.
 
 ```{r option, echo = FALSE}
 ## Set options back to original options
@@ -143,7 +194,7 @@ It's useful to record some information about how your file was created.
 - R version (short form): `r getRversion()`
 - [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
 - File version: 1.0.1
-- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
+- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/4352/)
 - GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
 - Additional session information:
 
@@ -185,8 +236,20 @@ rm(sys1, sys2)
 
 ## Reference
 
-01. [Shrinkage Estimation of Linear Regression Models with GARCH Errors](Shrinkag%20Estimation%20of%20Linear%20Regression%20Models%20with%20GARCH%20Errors.pdf)
-02. [Iteratively Reweighted Adaptive Lasso for Conditional Heteroscedastic Time Series with Applications to AR-ARCH Type Processes](Iteratively%20Reweighted%20Adaptive%20Lasso%20for%20Conditional%20Heteroscedastic%20Time%20Series with%20Applications%20to%20AR-ARCH%20Type%20Processes.pdf)
+01. [**Stock Market Forecasting Using LASSO Linear Regression Model** *by Sanjiban Sekhar Roy, Dishant Mital, Avik Basu, Ajith Abraham (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
+02. [**Using LASSO from lars (or glmnet) package in R for variable selection** *by Juancentro (2014)*](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
+03. [**Difference between glmnet() and cv.glmnet() in R?** *by Amrita Sawant (2015)*](https://stackoverflow.com/questions/29311323/difference-between-glmnet-and-cv-glmnet-in-r?answertab=votes#tab-top)
+04. [**Testing Kelly Criterion and Optimal f in R** *by Roy Wei (2012)*](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) <img src='www/hot.jpg' width='20'>
+05. [**Portfolio Optimization and Monte Carlo Simulation** *by Magnus Erik Hvass Pedersen (2014)*](https://raw.githubusercontent.com/scibrokes/kelly-criterion/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf) <img src='www/hot.jpg' width='20'>
+06. [**Glmnet Vignette** *by Trevor Hastie and Junyang Qian (2014)*](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
+07. [**lasso怎么用算法实现？** *by shuaihuang (2010)*](https://d.cosx.org/d/101533-101533/5)
+08. [**The Sparse Matrix and {glmnet}** *by Manuel Amunategui (2014)*](http://amunategui.github.io/sparse-matrix-glmnet/)
+09. [**Regularization and Variable Selection via the Elastic Net** *by Hui Zou and Trevor Hastie*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Regularization%20and%20Variable%20Selection%20via%20the%20Elastic%20Net.pdf)
+10. [LASSO, Ridge, and Elastic Net](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) <img src='www/hot.jpg' width='20'>
+11. [**热门数据挖掘模型应用入门（一）: LASSO回归** *by 侯澄钧 (2016)*](https://cosx.org/2016/10/data-mining-1-lasso)
+12. [The Lasso Page](http://statweb.stanford.edu/~tibs/lasso.html)
+13. [Shrinkage Estimation of Linear Regression Models with GARCH Errors](Shrinkag%20Estimation%20of%20Linear%20Regression%20Models%20with%20GARCH%20Errors.pdf)
+14. [Iteratively Reweighted Adaptive Lasso for Conditional Heteroscedastic Time Series with Applications to AR-ARCH Type Processes](Iteratively%20Reweighted%20Adaptive%20Lasso%20for%20Conditional%20Heteroscedastic%20Time%20Series with%20Applications%20to%20AR-ARCH%20Type%20Processes.pdf)
 
 ---
 

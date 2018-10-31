@@ -41,6 +41,8 @@ rm(pkgs)
 
 Due to the paper <span style='color:goldenrod'>*binary.com Interview Question I - Multivariate GARCH Models*</span> unable to execute the copula-DCC-GARCH models smoothly where I believed the Copula-GARCH and also GO-GARCH models will be better fit than normal DCC models, here I try to refer to more reference like <span style='color:goldenrod'>*Higher Moment Models for Risk and Portfolio Management*</span> etc. The author published a thesis which contains a series of GARCH models.
 
+[Copulas and Financial Time Series](https://www.r-bloggers.com/copulas-and-financial-time-series/) apply univariate and also multivariate GARCH models onto the financial market.
+
 Yihui, Xie used to publish a post which is [我手头关于Copula的20篇论文资料（下载）](https://d.cosx.org/d/6181-6181), the Copula-GARCH model widely use in financial market. <span style='color:goldenrod'>*Enjoy the Joy of Copulas - With a Package `copula`*</span>... 
 
 # Data
@@ -69,7 +71,7 @@ It's useful to record some information about how your file was created.
 - R version (short form): `r getRversion()`
 - [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
 - File version: 1.0.1
-- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
+- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/4352/)
 - GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
 - Additional session information:
 

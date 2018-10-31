@@ -11,9 +11,10 @@ output:
     toc_float:
       collapsed: yes
       smooth_scroll: yes
+    code_folding: hide
 ---
 
-```{r setup, include = FALSE}
+```{r setup, include=FALSE}
 suppressPackageStartupMessages(library('BBmisc'))
 pkgs <- c('knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyr', 'tidyverse', 'tidyquant', 'turner', 'readr', 'quantmod', 'htmltools', 'highcharter', 'googleVis', 'formattable', 'ggfortify', 'DT', 'forecast', 'PerformanceAnalytics', 'broom', 'microbenchmark', 'doParallel', 'Boruta', 'fBasics', 'fPortfolio', 'rugarch', 'parma', 'rmgarch')
 
@@ -53,7 +54,7 @@ rm(pkgs)
 
 In order to test the timeline of daily highest and lowest price, here I created this file to read the high volume tick-data-history to test the efficiency of Kelly Criterion betting models. Kindly refer to [Reference] for further information.
 
-*binary.com Interview Question I - Tick-Data-HiLo For Daily Trading (Blooper)* descript that the VaR figure required in order to place orders. [What is the difference between Sharpe ratio and value at risk?](https://www.quora.com/What-is-the-difference-between-Sharpe-ratio-and-value-at-risk) states the difference between VaR and shape ratio where the shape ratio will be use in the future research.
+<span style='color:goldenrod'>*binary.com Interview Question I - Tick-Data-HiLo For Daily Trading (Blooper)*</span> descript that the VaR figure required in order to place orders. [What is the difference between Sharpe ratio and value at risk?](https://www.quora.com/What-is-the-difference-between-Sharpe-ratio-and-value-at-risk) states the difference between VaR and shape ratio where the shape ratio will be use in the future research.
 
 [ARIMA+GARCH Trading Strategy on the S&P500 Stock Market Index Using R](https://www.quantstart.com/articles/ARIMA-GARCH-Trading-Strategy-on-the-SP500-Stock-Market-Index-Using-R) compares the ROI of buy and hold and application of ARIMA + GARCH model.
 
@@ -66,7 +67,7 @@ In order to test the timeline of daily highest and lowest price, here I created 
 
 ## Intro Reference
 
-*Currency Hedging Strategies Using Dynamic Multivariate GARCH* compares DCC, BEKK, CCC and VARMA-AGARCH models to examine the conditional volatilities among the spot and two distint futures maturities, namely near-month and next-to-near-month contracts. The estimated conditionl covariances matrices from these models were used to calculate the optimal portfolios weights and optimal hedge ratios. The empirical results in the paper reveal that there are not big differences either the near-month or next-to-near-month contract is used for hedge spot position on currencies. They also reveal that hedging ratios are lower for near-month contract when the USD/EUR and USD/JPY exchange rates are anlyzed. This result is explained in terms of the higher correlation between spot prices and the next-to-near-month future prices than that with near-month contract and additionally because of the lower volatility of the long maturity futures. Finally across all currencies and error densities, the CCC and VARMA-AGARCH models provide similar results in terms of hedging ratios, portfolio variance reduction and hedging effectiveness. Some difference might appear when the DCC and BEKK models are used. Below is the table summary of the paper.
+<span style='color:goldenrod'>*Currency Hedging Strategies Using Dynamic Multivariate GARCH*</span> compares DCC, BEKK, CCC and VARMA-AGARCH models to examine the conditional volatilities among the spot and two distint futures maturities, namely near-month and next-to-near-month contracts. The estimated conditionl covariances matrices from these models were used to calculate the optimal portfolios weights and optimal hedge ratios. The empirical results in the paper reveal that there are not big differences either the near-month or next-to-near-month contract is used for hedge spot position on currencies. They also reveal that hedging ratios are lower for near-month contract when the USD/EUR and USD/JPY exchange rates are anlyzed. This result is explained in terms of the higher correlation between spot prices and the next-to-near-month future prices than that with near-month contract and additionally because of the lower volatility of the long maturity futures. Finally across all currencies and error densities, the CCC and VARMA-AGARCH models provide similar results in terms of hedging ratios, portfolio variance reduction and hedging effectiveness. Some difference might appear when the DCC and BEKK models are used. Below is the table summary of the paper.
 
 ![](www/hedge-strategy-01A.jpg)
 
@@ -94,7 +95,7 @@ The correlations of the dynamic patterns in Tables 8A-8C are given in Tables 9A-
 
 In summary, the estimates based on both OHR and optimal weight values recommend holding more FUT2 than FUT1 contracts for USD/EUR and USD/JPY spot/futures portfolios, meaning that we should increase the percentage of futures contracts for longer term portfolios when these currencies are used.
 
-*Dynamic Portfolio Optimization using Generalized Dynamic Conditional Heteroskedastic Factor Models* compares . The paper studies the portfolio selection problem based on a generalized dynamic factor model (GDFM) with conditional heteroskedasticity in the idiosyncratic components. We propose a Generalized Smooth Transition Conditional Correlation (GSTCC) model for the idiosyncratic components combined with the GDFM. Among all the multivariate GARCH models that the authors propose, the generalized smooth transition conditional correlation provides the best result.
+<span style='color:goldenrod'>*Dynamic Portfolio Optimization using Generalized Dynamic Conditional Heteroskedastic Factor Models*</span> studies the portfolio selection problem based on a generalized dynamic factor model (GDFM) with conditional heteroskedasticity in the idiosyncratic components. We propose a Generalized Smooth Transition Conditional Correlation (GSTCC) model for the idiosyncratic components combined with the GDFM. Among all the multivariate GARCH models that the authors propose, the generalized smooth transition conditional correlation provides the best result.
 
 ![](www/ROI-DPO.jpg)
 
@@ -110,7 +111,7 @@ I try to surf over internet and the model has no yet widely use. Here I can only
 
 ## VaR
 
-I stored the forecast VaR value as well, kindly refer to *How Good Are Your VaR Estimates?*^ for more information. 
+I stored the forecast VaR value as well, kindly refer to <span style='color:goldenrod'>*How Good Are Your VaR Estimates?*</span> for more information. 
 
 - *ARMA(1,1)-GARCH(1,1)
 Estimation and forecast using rugarch 1.2-2*
@@ -166,7 +167,7 @@ Alternatively, using the rugarch package which defaults to standardized distribu
 
   I use more than 3 years data (from week 1 2015 until week 27 2018)^[You are feel feel to get the data via [FXCMTickData](https://github.com/fxcm/FXCMTickData)] for the question as experiment, 1st year data is burn-in data for statistical modelling and prediction purpose while following 2 years data for forecasting and staking. There have 52 trading weeks within a year.
 
-```{r read-data, echo = FALSE, eval = FALSE}
+```{r echo=FALSE, eval=FALSE}
 ## ================== eval = FALSE =============================
 ## Do not execute...
 ## 
@@ -297,7 +298,7 @@ plot(forecast(fit))
 forecast(fit, h = 4)
 ```
 
-```{r read-data2, warning = FALSE}
+```{r warning=FALSE}
 ## get currency dataset online.
 ## http://stackoverflow.com/questions/24219694/get-symbols-quantmod-ohlc-currency-data
 #'@ getFX('USD/JPY', from = '2014-01-01', to = '2017-01-20')
@@ -307,6 +308,11 @@ forecast(fit, h = 4)
 #'@                      to = '2017-01-20', auto.assign = FALSE)
 #'@ names(USDJPY) <- str_replace_all(names(USDJPY), 'JPY=X', 'USDJPY')
 #'@ USDJPY <- xts(USDJPY[, -1], order.by = USDJPY$Date)
+
+cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'CNY=X', 'JPY=X')
+
+names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
+#'@ names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
 
 #'@ saveRDS(USDJPY, './data/USDJPY.rds')
 USDJPY <- read_rds(path = './data/USDJPY.rds')
@@ -320,48 +326,19 @@ dateID <- dateID[dateID > dateID0]
 
 ```{r data-summary}
 dim(mbase)
-summary(mbase) %>% kable(width = 'auto')
+summary(mbase) %>% 
+  tidy %>% 
+  .[,-1] %>% 
+  kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  scroll_box(width = '100%', height = '400px')
 ```
 
 # Betting Strategy
 
+## Betting Model
 
 
-# Model Comparison
-
-```{r tidy-data1}
-##数据1
-fx1 <- llply(names(cr_code), function(x) {
-    fls <- list.files(paste0('data/fx/', x), pattern = '^pred1')
-    dfm <- ldply(fls, function(y) {
-        readRDS(paste0('data/fx/', x, '/', y))
-    }) %>% data.frame(Cat = 'pred1', .) %>% tbl_df
-    names(dfm)[4:5] <- c('Price', 'Price.T1')
-    dfm
- })
-names(fx1) <- names(cr_code)
-
-##数据2
-fx2 <- llply(names(cr_code), function(x) {
-    fls <- list.files(paste0('data/fx/', x), pattern = '^pred2')
-    dfm <- ldply(fls, function(y) {
-        readRDS(paste0('data/fx/', x, '/', y))
-    }) %>% data.frame(Cat = 'pred2', .) %>% tbl_df
-    names(dfm)[4:5] <- c('Price', 'Price.T1')
-    dfm
- })
-names(fx2) <- names(cr_code)
-
-## Merge and tidy dataset.
-fx1 %<>% ldply %>% tbl_df
-fx2 %<>% ldply %>% tbl_df
-fx <- suppressAll(
-  bind_rows(fx1, fx2) %>% arrange(Date) %>% 
-    mutate(.id = factor(.id), Cat = factor(Cat), Price.T1 = lag(Price.T1, 56)) %>% 
-    dplyr::filter(Date >= ymd('2013-01-01') & Date <= ymd('2017-08-30')))
-
-rm(fx1, fx2)
-```
 
 # Conclusion
 
@@ -383,22 +360,31 @@ It's useful to record some information about how your file was created.
 - R version (short form): `r getRversion()`
 - [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
 - File version: 1.0.1
-- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
+- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/4352/)
 - GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
 - Additional session information:
 
-```{r info, echo=FALSE, warning=FALSE, results='asis'}
-suppressMessages(require('dplyr', quietly = TRUE))
-suppressMessages(require('formattable', quietly = TRUE))
-
-sys1 <- devtools::session_info()$platform %>% unlist %>% data.frame(Category = names(.), session_info = .)
+```{r info, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
+sys1 <- session_info()$platform %>% 
+  unlist %>% 
+  data.frame(Category = names(.), session_info = .)
 rownames(sys1) <- NULL
 
-sys1 %<>% rbind(., data.frame(Category = 'Current time', session_info = paste(as.character(now('Asia/Tokyo')), 'JST')))
-
-sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
+sys2 <- data.frame(Sys.info()) %>% 
+  mutate(Category = rownames(.)) %>% 
+  .[2:1]
 names(sys2)[2] <- c('Sys.info')
 rownames(sys2) <- NULL
+
+if (nrow(sys1) == 7 & nrow(sys2) == 8) {
+  sys1 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
+} else {
+  sys2 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST')))
+}
 
 cbind(sys1, sys2) %>% 
   kable(caption = 'Additional session information:') %>% 
@@ -444,7 +430,8 @@ rm(sys1, sys2)
 33. [Comparison of Value at Risk Models and Forecasting Realized Volatility by using Intraday Data](https://github.com/scibrokes/real-time-fxcm/blob/master/reference/Comparison%20of%20Value%20at%20Risk%20Models%20and%20Forecasting%20Realized%20Volatility%20by%20using%20Intraday%20Data.pdf)
 34. [binary.com Interview Question I - Tick-Data-HiLo For Daily Trading (Blooper)](http://rpubs.com/englianhu/binary-Q1TD)
 35. [How Good Are Your VaR Estimates?](http://www.unstarched.net/2012/12/26/how-good-are-your-var-estimates/)
+36. [Kelly's Criterion in Portfolio Optimization - A Decoupled Problem](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Kelly's%20Criterion%20in%20Portfolio%20Optimization%20-%20A%20Decoupled%20Problem.pdf)
 
 ---
 
-**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
+<span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of [<img src='www/scb_logo.jpg' width='64'>®](http://www.scibrokes.com)個人の経営企業**</span>

@@ -59,11 +59,11 @@ Besides, I wrote a shinyApp which display the real-time price through API. Kindl
 - <s>GO-GARCH</s>
 - <s>Copula-GARCH</s>
 
-In order to started the high-frequency-trading statistical modelling, I inspect the dataset via [binary.com面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value) and also [binary.com 面试试题 I - 多变量数据缺失值管理 II](http://rpubs.com/englianhu/handle-multivariate-missing-value) but the univariate modelling caused some statistical error. The papers compares multi-methods like `interpolatan`, `kalman`, `locf` and `ma`. The [binary.com Interview Question I - Interday High Frequency Trading Models Comparison](http://rpubs.com/englianhu/binary-Q1Inter-HFT) compares SARIMA, mcsGARCH, <s>midasr, midas-garch, Levy process</s> models.
+In order to started the high-frequency-trading statistical modelling, I inspect the dataset via [binary.com面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value) and also [binary.com 面试试题 I - 多变量数据缺失值管理 II](http://rpubs.com/englianhu/handle-multivariate-missing-value) but the univariate modelling caused some statistical error. The papers compares multi-methods like `interpolatan`, `kalman`, `locf` and `ma`. The [binary.com Interview Question I - Interday High Frequency Trading Models Comparison](http://rpubs.com/englianhu/binary-Q1Inter-HFT) compares ts, msts, SARIMA, mcsGARCH, <s>midasr, midas-garch, Levy process</s> models.
 
 ### 1.2) <span style='color:red'>Blooper</span>
 
-Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) which contain the questions and answers of 3 questions. For the staking model, I simply forecast the highest and lowest price, and then : 
+Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) (Kindly refer to [binary.com Interview Question I - Lasso, Elastic-Net and Ridge Regression](http://rpubs.com/englianhu/binary-Q1L-EN-R) for more information) which contain the questions and answers of 3 questions. For the staking model, I simply forecast the highest and lowest price, and then : 
   
 - Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
 - Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 

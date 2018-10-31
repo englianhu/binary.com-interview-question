@@ -18,7 +18,7 @@ output:
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'timetk', 'plyr', 'stringr', 'magrittr', 'dplyr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend')
+pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -151,9 +151,7 @@ getTStime <- function(ats){
   }
   return(time)
 }
-```
 
-```{r warning=FALSE}
 ## https://stackoverflow.com/questions/13865172/handling-data-on-the-days-when-we-switch-to-daylight-savings-time-and-back-in-r
 #> as.POSIXct("2012-03-25 02:00:00", tz="Europe/Vienna")
 #[1] "2012-03-25 CET"
@@ -238,9 +236,14 @@ tsz %>% dplyr::filter(diff <= 6000)
 ## https://stackoverflow.com/questions/45070078/convert-forecast-time-produced-by-arima-into-standard-date-time
 #How to extract below index to datetime
 #Y2015W1 %>% tk_ts(end = c(1440, 7200), frequency = 1440) %>% attributes %>% .$index %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01') %>% force_tz(tz = 'Europe/Athens')
-Y2015W1_min1 %>% tk_ts(end = c(3, 7200), frequency = 1440) %>% .[,1:ncol(.)] %>% head #1440 * 5 = 7200
+Y2015W1_min1 %>% 
+  tk_ts(end = c(3, 7200), frequency = 1440) %>% 
+  .[,1:ncol(.)] %>% 
+  head #1440 * 5 = 7200
 
-Y2015W1_min1 %>% head %>% zooreg(frequency = 1440)
+Y2015W1_min1 %>% 
+  head %>% 
+  zooreg(frequency = 1440)
 
 #Y2015W1_min1 %>% tk_ts(end = c(1440, 7200), frequency = 1440) %>% index %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01')
 
@@ -248,7 +251,9 @@ Y2015W1_min1 %>% head %>% zooreg(frequency = 1440)
 ## http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/
 #How to extract below index to datetime
 #Y2015W1_min1 %>% msts(seasonal.periods=c(1440, 7200)) %>% .[,1] %>% as.numeric %>% as.POSIXct(tz = 'UTC', origin = '1970-01-01') %>% force_tz(tz = 'Europe/Athens')
-Y2015W1_min1 %>% head %>% msts(seasonal.periods=c(1440, 7200))
+Y2015W1_min1 %>% 
+  head %>% 
+  msts(seasonal.periods=c(1440, 7200))
 ```
 
 `ts()` only can build a year-month seasonal dataset, otherwise need to decimal numeric to figure out what date within a month accordingly. `msts()` will be more user friendly which is modelling intra-and-inter seasonal dataset. <s>Now I convert all dataset again from `UTC` to `UTC+2` to be a constant weekly seasonal dataset. Due to the trading day is 5 days and 2 rest days, therefore I set a weekly seasonal period instead of daily.</s>
@@ -367,7 +372,7 @@ From above tables, we can know the daylight saving detection and `datetime` auto
 - mean
 - random
 
-The papers concludes that the `imputeTS::na.seadec(algorithm = 'interpolation')` or `imputeTS::na.seadec(algorithm = 'kalman')` repaired dataset no matter how much of portion of missing value is workable since the MSE and bias is very low. The `Amelia::amelia` is accurate and the bias is small compare to `imputeTS::sea.dec` when the portion of missing value is small. The papers compare tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM. It is very weird that the `tidyr::fill` and `na.locf` both are not too accurate. However, in this paper I use `tidy::fill()` method to fill the missing value.
+The papers concludes that the `imputeTS::na.seadec(algorithm = 'interpolation')` or `imputeTS::na.seadec(algorithm = 'kalman')` repaired dataset no matter how much of portion of missing value is workable since the MSE and bias is very low. The `Amelia::amelia` is accurate and the bias is small compare to `imputeTS::sea.dec` when the portion of missing value is small. The papers compare tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM. It is very weird that the `tidyr::fill` and `na.locf` both are not too accurate. However, in this paper I use `tidy::fill()` method to fill the missing value, it will similar with `kalman filter` method since it will filled up the missing value ascending to fill up with direction down until the bottom of the dataset and then fill up with direction up by descending to fill up initial missing value or top. It will not occured standard error bias like open or close price higher than highest price or lower than lowest price. Moreover, the filled price will not bias a lot from the trend as time goes by.
 
 ```{r warning=FALSE}
 ## tick-data to minute 1 dataset
@@ -408,12 +413,30 @@ Here I compare the mean and get to know the downloaded min1 dataset from FXCM is
 
 ```{r warning=FALSE, eval=FALSE}
 # -------- eval=FALSE -----------
+## tick-data to min-1 dataset
+data_tm1 <- llply(fls[[7]], function(x) {
+    y <- readRDS(x) %>% 
+      convertOHLC(combine = TRUE)
+    
+    yw <- x %>% 
+      str_extract_all('Y[0-9]{4}W[0-9]{1,2}') %>% 
+      str_split_fixed('[A-Z]{1}', 3) %>% 
+      .[,-1]
+    y %<>% mutate(
+      year = as.numeric(yw[1]), week = as.numeric(yw[2]), .)
+    }) %>% 
+  bind_rows %>% 
+  tbl_df %>% 
+  arrange(index)
+
+
 ## min-1 dataset
 data_m1 <- llply(fls1[[5]], function(x) {
-    y <- readRDS(x) %>% dplyr::rename(index = DateTime) %>% 
-        mutate(index = index %>% mdy_hms %>% 
-                   .POSIXct(tz = 'Europe/Athens') %>% 
-                 force_tz())
+    y <- readRDS(x) %>% 
+      dplyr::rename(index = DateTime) %>% 
+      mutate(index = index %>% mdy_hms %>% 
+               .POSIXct(tz = 'Europe/Athens') %>% 
+               force_tz())
     
     yw <- x %>% str_extract_all('Y[0-9]{4}W[0-9]{1,2}') %>% 
       str_split_fixed('[A-Z]{1}', 3) %>% .[,-1]
@@ -424,17 +447,10 @@ data_m1 <- llply(fls1[[5]], function(x) {
       nch = nch, index = if_else(
         nch == '23', index + hours(1), index)) %>% 
       dplyr::select(-nch)
-    }) %>% bind_rows %>% tbl_df %>% arrange(index)
-
-## tick-data to min-1 dataset
-data_tm1 <- llply(fls[[7]], function(x) {
-    y <- readRDS(x) %>% convertOHLC(combine = TRUE)
-    
-    yw <- x %>% str_extract_all('Y[0-9]{4}W[0-9]{1,2}') %>% 
-      str_split_fixed('[A-Z]{1}', 3) %>% .[,-1]
-    y %<>% mutate(
-      year = as.numeric(yw[1]), week = as.numeric(yw[2]), .)
-    }) %>% bind_rows %>% tbl_df %>% arrange(index)
+    }) %>% 
+  bind_rows %>% 
+  tbl_df %>% 
+  arrange(index)
 ```
 
 ```{r warning=FALSE, eval=FALSE}
@@ -449,9 +465,10 @@ dtm <- data_tm1 %>%
 
 ## create a seq of datetime to complete the  data point.
 dttm <- llply(1:nrow(dtm), function(i) {
-  x1 <- dtm$index[i] %>% as.POSIXct %>% 
-      with_tz(tz = 'UTC') %>% 
-      force_tz()
+  x1 <- dtm$index[i] %>% 
+    as.POSIXct %>% 
+    with_tz(tz = 'UTC') %>% 
+    force_tz()
   
   #x2 <- x1 + days(4) + hours(23) + minutes(59)
   x2 <- x1 + days(5)
@@ -465,8 +482,15 @@ Above chunk created a sequence of `datetime`.
 
 ```{r warning=FALSE, eval=FALSE}
 ## merge dataset
-data_tm1 <- left_join(dttm, data_tm1) %>% tbl_df %>% unique %>% arrange(index)
-data_m1 <- left_join(dttm, data_m1) %>% tbl_df %>% unique %>% arrange(index)
+data_m1 <- left_join(dttm, data_m1) %>% 
+  tbl_df %>% 
+  unique %>% 
+  arrange(index)
+
+data_tm1 <- left_join(dttm, data_tm1) %>% 
+  tbl_df %>% 
+  unique %>% 
+  arrange(index)
 
 ## https://stackoverflow.com/questions/43212308/na-locf-using-group-by-from-dplyr
 ## https://stackoverflow.com/questions/23340150/replace-missing-values-na-with-most-recent-non-na-by-group
@@ -551,16 +575,16 @@ cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'CNY=X', 'JPY
 
 names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
 
-data_tm1 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds')
+data_m1 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds')
 
-data_tm1 %>% ddply(.(year, week), head, 1) %>% 
+data_m1 %>% ddply(.(year, week), head, 1) %>% 
   kable(caption = 'Weekly Initial Data Point') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
 ```{r echo=FALSE}
-data_tm1 %>% ddply(.(year, week), tail, 1) %>% 
+data_m1 %>% ddply(.(year, week), tail, 1) %>% 
   kable(caption = 'Weekly Final Data Point') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
@@ -568,24 +592,111 @@ data_tm1 %>% ddply(.(year, week), tail, 1) %>%
 
 ```{r warning=FALSE}
 ## Tidy dataset for modelling.
-data_tm1 %<>% 
+data_m1 %<>% 
   mutate(open = (BidOpen + AskOpen)/2, close = (BidClose + AskClose)/2) %>% 
   dplyr::rename(high = BidHigh, low = AskLow) %>%  #use bid price for sell.
   dplyr::select(index, open, high, low, close)     # and ask price for buy.
 ```
 
-Here I try to check if the filled dataset bias or not.
+Here I try to check if the filled dataset bias or not. Due to above I used `open = (BidOpen + AskOpen)/2`, `high = BidHigh`, `low = AskLow` and `close = (BidClose + AskClose)/2`^[For buying order, we need to refer to `ask` price and selling order need to refer to `bid` price.]. There will probably have bias.
 
 ```{r warning=FALSE}
-data_tm1 %>% mutate(
+data_m1 %>% mutate(
   bias.open = if_else(open>high|open<low, 1, 0), 
   bias.high = if_else(high<open|high<low|high<close, 1, 0), 
   bias.low = if_else(low>open|low>high|low>close, 1, 0), 
-  bias.close = if_else(close>high|close<low, 1, 0)) %>% dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)# %>% 
+  bias.close = if_else(close>high|close<low, 1, 0)) %>% 
+  dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)# %>% 
 #  kable(caption = 'Bias Imputation') %>% 
 #  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
 #  scroll_box(width = '100%', height = '400px')
 ```
+
+```{r warning=FALSE, eval=FALSE}
+# -------- eval=FALSE -----------
+## Below prove that the dataset has no any bias or error.
+> readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds') %>% mutate(
++     open = BidOpen, high = BidHigh, low = BidLow, close = BidClose, 
++     bias.open = if_else(open>high|open<low, 1, 0), 
++     bias.high = if_else(high<open|high<low|high<close, 1, 0), 
++     bias.low = if_else(low>open|low>high|low>close, 1, 0), 
++     bias.close = if_else(close>high|close<low, 1, 0)) %>% 
++     dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
+# A tibble: 0 x 19
+# ... with 19 variables: index <dttm>, year <dbl>, week <dbl>, BidOpen <dbl>, BidHigh <dbl>, BidLow <dbl>,
+#   BidClose <dbl>, AskOpen <dbl>, AskHigh <dbl>, AskLow <dbl>, AskClose <dbl>, open <dbl>, high <dbl>, low <dbl>,
+#   close <dbl>, bias.open <dbl>, bias.high <dbl>, bias.low <dbl>, bias.close <dbl>
+
+> readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds') %>% mutate(
++     open = BidOpen, high = BidHigh, low = BidLow, close = BidClose, 
++     bias.open = if_else(open>high|open<low, 1, 0), 
++     bias.high = if_else(high<open|high<low|high<close, 1, 0), 
++     bias.low = if_else(low>open|low>high|low>close, 1, 0), 
++     bias.close = if_else(close>high|close<low, 1, 0)) %>% 
++     dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
+# A tibble: 0 x 19
+# ... with 19 variables: index <dttm>, year <dbl>, week <dbl>, AskOpen <dbl>, AskHigh <dbl>, AskLow <dbl>,
+#   AskClose <dbl>, BidOpen <dbl>, BidHigh <dbl>, BidLow <dbl>, BidClose <dbl>, open <dbl>, high <dbl>, low <dbl>,
+#   close <dbl>, bias.open <dbl>, bias.high <dbl>, bias.low <dbl>, bias.close <dbl>
+
+> readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds') %>% mutate(
++     open = AskOpen, high = AskHigh, low = AskLow, close = AskClose, 
++     bias.open = if_else(open>high|open<low, 1, 0), 
++     bias.high = if_else(high<open|high<low|high<close, 1, 0), 
++     bias.low = if_else(low>open|low>high|low>close, 1, 0), 
++     bias.close = if_else(close>high|close<low, 1, 0)) %>% 
++     dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
+# A tibble: 0 x 19
+# ... with 19 variables: index <dttm>, year <dbl>, week <dbl>, BidOpen <dbl>, BidHigh <dbl>, BidLow <dbl>,
+#   BidClose <dbl>, AskOpen <dbl>, AskHigh <dbl>, AskLow <dbl>, AskClose <dbl>, open <dbl>, high <dbl>, low <dbl>,
+#   close <dbl>, bias.open <dbl>, bias.high <dbl>, bias.low <dbl>, bias.close <dbl>
+
+> readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_tm1.rds') %>% mutate(
++     open = AskOpen, high = AskHigh, low = AskLow, close = AskClose, 
++     bias.open = if_else(open>high|open<low, 1, 0), 
++     bias.high = if_else(high<open|high<low|high<close, 1, 0), 
++     bias.low = if_else(low>open|low>high|low>close, 1, 0), 
++     bias.close = if_else(close>high|close<low, 1, 0)) %>% 
++     dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)
+# A tibble: 0 x 19
+# ... with 19 variables: index <dttm>, year <dbl>, week <dbl>, AskOpen <dbl>, AskHigh <dbl>, AskLow <dbl>,
+#   AskClose <dbl>, BidOpen <dbl>, BidHigh <dbl>, BidLow <dbl>, BidClose <dbl>, open <dbl>, high <dbl>, low <dbl>,
+#   close <dbl>, bias.open <dbl>, bias.high <dbl>, bias.low <dbl>, bias.close <dbl>
+```
+
+I initially try to use `bid` for high and `ask` for low in order to produce a better prediction price for buy and sell. However, I use the mean value of OHLC all prices for this paper to avoid the statistical error/bias.
+
+Due to `1min` dataset is better than (more complete) `tickdata-to-1min`, here I use the `1min` dataset.
+
+```{r warning=FALSE, message=FALSE}
+data_m1 <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/data_m1.rds')
+data_m1 %<>% 
+  mutate(open = (BidOpen + AskOpen)/2, 
+         high = (BidHigh + AskHigh)/2, 
+         low = (BidLow + AskLow)/2, 
+         close = (BidClose + AskClose)/2) %>% 
+  dplyr::select(index, open, high, low, close)
+```
+
+```{r warning=FALSE}
+data_m1 %>% mutate(
+  bias.open = if_else(open>high|open<low, 1, 0), 
+  bias.high = if_else(high<open|high<low|high<close, 1, 0), 
+  bias.low = if_else(low>open|low>high|low>close, 1, 0), 
+  bias.close = if_else(close>high|close<low, 1, 0)) %>% 
+  dplyr::filter(bias.open==1|bias.high==1|bias.low==1|bias.close==1)# %>% 
+#  kable(caption = 'Bias Imputation') %>% 
+#  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+#  scroll_box(width = '100%', height = '400px')
+```
+
+```{js}
+<script type="text/javascript" src="//cdn.datacamp.com/dcl-react.js.gz"></script>
+```
+
+*Source : [DataCamp Light](https://github.com/datacamp/datacamp-light)*
+
+You are feel free to surf [Online Coding Platform Example](https://cdn.datacamp.com/dcl-react-prod/example.html) for R, Python and also Shell.
 
 # Modelling
 
@@ -601,30 +712,41 @@ I set the length of dataset as weekly but the frequency set as 1440 minutes (per
 
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
-#sq <- seq(1 , length(data_tm1$index), by = 1440)
+#sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
-timeID <- data_tm1$index %>% as_date %>% unique %>% sort
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
 timeID %<>% .[. > ymd('2015-01-11')]
 
 for (dt in timeID) {
-  smp <- data_tm1 %>% tk_xts(silent = TRUE)
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
   dt %<>% as_date
   smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
   
   sets <- smp %>% 
     tk_ts(frequency = 1440) %>% 
-    forecast(h=1440) %>% 
+    forecast(h = 1440) %>% 
     llply(tk_tbl)
   
   if(is.double(sets$forecast$index[1])){
-    sq <- smp %>% tail(1) %>% index
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
     sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
     sets$forecast$index <- sq
     
   } else {
-    sets$forecast$index <- data_tm1$index[
-    (which(data_tm1$index == smp %>% index %>% xts::last()) + 1):(
-     which(data_tm1$index == smp %>% index %>% xts::last()) + 1440)]
+    sets$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1440)]
   }
   
   if (!dir.exists(paste0('data/fx/USDJPY'))) 
@@ -645,13 +767,17 @@ I set the length of dataset as monthly but the frequency set as 1440 minutes (pe
 
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
-#sq <- seq(1 , length(data_tm1$index), by = 1440)
+#sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
-timeID <- data_tm1$index %>% as_date %>% unique %>% sort + days(1)
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
 timeID %<>% .[. > ymd('2015-01-11')]
 
 for (dt in timeID) {
-  smp <- data_tm1 %>% tk_xts(silent = TRUE)
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
   dt %<>% as_date
   smp <- smp[paste0(dt %m-% months(1) + seconds(59), '/', dt + seconds(59))]
   
@@ -661,14 +787,21 @@ for (dt in timeID) {
     llply(tk_tbl)
   
   if(is.double(sets$forecast$index[1])){
-    sq <- smp %>% tail(1) %>% index
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
     sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
     sets$forecast$index <- sq
     
   } else {
-    sets$forecast$index <- data_tm1$index[
-    (which(data_tm1$index == smp %>% index %>% xts::last()) + 1):(
-     which(data_tm1$index == smp %>% index %>% xts::last()) + 1440)]
+    sets$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1440)]
   }
   
   if (!dir.exists(paste0('data/fx/USDJPY'))) 
@@ -689,13 +822,17 @@ I set the length of dataset as quarterly but the frequency set as 1440 minutes (
 
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
-#sq <- seq(1 , length(data_tm1$index), by = 1440)
+#sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
-timeID <- data_tm1$index %>% as_date %>% unique %>% sort
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
 timeID %<>% .[. > ymd('2015-01-11')]
 
 for (dt in timeID) {
-  smp <- data_tm1 %>% tk_xts(silent = TRUE)
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
   dt %<>% as_date
   smp <- smp[paste0(dt %m-% months(3) + seconds(59), '/', dt + seconds(59))]
   
@@ -705,14 +842,21 @@ for (dt in timeID) {
     llply(tk_tbl)
   
   if(is.double(sets$forecast$index[1])){
-    sq <- smp %>% tail(1) %>% index
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
     sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
     sets$forecast$index <- sq
     
   } else {
-    sets$forecast$index <- data_tm1$index[
-    (which(data_tm1$index == smp %>% index %>% xts::last()) + 1):(
-     which(data_tm1$index == smp %>% index %>% xts::last()) + 1440)]
+    sets$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1440)]
   }
   
   if (!dir.exists(paste0('data/fx/USDJPY'))) 
@@ -733,13 +877,16 @@ I set the length of dataset as yearly but the frequency set as 1440 minutes (per
 
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
-#sq <- seq(1 , length(data_tm1$index), by = 1440)
+#sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
-timeID <- data_tm1$index %>% as_date %>% unique %>% sort
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
 timeID %<>% .[. > ymd('2015-01-11')]
 
 for (dt in timeID) {
-  smp <- data_tm1 %>% tk_xts(silent = TRUE)
+  smp <- data_m1 %>% tk_xts(silent = TRUE)
   dt %<>% as_date
   smp <- smp[paste0(dt %m-% years(1) + seconds(59), '/', dt + seconds(59))]
   
@@ -749,14 +896,21 @@ for (dt in timeID) {
     llply(tk_tbl)
   
   if(is.double(sets$forecast$index[1])){
-    sq <- smp %>% tail(1) %>% index
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
     sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
     sets$forecast$index <- sq
     
   } else {
-    sets$forecast$index <- data_tm1$index[
-    (which(data_tm1$index == smp %>% index %>% xts::last()) + 1):(
-     which(data_tm1$index == smp %>% index %>% xts::last()) + 1440)]
+    sets$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1440)]
   }
   
   if (!dir.exists(paste0('data/fx/USDJPY'))) 
@@ -880,7 +1034,7 @@ The new dshw() function implements *Taylor’s (2003)* double-seasonal Holt-Wint
 - [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re) introduced 3 seasonal modelling.
 - [R - Putting time series with frequency of 20 min into the function `stl()`](https://stackoverflow.com/questions/17738746/r-putting-time-series-with-frequency-of-20-min-into-the-function-stl)
 - ["Frequency" value for seconds/minutes intervals data in R](https://stats.stackexchange.com/questions/120806/frequency-value-for-seconds-minutes-intervals-data-in-r)
-- [Time series and forecasting using R](http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/)
+- [Time Series and Forecasting using R](http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/)
 
 ```
 library(forecast)
@@ -918,8 +1072,10 @@ fit <- auto.arima(ts_, seasonal=F, xreg=fourier(msts_, K=c(3,5,10)))  # i,j,k
 *Source : [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re)*
 
 ```{r warning=FALSE, eval=FALSE}
-ts_ <- data_tm1$close %>% ts()
-mts_ <- data_tm1 %>% msts(seasonal.periods = c(1440, 7200), start = index(.)[1])
+ts_ <- data_m1$close %>% 
+  ts()
+mts_ <- data_m1 %>% 
+  msts(seasonal.periods = c(1440, 7200), start = index(.)[1])
 fit1 <- auto.arima(ts_, seasonal = FALSE, xreg=fourier(mts_, K=c(3,5,10)))
 fit2 <- auto.arima(ts_, seasonal = FALSE, xreg=mts_)
 fit3 <- auto.arima(ts_, D = 1, xreg=mts_)
@@ -928,8 +1084,9 @@ fit3 <- auto.arima(ts_, D = 1, xreg=mts_)
 ## https://stackoverflow.com/questions/17738746/r-putting-time-series-with-frequency-of-20-min-into-the-function-stl
 ## https://stats.stackexchange.com/questions/120806/frequency-value-for-seconds-minutes-intervals-data-in-r
 ## http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/
-smp %>% tk_ts(start = index(index)[1], frequency = c(1440, 7200)) %>% forecast %>% llply(tk_tbl)
-
+smp %>% 
+  tk_ts(start = index(index)[1], frequency = c(1440, 7200)) %>% 
+  forecast %>% llply(tk_tbl)
 ```
 
 #### Weekly >> Daily
@@ -953,7 +1110,7 @@ p d q P D Q s
 
 sarima <- list()
 for(i in (1:length(fs))) {
-    smp <- data_tm1 %>% tk_xts(silent = TRUE)
+    smp <- data_m1 %>% tk_xts(silent = TRUE)
     timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
       .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
     
@@ -984,7 +1141,7 @@ for(i in (1:length(fs))) {
 ```
 
 ```{r eval=FALSE}
-smp <- data_tm1 %>% tk_xts(silent = TRUE)
+smp <- data_m1 %>% tk_xts(silent = TRUE)
 timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
   .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
 dt <- timeID[1]
@@ -1013,73 +1170,311 @@ I set the length of dataset as 3 level nested seasonal dataset as monthly (1 yea
 - [About `tbats`](https://stats.stackexchange.com/tags/tbats/info) talk about the model `tbats`.
 - [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re) introduced 3 seasonal modelling.
 - [How to store forecasted values using 'forecast' library in R into a CSV file?](https://stackoverflow.com/questions/37818975/how-to-store-forecasted-values-using-forecast-library-in-r-into-a-csv-file) talk about how to retrieve the forecasted values.
+- [Forecasting Time Series with Complex Seasonal Patterns using Exponential Smoothing](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Forecasting%20Time%20Series%20with%20Complex%20Seasonal%20Patterns%20using%20Exponential%20Smoothing.pdf) introduce a nested seasonal exponential smoothing model and concludes that trigonometric `tbats` model produce lower RMSE and better than `BATS` model.
 
 ### Nested Daily-Weekly Model
 
-```{r eval=FALSE}
-# --------- eval=FALSE ---------
-> suppressWarnings(Y2015W1 %>% 
-     tk_xts %>% 
-     to.daily %>% 
-     Cl %>% opt_arma(arma=TRUE))
-Using column `index` for date_var.
-p d q P D Q s 
-0 0 0 0 0 0 1
-```
-
 ```{r warning=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
-#'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% tbl_df")))
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#mts <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
 
-sarima <- list()
-for(i in (1:length(fs))) {
-    smp <- data_tm1 %>% tk_xts(silent = TRUE)
-    timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
-      .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  
+  mts <- smp %>% 
+    msts(seasonal.periods = c(1440, 7200))
+  
+  mts <- llply(1:ncol(mts), function(i) {
+    y <- mts[,i] %>% 
+      tbats %>% 
+      forecast(h = 1440) %>% 
+      tbl_df
+      names(y)[1] <- names(smp)[i]
+      y
+    }) %>% bind_rows
+  
+  if(is.numeric(index(mts)[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    n <- nrow(mts) / length(sq)
     
-    if (dt %in% timeID) {
-      smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - seconds(59))]
-      
-      sarima[[i]] <- tryCatch({llply(price_type, function(y) {
-        df = auto.arima(smp, parallel=FALSE, num.cores = 2)
-        df = data.frame(Date = index(df$latestPrice[1]), 
-                        Type = paste0(names(df$latestPrice), '.', y), 
-                        df$latestPrice, df$forecastPrice, t(df$AIC))
-        names(df)[4] %<>% str_replace_all('1', 'T+1')
-        df
-      }) %>% tbl_df %>% bind_rows}, error = function(e) NULL)
-      
-      if (!dir.exists(paste0('data/fx/', names(sarima[[i]])[3]))) 
-        dir.create(paste0('data/fx/', names(sarima[[i]])[3]))
-      
-      saveRDS(sarima[[i]], paste0(
-        'data/fx/', names(sarima[[i]])[3], '/sarima.', 
-        unique(sarima[[i]]$Date), '.rds'))
-      
-      cat(paste0(
-        'data/fx/', names(sarima[[i]])[3], '/sarima.', 
-        unique(sarima[[i]]$Date), '.rds saved!\n'))
-      }
+    mts <- cbind(index = rep(sq, n), mts) %>% 
+      tbl_df
+    
+  } else {
+    stop('index of dataset does not assign.')
+    #mts$forecast$index <- data_m1$index[
+    #(which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1):(
+    # which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1440)]
   }
-```
-
-```{r eval=FALSE}
-smp <- data_tm1 %>% tk_xts(silent = TRUE)
-timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
-  .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
-dt <- timeID[1]
-smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - seconds(59))]
-
-smp %>% tk_ts %>% forecast %>% llply(tk_tbl)
-
-mts <- multi_seasons(smp)
-aar <- multi_seasons(smp, auto_arima=TRUE)
-
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(mts, paste0('data/fx/USDJPY/mts.dy.wk.', 
+                       as_date(mts$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/mts.dy.wk.', 
+    as_date(mts$index[1]), '.rds saved!\n'))
+  }
 ```
 
 ### Nested Daily-Weekly-Monthly Model
 
+```{r warning=FALSE, eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#mts <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
 
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  
+  mts <- smp %>% 
+    msts(seasonal.periods = c(1440, 7200))
+  
+  mts <- llply(1:ncol(mts), function(i) {
+    y <- mts[,i] %>% 
+      tbats %>% 
+      forecast(h = 1440) %>% 
+      tbl_df
+      names(y)[1] <- names(smp)[i]
+      y
+    }) %>% bind_rows
+  
+  if(is.double(mts$forecast$index[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    mts$forecast$index <- sq
+    
+  } else {
+    mts$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.wk.1440.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.wk.1440.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Nested Daily-Weekly-Monthly-Quarterly Model
+
+```{r warning=FALSE, eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#mts <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  
+  mts <- smp %>% 
+    msts(seasonal.periods = c(1440, 7200))
+  
+  mts <- llply(1:ncol(mts), function(i) {
+    y <- mts[,i] %>% 
+      tbats %>% 
+      forecast(h = 1440) %>% 
+      tbl_df
+      names(y)[1] <- names(smp)[i]
+      y
+    }) %>% bind_rows
+  
+  if(is.double(mts$forecast$index[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    mts$forecast$index <- sq
+    
+  } else {
+    mts$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.wk.1440.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.wk.1440.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Nested Daily-Weekly-Monthly-Quarterly-Yearly Model
+
+```{r warning=FALSE, eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#mts <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  
+  mts <- smp %>% 
+    msts(seasonal.periods = c(1440, 7200))
+  
+  mts <- llply(1:ncol(mts), function(i) {
+    y <- mts[,i] %>% 
+      tbats %>% 
+      forecast(h = 1440) %>% 
+      tbl_df
+      names(y)[1] <- names(smp)[i]
+      y
+    }) %>% bind_rows
+  
+  if(is.double(mts$forecast$index[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    mts$forecast$index <- sq
+    
+  } else {
+    mts$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.wk.1440.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.wk.1440.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Nested Weekly-Monthly Model
+
+```{r warning=FALSE, eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#mts <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  
+  mts <- smp %>% 
+    msts(seasonal.periods = c(7200, 7200))
+  
+  mts <- llply(1:ncol(mts), function(i) {
+    y <- mts[,i] %>% 
+      tbats %>% 
+      forecast(h = 1440) %>% 
+      tbl_df
+      names(y)[1] <- names(smp)[i]
+      y
+    }) %>% bind_rows
+  
+  if(is.double(mts$forecast$index[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    mts$forecast$index <- sq
+    
+  } else {
+    mts$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.wk.1440.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.wk.1440.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
 
 ## MIDAS
 
@@ -1170,8 +1565,9 @@ comp <- llply(fls, function(x) {
   }
   }) %>% bind_rows %>% tbl_df
 
-comp <- join(data_tm1, comp) %>% 
-  tbl_df %>% na.omit
+comp <- join(data_m1, comp) %>% ##The last observation of Firday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price. The 
+  tbl_df %>% 
+  na.omit
 ```
 
 ```{r warning=FALSE}
@@ -1189,7 +1585,7 @@ comp %>% ddply(.(Period), summarise,
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-```{r warning=FALSE}
+```{r warning=FALSE, eval=FALSE}
 tmID <- fls %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% 
@@ -1219,19 +1615,23 @@ comp2 <- llply(fls2, function(x) {
   }
   }) %>% bind_rows %>% tbl_df
 
-comp2 <- join(data_tm1, comp2) %>% 
-  tbl_df %>% na.omit
+comp2 <- join(data_m1, comp2) %>% 
+  tbl_df %>% 
+  na.omit
 ```
 
 ```{r warning=FALSE}
-comp2 %>% ddply(.(Period), summarise, 
-               MSE.open = mean((open.Point.Forecast - open)^2), 
-               MSE.high = mean((high.Point.Forecast - high)^2), 
-               MSE.low = mean((low.Point.Forecast - low)^2), 
-               MSE.close = mean((close.Point.Forecast - close)^2), 
-               MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
-               MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
-               n = length(index)) %>% 
+#comp2 %>% ddply(.(Period), summarise, 
+comp %>% 
+  dplyr::filter(index > ymd('2016-01-04')) %>% 
+  ddply(.(Period), summarise, 
+        MSE.open = mean((open.Point.Forecast - open)^2), 
+        MSE.high = mean((high.Point.Forecast - high)^2), 
+        MSE.low = mean((low.Point.Forecast - low)^2), 
+        MSE.close = mean((close.Point.Forecast - close)^2), 
+        MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
+        MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
+        n = length(index)) %>% 
   tbl_df %>% 
   kable(caption = 'MSE of Seasonal ETS Model (Completed Period)') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
@@ -1279,28 +1679,28 @@ ETS.MSE %>%
           MSE.2 = mean(MSE.2, na.rm=TRUE)) %>% 
   kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  group_rows('AAN', 1, 25, label_row_css = 'background-color: #e68a00; color: #fff;') %>%
-  group_rows('AAZ', 26, 50, label_row_css = 'background-color: #ff0000; color: #fff;') %>%
-  group_rows('ANN', 51, 75, label_row_css = 'background-color: #bf80ff; color: #fff;') %>%
-  group_rows('ANZ', 76, 100, label_row_css = 'background-color: #66ff33; color: #fff;') %>%
-  group_rows('AZN', 101, 125, label_row_css = 'background-color: #6666ff; color: #fff;') %>%
-  group_rows('AZZ', 126, 150, label_row_css = 'background-color: #66e0ff; color: #fff;') %>%
-  group_rows('MAN', 151, 175, label_row_css = 'background-color:#0066ff; color: #fff;') %>%
-  group_rows('MAZ', 176, 200, label_row_css = 'background-color: #ff9900; color: #fff;') %>%
-  group_rows('MMN', 201, 225, label_row_css = 'background-color: #33ff33; color: #fff;') %>%
-  group_rows('MMZ', 226, 250, label_row_css = 'background-color: #339966; color: #fff;') %>%
-  group_rows('MNN', 251, 275, label_row_css = 'background-color: #5900b3; color: #fff;') %>%
-  group_rows('MNZ', 276, 300, label_row_css = 'background-color: #269900; color: #fff;') %>%
-  group_rows('MZN', 301, 325, label_row_css = 'background-color: #808000; color: #fff;') %>%
-  group_rows('MZZ', 326, 350, label_row_css = 'background-color: #3399ff; color: #fff;') %>%
-  group_rows('ZAN', 351, 375, label_row_css = 'background-color: #003380; color: #fff;') %>%
-  group_rows('ZAZ', 376, 400, label_row_css = 'background-color: #804d00; color: #fff;') %>%
-  group_rows('ZMN', 401, 425, label_row_css = 'background-color: #d279d2; color: #fff;') %>%
-  group_rows('ZMZ', 426, 450, label_row_css = 'background-color: #666; color: #fff;') %>%
-  group_rows('ZNN', 451, 475, label_row_css = 'background-color: #ff3377; color: #fff;') %>%
-  group_rows('ZNZ', 476, 500, label_row_css = 'background-color: #993399; color: #fff;') %>%
-  group_rows('ZZN', 501, 525, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
-  group_rows('ZZZ', 526, 550, label_row_css = 'background-color: #e60000; color: #fff;') %>%
+  kableExtra::group_rows('AAN', 1, 25, label_row_css = 'background-color: #e68a00; color: #fff;') %>%
+  kableExtra::group_rows('AAZ', 26, 50, label_row_css = 'background-color: #ff0000; color: #fff;') %>%
+  kableExtra::group_rows('ANN', 51, 75, label_row_css = 'background-color: #bf80ff; color: #fff;') %>%
+  kableExtra::group_rows('ANZ', 76, 100, label_row_css = 'background-color: #66ff33; color: #fff;') %>%
+  kableExtra::group_rows('AZN', 101, 125, label_row_css = 'background-color: #6666ff; color: #fff;') %>%
+  kableExtra::group_rows('AZZ', 126, 150, label_row_css = 'background-color: #66e0ff; color: #fff;') %>%
+  kableExtra::group_rows('MAN', 151, 175, label_row_css = 'background-color:#0066ff; color: #fff;') %>%
+  kableExtra::group_rows('MAZ', 176, 200, label_row_css = 'background-color: #ff9900; color: #fff;') %>%
+  kableExtra::group_rows('MMN', 201, 225, label_row_css = 'background-color: #33ff33; color: #fff;') %>%
+  kableExtra::group_rows('MMZ', 226, 250, label_row_css = 'background-color: #339966; color: #fff;') %>%
+  kableExtra::group_rows('MNN', 251, 275, label_row_css = 'background-color: #5900b3; color: #fff;') %>%
+  kableExtra::group_rows('MNZ', 276, 300, label_row_css = 'background-color: #269900; color: #fff;') %>%
+  kableExtra::group_rows('MZN', 301, 325, label_row_css = 'background-color: #808000; color: #fff;') %>%
+  kableExtra::group_rows('MZZ', 326, 350, label_row_css = 'background-color: #3399ff; color: #fff;') %>%
+  kableExtra::group_rows('ZAN', 351, 375, label_row_css = 'background-color: #003380; color: #fff;') %>%
+  kableExtra::group_rows('ZAZ', 376, 400, label_row_css = 'background-color: #804d00; color: #fff;') %>%
+  kableExtra::group_rows('ZMN', 401, 425, label_row_css = 'background-color: #d279d2; color: #fff;') %>%
+  kableExtra::group_rows('ZMZ', 426, 450, label_row_css = 'background-color: #666; color: #fff;') %>%
+  kableExtra::group_rows('ZNN', 451, 475, label_row_css = 'background-color: #ff3377; color: #fff;') %>%
+  kableExtra::group_rows('ZNZ', 476, 500, label_row_css = 'background-color: #993399; color: #fff;') %>%
+  kableExtra::group_rows('ZZN', 501, 525, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
+  kableExtra::group_rows('ZZZ', 526, 550, label_row_css = 'background-color: #e60000; color: #fff;') %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
@@ -1316,31 +1716,31 @@ ETS.MSE %>%
   arrange(MSE.1, MSE.2) %>% 
   kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  group_rows('OpOp', 1, 22, label_row_css = 'background-color: #e68a00; color: #fff;') %>%
-  group_rows('OpCl', 23, 44, label_row_css = 'background-color: #ff0000; color: #fff;') %>%
-  group_rows('ANN', 45, 66, label_row_css = 'background-color: #bf80ff; color: #fff;') %>%
-  group_rows('ANZ', 67, 88, label_row_css = 'background-color: #66ff33; color: #fff;') %>%
-  group_rows('AZN', 89, 110, label_row_css = 'background-color: #6666ff; color: #fff;') %>%
-  group_rows('AZZ', 111, 132, label_row_css = 'background-color: #66e0ff; color: #fff;') %>%
-  group_rows('MAN', 133, 154, label_row_css = 'background-color:#0066ff; color: #fff;') %>%
-  group_rows('MAZ', 155, 176, label_row_css = 'background-color: #ff9900; color: #fff;') %>%
-  group_rows('MMN', 177, 198, label_row_css = 'background-color: #33ff33; color: #fff;') %>%
-  group_rows('MMZ', 199, 220, label_row_css = 'background-color: #339966; color: #fff;') %>%
-  group_rows('MNN', 221, 242, label_row_css = 'background-color: #5900b3; color: #fff;') %>%
-  group_rows('MNZ', 243, 264, label_row_css = 'background-color: #269900; color: #fff;') %>%
-  group_rows('MZN', 265, 286, label_row_css = 'background-color: #808000; color: #fff;') %>%
-  group_rows('MZZ', 287, 308, label_row_css = 'background-color: #3399ff; color: #fff;') %>%
-  group_rows('ZAN', 309, 330, label_row_css = 'background-color: #003380; color: #fff;') %>%
-  group_rows('ZAZ', 331, 352, label_row_css = 'background-color: #804d00; color: #fff;') %>%
-  group_rows('ZMN', 353, 374, label_row_css = 'background-color: #d279d2; color: #fff;') %>%
-  group_rows('ZMZ', 375, 396, label_row_css = 'background-color: #666; color: #fff;') %>%
-  group_rows('ZNN', 397, 418, label_row_css = 'background-color: #ff3377; color: #fff;') %>%
-  group_rows('ZNZ', 419, 440, label_row_css = 'background-color: #993399; color: #fff;') %>%
-  group_rows('ZZN', 441, 462, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
-  group_rows('ZZZ', 463, 484, label_row_css = 'background-color: #e60cc0; color: #fff;') %>%
-  group_rows('ZZN', 485, 506, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
-  group_rows('ZZZ', 507, 528, label_row_css = 'background-color: #e56000; color: #fff;') %>%
-  group_rows('ZZZ', 529, 550, label_row_css = 'background-color: #e33000; color: #fff;') %>%
+  kableExtra::group_rows('OpOp', 1, 22, label_row_css = 'background-color: #e68a00; color: #fff;') %>%
+  kableExtra::group_rows('OpCl', 23, 44, label_row_css = 'background-color: #ff0000; color: #fff;') %>%
+  kableExtra::group_rows('ANN', 45, 66, label_row_css = 'background-color: #bf80ff; color: #fff;') %>%
+  kableExtra::group_rows('ANZ', 67, 88, label_row_css = 'background-color: #66ff33; color: #fff;') %>%
+  kableExtra::group_rows('AZN', 89, 110, label_row_css = 'background-color: #6666ff; color: #fff;') %>%
+  kableExtra::group_rows('AZZ', 111, 132, label_row_css = 'background-color: #66e0ff; color: #fff;') %>%
+  kableExtra::group_rows('MAN', 133, 154, label_row_css = 'background-color:#0066ff; color: #fff;') %>%
+  kableExtra::group_rows('MAZ', 155, 176, label_row_css = 'background-color: #ff9900; color: #fff;') %>%
+  kableExtra::group_rows('MMN', 177, 198, label_row_css = 'background-color: #33ff33; color: #fff;') %>%
+  kableExtra::group_rows('MMZ', 199, 220, label_row_css = 'background-color: #339966; color: #fff;') %>%
+  kableExtra::group_rows('MNN', 221, 242, label_row_css = 'background-color: #5900b3; color: #fff;') %>%
+  kableExtra::group_rows('MNZ', 243, 264, label_row_css = 'background-color: #269900; color: #fff;') %>%
+  kableExtra::group_rows('MZN', 265, 286, label_row_css = 'background-color: #808000; color: #fff;') %>%
+  kableExtra::group_rows('MZZ', 287, 308, label_row_css = 'background-color: #3399ff; color: #fff;') %>%
+  kableExtra::group_rows('ZAN', 309, 330, label_row_css = 'background-color: #003380; color: #fff;') %>%
+  kableExtra::group_rows('ZAZ', 331, 352, label_row_css = 'background-color: #804d00; color: #fff;') %>%
+  kableExtra::group_rows('ZMN', 353, 374, label_row_css = 'background-color: #d279d2; color: #fff;') %>%
+  kableExtra::group_rows('ZMZ', 375, 396, label_row_css = 'background-color: #666; color: #fff;') %>%
+  kableExtra::group_rows('ZNN', 397, 418, label_row_css = 'background-color: #ff3377; color: #fff;') %>%
+  kableExtra::group_rows('ZNZ', 419, 440, label_row_css = 'background-color: #993399; color: #fff;') %>%
+  kableExtra::group_rows('ZZN', 441, 462, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
+  kableExtra::group_rows('ZZZ', 463, 484, label_row_css = 'background-color: #e60cc0; color: #fff;') %>%
+  kableExtra::group_rows('ZZN', 485, 506, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
+  kableExtra::group_rows('ZZZ', 507, 528, label_row_css = 'background-color: #e56000; color: #fff;') %>%
+  kableExtra::group_rows('ZZZ', 529, 550, label_row_css = 'background-color: #e33000; color: #fff;') %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
@@ -1413,11 +1813,11 @@ It's useful to record some information about how your file was created.
 - R version (short form): `r getRversion()`
 - [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
 - File version: 1.0.1
-- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
+- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/4352/)
 - GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
 - Additional session information:
 
-```{r info, echo=FALSE, warning=FALSE, results='asis'}
+```{r info, echo=FALSE, warning=FALSE, message=FALSE, results='asis'}
 sys1 <- session_info()$platform %>% 
   unlist %>% 
   data.frame(Category = names(.), session_info = .)
