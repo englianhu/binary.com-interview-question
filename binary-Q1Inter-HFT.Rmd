@@ -14,7 +14,7 @@ output:
     code_folding: hide
 ---
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 suppressPackageStartupMessages(library('BBmisc'))
 #'@ suppressPackageStartupMessages(library('rmsfuns'))
 
@@ -68,7 +68,7 @@ Due to the dataset gather via `getSymbols('JPY=X', src='av', api.key=api, period
 - [Chapter 7 Importing Financial Data from the Internet](https://msperlin.github.io/pafdR/importingInternet.html) introduce few packages where provides api service.
 - [High Frequency Data Price (Sample)](https://raw.githubusercontent.com/DavisVaughan/fin-econ-project-bitcoin/master/data/cleaned/cleaned-bitstamp-minutely.csv) is an example for intraday high-frequency-trading.
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'CNY=X', 'JPY=X')
 
 names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
@@ -103,7 +103,7 @@ t.unit <- c('seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'quarters'
 
 Due to high volume of dataset, here I only use `USDJPY` since the variance is higher than the rest of currencies.
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 ## Read raw dataset.
 eval(parse(text = paste0(fs[1], "<- readRDS('", fls[[7]][1], "') %>% tbl_df")))
 
@@ -132,7 +132,7 @@ Do you have any experiences with this? Do you know an R function or a package th
 `%z` Signed offset in hours and minutes from UTC, so -0800 is 8 hours behind UTC.
 For example: In 2012, the switch from Standard Time to DST occured on 2012-03-25, so there is no 02:00 on this day. If you try to convert "2012-03-25 02:00:00" to a POSIXct-Object,
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 ## https://stackoverflow.com/questions/29202021/r-how-to-extract-dates-from-a-time-series
 getTStime <- function(ats){
   start <- start(ats)
@@ -182,7 +182,7 @@ The top panel of Figure 11.1 shows the number of retail banking call arrivals pe
 
 *Source : [11.1 Complex seasonality](https://otexts.org/fpp2/complexseasonality.html)*
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 ## Convert the univariate price to be OHLC price in `minutes` unit.
 Y2015W1_min1 <- Y2015W1 %>% 
   convertOHLC(combine = TRUE, trade = FALSE, .unit = t.unit[2]) %>% 
@@ -190,7 +190,7 @@ Y2015W1_min1 <- Y2015W1 %>%
 Y2015W1_min1
 ```
 
-```{r, warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 #suppressWarnings(Y2015W1 <- tbl %>% 
 #       dplyr::select(date, close) %>% tk_xts %>% 
 #       auto.arima(seasonal = FALSE))
@@ -204,7 +204,7 @@ Y2015W1_min1 %>%
 
 Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) to know the seasonality dataset. <span style='color:goldenrod'>*High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model*</span> use the dataset start from `00:01:00` but not `00:00:00`, therefore above dataset shows the last observation will be the start of next day.
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 # tsz <- llply(fls[[7]], function(x) {
 #     y <- readRDS(x) %>% 
 #       convertOHLC(combine = TRUE, trade = FALSE, .unit = t.unit[2]) %>% 
@@ -230,7 +230,7 @@ tsz %>% dplyr::count(diff) %>%
 tsz %>% dplyr::filter(diff <= 6000)
 ```
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 ## https://stackoverflow.com/questions/34454947/why-is-this-xts-frequency-always-1
 ## https://www.stat.berkeley.edu/~s133/dates.html
 ## https://stackoverflow.com/questions/45070078/convert-forecast-time-produced-by-arima-into-standard-date-time
@@ -269,7 +269,7 @@ Without knowing much about PHP time zone handling, it seems strange to me that y
 
 <s>Due to the `UTC` timezone has no daylight saving issue, therefore the initial trading time will be a problem where I need to cope with.</s> [Handling Data for Daylight-Saving and Non-Daylight-Saving for HFT](https://community.rstudio.com/t/handling-data-for-daylight-saving-and-non-daylight-saving-for-hft/15699/2) provides the solution for the timezone issue.
 
-```{r, eval=FALSE}
+```{r eval=FALSE}
 ## -------- eval=FALSE --------------
 ## Now I simply tidy all datasets and save it prior to start the statistical modelling.
 llply(fls[[7]], function(x) {
@@ -299,7 +299,7 @@ it is 5:00PM at the end of the day, which is shown in GMT as 21:00 day light sav
 
 From above quote, we can know even the `EST` converted to `UTC` will not be `00:00:00`, therefore I refer to [Handling data on the days when we switch to daylight savings time and back in R](https://stackoverflow.com/questions/13865172/handling-data-on-the-days-when-we-switch-to-daylight-savings-time-and-back-in-r) as my solution as `UTC+2` (daylight saving `UTC+3`) will get the desired result.
 
-```{r, warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 cr_code <- c('EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'JPY=X')
 names(cr_code) <- c('EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDJPY') 
 
@@ -316,7 +316,7 @@ fs1 <- list.files('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data
 #'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "')")))
 ```
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 ## Read raw dataset.
 eval(parse(text = paste0(fs1[1], "<- readRDS('", fls1[[5]][1], "') %>% tbl_df")))
 
@@ -326,7 +326,7 @@ Y2015W1_m1
 
 Now I try to validate the daylight saving date.
 
-```{r, warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 # tsz2 <- llply(fls1[[5]], function(x) {
 #    y <- readRDS(x) %>% dplyr::filter(DateTime == head(DateTime, 1)|
 #                                      DateTime == tail(DateTime, 1)) %>% 
@@ -374,7 +374,7 @@ From above tables, we can know the daylight saving detection and `datetime` auto
 
 The papers concludes that the `imputeTS::na.seadec(algorithm = 'interpolation')` or `imputeTS::na.seadec(algorithm = 'kalman')` repaired dataset no matter how much of portion of missing value is workable since the MSE and bias is very low. The `Amelia::amelia` is accurate and the bias is small compare to `imputeTS::sea.dec` when the portion of missing value is small. The papers compare tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM. It is very weird that the `tidyr::fill` and `na.locf` both are not too accurate. However, in this paper I use `tidy::fill()` method to fill the missing value, it will similar with `kalman filter` method since it will filled up the missing value ascending to fill up with direction down until the bottom of the dataset and then fill up with direction up by descending to fill up initial missing value or top. It will not occured standard error bias like open or close price higher than highest price or lower than lowest price. Moreover, the filled price will not bias a lot from the trend as time goes by.
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 ## tick-data to minute 1 dataset
 #tsz <- readRDS('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
 tsz %>% dplyr::count(diff) %>% 
@@ -392,14 +392,14 @@ tsz2 %>% dplyr::count(diff) %>%
 
 Above tables show both datasets are incompleted. However, when I tried to check the `Y2017W20` and `Y2017W20_m1`, the tick-dataset only start from `2017-05-15` until `2017-05-17` but the m1-dataset from `2017-05-15` until `2017-05-19`. Kindly refer to below comparison.
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 mean(tsz$diff, na.rm=TRUE)
 mean(tsz2$diff, na.rm=TRUE)
 ```
 
 From above comparison, we know the dataset of `1min` is better compelete than `tick-to-1min` dataset.
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 #left_join(tsz[c(1, ncol(tsz))], tsz2[c(1, ncol(tsz2))])
 right_join(tsz[c(1, ncol(tsz))], tsz2[c(1, ncol(tsz2))])
 ```
@@ -411,7 +411,7 @@ right_join(tsz[c(1, ncol(tsz))], tsz2[c(1, ncol(tsz2))])
 
 Here I compare the mean and get to know the downloaded min1 dataset from FXCM is better than downloaded tick-dataset (converted to min1) from FXCM.
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 # -------- eval=FALSE -----------
 ## tick-data to min-1 dataset
 data_tm1 <- llply(fls[[7]], function(x) {
@@ -453,7 +453,7 @@ data_m1 <- llply(fls1[[5]], function(x) {
   arrange(index)
 ```
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 # -------- eval=FALSE -----------
 #dtm <- seq(ymd_hms('2015-01-01 00:00:00'), ymd_hms('2017-08-31 00:00:00'), by = 'minutes')
 #dtm <- seq(from = ymd('2015-01-05'), to = ymd('2018-07-07'), by = 'weeks')
@@ -480,7 +480,7 @@ dttm <- llply(1:nrow(dtm), function(i) {
 
 Above chunk created a sequence of `datetime`.
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 ## merge dataset
 data_m1 <- left_join(dttm, data_m1) %>% 
   tbl_df %>% 
@@ -568,7 +568,7 @@ Finally, I filled-up the `NA` section of `data_m1` and `data_tm1` and eventually
 
 Due to the files preload all before simulate the statistical modelling will occupy the space. Here I directly read the files and simulate the algorithmic prediction in following sections.
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 rm(list = ls()[grep('i|j|tz|nch|yw|dtm|dttm|form|data|Y2015W|tsz|tsz2|dc', ls())])
 
 cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'CNY=X', 'JPY=X')
@@ -583,14 +583,14 @@ data_m1 %>% ddply(.(year, week), head, 1) %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
-```{r echo=FALSE}
+```{r warning=FALSE, message=FALSE, echo=FALSE}
 data_m1 %>% ddply(.(year, week), tail, 1) %>% 
   kable(caption = 'Weekly Final Data Point') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 ## Tidy dataset for modelling.
 data_m1 %<>% 
   mutate(open = (BidOpen + AskOpen)/2, close = (BidClose + AskClose)/2) %>% 
@@ -600,7 +600,7 @@ data_m1 %<>%
 
 Here I try to check if the filled dataset bias or not. Due to above I used `open = (BidOpen + AskOpen)/2`, `high = BidHigh`, `low = AskLow` and `close = (BidClose + AskClose)/2`^[For buying order, we need to refer to `ask` price and selling order need to refer to `bid` price.]. There will probably have bias.
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 data_m1 %>% mutate(
   bias.open = if_else(open>high|open<low, 1, 0), 
   bias.high = if_else(high<open|high<low|high<close, 1, 0), 
@@ -678,7 +678,7 @@ data_m1 %<>%
   dplyr::select(index, open, high, low, close)
 ```
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 data_m1 %>% mutate(
   bias.open = if_else(open>high|open<low, 1, 0), 
   bias.high = if_else(high<open|high<low|high<close, 1, 0), 
@@ -710,7 +710,7 @@ The `forecast.ets()` will automatically use the optimal `ets()` which is similar
 
 I set the length of dataset as weekly but the frequency set as 1440 minutes (per day).
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
@@ -765,7 +765,7 @@ for (dt in timeID) {
 
 I set the length of dataset as monthly but the frequency set as 1440 minutes (per day). Initial forecast will be based on weekly dataset and then accumulated date-by-date until a monthly dataset.
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
@@ -820,7 +820,7 @@ for (dt in timeID) {
 
 I set the length of dataset as quarterly but the frequency set as 1440 minutes (per day). Initial forecast will be based on weekly dataset and then accumulated date-by-date until a quarterly dataset.
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
@@ -875,7 +875,7 @@ for (dt in timeID) {
 
 I set the length of dataset as yearly but the frequency set as 1440 minutes (per day). Initial forecast will be based on weekly dataset and then accumulated date-by-date until a yearly dataset.
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
@@ -921,6 +921,226 @@ for (dt in timeID) {
   
   cat(paste0(
     'data/fx/USDJPY/sets.yr.1440.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Weekly >> Weekly
+
+I set the length of dataset as weekly but the frequency set as 7200 minutes (per week).
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 7200)
+#sets <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  
+  sets <- smp %>% 
+    tk_ts(frequency = 7200) %>% 
+    forecast(h = 7200) %>% 
+    llply(tk_tbl)
+  
+  if(is.double(sets$forecast$index[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    sets$forecast$index <- sq
+    
+  } else {
+    sets$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 7200)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.wk.7200.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.wk.7200.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Monthly >> Weekly
+
+I set the length of dataset as monthly but the frequency set as 7200 minutes (per week).
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 7200)
+#sets <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% months(1) + seconds(59), '/', dt + seconds(59))]
+  
+  sets <- smp %>% 
+    tk_ts(frequency = 7200) %>% 
+    forecast(h = 7200) %>% 
+    llply(tk_tbl)
+  
+  if(is.double(sets$forecast$index[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    sets$forecast$index <- sq
+    
+  } else {
+    sets$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 7200)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.mo.7200.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.mo.7200.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Quarterly >> Weekly
+
+I set the length of dataset as quarterly but the frequency set as 7200 minutes (per week).
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 7200)
+#sets <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% months(3) + seconds(59), '/', dt + seconds(59))]
+  
+  sets <- smp %>% 
+    tk_ts(frequency = 7200) %>% 
+    forecast(h = 7200) %>% 
+    llply(tk_tbl)
+  
+  if(is.double(sets$forecast$index[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    sets$forecast$index <- sq
+    
+  } else {
+    sets$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 7200)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.qt.7200.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.qt.7200.', 
+    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Yearly >> Weekly
+
+I set the length of dataset as yearly but the frequency set as 7200 minutes (per week).
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 7200)
+#sets <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% years(1) + seconds(59), '/', dt + seconds(59))]
+  
+  sets <- smp %>% 
+    tk_ts(frequency = 7200) %>% 
+    forecast(h = 7200) %>% 
+    llply(tk_tbl)
+  
+  if(is.double(sets$forecast$index[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    sets$forecast$index <- sq
+    
+  } else {
+    sets$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 7200)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.yr.7200.', 
+                       as_date(sets$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sets.yr.7200.', 
     as_date(sets$forecast$index[1]), '.rds saved!\n'))
   }
 ```
@@ -1071,7 +1291,7 @@ fit <- auto.arima(ts_, seasonal=F, xreg=fourier(msts_, K=c(3,5,10)))  # i,j,k
 
 *Source : [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re)*
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 ts_ <- data_m1$close %>% 
   ts()
 mts_ <- data_m1 %>% 
@@ -1086,7 +1306,8 @@ fit3 <- auto.arima(ts_, D = 1, xreg=mts_)
 ## http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/
 smp %>% 
   tk_ts(start = index(index)[1], frequency = c(1440, 7200)) %>% 
-  forecast %>% llply(tk_tbl)
+  forecast %>% 
+  llply(tk_tbl)
 ```
 
 #### Weekly >> Daily
@@ -1096,15 +1317,16 @@ I set the length of dataset as nested seasonal dataset as weekly (1 week = 5 tra
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
 > suppressWarnings(Y2015W1 %>% 
-     tk_xts %>% 
-     to.daily %>% 
-     Cl %>% opt_arma(arma=TRUE))
+                     tk_xts %>% 
+                     to.daily %>% 
+                     Cl %>% 
+                     opt_arma(arma=TRUE))
 Using column `index` for date_var.
 p d q P D Q s 
 0 0 0 0 0 0 1
 ```
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 # --------- eval=FALSE ---------
 #'@ eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% tbl_df")))
 
@@ -1162,7 +1384,7 @@ I set the length of dataset as 3 level nested seasonal dataset as monthly (), we
 
 I set the length of dataset as 3 level nested seasonal dataset as monthly (1 year = ), weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
 
-## TBATS
+## TBATS `forecast::tbats()`
 
 ### Modelling
 
@@ -1174,7 +1396,7 @@ I set the length of dataset as 3 level nested seasonal dataset as monthly (1 yea
 
 ### Nested Daily-Weekly Model
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -1197,10 +1419,36 @@ for (dt in timeID) {
     y <- mts[,i] %>% 
       tbats %>% 
       forecast(h = 1440) %>% 
+      tbl_df %>% 
+      data.frame %>% 
       tbl_df
-      names(y)[1] <- names(smp)[i]
+    names(y)[1] <- names(smp)[i]
+    names(y)[2:ncol(y)] <- paste0(names(y)[1], '.', names(y)[2:ncol(y)])
+    names(y)[1] <- paste0(names(smp)[i], '.Point.Forecast')
       y
-    }) %>% bind_rows
+      
+    }) %>% 
+    bind_rows %>% 
+    tbl_df
+    mutate(Model = factor('tbats'), Period = factor('dy.wk'), type = case_when(
+      !is.na(open) ~ 'open', 
+      !is.na(high) ~ 'high', 
+      !is.na(low) ~ 'low', 
+      !is.na(close) ~ 'close')) %>% 
+    dlply(.(type, Period), function(x) {
+      x %<>% dplyr::rename(open.Point.Forecast = open, 
+                           high.Point.Forecast = high, 
+                           low.Point.Forecast = low, 
+                           close.Point.Forecast = close)
+      names(x)[3:6] <- paste0(x$type[1], '.', names(x)[3:6])
+      x[colSums(!is.na(x)) > 0] %>% 
+        data.frame %>% 
+        tbl_df %>% 
+        dplyr::select(-type)
+      
+      }) %>% 
+    join_all %>% 
+    tbl_df
   
   if(is.numeric(index(mts)[1])){
     sq <- smp %>% 
@@ -1238,7 +1486,7 @@ for (dt in timeID) {
 
 ### Nested Daily-Weekly-Monthly Model
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -1252,10 +1500,10 @@ for (dt in timeID) {
   smp <- data_m1 %>% 
     tk_xts(silent = TRUE)
   dt %<>% as_date
-  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  smp <- smp[paste0(dt %m-% months(1) + seconds(59), '/', dt + seconds(59))]
   
   mts <- smp %>% 
-    msts(seasonal.periods = c(1440, 7200))
+    msts(seasonal.periods = c(1440, 7200, nrow(smp)))
   
   mts <- llply(1:ncol(mts), function(i) {
     y <- mts[,i] %>% 
@@ -1264,41 +1512,65 @@ for (dt in timeID) {
       tbl_df
       names(y)[1] <- names(smp)[i]
       y
-    }) %>% bind_rows
+    }) %>% 
+    bind_rows %>% 
+    mutate(Model = factor('tbats'), Period = factor('dy.wk.mo'), type = case_when(
+      !is.na(open) ~ 'open', 
+      !is.na(high) ~ 'high', 
+      !is.na(low) ~ 'low', 
+      !is.na(close) ~ 'close')) %>% 
+    dlply(.(type, Period), function(x) {
+      x %<>% dplyr::rename(open.Point.Forecast = open, 
+                           high.Point.Forecast = high, 
+                           low.Point.Forecast = low, 
+                           close.Point.Forecast = close)
+      names(x)[3:6] <- paste0(x$type[1], '.', names(x)[3:6])
+      x[colSums(!is.na(x)) > 0] %>% 
+        data.frame %>% 
+        tbl_df %>% 
+        dplyr::select(-type)
+      
+      }) %>% 
+    join_all %>% 
+    tbl_df
   
-  if(is.double(mts$forecast$index[1])){
+  if(is.numeric(index(mts)[1])){
     sq <- smp %>% 
       tail(1) %>% 
       index
     if(weekdays(sq) == '土曜日') sq <- sq + days(2)
     sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
-    mts$forecast$index <- sq
+    n <- nrow(mts) / length(sq)
+    
+    mts <- cbind(index = rep(sq, n), mts) %>% 
+      tbl_df
     
   } else {
-    mts$forecast$index <- data_m1$index[
-    (which(data_m1$index == smp %>% 
-             index %>% 
-             xts::last()) + 1):(
-     which(data_m1$index == smp %>% 
-             index %>% 
-             xts::last()) + 1440)]
+    stop('index of dataset does not assign.')
+    #mts$forecast$index <- data_m1$index[
+    #(which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1):(
+    # which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1440)]
   }
   
   if (!dir.exists(paste0('data/fx/USDJPY'))) 
     dir.create(paste0('data/fx/USDJPY'))
   
-  saveRDS(sets, paste0('data/fx/USDJPY/sets.wk.1440.', 
-                       as_date(sets$forecast$index[1]), '.rds'))
+  saveRDS(mts, paste0('data/fx/USDJPY/mts.dy.wk.mo.', 
+                       as_date(mts$index[1]), '.rds'))
   
   cat(paste0(
-    'data/fx/USDJPY/sets.wk.1440.', 
-    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+    'data/fx/USDJPY/mts.dy.wk.mo.', 
+    as_date(mts$index[1]), '.rds saved!\n'))
   }
 ```
 
-### Nested Daily-Weekly-Monthly-Quarterly Model
+### Nested Daily-Weekly-Quarterly Model
 
-```{r warning=FALSE, eval=FALSE}
+```{r eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -1312,10 +1584,10 @@ for (dt in timeID) {
   smp <- data_m1 %>% 
     tk_xts(silent = TRUE)
   dt %<>% as_date
-  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  smp <- smp[paste0(dt %m-% months(3) + seconds(59), '/', dt + seconds(59))]
   
   mts <- smp %>% 
-    msts(seasonal.periods = c(1440, 7200))
+    msts(seasonal.periods = c(1440, 7200, nrow(smp)))
   
   mts <- llply(1:ncol(mts), function(i) {
     y <- mts[,i] %>% 
@@ -1324,156 +1596,155 @@ for (dt in timeID) {
       tbl_df
       names(y)[1] <- names(smp)[i]
       y
-    }) %>% bind_rows
+    }) %>% 
+    bind_rows %>% 
+    mutate(Model = factor('tbats'), Period = factor('dy.wk.qt'), type = case_when(
+      !is.na(open) ~ 'open', 
+      !is.na(high) ~ 'high', 
+      !is.na(low) ~ 'low', 
+      !is.na(close) ~ 'close')) %>% 
+    dlply(.(type, Period), function(x) {
+      x %<>% dplyr::rename(open.Point.Forecast = open, 
+                           high.Point.Forecast = high, 
+                           low.Point.Forecast = low, 
+                           close.Point.Forecast = close)
+      names(x)[3:6] <- paste0(x$type[1], '.', names(x)[3:6])
+      x[colSums(!is.na(x)) > 0] %>% 
+        data.frame %>% 
+        tbl_df %>% 
+        dplyr::select(-type)
+      
+      }) %>% 
+    join_all %>% 
+    tbl_df
   
-  if(is.double(mts$forecast$index[1])){
+  if(is.numeric(index(mts)[1])){
     sq <- smp %>% 
       tail(1) %>% 
       index
     if(weekdays(sq) == '土曜日') sq <- sq + days(2)
     sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
-    mts$forecast$index <- sq
+    n <- nrow(mts) / length(sq)
+    
+    mts <- cbind(index = rep(sq, n), mts) %>% 
+      tbl_df
     
   } else {
-    mts$forecast$index <- data_m1$index[
-    (which(data_m1$index == smp %>% 
-             index %>% 
-             xts::last()) + 1):(
-     which(data_m1$index == smp %>% 
-             index %>% 
-             xts::last()) + 1440)]
+    stop('index of dataset does not assign.')
+    #mts$forecast$index <- data_m1$index[
+    #(which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1):(
+    # which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1440)]
   }
   
   if (!dir.exists(paste0('data/fx/USDJPY'))) 
     dir.create(paste0('data/fx/USDJPY'))
   
-  saveRDS(sets, paste0('data/fx/USDJPY/sets.wk.1440.', 
-                       as_date(sets$forecast$index[1]), '.rds'))
+  saveRDS(mts, paste0('data/fx/USDJPY/mts.dy.wk.qt.', 
+                       as_date(mts$index[1]), '.rds'))
   
   cat(paste0(
-    'data/fx/USDJPY/sets.wk.1440.', 
-    as_date(sets$forecast$index[1]), '.rds saved!\n'))
+    'data/fx/USDJPY/mts.dy.wk.qt.', 
+    as_date(mts$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Nested Daily-Weekly-Yearly Model
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#mts <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% years(1) + seconds(59), '/', dt + seconds(59))]
+  
+  mts <- smp %>% 
+    msts(seasonal.periods = c(1440, 7200, nrow(smp)))
+  
+  mts <- llply(1:ncol(mts), function(i) {
+    y <- mts[,i] %>% 
+      tbats %>% 
+      forecast(h = 1440) %>% 
+      tbl_df
+      names(y)[1] <- names(smp)[i]
+      y
+    }) %>% 
+    bind_rows %>% 
+    mutate(Model = factor('tbats'), Period = factor('dy.wk.yr'), type = case_when(
+      !is.na(open) ~ 'open', 
+      !is.na(high) ~ 'high', 
+      !is.na(low) ~ 'low', 
+      !is.na(close) ~ 'close')) %>% 
+    dlply(.(type, Period), function(x) {
+      x %<>% dplyr::rename(open.Point.Forecast = open, 
+                           high.Point.Forecast = high, 
+                           low.Point.Forecast = low, 
+                           close.Point.Forecast = close)
+      names(x)[3:6] <- paste0(x$type[1], '.', names(x)[3:6])
+      x[colSums(!is.na(x)) > 0] %>% 
+        data.frame %>% 
+        tbl_df %>% 
+        dplyr::select(-type)
+      
+      }) %>% 
+    join_all %>% 
+    tbl_df
+  
+  if(is.numeric(index(mts)[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    n <- nrow(mts) / length(sq)
+    
+    mts <- cbind(index = rep(sq, n), mts) %>% 
+      tbl_df
+    
+  } else {
+    stop('index of dataset does not assign.')
+    #mts$forecast$index <- data_m1$index[
+    #(which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1):(
+    # which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(mts, paste0('data/fx/USDJPY/mts.dy.wk.yr.', 
+                       as_date(mts$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/mts.dy.wk.yr.', 
+    as_date(mts$index[1]), '.rds saved!\n'))
   }
 ```
 
 ### Nested Daily-Weekly-Monthly-Quarterly-Yearly Model
 
-```{r warning=FALSE, eval=FALSE}
-# --------- eval=FALSE ---------
-#sq <- seq(1 , length(data_m1$index), by = 1440)
-#mts <- list()
-timeID <- data_m1$index %>% 
-  as_date %>% 
-  unique %>% 
-  sort
-timeID %<>% .[. > ymd('2015-01-11')]
-
-for (dt in timeID) {
-  smp <- data_m1 %>% 
-    tk_xts(silent = TRUE)
-  dt %<>% as_date
-  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
-  
-  mts <- smp %>% 
-    msts(seasonal.periods = c(1440, 7200))
-  
-  mts <- llply(1:ncol(mts), function(i) {
-    y <- mts[,i] %>% 
-      tbats %>% 
-      forecast(h = 1440) %>% 
-      tbl_df
-      names(y)[1] <- names(smp)[i]
-      y
-    }) %>% bind_rows
-  
-  if(is.double(mts$forecast$index[1])){
-    sq <- smp %>% 
-      tail(1) %>% 
-      index
-    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
-    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
-    mts$forecast$index <- sq
-    
-  } else {
-    mts$forecast$index <- data_m1$index[
-    (which(data_m1$index == smp %>% 
-             index %>% 
-             xts::last()) + 1):(
-     which(data_m1$index == smp %>% 
-             index %>% 
-             xts::last()) + 1440)]
-  }
-  
-  if (!dir.exists(paste0('data/fx/USDJPY'))) 
-    dir.create(paste0('data/fx/USDJPY'))
-  
-  saveRDS(sets, paste0('data/fx/USDJPY/sets.wk.1440.', 
-                       as_date(sets$forecast$index[1]), '.rds'))
-  
-  cat(paste0(
-    'data/fx/USDJPY/sets.wk.1440.', 
-    as_date(sets$forecast$index[1]), '.rds saved!\n'))
-  }
-```
 
 ### Nested Weekly-Monthly Model
 
-```{r warning=FALSE, eval=FALSE}
-# --------- eval=FALSE ---------
-#sq <- seq(1 , length(data_m1$index), by = 1440)
-#mts <- list()
-timeID <- data_m1$index %>% 
-  as_date %>% 
-  unique %>% 
-  sort
-timeID %<>% .[. > ymd('2015-01-11')]
+## Seasonal Models `seasonal::seas()` 
 
-for (dt in timeID) {
-  smp <- data_m1 %>% 
-    tk_xts(silent = TRUE)
-  dt %<>% as_date
-  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
-  
-  mts <- smp %>% 
-    msts(seasonal.periods = c(7200, 7200))
-  
-  mts <- llply(1:ncol(mts), function(i) {
-    y <- mts[,i] %>% 
-      tbats %>% 
-      forecast(h = 1440) %>% 
-      tbl_df
-      names(y)[1] <- names(smp)[i]
-      y
-    }) %>% bind_rows
-  
-  if(is.double(mts$forecast$index[1])){
-    sq <- smp %>% 
-      tail(1) %>% 
-      index
-    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
-    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
-    mts$forecast$index <- sq
-    
-  } else {
-    mts$forecast$index <- data_m1$index[
-    (which(data_m1$index == smp %>% 
-             index %>% 
-             xts::last()) + 1):(
-     which(data_m1$index == smp %>% 
-             index %>% 
-             xts::last()) + 1440)]
-  }
-  
-  if (!dir.exists(paste0('data/fx/USDJPY'))) 
-    dir.create(paste0('data/fx/USDJPY'))
-  
-  saveRDS(sets, paste0('data/fx/USDJPY/sets.wk.1440.', 
-                       as_date(sets$forecast$index[1]), '.rds'))
-  
-  cat(paste0(
-    'data/fx/USDJPY/sets.wk.1440.', 
-    as_date(sets$forecast$index[1]), '.rds saved!\n'))
-  }
+```{r warning=FALSE, message=FALSE}
+
 ```
 
 ## MIDAS
@@ -1542,36 +1813,81 @@ for (dt in timeID) {
 
 ### Seasonal ETS
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
+## Get all files.
 fls <- paste0('data/fx/USDJPY/', list.files(
-  'data/fx/USDJPY/', pattern = 'sets\\.[a-z]{2}\\.'))
-readRDS(fls[1])
+  'data/fx/USDJPY/', pattern = 'sets|mts'))
+
+## Shows example.
+readRDS(grep('sets', fls, value = TRUE)[1])
+readRDS(grep('mts', fls, value = TRUE)[1]) %>% tbl_df
 
 comp <- llply(fls, function(x) {
-  if(grepl('sets.wk', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('wk'))
+  if(grepl('sets.wk.1440.', x)) {
+    readRDS(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('wk.1440'))
     
-  } else if(grepl('sets.mo', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('mo'))
+  } else if(grepl('sets.mo.1440.', x)) {
+    readRDS(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('mo.1440'))
     
-  } else if(grepl('sets.qt', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('qt'))
+  } else if(grepl('sets.qt.1440.', x)) {
+    readRDS(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('qt.1440'))
     
-  }else if(grepl('sets.yr', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('yr'))
+  } else if(grepl('sets.yr.1440.', x)) {
+    readRDS(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('yr.1440'))
+    
+  } else if(grepl('sets.wk.7200.', x)) {
+    readRDS(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('wk.7200'))
+    
+  } else if(grepl('sets.mo.7200.', x)) {
+    readRDS(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('mo.7200'))
+    
+  } else if(grepl('sets.qt.7200.', x)) {
+    readRDS(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('qt.7200'))
+    
+  } else if(grepl('sets.yr.7200.', x)) {
+    readRDS(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('yr.7200'))
+    
+  } else if(grepl('mts.dy.wk.[0-9]{4}', x)) {
+    readRDS(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('dy.wk'))
+    
+  } else if(grepl('mts.dy.wk.mo.[0-9]{4}', x)) {
+    readRDS(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('dy.wk.mo'))
+    
+  } else if(grepl('mts.dy.wk.mo.qt.[0-9]{4}', x)) {
+    readRDS(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('dy.wk.mo.qt'))
+    
+  } else if(grepl('mts.dy.wk.mo.yr.[0-9]{4}', x)) {
+    readRDS(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('dy.wk.mo.yr'))
     
   } else {
-    stop('No suach files.')
+    stop('No such files.')
   }
-  }) %>% bind_rows %>% tbl_df
+  
+  }) %>% 
+  bind_rows %>% 
+  tbl_df
 
-comp <- join(data_m1, comp) %>% ##The last observation of Firday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price. The 
+##The last observation of Firday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price.
+#comp %<>% .[colSums(!is.na(.)) > 0]
+comp <- join(data_m1, comp) %>% 
   tbl_df %>% 
   na.omit
 ```
 
-```{r warning=FALSE}
-comp %>% ddply(.(Period), summarise, 
+```{r warning=FALSE, message=FALSE}
+comp %>% ddply(.(Model, Period), summarise, 
                MSE.open = mean((open.Point.Forecast - open)^2), 
                MSE.high = mean((high.Point.Forecast - high)^2), 
                MSE.low = mean((low.Point.Forecast - low)^2), 
@@ -1580,51 +1896,15 @@ comp %>% ddply(.(Period), summarise,
                MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
                n = length(index)) %>% 
   tbl_df %>% 
-  kable(caption = 'MSE of Seasonal ETS Model (Accumulated Period from Weekly)') %>% 
+  kable(caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-```{r warning=FALSE, eval=FALSE}
-tmID <- fls %>% 
-  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
-  unlist %>% 
-  plyr::count() %>% 
-  dplyr::filter(freq == 4)
-tmID %<>% .$x
-fls2 <- llply(tmID, function(x) {
-    paste0('data/fx/USDJPY/sets.', c('wk', 'mo', 'qt', 'yr'), 
-           '.1440.', x, '.rds')
-    }) %>% unlist
-
-comp2 <- llply(fls2, function(x) {
-  if(grepl('sets.wk', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('wk'))
-    
-  } else if(grepl('sets.mo', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('mo'))
-    
-  } else if(grepl('sets.qt', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('qt'))
-    
-  }else if(grepl('sets.yr', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('yr'))
-    
-  } else {
-    stop('No suach files.')
-  }
-  }) %>% bind_rows %>% tbl_df
-
-comp2 <- join(data_m1, comp2) %>% 
-  tbl_df %>% 
-  na.omit
-```
-
-```{r warning=FALSE}
-#comp2 %>% ddply(.(Period), summarise, 
+```{r warning=FALSE, message=FALSE}
 comp %>% 
   dplyr::filter(index > ymd('2016-01-04')) %>% 
-  ddply(.(Period), summarise, 
+  ddply(.(Model, Period), summarise, 
         MSE.open = mean((open.Point.Forecast - open)^2), 
         MSE.high = mean((high.Point.Forecast - high)^2), 
         MSE.low = mean((low.Point.Forecast - low)^2), 
@@ -1633,16 +1913,16 @@ comp %>%
         MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
         n = length(index)) %>% 
   tbl_df %>% 
-  kable(caption = 'MSE of Seasonal ETS Model (Completed Period)') %>% 
+  kable(caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Completed Period)') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-### ETS
+### Interday ETS
 
-Below I recall the `ETS` models in previous paper for comparison.
+Below I recall the `ETS` models for interday price prediction in previous paper for comparison.
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 ets.fls <- list.files('data', pattern = '^[A-Z]{3}\\.[A-Za-z]{4}')
 ETS.MSE <- llply(ets.fls, function(x) {
     nm <- x %>% 
@@ -1708,7 +1988,7 @@ ETS.MSE %>%
 
 From above `MSE` comparison with intraday-dataset, we know that the intraday data will be more accurate than just daily dataset.
 
-```{r warning=FALSE}
+```{r warning=FALSE, message=FALSE}
 ETS.MSE %>% 
     ddply(.(Model, Type), summarise, 
           MSE.1 = mean(MSE.1, na.rm=TRUE), 
@@ -1744,11 +2024,112 @@ ETS.MSE %>%
   scroll_box(width = '100%', height = '400px')
 ```
 
+### Nested Seasonal `TBats` Model
+
+```{r warning=FALSE, message=FALSE, eval=FALSE}
+## Get all files.
+fls <- paste0('data/fx/USDJPY/', list.files(
+  'data/fx/USDJPY/', pattern = 'mts'))
+
+## Shows example.
+readRDS(grepl('sets', fls, value = TRUE)[1])
+readRDS(grepl('mts', fls, value = TRUE)[1])
+
+comp <- llply(fls, function(x) {
+  if(grepl('sets.wk', x)) {
+    dat <- readRDS(x)$forecast %>% mutate(Period = factor('wk'))
+    
+  } else if(grepl('sets.mo', x)) {
+    dat <- readRDS(x)$forecast %>% mutate(Period = factor('mo'))
+    
+  } else if(grepl('sets.qt', x)) {
+    dat <- readRDS(x)$forecast %>% mutate(Period = factor('qt'))
+    
+  }else if(grepl('sets.yr', x)) {
+    dat <- readRDS(x)$forecast %>% mutate(Period = factor('yr'))
+    
+  } else if(grepl('mts.dy.wk.[0-9]{4}', x)) {
+    dat <- readRDS(x) %>% mutate(Period = factor('dy.wk'))
+    
+  } else if(grepl('mts.dy.wk.mo.[0-9]{4}', x)) {
+    dat <- readRDS(x) %>% mutate(Period = factor('dy.wk.mo'))
+    
+  } else if(grepl('mts.dy.wk.mo.qt.[0-9]{4}', x)) {
+    dat <- readRDS(x) %>% mutate(Period = factor('dy.wk.mo.qt'))
+    
+  } else if(grepl('mts.dy.wk.mo.yr.[0-9]{4}', x)) {
+    dat <- readRDS(x) %>% mutate(Period = factor('dy.wk.mo.yr'))
+    
+  } else {
+    stop('No suach files.')
+  }
+  
+  dat %>% mutate(type = case_when(
+    !is.na(open) ~ 'open', 
+    !is.na(high) ~ 'high', 
+    !is.na(low) ~ 'low', 
+    !is.na(close) ~ 'close')) %>% 
+    dlply(.(type, Period), function(x) {
+    x %<>% dplyr::rename(open.Point.Forecast = open, 
+                         high.Point.Forecast = high, 
+                         low.Point.Forecast = low, 
+                         close.Point.Forecast = close)
+    names(x)[3:6] <- paste0(x$type[1], '.Point.Forecast.', names(x)[3:6])
+    x[colSums(!is.na(x)) > 0] %>% 
+      tbl_df %>% dplyr::select(-type)
+    
+    }) %>% 
+    join_all %>% 
+    tbl_df
+  
+  }) %>% 
+  bind_rows %>% 
+  tbl_df
+
+##The last observation of Firday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price.
+comp %<>% .[colSums(!is.na(.)) > 0]
+comp <- join(data_m1, comp) %>% 
+  tbl_df %>% 
+  na.omit
+```
+
+```{r warning=FALSE, eval=FALSE}
+comp %>% ddply(.(Period), summarise, 
+               MSE.open = mean((open.Point.Forecast - open)^2), 
+               MSE.high = mean((high.Point.Forecast - high)^2), 
+               MSE.low = mean((low.Point.Forecast - low)^2), 
+               MSE.close = mean((close.Point.Forecast - close)^2), 
+               MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
+               MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
+               n = length(index)) %>% 
+  tbl_df %>% 
+  kable(caption = 'MSE of Nested Seasonal Model (Accumulated Period from Weekly)') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%')#, height = '400px')
+```
+
+```{r warning=FALSE, message=FALSE, eval=FALSE}
+comp %>% 
+  dplyr::filter(index > ymd('2016-01-04')) %>% 
+  ddply(.(Period), summarise, 
+        MSE.open = mean((open.Point.Forecast - open)^2), 
+        MSE.high = mean((high.Point.Forecast - high)^2), 
+        MSE.low = mean((low.Point.Forecast - low)^2), 
+        MSE.close = mean((close.Point.Forecast - close)^2), 
+        MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
+        MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
+        n = length(index)) %>% 
+  tbl_df %>% 
+  kable(caption = 'MSE of Nested Seasonal Model (Completed Period)') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%')#, height = '400px')
+```
+
 ## Seasonal ARIMA
 
 ### SARIMA
 
-### AUTO ARIMA
+### Interday AUTO ARIMA
 
 ```{r warning=FALSE}
 ar.fls <- list.files('data', pattern = '^fundAutoArima')
