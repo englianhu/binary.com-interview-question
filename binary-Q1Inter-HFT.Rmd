@@ -39,13 +39,13 @@ suppressAll(lib(pkgs))
 
 funs <- c('uv_fx.R', 'opt_arma.R', 'multi_seasons.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R', 'task_progress.R', 'read_umodels.R', 'convertOHLC.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
-spark_install()
+# spark_install()
 
-if(FALSE) {
+# if(FALSE) {
   # Not run due to side-effects
-  spark_home_set()
-  }
-sc <- spark_connect(master = 'local')
+#   spark_home_set()
+#   }
+# sc <- spark_connect(master = 'local')
 
 .cl = FALSE
 
@@ -235,7 +235,7 @@ Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndma
 # saveRDS(tsz, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
 
 ## The daylight saving convertion in not tally.
-tsz <- read_rds('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds') %>% 
+tsz <- read_rds(paste0(dtr, tsz.rds')) %>% 
   dplyr::filter(index >= ymd_hms('2015-01-05 00:00:00', tz = 'Europe/Athens'))
 tsz
 
