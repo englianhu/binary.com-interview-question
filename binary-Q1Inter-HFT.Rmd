@@ -134,7 +134,7 @@ Due to high volume of dataset, here I only use `USDJPY` since the variance is hi
 ## Read raw dataset.
 #Y2015W1 <- read_rds(paste0(dtr1, '/', fls[[7]][1], '.rds')) %>% as_tibble
 
-eval(parse(text = paste0(fs[1], "<- readRDS('", dtr1, "/", fls[[7]][1], "') %>% as_tibble")))
+eval(parse(text = paste0(fs[1], "<- readRDS('", dtr1, "/", fls[[7]][1], ".rds') %>% as_tibble")))
 
 ## raw dataset
 Y2015W1
@@ -698,7 +698,7 @@ I initially try to use `bid` for high and `ask` for low in order to produce a be
 Due to `1min` dataset is better than (more complete) `tickdata-to-1min`, here I use the `1min` dataset.
 
 ```{r warning=FALSE, message=FALSE}
-data_m1 <- read_rds(dtr1, paste0('/data_m1.rds'))
+data_m1 <- read_rds(paste0(dtr1, '/data_m1.rds'))
 data_m1 %<>% 
   mutate(open = (BidOpen + AskOpen)/2, 
          high = (BidHigh + AskHigh)/2, 
@@ -1781,10 +1781,8 @@ for (dt in timeID) {
 
 ## Seasonal Models `seasonal::seas()` 
 
-```{r warning=FALSE, message=FALSE}
-
-<<<<<<< Updated upstream
-=======
+```{r warning=FALSE, message=FALSE, eval=FALSE}
+##
 for (dt in timeID) {
   smp <- data_m1 %>% 
     tk_xts(silent = TRUE)
@@ -1831,7 +1829,6 @@ for (dt in timeID) {
     'data/fx/USDJPY/sets.wk.1440.', 
     as_date(sets$forecast$index[1]), '.rds saved!\n'))
   }
->>>>>>> Stashed changes
 ```
 
 ## MIDAS
@@ -1961,8 +1958,67 @@ comp <- llply(fls, function(x) {
   } else {
     stop('No such files.')
   }
-<<<<<<< Updated upstream
-  
+  }) %>% 
+  bind_rows %>% 
+  as_tibble
+
+##
+comp <- llply(fls, function(x) {
+  read_rds(x)$forecast %>% 
+    mutate(
+      Model = case_when(
+        grepl('sets.wk.1440.', x) ~ factor('ts'), 
+        grepl('sets.mo.1440.', x) ~ 
+        
+      Period = factor('wk.1440'))
+    
+  } else if(grepl('sets.mo.1440.', x)) {
+    read_rds(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('mo.1440'))
+    
+  } else if(grepl('sets.qt.1440.', x)) {
+    read_rds(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('qt.1440'))
+    
+  } else if(grepl('sets.yr.1440.', x)) {
+    read_rds(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('yr.1440'))
+    
+  } else if(grepl('sets.wk.7200.', x)) {
+    read_rds(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('wk.7200'))
+    
+  } else if(grepl('sets.mo.7200.', x)) {
+    read_rds(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('mo.7200'))
+    
+  } else if(grepl('sets.qt.7200.', x)) {
+    read_rds(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('qt.7200'))
+    
+  } else if(grepl('sets.yr.7200.', x)) {
+    read_rds(x)$forecast %>% 
+      mutate(Model = factor('ts'), Period = factor('yr.7200'))
+    
+  } else if(grepl('mts.dy.wk.[0-9]{4}', x)) {
+    read_rds(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('dy.wk'))
+    
+  } else if(grepl('mts.dy.wk.mo.[0-9]{4}', x)) {
+    read_rds(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('dy.wk.mo'))
+    
+  } else if(grepl('mts.dy.wk.mo.qt.[0-9]{4}', x)) {
+    read_rds(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('dy.wk.mo.qt'))
+    
+  } else if(grepl('mts.dy.wk.mo.yr.[0-9]{4}', x)) {
+    read_rds(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('dy.wk.mo.yr'))
+    
+  } else {
+    stop('No such files.')
+  }
   }) %>% 
   bind_rows %>% 
   as_tibble
@@ -1970,11 +2026,9 @@ comp <- llply(fls, function(x) {
 ##The last observation of Firday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price.
 #comp %<>% .[colSums(!is.na(.)) > 0]
 comp <- join(data_m1, comp) %>% 
-=======
   }) %>% bind_rows %>% as_tibble
 
 comp <- join(data_m1, comp) %>% ##The last observation of Firday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price. The 
->>>>>>> Stashed changes
   as_tibble %>% 
   na.omit
 ```
