@@ -1903,8 +1903,8 @@ fls <- paste0('data/fx/USDJPY/', list.files(
   'data/fx/USDJPY/', pattern = 'sets|mts'))
 
 ## Shows example.
-read_rds(grep('sets', fls, value = TRUE)[1])
-read_rds(grep('mts', fls, value = TRUE)[1]) %>% as_tibble
+# read_rds(grep('sets', fls, value = TRUE)[1])
+# read_rds(grep('mts', fls, value = TRUE)[1]) %>% as_tibble
 
 comp <- llply(fls, function(x) {
   if(grepl('sets.wk.1440.', x)) {
@@ -1963,72 +1963,52 @@ comp <- llply(fls, function(x) {
   as_tibble
 
 ##
-comp <- llply(fls, function(x) {
-  read_rds(x)$forecast %>% 
-    mutate(
-      Model = case_when(
-        grepl('sets.wk.1440.', x) ~ factor('ts'), 
-        grepl('sets.mo.1440.', x) ~ 
-        
-      Period = factor('wk.1440'))
-    
-  } else if(grepl('sets.mo.1440.', x)) {
-    read_rds(x)$forecast %>% 
-      mutate(Model = factor('ts'), Period = factor('mo.1440'))
-    
-  } else if(grepl('sets.qt.1440.', x)) {
-    read_rds(x)$forecast %>% 
-      mutate(Model = factor('ts'), Period = factor('qt.1440'))
-    
-  } else if(grepl('sets.yr.1440.', x)) {
-    read_rds(x)$forecast %>% 
-      mutate(Model = factor('ts'), Period = factor('yr.1440'))
-    
-  } else if(grepl('sets.wk.7200.', x)) {
-    read_rds(x)$forecast %>% 
-      mutate(Model = factor('ts'), Period = factor('wk.7200'))
-    
-  } else if(grepl('sets.mo.7200.', x)) {
-    read_rds(x)$forecast %>% 
-      mutate(Model = factor('ts'), Period = factor('mo.7200'))
-    
-  } else if(grepl('sets.qt.7200.', x)) {
-    read_rds(x)$forecast %>% 
-      mutate(Model = factor('ts'), Period = factor('qt.7200'))
-    
-  } else if(grepl('sets.yr.7200.', x)) {
-    read_rds(x)$forecast %>% 
-      mutate(Model = factor('ts'), Period = factor('yr.7200'))
-    
-  } else if(grepl('mts.dy.wk.[0-9]{4}', x)) {
-    read_rds(x) %>% 
-      mutate(Model = factor('tbats'), Period = factor('dy.wk'))
-    
-  } else if(grepl('mts.dy.wk.mo.[0-9]{4}', x)) {
-    read_rds(x) %>% 
-      mutate(Model = factor('tbats'), Period = factor('dy.wk.mo'))
-    
-  } else if(grepl('mts.dy.wk.mo.qt.[0-9]{4}', x)) {
-    read_rds(x) %>% 
-      mutate(Model = factor('tbats'), Period = factor('dy.wk.mo.qt'))
-    
-  } else if(grepl('mts.dy.wk.mo.yr.[0-9]{4}', x)) {
-    read_rds(x) %>% 
-      mutate(Model = factor('tbats'), Period = factor('dy.wk.mo.yr'))
-    
-  } else {
-    stop('No such files.')
-  }
-  }) %>% 
-  bind_rows %>% 
-  as_tibble
+#comp <- llply(fls, function(x) {
+#  read_rds(x)$forecast %>% 
+#    mutate(
+#      Model = case_when(
+#        grepl('sets.wk.1440.', x) ~ factor('ts'), 
+#        grepl('sets.mo.1440.', x) ~ factor('ts'), 
+#        grepl('sets.qt.1440.', x) ~ factor('ts'), 
+#        grepl('sets.yr.1440.', x) ~ factor('ts'), 
+#        grepl('sets.wk.7200.', x) ~ factor('ts'), 
+#        grepl('sets.mo.7200.', x) ~ factor('ts'), 
+#        grepl('sets.qt.7200.', x) ~ factor('ts'), 
+#        grepl('sets.yr.7200.', x) ~ factor('ts'), 
+#        grepl('mts.dy.wk.[0-9]{4}', x) ~ factor('tbats'), 
+#        grepl('mts.dy.wk.mo.[0-9]{4}', x) ~ factor('tbats'), 
+#        grepl('mts.dy.wk.mo.qt.[0-9]{4}', x) ~ factor('tbats'), 
+#        grepl('mts.dy.wk.mo.yr.[0-9]{4}', x) ~ factor('tbats'), 
+#        FALSE~ stop('No such files.')), 
+#      Period = factor('wk.1440'), 
+#      Period = factor('mo.1440'), 
+#      Period = factor('qt.1440'), 
+#      Period = factor('yr.1440'), 
+#      Period = factor('wk.7200'), 
+#      Period = factor('mo.7200'), 
+#      Period = factor('qt.7200'), 
+#      Period = factor('yr.7200'), 
+#      Period = factor('dy.wk'), 
+#      Period = factor('dy.wk.mo'), 
+#      Period = factor('dy.wk.mo.qt'), 
+#      Period = factor('dy.wk.mo.yr'))
+#
+  #} else {
+  #  stop('No such files.')
+  #}
+#  }) %>% 
+#  bind_rows %>% 
+#  as_tibble
 
-##The last observation of Firday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price.
+##The last observation of Friday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price.
 #comp %<>% .[colSums(!is.na(.)) > 0]
-comp <- join(data_m1, comp) %>% 
-  }) %>% bind_rows %>% as_tibble
 
-comp <- join(data_m1, comp) %>% ##The last observation of Firday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price. The 
+##
+##
+comp <- join(data_m1, comp) %>% 
+  bind_rows %>% as_tibble
+
+comp <- join(data_m1, comp) %>% ##The last observation of Friday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price. The 
   as_tibble %>% 
   na.omit
 ```
