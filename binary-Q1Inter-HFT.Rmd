@@ -1,7 +1,7 @@
 ---
 title: "<img src='www/deriv.jpg' width='240'>"
-subtitle: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Interday High Frequency Trading Models Comparison"
-author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/Me byteDance.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>® <img src='www/joey_chua.jpg width='24'>"
+subtitle: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) - Interday High Frequency Trading Models Comparison"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/Me byteDance.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>® <img src='www/xueba.jpg width='24'>"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
   html_document: 
@@ -1897,7 +1897,7 @@ for (dt in timeID) {
 
 ### Seasonal ETS
 
-```{r warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE, eval=FALSE}
 ## Get all files.
 fls <- paste0('data/fx/USDJPY/', list.files(
   'data/fx/USDJPY/', pattern = 'sets|mts'))
@@ -2013,7 +2013,7 @@ comp <- join(data_m1, comp) %>% ##The last observation of Friday is Saturday 00:
   na.omit
 ```
 
-```{r warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE, eval=FALSE}
 comp %>% ddply(.(Model, Period), summarise, 
                MSE.open = mean((open.Point.Forecast - open)^2), 
                MSE.high = mean((high.Point.Forecast - high)^2), 
@@ -2023,18 +2023,11 @@ comp %>% ddply(.(Model, Period), summarise,
                MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
                n = length(index)) %>% 
   as_tibble %>% 
-<<<<<<< Updated upstream
   kable(caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)') %>% 
-=======
-  kable(caption = 'MSE of Seasonal ETS Model (Accumulated Period from Weekly)') %>% 
->>>>>>> Stashed changes
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-<<<<<<< Updated upstream
-```{r warning=FALSE, message=FALSE}
-=======
 ```{r warning=FALSE, eval=FALSE}
 tmID <- fls %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
@@ -2070,9 +2063,8 @@ comp2 <- join(data_m1, comp2) %>%
   na.omit
 ```
 
-```{r warning=FALSE}
+```{r warning=FALSE, eval=FALSE}
 #comp2 %>% ddply(.(Period), summarise, 
->>>>>>> Stashed changes
 comp %>% 
   dplyr::filter(index > ymd('2016-01-04')) %>% 
   ddply(.(Model, Period), summarise, 
@@ -2084,11 +2076,7 @@ comp %>%
         MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
         n = length(index)) %>% 
   as_tibble %>% 
-<<<<<<< Updated upstream
   kable(caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Completed Period)') %>% 
-=======
-  kable(caption = 'MSE of Seasonal ETS Model (Completed Period)') %>% 
->>>>>>> Stashed changes
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
 ```
@@ -2097,7 +2085,7 @@ comp %>%
 
 Below I recall the `ETS` models for interday price prediction in previous paper for comparison.
 
-```{r warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE, eval=FALSE}
 ets.fls <- list.files('data', pattern = '^[A-Z]{3}\\.[A-Za-z]{4}')
 ETS.MSE <- llply(ets.fls, function(x) {
     nm <- x %>% 
@@ -2163,7 +2151,7 @@ ETS.MSE %>%
 
 From above `MSE` comparison with intraday-dataset, we know that the intraday data will be more accurate than just daily dataset.
 
-```{r warning=FALSE, message=FALSE}
+```{r warning=FALSE, message=FALSE, eval=FALSE}
 ETS.MSE %>% 
     ddply(.(Model, Type), summarise, 
           MSE.1 = mean(MSE.1, na.rm=TRUE), 
@@ -2428,9 +2416,4 @@ cbind(sys1, sys2) %>%
 
 ---
 
-<<<<<<< Updated upstream
 <span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of <img src='www/scb-logo3rs.jpg' width='24'> [Sςιβrοκεrs Trαdιηg®️](http://www.scibrokes.com)経営企業**</span>
-=======
-<span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of <img src='figure/scibrokes_trading.jpg' width='24'> [Sςιβrοκεrs Trαdιηg®️](http://www.scibrokes.com)経営企業**</span>
-
->>>>>>> Stashed changes
