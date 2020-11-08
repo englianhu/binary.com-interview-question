@@ -1,0 +1,48 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r} 
+knitr::asis_output('Phew, that was close \U1F605  \U2660   \U2665  \U2666  \U2663')
+```
+
+```{r}
+knitr::asis_output('\U0001f5fe')
+```
+
+```{r, warning = FALSE, results = 'asis'}
+c('\U0001f5fe')
+```
+
+```{r, warning = FALSE, results = 'asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('magrittr', quietly = TRUE))
+suppressMessages(require('lubridate', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+suppressMessages(require('knitr', quietly = TRUE))
+suppressMessages(require('kableExtra', quietly = TRUE))
+
+sys1 <- devtools::session_info()$platform %>% 
+  unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+
+sys2 <- data.frame(Sys.info()) %>% mutate(Category = rownames(.)) %>% .[2:1]
+names(sys2)[2] <- c('Sys.info')
+rownames(sys2) <- NULL
+
+if (nrow(sys1) == 9 & nrow(sys2) == 8) {
+  sys2 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  Sys.info = paste(as.character(now('Asia/Tokyo')), 'JST \U0001F5FE 🗾')))
+} else {
+  sys1 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  session_info = paste(as.character(now('Asia/Tokyo')), 'JST \U0001f5fe 🗾')))
+}
+
+cbind(sys1, sys2) %>% 
+  kbl(caption = 'Additional session information:') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  row_spec(9, bold = T, color = 'white', background = '#D7261E')
+```

@@ -1,11 +1,12 @@
 ---
 title: "<img src='www/deriv.jpg' width='240'>"
 subtitle: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) - Interday High Frequency Trading Models Comparison"
-author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/Me byteDance.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>® <img src='www/xueba.jpg width='24'>"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/Me byteDance.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='28'>® <img src='www/xueba.jpg' width='28'>"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
   html_document: 
     mathjax: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+    dev: ragg_png
     number_sections: yes
     toc: yes
     toc_depth: 4
@@ -53,7 +54,7 @@ l_ply(funs, function(x) source(paste0('./function/', x)))
 
 .cl = FALSE
 
-options(warn = -1)#, digits.secs = 6)
+options(warn = -1, encoding = 'native')#, digits.secs = 6)
 rm(pkgs, funs)
 ```
 
@@ -611,6 +612,7 @@ data_m1 %>% ddply(.(year, week), head, 1) %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
 ```
+By refered to sportsbook experience, here I plot above table which shows weekly initial price.
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE}
 data_m1 %>% ddply(.(year, week), tail, 1) %>% 
@@ -618,6 +620,7 @@ data_m1 %>% ddply(.(year, week), tail, 1) %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
 ```
+By refered to sportsbook experience again, here I plot above table which shows weekly closed price.
 
 ```{r warning=FALSE, message=FALSE}
 ## Tidy dataset for modelling.
@@ -2361,7 +2364,7 @@ It's useful to record some information about how your file was created.
 - GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
 - Additional session information:
 
-```{r, warning = FALSE, results = 'asis'}
+```{r, warning = FALSE, , echo = FALSE, results = 'asis'}
 suppressMessages(require('dplyr', quietly = TRUE))
 suppressMessages(require('magrittr', quietly = TRUE))
 suppressMessages(require('formattable', quietly = TRUE))
@@ -2379,11 +2382,11 @@ rownames(sys2) <- NULL
 if (nrow(sys1) == 9 & nrow(sys2) == 8) {
   sys2 %<>% rbind(., data.frame(
   Category = 'Current time', 
-  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST🗾')))
+  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST 🗾')))
 } else {
   sys1 %<>% rbind(., data.frame(
   Category = 'Current time', 
-  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST🗾')))
+  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST 🗾')))
 }
 
 cbind(sys1, sys2) %>% 
