@@ -1,12 +1,11 @@
 ---
 title: "<img src='www/deriv.jpg' width='240'>"
-subtitle: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) - Interday High Frequency Trading Models Comparison"
-author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/Me byteDance.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='28'>® <img src='www/xueba.jpg' width='28'>"
+subtitle: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Interday High Frequency Trading Models Comparison"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/Me byteDance.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>® <img src='www/joey_chua.jpg width='24'>"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
   html_document: 
     mathjax: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-    dev: ragg_png
     number_sections: yes
     toc: yes
     toc_depth: 4
@@ -54,7 +53,7 @@ l_ply(funs, function(x) source(paste0('./function/', x)))
 
 .cl = FALSE
 
-options(warn = -1, encoding = 'native')#, digits.secs = 6)
+options(warn = -1)#, digits.secs = 6)
 rm(pkgs, funs)
 ```
 
@@ -612,7 +611,6 @@ data_m1 %>% ddply(.(year, week), head, 1) %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
 ```
-By refered to sportsbook experience, here I plot above table which shows weekly initial price.
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE}
 data_m1 %>% ddply(.(year, week), tail, 1) %>% 
@@ -620,7 +618,6 @@ data_m1 %>% ddply(.(year, week), tail, 1) %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
 ```
-By refered to sportsbook experience again, here I plot above table which shows weekly closed price.
 
 ```{r warning=FALSE, message=FALSE}
 ## Tidy dataset for modelling.
@@ -1360,11 +1357,7 @@ p d q P D Q s
 
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
-<<<<<<< Updated upstream
 # eval(parse(text = paste0(fs, "<- read_rds('", fls[[7]], "') %>% as_tibble")))
-=======
-# eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% as_tibble")))
->>>>>>> Stashed changes
 
 sarima <- list()
 for(i in (1:length(fs))) {
@@ -1455,19 +1448,13 @@ for (dt in timeID) {
     y <- mts[,i] %>% 
       tbats %>% 
       forecast(h = 1440) %>% 
-<<<<<<< Updated upstream
       as_tibble %>% 
       data.frame %>% 
       as_tibble
     names(y)[1] <- names(smp)[i]
     names(y)[2:ncol(y)] <- paste0(names(y)[1], '.', names(y)[2:ncol(y)])
     names(y)[1] <- paste0(names(smp)[i], '.Point.Forecast')
-=======
-      as_tibble
-      names(y)[1] <- names(smp)[i]
->>>>>>> Stashed changes
-      y
-      
+    y
     }) %>% 
     bind_rows %>% 
     as_tibble
@@ -1900,7 +1887,7 @@ for (dt in timeID) {
 
 ### Seasonal ETS
 
-```{r warning=FALSE, message=FALSE, eval=FALSE}
+```{r eval=FALSE, warning=FALSE, message=FALSE}
 ## Get all files.
 fls <- paste0('data/fx/USDJPY/', list.files(
   'data/fx/USDJPY/', pattern = 'sets|mts'))
@@ -1909,7 +1896,7 @@ fls <- paste0('data/fx/USDJPY/', list.files(
 # read_rds(grep('sets', fls, value = TRUE)[1])
 # read_rds(grep('mts', fls, value = TRUE)[1]) %>% as_tibble
 
-comp <- llply(fls, function(x) {
+seasonal_m <- llply(fls, function(x) {
   if(grepl('sets.wk.1440.', x)) {
     read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('wk.1440'))
@@ -1965,8 +1952,14 @@ comp <- llply(fls, function(x) {
   bind_rows %>% 
   as_tibble
 
+seasonal_m[c('Lo.80', 'close.Hi.80', 'close.Lo.95', 'close.Hi.95', 
+             'high.Hi.80', 'high.Lo.95', 'high.Hi.95', 
+             'high.high.Point.Forecast', 'low.Hi.80', 'low.Lo.95', 
+             'low.Hi.95', 'open.Hi.80', 'open.Lo.95', 'open.Hi.95', 
+             'open.Lo.80', 'high.Lo.80', 'low.Lo.80', 'close.Lo.80')] <- NULL
+
 ##
-#comp <- llply(fls, function(x) {
+#seasonal_m <- llply(fls, function(x) {
 #  read_rds(x)$forecast %>% 
 #    mutate(
 #      Model = case_when(
@@ -2005,33 +1998,103 @@ comp <- llply(fls, function(x) {
 
 ##The last observation of Friday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price.
 #comp %<>% .[colSums(!is.na(.)) > 0]
-
-##
-##
-comp <- join(data_m1, comp) %>% 
+seasonal_m <- join(data_m1, seasonal_m) %>% 
   bind_rows %>% as_tibble
 
-comp <- join(data_m1, comp) %>% ##The last observation of Friday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price. The 
-  as_tibble %>% 
-  na.omit
+seasonal_m %<>% 
+  .[c('index','Model','Period','open','high','low','close',
+  'open.Point.Forecast','high.Point.Forecast',
+  'low.Point.Forecast','close.Point.Forecast',
+  'open.Point.Forecast.Hi 80','open.Point.Forecast.Lo 80',
+  'open.Point.Forecast.Lo 95','open.Point.Forecast.Hi 95',
+  'high.Point.Forecast.Lo 80','high.Point.Forecast.Hi 80',
+  'high.Point.Forecast.Lo 95','high.Point.Forecast.Hi 95',
+  'low.Point.Forecast.Lo 80','low.Point.Forecast.Hi 80',
+  'low.Point.Forecast.Lo 95','low.Point.Forecast.Hi 95',
+  'close.Point.Forecast.Lo 80','close.Point.Forecast.Hi 80',
+  'close.Point.Forecast.Lo 95','close.Point.Forecast.Hi 95')]
+write_rds(seasonal_m, 'data/fx/USDJPY/seasonal_m.rds')
 ```
 
-```{r warning=FALSE, message=FALSE, eval=FALSE}
-comp %>% ddply(.(Model, Period), summarise, 
-               MSE.open = mean((open.Point.Forecast - open)^2), 
-               MSE.high = mean((high.Point.Forecast - high)^2), 
-               MSE.low = mean((low.Point.Forecast - low)^2), 
-               MSE.close = mean((close.Point.Forecast - close)^2), 
-               MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
-               MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
-               n = length(index)) %>% 
-  as_tibble %>% 
-  kable(caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+```{r warning=FALSE, message=FALSE}
+seasonal_m <- read_rds('data/fx/USDJPY/seasonal_m.rds')
+```
+
+```{r warning=FALSE, message=FALSE}
+
+mse1 <- seasonal_m %>% 
+  ddply(.(Model, Period), summarise, 
+        MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
+        MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
+        MSE.low = mean((low.Point.Forecast - low)^2, na.rm=TRUE), 
+        MSE.close = mean((close.Point.Forecast - close)^2, na.rm=TRUE), 
+        MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
+        MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
+        n = length(index)) %>% 
+  as_tibble
+```
+
+```{r warning=FALSE, message=FALSE}
+
+mse1 %>% 
+  mutate(
+    MSE.open = ifelse(
+      rank(MSE.open) <= 3, 
+      cell_spec(
+        paste0(round(MSE.open, 7), ' (rank: ', sprintf('%1.f', rank(MSE.open)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.open, 7), ' (rank: ', sprintf('%1.f', rank(MSE.open)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    MSE.high = ifelse(
+      rank(MSE.high) <= 3, 
+      cell_spec(
+        paste0(round(MSE.high, 7), ' (rank: ', sprintf('%1.f', rank(MSE.high)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.high, 7), ' (rank: ', sprintf('%1.f', rank(MSE.high)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    MSE.low = ifelse(
+      rank(MSE.low) <= 3, 
+      cell_spec(
+        paste0(round(MSE.low, 7), ' (rank: ', sprintf('%1.f', rank(MSE.low)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.low, 7), ' (rank: ', sprintf('%1.f', rank(MSE.low)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    MSE.close = ifelse(
+      rank(MSE.close) <= 3, 
+      cell_spec(
+        paste0(round(MSE.close, 7), ' (rank: ', sprintf('%1.f', rank(MSE.close)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.close, 7), ' (rank: ', sprintf('%1.f', rank(MSE.close)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    MSE.HLC = ifelse(
+      rank(MSE.HLC) <= 3, 
+      cell_spec(
+        paste0(round(MSE.HLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.HLC)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.HLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.HLC)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    MSE.OHLC = ifelse(
+      rank(MSE.OHLC) <= 3, 
+      cell_spec(
+        paste0(round(MSE.OHLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.OHLC)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.OHLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.OHLC)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    ) %>% 
+  kbl('html', caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)', escape = F) %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material() %>% 
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-```{r warning=FALSE, eval=FALSE}
+```{r warning=FALSE, message=FALSE}
+######
 tmID <- fls %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% 
@@ -2043,7 +2106,7 @@ fls2 <- llply(tmID, function(x) {
            '.1440.', x, '.rds')
     }) %>% unlist
 
-comp2 <- llply(fls2, function(x) {
+comp3 <- llply(fls2, function(x) {
   if(grepl('sets.wk', x)) {
     readRDS(x)$forecast %>% mutate(Period = factor('wk'))
     
@@ -2061,25 +2124,26 @@ comp2 <- llply(fls2, function(x) {
   }
   }) %>% bind_rows %>% as_tibble
 
-comp2 <- join(data_m1, comp2) %>% 
+comp4 <- join(data_m1, comp3) %>% 
   as_tibble %>% 
   na.omit
 ```
 
-```{r warning=FALSE, eval=FALSE}
+```{r warning=FALSE}
+######
 #comp2 %>% ddply(.(Period), summarise, 
 comp %>% 
   dplyr::filter(index > ymd('2016-01-04')) %>% 
   ddply(.(Model, Period), summarise, 
-        MSE.open = mean((open.Point.Forecast - open)^2), 
-        MSE.high = mean((high.Point.Forecast - high)^2), 
-        MSE.low = mean((low.Point.Forecast - low)^2), 
-        MSE.close = mean((close.Point.Forecast - close)^2), 
+        MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
+        MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
+        MSE.low = mean((low.Point.Forecast - low)^2, na.rm=TRUE), 
+        MSE.close = mean((close.Point.Forecast - close)^2, na.rm=TRUE), 
         MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
         MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
         n = length(index)) %>% 
   as_tibble %>% 
-  kable(caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Completed Period)') %>% 
+  kbl(caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Completed Period)') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%')#, height = '400px')
 ```
@@ -2088,7 +2152,7 @@ comp %>%
 
 Below I recall the `ETS` models for interday price prediction in previous paper for comparison.
 
-```{r warning=FALSE, message=FALSE, eval=FALSE}
+```{r warning=FALSE, message=FALSE}
 ets.fls <- list.files('data', pattern = '^[A-Z]{3}\\.[A-Za-z]{4}')
 ETS.MSE <- llply(ets.fls, function(x) {
     nm <- x %>% 
@@ -2154,7 +2218,7 @@ ETS.MSE %>%
 
 From above `MSE` comparison with intraday-dataset, we know that the intraday data will be more accurate than just daily dataset.
 
-```{r warning=FALSE, message=FALSE, eval=FALSE}
+```{r warning=FALSE, message=FALSE}
 ETS.MSE %>% 
     ddply(.(Model, Type), summarise, 
           MSE.1 = mean(MSE.1, na.rm=TRUE), 
@@ -2201,7 +2265,7 @@ fls <- paste0('data/fx/USDJPY/', list.files(
 read_rds(grepl('sets', fls, value = TRUE)[1])
 read_rds(grepl('mts', fls, value = TRUE)[1])
 
-comp <- llply(fls, function(x) {
+seas_m_inter <- llply(fls, function(x) {
   if(grepl('sets.wk', x)) {
     dat <- read_rds(x)$forecast %>% mutate(Period = factor('wk'))
     
@@ -2253,14 +2317,14 @@ comp <- llply(fls, function(x) {
   as_tibble
 
 ##The last observation of Firday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price.
-comp %<>% .[colSums(!is.na(.)) > 0]
-comp <- join(data_m1, comp) %>% 
+seas_m_inter %<>% .[colSums(!is.na(.)) > 0]
+seas_m_inter <- join(data_m1, seas_m_inter) %>% 
   as_tibble %>% 
   na.omit
 ```
 
 ```{r warning=FALSE, eval=FALSE}
-comp %>% ddply(.(Period), summarise, 
+seas_m_inter %>% ddply(.(Period), summarise, 
                MSE.open = mean((open.Point.Forecast - open)^2), 
                MSE.high = mean((high.Point.Forecast - high)^2), 
                MSE.low = mean((low.Point.Forecast - low)^2), 
@@ -2275,7 +2339,7 @@ comp %>% ddply(.(Period), summarise,
 ```
 
 ```{r warning=FALSE, message=FALSE, eval=FALSE}
-comp %>% 
+seas_m_inter %>% 
   dplyr::filter(index > ymd('2016-01-04')) %>% 
   ddply(.(Period), summarise, 
         MSE.open = mean((open.Point.Forecast - open)^2), 
@@ -2364,7 +2428,7 @@ It's useful to record some information about how your file was created.
 - GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
 - Additional session information:
 
-```{r, warning = FALSE, , echo = FALSE, results = 'asis'}
+```{r, warning = FALSE, results = 'asis'}
 suppressMessages(require('dplyr', quietly = TRUE))
 suppressMessages(require('magrittr', quietly = TRUE))
 suppressMessages(require('formattable', quietly = TRUE))
@@ -2382,11 +2446,11 @@ rownames(sys2) <- NULL
 if (nrow(sys1) == 9 & nrow(sys2) == 8) {
   sys2 %<>% rbind(., data.frame(
   Category = 'Current time', 
-  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST 🗾')))
+  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST🗾')))
 } else {
   sys1 %<>% rbind(., data.frame(
   Category = 'Current time', 
-  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST 🗾')))
+  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST🗾')))
 }
 
 cbind(sys1, sys2) %>% 
