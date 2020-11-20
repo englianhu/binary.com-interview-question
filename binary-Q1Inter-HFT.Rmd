@@ -1,6 +1,6 @@
 ---
 title: "<img src='www/deriv.jpg' width='240'>"
-subtitle: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) Interview Question I - Interday High Frequency Trading Models Comparison"
+subtitle: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) - Interday High Frequency Trading Models Comparison"
 author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/Me byteDance.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>® <img src='www/joey_chua.jpg width='24'>"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
@@ -698,7 +698,9 @@ I initially try to use `bid` for high and `ask` for low in order to produce a be
 Due to `1min` dataset is better than (more complete) `tickdata-to-1min`, here I use the `1min` dataset.
 
 ```{r warning=FALSE, message=FALSE}
-data_m1 <- read_rds(paste0(dtr1, '/data_m1.rds'))
+if(!exists('data_m1')) {
+  data_m1 <- read_rds(paste0(dtr1, '/data_m1.rds'))
+}
 data_m1 %<>% 
   mutate(open = (BidOpen + AskOpen)/2, 
          high = (BidHigh + AskHigh)/2, 
@@ -1448,16 +1450,14 @@ for (dt in timeID) {
     y <- mts[,i] %>% 
       tbats %>% 
       forecast(h = 1440) %>% 
-      as_tibble %>% 
-      data.frame %>% 
       as_tibble
-    names(y)[1] <- names(smp)[i]
-    names(y)[2:ncol(y)] <- paste0(names(y)[1], '.', names(y)[2:ncol(y)])
-    names(y)[1] <- paste0(names(smp)[i], '.Point.Forecast')
-    y
+      #names(y)[1] <- names(smp)[i]
+      #names(y)[2:ncol(y)] <- paste0(names(y)[1], '.', names(y)[2:ncol(y)])
+      #names(y)[1] <- paste0(names(smp)[i], '.Point.Forecast')
+      names(y)[1] <- names(smp)[i]
+      y
     }) %>% 
     bind_rows %>% 
-    as_tibble
     mutate(Model = factor('tbats'), Period = factor('dy.wk'), type = case_when(
       !is.na(open) ~ 'open', 
       !is.na(high) ~ 'high', 
@@ -1680,6 +1680,8 @@ for (dt in timeID) {
   }
 ```
 
+Due to heavily calculation and based on the comparison section proved that 2 levels (or layers) nested model more effective than 3 levels (or layers) models, here i skip above model.
+
 ### Nested Daily-Weekly-Yearly Model
 
 ```{r eval=FALSE}
@@ -1764,10 +1766,270 @@ for (dt in timeID) {
   }
 ```
 
+Due to heavily calculation and based on the comparison section proved that 2 levels (or layers) nested model more effective than 3 levels (or layers) models, here i skip above model.
+
 ### Nested Daily-Weekly-Monthly-Quarterly-Yearly Model
 
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#mts <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  
+  ##https://robjhyndman.com/hyndsight/seasonal-periods/
+  yr1 <- smp[paste0(dt %m-% years(1) + seconds(59), '/', dt + seconds(59))]
+  qt1 <- smp[paste0(dt %m-% months(3) + seconds(59), '/', dt + seconds(59))]
+  
+  mts <- smp %>% 
+    msts(seasonal.periods = c(1440, 7200, nrow(qt1), nrow(yr1)))
+  
+  mts <- llply(1:ncol(mts), function(i) {
+    y <- mts[,i] %>% 
+      tbats %>% 
+      forecast(h = 1440) %>% 
+      as_tibble
+      names(y)[1] <- names(smp)[i]
+      y
+    }) %>% 
+    bind_rows %>% 
+    mutate(Model = factor('tbats'), Period = factor('dy.wk.qt.yr'), type = case_when(
+      !is.na(open) ~ 'open', 
+      !is.na(high) ~ 'high', 
+      !is.na(low) ~ 'low', 
+      !is.na(close) ~ 'close')) %>% 
+    dlply(.(type, Period), function(x) {
+      x %<>% dplyr::rename(open.Point.Forecast = open, 
+                           high.Point.Forecast = high, 
+                           low.Point.Forecast = low, 
+                           close.Point.Forecast = close)
+      names(x)[3:6] <- paste0(x$type[1], '.', names(x)[3:6])
+      x[colSums(!is.na(x)) > 0] %>% 
+        data.frame %>% 
+        as_tibble %>% 
+        dplyr::select(-type)
+      
+      }) %>% 
+    join_all %>% 
+    as_tibble
+  
+  if(is.numeric(index(mts)[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    n <- nrow(mts) / length(sq)
+    
+    mts <- cbind(index = rep(sq, n), mts) %>% 
+      as_tibble
+    
+  } else {
+    stop('index of dataset does not assign.')
+    #mts$forecast$index <- data_m1$index[
+    #(which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1):(
+    # which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(mts, paste0('data/fx/USDJPY/mts.dy.wk.qt.yr.', 
+                       as_date(mts$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/mts.dy.wk.qt.yr.', 
+    as_date(mts$index[1]), '.rds saved!\n'))
+  }
+```
+
+Due to heavily calculation and based on the comparison section proved that 2 levels (or layers) nested model more effective than 3 levels (or layers) models, here i skip above model.
+
+### Nested Daily-Quarterly Model
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#mts <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% months(3) + seconds(59), '/', dt + seconds(59))]
+  
+  mts <- smp %>% 
+    msts(seasonal.periods = c(1440, nrow(smp)))
+  
+  mts <- llply(1:ncol(mts), function(i) {
+    y <- mts[,i] %>% 
+      tbats %>% 
+      forecast(h = 1440) %>% 
+      as_tibble
+      names(y)[1] <- names(smp)[i]
+      y
+    }) %>% 
+    bind_rows %>% 
+    mutate(Model = factor('tbats'), Period = factor('dy.qt'), type = case_when(
+      !is.na(open) ~ 'open', 
+      !is.na(high) ~ 'high', 
+      !is.na(low) ~ 'low', 
+      !is.na(close) ~ 'close')) %>% 
+    dlply(.(type, Period), function(x) {
+      x %<>% dplyr::rename(open.Point.Forecast = open, 
+                           high.Point.Forecast = high, 
+                           low.Point.Forecast = low, 
+                           close.Point.Forecast = close)
+      names(x)[3:6] <- paste0(x$type[1], '.', names(x)[3:6])
+      x[colSums(!is.na(x)) > 0] %>% 
+        data.frame %>% 
+        as_tibble %>% 
+        dplyr::select(-type)
+      
+      }) %>% 
+    join_all %>% 
+    as_tibble
+  
+  if(is.numeric(index(mts)[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    n <- nrow(mts) / length(sq)
+    
+    mts <- cbind(index = rep(sq, n), mts) %>% 
+      as_tibble
+    
+  } else {
+    stop('index of dataset does not assign.')
+    #mts$forecast$index <- data_m1$index[
+    #(which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1):(
+    # which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(mts, paste0('data/fx/USDJPY/mts.dy.qt.', 
+                       as_date(mts$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/mts.dy.qt.', 
+    as_date(mts$index[1]), '.rds saved!\n'))
+  }
+```
+
+### Nested Daily-Yearly Model
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#mts <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% years(1) + seconds(59), '/', dt + seconds(59))]
+  
+  mts <- smp %>% 
+    msts(seasonal.periods = c(1440, nrow(smp)))
+  
+  mts <- llply(1:ncol(mts), function(i) {
+    y <- mts[,i] %>% 
+      tbats %>% 
+      forecast(h = 1440) %>% 
+      as_tibble
+      names(y)[1] <- names(smp)[i]
+      y
+    }) %>% 
+    bind_rows %>% 
+    mutate(Model = factor('tbats'), Period = factor('dy.yr'), type = case_when(
+      !is.na(open) ~ 'open', 
+      !is.na(high) ~ 'high', 
+      !is.na(low) ~ 'low', 
+      !is.na(close) ~ 'close')) %>% 
+    dlply(.(type, Period), function(x) {
+      x %<>% dplyr::rename(open.Point.Forecast = open, 
+                           high.Point.Forecast = high, 
+                           low.Point.Forecast = low, 
+                           close.Point.Forecast = close)
+      names(x)[3:6] <- paste0(x$type[1], '.', names(x)[3:6])
+      x[colSums(!is.na(x)) > 0] %>% 
+        data.frame %>% 
+        as_tibble %>% 
+        dplyr::select(-type)
+      
+      }) %>% 
+    join_all %>% 
+    as_tibble
+  
+  if(is.numeric(index(mts)[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    n <- nrow(mts) / length(sq)
+    
+    mts <- cbind(index = rep(sq, n), mts) %>% 
+      as_tibble
+    
+  } else {
+    stop('index of dataset does not assign.')
+    #mts$forecast$index <- data_m1$index[
+    #(which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1):(
+    # which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(mts, paste0('data/fx/USDJPY/mts.dy.yr.', 
+                       as_date(mts$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/mts.dy.yr.', 
+    as_date(mts$index[1]), '.rds saved!\n'))
+  }
+```
 
 ### Nested Weekly-Monthly Model
+
+### Nested Weekly-Quarterly Model
+
+### Nested Weekly-Yearly Model
 
 ## Seasonal Models `seasonal::seas()` 
 
@@ -1887,6 +2149,8 @@ for (dt in timeID) {
 
 ### Seasonal ETS
 
+Here I read the saved models.
+
 ```{r eval=FALSE, warning=FALSE, message=FALSE}
 ## Get all files.
 fls <- paste0('data/fx/USDJPY/', list.files(
@@ -1999,7 +2263,8 @@ seasonal_m[c('Lo.80', 'close.Hi.80', 'close.Lo.95', 'close.Hi.95',
 ##The last observation of Friday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price.
 #comp %<>% .[colSums(!is.na(.)) > 0]
 seasonal_m <- join(data_m1, seasonal_m) %>% 
-  bind_rows %>% as_tibble
+  bind_rows %>% 
+  as_tibble
 
 seasonal_m %<>% 
   .[c('index','Model','Period','open','high','low','close',
@@ -2013,6 +2278,9 @@ seasonal_m %<>%
   'low.Point.Forecast.Lo 95','low.Point.Forecast.Hi 95',
   'close.Point.Forecast.Lo 80','close.Point.Forecast.Hi 80',
   'close.Point.Forecast.Lo 95','close.Point.Forecast.Hi 95')]
+
+## don't use complete.cases() since there has some NA elements in ts models.
+#seasonal_m <- seasonal_m[complete.cases(seasonal_m),]
 write_rds(seasonal_m, 'data/fx/USDJPY/seasonal_m.rds')
 ```
 
@@ -2020,8 +2288,9 @@ write_rds(seasonal_m, 'data/fx/USDJPY/seasonal_m.rds')
 seasonal_m <- read_rds('data/fx/USDJPY/seasonal_m.rds')
 ```
 
-```{r warning=FALSE, message=FALSE}
+Below table compares the models.
 
+```{r warning=FALSE, message=FALSE}
 mse1 <- seasonal_m %>% 
   ddply(.(Model, Period), summarise, 
         MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
@@ -2035,7 +2304,6 @@ mse1 <- seasonal_m %>%
 ```
 
 ```{r warning=FALSE, message=FALSE}
-
 mse1 %>% 
   mutate(
     MSE.open = ifelse(
@@ -2093,20 +2361,23 @@ mse1 %>%
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-```{r warning=FALSE, message=FALSE}
+from above models we know the βest model.
+
+```{r warning=FALSE, message=FALSE, eval=FALSE}
 ######
 tmID <- fls %>% 
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% 
   plyr::count() %>% 
-  dplyr::filter(freq == 4)
+  dplyr::filter(freq == 7)
 tmID %<>% .$x
+
 fls2 <- llply(tmID, function(x) {
     paste0('data/fx/USDJPY/sets.', c('wk', 'mo', 'qt', 'yr'), 
            '.1440.', x, '.rds')
     }) %>% unlist
 
-comp3 <- llply(fls2, function(x) {
+seasonal_m1 <- llply(fls2, function(x) {
   if(grepl('sets.wk', x)) {
     readRDS(x)$forecast %>% mutate(Period = factor('wk'))
     
@@ -2120,13 +2391,31 @@ comp3 <- llply(fls2, function(x) {
     readRDS(x)$forecast %>% mutate(Period = factor('yr'))
     
   } else {
-    stop('No suach files.')
+    stop('No such files.')
   }
-  }) %>% bind_rows %>% as_tibble
+  }) %>% bind_rows %>% 
+  as_tibble
 
-comp4 <- join(data_m1, comp3) %>% 
+seasonal_m1 <- join(data_m1, seasonal_m1) %>% 
   as_tibble %>% 
   na.omit
+
+seasonal_m1 %<>% 
+  .[c('index','Period','open','high','low','close',
+  'open.Point.Forecast','high.Point.Forecast',
+  'low.Point.Forecast','close.Point.Forecast',
+  'open.Hi.80','open.Lo.80','open.Lo.95','open.Hi.95',
+  'high.Lo.80','high.Hi.80','high.Lo.95','high.Hi.95',
+  'low.Lo.80','low.Hi.80','low.Lo.95','low.Hi.95',
+  'close.Lo.80','close.Hi.80','close.Lo.95','close.Hi.95')]
+
+## don't use complete.cases() since there has some NA elements in ts models.
+#seasonal_m <- seasonal_m[complete.cases(seasonal_m),]
+write_rds(seasonal_m1, 'data/fx/USDJPY/seasonal_m1.rds')
+```
+
+```{r warning=FALSE, message=FALSE}
+seasonal_m1 <- read_rds('data/fx/USDJPY/seasonal_m1.rds')
 ```
 
 ```{r warning=FALSE}
@@ -2291,7 +2580,7 @@ seas_m_inter <- llply(fls, function(x) {
     dat <- read_rds(x) %>% mutate(Period = factor('dy.wk.mo.yr'))
     
   } else {
-    stop('No suach files.')
+    stop('No such files.')
   }
   
   dat %>% mutate(type = case_when(
