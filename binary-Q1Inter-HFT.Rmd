@@ -2282,6 +2282,7 @@ seasonal_m %<>%
 ## don't use complete.cases() since there has some NA elements in ts models.
 #seasonal_m <- seasonal_m[complete.cases(seasonal_m),]
 write_rds(seasonal_m, 'data/fx/USDJPY/seasonal_m.rds')
+#zip it to be splited 99MB for each file.
 ```
 
 ```{r warning=FALSE, message=FALSE}
@@ -2412,6 +2413,7 @@ seasonal_m1 %<>%
 ## don't use complete.cases() since there has some NA elements in ts models.
 #seasonal_m <- seasonal_m[complete.cases(seasonal_m),]
 write_rds(seasonal_m1, 'data/fx/USDJPY/seasonal_m1.rds')
+#zip it to be splited 99MB for each file.
 ```
 
 ```{r warning=FALSE, message=FALSE}
