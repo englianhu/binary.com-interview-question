@@ -701,12 +701,14 @@ Due to `1min` dataset is better than (more complete) `tickdata-to-1min`, here I 
 if(!exists('data_m1')) {
   data_m1 <- read_rds(paste0(dtr1, '/data_m1.rds'))
 }
+if(nrow(data_m1 %>% select(contains('Bid|Ask'))) < 1) {
 data_m1 %<>% 
   mutate(open = (BidOpen + AskOpen)/2, 
          high = (BidHigh + AskHigh)/2, 
          low = (BidLow + AskLow)/2, 
          close = (BidClose + AskClose)/2) %>% 
   dplyr::select(index, open, high, low, close)
+}
 ```
 
 ```{r warning=FALSE, message=FALSE}

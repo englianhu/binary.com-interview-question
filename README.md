@@ -1,5 +1,5 @@
 
-![](www/binary-logo.jpg) ![](www/deriv.jpg)
+![](www/binary-logo.jpg)
 
 # Job Application - Quantitative Analyst
 
@@ -143,6 +143,10 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 01. [Data APIs/feeds available as packages in R](http://stats.stackexchange.com/questions/12670/data-apis-feeds-available-as-packages-in-r)
 02. [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion)
+
+---
+
+<img src='www/deriv.jpg' width='260'>
 
 # Quantitative Trading
 
