@@ -27,7 +27,7 @@ if(!require('BBmisc')) {
 suppressPackageStartupMessages(library('BBmisc'))
 # suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'devtools', 'lubridate', 'data.table', 'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend')
+pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'devtools','readr',   'lubridate', 'data.table', 'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend', 'lhmetools', 'stringr')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -701,7 +701,7 @@ Due to `1min` dataset is better than (more complete) `tickdata-to-1min`, here I 
 if(!exists('data_m1')) {
   data_m1 <- read_rds(paste0(dtr1, '/data_m1.rds'))
 }
-if(nrow(data_m1 %>% select(contains('Bid|Ask'))) < 1) {
+if(names(data_m1) %>% str_detect('Bid|Ask') %>% any()) {
 data_m1 %<>% 
   mutate(open = (BidOpen + AskOpen)/2, 
          high = (BidHigh + AskHigh)/2, 
@@ -724,7 +724,7 @@ data_m1 %>% mutate(
 ```
 
 ```{js}
-<script type="text/javascript" src="//cdn.datacamp.com/dcl-react.js.gz"></script>
+//<script type="text/javascript" src="//cdn.datacamp.com/dcl-react.js.gz"></script>
 ```
 
 *Source : [DataCamp Light](https://github.com/datacamp/datacamp-light)*
@@ -733,11 +733,18 @@ You are feel free to surf [Online Coding Platform Example](https://cdn.datacamp.
 
 # Modelling
 
+## Seasonal Modelling
+
+Below articles introduce **TBATS models** `tbats()` and **Dynamic harmonic regression with multiple seasonal periods** `auto.arima()`. Here I also includes `ts()`, **MIDAS** `midasr()`, **GARCH-MIDAS**, **mcsGARCH** and **Levy Process** for this research.
+
+- [Forecasting: Principles and Practice - *11.1 Complex seasonality*](https://otexts.com/fpp2/complexseasonality.html#complexseasonality)
+- [Forecasting: Principles and Practice - *12.1 Weekly, daily and sub-daily data*](https://otexts.com/fpp2/weekly.html#weekly)
+
 ## Seasonal ETS
 
 ### ETS `ts()`
 
-The `forecast.ets()` will automatically use the optimal `ets()` which is similar with `auto.arima()`.
+The `forecast.ets()` will automatically use the optimal `ets()` which is similar theory with `auto.arima()`.
 
 ### Weekly >> Daily
 
@@ -1682,7 +1689,7 @@ for (dt in timeID) {
   }
 ```
 
-Due to heavily calculation and based on the comparison section proved that 2 levels (or layers) nested model more effective than 3 levels (or layers) models, here i skip above model.
+Due to heavily calculation and based on the comparison section proved that 2 levels (or layers) nested model more effective than 3 levels (or layers) models, here I skip above model.
 
 ### Nested Daily-Weekly-Yearly Model
 
@@ -1768,7 +1775,7 @@ for (dt in timeID) {
   }
 ```
 
-Due to heavily calculation and based on the comparison section proved that 2 levels (or layers) nested model more effective than 3 levels (or layers) models, here i skip above model.
+Due to heavily calculation and based on the comparison section proved that 2 levels (or layers) nested model more effective than 3 levels (or layers) models, here I skip above model.
 
 ### Nested Daily-Weekly-Monthly-Quarterly-Yearly Model
 
@@ -1857,7 +1864,7 @@ for (dt in timeID) {
   }
 ```
 
-Due to heavily calculation and based on the comparison section proved that 2 levels (or layers) nested model more effective than 3 levels (or layers) models, here i skip above model.
+Due to heavily calculation and based on the comparison section proved that 2 levels (or layers) nested model more effective than 3 levels (or layers) models, here I skip above model.
 
 ### Nested Daily-Quarterly Model
 
@@ -2027,16 +2034,34 @@ for (dt in timeID) {
   }
 ```
 
+### Nested Weekly-Weekly Model
+
+Based on the comparison section proved that daily (1440 mins) nested model more effective than weekly (7200 mins) nested models, here I skip above model.
+
 ### Nested Weekly-Monthly Model
+
+Based on the comparison section proved that daily (1440 mins) nested model more effective than weekly (7200 mins) nested models, here I skip above model.
 
 ### Nested Weekly-Quarterly Model
 
+Based on the comparison section proved that daily (1440 mins) nested model more effective than weekly (7200 mins) nested models, here I skip above model.
+
 ### Nested Weekly-Yearly Model
+
+Based on the comparison section proved that daily (1440 mins) nested model more effective than weekly (7200 mins) nested models, here I skip above model.
 
 ## Seasonal Models `seasonal::seas()` 
 
 ```{r warning=FALSE, message=FALSE, eval=FALSE}
-##
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#mts <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > ymd('2015-01-11')]
+
 for (dt in timeID) {
   smp <- data_m1 %>% 
     tk_xts(silent = TRUE)
@@ -2044,7 +2069,7 @@ for (dt in timeID) {
   smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
   
   mts <- smp %>% 
-    msts(seasonal.periods = c(7200, 7200))
+    msts(seasonal.periods = c(1440, 7200))
   
   mts <- llply(1:ncol(mts), function(i) {
     y <- mts[,i] %>% 
@@ -2141,8 +2166,6 @@ for (dt in timeID) {
   }
 ```
 
-
-
 ## Levy Process
 
 # Comparison
@@ -2163,56 +2186,76 @@ fls <- paste0('data/fx/USDJPY/', list.files(
 # read_rds(grep('mts', fls, value = TRUE)[1]) %>% as_tibble
 
 seasonal_m <- llply(fls, function(x) {
-  if(grepl('sets.wk.1440.', x)) {
+  if(str_detect(x, 'sets.wk.1440.')) {
     read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('wk.1440'))
     
-  } else if(grepl('sets.mo.1440.', x)) {
+  } else if(str_detect(x, 'sets.mo.1440.')) {
     read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('mo.1440'))
     
-  } else if(grepl('sets.qt.1440.', x)) {
+  } else if(str_detect(x, 'sets.qt.1440.')) {
     read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('qt.1440'))
     
-  } else if(grepl('sets.yr.1440.', x)) {
+  } else if(str_detect(x, 'sets.yr.1440.')) {
     read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('yr.1440'))
     
-  } else if(grepl('sets.wk.7200.', x)) {
+  } else if(str_detect(x, 'sets.wk.7200.')) {
     read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('wk.7200'))
     
-  } else if(grepl('sets.mo.7200.', x)) {
+  } else if(str_detect(x, 'sets.mo.7200.')) {
     read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('mo.7200'))
     
-  } else if(grepl('sets.qt.7200.', x)) {
+  } else if(str_detect(x, 'sets.qt.7200.')) {
     read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('qt.7200'))
     
-  } else if(grepl('sets.yr.7200.', x)) {
+  } else if(str_detect(x, 'sets.yr.7200.')) {
     read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('yr.7200'))
     
-  } else if(grepl('mts.dy.wk.[0-9]{4}', x)) {
+  } else if(str_detect(x, 'mts.dy.wk.[0-9]{4}')) {
     read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('dy.wk'))
     
-  } else if(grepl('mts.dy.wk.mo.[0-9]{4}', x)) {
+  } else if(str_detect(x, 'mts.dy.qt.[0-9]{4}')) {
+    read_rds(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('dy.qt'))
+    
+  } else if(str_detect(x, 'mts.dy.yr.[0-9]{4}')) {
+    read_rds(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('dy.yr'))
+    
+  } else if(str_detect(x, 'mts.wk.qt.[0-9]{4}')) {
+    read_rds(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('wk.qt'))
+    
+  } else if(str_detect(x, 'mts.wk.qt.[0-9]{4}')) {
+    read_rds(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('wk.yr'))
+    
+  } else if(str_detect(x, 'mts.qt.yr.[0-9]{4}')) {
+    read_rds(x) %>% 
+      mutate(Model = factor('tbats'), Period = factor('qt.yr'))
+    
+  }  else if(str_detect(x, 'mts.dy.wk.mo.[0-9]{4}')) {
     read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('dy.wk.mo'))
     
-  } else if(grepl('mts.dy.wk.mo.qt.[0-9]{4}', x)) {
+  } else if(str_detect(x, 'mts.dy.wk.mo.qt.[0-9]{4}')) {
     read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('dy.wk.mo.qt'))
     
-  } else if(grepl('mts.dy.wk.mo.yr.[0-9]{4}', x)) {
+  } else if(str_detect(x, 'mts.dy.wk.mo.yr.[0-9]{4}')) {
     read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('dy.wk.mo.yr'))
     
   } else {
-    stop('No such files.')
+    cat('No such files.\n')
   }
   }) %>% 
   bind_rows %>% 
@@ -2288,7 +2331,14 @@ write_rds(seasonal_m, 'data/fx/USDJPY/seasonal_m.rds')
 ```
 
 ```{r warning=FALSE, message=FALSE}
+dir('data/fx/USDJPY', pattern = '*.rar') %>% 
+  llply(., function(x) {
+    suppressAll(unzip(paste0('data/fx/USDJPY/', x)))
+  })
 seasonal_m <- read_rds('data/fx/USDJPY/seasonal_m.rds')
+
+## https://stackoverflow.com/a/52490634/3806250
+seasonal_m[is.nan(seasonal_m)] <- NA
 ```
 
 Below table compares the models.
@@ -2584,7 +2634,7 @@ seas_m_inter <- llply(fls, function(x) {
     dat <- read_rds(x) %>% mutate(Period = factor('dy.wk.mo.yr'))
     
   } else {
-    stop('No such files.')
+    cat('No such files.\n')
   }
   
   dat %>% mutate(type = case_when(
@@ -2652,7 +2702,11 @@ seas_m_inter %>%
 
 ### SARIMA
 
+
 ### Interday AUTO ARIMA
+
+- [Forecasting: Principles and Practice - *11.1 Complex seasonality*](https://otexts.com/fpp2/complexseasonality.html#complexseasonality)
+- [Forecasting: Principles and Practice - *12.1 Weekly, daily and sub-daily data*](https://otexts.com/fpp2/weekly.html#weekly)
 
 ```{r warning=FALSE}
 ar.fls <- list.files('data', pattern = '^fundAutoArima')
@@ -2694,11 +2748,9 @@ ARIMA.MSE %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 ```
 
-
 # Conclusion
 
 <span style='color:goldenrod'>*High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers*</span> introduce... suggest... DCC-MIDAS etc.
-
 
 ```{r option, echo = FALSE}
 ## Set options back to original options
@@ -2773,6 +2825,7 @@ cbind(sys1, sys2) %>%
 17. [High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model](http://www.unstarched.net/2013/03/20/high-frequency-garch-the-multiplicative-component-garch-mcsgarch-model/)
 18. [A Review of Literature on Time Zone Difference and Trade](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/A%20Review%20of%20Literature%20on%20Time%20Zone%20Difference%20and%20Trade.pdf)
 19. [binary.com Interview Question I - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](https://rpubs.com/englianhu/binary-Q1TD)
+20. [Forecasting: Principles and Practice](https://otexts.com/fpp2)
 
 ---
 
