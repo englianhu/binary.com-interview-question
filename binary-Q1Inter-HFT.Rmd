@@ -1991,14 +1991,16 @@ for (dt in timeID) {
                            low.Point.Forecast = low, 
                            close.Point.Forecast = close)
       names(x)[3:6] <- paste0(x$type[1], '.', names(x)[3:6])
-      x[colSums(!is.na(x)) > 0] %>% 
+      x[colSums(!is.na(x)) > 0] %<>% 
         data.frame %>% 
         as_tibble %>% 
         dplyr::select(-type)
+      #x[c(ncol(x), ncol(x)-1, x[1:(ncol(x)-2)])]
       
       }) %>% 
     join_all %>% 
-    as_tibble
+    as_tibble %>% 
+    dplyr::rename('high.Point.Forecast' = 'high.high.Point.Forecast')
   
   if(is.numeric(index(mts)[1])){
     sq <- smp %>% 
