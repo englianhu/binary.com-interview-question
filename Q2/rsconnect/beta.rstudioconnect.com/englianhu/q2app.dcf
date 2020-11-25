@@ -5,9 +5,8 @@ account: englianhu
 server: beta.rstudioconnect.com
 hostUrl: https://beta.rstudioconnect.com/__api__
 appId: 3089
-bundleId: 6656
+bundleId: 32807
 url: https://beta.rstudioconnect.com/content/3089/
-when: 1507783536.2911
+when: 1606231190.58301
 asMultiple: FALSE
 asStatic: FALSE
-ignoredFiles: global.R

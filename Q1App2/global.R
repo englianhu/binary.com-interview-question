@@ -9,9 +9,9 @@ suppressWarnings(require('memoise'))
 suppressWarnings(require('rugarch'))
 suppressWarnings(require('rmgarch'))
 
-fx <- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
-cur <- c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 'USD/CAD', 'AUD/USD')
-wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')#, 'Saturday', 'Sunday')
+fx <<- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
+cur <<- c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 'USD/CAD', 'AUD/USD')
+wd <<- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')#, 'Saturday', 'Sunday')
 
 #'@ if(now('GMT') == today('GMT')) {
 ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
@@ -43,10 +43,10 @@ openBet <- memoise(function(currency, realFX, ahead = 1) {
   return(tmp)
 })
 
-kellyBet <- function(currency, ){
-  
-  return(res)
-}
+#kellyBet <- function(currency, ){
+#  
+#  return(res)
+#}
 
 opt_arma <- function(mbase){
   #ARMA Modeling minimum AIC value of `p,d,q`
