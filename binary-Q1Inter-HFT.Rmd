@@ -1,7 +1,7 @@
 ---
 title: "<img src='www/deriv.jpg' width='240'>"
 subtitle: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) - Interday High Frequency Trading Models Comparison"
-author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/Me byteDance.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>® <img src='www/joey_chua.jpg width='24'>"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/Me byteDance.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>® <img src='www/xueba1.jpg width='24'>"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
   html_document: 
@@ -27,7 +27,7 @@ if(!require('BBmisc')) {
 suppressPackageStartupMessages(library('BBmisc'))
 # suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'devtools','readr',   'lubridate', 'data.table', 'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend', 'lhmetools', 'stringr')
+pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'devtools','readr',   'lubridate', 'data.table', 'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend', 'lhmetools', 'stringr', 'pacman')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -1484,9 +1484,14 @@ for (dt in timeID) {
         dplyr::select(-type)
       
       }) %>% 
-    join_all %>% 
-    as_tibble %>% 
-    dplyr::rename('high.Point.Forecast' = 'high.high.Point.Forecast')
+    bind_cols %>% 
+    as_tibble 
+  mts <- mts[c('open.Point.Forecast', 'high.Point.Forecast', 'low.Point.Forecast', 'close.Point.Forecast', 
+               'open.Lo.80', 'open.Hi.80', 'open.Lo.95', 'open.Hi.95', 
+               'high.Lo.80', 'high.Hi.80', 'high.Lo.95', 'high.Hi.95', 
+               'low.Lo.80', 'low.Hi.80', 'low.Lo.95', 'low.Hi.95', 
+               'close.Lo.80', 'close.Hi.80', 'close.Lo.95', 'close.Hi.95')]
+  #mts[str_detect(names(mts), 'Model.|Period.')] <- NULL
   
   if(is.numeric(index(mts)[1])){
     sq <- smp %>% 
@@ -1914,9 +1919,14 @@ for (dt in timeID) {
         dplyr::select(-type)
       
       }) %>% 
-    join_all %>% 
-    as_tibble %>% 
-    dplyr::rename('high.Point.Forecast' = 'high.high.Point.Forecast')
+    bind_cols %>% 
+    as_tibble 
+  mts <- mts[c('open.Point.Forecast', 'high.Point.Forecast', 'low.Point.Forecast', 'close.Point.Forecast', 
+               'open.Lo.80', 'open.Hi.80', 'open.Lo.95', 'open.Hi.95', 
+               'high.Lo.80', 'high.Hi.80', 'high.Lo.95', 'high.Hi.95', 
+               'low.Lo.80', 'low.Hi.80', 'low.Lo.95', 'low.Hi.95', 
+               'close.Lo.80', 'close.Hi.80', 'close.Lo.95', 'close.Hi.95')]
+  #mts[str_detect(names(mts), 'Model.|Period.')] <- NULL
   
   if(is.numeric(index(mts)[1])){
     sq <- smp %>% 
@@ -2000,9 +2010,14 @@ for (dt in timeID) {
       #x[c(ncol(x), ncol(x)-1, x[1:(ncol(x)-2)])] #Due to xts format attr, there will be not in order.
       
       }) %>% 
-    join_all %>% 
-    as_tibble %>% 
-    dplyr::rename('high.Point.Forecast' = 'high.high.Point.Forecast')
+    bind_cols %>% 
+    as_tibble 
+  mts <- mts[c('open.Point.Forecast', 'high.Point.Forecast', 'low.Point.Forecast', 'close.Point.Forecast', 
+               'open.Lo.80', 'open.Hi.80', 'open.Lo.95', 'open.Hi.95', 
+               'high.Lo.80', 'high.Hi.80', 'high.Lo.95', 'high.Hi.95', 
+               'low.Lo.80', 'low.Hi.80', 'low.Lo.95', 'low.Hi.95', 
+               'close.Lo.80', 'close.Hi.80', 'close.Lo.95', 'close.Hi.95')]
+  #mts[str_detect(names(mts), 'Model.|Period.')] <- NULL
   
   if(is.numeric(index(mts)[1])){
     sq <- smp %>% 
