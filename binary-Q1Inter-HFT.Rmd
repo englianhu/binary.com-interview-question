@@ -53,6 +53,7 @@ l_ply(funs, function(x) source(paste0('./function/', x)))
 
 .cl = FALSE
 
+Sys.setenv(TZ = 'Asia/Tokyo')
 options(warn = -1)#, digits.secs = 6)
 rm(pkgs, funs)
 ```
@@ -743,7 +744,7 @@ Below articles introduce **TBATS models** `tbats()` and **Dynamic harmonic regre
 **Progress Function**
 
 ```{r}
-task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^mts|^ts', .loops = TRUE) {
+task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^mts|^sets', .loops = TRUE) {
   ## ------------- 定时查询进度 ----------------------
   ## 每分钟自动查询与更新以上模拟预测汇价进度（储存文件量）。
   require('magrittr')
@@ -757,40 +758,40 @@ task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^mts|^ts'
     while(1) {
       cat('Current Tokyo Time :', as.character(now('Asia/Tokyo')), '\n\n')
       
-      y = as.Date(dtm$index) %>% 
+      y = as_date(mbase$index) %>% 
 			unique
-		datee = y
+	  datee = y
+	
+	  if(is.null(timeID0)) { 
+		  timeID0 = y[1]
+	  } else if (lubridate::is.Date(timeID0)) { 
+		  timeID0 = timeID0
+	  } else {
+		  timeID0 = as_date(mbase$index) %>% 
+		  unique
+	  }
+	
+	  y = y[y >= timeID0]
+    
+      x = list.files(paste0('./data/fx/USDJPY/'), pattern = .pattern) %>% 
+	      str_replace_all('.rds', '') %>% 
+		  str_replace_all('.201', '_201') %>% 
+		  str_split_fixed('_', '2') %>% 
+		  as_tibble %>% 
+		  dplyr::rename('Model' = 'V1', 'Date' = 'V2') %>% 
+		  mutate(Model = factor(Model), Date = as_date(Date))
 		
-		if(is.null(timeID0)) { 
-			timeID0 = y[1]
-		} else if (is.Date(timeID0)) { 
-			timeID0 = timeID0
-		} else {
-			timeID0 = as.POSIXct(dtm$index) %>% 
-			as.Date %>% 
-			unique
-		}
-		
-        y = y[y >= timeID0]
-        
-        x = list.files(paste0('./data/fx/USDJPY/'), pattern = .pattern) %>% 
-			str_replace_all('.rds', '') %>% 
-			str_replace_all('.201', '_201') %>% 
-			str_split_fixed('_', '2') %>% 
-			as_tibble %>% 
-			dplyr::rename('Model' = 'V1', 'Date' = 'V2') %>% 
-			mutate(Model = factor(Model), Date = ymd(Date))
-		
-		x = join(tibble(Date = datee), x) %>% 
-			as_tibble
-		
-        x %<>% mutate(binary = if_else(is.na(Model), 0, 1)) %>% 
-			spread(Model, binary)
-        
-        z <- ldply(x[,-1], function(zz) {
-			na.omit(zz) %>% length }) %>% 
-			dplyr::rename(x = V1) %>% 
-			mutate(n = length(y), progress = percent(x/n))
+	  x = join(tibble(Date = datee), x) %>% 
+		  as_tibble	  
+	  x %<>% na.omit
+	  
+      x %<>% mutate(binary = if_else(is.na(Model), 0, 1)) %>% 
+		  spread(Model, binary)
+      
+      z <- ldply(x[,-1], function(zz) {
+		  na.omit(zz) %>% length }) %>% 
+		  dplyr::rename(x = V1) %>% 
+		  mutate(n = length(y), progress = percent(x/n))
       
       print(z)
       
@@ -805,41 +806,42 @@ task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^mts|^ts'
     
     cat('Current Tokyo Time :', as.character(now('Asia/Tokyo')), '\n\n')
       
-    y = as.Date(dtm$index) %>% 
+    
+      y = as_date(mbase$index) %>% 
 			unique
-		datee = y
+	  datee = y
 		
-		if(is.null(timeID0)) { 
-			timeID0 = y[1]
-		} else if (is.Date(timeID0)) { 
-			timeID0 = timeID0
-		} else {
-			timeID0 = as.POSIXct(dtm$index) %>% 
-			as.Date %>% 
-			unique
-		}
+	  if(is.null(timeID0)) { 
+		  timeID0 = y[1]
+	  } else if (lubridate::is.Date(timeID0)) { 
+		  timeID0 = timeID0
+	  } else {
+		  timeID0 = as_date(mbase$index) %>% 
+		  unique
+	  }
+	
+	  y = y[y >= timeID0]
+    
+      x = list.files(paste0('./data/fx/USDJPY/'), pattern = .pattern) %>% 
+	      str_replace_all('.rds', '') %>% 
+		  str_replace_all('.201', '_201') %>% 
+		  str_split_fixed('_', '2') %>% 
+		  as_tibble %>% 
+		  dplyr::rename('Model' = 'V1', 'Date' = 'V2') %>% 
+		  mutate(Model = factor(Model), Date = as_date(Date))
 		
-        y = y[y >= timeID0]
+	  x = join(tibble(Date = datee), x) %>% 
+		  as_tibble
+	  x %<>% na.omit
+	  
+      x %<>% mutate(binary = if_else(is.na(Model), 0, 1)) %>% 
+		  spread(Model, binary)
         
-        x = list.files(paste0('./data/fx/USDJPY/'), pattern = .pattern) %>% 
-			str_replace_all('.rds', '') %>% 
-			str_replace_all('.201', '_201') %>% 
-			str_split_fixed('_', '2') %>% 
-			as_tibble %>% 
-			dplyr::rename('Model' = 'V1', 'Date' = 'V2') %>% 
-			mutate(Model = factor(Model), Date = ymd(Date))
-		
-		x = join(tibble(Date = datee), x) %>% 
-			as_tibble
-		
-        x %<>% mutate(binary = if_else(is.na(Model), 0, 1)) %>% 
-			spread(Model, binary)
-        
-        z <- ldply(x[,-1], function(zz) {
-			na.omit(zz) %>% length }) %>% 
-			dplyr::rename(x = V1) %>% 
-			mutate(n = length(y), progress = percent(x/n))
-            
+      z <- ldply(x[,-1], function(zz) {
+		  na.omit(zz) %>% length }) %>% 
+		  dplyr::rename(x = V1) %>% 
+		  mutate(n = length(y), progress = percent(x/n))
+                
     print(z)
     
     prg = sum(z$x)/sum(z$n)
@@ -866,7 +868,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -921,7 +923,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -976,7 +978,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1031,7 +1033,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% tk_xts(silent = TRUE)
@@ -1085,7 +1087,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1140,7 +1142,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1195,7 +1197,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1250,7 +1252,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1552,7 +1554,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1645,7 +1647,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1729,7 +1731,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1815,7 +1817,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1901,7 +1903,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1990,7 +1992,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -2080,7 +2082,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -2187,7 +2189,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > ymd('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-11')]
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -2603,7 +2605,7 @@ seasonal_m1 <- read_rds('data/fx/USDJPY/seasonal_m1.rds')
 ######
 #comp2 %>% ddply(.(Period), summarise, 
 comp %>% 
-  dplyr::filter(index > ymd('2016-01-04')) %>% 
+  dplyr::filter(index > as_date('2016-01-04')) %>% 
   ddply(.(Model, Period), summarise, 
         MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
         MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
@@ -2810,7 +2812,7 @@ seas_m_inter %>% ddply(.(Period), summarise,
 
 ```{r warning=FALSE, message=FALSE, eval=FALSE}
 seas_m_inter %>% 
-  dplyr::filter(index > ymd('2016-01-04')) %>% 
+  dplyr::filter(index > as_date('2016-01-04')) %>% 
   ddply(.(Period), summarise, 
         MSE.open = mean((open.Point.Forecast - open)^2), 
         MSE.high = mean((high.Point.Forecast - high)^2), 
@@ -2885,6 +2887,45 @@ options(warn = 0)
 ```
 
 # Appendix
+
+## Efficiency
+
+```{r eval=FALSE}
+##
+> dim(data_m1)
+[1] 1324800       5
+> microbenchmark(data_m1$index[1], tidyquant::FIRST(data_m1$index), tail(data_m1$index, 1), data_m1$index %>% .[1], data_m1$index %>% (tidyquant::FIRST), data_m1$index %>% tail(1))
+Unit: microseconds
+                                 expr  min    lq    mean median    uq    max neval
+                     data_m1$index[1]  8.8 10.40  16.352  11.50 14.20  106.9   100
+      tidyquant::FIRST(data_m1$index) 34.4 41.25 140.854  46.30 65.15 7256.6   100
+               tail(data_m1$index, 1) 20.3 24.25  39.063  27.80 36.45  180.4   100
+               data_m1$index %>% .[1] 12.2 14.60  23.498  15.85 18.70  229.3   100
+ data_m1$index %>% (tidyquant::FIRST) 39.7 44.05  67.244  50.25 62.60  694.6   100
+            data_m1$index %>% tail(1) 25.0 30.60  64.955  36.40 57.65  613.7   100
+
+#
+> system.time({
++     smp <- data_m1 %>% 
++         tk_xts(silent = TRUE);
++     dt %<>% as_date;
++     smp <- smp[paste0(dt %m-% months(3) + seconds(59), '/', dt + seconds(59))];
++     
++     mts <- smp %>% 
++         msts(seasonal.periods = c(1440, nrow(smp)))
++ })
+   user  system elapsed 
+   0.63    0.09    1.16 
+> system.time({
++     smp <- tk_xts(data_m1, silent = TRUE);
++     dt %<>% as_date;
++     smp <- smp[paste0(dt %m-% months(3) + seconds(59), '/', dt + seconds(59))];
++     
++     mts <- msts(smp, seasonal.periods = c(1440, nrow(smp)))
++ })
+   user  system elapsed 
+   0.16    0.06    0.42
+```
 
 ## Documenting File Creation 
 
