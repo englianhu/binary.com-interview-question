@@ -741,7 +741,7 @@ Below articles introduce **TBATS models** `tbats()` and **Dynamic harmonic regre
 - [Forecasting: Principles and Practice - *11.1 Complex seasonality*](https://otexts.com/fpp2/complexseasonality.html#complexseasonality)
 - [Forecasting: Principles and Practice - *12.1 Weekly, daily and sub-daily data*](https://otexts.com/fpp2/weekly.html#weekly)
 
-**Progress Function**
+<span style='color:red'>**Progress Function**</span>
 
 ```{r}
 task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^mts|^sets', .loops = TRUE) {
@@ -760,19 +760,20 @@ task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^mts|^set
       
       y = as_date(mbase$index) %>% 
 			unique
-	  datee = y
-	
-	  if(is.null(timeID0)) { 
-		  timeID0 = y[1]
-	  } else if (is.Date(timeID0)) { 
-		  timeID0 = as_date(timeID0)
-	  } else {
-		  timeID0 = as_date(mbase$index) %>% 
-		  unique
-	  }
-	
-	  y = y[y >= timeID0]
-    
+      y <- y[weekdays(y) != 'Saturday'] #filter and omit the weekly last price which is 12:00am on saturday
+	    datee = y
+	    
+	    if(is.null(timeID0)) { 
+		    timeID0 = y[1]
+	    } else if (is.Date(timeID0)) { 
+		    timeID0 = as_date(timeID0)
+	    } else {
+		    timeID0 = as_date(mbase$index) %>% 
+		    unique
+	    }
+  	  
+	    y = y[y >= timeID0]
+      
       x = list.files(paste0('./data/fx/USDJPY/'), pattern = .pattern) %>% 
 	      str_replace_all('.rds', '') %>% 
 		  str_replace_all('.201', '_201') %>% 
@@ -2888,10 +2889,14 @@ options(warn = 0)
 
 # Appendix
 
-## Efficiency
+## Blooper
+
+<span style='color:red'>**Efficiency**</span>
+
+There cost alot of time for couple models comparison.
 
 ```{r eval=FALSE}
-##
+# Test the efficiency
 > dim(data_m1)
 [1] 1324800       5
 > microbenchmark(data_m1$index[1], tidyquant::FIRST(data_m1$index), tail(data_m1$index, 1), data_m1$index %>% .[1], data_m1$index %>% (tidyquant::FIRST), data_m1$index %>% tail(1))
@@ -2904,7 +2909,7 @@ Unit: microseconds
  data_m1$index %>% (tidyquant::FIRST) 39.7 44.05  67.244  50.25 62.60  694.6   100
             data_m1$index %>% tail(1) 25.0 30.60  64.955  36.40 57.65  613.7   100
 
-#
+# Test the efficiency
 > system.time({
 +     smp <- data_m1 %>% 
 +         tk_xts(silent = TRUE);
@@ -2925,6 +2930,39 @@ Unit: microseconds
 + })
    user  system elapsed 
    0.16    0.06    0.42
+
+# Test the efficiency
+> microbenchmark(
++     as_tibble(matrix(weekdays(unique(na.omit(data.table(data_m1))[weekdays(index) %in% c('Saturday', 'Sunday')]$index)), byrow = TRUE, ncol = 6)), 
++     as_tibble(matrix(weekdays(as_date(data_m1$index))[weekdays(as_date(data_m1$index)) %in% c('Saturday', 'Sunday')], byrow = TRUE, ncol = 6))
++ )
+Unit: seconds
+                                                                                                                                               expr
+ as_tibble(matrix(weekdays(unique(na.omit(data.table(data_m1))[weekdays(index) %in%      c("Saturday", "Sunday")]$index)), byrow = TRUE, ncol = 6))
+    as_tibble(matrix(weekdays(as_date(data_m1$index))[weekdays(as_date(data_m1$index)) %in%      c("Saturday", "Sunday")], byrow = TRUE, ncol = 6))
+       min        lq      mean    median        uq       max neval
+  4.923539  5.102061  5.388813  5.368958  5.552245  6.816211   100
+ 10.182849 10.652719 11.118986 11.026882 11.546361 13.484108   100
+```
+
+<span style='color:red'>**Small Mistake**</span>
+
+Here I noticed that there have `Saturday` and `Sunday` trading days as show below when I continue R&D after 2 years from 2018. It is not a big problem since this paper only compare the models and choose the best fit model for high-frequency-trading.
+
+```{r}
+dt_data_m1 <- na.omit(data.table(data_m1))
+
+## date breakdown
+dtb <- as_tibble(matrix(unique(as.character(as_date(dt_data_m1$index))), byrow = TRUE, ncol = 6)) %>% mutate_if(is.character, as_date)
+dtb %>% 
+  mutate(dif = as.numeric(V1 - lag(V1))) %>% 
+  dplyr::filter(dif != 7)
+
+## weekdays breakdown
+wkb <- dtb %>% 
+    mutate_if(is.Date, weekdays) %>% mutate_if(is.character, as.factor)
+wkb %>% 
+  dplyr::filter(V1 != 'Monday')
 ```
 
 ## Documenting File Creation 
