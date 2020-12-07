@@ -2456,6 +2456,8 @@ seasonal_m <- join(data_m1, seasonal_m) %>%
   bind_rows %>% 
   as_tibble
 
+seasonal_m %<>% na.omit
+
 seasonal_m %<>% 
   .[c('index','Model','Period','open','high','low','close',
   'open.Point.Forecast','high.Point.Forecast',
