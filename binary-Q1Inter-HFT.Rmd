@@ -2392,11 +2392,12 @@ seasonal_m <- llply(fls, function(x) {
   bind_rows %>% 
   as_tibble
 
-# seasonal_m[c('close.Lo.80', 'close.Hi.80', 'close.Lo.95', 'close.Hi.95', 
-#              'high.Hi.80', 'high.Lo.95', 'high.Hi.95', 
-#              'high.high.Point.Forecast', 'low.Hi.80', 'low.Lo.95', 
-#              'low.Hi.95', 'open.Hi.80', 'open.Lo.95', 'open.Hi.95', 
-#              'open.Lo.80', 'high.Lo.80', 'low.Lo.80', 'close.Lo.80')] <- NULL
+seasonal_m[c('Lo.80', 
+             'close.Lo.80', 'close.Hi.80', 'close.Lo.95', 'close.Hi.95', 
+             'high.Hi.80', 'high.Lo.95', 'high.Hi.95', 
+             'high.high.Point.Forecast', 'low.Hi.80', 'low.Lo.95', 
+             'low.Hi.95', 'open.Hi.80', 'open.Lo.95', 'open.Hi.95', 
+             'open.Lo.80', 'high.Lo.80', 'low.Lo.80', 'close.Lo.80')] <- NULL
 
 seasonal_m %<>% 
   .[c('index','Model','Period',
