@@ -2392,25 +2392,31 @@ seasonal_m <- llply(fls, function(x) {
   bind_rows %>% 
   as_tibble
 
-seasonal_m[c('Lo.80', 
-             'close.Lo.80', 'close.Hi.80', 'close.Lo.95', 'close.Hi.95', 
-             'high.Hi.80', 'high.Lo.95', 'high.Hi.95', 
-             'high.high.Point.Forecast', 'low.Hi.80', 'low.Lo.95', 
-             'low.Hi.95', 'open.Hi.80', 'open.Lo.95', 'open.Hi.95', 
-             'open.Lo.80', 'high.Lo.80', 'low.Lo.80', 'close.Lo.80')] <- NULL
+# seasonal_m[c('Lo.80', 
+#              'close.Lo.80', 'close.Hi.80', 'close.Lo.95', 'close.Hi.95', 
+#              'high.Hi.80', 'high.Lo.95', 'high.Hi.95', 
+#              'high.high.Point.Forecast', 'low.Hi.80', 'low.Lo.95', 
+#              'low.Hi.95', 'open.Hi.80', 'open.Lo.95', 'open.Hi.95', 
+#              'open.Lo.80', 'high.Lo.80', 'low.Lo.80', 'close.Lo.80')] <- NULL
 
-seasonal_m %<>% 
+## don't use complete.cases() since there has some NA elements in ts models.
+#seasonal_m <- seasonal_m[complete.cases(seasonal_m),]
+#dataset with 23
+write_rds(seasonal_m, 'data/fx/USDJPY/seasonal_m.rds')
+seasonal_m1 <- seasonal_m
+
+seasonal_m1 %<>% 
   .[c('index','Model','Period',
   'open.Point.Forecast','high.Point.Forecast',
-  'low.Point.Forecast','close.Point.Forecast',
-  'open.Point.Forecast.Hi 80','open.Point.Forecast.Lo 80',
-  'open.Point.Forecast.Lo 95','open.Point.Forecast.Hi 95',
-  'high.Point.Forecast.Lo 80','high.Point.Forecast.Hi 80',
-  'high.Point.Forecast.Lo 95','high.Point.Forecast.Hi 95',
-  'low.Point.Forecast.Lo 80','low.Point.Forecast.Hi 80',
-  'low.Point.Forecast.Lo 95','low.Point.Forecast.Hi 95',
-  'close.Point.Forecast.Lo 80','close.Point.Forecast.Hi 80',
-  'close.Point.Forecast.Lo 95','close.Point.Forecast.Hi 95')]
+  'low.Point.Forecast','close.Point.Forecast')]#,
+#  'open.Point.Forecast.Hi 80','open.Point.Forecast.Lo 80',
+#  'open.Point.Forecast.Lo 95','open.Point.Forecast.Hi 95',
+#  'high.Point.Forecast.Lo 80','high.Point.Forecast.Hi 80',
+#  'high.Point.Forecast.Lo 95','high.Point.Forecast.Hi 95',
+#  'low.Point.Forecast.Lo 80','low.Point.Forecast.Hi 80',
+#  'low.Point.Forecast.Lo 95','low.Point.Forecast.Hi 95',
+#  'close.Point.Forecast.Lo 80','close.Point.Forecast.Hi 80',
+#  'close.Point.Forecast.Lo 95','close.Point.Forecast.Hi 95')]
 
 ##
 #seasonal_m <- llply(fls, function(x) {
@@ -2452,28 +2458,28 @@ seasonal_m %<>%
 
 ##The last observation of Friday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price.
 #comp %<>% .[colSums(!is.na(.)) > 0]
-seasonal_m <- join(data_m1, seasonal_m) %>% 
+seasonal_m1 <- join(data_m1, seasonal_m1) %>% 
   bind_rows %>% 
   as_tibble
-
-#seasonal_m %<>% na.omit
 
 seasonal_m %<>% 
   .[c('index','Model','Period','open','high','low','close',
   'open.Point.Forecast','high.Point.Forecast',
-  'low.Point.Forecast','close.Point.Forecast',
-  'open.Point.Forecast.Hi 80','open.Point.Forecast.Lo 80',
-  'open.Point.Forecast.Lo 95','open.Point.Forecast.Hi 95',
-  'high.Point.Forecast.Lo 80','high.Point.Forecast.Hi 80',
-  'high.Point.Forecast.Lo 95','high.Point.Forecast.Hi 95',
-  'low.Point.Forecast.Lo 80','low.Point.Forecast.Hi 80',
-  'low.Point.Forecast.Lo 95','low.Point.Forecast.Hi 95',
-  'close.Point.Forecast.Lo 80','close.Point.Forecast.Hi 80',
-  'close.Point.Forecast.Lo 95','close.Point.Forecast.Hi 95')]
+  'low.Point.Forecast','close.Point.Forecast')]#,
+#  'open.Point.Forecast.Hi 80','open.Point.Forecast.Lo 80',
+#  'open.Point.Forecast.Lo 95','open.Point.Forecast.Hi 95',
+#  'high.Point.Forecast.Lo 80','high.Point.Forecast.Hi 80',
+#  'high.Point.Forecast.Lo 95','high.Point.Forecast.Hi 95',
+#  'low.Point.Forecast.Lo 80','low.Point.Forecast.Hi 80',
+#  'low.Point.Forecast.Lo 95','low.Point.Forecast.Hi 95',
+#  'close.Point.Forecast.Lo 80','close.Point.Forecast.Hi 80',
+#  'close.Point.Forecast.Lo 95','close.Point.Forecast.Hi 95')]
+
+seasonal_m1 %<>% na.omit
 
 ## don't use complete.cases() since there has some NA elements in ts models.
 #seasonal_m <- seasonal_m[complete.cases(seasonal_m),]
-write_rds(seasonal_m, 'data/fx/USDJPY/seasonal_m.rds')
+write_rds(seasonal_m1, 'data/fx/USDJPY/seasonal_m1.rds')
 #zip it to be splited 99MB for each file.
 ```
 
@@ -2491,7 +2497,7 @@ seasonal_m[is.nan(seasonal_m)] <- NA
 Below table compares the models.
 
 ```{r warning=FALSE, message=FALSE}
-mse1 <- seasonal_m %>% 
+mse1 <- seasonal_m1 %>% 
   ddply(.(Model, Period), summarise, 
         MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
         MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
