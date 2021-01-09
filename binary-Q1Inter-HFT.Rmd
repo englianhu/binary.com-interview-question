@@ -93,21 +93,19 @@ cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'CNY=X', 'JPY
 names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
 # names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
 
+dtr <- str_extract_all(getwd(), '.*/', '')[1]
+dtr1 <- paste0(dtr, 'real-time-fxcm/data/')
+
 ## Read presaved FXCM data.
 # mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
 
 fls <- sapply(names(cr_code), function(x) {
-  dtr <<- paste0('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/', x)
-  if(any(file.exists(dtr, pattern = '^Y[0-9]{4}W[0-9]{1,2}.rds$'))){
-    dtr <<- 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/'
-    dtr1 <<- paste0(dtr, x)
-  } else {
-    dtr <<- 'C:/Users/Owner/Documents/GitHub/real-time-fxcm/data/'
-    dtr1 <<- paste0(dtr, x)
-  }
-    list.files(dtr1, pattern = '^Y[0-9]{4}W[0-9]{1,2}.rds$') %>% str_replace_all('.rds', '')
+  dtr1 <- paste0(dtr1, x)
+  list.files(dtr1, pattern = '^Y[0-9]{4}W[0-9]{1,2}.rds$') %>% 
+    str_replace_all('.rds', '')
   })
 fls[lengths(fls) == 0] <- NA_character_
+fls[is.na(fls)] <- NULL
 
 # AUDUSD <- sapply(fls[[1]], read_rds)
 # EURUSD <- sapply(fls[[2]], read_rds)
@@ -117,7 +115,10 @@ fls[lengths(fls) == 0] <- NA_character_
 # USDCNY <- sapply(fls[[6]], read_rds)
 # mbase <- llply(as.list(fls[[7]]), read_rds) #185 files where 1 files contains 1 million observation.
 
-fs <- list.files(dtr1, pattern = '^Y[0-9]{4}W[0-9]{1,2}.rds$') %>% str_replace_all('.rds', '')
+## Here I take USDJPY as example...
+dtr1s <- paste0(dtr1, names(fls[length(fls)]))
+fs <- list.files(dtr1s, pattern = '^Y[0-9]{4}W[0-9]{1,2}.rds$') %>% 
+  str_replace_all('.rds', '')
 # eval(parse(text = paste0(fs, "<- readRDS('", fls[[7]], "') %>% as_tibble")))
 
 t.unit <- c('seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'quarters', 'quarters')
@@ -135,7 +136,9 @@ Due to high volume of dataset, here I only use `USDJPY` since the variance is hi
 ## Read raw dataset.
 #Y2015W1 <- read_rds(paste0(dtr1, '/', fls[[7]][1], '.rds')) %>% as_tibble
 
-eval(parse(text = paste0(fs[1], "<- readRDS('", dtr1, "/", fls[[7]][1], ".rds') %>% as_tibble")))
+eval(parse(text = paste0(fs[1], "<- readRDS('", dtr1, "/", 
+                         names(fls[length(fls)]), '/', fls[length(fls)][[1]][1], 
+                         ".rds') %>% as_tibble")))
 
 ## raw dataset
 Y2015W1
@@ -246,7 +249,7 @@ Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndma
 # saveRDS(tsz, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
 
 ## The daylight saving convertion in not tally.
-tsz <- read_rds(paste0(dtr1, '/tsz.rds')) %>% 
+tsz <- read_rds(paste0(dtr1s, '/tsz.rds')) %>% 
   dplyr::filter(index >= ymd_hms('2015-01-05 00:00:00', tz = 'Europe/Athens'))
 tsz
 
@@ -333,12 +336,14 @@ cr_code <- c('EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'JPY=X')
 names(cr_code) <- c('EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDJPY')
 
 fls1 <- llply(names(cr_code), function(x) {
-    fls <- list.files(paste0(dtr, x), pattern = '^Y[0-9]{4}W[0-9]{1,2}_m1.rds$')
-    if (length(fls) > 0) paste0(dtr, x, '/', fls)
+    fls <- list.files(paste0(dtr1, x), pattern = '^Y[0-9]{4}W[0-9]{1,2}_m1.rds$')
+    if (length(fls) > 0) paste0(dtr1, x, '/', fls)
   })
 names(fls1) <- names(cr_code)
 
-fs1 <- list.files(dtr1, pattern = '^Y[0-9]{4}W[0-9]{1,2}_m1.rds$') %>% str_replace_all('.rds', '')
+dtr1s <- paste0(dtr1, names(fls1[length(fls1)]))
+fs1 <- list.files(dtr1s, pattern = '^Y[0-9]{4}W[0-9]{1,2}_m1.rds$') %>% 
+  str_replace_all('.rds', '')
 
 ## Read raw dataset.
 # eval(parse(text = paste0(fs, "<- read_rds('", fls[[7]], "')")))
@@ -371,7 +376,7 @@ Now I try to validate the daylight saving date.
 # saveRDS(tsz2, 'C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz2.rds')
 
 ## The daylight saving convertion in not tally.
-tsz2 <- read_rds(paste0(dtr1, '/tsz2.rds')) %>% 
+tsz2 <- read_rds(paste0(dtr1s, '/tsz2.rds')) %>% 
   dplyr::rename(index = DateTime) %>% 
   dplyr::filter(index >= ymd_hms('2015-01-05 00:01:00', tz = 'Europe/Athens'))
 tsz2
@@ -605,7 +610,7 @@ cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'CNY=X', 'JPY
 
 names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
 
-data_m1 <- read_rds(paste0(dtr1, '/data_m1.rds'))
+data_m1 <- read_rds(paste0(dtr1s, '/data_m1.rds'))
 
 data_m1 %>% ddply(.(year, week), head, 1) %>% 
   kable(caption = 'Weekly Initial Data Point') %>% 
@@ -700,7 +705,7 @@ Due to `1min` dataset is better than (more complete) `tickdata-to-1min`, here I 
 
 ```{r warning=FALSE, message=FALSE}
 if(!exists('data_m1')) {
-  data_m1 <- read_rds(paste0(dtr1, '/data_m1.rds'))
+  data_m1 <- read_rds(paste0(dtr1s, '/data_m1.rds'))
 }
 if(names(data_m1) %>% str_detect('Bid|Ask') %>% any()) {
 data_m1 %<>% 
@@ -2404,6 +2409,7 @@ seasonal_m <- llply(fls, function(x) {
 #dataset with 23
 write_rds(seasonal_m, 'data/fx/USDJPY/seasonal_m.rds')
 seasonal_m1 <- seasonal_m
+rm(seasonal_m)
 
 seasonal_m1 %<>% 
   .[c('index','Model','Period',
@@ -2462,7 +2468,7 @@ seasonal_m1 <- join(data_m1, seasonal_m1) %>%
   bind_rows %>% 
   as_tibble
 
-seasonal_m %<>% 
+seasonal_m1 %<>% 
   .[c('index','Model','Period','open','high','low','close',
   'open.Point.Forecast','high.Point.Forecast',
   'low.Point.Forecast','close.Point.Forecast')]#,
@@ -2481,10 +2487,14 @@ seasonal_m1 %<>% na.omit
 #seasonal_m <- seasonal_m[complete.cases(seasonal_m),]
 write_rds(seasonal_m1, 'data/fx/USDJPY/seasonal_m1.rds')
 #zip it to be splited 99MB for each file.
+
+## ------------------------------------------
+## zip above files to be splitted small files since file sizes restriction on GitHub.
+## ------------------------------------------
 ```
 
-```{r warning=FALSE, message=FALSE}
-dir('data/fx/USDJPY', pattern = '*.rar') %>% 
+```{r warning=FALSE, message=FALSE, eval=FALSE}
+dir('data/fx/USDJPY', pattern = '*.z') %>% 
   llply(., function(x) {
     suppressAll(unzip(paste0('data/fx/USDJPY/', x)))
   })
@@ -2575,7 +2585,7 @@ tmID <- fls %>%
   str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
   unlist %>% 
   plyr::count() %>% 
-  dplyr::filter(freq == 7)
+  dplyr::filter(freq == 9)
 tmID %<>% .$x
 
 fls2 <- llply(tmID, function(x) {
@@ -2583,7 +2593,7 @@ fls2 <- llply(tmID, function(x) {
            '.1440.', x, '.rds')
     }) %>% unlist
 
-seasonal_m1 <- llply(fls2, function(x) {
+seasonal_m2 <- llply(fls2, function(x) {
   if(grepl('sets.wk', x)) {
     readRDS(x)$forecast %>% mutate(Period = factor('wk'))
     
@@ -2602,11 +2612,11 @@ seasonal_m1 <- llply(fls2, function(x) {
   }) %>% bind_rows %>% 
   as_tibble
 
-seasonal_m1 <- join(data_m1, seasonal_m1) %>% 
+seasonal_m2 <- join(data_m1, seasonal_m2) %>% 
   as_tibble %>% 
   na.omit
 
-seasonal_m1 %<>% 
+seasonal_m2 %<>% 
   .[c('index','Period','open','high','low','close',
   'open.Point.Forecast','high.Point.Forecast',
   'low.Point.Forecast','close.Point.Forecast',
@@ -2617,18 +2627,16 @@ seasonal_m1 %<>%
 
 ## don't use complete.cases() since there has some NA elements in ts models.
 #seasonal_m <- seasonal_m[complete.cases(seasonal_m),]
-write_rds(seasonal_m1, 'data/fx/USDJPY/seasonal_m1.rds')
+write_rds(seasonal_m2, 'data/fx/USDJPY/seasonal_m2.rds')
 #zip it to be splited 99MB for each file.
 ```
 
 ```{r warning=FALSE, message=FALSE}
-seasonal_m1 <- read_rds('data/fx/USDJPY/seasonal_m1.rds')
+seasonal_m2 <- read_rds('data/fx/USDJPY/seasonal_m2.rds')
 ```
 
-```{r warning=FALSE}
-######
-#comp2 %>% ddply(.(Period), summarise, 
-comp %>% 
+```{r warning=FALSE, message=FALSE}
+mse2 <- seasonal_m1 %>% 
   dplyr::filter(index > as_date('2016-01-04')) %>% 
   ddply(.(Model, Period), summarise, 
         MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
@@ -2638,9 +2646,64 @@ comp %>%
         MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
         MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
         n = length(index)) %>% 
-  as_tibble %>% 
-  kbl(caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Completed Period)') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  as_tibble
+```
+
+```{r warning=FALSE, message=FALSE}
+mse2 %>% 
+  mutate(
+    MSE.open = ifelse(
+      rank(MSE.open) <= 3, 
+      cell_spec(
+        paste0(round(MSE.open, 7), ' (rank: ', sprintf('%1.f', rank(MSE.open)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.open, 7), ' (rank: ', sprintf('%1.f', rank(MSE.open)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    MSE.high = ifelse(
+      rank(MSE.high) <= 3, 
+      cell_spec(
+        paste0(round(MSE.high, 7), ' (rank: ', sprintf('%1.f', rank(MSE.high)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.high, 7), ' (rank: ', sprintf('%1.f', rank(MSE.high)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    MSE.low = ifelse(
+      rank(MSE.low) <= 3, 
+      cell_spec(
+        paste0(round(MSE.low, 7), ' (rank: ', sprintf('%1.f', rank(MSE.low)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.low, 7), ' (rank: ', sprintf('%1.f', rank(MSE.low)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    MSE.close = ifelse(
+      rank(MSE.close) <= 3, 
+      cell_spec(
+        paste0(round(MSE.close, 7), ' (rank: ', sprintf('%1.f', rank(MSE.close)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.close, 7), ' (rank: ', sprintf('%1.f', rank(MSE.close)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    MSE.HLC = ifelse(
+      rank(MSE.HLC) <= 3, 
+      cell_spec(
+        paste0(round(MSE.HLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.HLC)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.HLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.HLC)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    MSE.OHLC = ifelse(
+      rank(MSE.OHLC) <= 3, 
+      cell_spec(
+        paste0(round(MSE.OHLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.OHLC)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.OHLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.OHLC)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    ) %>% 
+  kbl('html', caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Completed Period)', escape = F) %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material() %>% 
   scroll_box(width = '100%')#, height = '400px')
 ```
 
@@ -2667,23 +2730,49 @@ ETS.MSE <- llply(ets.fls, function(x) {
 
 ETS.MSE %<>% mutate(
     MSE.1 = case_when(
-        substr(Type, 1, 2) == 'Op' ~ mean((Point.Forecast - USDJPY.Open)^2), 
-        substr(Type, 1, 2) == 'Hi' ~ mean((Point.Forecast - USDJPY.High)^2), 
-        substr(Type, 1, 2) == 'Mn' ~ mean((Point.Forecast - (USDJPY.High + USDJPY.Low)/2)^2), 
-        substr(Type, 1, 2) == 'Lo' ~ mean((Point.Forecast - USDJPY.Low)^2), 
-        substr(Type, 1, 2) == 'Cl' ~ mean((Point.Forecast - USDJPY.Close)^2)), 
+        substr(Type, 1, 2) == 'Op' ~ mean((Point.Forecast - USDJPY.Open)^2, 
+                                          na.rm = TRUE), 
+        substr(Type, 1, 2) == 'Hi' ~ mean((Point.Forecast - USDJPY.High)^2, 
+                                          na.rm = TRUE), 
+        substr(Type, 1, 2) == 'Mn' ~ mean((Point.Forecast - (USDJPY.High + USDJPY.Low)/2)^2, na.rm = TRUE), 
+        substr(Type, 1, 2) == 'Lo' ~ mean((Point.Forecast - USDJPY.Low)^2, 
+                                          na.rm = TRUE), 
+        substr(Type, 1, 2) == 'Cl' ~ mean((Point.Forecast - USDJPY.Close)^2, 
+                                          na.rm = TRUE)), 
     MSE.2 = case_when(
-        substr(Type, 3, 4) == 'Op' ~ mean((Point.Forecast - USDJPY.Open)^2), 
-        substr(Type, 3, 4) == 'Hi' ~ mean((Point.Forecast - USDJPY.High)^2), 
-        substr(Type, 3, 4) == 'Mn' ~ mean((Point.Forecast - (USDJPY.High + USDJPY.Low)/2)^2), 
-        substr(Type, 3, 4) == 'Lo' ~ mean((Point.Forecast - USDJPY.Low)^2), 
-        substr(Type, 3, 4) == 'Cl' ~ mean((Point.Forecast - USDJPY.Close)^2)))
+        substr(Type, 3, 4) == 'Op' ~ mean((Point.Forecast - USDJPY.Open)^2, 
+                                          na.rm = TRUE), 
+        substr(Type, 3, 4) == 'Hi' ~ mean((Point.Forecast - USDJPY.High)^2, 
+                                          na.rm = TRUE), 
+        substr(Type, 3, 4) == 'Mn' ~ mean((Point.Forecast - (USDJPY.High + USDJPY.Low)/2)^2, na.rm = TRUE), 
+        substr(Type, 3, 4) == 'Lo' ~ mean((Point.Forecast - USDJPY.Low)^2, 
+                                          na.rm = TRUE), 
+        substr(Type, 3, 4) == 'Cl' ~ mean((Point.Forecast - USDJPY.Close)^2, 
+                                          na.rm = TRUE)))
 
-ETS.MSE %>% 
+ETS.MSE %<>% 
     ddply(.(Model, Type), summarise, 
           MSE.1 = mean(MSE.1, na.rm=TRUE), 
-          MSE.2 = mean(MSE.2, na.rm=TRUE)) %>% 
-  kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
+          MSE.2 = mean(MSE.2, na.rm=TRUE))
+
+ETS.MSE %>% mutate(
+    MSE.1 = ifelse(
+      rank(MSE.1) <= 3, 
+      cell_spec(
+        paste0(round(MSE.1, 7), ' (rank: ', sprintf('%1.f', rank(MSE.1)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.1, 7), ' (rank: ', sprintf('%1.f', rank(MSE.1)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    MSE.2 = ifelse(
+      rank(MSE.2) <= 3, 
+      cell_spec(
+        paste0(round(MSE.2, 7), ' (rank: ', sprintf('%1.f', rank(MSE.2)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(MSE.2, 7), ' (rank: ', sprintf('%1.f', rank(MSE.2)), ')'), 
+        'html', color = 'grey', italic = T))) %>% 
+  kbl('html', caption = 'MSE of daily Opened and Closed Transaction Orders', escape = F) %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kableExtra::group_rows('AAN', 1, 25, label_row_css = 'background-color: #e68a00; color: #fff;') %>%
   kableExtra::group_rows('AAZ', 26, 50, label_row_css = 'background-color: #ff0000; color: #fff;') %>%
@@ -2713,42 +2802,6 @@ ETS.MSE %>%
 *Source : [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E)*
 
 From above `MSE` comparison with intraday-dataset, we know that the intraday data will be more accurate than just daily dataset.
-
-```{r warning=FALSE, message=FALSE}
-ETS.MSE %>% 
-    ddply(.(Model, Type), summarise, 
-          MSE.1 = mean(MSE.1, na.rm=TRUE), 
-          MSE.2 = mean(MSE.2, na.rm=TRUE)) %>% 
-  arrange(MSE.1, MSE.2) %>% 
-  kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kableExtra::group_rows('OpOp', 1, 22, label_row_css = 'background-color: #e68a00; color: #fff;') %>%
-  kableExtra::group_rows('OpCl', 23, 44, label_row_css = 'background-color: #ff0000; color: #fff;') %>%
-  kableExtra::group_rows('ANN', 45, 66, label_row_css = 'background-color: #bf80ff; color: #fff;') %>%
-  kableExtra::group_rows('ANZ', 67, 88, label_row_css = 'background-color: #66ff33; color: #fff;') %>%
-  kableExtra::group_rows('AZN', 89, 110, label_row_css = 'background-color: #6666ff; color: #fff;') %>%
-  kableExtra::group_rows('AZZ', 111, 132, label_row_css = 'background-color: #66e0ff; color: #fff;') %>%
-  kableExtra::group_rows('MAN', 133, 154, label_row_css = 'background-color:#0066ff; color: #fff;') %>%
-  kableExtra::group_rows('MAZ', 155, 176, label_row_css = 'background-color: #ff9900; color: #fff;') %>%
-  kableExtra::group_rows('MMN', 177, 198, label_row_css = 'background-color: #33ff33; color: #fff;') %>%
-  kableExtra::group_rows('MMZ', 199, 220, label_row_css = 'background-color: #339966; color: #fff;') %>%
-  kableExtra::group_rows('MNN', 221, 242, label_row_css = 'background-color: #5900b3; color: #fff;') %>%
-  kableExtra::group_rows('MNZ', 243, 264, label_row_css = 'background-color: #269900; color: #fff;') %>%
-  kableExtra::group_rows('MZN', 265, 286, label_row_css = 'background-color: #808000; color: #fff;') %>%
-  kableExtra::group_rows('MZZ', 287, 308, label_row_css = 'background-color: #3399ff; color: #fff;') %>%
-  kableExtra::group_rows('ZAN', 309, 330, label_row_css = 'background-color: #003380; color: #fff;') %>%
-  kableExtra::group_rows('ZAZ', 331, 352, label_row_css = 'background-color: #804d00; color: #fff;') %>%
-  kableExtra::group_rows('ZMN', 353, 374, label_row_css = 'background-color: #d279d2; color: #fff;') %>%
-  kableExtra::group_rows('ZMZ', 375, 396, label_row_css = 'background-color: #666; color: #fff;') %>%
-  kableExtra::group_rows('ZNN', 397, 418, label_row_css = 'background-color: #ff3377; color: #fff;') %>%
-  kableExtra::group_rows('ZNZ', 419, 440, label_row_css = 'background-color: #993399; color: #fff;') %>%
-  kableExtra::group_rows('ZZN', 441, 462, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
-  kableExtra::group_rows('ZZZ', 463, 484, label_row_css = 'background-color: #e60cc0; color: #fff;') %>%
-  kableExtra::group_rows('ZZN', 485, 506, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
-  kableExtra::group_rows('ZZZ', 507, 528, label_row_css = 'background-color: #e56000; color: #fff;') %>%
-  kableExtra::group_rows('ZZZ', 529, 550, label_row_css = 'background-color: #e33000; color: #fff;') %>%
-  scroll_box(width = '100%', height = '400px')
-```
 
 ### Nested Seasonal `TBats` Model
 
