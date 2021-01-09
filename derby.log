@@ -1,11 +1,11 @@
 ----------------------------------------------------------------
-Fri Sep 28 12:30:47 JST 2018:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0166-1e3a-93e4-0000071193d0 
-on database directory memory:C:\Users\scibr\Documents\GitHub\englianhu\binary.com-interview-question\databaseName=metastore_db with class loader org.apache.spark.sql.hive.client.IsolatedClientLoader$$anon$1@1a1e050c 
-Loaded from file:/C:/Users/scibr/AppData/Local/spark/spark-2.3.0-bin-hadoop2.7/jars/derby-10.12.1.1.jar
+Sat Jan 09 09:46:57 PST 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0176-e842-24cc-0000013d4640 
+on database directory C:\Users\User\Documents\GitHub\binary.com-interview-question\metastore_db with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@15db9742 
+Loaded from file:/C:/Users/User/AppData/Local/spark/spark-3.0.1-bin-hadoop3.2/jars/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
-java.runtime.version=1.8.0_144-b01
-user.dir=C:\Users\scibr\Documents\GitHub\englianhu\binary.com-interview-question
+java.runtime.version=15.0.1+9-18
+user.dir=C:\Users\User\Documents\GitHub\binary.com-interview-question
 os.name=Windows 10
 os.arch=amd64
 os.version=10.0

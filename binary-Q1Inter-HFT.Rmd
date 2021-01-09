@@ -1532,6 +1532,52 @@ aar <- multi_seasons(smp, auto_arima=TRUE)
 
 ```
 
+Below `Arima()` and `auto.arima()` functions prove that `auto.arima()` is better model.
+
+```{r, eval=FALSE}
+> n <- 2000
+> m <- 200
+> y <- ts(rnorm(n) + (1:n)%%100/30, f=m)
+> 
+> library(forecast)
+> fit <- Arima(y, order=c(2,0,1), xreg=fourier(y, K=4))
+> fit
+Series: y 
+Regression with ARIMA(2,0,1) errors 
+
+Coefficients:
+         ar1     ar2      ma1  intercept  S1-200  C1-200   S2-200   C2-200  S3-200   C3-200   S4-200
+      0.3846  0.0649  -0.2794     1.6168  0.0354  0.0308  -1.0026  -0.0222  0.0677  -0.0163  -0.5295
+s.e.  0.1588  0.0324   0.1584     0.0320  0.0453  0.0452   0.0452   0.0451  0.0450   0.0450   0.0448
+      C4-200
+      0.0059
+s.e.  0.0447
+
+sigma^2 estimated as 1.204:  log likelihood=-3017.65
+AIC=6061.3   AICc=6061.49   BIC=6134.11
+> 
+> fit2 <- auto.arima(y, seasonal=FALSE, xreg=fourier(y, K=4))
+> fit2
+Series: y 
+Regression with ARIMA(1,0,2) errors 
+
+Coefficients:
+         ar1      ma1     ma2  intercept  S1-200  C1-200   S2-200   C2-200  S3-200   C3-200   S4-200
+      0.4605  -0.3566  0.0605     1.6168  0.0354  0.0309  -1.0026  -0.0222  0.0677  -0.0164  -0.5296
+s.e.  0.1319   0.1322  0.0297     0.0319  0.0451  0.0451   0.0450   0.0450  0.0449   0.0449   0.0447
+      C4-200
+      0.0057
+s.e.  0.0447
+
+sigma^2 estimated as 1.204:  log likelihood=-3017.44
+AIC=6060.87   AICc=6061.06   BIC=6133.69
+> 
+> fit$aic
+[1] 6061.302
+> fit2$aic
+[1] 6060.873
+```
+
 #### Monthly >> Weekly >> Daily
 
 I set the length of dataset as 3 level nested seasonal dataset as monthly (), weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
@@ -2493,15 +2539,15 @@ write_rds(seasonal_m1, 'data/fx/USDJPY/seasonal_m1.rds')
 ## ------------------------------------------
 ```
 
-```{r warning=FALSE, message=FALSE, eval=FALSE}
-dir('data/fx/USDJPY', pattern = '*.z') %>% 
-  llply(., function(x) {
-    suppressAll(unzip(paste0('data/fx/USDJPY/', x)))
-  })
-seasonal_m <- read_rds('data/fx/USDJPY/seasonal_m.rds')
+```{r warning=FALSE, message=FALSE}
+#dir('data/fx/USDJPY', pattern = '*.z') %>% 
+#  llply(., function(x) {
+#    suppressAll(unzip(paste0('data/fx/USDJPY/', x)))
+#  })
+seasonal_m1 <- read_rds('data/fx/USDJPY/seasonal_m1.rds')
 
 ## https://stackoverflow.com/a/52490634/3806250
-seasonal_m[is.nan(seasonal_m)] <- NA
+#seasonal_m1[is.nan(seasonal_m1)] <- NA
 ```
 
 Below table compares the models.
@@ -2636,9 +2682,9 @@ seasonal_m2 <- read_rds('data/fx/USDJPY/seasonal_m2.rds')
 ```
 
 ```{r warning=FALSE, message=FALSE}
-mse2 <- seasonal_m1 %>% 
+mse2 <- seasonal_m2 %>% 
   dplyr::filter(index > as_date('2016-01-04')) %>% 
-  ddply(.(Model, Period), summarise, 
+  ddply(.(Period), summarise, 
         MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
         MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
         MSE.low = mean((low.Point.Forecast - low)^2, na.rm=TRUE), 
@@ -2811,8 +2857,8 @@ fls <- paste0('data/fx/USDJPY/', list.files(
   'data/fx/USDJPY/', pattern = 'mts'))
 
 ## Shows example.
-read_rds(grepl('sets', fls, value = TRUE)[1])
-read_rds(grepl('mts', fls, value = TRUE)[1])
+#read_rds(grepl('sets', fls, value = TRUE)[1])
+#read_rds(grepl('mts', fls, value = TRUE)[1])
 
 seas_m_inter <- llply(fls, function(x) {
   if(grepl('sets.wk', x)) {
