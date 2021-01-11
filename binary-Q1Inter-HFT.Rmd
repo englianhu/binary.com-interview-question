@@ -27,7 +27,15 @@ if(!require('BBmisc')) {
 suppressPackageStartupMessages(library('BBmisc'))
 # suppressPackageStartupMessages(library('rmsfuns'))
 
-pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'devtools','readr',   'lubridate', 'data.table', 'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tidyverse', 'memoise', 'htmltools', 'formattable', 'zoo', 'forecast', 'seasonal', 'seasonalview', 'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'microbenchmark', 'dendextend', 'lhmetools', 'stringr', 'pacman')
+pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 
+          'devtools','readr', 'lubridate', 'data.table', 
+          'feather', 'purrr', 'quantmod', 'tidyquant', 
+          'tibbletime', 'furrr', 'flyingfox', 'tidyr', 
+          'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 
+          'tidyverse', 'memoise', 'htmltools', 'formattable', 
+          'zoo', 'forecast', 'seasonal', 'seasonalview', 
+          'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 
+          'microbenchmark', 'dendextend', 'lhmetools', 'stringr', 'pacman')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -37,7 +45,9 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'devtools','readr',   'lubr
 suppressAll(lib(pkgs))
 # load_pkg(pkgs)
 
-funs <- c('uv_fx.R', 'opt_arma.R', 'multi_seasons.R', 'filterFX.R', 'filter_spec.R', 'mv_fx.R', 'task_progress.R', 'read_umodels.R', 'convertOHLC.R')
+funs <- c('uv_fx.R', 'opt_arma.R', 'multi_seasons.R', 
+          'filterFX.R', 'filter_spec.R', 'mv_fx.R', 
+          'task_progress.R', 'read_umodels.R', 'convertOHLC.R')
 l_ply(funs, function(x) source(paste0('./function/', x)))
 
 # spark_install()
@@ -1472,6 +1482,7 @@ I set the length of dataset as nested seasonal dataset as weekly (1 week = 5 tra
 
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
+# sample, not run
 > suppressWarnings(Y2015W1 %>% 
                      tk_xts %>% 
                      to.daily %>% 
@@ -1485,6 +1496,7 @@ p d q P D Q s
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
 # eval(parse(text = paste0(fs, "<- read_rds('", fls[[7]], "') %>% as_tibble")))
+# sample, not run
 
 sarima <- list()
 for(i in (1:length(fs))) {
@@ -1519,6 +1531,8 @@ for(i in (1:length(fs))) {
 ```
 
 ```{r eval=FALSE}
+# --------- eval=FALSE ---------
+# sample, not run
 smp <- data_m1 %>% tk_xts(silent = TRUE)
 timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
   .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
@@ -1532,13 +1546,15 @@ aar <- multi_seasons(smp, auto_arima=TRUE)
 
 ```
 
-Below `Arima()` and `auto.arima()` functions prove that `auto.arima()` is better model.
+Below `Arima()` and `auto.arima()` functions prove that `auto.arima()` is better model since it auto adjust the best `arima(p,d,q)` values.
 
 ```{r, eval=FALSE}
+# --------- eval=FALSE ---------
+# sample, not run
 > n <- 2000
 > m <- 200
 > y <- ts(rnorm(n) + (1:n)%%100/30, f=m)
-> 
+
 > library(forecast)
 > fit <- Arima(y, order=c(2,0,1), xreg=fourier(y, K=4))
 > fit
@@ -1555,7 +1571,7 @@ s.e.  0.0447
 
 sigma^2 estimated as 1.204:  log likelihood=-3017.65
 AIC=6061.3   AICc=6061.49   BIC=6134.11
-> 
+
 > fit2 <- auto.arima(y, seasonal=FALSE, xreg=fourier(y, K=4))
 > fit2
 Series: y 
@@ -1571,11 +1587,67 @@ s.e.  0.0447
 
 sigma^2 estimated as 1.204:  log likelihood=-3017.44
 AIC=6060.87   AICc=6061.06   BIC=6133.69
-> 
+
 > fit$aic
 [1] 6061.302
 > fit2$aic
 [1] 6060.873
+```
+
+****
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#sets <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > as_date('2015-01-11')]
+
+for (dt in timeID) {
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  
+  sarimats <- smp %>% 
+    tk_ts(frequency = 1440) %>% 
+    #https://stackoverflow.com/a/37046276/3806250 #auto.arima(x, D = 1)
+    #https://stackoverflow.com/a/37400899/3806250 #auto.arima(x, seasonal = T)
+    auto.arima(D=1) %>% 
+    forecast(h = 1440) %>% 
+    llply(tk_tbl)
+  
+  if(is.double(sarimats$forecast$index[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日'|weekdays(sq) == 'Saturday') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    sarimats$forecast$index <- sq
+    
+  } else {
+    sarimats$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sarimats, paste0('data/fx/USDJPY/sarimats.wk.1440.', 
+                       as_date(sarimats$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sarimats.wk.1440.', 
+    as_date(sarimats$forecast$index[1]), '.rds saved!\n'))
+  }
 ```
 
 #### Monthly >> Weekly >> Daily
@@ -2230,6 +2302,196 @@ Based on the comparison section proved that daily (1440 mins) nested model more 
 ### Nested Weekly-Yearly Model
 
 Based on the comparison section proved that daily (1440 mins) nested model more effective than weekly (7200 mins) nested models, here I skip above model.
+
+```{r eval=FALSE}
+## Due to notice there have bias on `qt` and `yr` models after 2 years 2020 from 2018... might probably due to different reasons.
+
+## mts.dy.wk.
+ffl <- list.files('data/fx/USDJPY', pattern = 'mts.dy.wk.[0-9]{4}')
+smp <- llply(ffl, function(x) {
+    read_rds(paste0('data/fx/USDJPY/', x))
+  })
+
+smp_wk <- smp %>% 
+  bind_rows()
+smp_wk %<>% 
+  .[c('index', 'open.Point.Forecast', 'high.Point.Forecast',
+  'low.Point.Forecast', 'close.Point.Forecast')]
+smp_wk <- join(data_m1, smp_wk)
+smp_wk %<>% 
+  tibble %>% 
+  na.omit
+
+## mts.dy.wk.mo
+ffl <- list.files('data/fx/USDJPY', pattern = 'mts.dy.wk.mo.[0-9]{4}')
+smp <- llply(ffl, function(x) {
+    read_rds(paste0('data/fx/USDJPY/', x))
+  })
+
+smp_wk.mo <- smp %>% 
+  bind_rows()
+smp_wk.mo %<>% 
+  .[c('index', 'open.Point.Forecast', 'high.Point.Forecast',
+  'low.Point.Forecast', 'close.Point.Forecast')]
+smp_wk.mo <- join(data_m1, smp_wk.mo)
+smp_wk.mo %<>% 
+  tibble %>% 
+  na.omit
+
+## mts.dy.qt.
+ffl <- list.files('data/fx/USDJPY', pattern = 'mts.dy.qt.[0-9]{4}')
+smp <- llply(ffl, function(x) {
+    read_rds(paste0('data/fx/USDJPY/', x))
+  })
+
+smp_qt <- smp %>% 
+  bind_rows()
+smp_qt %<>% 
+  .[c('index', 'open.Point.Forecast', 'high.Point.Forecast',
+  'low.Point.Forecast', 'close.Point.Forecast')]
+smp_qt <- join(data_m1, smp_qt)
+smp_qt %<>% 
+  tibble %>% 
+  na.omit
+
+## mts.dy.yr.
+ffl <- list.files('data/fx/USDJPY', pattern = 'mts.dy.yr.[0-9]{4}')
+smp <- llply(ffl, function(x) {
+    read_rds(paste0('data/fx/USDJPY/', x))
+  })
+
+smp_yr <- smp %>% 
+  bind_rows()
+smp_yr %<>% 
+  .[c('index', 'open.Point.Forecast', 'high.Point.Forecast', 
+      'low.Point.Forecast', 'close.Point.Forecast')]
+smp_yr <- join(data_m1, smp_yr)
+smp_yr %<>% 
+  tibble %>% 
+  na.omit
+
+rm(ffl, smp)
+
+## trace and check the bias
+smp_wkc <- smp_wk %>% 
+    ddply(.(date = as_date(index)), summarise, 
+          MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
+          MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
+          MSE.low = mean((low.Point.Forecast - low)^2, na.rm=TRUE), 
+          MSE.close = mean((close.Point.Forecast - close)^2, na.rm=TRUE), 
+          MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
+          MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
+          n = length(index)) %>% 
+    as_tibble
+smp_wkc <- data.frame(model = factor('mts.dy.wk'), smp_wkc) %>% 
+  tibble
+
+smp_wk.moc <- smp_wk.mo %>% 
+    ddply(.(date = as_date(index)), summarise, 
+          MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
+          MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
+          MSE.low = mean((low.Point.Forecast - low)^2, na.rm=TRUE), 
+          MSE.close = mean((close.Point.Forecast - close)^2, na.rm=TRUE), 
+          MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
+          MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
+          n = length(index)) %>% 
+    as_tibble
+smp_wk.moc <- data.frame(model = factor('mts.dy.wk.mo'), smp_wk.moc) %>% 
+  tibble
+
+smp_qtc <- smp_qt %>% 
+    ddply(.(date = as_date(index)), summarise, 
+          MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
+          MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
+          MSE.low = mean((low.Point.Forecast - low)^2, na.rm=TRUE), 
+          MSE.close = mean((close.Point.Forecast - close)^2, na.rm=TRUE), 
+          MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
+          MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
+          n = length(index)) %>% 
+    as_tibble
+smp_qtc <- data.frame(model = factor('mts.dy.qt'), smp_qtc) %>% 
+  tibble
+
+smp_yrc <- smp_yr %>% 
+    ddply(.(date = as_date(index)), summarise, 
+          MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
+          MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
+          MSE.low = mean((low.Point.Forecast - low)^2, na.rm=TRUE), 
+          MSE.close = mean((close.Point.Forecast - close)^2, na.rm=TRUE), 
+          MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
+          MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
+          n = length(index)) %>% 
+    as_tibble
+smp_yrc <- data.frame(model = factor('mts.dy.yr'), smp_yrc) %>% 
+  tibble
+
+smpp <- list(smp_wkc, smp_wk.moc, smp_qtc, smp_yrc) %>% 
+  bind_rows
+
+MSE.open <- smpp %>% 
+    dplyr::select(date, model, MSE.open, n) %>% 
+    spread(model, MSE.open) %>% 
+  na.omit %>% 
+    mutate(mean = rowMeans(
+      select(., mts.dy.wk, mts.dy.wk.mo, mts.dy.qt, mts.dy.yr)))
+
+MSE.high <- smpp %>% 
+    dplyr::select(date, model, MSE.high, n) %>% 
+    spread(model, MSE.high) %>% 
+  na.omit %>% 
+    mutate(mean = rowMeans(
+      select(., mts.dy.wk, mts.dy.wk.mo, mts.dy.qt, mts.dy.yr)))
+
+MSE.low <- smpp %>% 
+    dplyr::select(date, model, MSE.low, n) %>% 
+    spread(model, MSE.low) %>% 
+  na.omit %>% 
+    mutate(mean = rowMeans(
+      select(., mts.dy.wk, mts.dy.wk.mo, mts.dy.qt, mts.dy.yr)))
+
+MSE.close <- smpp %>% 
+    dplyr::select(date, model, MSE.close, n) %>% 
+    spread(model, MSE.close) %>% 
+  na.omit %>% 
+    mutate(mean = rowMeans(
+      select(., mts.dy.wk, mts.dy.wk.mo, mts.dy.qt, mts.dy.yr)))
+
+select(MSE.open, c(mts.dy.wk, mts.dy.wk.mo, mts.dy.qt, mts.dy.yr, mean)) %>% colMeans
+#   mts.dy.wk mts.dy.wk.mo    mts.dy.qt    mts.dy.yr         mean 
+#   0.2931847    0.3066926    0.6637179    3.0892483    1.0882109 
+select(MSE.high, c(mts.dy.wk, mts.dy.wk.mo, mts.dy.qt, mts.dy.yr, mean)) %>% colMeans
+#   mts.dy.wk mts.dy.wk.mo    mts.dy.qt    mts.dy.yr         mean 
+#   0.2824914    0.3044910    0.6679225    3.1030069    1.0894780 
+select(MSE.low, c(mts.dy.wk, mts.dy.wk.mo, mts.dy.qt, mts.dy.yr, mean)) %>% colMeans
+#   mts.dy.wk mts.dy.wk.mo    mts.dy.qt    mts.dy.yr         mean 
+#   0.2798276    0.3028962    0.6615109    3.0781766    1.0806028 
+select(MSE.close, c(mts.dy.wk, mts.dy.wk.mo, mts.dy.qt, mts.dy.yr, mean)) %>% colMeans
+#   mts.dy.wk mts.dy.wk.mo    mts.dy.qt    mts.dy.yr         mean 
+#   0.2997343    0.2947651    0.6627861    3.0969951    1.0885702
+```
+
+```{r eval=FALSE}
+> list(smp_wkc, smp_wk.moc, smp_qtc, smp_yrc) %>% 
+  l_ply(function(x) length(x$n), .print = TRUE)
+[1] 1084
+[1] 1076
+[1] 1084
+[1] 1084
+
+chk1 <- MSE.open %>% 
+    mutate(
+        diff1 = abs(mts.dy.wk - mean), 
+        diff2 = abs(mts.dy.wk.mo - mean),
+        diff3 = abs(mts.dy.qt - mean),
+        diff4 = abs(mts.dy.yr - mean)) %>% 
+    mutate_if(is.numeric, round, 4) %>% 
+    data.frame
+
+chk1a <- chk1 %>% 
+  dplyr::filter(diff1 >= 0.05 | diff2 >= 0.05 | diff3 >= 0.05 | diff4 >= 0.05)
+chk1a[1:100,]
+
+```
 
 ## Seasonal Models `seasonal::seas()` 
 
