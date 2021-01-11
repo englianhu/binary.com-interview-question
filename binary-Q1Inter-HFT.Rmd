@@ -1476,7 +1476,16 @@ smp %>%
   llply(tk_tbl)
 ```
 
-#### Weekly >> Daily
+#### Weekly >> Daily `ts()`
+
+Here I use `ts()` for seasonal data modeling and set `auto.arima(D = 1, seasonal = TRUE)` as **sarima** model, **sarimax** models will be modelled in next paper.
+
+- [Auto.arima with xreg in R, restriction on forecast periods](https://datascience.stackexchange.com/questions/53955/auto-arima-with-xreg-in-r-restriction-on-forecast-periods)
+- [How to setup xreg argument in auto.arima() in R?](https://stats.stackexchange.com/questions/41070/how-to-setup-xreg-argument-in-auto-arima-in-r)
+- [Introducing seasonality to an ARIMA model in R](https://stats.stackexchange.com/questions/329433/introducing-seasonality-to-an-arima-model-in-r)
+- [Seasonality not taken account of in `auto.arima()`](https://stats.stackexchange.com/questions/213201/seasonality-not-taken-account-of-in-auto-arima)
+- [purrr auto.arima xreg combination](https://stackoverflow.com/questions/52096188/purrr-auto-arima-xreg-combination)
+- [](Forecasting using R - Dynamic Regression (ch5).pdf)
 
 I set the length of dataset as nested seasonal dataset as weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
 
@@ -1594,7 +1603,7 @@ AIC=6060.87   AICc=6061.06   BIC=6133.69
 [1] 6060.873
 ```
 
-****
+**Modelling**
 
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
@@ -1650,11 +1659,11 @@ for (dt in timeID) {
   }
 ```
 
-#### Monthly >> Weekly >> Daily
+#### Monthly >> Weekly >> Daily `ts()`
 
 I set the length of dataset as 3 level nested seasonal dataset as monthly (), weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
 
-#### Yearly >> Weekly >> Daily
+#### Yearly >> Weekly >> Daily `ts()`
 
 I set the length of dataset as 3 level nested seasonal dataset as monthly (1 year = ), weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
 
