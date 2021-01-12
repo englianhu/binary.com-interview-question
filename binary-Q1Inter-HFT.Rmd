@@ -1,7 +1,7 @@
 ---
 title: "<img src='www/deriv.jpg' width='240'>"
 subtitle: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) - Interday High Frequency Trading Models Comparison"
-author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/Me byteDance.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>® <img src='www/xueba1.jpg width='24'>"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/Me byteDance.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>® <img src='www/xueba1.jpg' width='24'>"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
   html_document: 
@@ -35,7 +35,8 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint',
           'tidyverse', 'memoise', 'htmltools', 'formattable', 
           'zoo', 'forecast', 'seasonal', 'seasonalview', 
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 
-          'microbenchmark', 'dendextend', 'lhmetools', 'stringr', 'pacman')
+          'microbenchmark', 'dendextend', 'lhmetools', 'stringr', 
+          'pacman', 'DescTools')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -1486,6 +1487,11 @@ Here I use `ts()` for seasonal data modeling and set `auto.arima(D = 1, seasonal
 - [Seasonality not taken account of in `auto.arima()`](https://stats.stackexchange.com/questions/213201/seasonality-not-taken-account-of-in-auto-arima)
 - [purrr auto.arima xreg combination](https://stackoverflow.com/questions/52096188/purrr-auto-arima-xreg-combination)
 - [Forecasting using R - Dynamic Regression (ch5).pdf](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/a26550f8fa1280e4d77cd92d2420fe57cba9d0bb/reference/Forecasting%20using%20R%20-%20Dynamic%20Regression%20(ch5).pdf)
+- [Daily timeseries forecasting, with weekly and annual cycle](https://stackoverflow.com/questions/35649734/daily-timeseries-forecasting-with-weekly-and-annual-cycle)
+- [Forecasting Daily Data with Multiple Seasonality in R](http://www.dbenson.co.uk/Rparts/subpages/forecastR)
+- [**Time Series Forecasting, a Summarize of Data visualization and prediction**](https://rpubs.com/tedding/long-term-time-series-forecasting)
+- [Time Series Analysis and Forecasting with the TSstudio Package](https://rpubs.com/ramkrisp/TSstudioDemo)
+- [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re)
 
 I set the length of dataset as nested seasonal dataset as weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
 
@@ -1607,6 +1613,32 @@ AIC=6060.87   AICc=6061.06   BIC=6133.69
 
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
+# measure as sample take from next chunk
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > as_date('2015-01-11')]
+dt <- timeID[1]
+
+smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+dt %<>% as_date
+smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+
+sarimats <- smp %>% 
+    tk_ts(frequency = 1440)
+
+fit_ts <- auto.arima(Op(sarimats), D = 1, trace = TRUE)
+
+saveRDS(fit_msts, 'data/fx/USDJPY/sarima_msts_sample.rds')
+```
+
+Due to above model consume few hours, here I can only use a sample to compare the accuracy.
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+#Not run
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
 timeID <- data_m1$index %>% 
@@ -1622,15 +1654,14 @@ for (dt in timeID) {
   smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
   
   sarimats <- smp %>% 
-    tk_ts(frequency = 1440) %>% 
+    tk_ts(frequency = 1440)
     #https://stackoverflow.com/a/37046276/3806250 #auto.arima(x, D = 1)
     #https://stackoverflow.com/a/37400899/3806250 #auto.arima(x, seasonal = T)
-    #auto.arima(D=1) %>% 
-    #forecast(h = 1440) %>% 
-    llply(., function(x) {
-      auto.arima(x, D = 1) %>% 
-        forecast(h = 1440)
-      }) %>% 
+  
+  sarimats <- llply(., function(x) {
+    auto.arima(x, D = 1, trace = TRUE) %>% 
+      forecast(h = 1440)
+    }) %>% 
     llply(tk_tbl)
   
   if(is.double(sarimats$forecast$index[1])){
@@ -1670,6 +1701,97 @@ I set the length of dataset as 3 level nested seasonal dataset as monthly (), we
 #### Yearly >> Weekly >> Daily `ts()`
 
 I set the length of dataset as 3 level nested seasonal dataset as monthly (1 year = ), weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
+
+#### Weekly >> Daily `msts()`
+
+**Modeling**
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+# measure as sample take from next chunk
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > as_date('2015-01-11')]
+dt <- timeID[1]
+
+smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  
+## Dataset has 7200 observations which is 7200 mins per week
+## due to not enough data to run, here I set as 60 mins and 1440 mins, therefore it can loop 5 days.
+#mts <- smp %>% 
+#    msts(seasonal.periods = c(1440, 7200))
+sarimamsts <- smp %>% 
+  msts(seasonal.periods = c(60, 1440))
+
+fit_ts <- auto.arima(Op(sarimamsts), D = 1, trace = TRUE)
+
+saveRDS(fit_msts, 'data/fx/USDJPY/sarima_msts_sample.rds')
+```
+
+Due to above model consume few hours, here I can only use a sample to compare the accuracy.
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 1440)
+#sets <- list()
+timeID <- data_m1$index %>% 
+  as_date %>% 
+  unique %>% 
+  sort
+timeID %<>% .[. > as_date('2015-01-11')]
+
+dt in timeID
+  smp <- data_m1 %>% 
+    tk_xts(silent = TRUE)
+  dt %<>% as_date
+  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  
+  sarimats <- smp %>% 
+    tk_ts(frequency = 1440)
+    #https://stackoverflow.com/a/37046276/3806250 #auto.arima(x, D = 1)
+    #https://stackoverflow.com/a/37400899/3806250 #auto.arima(x, seasonal = T)
+  
+  sarimats <- llply(., function(x) {
+    auto.arima(x, D = 1, trace = TRUE) %>% 
+      forecast(h = 1440)
+    }) %>% 
+    llply(tk_tbl)
+  
+  if(is.double(sarimats$forecast$index[1])){
+    sq <- smp %>% 
+      tail(1) %>% 
+      index
+    if(weekdays(sq) == '土曜日'|weekdays(sq) == 'Saturday') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    sarimats$forecast$index <- sq
+    
+  } else {
+    sarimats$forecast$index <- data_m1$index[
+    (which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1):(
+     which(data_m1$index == smp %>% 
+             index %>% 
+             xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(sarimats, paste0('data/fx/USDJPY/sarimats.wk.1440.', 
+                       as_date(sarimats$forecast$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/sarimats.wk.1440.', 
+    as_date(sarimats$forecast$index[1]), '.rds saved!\n'))
+  }
+```
+
 
 ## TBATS `forecast::tbats()`
 
@@ -2626,9 +2748,9 @@ for (dt in timeID) {
 
 # Comparison
 
-## Exponential Time Series
+## 1 min per unit
 
-### Seasonal ETS
+### Seasonal `ts` and `msts`
 
 Here I read the saved models.
 
@@ -2890,8 +3012,7 @@ mse1 %>%
         'html', color = 'darkgoldenrod', bold = T), 
       cell_spec(
         paste0(round(MSE.OHLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.OHLC)), ')'), 
-        'html', color = 'grey', italic = T)), 
-    ) %>% 
+        'html', color = 'grey', italic = T))) %>% 
   kbl('html', caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)', escape = F) %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material() %>% 
@@ -2900,66 +3021,13 @@ mse1 %>%
 
 from above models we know the βest model.
 
-```{r warning=FALSE, message=FALSE, eval=FALSE}
-######
-tmID <- fls %>% 
-  str_extract_all('[0-9]{4}-[0-9]{2}-[0-9]{2}') %>% 
-  unlist %>% 
-  plyr::count() %>% 
-  dplyr::filter(freq == 9)
-tmID %<>% .$x
+### Interday Models
 
-fls2 <- llply(tmID, function(x) {
-    paste0('data/fx/USDJPY/sets.', c('wk', 'mo', 'qt', 'yr'), 
-           '.1440.', x, '.rds')
-    }) %>% unlist
-
-seasonal_m2 <- llply(fls2, function(x) {
-  if(grepl('sets.wk', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('wk'))
-    
-  } else if(grepl('sets.mo', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('mo'))
-    
-  } else if(grepl('sets.qt', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('qt'))
-    
-  }else if(grepl('sets.yr', x)) {
-    readRDS(x)$forecast %>% mutate(Period = factor('yr'))
-    
-  } else {
-    stop('No such files.')
-  }
-  }) %>% bind_rows %>% 
-  as_tibble
-
-seasonal_m2 <- join(data_m1, seasonal_m2) %>% 
-  as_tibble %>% 
-  na.omit
-
-seasonal_m2 %<>% 
-  .[c('index','Period','open','high','low','close',
-  'open.Point.Forecast','high.Point.Forecast',
-  'low.Point.Forecast','close.Point.Forecast',
-  'open.Hi.80','open.Lo.80','open.Lo.95','open.Hi.95',
-  'high.Lo.80','high.Hi.80','high.Lo.95','high.Hi.95',
-  'low.Lo.80','low.Hi.80','low.Lo.95','low.Hi.95',
-  'close.Lo.80','close.Hi.80','close.Lo.95','close.Hi.95')]
-
-## don't use complete.cases() since there has some NA elements in ts models.
-#seasonal_m <- seasonal_m[complete.cases(seasonal_m),]
-write_rds(seasonal_m2, 'data/fx/USDJPY/seasonal_m2.rds')
-#zip it to be splited 99MB for each file.
-```
+Here I summarise 1440 of 1 min data to be 1 day and choose the best fitted model. Below table compares the models.
 
 ```{r warning=FALSE, message=FALSE}
-seasonal_m2 <- read_rds('data/fx/USDJPY/seasonal_m2.rds')
-```
-
-```{r warning=FALSE, message=FALSE}
-mse2 <- seasonal_m2 %>% 
-  dplyr::filter(index > as_date('2016-01-04')) %>% 
-  ddply(.(Period), summarise, 
+mse2 <- seasonal_m1 %>% 
+  ddply(.(Model, Period, index), summarise, 
         MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
         MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
         MSE.low = mean((low.Point.Forecast - low)^2, na.rm=TRUE), 
@@ -3020,15 +3088,74 @@ mse2 %>%
         'html', color = 'darkgoldenrod', bold = T), 
       cell_spec(
         paste0(round(MSE.OHLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.OHLC)), ')'), 
-        'html', color = 'grey', italic = T)), 
-    ) %>% 
-  kbl('html', caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Completed Period)', escape = F) %>% 
+        'html', color = 'grey', italic = T))) %>% 
+  kbl('html', caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)', escape = F) %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material() %>% 
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-### Interday ETS
+### Miccelnous
+
+**Best Model**
+
+```{r}
+best_model <- seasonal_m1 %>% 
+    ddply(.(Model, Period), summarise, 
+        mape = MAPE(open, open.Point.Forecast), 
+        smape = SMAPE(open, open.Point.Forecast), 
+        mse = MSE(open, open.Point.Forecast), 
+        rmse = RMSE(open, open.Point.Forecast))
+
+best_model %>% 
+  mutate(
+    mape = ifelse(
+      rank(mape) <= 3, 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    smape = ifelse(
+      rank(smape) <= 3, 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    mse = ifelse(
+      rank(mse) <= 3, 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    rmse = ifelse(
+      rank(rmse) <= 3, 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        'html', color = 'grey', italic = T)))
+```
+
+**sarima**
+
+```{r}
+##Below model use dataset where contain 7200 mins and forecast 1440 mins.
+fit_ts <- readRDS('data/fx/USDJPY/sarima_msts_sample.rds')
+
+##Below model use dataset where contain 7200 mins and forecast nested 60mins & 1440 mins.
+fit_msts_60_1440 <- readRDS(fit_msts_60_1440, 'data/fx/USDJPY/sarima_msts_60_1440_sample.rds')
+```
+
+## 1 day per unit
+
+### Interday `ETS` Model
 
 Below I recall the `ETS` models for interday price prediction in previous paper for comparison.
 
@@ -3124,113 +3251,7 @@ ETS.MSE %>% mutate(
 
 From above `MSE` comparison with intraday-dataset, we know that the intraday data will be more accurate than just daily dataset.
 
-### Nested Seasonal `TBats` Model
-
-```{r warning=FALSE, message=FALSE, eval=FALSE}
-## Get all files.
-fls <- paste0('data/fx/USDJPY/', list.files(
-  'data/fx/USDJPY/', pattern = 'mts'))
-
-## Shows example.
-#read_rds(grepl('sets', fls, value = TRUE)[1])
-#read_rds(grepl('mts', fls, value = TRUE)[1])
-
-seas_m_inter <- llply(fls, function(x) {
-  if(grepl('sets.wk', x)) {
-    dat <- read_rds(x)$forecast %>% mutate(Period = factor('wk'))
-    
-  } else if(grepl('sets.mo', x)) {
-    dat <- read_rds(x)$forecast %>% mutate(Period = factor('mo'))
-    
-  } else if(grepl('sets.qt', x)) {
-    dat <- read_rds(x)$forecast %>% mutate(Period = factor('qt'))
-    
-  }else if(grepl('sets.yr', x)) {
-    dat <- read_rds(x)$forecast %>% mutate(Period = factor('yr'))
-    
-  } else if(grepl('mts.dy.wk.[0-9]{4}', x)) {
-    dat <- read_rds(x) %>% mutate(Period = factor('dy.wk'))
-    
-  } else if(grepl('mts.dy.wk.mo.[0-9]{4}', x)) {
-    dat <- read_rds(x) %>% mutate(Period = factor('dy.wk.mo'))
-    
-  } else if(grepl('mts.dy.wk.mo.qt.[0-9]{4}', x)) {
-    dat <- read_rds(x) %>% mutate(Period = factor('dy.wk.mo.qt'))
-    
-  } else if(grepl('mts.dy.wk.mo.yr.[0-9]{4}', x)) {
-    dat <- read_rds(x) %>% mutate(Period = factor('dy.wk.mo.yr'))
-    
-  } else {
-    cat('No such files.\n')
-  }
-  
-  dat %>% mutate(type = case_when(
-    !is.na(open) ~ 'open', 
-    !is.na(high) ~ 'high', 
-    !is.na(low) ~ 'low', 
-    !is.na(close) ~ 'close')) %>% 
-    dlply(.(type, Period), function(x) {
-    x %<>% dplyr::rename(open.Point.Forecast = open, 
-                         high.Point.Forecast = high, 
-                         low.Point.Forecast = low, 
-                         close.Point.Forecast = close)
-    names(x)[3:6] <- paste0(x$type[1], '.Point.Forecast.', names(x)[3:6])
-    x[colSums(!is.na(x)) > 0] %>% 
-      as_tibble %>% dplyr::select(-type)
-    
-    }) %>% 
-    join_all %>% 
-    as_tibble
-  
-  }) %>% 
-  bind_rows %>% 
-  as_tibble
-
-##The last observation of Firday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price.
-seas_m_inter %<>% .[colSums(!is.na(.)) > 0]
-seas_m_inter <- join(data_m1, seas_m_inter) %>% 
-  as_tibble %>% 
-  na.omit
-```
-
-```{r warning=FALSE, eval=FALSE}
-seas_m_inter %>% ddply(.(Period), summarise, 
-               MSE.open = mean((open.Point.Forecast - open)^2), 
-               MSE.high = mean((high.Point.Forecast - high)^2), 
-               MSE.low = mean((low.Point.Forecast - low)^2), 
-               MSE.close = mean((close.Point.Forecast - close)^2), 
-               MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
-               MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
-               n = length(index)) %>% 
-  as_tibble %>% 
-  kable(caption = 'MSE of Nested Seasonal Model (Accumulated Period from Weekly)') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
-  scroll_box(width = '100%')#, height = '400px')
-```
-
-```{r warning=FALSE, message=FALSE, eval=FALSE}
-seas_m_inter %>% 
-  dplyr::filter(index > as_date('2016-01-04')) %>% 
-  ddply(.(Period), summarise, 
-        MSE.open = mean((open.Point.Forecast - open)^2), 
-        MSE.high = mean((high.Point.Forecast - high)^2), 
-        MSE.low = mean((low.Point.Forecast - low)^2), 
-        MSE.close = mean((close.Point.Forecast - close)^2), 
-        MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
-        MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
-        n = length(index)) %>% 
-  as_tibble %>% 
-  kable(caption = 'MSE of Nested Seasonal Model (Completed Period)') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
-  scroll_box(width = '100%')#, height = '400px')
-```
-
-## Seasonal ARIMA
-
-### SARIMA
-
-
-### Interday AUTO ARIMA
+### Interday `auto.arima` Model
 
 - [Forecasting: Principles and Practice - *11.1 Complex seasonality*](https://otexts.com/fpp2/complexseasonality.html#complexseasonality)
 - [Forecasting: Principles and Practice - *12.1 Weekly, daily and sub-daily data*](https://otexts.com/fpp2/weekly.html#weekly)
@@ -3277,7 +3298,12 @@ ARIMA.MSE %>%
 
 # Conclusion
 
+From the backtest, we concludes that high-frequency-trading **1 min per unit** (`ETS`:0.46 and `auto.arima`:0.69) more accurate than interday-trading **1 day per unit**.
+
 <span style='color:goldenrod'>*High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers*</span> introduce... suggest... DCC-MIDAS etc.
+
+- [Time Series Forecasting, a Summarize of Data visualization and prediction](https://rpubs.com/tedding/long-term-time-series-forecasting)
+- [Time Series Analysis and Forecasting with the TSstudio Package](https://rpubs.com/ramkrisp/TSstudioDemo)
 
 ```{r option, echo = FALSE}
 ## Set options back to original options
