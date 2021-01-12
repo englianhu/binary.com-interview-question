@@ -35,8 +35,8 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint',
           'tidyverse', 'memoise', 'htmltools', 'formattable', 
           'zoo', 'forecast', 'seasonal', 'seasonalview', 
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 
-          'microbenchmark', 'dendextend', 'lhmetools', 'stringr', 
-          'pacman', 'DescTools')
+          'microbenchmark', 'dendextend', 'lhmetools', 
+          'stringr', 'pacman', 'profmem', 'DescTools')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -1792,7 +1792,6 @@ dt in timeID
   }
 ```
 
-
 ## TBATS `forecast::tbats()`
 
 ### Modelling
@@ -3016,7 +3015,7 @@ mse1 %>%
   kbl('html', caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)', escape = F) %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material() %>% 
-  scroll_box(width = '100%')#, height = '400px')
+  scroll_box(width = '200%')#, height = '400px')
 ```
 
 from above models we know the βest model.
@@ -3025,122 +3024,456 @@ from above models we know the βest model.
 
 Here I summarise 1440 of 1 min data to be 1 day and choose the best fitted model. Below table compares the models.
 
-```{r warning=FALSE, message=FALSE}
-mse2 <- seasonal_m1 %>% 
-  ddply(.(Model, Period, index), summarise, 
-        MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
-        MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
-        MSE.low = mean((low.Point.Forecast - low)^2, na.rm=TRUE), 
-        MSE.close = mean((close.Point.Forecast - close)^2, na.rm=TRUE), 
-        MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
-        MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
-        n = length(index)) %>% 
-  as_tibble
+```{r message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+# mse2 <- seasonal_m1 %>% 
+#   ddply(.(Model, Period, index), summarise, 
+#         MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
+#         MSE.high = mean((high.Point.Forecast - high)^2, na.rm=TRUE), 
+#         MSE.low = mean((low.Point.Forecast - low)^2, na.rm=TRUE), 
+#         MSE.close = mean((close.Point.Forecast - close)^2, na.rm=TRUE), 
+#         MSE.HLC = (MSE.high + MSE.low + MSE.close)/3, 
+#         MSE.OHLC = (MSE.open + MSE.high + MSE.low + MSE.close)/4, 
+#         n = length(index)) %>% 
+#   as_tibble
+
+## https://tysonbarrett.com/jekyll/update/2019/10/06/datatable_memory/
+## http://brooksandrew.github.io/simpleblog/articles/advanced-data-table/
+setorder(seasonal_m1, index)
+
+open.accr <- seasonal_m1[, {
+  open = open
+  open.Point.Forecast = open.Point.Forecast
+  .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+          open.smape = SMAPE(open, open.Point.Forecast), 
+          open.mse = MSE(open, open.Point.Forecast), 
+          open.rmse = RMSE(open, open.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+high.accr <- seasonal_m1[, {
+  high = high
+  high.Point.Forecast = high.Point.Forecast
+  .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+          high.smape = SMAPE(high, high.Point.Forecast), 
+          high.mse = MSE(high, high.Point.Forecast), 
+          high.rmse = RMSE(high, high.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+low.accr <- seasonal_m1[, {
+  low = low
+  low.Point.Forecast = low.Point.Forecast
+  .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+          low.smape = SMAPE(low, low.Point.Forecast), 
+          low.mse = MSE(low, low.Point.Forecast), 
+          low.rmse = RMSE(low, low.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+close.accr <- seasonal_m1[, {
+  close = close
+  close.Point.Forecast = close.Point.Forecast
+  .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+          close.smape = SMAPE(close, close.Point.Forecast), 
+          close.mse = MSE(close, close.Point.Forecast), 
+          close.rmse = RMSE(close, close.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
 ```
 
-```{r warning=FALSE, message=FALSE}
-mse2 %>% 
+```{r, results='asis', warning=FALSE, message=FALSE}
+open.sm <- open.accr[, list(open.mape = mean(open.mape), 
+                            open.smape = mean(open.smape), 
+                            open.mse = mean(open.mse), 
+                            open.rmse = mean(open.rmse)), 
+                       by=.(Model, Period)]
+
+high.sm <- high.accr[, list(high.mape = mean(high.mape), 
+                            high.smape = mean(high.smape), 
+                            high.mse = mean(high.mse), 
+                            high.rmse = mean(high.rmse)), 
+                       by=.(Model, Period)]
+
+low.sm <- low.accr[, list(low.mape = mean(low.mape), 
+                          low.smape = mean(low.smape), 
+                          low.mse = mean(low.mse), 
+                          low.rmse = mean(low.rmse)), 
+                       by=.(Model, Period)]
+
+close.sm <- close.accr[, list(close.mape = mean(close.mape), 
+                              close.smape = mean(close.smape), 
+                              close.mse = mean(close.mse), 
+                              close.rmse = mean(close.rmse)), 
+                       by=.(Model, Period)]
+```
+
+**Open Price**
+
+```{r, results='asis', warning=FALSE, message=FALSE}
+open.sm %>% 
   mutate(
-    MSE.open = ifelse(
-      rank(MSE.open) <= 3, 
+    open.mape = ifelse(
+      rank(open.mape) <= 3, 
       cell_spec(
-        paste0(round(MSE.open, 7), ' (rank: ', sprintf('%1.f', rank(MSE.open)), ')'), 
+        paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
         'html', color = 'darkgoldenrod', bold = T), 
       cell_spec(
-        paste0(round(MSE.open, 7), ' (rank: ', sprintf('%1.f', rank(MSE.open)), ')'), 
+        paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
         'html', color = 'grey', italic = T)), 
-    MSE.high = ifelse(
-      rank(MSE.high) <= 3, 
+    open.smape = ifelse(
+      rank(open.smape) <= 3, 
       cell_spec(
-        paste0(round(MSE.high, 7), ' (rank: ', sprintf('%1.f', rank(MSE.high)), ')'), 
+        paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
         'html', color = 'darkgoldenrod', bold = T), 
       cell_spec(
-        paste0(round(MSE.high, 7), ' (rank: ', sprintf('%1.f', rank(MSE.high)), ')'), 
+        paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
         'html', color = 'grey', italic = T)), 
-    MSE.low = ifelse(
-      rank(MSE.low) <= 3, 
+    open.mse = ifelse(
+      rank(open.mse) <= 3, 
       cell_spec(
-        paste0(round(MSE.low, 7), ' (rank: ', sprintf('%1.f', rank(MSE.low)), ')'), 
+        paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
         'html', color = 'darkgoldenrod', bold = T), 
       cell_spec(
-        paste0(round(MSE.low, 7), ' (rank: ', sprintf('%1.f', rank(MSE.low)), ')'), 
+        paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
         'html', color = 'grey', italic = T)), 
-    MSE.close = ifelse(
-      rank(MSE.close) <= 3, 
+    open.rmse = ifelse(
+      rank(open.rmse) <= 3, 
       cell_spec(
-        paste0(round(MSE.close, 7), ' (rank: ', sprintf('%1.f', rank(MSE.close)), ')'), 
+        paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
         'html', color = 'darkgoldenrod', bold = T), 
       cell_spec(
-        paste0(round(MSE.close, 7), ' (rank: ', sprintf('%1.f', rank(MSE.close)), ')'), 
-        'html', color = 'grey', italic = T)), 
-    MSE.HLC = ifelse(
-      rank(MSE.HLC) <= 3, 
-      cell_spec(
-        paste0(round(MSE.HLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.HLC)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
-      cell_spec(
-        paste0(round(MSE.HLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.HLC)), ')'), 
-        'html', color = 'grey', italic = T)), 
-    MSE.OHLC = ifelse(
-      rank(MSE.OHLC) <= 3, 
-      cell_spec(
-        paste0(round(MSE.OHLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.OHLC)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
-      cell_spec(
-        paste0(round(MSE.OHLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.OHLC)), ')'), 
+        paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
         'html', color = 'grey', italic = T))) %>% 
-  kbl('html', caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)', escape = F) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = F) %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material() %>% 
-  scroll_box(width = '100%')#, height = '400px')
+  scroll_box(width = '150%')#, height = '400px')
+```
+
+**High Price**
+
+```{r, results='asis', warning=FALSE, message=FALSE}
+high.sm %>% 
+  mutate(
+    high.mape = ifelse(
+      rank(high.mape) <= 3, 
+      cell_spec(
+        paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    high.smape = ifelse(
+      rank(high.smape) <= 3, 
+      cell_spec(
+        paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    high.mse = ifelse(
+      rank(high.mse) <= 3, 
+      cell_spec(
+        paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    high.rmse = ifelse(
+      rank(high.rmse) <= 3, 
+      cell_spec(
+        paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
+        'html', color = 'grey', italic = T))) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = F) %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material() %>% 
+  scroll_box(width = '150%')#, height = '400px')
+```
+
+**Low Price**
+
+```{r, results='asis', warning=FALSE, message=FALSE}
+low.sm %>% 
+  mutate(
+    low.mape = ifelse(
+      rank(low.mape) <= 3, 
+      cell_spec(
+        paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    low.smape = ifelse(
+      rank(low.smape) <= 3, 
+      cell_spec(
+        paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    low.mse = ifelse(
+      rank(low.mse) <= 3, 
+      cell_spec(
+        paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    low.rmse = ifelse(
+      rank(low.rmse) <= 3, 
+      cell_spec(
+        paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
+        'html', color = 'grey', italic = T))) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = F) %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material() %>% 
+  scroll_box(width = '150%')#, height = '400px')
+```
+
+
+**Close Price**
+
+```{r, results='asis', warning=FALSE, message=FALSE}
+close.sm %>% 
+  mutate(
+    close.mape = ifelse(
+      rank(close.mape) <= 3, 
+      cell_spec(
+        paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    close.smape = ifelse(
+      rank(close.smape) <= 3, 
+      cell_spec(
+        paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    close.mse = ifelse(
+      rank(close.mse) <= 3, 
+      cell_spec(
+        paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    close.rmse = ifelse(
+      rank(close.rmse) <= 3, 
+      cell_spec(
+        paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
+        'html', color = 'grey', italic = T))) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = F) %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material() %>% 
+  scroll_box(width = '150%')#, height = '400px')
 ```
 
 ### Miccelnous
 
 **Best Model**
 
-```{r}
-best_model <- seasonal_m1 %>% 
-    ddply(.(Model, Period), summarise, 
-        mape = MAPE(open, open.Point.Forecast), 
-        smape = SMAPE(open, open.Point.Forecast), 
-        mse = MSE(open, open.Point.Forecast), 
-        rmse = RMSE(open, open.Point.Forecast))
+```{r, results='asis', warning=FALSE, message=FALSE}
+#best_model <- seasonal_m1 %>% 
+#    ddply(.(Model, Period), summarise, 
+#        mape = MAPE(open, open.Point.Forecast), 
+#        smape = SMAPE(open, open.Point.Forecast), 
+#        mse = MSE(open, open.Point.Forecast), 
+#        rmse = RMSE(open, open.Point.Forecast))
 
+## https://tysonbarrett.com/jekyll/update/2019/10/06/datatable_memory/
+## http://brooksandrew.github.io/simpleblog/articles/advanced-data-table/
+setorder(seasonal_m1, index)
+
+m.op <- seasonal_m1[, {
+  open = open
+  open.Point.Forecast = open.Point.Forecast
+  .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+          open.smape = SMAPE(open, open.Point.Forecast), 
+          open.mse = MSE(open, open.Point.Forecast), 
+          open.rmse = RMSE(open, open.Point.Forecast)), 
+      by=.(Model, Period)]}][order(Model, Period), ]
+
+m.hi <- seasonal_m1[, {
+  high = high
+  high.Point.Forecast = high.Point.Forecast
+  .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+          high.smape = SMAPE(high, high.Point.Forecast), 
+          high.mse = MSE(high, high.Point.Forecast), 
+          high.rmse = RMSE(high, high.Point.Forecast)), 
+      by=.(Model, Period)]}][order(Model, Period), ]
+
+m.lo <- seasonal_m1[, {
+  low = low
+  low.Point.Forecast = low.Point.Forecast
+  .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+          low.smape = SMAPE(low, low.Point.Forecast), 
+          low.mse = MSE(low, low.Point.Forecast), 
+          low.rmse = RMSE(low, low.Point.Forecast)), 
+      by=.(Model, Period)]}][order(Model, Period), ]
+
+m.cl <- seasonal_m1[, {
+  close = close
+  close.Point.Forecast = close.Point.Forecast
+  .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+          close.smape = SMAPE(close, close.Point.Forecast), 
+          close.mse = MSE(close, close.Point.Forecast), 
+          close.rmse = RMSE(close, close.Point.Forecast)), 
+      by=.(Model, Period)]}][order(Model, Period), ]
+
+best_model <- join_all(list(m.op, m.hi, m.lo, m.cl)) %>% tibble
+rm(m.op, m.hi, m.lo, m.cl)
+```
+
+```{r, results='asis', warning=FALSE, message=FALSE}
 best_model %>% 
   mutate(
-    mape = ifelse(
-      rank(mape) <= 3, 
+    open.mape = ifelse(
+      rank(open.mape) <= 3, 
       cell_spec(
-        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
         'html', color = 'darkgoldenrod', bold = T), 
       cell_spec(
-        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
         'html', color = 'grey', italic = T)), 
-    smape = ifelse(
-      rank(smape) <= 3, 
+    open.smape = ifelse(
+      rank(open.smape) <= 3, 
       cell_spec(
-        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
         'html', color = 'darkgoldenrod', bold = T), 
       cell_spec(
-        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
         'html', color = 'grey', italic = T)), 
-    mse = ifelse(
-      rank(mse) <= 3, 
+    open.mse = ifelse(
+      rank(open.mse) <= 3, 
       cell_spec(
-        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
         'html', color = 'darkgoldenrod', bold = T), 
       cell_spec(
-        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
         'html', color = 'grey', italic = T)), 
-    rmse = ifelse(
-      rank(rmse) <= 3, 
+    open.rmse = ifelse(
+      rank(open.rmse) <= 3, 
       cell_spec(
-        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
         'html', color = 'darkgoldenrod', bold = T), 
       cell_spec(
-        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
-        'html', color = 'grey', italic = T)))
+        paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    
+    high.mape = ifelse(
+      rank(high.mape) <= 3, 
+      cell_spec(
+        paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    high.smape = ifelse(
+      rank(high.smape) <= 3, 
+      cell_spec(
+        paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    high.mse = ifelse(
+      rank(high.mse) <= 3, 
+      cell_spec(
+        paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    high.rmse = ifelse(
+      rank(high.rmse) <= 3, 
+      cell_spec(
+        paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    
+    low.mape = ifelse(
+      rank(low.mape) <= 3, 
+      cell_spec(
+        paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    low.smape = ifelse(
+      rank(low.smape) <= 3, 
+      cell_spec(
+        paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    low.mse = ifelse(
+      rank(low.mse) <= 3, 
+      cell_spec(
+        paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    low.rmse = ifelse(
+      rank(low.rmse) <= 3, 
+      cell_spec(
+        paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    
+    close.mape = ifelse(
+      rank(close.mape) <= 3, 
+      cell_spec(
+        paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    close.smape = ifelse(
+      rank(close.smape) <= 3, 
+      cell_spec(
+        paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    close.mse = ifelse(
+      rank(close.mse) <= 3, 
+      cell_spec(
+        paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
+        'html', color = 'grey', italic = T)), 
+    close.rmse = ifelse(
+      rank(close.rmse) <= 3, 
+      cell_spec(
+        paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = T), 
+      cell_spec(
+        paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
+        'html', color = 'grey', italic = T))) %>% 
+  kbl('html', caption = 'Comparison of Models', escape = F) %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material() %>% 
+  scroll_box(width = '500%')#, height = '400px')
 ```
 
 **sarima**
@@ -3159,7 +3492,7 @@ fit_msts_60_1440 <- readRDS(fit_msts_60_1440, 'data/fx/USDJPY/sarima_msts_60_144
 
 Below I recall the `ETS` models for interday price prediction in previous paper for comparison.
 
-```{r warning=FALSE, message=FALSE}
+```{r, results='asis', warning=FALSE, message=FALSE}
 ets.fls <- list.files('data', pattern = '^[A-Z]{3}\\.[A-Za-z]{4}')
 ETS.MSE <- llply(ets.fls, function(x) {
     nm <- x %>% 
@@ -3256,7 +3589,7 @@ From above `MSE` comparison with intraday-dataset, we know that the intraday dat
 - [Forecasting: Principles and Practice - *11.1 Complex seasonality*](https://otexts.com/fpp2/complexseasonality.html#complexseasonality)
 - [Forecasting: Principles and Practice - *12.1 Weekly, daily and sub-daily data*](https://otexts.com/fpp2/weekly.html#weekly)
 
-```{r warning=FALSE}
+```{r, results='asis', warning=FALSE, message=FALSE}
 ar.fls <- list.files('data', pattern = '^fundAutoArima')
 ARIMA.MSE <- llply(ar.fls, function(x) {
     nm <- x %>% 
