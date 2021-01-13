@@ -1630,9 +1630,11 @@ smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
 sarimats <- smp %>% 
     tk_ts(frequency = 1440)
 
-fit_ts <- auto.arima(Op(sarimats), D = 1, trace = TRUE)
+fit_ts <- auto.arima(Op(sarimats), D = 1)#, trace = TRUE)
+saveRDS(fit_ts, 'data/fx/USDJPY/sarima_ts_sample.rds')
 
-saveRDS(fit_msts, 'data/fx/USDJPY/sarima_msts_sample.rds')
+fr_ts <- forecast(fit_ts, h = 1440)
+saveRDS(fr_ts, 'data/fx/USDJPY/sarima_frts_sample.rds')
 ```
 
 Due to above model consume few hours, here I can only use a sample to compare the accuracy.
@@ -1730,8 +1732,10 @@ sarimamsts <- smp %>%
   msts(seasonal.periods = c(60, 1440))
 
 fit_msts <- auto.arima(Op(sarimamsts), D = 1)#, trace = TRUE)
-
 saveRDS(fit_msts, 'data/fx/USDJPY/sarima_msts_sample.rds')
+
+fr_msts <- forecast(fit_msts, h = 1440)
+saveRDS(fr_msts, 'data/fx/USDJPY/sarima_frmsts_sample.rds')
 ```
 
 Due to above model consume few hours, here I can only use a sample to compare the accuracy.
@@ -3725,16 +3729,20 @@ Above table summarized the total observations with `mape`, `smape`, `mse` and `r
 #### Sarima
 
 ```{r}
-##Below model use dataset where contain 7200 mins and forecast 1440 mins.
+##Below model use open price dataset where contain 7200 mins and forecast 1440 mins.
 fit_ts <- readRDS('data/fx/USDJPY/sarima_ts_sample.rds')
+fr_ts <- forecast(fit_ts, h = 1440)
 
-##Below model use dataset where contain 7200 mins and forecast nested 60mins & 1440 mins.
+##Below model use open price dataset where contain 7200 mins and forecast nested 60mins & 1440 mins.
 fit_msts <- readRDS('data/fx/USDJPY/sarima_msts_sample.rds')
+fr_msts <- forecast(fit_msts, h = 1440)
 ```
 
 ```{r, results='asis', warning=FALSE, message=FALSE}
 fit_ts
 fit_msts
+
+
 ```
 
 [Application of `auto.arima()` on both `ts()` and `msts()` seasonal datasets](https://stackoverflow.com/questions/65699784/application-of-auto-arima-on-both-ts-and-msts-seasonal-dataset) compare the `ts()` and `msts()` sarima models.
