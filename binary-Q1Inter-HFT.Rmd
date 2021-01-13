@@ -65,6 +65,7 @@ l_ply(funs, function(x) source(paste0('./function/', x)))
 .cl = FALSE
 
 Sys.setenv(TZ = 'Asia/Tokyo')
+## options(knitr.table.format = 'html') will set all kableExtra tables to be 'html', otherwise need to set the parameter on every single table.
 options(warn = -1, knitr.table.format = 'html')#, digits.secs = 6)
 rm(pkgs, funs)
 ```
@@ -3119,7 +3120,7 @@ close.sm <- close.accr[, list(close.mape = mean(close.mape),
                        by=.(Model, Period)]
 ```
 
-**Open Price**
+#### Open Price
 
 ```{r, results='asis', warning=FALSE, message=FALSE}
 open.sm %>% 
@@ -3170,7 +3171,7 @@ open.sm %>%
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-**High Price**
+#### High Price
 
 ```{r, results='asis', warning=FALSE, message=FALSE}
 high.sm %>% 
@@ -3221,7 +3222,7 @@ high.sm %>%
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-**Low Price**
+#### Low Price
 
 ```{r, results='asis', warning=FALSE, message=FALSE}
 low.sm %>% 
@@ -3272,7 +3273,7 @@ low.sm %>%
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-**Close Price**
+#### Close Price
 
 ```{r, results='asis', warning=FALSE, message=FALSE}
 close.sm %>% 
@@ -3323,9 +3324,9 @@ close.sm %>%
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-### Miccelnous
+### Miscellaneous
 
-**Best Model**
+#### Best Model
 
 ```{r, results='asis', warning=FALSE, message=FALSE}
 #best_model <- seasonal_m1 %>% 
@@ -3337,6 +3338,7 @@ close.sm %>%
 
 ## https://tysonbarrett.com/jekyll/update/2019/10/06/datatable_memory/
 ## http://brooksandrew.github.io/simpleblog/articles/advanced-data-table/
+if(!is.data.table(seasonal_m1)) seasonal_m1 <- data.table(seasonal_m1)
 setorder(seasonal_m1, index)
 
 m.op <- seasonal_m1[, {
@@ -3540,16 +3542,20 @@ best_model %>%
   scroll_box(width = '100%')#, height = '400px')
 ```
 
-**sarima**
+#### Sarima
 
 ```{r}
 ##Below model use dataset where contain 7200 mins and forecast 1440 mins.
 fit_ts <- readRDS('data/fx/USDJPY/sarima_ts_sample.rds')
-fit_ts <- data.table(fit_ts)
+#fit_ts <- data.table(fit_ts)
 
 ##Below model use dataset where contain 7200 mins and forecast nested 60mins & 1440 mins.
 fit_msts_60_1440 <- readRDS('data/fx/USDJPY/sarima_msts_60_1440_sample.rds')
-fit_msts_60_1440 <- data.table(fit_msts_60_1440)
+#fit_msts_60_1440 <- data.table(fit_msts_60_1440)
+```
+
+```{r, results='asis', warning=FALSE, message=FALSE}
+
 ```
 
 ## 1 day per unit

@@ -17111,392 +17111,403 @@ seasonal_m1 &lt;- read_rds(&#39;data/fx/USDJPY/seasonal_m1.rds&#39;)
       cell_spec(
         paste0(round(MSE.OHLC, 7), &#39; (rank: &#39;, sprintf(&#39;%1.f&#39;, rank(MSE.OHLC)), &#39;)&#39;), 
         &#39;html&#39;, color = &#39;grey&#39;, italic = TRUE))) %&gt;% 
-  kbl(&#39;html&#39;, caption = &#39;MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)&#39;, escape = F) %&gt;% 
+  kbl(&#39;html&#39;, caption = &#39;MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)&#39;, escape = FALSE) %&gt;% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = &#39;DimGrey&#39;) %&gt;% 
+  column_spec(1, background = &#39;CornflowerBlue&#39;) %&gt;% 
+  column_spec(2, background = &#39;DarkGrey&#39;) %&gt;% 
+  column_spec(3, background = &#39;Gainsboro&#39;) %&gt;% 
+  column_spec(4, background = &#39;LightGray&#39;) %&gt;% 
+  column_spec(5, background = &#39;Gainsboro&#39;) %&gt;% 
+  column_spec(6, background = &#39;LightGray&#39;) %&gt;% 
+  column_spec(7, background = &#39;Gainsboro&#39;) %&gt;%  
+  column_spec(8, background = &#39;LightGray&#39;) %&gt;% 
+  column_spec(9, background = &#39;LightSlateGrey&#39;) %&gt;% 
   kable_styling(bootstrap_options = c(&#39;striped&#39;, &#39;hover&#39;, &#39;condensed&#39;, &#39;responsive&#39;)) %&gt;% 
-  kable_material() %&gt;% 
-  scroll_box(width = &#39;200%&#39;)#, height = &#39;400px&#39;)</code></pre>
-<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:200%; ">
-<table class="table table-striped table-hover table-condensed table-responsive lightable-material" style="margin-left: auto; margin-right: auto; font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; margin-left: auto; margin-right: auto;">
+  kable_material(full_width = FALSE) %&gt;% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = &#39;100%&#39;)#, height = &#39;400px&#39;)</code></pre>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed table-responsive lightable-material" style="margin-left: auto; margin-right: auto; font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
 MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)
 </caption>
 <thead>
 <tr>
-<th style="text-align:left;">
+<th style="text-align:left;background-color: DimGrey !important;">
 Model
 </th>
-<th style="text-align:left;">
+<th style="text-align:left;background-color: DimGrey !important;">
 Period
 </th>
-<th style="text-align:left;">
+<th style="text-align:left;background-color: DimGrey !important;">
 MSE.open
 </th>
-<th style="text-align:left;">
+<th style="text-align:left;background-color: DimGrey !important;">
 MSE.high
 </th>
-<th style="text-align:left;">
+<th style="text-align:left;background-color: DimGrey !important;">
 MSE.low
 </th>
-<th style="text-align:left;">
+<th style="text-align:left;background-color: DimGrey !important;">
 MSE.close
 </th>
-<th style="text-align:left;">
+<th style="text-align:left;background-color: DimGrey !important;">
 MSE.HLC
 </th>
-<th style="text-align:left;">
+<th style="text-align:left;background-color: DimGrey !important;">
 MSE.OHLC
 </th>
-<th style="text-align:right;">
+<th style="text-align:right;background-color: DimGrey !important;">
 n
 </th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 tbats
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 dy.qt
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.5935084 (rank: 11)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.5946396 (rank: 11)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.593577 (rank: 11)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.59344 (rank: 11)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.5938855 (rank: 11)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.5937912 (rank: 11)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 1298880
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 tbats
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 dy.wk
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2331241 (rank: 1)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2305384 (rank: 1)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2331357 (rank: 1)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2415673 (rank: 4)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2350805 (rank: 2)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2345914 (rank: 1)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 1298880
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 tbats
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 dy.wk.mo
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2585134 (rank: 6)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2531527 (rank: 7)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2511519 (rank: 6)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2468493 (rank: 5)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2503846 (rank: 6)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2524168 (rank: 6)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 1287360
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 tbats
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 dy.yr
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">2.992332 (rank: 12)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">3.0002451 (rank: 12)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">2.989127 (rank: 12)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">3.0017416 (rank: 12)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">2.9970379 (rank: 12)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">2.9958614 (rank: 12)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 1298880
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 ts
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 mo.1440
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.238598 (rank: 4)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2372364 (rank: 4)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2349181 (rank: 4)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2378324 (rank: 3)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2366623 (rank: 4)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2371462 (rank: 4)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 1298880
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 ts
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 mo.7200
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3134664 (rank: 8)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3146787 (rank: 8)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3119626 (rank: 8)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3142609 (rank: 7)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3136341 (rank: 8)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3135922 (rank: 8)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 244800
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 ts
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 qt.1440
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2355912 (rank: 2)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2357561 (rank: 2)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2346795 (rank: 2)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.234693 (rank: 1)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2350429 (rank: 1)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2351799 (rank: 2)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 1298880
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 ts
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 qt.7200
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3156878 (rank: 9)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3167276 (rank: 9)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3144045 (rank: 9)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3168899 (rank: 8)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3160073 (rank: 9)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3159275 (rank: 9)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 223200
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 ts
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 wk.1440
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2525562 (rank: 5)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2483678 (rank: 6)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2491352 (rank: 5)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2490372 (rank: 6)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2488467 (rank: 5)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2497741 (rank: 5)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 1298880
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 ts
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 wk.7200
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2850686 (rank: 7)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2391797 (rank: 5)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3065442 (rank: 7)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.32009 (rank: 9)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2886046 (rank: 7)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.2877206 (rank: 7)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 6494400
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 ts
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 yr.1440
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2357672 (rank: 3)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2359108 (rank: 3)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2349109 (rank: 3)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2348683 (rank: 2)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.23523 (rank: 3)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style=" font-weight: bold;    color: darkgoldenrod !important;">0.2353643 (rank: 3)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 1298880
 </td>
 </tr>
 <tr>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: CornflowerBlue !important;">
 ts
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: DarkGrey !important;">
 yr.7200
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3342637 (rank: 10)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3353777 (rank: 10)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3327021 (rank: 10)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.335306 (rank: 10)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: Gainsboro !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3344619 (rank: 10)</span>
 </td>
-<td style="text-align:left;">
+<td style="text-align:left;background-color: LightGray !important;">
 <span style="  font-style: italic;   color: grey !important;">0.3344124 (rank: 10)</span>
 </td>
-<td style="text-align:right;">
+<td style="text-align:right;background-color: LightSlateGrey !important;">
 208800
 </td>
 </tr>
@@ -17586,7 +17597,8 @@ close.sm &lt;- close.accr[, list(close.mape = mean(close.mape),
                               close.mse = mean(close.mse), 
                               close.rmse = mean(close.rmse)), 
                        by=.(Model, Period)]</code></pre>
-<p><strong>Open Price</strong></p>
+<div id="open-price" class="section level4" number="5.1.2.1">
+<h4 number="5.1.2.1"><span class="header-section-number">5.1.2.1</span> Open Price</h4>
 <pre class="r"><code>open.sm %&gt;% 
   mutate(
     open.mape = ifelse(
@@ -17631,7 +17643,7 @@ close.sm &lt;- close.accr[, list(close.mape = mean(close.mape),
   column_spec(5, background = &#39;Gainsboro&#39;) %&gt;% 
   column_spec(6, background = &#39;LightGray&#39;) %&gt;%   
   kable_styling(bootstrap_options = c(&#39;striped&#39;, &#39;hover&#39;, &#39;condensed&#39;, &#39;responsive&#39;)) %&gt;% 
-  kable_material(full_width = FALSE) %&gt;% 
+  kable_material(full_width = FALSE) %&gt;% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = &#39;100%&#39;)#, height = &#39;400px&#39;)</code></pre>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed table-responsive lightable-material" style="margin-left: auto; margin-right: auto; font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
@@ -17904,7 +17916,9 @@ dy.wk.mo
 </tbody>
 </table>
 </div>
-<p><strong>High Price</strong></p>
+</div>
+<div id="high-price" class="section level4" number="5.1.2.2">
+<h4 number="5.1.2.2"><span class="header-section-number">5.1.2.2</span> High Price</h4>
 <pre class="r"><code>high.sm %&gt;% 
   mutate(
     high.mape = ifelse(
@@ -17949,7 +17963,7 @@ dy.wk.mo
   column_spec(5, background = &#39;Gainsboro&#39;) %&gt;% 
   column_spec(6, background = &#39;LightGray&#39;) %&gt;%   
   kable_styling(bootstrap_options = c(&#39;striped&#39;, &#39;hover&#39;, &#39;condensed&#39;, &#39;responsive&#39;)) %&gt;% 
-  kable_material(full_width = FALSE) %&gt;% 
+  kable_material(full_width = FALSE) %&gt;% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = &#39;100%&#39;)#, height = &#39;400px&#39;)</code></pre>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed table-responsive lightable-material" style="margin-left: auto; margin-right: auto; font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
@@ -18222,7 +18236,9 @@ dy.wk.mo
 </tbody>
 </table>
 </div>
-<p><strong>Low Price</strong></p>
+</div>
+<div id="low-price" class="section level4" number="5.1.2.3">
+<h4 number="5.1.2.3"><span class="header-section-number">5.1.2.3</span> Low Price</h4>
 <pre class="r"><code>low.sm %&gt;% 
   mutate(
     low.mape = ifelse(
@@ -18267,9 +18283,9 @@ dy.wk.mo
   column_spec(5, background = &#39;Gainsboro&#39;) %&gt;% 
   column_spec(6, background = &#39;LightGray&#39;) %&gt;%   
   kable_styling(bootstrap_options = c(&#39;striped&#39;, &#39;hover&#39;, &#39;condensed&#39;, &#39;responsive&#39;)) %&gt;% 
-  kable_material(full_width = FALSE) %&gt;% 
-  scroll_box(width = &#39;150%&#39;)#, height = &#39;400px&#39;)</code></pre>
-<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:150%; ">
+  kable_material(full_width = FALSE) %&gt;% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = &#39;100%&#39;)#, height = &#39;400px&#39;)</code></pre>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed table-responsive lightable-material" style="margin-left: auto; margin-right: auto; font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
 Comparison of Models (1 min summarised to 1 day per unit)
@@ -18540,7 +18556,9 @@ dy.wk.mo
 </tbody>
 </table>
 </div>
-<p><strong>Close Price</strong></p>
+</div>
+<div id="close-price" class="section level4" number="5.1.2.4">
+<h4 number="5.1.2.4"><span class="header-section-number">5.1.2.4</span> Close Price</h4>
 <pre class="r"><code>close.sm %&gt;% 
   mutate(
     close.mape = ifelse(
@@ -18585,9 +18603,9 @@ dy.wk.mo
   column_spec(5, background = &#39;Gainsboro&#39;) %&gt;% 
   column_spec(6, background = &#39;LightGray&#39;) %&gt;%   
   kable_styling(bootstrap_options = c(&#39;striped&#39;, &#39;hover&#39;, &#39;condensed&#39;, &#39;responsive&#39;)) %&gt;% 
-  kable_material(full_width = FALSE) %&gt;% 
-  scroll_box(width = &#39;150%&#39;)#, height = &#39;400px&#39;)</code></pre>
-<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:150%; ">
+  kable_material(full_width = FALSE) %&gt;% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = &#39;100%&#39;)#, height = &#39;400px&#39;)</code></pre>
+<div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed table-responsive lightable-material" style="margin-left: auto; margin-right: auto; font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
 <caption>
 Comparison of Models (1 min summarised to 1 day per unit)
@@ -18859,9 +18877,11 @@ dy.wk.mo
 </table>
 </div>
 </div>
-<div id="miccelnous" class="section level3" number="5.1.3">
-<h3 number="5.1.3"><span class="header-section-number">5.1.3</span> Miccelnous</h3>
-<p><strong>Best Model</strong></p>
+</div>
+<div id="miscellaneous" class="section level3" number="5.1.3">
+<h3 number="5.1.3"><span class="header-section-number">5.1.3</span> Miscellaneous</h3>
+<div id="best-model" class="section level4" number="5.1.3.1">
+<h4 number="5.1.3.1"><span class="header-section-number">5.1.3.1</span> Best Model</h4>
 <pre class="r"><code>#best_model &lt;- seasonal_m1 %&gt;% 
 #    ddply(.(Model, Period), summarise, 
 #        mape = MAPE(open, open.Point.Forecast), 
@@ -18871,6 +18891,7 @@ dy.wk.mo
 
 ## https://tysonbarrett.com/jekyll/update/2019/10/06/datatable_memory/
 ## http://brooksandrew.github.io/simpleblog/articles/advanced-data-table/
+if(!is.data.table(seasonal_m1)) seasonal_m1 &lt;- data.table(seasonal_m1)
 setorder(seasonal_m1, index)
 
 m.op &lt;- seasonal_m1[, {
@@ -19067,7 +19088,7 @@ rm(m.op, m.hi, m.lo, m.cl)</code></pre>
   column_spec(18, background = &#39;LightGray&#39;) %&gt;%   
   column_spec(19, background = &#39;Gainsboro&#39;) %&gt;% 
   kable_styling(bootstrap_options = c(&#39;striped&#39;, &#39;hover&#39;, &#39;condensed&#39;, &#39;responsive&#39;)) %&gt;% 
-  kable_material(full_width = FALSE) %&gt;% 
+  kable_material(full_width = FALSE) %&gt;% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = &#39;100%&#39;)#, height = &#39;400px&#39;)</code></pre>
 <div style="border: 1px solid #ddd; padding: 5px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed table-responsive lightable-material" style="margin-left: auto; margin-right: auto; font-family: &quot;Source Sans Pro&quot;, helvetica, sans-serif; width: auto !important; margin-left: auto; margin-right: auto;">
@@ -19847,7 +19868,9 @@ yr.7200
 </tbody>
 </table>
 </div>
-<p><strong>sarima</strong></p>
+</div>
+<div id="sarima" class="section level4" number="5.1.3.2">
+<h4 number="5.1.3.2"><span class="header-section-number">5.1.3.2</span> Sarima</h4>
 <pre class="r"><code>##Below model use dataset where contain 7200 mins and forecast 1440 mins.
 fit_ts &lt;- readRDS(&#39;data/fx/USDJPY/sarima_ts_sample.rds&#39;)
 fit_ts &lt;- data.table(fit_ts)
@@ -19855,6 +19878,7 @@ fit_ts &lt;- data.table(fit_ts)
 ##Below model use dataset where contain 7200 mins and forecast nested 60mins &amp; 1440 mins.
 fit_msts_60_1440 &lt;- readRDS(&#39;data/fx/USDJPY/sarima_msts_60_1440_sample.rds&#39;)
 fit_msts_60_1440 &lt;- data.table(fit_msts_60_1440)</code></pre>
+</div>
 </div>
 </div>
 <div id="day-per-unit" class="section level2" number="5.2">
@@ -19922,7 +19946,7 @@ ETS.MSE %&gt;% mutate(
       cell_spec(
         paste0(round(MSE.2, 7), &#39; (rank: &#39;, sprintf(&#39;%1.f&#39;, rank(MSE.2)), &#39;)&#39;), 
         &#39;html&#39;, color = &#39;grey&#39;, italic = TRUE))) %&gt;% 
-  kbl(&#39;html&#39;, caption = &#39;MSE of daily Opened and Closed Transaction Orders&#39;, escape = F) %&gt;% 
+  kbl(&#39;html&#39;, caption = &#39;MSE of daily Opened and Closed Transaction Orders&#39;, escape = FALSE) %&gt;% 
   kable_styling(bootstrap_options = c(&#39;striped&#39;, &#39;hover&#39;, &#39;condensed&#39;, &#39;responsive&#39;)) %&gt;% 
   kableExtra::group_rows(&#39;AAN&#39;, 1, 25, label_row_css = &#39;background-color: #e68a00; color: #fff;&#39;) %&gt;%
   kableExtra::group_rows(&#39;AAZ&#39;, 26, 50, label_row_css = &#39;background-color: #ff0000; color: #fff;&#39;) %&gt;%
@@ -28139,7 +28163,7 @@ date
 Current time
 </td>
 <td style="text-align:left;font-weight: bold;color: white !important;background-color: #D7261E !important;">
-2021-01-13 17:54:22 JST&lt;U+0001F5FE&gt;
+2021-01-13 18:12:15 JST&lt;U+0001F5FE&gt;
 </td>
 </tr>
 </tbody>
