@@ -1729,7 +1729,7 @@ smp <- data_m1 %>%
 sarimamsts <- smp %>% 
   msts(seasonal.periods = c(60, 1440))
 
-fit_ts <- auto.arima(Op(sarimamsts), D = 1, trace = TRUE)
+fit_msts <- auto.arima(Op(sarimamsts), D = 1)#, trace = TRUE)
 
 saveRDS(fit_msts, 'data/fx/USDJPY/sarima_msts_sample.rds')
 ```
