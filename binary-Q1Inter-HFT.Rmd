@@ -65,7 +65,7 @@ l_ply(funs, function(x) source(paste0('./function/', x)))
 .cl = FALSE
 
 Sys.setenv(TZ = 'Asia/Tokyo')
-options(warn = -1)#, digits.secs = 6)
+options(warn = -1, knitr.table.format = 'html')#, digits.secs = 6)
 rm(pkgs, funs)
 ```
 
@@ -1656,7 +1656,7 @@ for (dt in timeID) {
   sarimats <- smp %>% 
     tk_ts(frequency = 1440)
     #https://stackoverflow.com/a/37046276/3806250 #auto.arima(x, D = 1)
-    #https://stackoverflow.com/a/37400899/3806250 #auto.arima(x, seasonal = T)
+    #https://stackoverflow.com/a/37400899/3806250 #auto.arima(x, seasonal = TRUE)
   
   sarimats <- llply(., function(x) {
     auto.arima(x, D = 1, trace = TRUE) %>% 
@@ -1754,7 +1754,7 @@ dt in timeID
   sarimats <- smp %>% 
     tk_ts(frequency = 1440)
     #https://stackoverflow.com/a/37046276/3806250 #auto.arima(x, D = 1)
-    #https://stackoverflow.com/a/37400899/3806250 #auto.arima(x, seasonal = T)
+    #https://stackoverflow.com/a/37400899/3806250 #auto.arima(x, seasonal = TRUE)
   
   sarimats <- llply(., function(x) {
     auto.arima(x, D = 1, trace = TRUE) %>% 
@@ -2961,61 +2961,72 @@ mse1 <- seasonal_m1 %>%
   as_tibble
 ```
 
-```{r warning=FALSE, message=FALSE}
+```{r, results='asis', warning=FALSE, message=FALSE}
 mse1 %>% 
   mutate(
     MSE.open = ifelse(
       rank(MSE.open) <= 3, 
       cell_spec(
         paste0(round(MSE.open, 7), ' (rank: ', sprintf('%1.f', rank(MSE.open)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(MSE.open, 7), ' (rank: ', sprintf('%1.f', rank(MSE.open)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     MSE.high = ifelse(
       rank(MSE.high) <= 3, 
       cell_spec(
         paste0(round(MSE.high, 7), ' (rank: ', sprintf('%1.f', rank(MSE.high)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(MSE.high, 7), ' (rank: ', sprintf('%1.f', rank(MSE.high)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     MSE.low = ifelse(
       rank(MSE.low) <= 3, 
       cell_spec(
         paste0(round(MSE.low, 7), ' (rank: ', sprintf('%1.f', rank(MSE.low)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(MSE.low, 7), ' (rank: ', sprintf('%1.f', rank(MSE.low)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     MSE.close = ifelse(
       rank(MSE.close) <= 3, 
       cell_spec(
         paste0(round(MSE.close, 7), ' (rank: ', sprintf('%1.f', rank(MSE.close)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(MSE.close, 7), ' (rank: ', sprintf('%1.f', rank(MSE.close)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     MSE.HLC = ifelse(
       rank(MSE.HLC) <= 3, 
       cell_spec(
         paste0(round(MSE.HLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.HLC)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(MSE.HLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.HLC)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     MSE.OHLC = ifelse(
       rank(MSE.OHLC) <= 3, 
       cell_spec(
         paste0(round(MSE.OHLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.OHLC)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(MSE.OHLC, 7), ' (rank: ', sprintf('%1.f', rank(MSE.OHLC)), ')'), 
-        'html', color = 'grey', italic = T))) %>% 
-  kbl('html', caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)', escape = F) %>% 
+        'html', color = 'grey', italic = TRUE))) %>% 
+  kbl('html', caption = 'MSE of Seasonal Daily 1440 minutes ETS Model (Accumulated Period from Weekly)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'DarkGrey') %>% 
+  column_spec(3, background = 'Gainsboro') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>% 
+  column_spec(7, background = 'Gainsboro') %>%  
+  column_spec(8, background = 'LightGray') %>% 
+  column_spec(9, background = 'LightSlateGrey') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material() %>% 
-  scroll_box(width = '200%')#, height = '400px')
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%')#, height = '400px')
 ```
 
 from above models we know the βest model.
@@ -3024,7 +3035,7 @@ from above models we know the βest model.
 
 Here I summarise 1440 of 1 min data to be 1 day and choose the best fitted model. Below table compares the models.
 
-```{r message=FALSE, warning=FALSE, paged.print=TRUE, results='asis'}
+```{r message=FALSE, warning=FALSE, results='asis'}
 # mse2 <- seasonal_m1 %>% 
 #   ddply(.(Model, Period, index), summarise, 
 #         MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
@@ -3038,6 +3049,7 @@ Here I summarise 1440 of 1 min data to be 1 day and choose the best fitted model
 
 ## https://tysonbarrett.com/jekyll/update/2019/10/06/datatable_memory/
 ## http://brooksandrew.github.io/simpleblog/articles/advanced-data-table/
+seasonal_m1 <- data.table(seasonal_m1)
 setorder(seasonal_m1, index)
 
 open.accr <- seasonal_m1[, {
@@ -3116,38 +3128,46 @@ open.sm %>%
       rank(open.mape) <= 3, 
       cell_spec(
         paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     open.smape = ifelse(
       rank(open.smape) <= 3, 
       cell_spec(
         paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     open.mse = ifelse(
       rank(open.mse) <= 3, 
       cell_spec(
         paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     open.rmse = ifelse(
       rank(open.rmse) <= 3, 
       cell_spec(
         paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
-        'html', color = 'grey', italic = T))) %>% 
-  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = F) %>% 
+        'html', color = 'grey', italic = TRUE))) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'DarkGrey') %>% 
+  column_spec(3, background = 'Gainsboro') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>%   
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material() %>% 
-  scroll_box(width = '150%')#, height = '400px')
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%')#, height = '400px')
 ```
 
 **High Price**
@@ -3159,38 +3179,46 @@ high.sm %>%
       rank(high.mape) <= 3, 
       cell_spec(
         paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     high.smape = ifelse(
       rank(high.smape) <= 3, 
       cell_spec(
         paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     high.mse = ifelse(
       rank(high.mse) <= 3, 
       cell_spec(
         paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     high.rmse = ifelse(
       rank(high.rmse) <= 3, 
       cell_spec(
         paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
-        'html', color = 'grey', italic = T))) %>% 
-  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = F) %>% 
+        'html', color = 'grey', italic = TRUE))) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'DarkGrey') %>% 
+  column_spec(3, background = 'Gainsboro') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>%   
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material() %>% 
-  scroll_box(width = '150%')#, height = '400px')
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%')#, height = '400px')
 ```
 
 **Low Price**
@@ -3202,40 +3230,47 @@ low.sm %>%
       rank(low.mape) <= 3, 
       cell_spec(
         paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     low.smape = ifelse(
       rank(low.smape) <= 3, 
       cell_spec(
         paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     low.mse = ifelse(
       rank(low.mse) <= 3, 
       cell_spec(
         paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     low.rmse = ifelse(
       rank(low.rmse) <= 3, 
       cell_spec(
         paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
-        'html', color = 'grey', italic = T))) %>% 
-  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = F) %>% 
+        'html', color = 'grey', italic = TRUE))) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'DarkGrey') %>% 
+  column_spec(3, background = 'Gainsboro') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>%   
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material() %>% 
-  scroll_box(width = '150%')#, height = '400px')
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%')#, height = '400px')
 ```
-
 
 **Close Price**
 
@@ -3246,38 +3281,46 @@ close.sm %>%
       rank(close.mape) <= 3, 
       cell_spec(
         paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     close.smape = ifelse(
       rank(close.smape) <= 3, 
       cell_spec(
         paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     close.mse = ifelse(
       rank(close.mse) <= 3, 
       cell_spec(
         paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     close.rmse = ifelse(
       rank(close.rmse) <= 3, 
       cell_spec(
         paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
-        'html', color = 'grey', italic = T))) %>% 
-  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = F) %>% 
+        'html', color = 'grey', italic = TRUE))) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'DarkGrey') %>% 
+  column_spec(3, background = 'Gainsboro') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>%   
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material() %>% 
-  scroll_box(width = '150%')#, height = '400px')
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%')#, height = '400px')
 ```
 
 ### Miccelnous
@@ -3343,147 +3386,170 @@ best_model %>%
       rank(open.mape) <= 3, 
       cell_spec(
         paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     open.smape = ifelse(
       rank(open.smape) <= 3, 
       cell_spec(
         paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     open.mse = ifelse(
       rank(open.mse) <= 3, 
       cell_spec(
         paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     open.rmse = ifelse(
       rank(open.rmse) <= 3, 
       cell_spec(
         paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     
     high.mape = ifelse(
       rank(high.mape) <= 3, 
       cell_spec(
         paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     high.smape = ifelse(
       rank(high.smape) <= 3, 
       cell_spec(
         paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     high.mse = ifelse(
       rank(high.mse) <= 3, 
       cell_spec(
         paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     high.rmse = ifelse(
       rank(high.rmse) <= 3, 
       cell_spec(
         paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     
     low.mape = ifelse(
       rank(low.mape) <= 3, 
       cell_spec(
         paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     low.smape = ifelse(
       rank(low.smape) <= 3, 
       cell_spec(
         paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     low.mse = ifelse(
       rank(low.mse) <= 3, 
       cell_spec(
         paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     low.rmse = ifelse(
       rank(low.rmse) <= 3, 
       cell_spec(
         paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     
     close.mape = ifelse(
       rank(close.mape) <= 3, 
       cell_spec(
         paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     close.smape = ifelse(
       rank(close.smape) <= 3, 
       cell_spec(
         paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     close.mse = ifelse(
       rank(close.mse) <= 3, 
       cell_spec(
         paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     close.rmse = ifelse(
       rank(close.rmse) <= 3, 
       cell_spec(
         paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
-        'html', color = 'grey', italic = T))) %>% 
-  kbl('html', caption = 'Comparison of Models', escape = F) %>% 
+        'html', color = 'grey', italic = TRUE))) %>% 
+  kbl('html', caption = 'Comparison of Models', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'DarkGrey') %>% 
+  column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>%   
+  column_spec(7, background = 'Gainsboro') %>% 
+  column_spec(8, background = 'LightGray') %>% 
+  column_spec(9, background = 'Gainsboro') %>% 
+  column_spec(10, background = 'LightGray') %>%   
+  column_spec(11, background = 'Gainsboro') %>% 
+  column_spec(12, background = 'LightGray') %>% 
+  column_spec(13, background = 'Gainsboro') %>% 
+  column_spec(14, background = 'LightGray') %>%   
+  column_spec(15, background = 'Gainsboro') %>% 
+  column_spec(16, background = 'LightGray') %>% 
+  column_spec(17, background = 'Gainsboro') %>% 
+  column_spec(18, background = 'LightGray') %>%   
+  column_spec(19, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material() %>% 
-  scroll_box(width = '500%')#, height = '400px')
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%')#, height = '400px')
 ```
 
 **sarima**
 
 ```{r}
 ##Below model use dataset where contain 7200 mins and forecast 1440 mins.
-fit_ts <- readRDS('data/fx/USDJPY/sarima_msts_sample.rds')
+fit_ts <- readRDS('data/fx/USDJPY/sarima_ts_sample.rds')
+fit_ts <- data.table(fit_ts)
 
 ##Below model use dataset where contain 7200 mins and forecast nested 60mins & 1440 mins.
-fit_msts_60_1440 <- readRDS(fit_msts_60_1440, 'data/fx/USDJPY/sarima_msts_60_1440_sample.rds')
+fit_msts_60_1440 <- readRDS('data/fx/USDJPY/sarima_msts_60_1440_sample.rds')
+fit_msts_60_1440 <- data.table(fit_msts_60_1440)
 ```
 
 ## 1 day per unit
@@ -3541,19 +3607,19 @@ ETS.MSE %>% mutate(
       rank(MSE.1) <= 3, 
       cell_spec(
         paste0(round(MSE.1, 7), ' (rank: ', sprintf('%1.f', rank(MSE.1)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(MSE.1, 7), ' (rank: ', sprintf('%1.f', rank(MSE.1)), ')'), 
-        'html', color = 'grey', italic = T)), 
+        'html', color = 'grey', italic = TRUE)), 
     MSE.2 = ifelse(
       rank(MSE.2) <= 3, 
       cell_spec(
         paste0(round(MSE.2, 7), ' (rank: ', sprintf('%1.f', rank(MSE.2)), ')'), 
-        'html', color = 'darkgoldenrod', bold = T), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
       cell_spec(
         paste0(round(MSE.2, 7), ' (rank: ', sprintf('%1.f', rank(MSE.2)), ')'), 
-        'html', color = 'grey', italic = T))) %>% 
-  kbl('html', caption = 'MSE of daily Opened and Closed Transaction Orders', escape = F) %>% 
+        'html', color = 'grey', italic = TRUE))) %>% 
+  kbl('html', caption = 'MSE of daily Opened and Closed Transaction Orders', escape = FALSE) %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kableExtra::group_rows('AAN', 1, 25, label_row_css = 'background-color: #e68a00; color: #fff;') %>%
   kableExtra::group_rows('AAZ', 26, 50, label_row_css = 'background-color: #ff0000; color: #fff;') %>%
