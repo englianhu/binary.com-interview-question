@@ -3899,6 +3899,8 @@ From the backtest, we concludes that high-frequency-trading **1 min per unit** (
 - [Time Series Forecasting, a Summarize of Data visualization and prediction](https://rpubs.com/tedding/long-term-time-series-forecasting)
 - [Time Series Analysis and Forecasting with the TSstudio Package](https://rpubs.com/ramkrisp/TSstudioDemo)
 
+`sarimax`, `tbats with xreg` I will also compare the `fracdiff()` models.
+
 ```{r option, echo = FALSE}
 ## Set options back to original options
 options(warn = 0)

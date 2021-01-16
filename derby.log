@@ -1,6 +1,6 @@
 ----------------------------------------------------------------
-Sat Jan 09 09:46:57 PST 2021:
-Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0176-e842-24cc-0000013d4640 
+Sat Jan 16 13:42:36 JST 2021:
+Booting Derby version The Apache Software Foundation - Apache Derby - 10.12.1.1 - (1704137): instance a816c00e-0177-0980-8f81-00000146d440 
 on database directory C:\Users\User\Documents\GitHub\binary.com-interview-question\metastore_db with class loader jdk.internal.loader.ClassLoaders$AppClassLoader@15db9742 
 Loaded from file:/C:/Users/User/AppData/Local/spark/spark-3.0.1-bin-hadoop3.2/jars/derby-10.12.1.1.jar
 java.vendor=Oracle Corporation
