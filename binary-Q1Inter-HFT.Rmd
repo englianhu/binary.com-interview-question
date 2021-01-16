@@ -1630,11 +1630,42 @@ smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
 sarimats <- smp %>% 
     tk_ts(frequency = 1440)
 
+## 
 fit_ts <- auto.arima(Op(sarimats), D = 1)#, trace = TRUE)
 saveRDS(fit_ts, 'data/fx/USDJPY/sarima_ts_sample.rds')
 
+## 
 fr_ts <- forecast(fit_ts, h = 1440)
 saveRDS(fr_ts, 'data/fx/USDJPY/sarima_frts_sample.rds')
+
+## 
+if(is.double(fr_ts$forecast$index[1])){
+    sq <- smp %>% 
+        tail(1) %>% 
+        index
+    if(weekdays(sq) == '土曜日'|weekdays(sq) == 'Saturday') sq <- sq + days(2)
+    sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+    fr_ts$forecast$index <- sq
+    
+} else {
+    fr_ts$forecast$index <- data_m1$index[
+        (which(data_m1$index == smp %>% 
+                   index %>% 
+                   xts::last()) + 1):(
+                       which(data_m1$index == smp %>% 
+                                 index %>% 
+                                 xts::last()) + 1440)]
+}
+
+if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+
+saveRDS(fr_ts, paste0('data/fx/USDJPY/fr_ts.sample.wk.1440.', 
+                         as_date(fr_ts$forecast$index[1]), '.rds'))
+
+cat(paste0(
+    'data/fx/USDJPY/fr_ts.sample.wk.1440.', 
+    as_date(fr_ts$forecast$index[1]), '.rds saved!\n'))
 ```
 
 Due to above model consume few hours, here I can only use a sample to compare the accuracy.
@@ -1662,7 +1693,7 @@ for (dt in timeID) {
     #https://stackoverflow.com/a/37400899/3806250 #auto.arima(x, seasonal = TRUE)
   
   sarimats <- llply(., function(x) {
-    auto.arima(x, D = 1, trace = TRUE) %>% 
+    auto.arima(x, D = 1) %>% #, trace = TRUE) %>% 
       forecast(h = 1440)
     }) %>% 
     llply(tk_tbl)
@@ -1721,9 +1752,9 @@ dt <- timeID[1]
 
 smp <- data_m1 %>% 
     tk_xts(silent = TRUE)
-  dt %<>% as_date
-  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
-  
+dt %<>% as_date
+smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+
 ## Dataset has 7200 observations which is 7200 mins per week
 ## due to not enough data to run, here I set as 60 mins and 1440 mins, therefore it can loop 5 days.
 #mts <- smp %>% 
@@ -1731,71 +1762,140 @@ smp <- data_m1 %>%
 sarimamsts <- smp %>% 
   msts(seasonal.periods = c(60, 1440))
 
+##
 fit_msts <- auto.arima(Op(sarimamsts), D = 1)#, trace = TRUE)
 saveRDS(fit_msts, 'data/fx/USDJPY/sarima_msts_sample.rds')
 
+##
 fr_msts <- forecast(fit_msts, h = 1440)
 saveRDS(fr_msts, 'data/fx/USDJPY/sarima_frmsts_sample.rds')
-```
 
-Due to above model consume few hours, here I can only use a sample to compare the accuracy.
+##
+if(is.numeric(index(fr_msts)[1])){
+  sq <- smp %>% 
+    tail(1) %>% 
+    index
+  if(weekdays(sq) == '土曜日'|weekdays(sq) == 'Saturday') sq <- sq + days(2)
+  sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
+  n <- nrow(fr_msts) / length(sq)
+
+  fr_msts <- cbind(index = rep(sq, n), fr_msts) %>% 
+    as_tibble
+
+  } else {
+    stop('index of dataset does not assign.')
+    #fr_msts$forecast$index <- data_m1$index[
+    #(which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1):(
+    # which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1440)]
+  }
+  
+  if (!dir.exists(paste0('data/fx/USDJPY'))) 
+    dir.create(paste0('data/fx/USDJPY'))
+  
+  saveRDS(fr_msts, paste0('data/fx/USDJPY/fr_msts.sample.dy.wk.', 
+                       as_date(fr_msts$index[1]), '.rds'))
+  
+  cat(paste0(
+    'data/fx/USDJPY/fr_msts.sample.dy.wk.', 
+    as_date(fr_msts$index[1]), '.rds saved!\n'))
+```
 
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
-#sets <- list()
+#mts <- list()
 timeID <- data_m1$index %>% 
   as_date %>% 
   unique %>% 
   sort
 timeID %<>% .[. > as_date('2015-01-11')]
 
-dt in timeID
+for (dt in timeID) {
   smp <- data_m1 %>% 
     tk_xts(silent = TRUE)
   dt %<>% as_date
   smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
   
-  sarimats <- smp %>% 
-    tk_ts(frequency = 1440)
-    #https://stackoverflow.com/a/37046276/3806250 #auto.arima(x, D = 1)
-    #https://stackoverflow.com/a/37400899/3806250 #auto.arima(x, seasonal = TRUE)
+  sarimamsts <- smp %>% 
+    msts(seasonal.periods = c(1440, 7200))
   
-  sarimats <- llply(., function(x) {
-    auto.arima(x, D = 1, trace = TRUE) %>% 
-      forecast(h = 1440)
+  sarimamsts <- llply(1:ncol(sarimamsts), function(i) {
+    y <- sarimamsts[,i] %>% 
+      auto.arima(D = 1) %>% 
+      forecast(h = 1440) %>% 
+      as_tibble
+      #names(y)[1] <- names(smp)[i]
+      #names(y)[2:ncol(y)] <- paste0(names(y)[1], '.', names(y)[2:ncol(y)])
+      #names(y)[1] <- paste0(names(smp)[i], '.Point.Forecast')
+      names(y)[1] <- names(smp)[i]
+      y
     }) %>% 
-    llply(tk_tbl)
+    bind_rows %>% 
+    mutate(Model = factor('tbats'), Period = factor('dy.wk'), type = case_when(
+      !is.na(open) ~ 'open', 
+      !is.na(high) ~ 'high', 
+      !is.na(low) ~ 'low', 
+      !is.na(close) ~ 'close')) %>% 
+    dlply(.(type, Period), function(x) {
+      x %<>% dplyr::rename(open.Point.Forecast = open, 
+                           high.Point.Forecast = high, 
+                           low.Point.Forecast = low, 
+                           close.Point.Forecast = close)
+      names(x)[str_detect(names(x), '80|95')] <- paste0(x$type[1], '.', names(x)[str_detect(names(x), '80|95')])
+      x[colSums(!is.na(x)) > 0] %>% 
+        data.frame %>% 
+        as_tibble %>% 
+        dplyr::select(-type)
+      
+      }) %>% 
+    bind_cols %>% 
+    as_tibble 
+  sarimamsts <- sarimamsts[c('open.Point.Forecast', 'high.Point.Forecast', 'low.Point.Forecast', 'close.Point.Forecast', 
+               'open.Lo.80', 'open.Hi.80', 'open.Lo.95', 'open.Hi.95', 
+               'high.Lo.80', 'high.Hi.80', 'high.Lo.95', 'high.Hi.95', 
+               'low.Lo.80', 'low.Hi.80', 'low.Lo.95', 'low.Hi.95', 
+               'close.Lo.80', 'close.Hi.80', 'close.Lo.95', 'close.Hi.95')]
+  #sarimamsts[str_detect(names(sarimamsts), 'Model.|Period.')] <- NULL
   
-  if(is.double(sarimats$forecast$index[1])){
+  if(is.numeric(index(sarimamsts)[1])){
     sq <- smp %>% 
       tail(1) %>% 
       index
     if(weekdays(sq) == '土曜日'|weekdays(sq) == 'Saturday') sq <- sq + days(2)
     sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
-    sarimats$forecast$index <- sq
+    n <- nrow(sarimamsts) / length(sq)
+    
+    sarimamsts <- cbind(index = rep(sq, n), sarimamsts) %>% 
+      as_tibble
     
   } else {
-    sarimats$forecast$index <- data_m1$index[
-    (which(data_m1$index == smp %>% 
-             index %>% 
-             xts::last()) + 1):(
-     which(data_m1$index == smp %>% 
-             index %>% 
-             xts::last()) + 1440)]
+    stop('index of dataset does not assign.')
+    #sarimamsts$forecast$index <- data_m1$index[
+    #(which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1):(
+    # which(data_m1$index == smp %>% 
+    #         index %>% 
+    #         xts::last()) + 1440)]
   }
   
   if (!dir.exists(paste0('data/fx/USDJPY'))) 
     dir.create(paste0('data/fx/USDJPY'))
   
-  saveRDS(sarimats, paste0('data/fx/USDJPY/sarimats.wk.1440.', 
-                       as_date(sarimats$forecast$index[1]), '.rds'))
+  saveRDS(sarimamsts, paste0('data/fx/USDJPY/sarimamsts.sample.dy.wk.', 
+                       as_date(sarimamsts$index[1]), '.rds'))
   
   cat(paste0(
-    'data/fx/USDJPY/sarimats.wk.1440.', 
-    as_date(sarimats$forecast$index[1]), '.rds saved!\n'))
+    'data/fx/USDJPY/sarimamsts.sample.dy.wk.', 
+    as_date(sarimamsts$index[1]), '.rds saved!\n'))
   }
 ```
+
+Due to above model consume few hours, here I can only use a sample to compare the accuracy.
 
 ## TBATS `forecast::tbats()`
 
@@ -3728,21 +3828,25 @@ Above table summarized the total observations with `mape`, `smape`, `mse` and `r
 
 #### Sarima
 
-```{r}
+```{r, results='asis', warning=FALSE, message=FALSE}
 ##Below model use open price dataset where contain 7200 mins and forecast 1440 mins.
 fit_ts <- readRDS('data/fx/USDJPY/sarima_ts_sample.rds')
-fr_ts <- forecast(fit_ts, h = 1440)
+#fr_ts <- forecast(fit_ts, h = 1440)
+fr_ts <- readRDS('data/fx/USDJPY/sarima_frts_sample.rds')
+fr_ts.sample <- readRDS('data/fx/USDJPY/fr_ts.sample.wk.1440.2015-01-12.rds')
 
 ##Below model use open price dataset where contain 7200 mins and forecast nested 60mins & 1440 mins.
 fit_msts <- readRDS('data/fx/USDJPY/sarima_msts_sample.rds')
-fr_msts <- forecast(fit_msts, h = 1440)
+fr_msts <- readRDS('data/fx/USDJPY/sarima_frmsts_sample.rds')
+fr_msts.sample <- readRDS('data/fx/USDJPY/fr_msts.sample.wk.1440.2015-01-12.rds')
 ```
 
 ```{r, results='asis', warning=FALSE, message=FALSE}
 fit_ts
 fit_msts
 
-
+sarimats %>% as_tibble %>% bind_cols(index = index(smp), .)
+sarimamsts %>% as_tibble %>% bind_cols(index = index(smp), .)
 ```
 
 [Application of `auto.arima()` on both `ts()` and `msts()` seasonal datasets](https://stackoverflow.com/questions/65699784/application-of-auto-arima-on-both-ts-and-msts-seasonal-dataset) compare the `ts()` and `msts()` sarima models.
