@@ -37,7 +37,7 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint',
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 
           'microbenchmark', 'dendextend', 'lhmetools', 
           'stringr', 'pacman', 'profmem', 'DescTools', 
-          'htmltools', 'echarts4r')
+          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -3046,9 +3046,24 @@ Below graph shows the forecast price and actual price.
 
 ##### Open Price
 
-```{r warning = FALSE, results = 'asis'}
-seasonal_m1 %>% 
+```{r, warning = FALSE, results = 'asis'}
+grph <- seasonal_m1 %>% 
   tidyr::unite(Model, Model:Period) %>% 
+  data.table
+prc <- unique(grph[, .(index, open, high, low, close)])
+prc <- prc[, Model := 'Market.Price'][]
+grph[, (c('open', 'high', 'low', 'close')) := NULL]
+names(grph) <- c('index', 'Model', 'open', 'high', 'low', 'close')
+grph <- rbind(grph, prc)
+rm(prc)
+
+grph %>% as_tibble
+```
+
+```{r, warning = FALSE, eval = FALSE, results = 'asis'}
+## ------------ eval = FALSE -------------------
+## Due to high volume dataset and heavily ploting, here I ommit it.
+grph %>% 
     group_by(Model) %>% 
     e_charts(x = index) %>% 
     e_line(open.Point.Forecast, smooth = TRUE) %>% 
@@ -3070,11 +3085,62 @@ seasonal_m1 %>%
   #e_theme('shine') %>% 
   e_toolbox_feature('saveAsImage', title = 'Screenshot')
 ```
+
+```{r, warning = FALSE, results = 'asis'}
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+grph %>%
+    ggplot(aes(x=index, y=open, group=Model, color=Model)) +
+    geom_line() +
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle(paste('1 min price forecasting from', range(unique(grph$index)), collapse = ' to ')) +
+    theme_ipsum() +
+    ylab('exchange rates USD/JPY')
+```
+
+##### High Price
+
+```{r, warning = FALSE, results = 'asis'}
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+grph %>%
+    ggplot(aes(x=index, y=high, group=Model, color=Model)) +
+    geom_line() +
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle(paste('1 min price forecasting from', range(unique(grph$index)), collapse = ' to ')) +
+    theme_ipsum() +
+    ylab('exchange rates USD/JPY')
+```
+
+##### Low Price
+
+```{r, warning = FALSE, results = 'asis'}
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+grph %>%
+    ggplot(aes(x=index, y=low, group=Model, color=Model)) +
+    geom_line() +
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle(paste('1 min price forecasting from', range(unique(grph$index)), collapse = ' to ')) +
+    theme_ipsum() +
+    ylab('exchange rates USD/JPY')
+```
+
+##### Close Price
+
+```{r, warning = FALSE, results = 'asis'}
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+grph %>%
+    ggplot(aes(x=index, y=close, group=Model, color=Model)) +
+    geom_line() +
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle(paste('1 min price forecasting from', range(unique(grph$index)), collapse = ' to ')) +
+    theme_ipsum() +
+    ylab('exchange rates USD/JPY')
+```
+
 #### MSE Table
 
 Below table compares the models.
 
-```{r warning=FALSE, message=FALSE}
+```{r warning = FALSE, message = FALSE}
 mse1 <- seasonal_m1 %>% 
   ddply(.(Model, Period), summarise, 
         MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
@@ -3087,7 +3153,7 @@ mse1 <- seasonal_m1 %>%
   as_tibble
 ```
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results='asis'}
 mse1 %>% 
   mutate(
     MSE.open = ifelse(
@@ -3159,9 +3225,9 @@ from above models we know the βest model.
 
 ### Interday Models
 
-Here I summarise 1440 of 1 min data to be 1 day and choose the best fitted model. Below table compares the models.
+Here I summarize 1440 of 1 min data to be 1 day and choose the best fitted model. Below table compares the models.
 
-```{r message=FALSE, warning=FALSE, results='asis'}
+```{r, message = FALSE, warning = FALSE, results = 'asis'}
 # mse2 <- seasonal_m1 %>% 
 #   ddply(.(Model, Period, index), summarise, 
 #         MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
@@ -3219,7 +3285,7 @@ close.accr <- seasonal_m1[, {
   by=.(Model, Period)]
 ```
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 open.sm <- open.accr[, list(open.mape = mean(open.mape), 
                             open.smape = mean(open.smape), 
                             open.mse = mean(open.mse), 
@@ -3250,7 +3316,7 @@ daily.sm <- join_all(list(open.sm, high.sm, low.sm, close.sm)) %>%
 
 #### Open Price
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 open.sm %>% 
   mutate(
     open.mape = ifelse(
@@ -3301,7 +3367,7 @@ open.sm %>%
 
 #### High Price
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 high.sm %>% 
   mutate(
     high.mape = ifelse(
@@ -3352,7 +3418,7 @@ high.sm %>%
 
 #### Low Price
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 low.sm %>% 
   mutate(
     low.mape = ifelse(
@@ -3403,7 +3469,7 @@ low.sm %>%
 
 #### Close Price
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 close.sm %>% 
   mutate(
     close.mape = ifelse(
@@ -3454,7 +3520,7 @@ close.sm %>%
 
 #### Summary
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 rm(m.op, m.hi, m.lo, m.cl)
 
 daily.sm %>% 
@@ -3627,7 +3693,7 @@ Above table summarized the daily `mape`, `smape`, `mse` and `rmse` values and th
 
 #### Best Model
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 #best_model <- seasonal_m1 %>% 
 #    ddply(.(Model, Period), summarise, 
 #        mape = MAPE(open, open.Point.Forecast), 
@@ -3680,7 +3746,7 @@ best_model <- join_all(list(m.op, m.hi, m.lo, m.cl)) %>% tibble
 rm(m.op, m.hi, m.lo, m.cl)
 ```
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 best_model %>% 
   mutate(
     open.mape = ifelse(
@@ -3849,7 +3915,7 @@ Above table summarized the total observations with `mape`, `smape`, `mse` and `r
 
 #### Sarima
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 ##Below model use open price dataset where contain 7200 mins and forecast 1440 mins.
 fit_ts <- readRDS('data/fx/USDJPY/sarima_ts_sample.rds')
 #fr_ts <- forecast(fit_ts, h = 1440)
@@ -3864,7 +3930,7 @@ fr_msts.sample <- readRDS('data/fx/USDJPY/fr_msts.sample.wk.1440.2015-01-12.rds'
 
 Due to heavily calculation on sarima models, here I only use 1st week `r paste('from', range(fr_ts.sample$index), collapse = ' to ')`` calculate.
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 cmp1 <- join(fr_ts.sample, fr_msts.sample) %>% 
   as_tibble
 
@@ -3970,7 +4036,7 @@ cmp <- bind_rows(cmp1, cmp2, cmp3) %>%
   as_tibble
 ```
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 cmp %>% 
   mutate(
     mape = ifelse(
@@ -4027,7 +4093,7 @@ cmp %>%
 
 Below I recall the `ETS` models for interday price prediction in previous paper for comparison.
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 ets.fls <- list.files('data', pattern = '^[A-Z]{3}\\.[A-Za-z]{4}')
 ETS.MSE <- llply(ets.fls, function(x) {
     nm <- x %>% 
@@ -4124,7 +4190,7 @@ From above `MSE` comparison with intraday-dataset, we know that the intraday dat
 - [Forecasting: Principles and Practice - *11.1 Complex seasonality*](https://otexts.com/fpp2/complexseasonality.html#complexseasonality)
 - [Forecasting: Principles and Practice - *12.1 Weekly, daily and sub-daily data*](https://otexts.com/fpp2/weekly.html#weekly)
 
-```{r, results='asis', warning=FALSE, message=FALSE}
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
 ar.fls <- list.files('data', pattern = '^fundAutoArima')
 ARIMA.MSE <- llply(ar.fls, function(x) {
     nm <- x %>% 
@@ -4188,7 +4254,7 @@ options(warn = 0)
 
 There cost alot of time for couple models comparison.
 
-```{r eval=FALSE}
+```{r eval = FALSE}
 # Test the efficiency
 > dim(data_m1)
 [1] 1324800       5

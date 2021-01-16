@@ -306,7 +306,8 @@ pkgs &lt;- c(&#39;devtools&#39;, &#39;knitr&#39;, &#39;kableExtra&#39;, &#39;tin
           &#39;zoo&#39;, &#39;forecast&#39;, &#39;seasonal&#39;, &#39;seasonalview&#39;, 
           &#39;rugarch&#39;, &#39;rmgarch&#39;, &#39;mfGARCH&#39;, &#39;sparklyr&#39;, 
           &#39;microbenchmark&#39;, &#39;dendextend&#39;, &#39;lhmetools&#39;, 
-          &#39;stringr&#39;, &#39;pacman&#39;, &#39;profmem&#39;, &#39;DescTools&#39;)
+          &#39;stringr&#39;, &#39;pacman&#39;, &#39;profmem&#39;, &#39;DescTools&#39;, 
+          &#39;htmltools&#39;, &#39;echarts4r&#39;, &#39;viridis&#39;, &#39;hrbrthemes&#39;)
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -17143,6 +17144,98 @@ seasonal_m1 &lt;- read_rds(&#39;data/fx/USDJPY/seasonal_m1.rds&#39;)
 
 ## https://stackoverflow.com/a/52490634/3806250
 #seasonal_m1[is.nan(seasonal_m1)] &lt;- NA</code></pre>
+<div id="line-graph-trend" class="section level4" number="5.1.1.1">
+<h4 number="5.1.1.1"><span class="header-section-number">5.1.1.1</span> Line Graph &amp; Trend</h4>
+<p>Below graph shows the forecast price and actual price.</p>
+<div id="open-price" class="section level5" number="5.1.1.1.1">
+<h5 number="5.1.1.1.1"><span class="header-section-number">5.1.1.1.1</span> Open Price</h5>
+<pre class="r"><code>grph &lt;- seasonal_m1 %&gt;% 
+  tidyr::unite(Model, Model:Period) %&gt;% 
+  data.table
+prc &lt;- unique(grph[, .(index, open, high, low, close)])
+prc &lt;- prc[, Model := &#39;Market.Price&#39;][]
+grph[, (c(&#39;open&#39;, &#39;high&#39;, &#39;low&#39;, &#39;close&#39;)) := NULL]
+names(grph) &lt;- c(&#39;index&#39;, &#39;Model&#39;, &#39;open&#39;, &#39;high&#39;, &#39;low&#39;, &#39;close&#39;)
+grph &lt;- rbind(grph, prc)
+rm(prc)
+
+grph</code></pre>
+<pre><code>                    index        Model     open     high      low    close
+   1: 2015-01-12 00:01:00  tbats_dy.qt 118.5390 118.5614 118.5230 118.5480
+   2: 2015-01-12 00:01:00  tbats_dy.wk 118.5390 118.5614 118.5230 118.5480
+   3: 2015-01-12 00:01:00  tbats_dy.yr 118.5390 118.5614 118.5230 118.5480
+   4: 2015-01-12 00:01:00   ts_mo.1440 118.5907 118.6257 118.5749 118.6095
+   5: 2015-01-12 00:01:00   ts_mo.7200 118.5390 118.5626 118.5260 118.5480
+  ---                                                                     </code></pre>
+<p>18849596: 2018-07-06 23:56:00 Market.Price 110.4575 110.4530 110.4560 110.4570 18849597: 2018-07-06 23:57:00 Market.Price 110.4570 110.4520 110.4620 110.4635 18849598: 2018-07-06 23:58:00 Market.Price 110.4635 110.4540 110.4770 110.4740 18849599: 2018-07-06 23:59:00 Market.Price 110.4635 110.4540 110.4770 110.4740 18849600: 2018-07-07 00:00:00 Market.Price 110.4635 110.4540 110.4770 110.4740</p>
+<pre class="r"><code>## ------------ eval = FALSE -------------------
+## Due to high volume dataset and heavily ploting, here I ommit it.
+grph %&gt;% 
+    group_by(Model) %&gt;% 
+    e_charts(x = index) %&gt;% 
+    e_line(open.Point.Forecast, smooth = TRUE) %&gt;% 
+  e_datazoom(
+    type = &#39;slider&#39;, 
+    toolbox = FALSE,
+    bottom = -5) %&gt;% 
+  e_tooltip() %&gt;% 
+  e_title(text = &#39;Model&#39;, subtext = &#39;open.Point.Forecast&#39;, left = &#39;center&#39;) %&gt;% 
+  e_axis_labels(x = &#39;index&#39;, y = &#39;open.Point.Forecast&#39;) %&gt;%
+  e_x_axis(index, axisPointer = list(show = TRUE)) %&gt;% 
+  e_legend(
+    orient = &#39;vertical&#39;, 
+    type = c(&#39;scroll&#39;), 
+    #selectedMode = &#39;multiple&#39;, #https://echarts.apache.org/en/option.html#legend
+    #selected = list(&#39;Model&#39;), 
+    left = 0, top = 80) %&gt;% 
+  e_grid(left = 150, top = 90) %&gt;% 
+  #e_theme(&#39;shine&#39;) %&gt;% 
+  e_toolbox_feature(&#39;saveAsImage&#39;, title = &#39;Screenshot&#39;)</code></pre>
+<pre class="r"><code>## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+grph %&gt;%
+    ggplot(aes(x=index, y=open, group=Model, color=Model)) +
+    geom_line() +
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle(paste(&#39;1 min price forecasting from&#39;, range(unique(grph$index)), collapse = &#39; to &#39;)) +
+    theme_ipsum() +
+    ylab(&#39;exchange rates USD/JPY&#39;)</code></pre>
+</div>
+<div id="high-price" class="section level5" number="5.1.1.1.2">
+<h5 number="5.1.1.1.2"><span class="header-section-number">5.1.1.1.2</span> High Price</h5>
+<pre class="r"><code>## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+grph %&gt;%
+    ggplot(aes(x=index, y=high, group=Model, color=Model)) +
+    geom_line() +
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle(paste(&#39;1 min price forecasting from&#39;, range(unique(grph$index)), collapse = &#39; to &#39;)) +
+    theme_ipsum() +
+    ylab(&#39;exchange rates USD/JPY&#39;)</code></pre>
+</div>
+<div id="low-price" class="section level5" number="5.1.1.1.3">
+<h5 number="5.1.1.1.3"><span class="header-section-number">5.1.1.1.3</span> Low Price</h5>
+<pre class="r"><code>## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+grph %&gt;%
+    ggplot(aes(x=index, y=low, group=Model, color=Model)) +
+    geom_line() +
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle(paste(&#39;1 min price forecasting from&#39;, range(unique(grph$index)), collapse = &#39; to &#39;)) +
+    theme_ipsum() +
+    ylab(&#39;exchange rates USD/JPY&#39;)</code></pre>
+</div>
+<div id="close-price" class="section level5" number="5.1.1.1.4">
+<h5 number="5.1.1.1.4"><span class="header-section-number">5.1.1.1.4</span> Close Price</h5>
+<pre class="r"><code>## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+grph %&gt;%
+    ggplot(aes(x=index, y=close, group=Model, color=Model)) +
+    geom_line() +
+    scale_color_viridis(discrete = TRUE) +
+    ggtitle(paste(&#39;1 min price forecasting from&#39;, range(unique(grph$index)), collapse = &#39; to &#39;)) +
+    theme_ipsum() +
+    ylab(&#39;exchange rates USD/JPY&#39;)</code></pre>
+</div>
+</div>
+<div id="mse-table" class="section level4" number="5.1.1.2">
+<h4 number="5.1.1.2"><span class="header-section-number">5.1.1.2</span> MSE Table</h4>
 <p>Below table compares the models.</p>
 <pre class="r"><code>mse1 &lt;- seasonal_m1 %&gt;% 
   ddply(.(Model, Period), summarise, 
@@ -17609,6 +17702,7 @@ yr.7200
 </div>
 <p>from above models we know the βest model.</p>
 </div>
+</div>
 <div id="interday-models" class="section level3" number="5.1.2">
 <h3 number="5.1.2"><span class="header-section-number">5.1.2</span> Interday Models</h3>
 <p>Here I summarise 1440 of 1 min data to be 1 day and choose the best fitted model. Below table compares the models.</p>
@@ -17693,7 +17787,7 @@ close.sm &lt;- close.accr[, list(close.mape = mean(close.mape),
 
 daily.sm &lt;- join_all(list(open.sm, high.sm, low.sm, close.sm)) %&gt;% 
   tibble</code></pre>
-<div id="open-price" class="section level4" number="5.1.2.1">
+<div id="open-price-1" class="section level4" number="5.1.2.1">
 <h4 number="5.1.2.1"><span class="header-section-number">5.1.2.1</span> Open Price</h4>
 <pre class="r"><code>open.sm %&gt;% 
   mutate(
@@ -18013,7 +18107,7 @@ dy.wk.mo
 </table>
 </div>
 </div>
-<div id="high-price" class="section level4" number="5.1.2.2">
+<div id="high-price-1" class="section level4" number="5.1.2.2">
 <h4 number="5.1.2.2"><span class="header-section-number">5.1.2.2</span> High Price</h4>
 <pre class="r"><code>high.sm %&gt;% 
   mutate(
@@ -18333,7 +18427,7 @@ dy.wk.mo
 </table>
 </div>
 </div>
-<div id="low-price" class="section level4" number="5.1.2.3">
+<div id="low-price-1" class="section level4" number="5.1.2.3">
 <h4 number="5.1.2.3"><span class="header-section-number">5.1.2.3</span> Low Price</h4>
 <pre class="r"><code>low.sm %&gt;% 
   mutate(
@@ -18653,7 +18747,7 @@ dy.wk.mo
 </table>
 </div>
 </div>
-<div id="close-price" class="section level4" number="5.1.2.4">
+<div id="close-price-1" class="section level4" number="5.1.2.4">
 <h4 number="5.1.2.4"><span class="header-section-number">5.1.2.4</span> Close Price</h4>
 <pre class="r"><code>close.sm %&gt;% 
   mutate(
@@ -29639,7 +29733,7 @@ date
 Current time
 </td>
 <td style="text-align:left;font-weight: bold;color: white !important;background-color: #D7261E !important;">
-2021-01-17 03:48:57 JST&lt;U+0001F5FE&gt;
+2021-01-17 05:08:48 JST&lt;U+0001F5FE&gt;
 </td>
 </tr>
 </tbody>
