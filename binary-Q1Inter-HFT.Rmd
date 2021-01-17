@@ -27,9 +27,9 @@ if(!suppressPackageStartupMessages(require('BBmisc'))) {
 suppressPackageStartupMessages(require('BBmisc'))
 # suppressPackageStartupMessages(require('rmsfuns'))
 
-pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 
+pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'dygraphs', 
           'devtools','readr', 'lubridate', 'data.table', 
-          'feather', 'purrr', 'quantmod', 'tidyquant', 
+          'feather', 'purrr', 'quantmod', 'tidyquant', 'plotly', 
           'tibbletime', 'furrr', 'flyingfox', 'tidyr', 
           'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 
           'tidyverse', 'memoise', 'htmltools', 'formattable', 
@@ -3062,9 +3062,9 @@ seasonal_m1 <- read_rds('data/fx/USDJPY/seasonal_m1.rds')
 
 Below graph shows the forecast price and actual price.
 
-##### Open Price
+##### Overview
 
-```{r, warning = FALSE, results = 'asis'}
+```{r, eval = FALSE, warning = FALSE, results = 'asis'}
 grph <- seasonal_m1 %>% 
   tidyr::unite(Model, Model:Period) %>% 
   data.table
@@ -3075,10 +3075,20 @@ names(grph) <- c('index', 'Model', 'open', 'high', 'low', 'close')
 grph <- rbind(grph, prc)
 rm(prc)
 
-tb5 <- grph %>% data.table
-
-tb5
+saveRDS(grph, 'data/fx/USDJPY/grph.rds')
 ```
+
+```{r, warning = FALSE, results = 'asis'}
+grph <- readRDS('data/fx/USDJPY/grph.rds')
+grph
+```
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
+fig <- plot_ly(grph, x = ~index, y = ~open, color = ~Model) 
+fig <- fig %>% add_lines()
+fig
+```
+
+##### Open Price
 
 ```{r, warning = FALSE, eval = FALSE, results = 'asis'}
 ## ------------ eval = FALSE -------------------
@@ -3159,7 +3169,7 @@ p1 <- grph %>%
   geom_line() + 
   #scale_colour_gradient2_tableau(palette = names(palettes)[1]) + #first palettes list in name
   #scale_color_viridis(discrete = TRUE) + 
-  labs(title = '1 min Price Forecasting', 
+  labs(title = '1 min Open Price Forecasting', 
        subtitle = paste('From', range(unique(grph$index))[1L], 'to', range(unique(grph$index))[2L]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
@@ -3182,7 +3192,7 @@ p2 <- grph %>%
   ggplot(aes(x = index, y = high, group = Model, color = Model)) + 
   geom_line() + 
   #scale_color_viridis(discrete = TRUE) + 
-  labs(title = '1 min Price Forecasting', 
+  labs(title = '1 min High Price Forecasting', 
        subtitle = paste('From', range(unique(grph$index))[1L], 'to', range(unique(grph$index))[2L]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
@@ -3202,7 +3212,7 @@ p3 <- grph %>%
   ggplot(aes(x = index, y = low, group = Model, color = Model)) + 
   geom_line() + 
   #scale_color_viridis(discrete = TRUE) + 
-  labs(title = '1 min Price Forecasting', 
+  labs(title = '1 min Low Price Forecasting', 
        subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
@@ -3222,7 +3232,7 @@ p4 <- grph %>%
   ggplot(aes(x = index, y = close, group = Model, color = Model)) + 
   geom_line() + 
   #scale_color_viridis(discrete = TRUE) + 
-  labs(title = '1 min Price Forecasting', 
+  labs(title = '1 min Close Price Forecasting', 
        subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
@@ -3456,7 +3466,7 @@ tb7 <- daily.sm %>%
       cell_spec(
         paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
         'html', color = 'grey', italic = TRUE))) %>% 
-  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = FALSE) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min Open Price Summarised to 1 Day per Unit)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -3510,7 +3520,7 @@ tb8 <- daily.sm %>%
       cell_spec(
         paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
         'html', color = 'grey', italic = TRUE))) %>% 
-  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = FALSE) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min High Price Summarised to 1 Day per Unit)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -3564,7 +3574,7 @@ tb9 <- daily.sm %>%
       cell_spec(
         paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
         'html', color = 'grey', italic = TRUE))) %>% 
-  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = FALSE) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min Open Price Summarised to 1 Day per Unit)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -3618,7 +3628,7 @@ tb10 <- daily.sm %>%
       cell_spec(
         paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
         'html', color = 'grey', italic = TRUE))) %>% 
-  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = FALSE) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min Close Price Summarised to 1 Day per Unit)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -4482,6 +4492,8 @@ dy.qt_dy.yr_2018[, {
       by={index=as_date(index)}]}, 
   by=.(Model, Period)]
 ```
+
+Kindly refer to [`Traceback-HFT.R`](https://github.com/englianhu/binary.com-interview-question/blob/master/Traceback-HFT.R) for more information.
 
 ```{r, warning = FALSE, eval = FALSE, results = 'asis'}
 ## ------------ eval = FALSE -------------------

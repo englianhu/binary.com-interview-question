@@ -7,10 +7,10 @@ suppressPackageStartupMessages(require('BBmisc'))
 pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 
           'devtools','readr', 'lubridate', 'data.table', 
           'feather', 'purrr', 'quantmod', 'tidyquant', 
-          'tibbletime', 'furrr', 'flyingfox', 'tidyr', 
+          'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'plotly', 
           'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 
           'tidyverse', 'memoise', 'htmltools', 'formattable', 
-          'zoo', 'forecast', 'seasonal', 'seasonalview', 
+          'zoo', 'forecast', 'seasonal', 'seasonalview', 'dygraphs', 
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
           'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
           'stringr', 'pacman', 'profmem', 'DescTools', 'ggthemes', 
@@ -167,9 +167,148 @@ yr_2018 <- data.table(seasonal_m1)[as_date(index) > as_date('2017-12-31')]
 dy.qt_dy.yr_2018 <- yr_2018[Model == 'tbats' & Period %in% c('dy.qt', 'dy.yr')]
 
 
-## =======================================================================
+#yr_2018 <- data.table(yr_2018)
+setorder(yr_2018, index)
 
-grph <- seasonal_m1 %>% 
+open.accr <- yr_2018[, {
+  open = open
+  open.Point.Forecast = open.Point.Forecast
+  .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+          open.smape = SMAPE(open, open.Point.Forecast), 
+          open.mse = MSE(open, open.Point.Forecast), 
+          open.rmse = RMSE(open, open.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+high.accr <- yr_2018[, {
+  high = high
+  high.Point.Forecast = high.Point.Forecast
+  .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+          high.smape = SMAPE(high, high.Point.Forecast), 
+          high.mse = MSE(high, high.Point.Forecast), 
+          high.rmse = RMSE(high, high.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+low.accr <- yr_2018[, {
+  low = low
+  low.Point.Forecast = low.Point.Forecast
+  .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+          low.smape = SMAPE(low, low.Point.Forecast), 
+          low.mse = MSE(low, low.Point.Forecast), 
+          low.rmse = RMSE(low, low.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+close.accr <- yr_2018[, {
+  close = close
+  close.Point.Forecast = close.Point.Forecast
+  .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+          close.smape = SMAPE(close, close.Point.Forecast), 
+          close.mse = MSE(close, close.Point.Forecast), 
+          close.rmse = RMSE(close, close.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+## check the imprecision and bias
+hist(open.accr$open.mape)
+hist(high.accr$high.smape)
+hist(low.accr$low.mse)
+hist(close.accr$close.rmse)
+
+
+open.accr[open.mape >= 0.01]
+
+fig <- plot_ly(x = ~unique(open.accr$index))
+fig <- fig %>% 
+	add_lines(y = ~open.accr[Period == 'dy.yr']$open.mape, 
+	name = 'tbats_dy.yr', line = list(shape = 'linear'))
+fig <- fig %>% 
+	add_lines(y = ~open.accr[Period == 'dy.wk.mo']$open.mape, 
+	name = 'tbats_dy.wk.mo', line = list(shape = 'linear'))
+fig <- fig %>% 
+	add_lines(y = ~open.accr[Period == 'dy.wk']$open.mape, 
+	name = 'tbats_dy.wk', line = list(shape = 'linear'))
+fig <- fig %>% 
+	add_lines(y = ~open.accr[Period == 'mo.1440']$open.mape, 
+	name = 'ts_mo.1440', line = list(shape = 'linear'))
+fig <- fig %>% 
+	add_lines(y = ~open.accr[Period == 'qt.1440']$open.mape, 
+	name = 'ts_qt.1440', line = list(shape = 'linear'))
+fig <- fig %>% 
+	add_lines(y = ~open.accr[Period == 'wk.1440']$open.mape, 
+	name = 'ts_wk.1440', line = list(shape = 'linear'))
+fig <- fig %>% 
+	add_lines(y = ~open.accr[Period == 'wk.7200']$open.mape, 
+	name = 'ts_wk.7200', line = list(shape = 'linear'))
+fig <- fig %>% 
+	add_lines(y = ~open.accr[Period == 'yr.1440']$open.mape, 
+	name = 'ts_yr.1440', line = list(shape = 'linear'))
+fig
+
+## ----- start error, not run... ----- 
+dens <- with(yr_2018, tapply(open.Point.Forecast, INDEX = Period, density))
+df <- data.frame(
+  index = unlist(lapply(dens, '[[', 'index')),
+  open.price = unlist(lapply(dens, '[[', 'open.Point.Forecast')),
+  cut = rep(names(dens), each = length(dens[[1]]$index)))
+
+fig <- plot_ly(df, x = ~index, y = ~open.price, color = ~cut) 
+fig <- fig %>% add_lines()
+
+fig
+## ----- end error, not run... ----- 
+
+# ---------------------------------
+
+dct <- yr_2018 %>% 
+	mutate(
+	open.mape = MAPE(open, open.Point.Forecast), 
+	open.smape = SMAPE(open, open.Point.Forecast), 
+	open.mse = MSE(open, open.Point.Forecast), 
+	open.rmse = RMSE(open, open.Point.Forecast), 
+	
+	high.mape = MAPE(high, high.Point.Forecast), 
+	high.smape = SMAPE(high, high.Point.Forecast), 
+	high.mse = MSE(high, high.Point.Forecast), 
+	high.rmse = RMSE(high, high.Point.Forecast), 
+	
+	low.mape = MAPE(low, low.Point.Forecast), 
+	low.smape = SMAPE(low, low.Point.Forecast), 
+	low.mse = MSE(low, low.Point.Forecast), 
+	low.rmse = RMSE(low, low.Point.Forecast), 
+	
+	close.mape = MAPE(close, close.Point.Forecast), 
+	close.smape = SMAPE(close, close.Point.Forecast), 
+	close.mse = MSE(close, close.Point.Forecast), 
+	close.rmse = RMSE(close, close.Point.Forecast))
+
+
+dct_dy.qt_dy <- dy.qt_dy.yr_2018 %>% 
+	mutate(
+	open.mape = MAPE(open, open.Point.Forecast), 
+	open.smape = SMAPE(open, open.Point.Forecast), 
+	open.mse = MSE(open, open.Point.Forecast), 
+	open.rmse = RMSE(open, open.Point.Forecast), 
+	
+	high.mape = MAPE(high, high.Point.Forecast), 
+	high.smape = SMAPE(high, high.Point.Forecast), 
+	high.mse = MSE(high, high.Point.Forecast), 
+	high.rmse = RMSE(high, high.Point.Forecast), 
+	
+	low.mape = MAPE(low, low.Point.Forecast), 
+	low.smape = SMAPE(low, low.Point.Forecast), 
+	low.mse = MSE(low, low.Point.Forecast), 
+	low.rmse = RMSE(low, low.Point.Forecast), 
+	
+	close.mape = MAPE(close, close.Point.Forecast), 
+	close.smape = SMAPE(close, close.Point.Forecast), 
+	close.mse = MSE(close, close.Point.Forecast), 
+	close.rmse = RMSE(close, close.Point.Forecast))
+
+## =======================================================================
+# grph <- seasonal_m1 %>% 
+grph <- yr_2018 %>% 
   tidyr::unite(Model, Model:Period) %>% 
   data.table
 prc <- unique(grph[, .(index, open, high, low, close)])
@@ -180,9 +319,37 @@ grph <- rbind(grph, prc)
 rm(prc)
 
 tb5 <- grph %>% data.table
-
 tb5
 
+####
+p_tb5_op <- tb5 %>% 
+    group_by(Model) %>% 
+    e_charts(x = index) %>% 
+    e_line(open, smooth = TRUE) %>% 
+  e_datazoom(
+    type = 'slider', 
+    toolbox = FALSE,
+    bottom = -5) %>% 
+  e_tooltip() %>% 
+  e_title(text = 'Model', subtext = 'open', left = 'center') %>% 
+  e_axis_labels(x = 'index', y = 'open') %>%
+  e_x_axis(index, axisPointer = list(show = TRUE)) %>% 
+  e_legend(
+    orient = 'vertical', 
+    type = c('scroll'), 
+    #selectedMode = 'multiple', #https://echarts.apache.org/en/option.html#legend
+    #selected = list('Model'), 
+    left = 0, top = 80) %>% 
+  e_grid(left = 150, top = 90) %>% 
+  #e_theme('shine') %>% 
+  e_toolbox_feature('saveAsImage', title = 'Screenshot')
+p_tb5_op
+# C:\Users\User\AppData\Local\Temp\RtmpOOeSsG\viewhtml40e8290451f\index.html
+
+
+fig <- plot_ly(tb5, x = ~index, y = ~open, color = ~Model) 
+fig <- fig %>% add_lines()
+fig
 
 
 
