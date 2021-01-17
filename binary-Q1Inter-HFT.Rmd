@@ -21,11 +21,11 @@ output:
 There has already 2 years passed by while [Binary.com-is-Rebranding-to-Deriv.com](https://derivdotcom.medium.com/binary-com-is-rebranding-to-deriv-com-and-here-is-everything-you-need-to-know-6f4a8513c84b), Here I summarized some previous research papers in [Binary.com → Deriv.com](https://englianhu.medium.com/binary-com-deriv-com-6058cdbfc3a1) and continue from this high-frequency-trading.
 
 ```{r warning=FALSE, message=FALSE}
-if(!require('BBmisc')) {
+if(!suppressPackageStartupMessages(require('BBmisc'))) {
   install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
 }
-suppressPackageStartupMessages(library('BBmisc'))
-# suppressPackageStartupMessages(library('rmsfuns'))
+suppressPackageStartupMessages(require('BBmisc'))
+# suppressPackageStartupMessages(require('rmsfuns'))
 
 pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 
           'devtools','readr', 'lubridate', 'data.table', 
@@ -419,7 +419,7 @@ From above tables, we can know the daylight saving detection and `datetime` auto
 - mean
 - random
 
-The papers concludes that the `imputeTS::na.seadec(algorithm = 'interpolation')` or `imputeTS::na.seadec(algorithm = 'kalman')` repaired dataset no matter how much of portion of missing value is workable since the MSE and bias is very low. The `Amelia::amelia` is accurate and the bias is small compare to `imputeTS::sea.dec` when the portion of missing value is small. The papers compare tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM. It is very weird that the `tidyr::fill` and `na.locf` both are not too accurate. However, in this paper I use `tidy::fill()` method to fill the missing value, it will similar with `kalman filter` method since it will filled up the missing value ascending to fill up with direction down until the bottom of the dataset and then fill up with direction up by descending to fill up initial missing value or top. It will not occured standard error bias like open or close price higher than highest price or lower than lowest price. Moreover, the filled price will not bias a lot from the trend as time goes by.
+The papers concludes that the `imputeTS::na.seadec(algorithm = 'interpolation')` or `imputeTS::na.seadec(algorithm = 'kalman')` repaired dataset no matter how much of portion of missing value is workable since the MSE and bias is very low. The `Amelia::amelia` is accurate and the bias and imprecision is small compare to `imputeTS::sea.dec` when the portion of missing value is small. The papers compare tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM. It is very weird that the `tidyr::fill` and `na.locf` both are not too accurate. However, in this paper I use `tidy::fill()` method to fill the missing value, it will similar with `kalman filter` method since it will filled up the missing value ascending to fill up with direction down until the bottom of the dataset and then fill up with direction up by descending to fill up initial missing value or top. It will not occured standard error bias like open or close price higher than highest price or lower than lowest price. Moreover, the filled price will not bias a lot from the trend as time goes by.
 
 ```{r warning=FALSE, message=FALSE}
 ## tick-data to minute 1 dataset
@@ -522,7 +522,9 @@ dttm <- llply(1:nrow(dtm), function(i) {
   
   data_frame(index = seq.POSIXt(from = x1 + minutes(1), to = x2, by = '1 min'), 
              year = dtm[i,2], week = dtm[i,3])
-  }) %>% bind_rows %>% as_tibble
+  }) %>% 
+  bind_rows %>% 
+  as_tibble
 ```
 
 Above chunk created a sequence of `datetime`.
@@ -567,7 +569,8 @@ data_m1 %<>%
                   AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
              fill(year, week, BidOpen, BidHigh, BidLow, BidClose, 
                   AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
-    }) %>% as_tibble
+    }) %>% 
+  as_tibble
 
 data_tm1 %<>% 
   ddply(.(year, week), function(x) {
@@ -575,7 +578,8 @@ data_tm1 %<>%
                   AskOpen, AskHigh, AskLow, AskClose) %>% #default direction down
              fill(year, week, BidOpen, BidHigh, BidLow, BidClose, 
                   AskOpen, AskHigh, AskLow, AskClose, .direction = 'up')
-    }) %>% as_tibble
+    }) %>% 
+  as_tibble
 #> data_m1 %>% anyNA
 #[1] TRUE
 #> data_m1 %>% filter_all(any_vars(is.na(.)))
@@ -625,17 +629,21 @@ names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDCNY', 
 
 data_m1 <- read_rds(paste0(dtr1s, '/data_m1.rds'))
 
-data_m1 %>% ddply(.(year, week), head, 1) %>% 
+tb1 <- data_m1 %>% ddply(.(year, week), head, 1) %>% 
   kable(caption = 'Weekly Initial Data Point') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
+
+tb1
 ```
 
 ```{r warning=FALSE, message=FALSE, echo=FALSE}
-data_m1 %>% ddply(.(year, week), tail, 1) %>% 
+tb2 <- data_m1 %>% ddply(.(year, week), tail, 1) %>% 
   kable(caption = 'Weekly Final Data Point') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
+
+tb2
 ```
 
 ```{r warning=FALSE, message=FALSE}
@@ -649,7 +657,7 @@ data_m1 %<>%
 Here I try to check if the filled dataset bias or not. Due to above I used `open = (BidOpen + AskOpen)/2`, `high = BidHigh`, `low = AskLow` and `close = (BidClose + AskClose)/2`^[For buying order, we need to refer to `ask` price and selling order need to refer to `bid` price.]. There will probably have bias.
 
 ```{r warning=FALSE, message=FALSE}
-data_m1 %>% mutate(
+tb3 <- data_m1 %>% mutate(
   bias.open = if_else(open>high|open<low, 1, 0), 
   bias.high = if_else(high<open|high<low|high<close, 1, 0), 
   bias.low = if_else(low>open|low>high|low>close, 1, 0), 
@@ -658,6 +666,8 @@ data_m1 %>% mutate(
 #  kable(caption = 'Bias Imputation') %>% 
 #  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
 #  scroll_box(width = '100%', height = '400px')
+
+tb3
 ```
 
 ```{r warning=FALSE, eval=FALSE}
@@ -731,7 +741,7 @@ data_m1 %<>%
 ```
 
 ```{r warning=FALSE, message=FALSE}
-data_m1 %>% mutate(
+tb4 <- data_m1 %>% mutate(
   bias.open = if_else(open>high|open<low, 1, 0), 
   bias.high = if_else(high<open|high<low|high<close, 1, 0), 
   bias.low = if_else(low>open|low>high|low>close, 1, 0), 
@@ -740,6 +750,8 @@ data_m1 %>% mutate(
 #  kable(caption = 'Bias Imputation') %>% 
 #  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
 #  scroll_box(width = '100%', height = '400px')
+
+tb4
 ```
 
 ```{js}
@@ -3063,7 +3075,9 @@ names(grph) <- c('index', 'Model', 'open', 'high', 'low', 'close')
 grph <- rbind(grph, prc)
 rm(prc)
 
-grph %>% as_tibble
+tb5 <- grph %>% as_tibble
+
+data.table(tb5)
 ```
 
 ```{r, warning = FALSE, eval = FALSE, results = 'asis'}
@@ -3092,10 +3106,100 @@ grph %>%
   e_toolbox_feature('saveAsImage', title = 'Screenshot')
 ```
 
+```{r, eval = FALSE, warning = FALSE, results = 'asis'}
+## ggthemes
+palettes1 <- ggthemes_data[['tableau']][['color-palettes']][['ordered-sequential']]
+## https://github.com/BTJ01/ggthemes/blob/master/inst/examples/ex-scale_color_tableau.R
+palettes2 <- ggthemes_data[["tableau"]][["color-palettes"]][["regular"]]
+
+## -------------------------------
+## ggthemr
+## https://www.shanelynn.ie/themes-and-colours-for-r-ggplots-with-ggthemr/
+
+#tableau_colours <- c('#1F77B4', '#FF7F0E', '#2CA02C', '#D62728', '#9467BD', '#8C564B', '#CFECF9', '#7F7F7F', '#BCBD22', '#17BECF')
+tableau_colours <- palettes2$`Tableau 20`$value
+names(tableau_colours) <- palettes2$`Tableau 20`$name
+
+#names(tableau_colours) <- unique(grph$Model)
+
+## https://colorbrewer2.org/#type=qualitative&scheme=Paired&n=12
+#tableau_colours <- c('#a6cee3', '#1f78b4', '#b2df8a', '#33a02c', '#fb9a99', '#e31a1c', '#fdbf6f', '#ff7f00', '#cab2d6', '#6a3d9a', '#ffff99', '#b15928')
+
+# you have to add a colour at the start of your palette for outlining boxes, we'll use a grey:
+#tableau_colours <- c("#555555", tableau_colours)
+# remove previous effects:
+ggthemr_reset()
+
+# Define colours for your figures with define_palette
+tableau <- define_palette(
+    swatch = tableau_colours, # colours for plotting points and bars
+    ## https://stackoverflow.com/questions/7014387/whats-the-difference-between-1l-and-1
+    gradient = c(lower = tableau_colours[1L], upper = tableau_colours[length(tableau_colours)]), #upper and lower colours for continuous colours
+    #background = "#EEEEEE" #defining a grey-ish background 
+)
+# set the theme for your figures:
+ggthemr(tableau)
+
+## ------------------------
+## https://stackoverflow.com/questions/34601194/change-colours-to-defined-palette-for-ggplot-objects
+change_colours <- function(p, palette) {
+  n <- nlevels(p$data[[deparse(p$mapping$group)]])
+  tryCatch(as.character(palette), 
+           error=function(e) stop('palette should be a vector of colours', call.=FALSE))
+  if(n > length(palette)) stop('Not enough colours in palette.')
+  pal <- function(n) palette[seq_len(n)]
+  p + theme_light() + discrete_scale('colour', 'foo', pal)
+}
+```
+
 ```{r, warning = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-grph %>% 
+p1 <- grph %>% 
   ggplot(aes(x = index, y = open, group = Model, color = Model)) + 
+  geom_line() + 
+  #scale_colour_gradient2_tableau(palette = names(palettes)[1]) + #first palettes list in name
+  #scale_color_viridis(discrete = TRUE) + 
+  labs(title = '1 min Price Forecasting', 
+       subtitle = paste('From', range(unique(grph$index))[1L], 'to', range(unique(grph$index))[2L]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  #scale_color_economist() + 
+  ##scale_fill_manual(values = tableau_colours) + 
+  #scale_color_brewer(tableau_colours) + 
+  #scale_color_jcolors(palette = palettes2$`Tableau 20`$value) + #choose color set among palettes
+  #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  theme(legend.position = 'right')
+
+p1
+```
+
+##### High Price
+
+```{r, warning = FALSE, results = 'asis'}
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+p2 <- grph %>% 
+  ggplot(aes(x = index, y = high, group = Model, color = Model)) + 
+  geom_line() + 
+  #scale_color_viridis(discrete = TRUE) + 
+  labs(title = '1 min Price Forecasting', 
+       subtitle = paste('From', range(unique(grph$index))[1L], 'to', range(unique(grph$index))[2L]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  #scale_color_economist() + 
+  #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  theme(legend.position = 'right')
+
+p2
+```
+
+##### Low Price
+
+```{r, warning = FALSE, results = 'asis'}
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+p3 <- grph %>% 
+  ggplot(aes(x = index, y = low, group = Model, color = Model)) + 
   geom_line() + 
   #scale_color_viridis(discrete = TRUE) + 
   labs(title = '1 min Price Forecasting', 
@@ -3104,64 +3208,30 @@ grph %>%
   ylab('Exchange Rates USD/JPY') + 
   theme_economist() + 
   #scale_color_economist() + 
-  theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
-  theme(legend.position = 'right')
-```
-
-##### High Price
-
-```{r, warning = FALSE, results = 'asis'}
-## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-grph %>% 
-  ggplot(aes(x = index, y = high, group = Model, color = Model)) + 
-  geom_line() + 
-  scale_color_viridis(discrete = TRUE) + 
-  labs(title = '1 min Price Forecasting', 
-       subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
-       caption = "Data source: fxcm") + 
-  ylab('Exchange Rates USD/JPY') + 
-  theme_economist() + 
-  scale_color_economist() + 
-  theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
-  theme(legend.position = 'right')
-```
-
-##### Low Price
-
-```{r, warning = FALSE, results = 'asis'}
-## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-grph %>% 
-  ggplot(aes(x = index, y = low, group = Model, color = Model)) + 
-  geom_line() + 
-  scale_color_viridis(discrete = TRUE) + 
-  labs(title = '1 min Price Forecasting', 
-       subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
-       caption = "Data source: fxcm") + 
-  ylab('Exchange Rates USD/JPY') + 
-  theme_economist() + 
-  scale_color_economist() + 
-  theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
   theme(legend.position = 'right')
 
+p3
 ```
 
 ##### Close Price
 
 ```{r, warning = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-grph %>% 
+p4 <- grph %>% 
   ggplot(aes(x = index, y = close, group = Model, color = Model)) + 
   geom_line() + 
-  scale_color_viridis(discrete = TRUE) + 
+  #scale_color_viridis(discrete = TRUE) + 
   labs(title = '1 min Price Forecasting', 
        subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
   theme_economist() + 
-  scale_color_economist() + 
-  theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  #scale_color_economist() + 
+  #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
   theme(legend.position = 'right')
 
+p4
 ```
 
 #### MSE Table
@@ -3182,7 +3252,7 @@ mse1 <- seasonal_m1 %>%
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-mse1 %>% 
+tb6 <- mse1 %>% 
   mutate(
     MSE.open = ifelse(
       rank(MSE.open) <= 3, 
@@ -3247,6 +3317,8 @@ mse1 %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
+
+tb6
 ```
 
 from above models we know the βest model.
@@ -3345,7 +3417,7 @@ daily.sm <- join_all(list(open.sm, high.sm, low.sm, close.sm)) %>%
 #### Open Price
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-open.sm %>% 
+tb7 <- open.sm %>% 
   mutate(
     open.mape = ifelse(
       rank(open.mape) <= 3, 
@@ -3391,12 +3463,14 @@ open.sm %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
+
+tb7
 ```
 
 #### High Price
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-high.sm %>% 
+tb8 <- high.sm %>% 
   mutate(
     high.mape = ifelse(
       rank(high.mape) <= 3, 
@@ -3442,12 +3516,14 @@ high.sm %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
+
+tb8
 ```
 
 #### Low Price
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-low.sm %>% 
+tb9 <- low.sm %>% 
   mutate(
     low.mape = ifelse(
       rank(low.mape) <= 3, 
@@ -3493,12 +3569,14 @@ low.sm %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
+
+tb9
 ```
 
 #### Close Price
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-close.sm %>% 
+tb10 <- close.sm %>% 
   mutate(
     close.mape = ifelse(
       rank(close.mape) <= 3, 
@@ -3544,6 +3622,8 @@ close.sm %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
+
+tb10
 ```
 
 #### Summary
@@ -3551,7 +3631,7 @@ close.sm %>%
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
 rm(m.op, m.hi, m.lo, m.cl)
 
-daily.sm %>% 
+tb11 <- daily.sm %>% 
   mutate(
     open.mape = ifelse(
       rank(open.mape) <= 3, 
@@ -3709,6 +3789,8 @@ daily.sm %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
+
+tb11
 ```
 
 Above table summarized the daily `mape`, `smape`, `mse` and `rmse` values and then summarized again the models (which is nested summarize <span style='color:red'>due to daily settlement</span>), we can interpret from above table :
@@ -3775,7 +3857,7 @@ rm(m.op, m.hi, m.lo, m.cl)
 ```
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-best_model %>% 
+tb12 <- best_model %>% 
   mutate(
     open.mape = ifelse(
       rank(open.mape) <= 3, 
@@ -3933,6 +4015,8 @@ best_model %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
+
+tb12
 ```
 
 Above table summarized the total observations with `mape`, `smape`, `mse` and `rmse` values (which is nested summarize <span style='color:red'>not daily settlement</span>), we can interpret from above table :
@@ -4065,7 +4149,7 @@ cmp <- bind_rows(cmp1, cmp2, cmp3) %>%
 ```
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-cmp %>% 
+tb13 <- cmp %>% 
   mutate(
     mape = ifelse(
       rank(mape) <= 3, 
@@ -4111,6 +4195,8 @@ cmp %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
+
+tb13
 ```
 
 [Application of `auto.arima()` on both `ts()` and `msts()` seasonal datasets](https://stackoverflow.com/questions/65699784/application-of-auto-arima-on-both-ts-and-msts-seasonal-dataset) compare the `ts()` and `msts()` sarima models.
@@ -4165,7 +4251,7 @@ ETS.MSE %<>%
           MSE.1 = mean(MSE.1, na.rm=TRUE), 
           MSE.2 = mean(MSE.2, na.rm=TRUE))
 
-ETS.MSE %>% mutate(
+tb14 <- ETS.MSE %>% mutate(
     MSE.1 = ifelse(
       rank(MSE.1) <= 3, 
       cell_spec(
@@ -4207,6 +4293,8 @@ ETS.MSE %>% mutate(
   kableExtra::group_rows('ZZN', 501, 525, label_row_css = 'background-color: #00a3cc; color: #fff;') %>%
   kableExtra::group_rows('ZZZ', 526, 550, label_row_css = 'background-color: #e60000; color: #fff;') %>%
   scroll_box(width = '100%', height = '400px')
+
+tb14
 ```
 
 *Source : [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E)*
@@ -4249,13 +4337,15 @@ ARIMA.MSE %<>% mutate(
     substr(Type, 3, 4) == 'LO' ~ mean((Point.Forecast - USDJPY.Low)^2), 
     substr(Type, 3, 4) == 'CL' ~ mean((Point.Forecast - USDJPY.Close)^2)))
 
-ARIMA.MSE %>% 
+tb15 <- ARIMA.MSE %>% 
     ddply(.(Model), summarise, 
           MSE.1 = mean(MSE.1, na.rm=TRUE), 
           MSE.2 = mean(MSE.2, na.rm=TRUE)) %>% 
   arrange(MSE.1, MSE.2) %>% 
   kable(caption = 'MSE of daily Opened and Closed Transaction Orders') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
+
+tb15
 ```
 
 # Conclusion
@@ -4350,6 +4440,11 @@ wkb <- dtb %>%
     mutate_if(is.Date, weekdays) %>% mutate_if(is.character, as.factor)
 wkb %>% 
   dplyr::filter(V1 != 'Monday')
+```
+
+```{r}
+## https://stackoverflow.com/questions/7014387/whats-the-difference-between-1l-and-1
+microbenchmark(seq(1L, 100000000L), seq(1, 100000000), seq(1L, 1e+08), seq(1, 1e+08L), seq(1L, 10L^8L), seq(1, 10^8))
 ```
 
 ```{r eval=FALSE}
