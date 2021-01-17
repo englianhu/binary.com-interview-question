@@ -34,9 +34,9 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint',
           'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 
           'tidyverse', 'memoise', 'htmltools', 'formattable', 
           'zoo', 'forecast', 'seasonal', 'seasonalview', 
-          'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 
-          'microbenchmark', 'dendextend', 'lhmetools', 
-          'stringr', 'pacman', 'profmem', 'DescTools', 
+          'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
+          'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
+          'stringr', 'pacman', 'profmem', 'DescTools', 'ggthemes', 
           'htmltools', 'echarts4r', 'viridis', 'hrbrthemes')
 
 # https://github.com/mpiktas/midasr
@@ -3094,52 +3094,74 @@ grph %>%
 
 ```{r, warning = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-grph %>%
-    ggplot(aes(x=index, y=open, group=Model, color=Model)) +
-    geom_line() +
-    scale_color_viridis(discrete = TRUE) +
-    ggtitle(paste(c('1 min price forecasting from', paste(range(unique(grph$index)), collapse = ' to ')), collapse = ' ')) +
-    theme_ipsum() +
-    ylab('exchange rates USD/JPY')
+grph %>% 
+  ggplot(aes(x = index, y = open, group = Model, color = Model)) + 
+  geom_line() + 
+  #scale_color_viridis(discrete = TRUE) + 
+  labs(title = '1 min Price Forecasting', 
+       subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  #scale_color_economist() + 
+  theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  theme(legend.position = 'right')
 ```
 
 ##### High Price
 
 ```{r, warning = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-grph %>%
-    ggplot(aes(x=index, y=high, group=Model, color=Model)) +
-    geom_line() +
-    scale_color_viridis(discrete = TRUE) +
-    ggtitle(paste(c('1 min price forecasting from', paste(range(unique(grph$index)), collapse = ' to ')), collapse = ' ')) +
-    theme_ipsum() +
-    ylab('exchange rates USD/JPY')
+grph %>% 
+  ggplot(aes(x = index, y = high, group = Model, color = Model)) + 
+  geom_line() + 
+  scale_color_viridis(discrete = TRUE) + 
+  labs(title = '1 min Price Forecasting', 
+       subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  scale_color_economist() + 
+  theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  theme(legend.position = 'right')
 ```
 
 ##### Low Price
 
 ```{r, warning = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-grph %>%
-    ggplot(aes(x=index, y=low, group=Model, color=Model)) +
-    geom_line() +
-    scale_color_viridis(discrete = TRUE) +
-    ggtitle(paste(c('1 min price forecasting from', paste(range(unique(grph$index)), collapse = ' to ')), collapse = ' ')) +
-    theme_ipsum() +
-    ylab('exchange rates USD/JPY')
+grph %>% 
+  ggplot(aes(x = index, y = low, group = Model, color = Model)) + 
+  geom_line() + 
+  scale_color_viridis(discrete = TRUE) + 
+  labs(title = '1 min Price Forecasting', 
+       subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  scale_color_economist() + 
+  theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  theme(legend.position = 'right')
+
 ```
 
 ##### Close Price
 
 ```{r, warning = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-grph %>%
-    ggplot(aes(x=index, y=close, group=Model, color=Model)) +
-    geom_line() +
-    scale_color_viridis(discrete = TRUE) +
-    ggtitle(paste(c('1 min price forecasting from', paste(range(unique(grph$index)), collapse = ' to ')), collapse = ' ')) +
-    theme_ipsum() +
-    ylab('exchange rates USD/JPY')
+grph %>% 
+  ggplot(aes(x = index, y = close, group = Model, color = Model)) + 
+  geom_line() + 
+  scale_color_viridis(discrete = TRUE) + 
+  labs(title = '1 min Price Forecasting', 
+       subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  scale_color_economist() + 
+  theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  theme(legend.position = 'right')
+
 ```
 
 #### MSE Table
@@ -3701,7 +3723,7 @@ Above table summarized the daily `mape`, `smape`, `mse` and `rmse` values and th
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
 #best_model <- seasonal_m1 %>% 
-#    ddply(.(Model, Period), summarise, 
+#    ddply(.(Model, Period), summarize, 
 #        mape = MAPE(open, open.Point.Forecast), 
 #        smape = SMAPE(open, open.Point.Forecast), 
 #        mse = MSE(open, open.Point.Forecast), 
