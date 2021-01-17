@@ -1,8 +1,8 @@
-if(!require('BBmisc')) {
+if(!suppressPackageStartupMessages(require('BBmisc'))) {
   install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
 }
-suppressPackageStartupMessages(library('BBmisc'))
-# suppressPackageStartupMessages(library('rmsfuns'))
+suppressPackageStartupMessages(require('BBmisc'))
+# suppressPackageStartupMessages(require('rmsfuns'))
 
 pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 
           'devtools','readr', 'lubridate', 'data.table', 
@@ -115,6 +115,49 @@ seasonal_m1 <- read_rds('data/fx/USDJPY/seasonal_m1.rds')
 #seasonal_m1[is.nan(seasonal_m1)] <- NA
 if(!is.data.table(seasonal_m1)) seasonal_m1 <- data.table(seasonal_m1)
 
+seasonal_m1 <- data.table(seasonal_m1)
+setorder(seasonal_m1, index)
+
+open.accr <- seasonal_m1[, {
+  open = open
+  open.Point.Forecast = open.Point.Forecast
+  .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+          open.smape = SMAPE(open, open.Point.Forecast), 
+          open.mse = MSE(open, open.Point.Forecast), 
+          open.rmse = RMSE(open, open.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+high.accr <- seasonal_m1[, {
+  high = high
+  high.Point.Forecast = high.Point.Forecast
+  .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+          high.smape = SMAPE(high, high.Point.Forecast), 
+          high.mse = MSE(high, high.Point.Forecast), 
+          high.rmse = RMSE(high, high.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+low.accr <- seasonal_m1[, {
+  low = low
+  low.Point.Forecast = low.Point.Forecast
+  .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+          low.smape = SMAPE(low, low.Point.Forecast), 
+          low.mse = MSE(low, low.Point.Forecast), 
+          low.rmse = RMSE(low, low.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+close.accr <- seasonal_m1[, {
+  close = close
+  close.Point.Forecast = close.Point.Forecast
+  .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+          close.smape = SMAPE(close, close.Point.Forecast), 
+          close.mse = MSE(close, close.Point.Forecast), 
+          close.rmse = RMSE(close, close.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+ 
 ## =======================================================================
 
 ## Checking models
@@ -126,7 +169,19 @@ dy.qt_dy.yr_2018 <- yr_2018[Model == 'tbats' & Period %in% c('dy.qt', 'dy.yr')]
 
 ## =======================================================================
 
+grph <- seasonal_m1 %>% 
+  tidyr::unite(Model, Model:Period) %>% 
+  data.table
+prc <- unique(grph[, .(index, open, high, low, close)])
+prc <- prc[, Model := 'Market.Price'][]
+grph <- grph[, (c('open', 'high', 'low', 'close')) := NULL]
+names(grph) <- c('index', 'Model', 'open', 'high', 'low', 'close')
+grph <- rbind(grph, prc)
+rm(prc)
 
+tb5 <- grph %>% data.table
+
+tb5
 
 
 

@@ -3075,9 +3075,9 @@ names(grph) <- c('index', 'Model', 'open', 'high', 'low', 'close')
 grph <- rbind(grph, prc)
 rm(prc)
 
-tb5 <- grph %>% as_tibble
+tb5 <- grph %>% data.table
 
-data.table(tb5)
+tb5
 ```
 
 ```{r, warning = FALSE, eval = FALSE, results = 'asis'}
@@ -3327,7 +3327,7 @@ from above models we know the βest model.
 
 Here I summarize 1440 of 1 min data to be 1 day and choose the best fitted model. Below table compares the models.
 
-```{r, message = FALSE, warning = FALSE, results = 'asis'}
+```{r, eval = FALSE, message = FALSE, warning = FALSE, results = 'asis'}
 # mse2 <- seasonal_m1 %>% 
 #   ddply(.(Model, Period, index), summarise, 
 #         MSE.open = mean((open.Point.Forecast - open)^2, na.rm=TRUE), 
@@ -3385,7 +3385,7 @@ close.accr <- seasonal_m1[, {
   by=.(Model, Period)]
 ```
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, eval = FALSE, warning = FALSE, message = FALSE, results = 'asis'}
 open.sm <- open.accr[, list(open.mape = mean(open.mape), 
                             open.smape = mean(open.smape), 
                             open.mse = mean(open.mse), 
@@ -3412,12 +3412,17 @@ close.sm <- close.accr[, list(close.mape = mean(close.mape),
 
 daily.sm <- join_all(list(open.sm, high.sm, low.sm, close.sm)) %>% 
   tibble
+
+saveRDS(daily.sm, 'data/fx/USDJPY/best_m.rds')
 ```
 
 #### Open Price
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-tb7 <- open.sm %>% 
+daily.sm <- readRDS('data/fx/USDJPY/best_m.rds')
+
+tb7 <- daily.sm %>% 
+  dplyr::select(contains(c('Model', 'Period', 'open'))) %>% 
   mutate(
     open.mape = ifelse(
       rank(open.mape) <= 3, 
@@ -3470,7 +3475,8 @@ tb7
 #### High Price
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-tb8 <- high.sm %>% 
+tb8 <- daily.sm %>% 
+  dplyr::select(contains(c('Model', 'Period', 'high'))) %>% 
   mutate(
     high.mape = ifelse(
       rank(high.mape) <= 3, 
@@ -3523,7 +3529,8 @@ tb8
 #### Low Price
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-tb9 <- low.sm %>% 
+tb9 <- daily.sm %>% 
+  dplyr::select(contains(c('Model', 'Period', 'low'))) %>% 
   mutate(
     low.mape = ifelse(
       rank(low.mape) <= 3, 
@@ -3576,7 +3583,8 @@ tb9
 #### Close Price
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-tb10 <- close.sm %>% 
+tb10 <- daily.sm %>% 
+  dplyr::select(contains(c('Model', 'Period', 'close'))) %>% 
   mutate(
     close.mape = ifelse(
       rank(close.mape) <= 3, 
@@ -3629,8 +3637,6 @@ tb10
 #### Summary
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-rm(m.op, m.hi, m.lo, m.cl)
-
 tb11 <- daily.sm %>% 
   mutate(
     open.mape = ifelse(
@@ -3803,7 +3809,7 @@ Above table summarized the daily `mape`, `smape`, `mse` and `rmse` values and th
 
 #### Best Model
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, eval = FALSE, warning = FALSE, message = FALSE, results = 'asis'}
 #best_model <- seasonal_m1 %>% 
 #    ddply(.(Model, Period), summarize, 
 #        mape = MAPE(open, open.Point.Forecast), 
@@ -3853,10 +3859,13 @@ m.cl <- seasonal_m1[, {
       by=.(Model, Period)]}][order(Model, Period), ]
 
 best_model <- join_all(list(m.op, m.hi, m.lo, m.cl)) %>% tibble
+saveRDS(best_model, 'data/fx/USDJPY/best_m_daily.rds')
 rm(m.op, m.hi, m.lo, m.cl)
 ```
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
+best_model <- readRDS('data/fx/USDJPY/best_m_daily.rds')
+
 tb12 <- best_model %>% 
   mutate(
     open.mape = ifelse(
@@ -4452,6 +4461,26 @@ microbenchmark(seq(1L, 100000000L), seq(1, 100000000), seq(1L, 1e+08), seq(1, 1e
 yr_2018 <- data.table(seasonal_m1)[as_date(index) > as_date('2017-12-31')]
 
 dy.qt_dy.yr_2018 <- yr_2018[Model == 'tbats' & Period %in% c('dy.qt', 'dy.yr')]
+
+yr_2018[, {
+  open = open
+  open.Point.Forecast = open.Point.Forecast
+  .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+          open.smape = SMAPE(open, open.Point.Forecast), 
+          open.mse = MSE(open, open.Point.Forecast), 
+          open.rmse = RMSE(open, open.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+dy.qt_dy.yr_2018[, {
+  open = open
+  open.Point.Forecast = open.Point.Forecast
+  .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+          open.smape = SMAPE(open, open.Point.Forecast), 
+          open.mse = MSE(open, open.Point.Forecast), 
+          open.rmse = RMSE(open, open.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
 ```
 
 ```{r, warning = FALSE, eval = FALSE, results = 'asis'}
