@@ -2515,6 +2515,12 @@ for (dt in timeID) {
   }
 ```
 
+```{r eval=FALSE}
+yr_2018 <- data.table(seasonal_m1)[as_date(index) > as_date('2017-12-31')]
+
+dy.qt_dy.yr_2018 <- yr_2018[Model == 'tbats' & Period %in% c('dy.qt', 'dy.yr')]
+```
+
 ### Nested Weekly-Weekly Model
 
 Based on the comparison section proved that daily (1440 mins) nested model more effective than weekly (7200 mins) nested models, here I skip above model.
@@ -3052,7 +3058,7 @@ grph <- seasonal_m1 %>%
   data.table
 prc <- unique(grph[, .(index, open, high, low, close)])
 prc <- prc[, Model := 'Market.Price'][]
-grph[, (c('open', 'high', 'low', 'close')) := NULL]
+grph <- grph[, (c('open', 'high', 'low', 'close')) := NULL]
 names(grph) <- c('index', 'Model', 'open', 'high', 'low', 'close')
 grph <- rbind(grph, prc)
 rm(prc)
@@ -3092,7 +3098,7 @@ grph %>%
     ggplot(aes(x=index, y=open, group=Model, color=Model)) +
     geom_line() +
     scale_color_viridis(discrete = TRUE) +
-    ggtitle(paste('1 min price forecasting from', range(unique(grph$index)), collapse = ' to ')) +
+    ggtitle(paste(c('1 min price forecasting from', paste(range(unique(grph$index)), collapse = ' to ')), collapse = ' ')) +
     theme_ipsum() +
     ylab('exchange rates USD/JPY')
 ```
@@ -3105,7 +3111,7 @@ grph %>%
     ggplot(aes(x=index, y=high, group=Model, color=Model)) +
     geom_line() +
     scale_color_viridis(discrete = TRUE) +
-    ggtitle(paste('1 min price forecasting from', range(unique(grph$index)), collapse = ' to ')) +
+    ggtitle(paste(c('1 min price forecasting from', paste(range(unique(grph$index)), collapse = ' to ')), collapse = ' ')) +
     theme_ipsum() +
     ylab('exchange rates USD/JPY')
 ```
@@ -3118,7 +3124,7 @@ grph %>%
     ggplot(aes(x=index, y=low, group=Model, color=Model)) +
     geom_line() +
     scale_color_viridis(discrete = TRUE) +
-    ggtitle(paste('1 min price forecasting from', range(unique(grph$index)), collapse = ' to ')) +
+    ggtitle(paste(c('1 min price forecasting from', paste(range(unique(grph$index)), collapse = ' to ')), collapse = ' ')) +
     theme_ipsum() +
     ylab('exchange rates USD/JPY')
 ```
@@ -3131,7 +3137,7 @@ grph %>%
     ggplot(aes(x=index, y=close, group=Model, color=Model)) +
     geom_line() +
     scale_color_viridis(discrete = TRUE) +
-    ggtitle(paste('1 min price forecasting from', range(unique(grph$index)), collapse = ' to ')) +
+    ggtitle(paste(c('1 min price forecasting from', paste(range(unique(grph$index)), collapse = ' to ')), collapse = ' ')) +
     theme_ipsum() +
     ylab('exchange rates USD/JPY')
 ```
@@ -4322,6 +4328,39 @@ wkb <- dtb %>%
     mutate_if(is.Date, weekdays) %>% mutate_if(is.character, as.factor)
 wkb %>% 
   dplyr::filter(V1 != 'Monday')
+```
+
+```{r eval=FALSE}
+## Due to the low precision and low accuracy, here I plot the graph and rerun the code to check the models.
+yr_2018 <- data.table(seasonal_m1)[as_date(index) > as_date('2017-12-31')]
+
+dy.qt_dy.yr_2018 <- yr_2018[Model == 'tbats' & Period %in% c('dy.qt', 'dy.yr')]
+```
+
+```{r, warning = FALSE, eval = FALSE, results = 'asis'}
+## ------------ eval = FALSE -------------------
+## Due to high volume dataset and heavily ploting, here I ommit it.
+yr_2018 %>% 
+    group_by(Model) %>% 
+    e_charts(x = index) %>% 
+    e_line(open.Point.Forecast, smooth = TRUE) %>% 
+  e_datazoom(
+    type = 'slider', 
+    toolbox = FALSE,
+    bottom = -5) %>% 
+  e_tooltip() %>% 
+  e_title(text = 'Model', subtext = 'open.Point.Forecast', left = 'center') %>% 
+  e_axis_labels(x = 'index', y = 'open.Point.Forecast') %>%
+  e_x_axis(index, axisPointer = list(show = TRUE)) %>% 
+  e_legend(
+    orient = 'vertical', 
+    type = c('scroll'), 
+    #selectedMode = 'multiple', #https://echarts.apache.org/en/option.html#legend
+    #selected = list('Model'), 
+    left = 0, top = 80) %>% 
+  e_grid(left = 150, top = 90) %>% 
+  #e_theme('shine') %>% 
+  e_toolbox_feature('saveAsImage', title = 'Screenshot')
 ```
 
 ## Documenting File Creation 
