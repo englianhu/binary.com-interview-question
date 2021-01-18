@@ -1,3 +1,5 @@
+setwd('C:/Users/User/Documents/GitHub/binary.com-interview-question')
+
 if(!suppressPackageStartupMessages(require('BBmisc'))) {
   install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
 }
