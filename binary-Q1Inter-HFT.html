@@ -1843,7 +1843,7 @@ names(cr_code) &lt;- c(&#39;AUDUSD&#39;, &#39;EURUSD&#39;, &#39;GBPUSD&#39;, &#3
 data_m1 &lt;- read_rds(paste0(dtr1s, &#39;/data_m1.rds&#39;))
 
 tb1 &lt;- data_m1 %&gt;% ddply(.(year, week), head, 1) %&gt;% 
-  kable(caption = &#39;Weekly Initial Data Point&#39;) %&gt;% 
+  kbl(&#39;html&#39;, caption = &#39;Weekly Initial Data Point&#39;, escape = FALSE) %&gt;% 
   kable_styling(bootstrap_options = c(&#39;striped&#39;, &#39;hover&#39;, &#39;condensed&#39;, &#39;responsive&#39;)) %&gt;%
   scroll_box(width = &#39;100%&#39;, height = &#39;400px&#39;)
 
@@ -8334,6 +8334,12 @@ NA
 </tbody>
 </table>
 </div>
+<pre class="r"><code>tb2 &lt;- data_m1 %&gt;% ddply(.(year, week), tail, 1) %&gt;% 
+  kbl(&#39;html&#39;, caption = &#39;Weekly Final Data Point&#39;, escape = FALSE) %&gt;% 
+  kable_styling(bootstrap_options = c(&#39;striped&#39;, &#39;hover&#39;, &#39;condensed&#39;, &#39;responsive&#39;)) %&gt;%
+  scroll_box(width = &#39;100%&#39;, height = &#39;400px&#39;)
+
+tb2</code></pre>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:100%; ">
 <table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
 <caption>
@@ -17184,9 +17190,296 @@ write(grph_json, &#39;data/fx/USDJPY/grph_json.json&#39;)
 
 #grph_json &lt;- fromJSON(&#39;data/fx/USDJPY/grph_json.json&#39;)</code></pre>
 <pre class="r"><code>grph &lt;- readRDS(&#39;data/fx/USDJPY/grph.rds&#39;)
-data.frame(grph)[c(1:5, (nrow(grph)-5):nrow(grph)),]</code></pre>
-<pre><code>                   index        Model     open     high      low    close</code></pre>
-<p>1 2015-01-12 00:01:00 tbats_dy.qt 118.5390 118.5614 118.5230 118.5480 2 2015-01-12 00:01:00 tbats_dy.wk 118.5390 118.5614 118.5230 118.5480 3 2015-01-12 00:01:00 tbats_dy.yr 118.5390 118.5614 118.5230 118.5480 4 2015-01-12 00:01:00 ts_mo.1440 118.5907 118.6257 118.5749 118.6095 5 2015-01-12 00:01:00 ts_mo.7200 118.5390 118.5626 118.5260 118.5480 18849595 2018-07-07 00:00:00 ts_wk.7200 110.6450 110.6435 110.5675 110.5737 18849596 2018-07-07 00:00:00 ts_wk.7200 110.6450 110.6435 110.5675 110.5737 18849597 2018-07-07 00:00:00 ts_wk.7200 110.6450 110.6435 110.5675 110.5737 18849598 2018-07-07 00:00:00 ts_wk.7200 110.6450 110.6435 110.5675 110.5737 18849599 2018-07-07 00:00:00 ts_yr.1440 110.6449 110.6492 110.5636 110.5707 18849600 2018-07-07 00:00:00 Market.Price 110.4635 110.4540 110.4770 110.4740</p>
+data.frame(grph)[c(1:5, (nrow(grph)-5):nrow(grph)),] %&gt;% 
+  kbl(&#39;html&#39;, caption = &#39;Data Sample&#39;, escape = FALSE) %&gt;% 
+  kable_styling(bootstrap_options = c(&#39;striped&#39;, &#39;hover&#39;, &#39;condensed&#39;, &#39;responsive&#39;)) %&gt;%
+  scroll_box(width = &#39;100%&#39;, height = &#39;100%&#39;)</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:100%; overflow-x: scroll; width:100%; ">
+<table class="table table-striped table-hover table-condensed table-responsive" style="margin-left: auto; margin-right: auto;">
+<caption>
+Data Sample
+</caption>
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+index
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+Model
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+open
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+high
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+low
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+close
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:left;">
+2015-01-12 00:01:00
+</td>
+<td style="text-align:left;">
+tbats_dy.qt
+</td>
+<td style="text-align:right;">
+118.5390
+</td>
+<td style="text-align:right;">
+118.5614
+</td>
+<td style="text-align:right;">
+118.5230
+</td>
+<td style="text-align:right;">
+118.5480
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:left;">
+2015-01-12 00:01:00
+</td>
+<td style="text-align:left;">
+tbats_dy.wk
+</td>
+<td style="text-align:right;">
+118.5390
+</td>
+<td style="text-align:right;">
+118.5614
+</td>
+<td style="text-align:right;">
+118.5230
+</td>
+<td style="text-align:right;">
+118.5480
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+3
+</td>
+<td style="text-align:left;">
+2015-01-12 00:01:00
+</td>
+<td style="text-align:left;">
+tbats_dy.yr
+</td>
+<td style="text-align:right;">
+118.5390
+</td>
+<td style="text-align:right;">
+118.5614
+</td>
+<td style="text-align:right;">
+118.5230
+</td>
+<td style="text-align:right;">
+118.5480
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+4
+</td>
+<td style="text-align:left;">
+2015-01-12 00:01:00
+</td>
+<td style="text-align:left;">
+ts_mo.1440
+</td>
+<td style="text-align:right;">
+118.5907
+</td>
+<td style="text-align:right;">
+118.6257
+</td>
+<td style="text-align:right;">
+118.5749
+</td>
+<td style="text-align:right;">
+118.6095
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+5
+</td>
+<td style="text-align:left;">
+2015-01-12 00:01:00
+</td>
+<td style="text-align:left;">
+ts_mo.7200
+</td>
+<td style="text-align:right;">
+118.5390
+</td>
+<td style="text-align:right;">
+118.5626
+</td>
+<td style="text-align:right;">
+118.5260
+</td>
+<td style="text-align:right;">
+118.5480
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+18849595
+</td>
+<td style="text-align:left;">
+2018-07-07 00:00:00
+</td>
+<td style="text-align:left;">
+ts_wk.7200
+</td>
+<td style="text-align:right;">
+110.6450
+</td>
+<td style="text-align:right;">
+110.6435
+</td>
+<td style="text-align:right;">
+110.5675
+</td>
+<td style="text-align:right;">
+110.5737
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+18849596
+</td>
+<td style="text-align:left;">
+2018-07-07 00:00:00
+</td>
+<td style="text-align:left;">
+ts_wk.7200
+</td>
+<td style="text-align:right;">
+110.6450
+</td>
+<td style="text-align:right;">
+110.6435
+</td>
+<td style="text-align:right;">
+110.5675
+</td>
+<td style="text-align:right;">
+110.5737
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+18849597
+</td>
+<td style="text-align:left;">
+2018-07-07 00:00:00
+</td>
+<td style="text-align:left;">
+ts_wk.7200
+</td>
+<td style="text-align:right;">
+110.6450
+</td>
+<td style="text-align:right;">
+110.6435
+</td>
+<td style="text-align:right;">
+110.5675
+</td>
+<td style="text-align:right;">
+110.5737
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+18849598
+</td>
+<td style="text-align:left;">
+2018-07-07 00:00:00
+</td>
+<td style="text-align:left;">
+ts_wk.7200
+</td>
+<td style="text-align:right;">
+110.6450
+</td>
+<td style="text-align:right;">
+110.6435
+</td>
+<td style="text-align:right;">
+110.5675
+</td>
+<td style="text-align:right;">
+110.5737
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+18849599
+</td>
+<td style="text-align:left;">
+2018-07-07 00:00:00
+</td>
+<td style="text-align:left;">
+ts_yr.1440
+</td>
+<td style="text-align:right;">
+110.6449
+</td>
+<td style="text-align:right;">
+110.6492
+</td>
+<td style="text-align:right;">
+110.5636
+</td>
+<td style="text-align:right;">
+110.5707
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+18849600
+</td>
+<td style="text-align:left;">
+2018-07-07 00:00:00
+</td>
+<td style="text-align:left;">
+Market.Price
+</td>
+<td style="text-align:right;">
+110.4635
+</td>
+<td style="text-align:right;">
+110.4540
+</td>
+<td style="text-align:right;">
+110.4770
+</td>
+<td style="text-align:right;">
+110.4740
+</td>
+</tr>
+</tbody>
+</table>
+</div>
 <p>the dataset above has 18849600 x, 6 x dimensions.</p>
 <pre class="r"><code>## https://plotly.com/r/embedding-graphs-in-rmarkdown
 ## https://stackoverflow.com/questions/25186022/embedding-plotly-output-in-r-markdown/25192691
@@ -29700,13 +29993,13 @@ wkb %&gt;%
 <pre class="r"><code>## https://stackoverflow.com/questions/7014387/whats-the-difference-between-1l-and-1
 microbenchmark(seq(1L, 100000000L), seq(1, 100000000), seq(1L, 1e+08), seq(1, 1e+08L), seq(1L, 10L^8L), seq(1, 10^8))</code></pre>
 <pre><code>## Unit: microseconds
-##                 expr   min     lq    mean median     uq     max neval
-##  seq(1L, 100000000L) 5.301 5.6000 6.14990 5.8010 6.3505  10.701   100
-##        seq(1, 1e+08) 5.301 5.6010 6.17395 5.7510 6.2010  12.300   100
-##       seq(1L, 1e+08) 5.301 5.6010 6.82593 5.8010 6.5010  31.201   100
-##   seq(1, 100000000L) 5.302 5.6510 6.38093 5.8010 6.5015  17.201   100
-##      seq(1L, 10L^8L) 5.701 6.1005 8.90703 6.2515 7.0005 203.401   100
-##         seq(1, 10^8) 5.701 6.0015 7.41302 6.4015 7.4515  55.200   100</code></pre>
+##                 expr min  lq  mean median   uq  max neval
+##  seq(1L, 100000000L) 4.8 5.0 5.292    5.1 5.30 15.2   100
+##        seq(1, 1e+08) 4.8 5.0 5.962    5.1 5.30 67.9   100
+##       seq(1L, 1e+08) 4.9 5.0 5.399    5.1 5.25 15.3   100
+##   seq(1, 100000000L) 4.9 5.0 5.293    5.1 5.30 15.7   100
+##      seq(1L, 10L^8L) 5.2 5.3 5.739    5.4 5.60 15.6   100
+##         seq(1, 10^8) 5.2 5.3 5.739    5.5 5.60 15.8   100</code></pre>
 <pre class="r"><code>## Due to the low precision and low accuracy, here I plot the graph and rerun the code to check the models.
 yr_2018 &lt;- data.table(seasonal_m1)[as_date(index) &gt; as_date(&#39;2017-12-31&#39;)]
 
@@ -29943,7 +30236,7 @@ date
 Current time
 </td>
 <td style="text-align:left;font-weight: bold;color: white !important;background-color: #D7261E !important;">
-2021-01-20 15:54:21 JST&lt;U+0001F5FE&gt;
+2021-01-20 16:47:01 JST&lt;U+0001F5FE&gt;
 </td>
 </tr>
 </tbody>

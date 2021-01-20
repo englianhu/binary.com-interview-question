@@ -20,7 +20,7 @@ output:
 
 There has already 2 years passed by while [Binary.com-is-Rebranding-to-Deriv.com](https://derivdotcom.medium.com/binary-com-is-rebranding-to-deriv-com-and-here-is-everything-you-need-to-know-6f4a8513c84b), Here I summarized some previous research papers in [Binary.com → Deriv.com](https://englianhu.medium.com/binary-com-deriv-com-6058cdbfc3a1) and continue from this high-frequency-trading.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 if(!suppressPackageStartupMessages(require('BBmisc'))) {
   install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
 }
@@ -100,7 +100,7 @@ Due to the dataset gather via `getSymbols('JPY=X', src='av', api.key=api, period
 - [Chapter 7 Importing Financial Data from the Internet](https://msperlin.github.io/pafdR/importingInternet.html) introduce few packages where provides api service.
 - [High Frequency Data Price (Sample)](https://raw.githubusercontent.com/DavisVaughan/fin-econ-project-bitcoin/master/data/cleaned/cleaned-bitstamp-minutely.csv) is an example for intraday high-frequency-trading.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'CNY=X', 'JPY=X')
 
 names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDCNY', 'USDJPY')
@@ -145,7 +145,7 @@ t.unit <- c('seconds', 'minutes', 'hours', 'days', 'weeks', 'months', 'quarters'
 
 Due to high volume of dataset, here I only use `USDJPY` since the variance is higher than the rest of currencies.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 ## Read raw dataset.
 #Y2015W1 <- read_rds(paste0(dtr1, '/', fls[[7]][1], '.rds')) %>% as_tibble
 
@@ -178,7 +178,7 @@ Do you have any experiences with this? Do you know an R function or a package th
 `%z` Signed offset in hours and minutes from UTC, so -0800 is 8 hours behind UTC.
 For example: In 2012, the switch from Standard Time to DST occured on 2012-03-25, so there is no 02:00 on this day. If you try to convert "2012-03-25 02:00:00" to a POSIXct-Object,
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 ## https://stackoverflow.com/questions/29202021/r-how-to-extract-dates-from-a-time-series
 getTStime <- function(ats){
   start <- start(ats)
@@ -228,7 +228,7 @@ The top panel of Figure 11.1 shows the number of retail banking call arrivals pe
 
 *Source : [11.1 Complex seasonality](https://otexts.org/fpp2/complexseasonality.html)*
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 ## Convert the univariate price to be OHLC price in `minutes` unit.
 Y2015W1_min1 <- Y2015W1 %>% 
   convertOHLC(combine = TRUE, trade = FALSE, .unit = t.unit[2]) %>% 
@@ -236,7 +236,7 @@ Y2015W1_min1 <- Y2015W1 %>%
 Y2015W1_min1
 ```
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 #suppressWarnings(Y2015W1 <- tbl %>% 
 #       dplyr::select(date, close) %>% tk_xts %>% 
 #       auto.arima(seasonal = FALSE))
@@ -250,7 +250,7 @@ Y2015W1_min1 %>%
 
 Kindly refer to section [Seasonal Data] or [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) to know the seasonality dataset. <span style='color:goldenrod'>*High Frequency GARCH: The multiplicative component GARCH (mcsGARCH) model*</span> use the dataset start from `00:01:00` but not `00:00:00`, therefore above dataset shows the last observation will be the start of next day.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 # tsz <- llply(fls[[7]], function(x) {
 #     y <- read_rds(x) %>% 
 #       convertOHLC(combine = TRUE, trade = FALSE, .unit = t.unit[2]) %>% 
@@ -276,7 +276,7 @@ tsz %>% dplyr::count(diff) %>%
 tsz %>% dplyr::filter(diff <= 6000)
 ```
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 ## https://stackoverflow.com/questions/34454947/why-is-this-xts-frequency-always-1
 ## https://www.stat.berkeley.edu/~s133/dates.html
 ## https://stackoverflow.com/questions/45070078/convert-forecast-time-produced-by-arima-into-standard-date-time
@@ -315,7 +315,7 @@ Without knowing much about PHP time zone handling, it seems strange to me that y
 
 <s>Due to the `UTC` timezone has no daylight saving issue, therefore the initial trading time will be a problem where I need to cope with.</s> [Handling Data for Daylight-Saving and Non-Daylight-Saving for HFT](https://community.rstudio.com/t/handling-data-for-daylight-saving-and-non-daylight-saving-for-hft/15699/2) provides the solution for the timezone issue.
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 ## -------- eval=FALSE --------------
 ## Now I simply tidy all datasets and save it prior to start the statistical modelling.
 llply(fls[[7]], function(x) {
@@ -344,7 +344,7 @@ it is 5:00PM at the end of the day, which is shown in GMT as 21:00 day light sav
 
 From above quote, we can know even the `EST` converted to `UTC` will not be `00:00:00`, therefore I refer to [Handling data on the days when we switch to daylight savings time and back in R](https://stackoverflow.com/questions/13865172/handling-data-on-the-days-when-we-switch-to-daylight-savings-time-and-back-in-r) as my solution as `UTC+2` (daylight saving `UTC+3`) will get the desired result.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 cr_code <- c('EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'JPY=X')
 names(cr_code) <- c('EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDJPY')
 
@@ -362,7 +362,7 @@ fs1 <- list.files(dtr1s, pattern = '^Y[0-9]{4}W[0-9]{1,2}_m1.rds$') %>%
 # eval(parse(text = paste0(fs, "<- read_rds('", fls[[7]], "')")))
 ```
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 ## Read raw dataset.
 eval(parse(text = paste0(fs1[1], "<- read_rds('", fls1[[5]][1], "') %>% as_tibble")))
 
@@ -372,7 +372,7 @@ Y2015W1_m1
 
 Now I try to validate the daylight saving date.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 # tsz2 <- llply(fls1[[5]], function(x) {
 #    y <- read_rds(x) %>% dplyr::filter(DateTime == head(DateTime, 1)|
 #                                      DateTime == tail(DateTime, 1)) %>% 
@@ -421,7 +421,7 @@ From above tables, we can know the daylight saving detection and `datetime` auto
 
 The papers concludes that the `imputeTS::na.seadec(algorithm = 'interpolation')` or `imputeTS::na.seadec(algorithm = 'kalman')` repaired dataset no matter how much of portion of missing value is workable since the MSE and bias is very low. The `Amelia::amelia` is accurate and the bias and imprecision is small compare to `imputeTS::sea.dec` when the portion of missing value is small. The papers compare tick-data-to-1min-data and also 1min-data where both datasets gather from FXCM. It is very weird that the `tidyr::fill` and `na.locf` both are not too accurate. However, in this paper I use `tidy::fill()` method to fill the missing value, it will similar with `kalman filter` method since it will filled up the missing value ascending to fill up with direction down until the bottom of the dataset and then fill up with direction up by descending to fill up initial missing value or top. It will not occured standard error bias like open or close price higher than highest price or lower than lowest price. Moreover, the filled price will not bias a lot from the trend as time goes by.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 ## tick-data to minute 1 dataset
 #tsz <- read_rds('C:/Users/scibr/Documents/GitHub/scibrokes/real-time-fxcm/data/USDJPY/tsz.rds')
 tsz %>% dplyr::count(diff) %>% 
@@ -439,14 +439,14 @@ tsz2 %>% dplyr::count(diff) %>%
 
 Above tables show both datasets are incompleted. However, when I tried to check the `Y2017W20` and `Y2017W20_m1`, the tick-dataset only start from `2017-05-15` until `2017-05-17` but the m1-dataset from `2017-05-15` until `2017-05-19`. Kindly refer to below comparison.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 mean(tsz$diff, na.rm=TRUE)
 mean(tsz2$diff, na.rm=TRUE)
 ```
 
 From above comparison, we know the dataset of `1min` is better compelete than `tick-to-1min` dataset.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 #left_join(tsz[c(1, ncol(tsz))], tsz2[c(1, ncol(tsz2))])
 right_join(tsz[c(1, ncol(tsz))], tsz2[c(1, ncol(tsz2))])
 ```
@@ -458,7 +458,7 @@ right_join(tsz[c(1, ncol(tsz))], tsz2[c(1, ncol(tsz2))])
 
 Here I compare the mean and get to know the downloaded min1 dataset from FXCM is better than downloaded tick-dataset (converted to min1) from FXCM.
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # -------- eval=FALSE -----------
 ## tick-data to min-1 dataset
 data_tm1 <- llply(fls[[7]], function(x) {
@@ -500,7 +500,7 @@ data_m1 <- llply(fls1[[5]], function(x) {
   arrange(index)
 ```
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # -------- eval=FALSE -----------
 #dtm <- seq(ymd_hms('2015-01-01 00:00:00'), ymd_hms('2017-08-31 00:00:00'), by = 'minutes')
 #dtm <- seq(from = ymd('2015-01-05'), to = ymd('2018-07-07'), by = 'weeks')
@@ -529,7 +529,7 @@ dttm <- llply(1:nrow(dtm), function(i) {
 
 Above chunk created a sequence of `datetime`.
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 ## merge dataset
 data_m1 <- left_join(dttm, data_m1) %>% 
   as_tibble %>% 
@@ -620,7 +620,7 @@ Finally, I filled-up the `NA` section of `data_m1` and `data_tm1` and eventually
 
 Due to the files preload all before simulate the statistical modelling will occupy the space. Here I directly read the files and simulate the algorithmic prediction in following sections.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 rm(list = ls()[grep('i|j|tz|nch|yw|dtm|dttm|form|data|Y2015W|tsz|tsz2|dc', ls())])
 
 cr_code <- c('AUDUSD=X', 'EURUSD=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'CNY=X', 'JPY=X')
@@ -637,7 +637,7 @@ tb1 <- data_m1 %>% ddply(.(year, week), head, 1) %>%
 tb1
 ```
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 tb2 <- data_m1 %>% ddply(.(year, week), tail, 1) %>% 
   kbl('html', caption = 'Weekly Final Data Point', escape = FALSE) %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
@@ -646,7 +646,7 @@ tb2 <- data_m1 %>% ddply(.(year, week), tail, 1) %>%
 tb2
 ```
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 ## Tidy dataset for modelling.
 data_m1 %<>% 
   mutate(open = (BidOpen + AskOpen)/2, close = (BidClose + AskClose)/2) %>% 
@@ -656,7 +656,7 @@ data_m1 %<>%
 
 Here I try to check if the filled dataset bias or not. Due to above I used `open = (BidOpen + AskOpen)/2`, `high = BidHigh`, `low = AskLow` and `close = (BidClose + AskClose)/2`^[For buying order, we need to refer to `ask` price and selling order need to refer to `bid` price.]. There will probably have bias.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 tb3 <- data_m1 %>% mutate(
   bias.open = if_else(open>high|open<low, 1, 0), 
   bias.high = if_else(high<open|high<low|high<close, 1, 0), 
@@ -670,7 +670,7 @@ tb3 <- data_m1 %>% mutate(
 tb3
 ```
 
-```{r warning=FALSE, eval=FALSE}
+```{r, cache = TRUE, warning=FALSE, eval=FALSE}
 # -------- eval=FALSE -----------
 ## Below prove that the dataset has no any bias or error.
 > read_rds(paste0(dtr1, '/data_m1.rds')) %>% mutate(
@@ -726,7 +726,7 @@ I initially try to use `bid` for high and `ask` for low in order to produce a be
 
 Due to `1min` dataset is better than (more complete) `tickdata-to-1min`, here I use the `1min` dataset.
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 if(!exists('data_m1')) {
   data_m1 <- read_rds(paste0(dtr1s, '/data_m1.rds'))
 }
@@ -740,7 +740,7 @@ data_m1 %<>%
 }
 ```
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 tb4 <- data_m1 %>% mutate(
   bias.open = if_else(open>high|open<low, 1, 0), 
   bias.high = if_else(high<open|high<low|high<close, 1, 0), 
@@ -891,7 +891,7 @@ The `forecast.ets()` will automatically use the optimal `ets()` which is similar
 
 I set the length of dataset as weekly but the frequency set as 1440 minutes (per day).
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
@@ -946,7 +946,7 @@ for (dt in timeID) {
 
 I set the length of dataset as monthly but the frequency set as 1440 minutes (per day). Initial forecast will be based on weekly dataset and then accumulated date-by-date until a monthly dataset.
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
@@ -1001,7 +1001,7 @@ for (dt in timeID) {
 
 I set the length of dataset as quarterly but the frequency set as 1440 minutes (per day). Initial forecast will be based on weekly dataset and then accumulated date-by-date until a quarterly dataset.
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
@@ -1056,7 +1056,7 @@ for (dt in timeID) {
 
 I set the length of dataset as yearly but the frequency set as 1440 minutes (per day). Initial forecast will be based on weekly dataset and then accumulated date-by-date until a yearly dataset.
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #sets <- list()
@@ -1110,7 +1110,7 @@ for (dt in timeID) {
 
 I set the length of dataset as weekly but the frequency set as 7200 minutes (per week).
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 7200)
 #sets <- list()
@@ -1165,7 +1165,7 @@ for (dt in timeID) {
 
 I set the length of dataset as monthly but the frequency set as 7200 minutes (per week).
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 7200)
 #sets <- list()
@@ -1220,7 +1220,7 @@ for (dt in timeID) {
 
 I set the length of dataset as quarterly but the frequency set as 7200 minutes (per week).
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 7200)
 #sets <- list()
@@ -1275,7 +1275,7 @@ for (dt in timeID) {
 
 I set the length of dataset as yearly but the frequency set as 7200 minutes (per week).
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 7200)
 #sets <- list()
@@ -1472,7 +1472,7 @@ fit <- auto.arima(ts_, seasonal=F, xreg=fourier(msts_, K=c(3,5,10)))  # i,j,k
 
 *Source : [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re)*
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 ts_ <- data_m1$close %>% 
   ts()
 mts_ <- data_m1 %>% 
@@ -1509,7 +1509,7 @@ Here I use `ts()` for seasonal data modeling and set `auto.arima(D = 1, seasonal
 
 I set the length of dataset as nested seasonal dataset as weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 # sample, not run
 > suppressWarnings(Y2015W1 %>% 
@@ -1522,7 +1522,7 @@ p d q P D Q s
 0 0 0 0 0 0 1
 ```
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 # eval(parse(text = paste0(fs, "<- read_rds('", fls[[7]], "') %>% as_tibble")))
 # sample, not run
@@ -1559,7 +1559,7 @@ for(i in (1:length(fs))) {
   }
 ```
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 # sample, not run
 smp <- data_m1 %>% tk_xts(silent = TRUE)
@@ -1625,7 +1625,7 @@ AIC=6060.87   AICc=6061.06   BIC=6133.69
 
 **Modeling**
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 # measure as sample take from next chunk
 timeID <- data_m1$index %>% 
@@ -1678,7 +1678,7 @@ cat(paste0(
 
 Due to above model consume few hours, here I can only use a sample to compare the accuracy.
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #Not run
 #sq <- seq(1 , length(data_m1$index), by = 1440)
@@ -1744,7 +1744,7 @@ I set the length of dataset as 3 level nested seasonal dataset as monthly (1 yea
 
 **Modeling**
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 # measure as sample take from next chunk
 timeID <- data_m1$index %>% 
@@ -1803,7 +1803,7 @@ cat(paste0(
     as_date(fr_msts.sample$index[1]), '.rds saved!\n'))
 ```
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -1910,7 +1910,7 @@ Due to above model consume few hours, here I can only use a sample to compare th
 
 ### Nested Daily-Weekly Model
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -2003,7 +2003,7 @@ for (dt in timeID) {
 
 ### Nested Daily-Weekly-Monthly Model
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -2087,7 +2087,7 @@ for (dt in timeID) {
 
 ### Nested Daily-Weekly-Quarterly Model
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -2173,7 +2173,7 @@ Due to heavily calculation and based on the comparison section proved that 2 lev
 
 ### Nested Daily-Weekly-Yearly Model
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -2259,7 +2259,7 @@ Due to heavily calculation and based on the comparison section proved that 2 lev
 
 ### Nested Daily-Weekly-Monthly-Quarterly-Yearly Model
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -2348,7 +2348,7 @@ Due to heavily calculation and based on the comparison section proved that 2 lev
 
 ### Nested Daily-Quarterly Model
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -2438,7 +2438,7 @@ for (dt in timeID) {
 
 ### Nested Daily-Yearly Model
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -2527,7 +2527,7 @@ for (dt in timeID) {
   }
 ```
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 yr_2018 <- data.table(seasonal_m1)[as_date(index) > as_date('2017-12-31')]
 
 dy.qt_dy.yr_2018 <- yr_2018[Model == 'tbats' & Period %in% c('dy.qt', 'dy.yr')]
@@ -2549,7 +2549,7 @@ Based on the comparison section proved that daily (1440 mins) nested model more 
 
 Based on the comparison section proved that daily (1440 mins) nested model more effective than weekly (7200 mins) nested models, here I skip above model.
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 ## Due to notice there have bias on `qt` and `yr` models after 2 years 2020 from 2018... might probably due to different reasons.
 
 ## mts.dy.wk.
@@ -2716,7 +2716,7 @@ select(MSE.close, c(mts.dy.wk, mts.dy.wk.mo, mts.dy.qt, mts.dy.yr, mean)) %>% co
 #   0.2997343    0.2947651    0.6627861    3.0969951    1.0885702
 ```
 
-```{r eval=FALSE}
+```{r, cache = TRUE, eval=FALSE}
 > list(smp_wkc, smp_wk.moc, smp_qtc, smp_yrc) %>% 
   l_ply(function(x) length(x$n), .print = TRUE)
 [1] 1084
@@ -2741,7 +2741,7 @@ chk1a[1:100,]
 
 ## Seasonal Models `seasonal::seas()` 
 
-```{r warning=FALSE, message=FALSE, eval=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE, eval=FALSE}
 # --------- eval=FALSE ---------
 #sq <- seq(1 , length(data_m1$index), by = 1440)
 #mts <- list()
@@ -2814,7 +2814,7 @@ I have just noticed there has another GARCH model in `rugarch` package and then 
 - [Query about mcsGARCH (rugarch package)](http://r.789695.n4.nabble.com/Query-about-mcmcsGARCH-rugarch-package-td4692890.html)
 - [R语言改进高频GARCH模型：乘法分量GARCH（mcsGARCH）模型](https://blog.csdn.net/qq_19600291/article/details/79542442)
 
-```{r msemcsGARCH3, eval=FALSE}
+```{r, cache = TRUE, msemcsGARCH3, eval=FALSE}
 ## ------------- Simulate uv_fx() ----------------------
 ## uv_fx just made the model and some argument flexible.
 mcsGARCH <- list()
@@ -2865,7 +2865,7 @@ for (dt in timeID) {
 
 Here I read the saved models.
 
-```{r eval=FALSE, warning=FALSE, message=FALSE}
+```{r, cache = TRUE, eval=FALSE, warning=FALSE, message=FALSE}
 ## Get all files.
 fls <- paste0('data/fx/USDJPY/', list.files(
   'data/fx/USDJPY/', pattern = '^sets|^mts'))
@@ -3047,7 +3047,7 @@ write_rds(seasonal_m1, 'data/fx/USDJPY/seasonal_m1.rds')
 ## ------------------------------------------
 ```
 
-```{r warning=FALSE, message=FALSE}
+```{r, cache = TRUE, warning=FALSE, message=FALSE}
 #dir('data/fx/USDJPY', pattern = '*.z') %>% 
 #  llply(., function(x) {
 #    suppressAll(unzip(paste0('data/fx/USDJPY/', x)))
@@ -3088,7 +3088,7 @@ write(grph_json, 'data/fx/USDJPY/grph_json.json')
 #grph_json <- fromJSON('data/fx/USDJPY/grph_json.json')
 ```
 
-```{r warning = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
 grph <- readRDS('data/fx/USDJPY/grph.rds')
 data.frame(grph)[c(1:5, (nrow(grph)-5):nrow(grph)),] %>% 
   kbl('html', caption = 'Data Sample', escape = FALSE) %>% 
@@ -3109,7 +3109,7 @@ fig
 
 ##### Open Price
 
-```{r eval = FALSE, warning = FALSE, results = 'asis'}
+```{r, cache = TRUE, eval = FALSE, warning = FALSE, results = 'asis'}
 ## ------------ eval = FALSE -------------------
 ## Due to high volume dataset and heavily ploting, here I ommit it.
 grph %>% 
@@ -3181,7 +3181,7 @@ change_colours <- function(p, palette) {
 }
 ```
 
-```{r, warning = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
 p1 <- grph %>% 
   ggplot(aes(x = index, y = open, group = Model, color = Model)) + 
@@ -3206,7 +3206,7 @@ p1
 
 ##### High Price
 
-```{r, warning = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
 rm(p1)
 
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
@@ -3229,7 +3229,7 @@ p2
 
 ##### Low Price
 
-```{r, warning = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
 rm(p2)
 
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
@@ -3252,7 +3252,7 @@ p3
 
 ##### Close Price
 
-```{r, warning = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
 rm(p3)
 
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
@@ -3277,7 +3277,7 @@ p4
 
 Below table compares the models.
 
-```{r warning = FALSE, message = FALSE}
+```{r, cache = TRUE, warning = FALSE, message = FALSE}
 rm(p4)
 
 mse1 <- seasonal_m1 %>% 
@@ -3292,7 +3292,7 @@ mse1 <- seasonal_m1 %>%
   as_tibble
 ```
 
-```{r, warning = FALSE, message = FALSE, results='asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results='asis'}
 tb6 <- mse1 %>% 
   mutate(
     MSE.open = ifelse(
@@ -3460,7 +3460,7 @@ saveRDS(daily.sm, 'data/fx/USDJPY/best_m.rds')
 
 #### Open Price
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
 daily.sm <- readRDS('data/fx/USDJPY/best_m.rds')
 
 tb7 <- daily.sm %>% 
@@ -3516,7 +3516,7 @@ tb7
 
 #### High Price
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
 tb8 <- daily.sm %>% 
   dplyr::select(contains(c('Model', 'Period', 'high'))) %>% 
   mutate(
@@ -3570,7 +3570,7 @@ tb8
 
 #### Low Price
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
 tb9 <- daily.sm %>% 
   dplyr::select(contains(c('Model', 'Period', 'low'))) %>% 
   mutate(
@@ -3624,7 +3624,7 @@ tb9
 
 #### Close Price
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
 tb10 <- daily.sm %>% 
   dplyr::select(contains(c('Model', 'Period', 'close'))) %>% 
   mutate(
@@ -3678,7 +3678,7 @@ tb10
 
 #### Summary
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
 tb11 <- daily.sm %>% 
   mutate(
     open.mape = ifelse(
@@ -3905,7 +3905,7 @@ saveRDS(best_model, 'data/fx/USDJPY/best_m_daily.rds')
 rm(m.op, m.hi, m.lo, m.cl)
 ```
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
 best_model <- readRDS('data/fx/USDJPY/best_m_daily.rds')
 
 tb12 <- best_model %>% 
@@ -4078,7 +4078,7 @@ Above table summarized the total observations with `mape`, `smape`, `mse` and `r
 
 #### Sarima
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
 ##Below model use open price dataset where contain 7200 mins and forecast 1440 mins.
 fit_ts <- readRDS('data/fx/USDJPY/sarima_ts_sample.rds')
 #fr_ts <- forecast(fit_ts, h = 1440)
@@ -4093,7 +4093,7 @@ fr_msts.sample <- readRDS('data/fx/USDJPY/fr_msts.sample.wk.1440.2015-01-12.rds'
 
 Due to heavily calculation on sarima models, here I only use 1st week `r paste('from', range(fr_ts.sample$index), collapse = ' to ')`` calculate.
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
 cmp1 <- join(fr_ts.sample, fr_msts.sample) %>% 
   as_tibble
 
@@ -4199,7 +4199,7 @@ cmp <- bind_rows(cmp1, cmp2, cmp3) %>%
   as_tibble
 ```
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
 tb13 <- cmp %>% 
   mutate(
     mape = ifelse(
@@ -4258,7 +4258,7 @@ tb13
 
 Below I recall the `ETS` models for interday price prediction in previous paper for comparison.
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
 ets.fls <- list.files('data', pattern = '^[A-Z]{3}\\.[A-Za-z]{4}')
 ETS.MSE <- llply(ets.fls, function(x) {
     nm <- x %>% 
@@ -4357,7 +4357,7 @@ From above `MSE` comparison with intraday-dataset, we know that the intraday dat
 - [Forecasting: Principles and Practice - *11.1 Complex seasonality*](https://otexts.com/fpp2/complexseasonality.html#complexseasonality)
 - [Forecasting: Principles and Practice - *12.1 Weekly, daily and sub-daily data*](https://otexts.com/fpp2/weekly.html#weekly)
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
 ar.fls <- list.files('data', pattern = '^fundAutoArima')
 ARIMA.MSE <- llply(ar.fls, function(x) {
     nm <- x %>% 
@@ -4410,7 +4410,7 @@ From the backtest, we concludes that high-frequency-trading **1 min per unit** (
 
 `sarimax`, `tbats with xreg` I will also compare the `fracdiff()` models.
 
-```{r option, echo = FALSE}
+```{r, cache = TRUE, option, echo = FALSE}
 ## Set options back to original options
 options(warn = 0)
 ```
@@ -4419,11 +4419,13 @@ options(warn = 0)
 
 ## Blooper
 
+### Efficiency
+
 <span style='color:red'>**Efficiency**</span>
 
 There cost alot of time for couple models comparison.
 
-```{r eval = FALSE}
+```{r, cache = TRUE, eval = FALSE}
 # Test the efficiency
 > dim(data_m1)
 [1] 1324800       5
@@ -4473,6 +4475,13 @@ Unit: seconds
  10.182849 10.652719 11.118986 11.026882 11.546361 13.484108   100
 ```
 
+```{r}
+## https://stackoverflow.com/questions/7014387/whats-the-difference-between-1l-and-1
+microbenchmark(seq(1L, 100000000L), seq(1, 100000000), seq(1L, 1e+08), seq(1, 1e+08L), seq(1L, 10L^8L), seq(1, 10^8))
+```
+
+### Small Mistake
+
 <span style='color:red'>**Small Mistake**</span>
 
 Here I noticed that there have `Saturday` and `Sunday` trading days as show below when I continue R&D after 2 years from 2018. It is not a big problem since this paper only compare the models and choose the best fit model for high-frequency-trading.
@@ -4494,12 +4503,11 @@ wkb %>%
   dplyr::filter(V1 != 'Monday')
 ```
 
-```{r}
-## https://stackoverflow.com/questions/7014387/whats-the-difference-between-1l-and-1
-microbenchmark(seq(1L, 100000000L), seq(1, 100000000), seq(1L, 1e+08), seq(1, 1e+08L), seq(1L, 10L^8L), seq(1, 10^8))
-```
+### Unexpected Error
 
-```{r eval=FALSE}
+##### Open Price
+
+```{r}
 ## Due to the low precision and low accuracy, here I plot the graph and rerun the code to check the models.
 yr_2018 <- data.table(seasonal_m1)[as_date(index) > as_date('2017-12-31')]
 
@@ -4526,9 +4534,112 @@ dy.qt_dy.yr_2018[, {
   by=.(Model, Period)]
 ```
 
-Kindly refer to [`Traceback-HFT.R`](https://github.com/englianhu/binary.com-interview-question/blob/master/Traceback-HFT.R) for more information.
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
+yr_2018 %<>% 
+  tidyr::unite(Model, Model:Period) %>% 
+  data.table
+prc <- unique(yr_2018[, .(index, open, high, low, close)])
+prc <- prc[, Model := 'Market.Price'][]
+yr_2018 <- yr_2018[, (c('open', 'high', 'low', 'close')) := NULL]
+names(yr_2018) <- c('index', 'Model', 'open', 'high', 'low', 'close')
+yr_2018 <- rbind(yr_2018, prc)
+yr_2018 <- data.table(yr_2018)[order(index)]
+rm(prc)
 
-```{r, warning = FALSE, eval = FALSE, results = 'asis'}
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+p1 <- yr_2018 %>% 
+  ggplot(aes(x = index, y = open, group = Model, color = Model)) + 
+  geom_line() + 
+  #scale_colour_gradient2_tableau(palette = names(palettes)[1]) + #first palettes list in name
+  #scale_color_viridis(discrete = TRUE) + 
+  labs(title = '1 min Open Price Forecasting', 
+       subtitle = paste('From', range(unique(grph$index))[1L], 'to', range(unique(grph$index))[2L]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  #scale_color_economist() + 
+  ##scale_fill_manual(values = tableau_colours) + 
+  #scale_color_brewer(tableau_colours) + 
+  #scale_color_jcolors(palette = palettes2$`Tableau 20`$value) + #choose color set among palettes
+  #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  theme(legend.position = 'right')
+
+#p1
+ggplotly(p1)
+```
+
+##### High Price
+
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
+rm(p1)
+
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+p2 <- yr_2018 %>% 
+  ggplot(aes(x = index, y = high, group = Model, color = Model)) + 
+  geom_line() + 
+  #scale_color_viridis(discrete = TRUE) + 
+  labs(title = '1 min High Price Forecasting', 
+       subtitle = paste('From', range(unique(grph$index))[1L], 'to', range(unique(grph$index))[2L]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  #scale_color_economist() + 
+  #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  theme(legend.position = 'right')
+
+#p2
+ggplotly(p2)
+```
+
+##### Low Price
+
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
+rm(p2)
+
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+p3 <- yr_2018 %>% 
+  ggplot(aes(x = index, y = low, group = Model, color = Model)) + 
+  geom_line() + 
+  #scale_color_viridis(discrete = TRUE) + 
+  labs(title = '1 min Low Price Forecasting', 
+       subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  #scale_color_economist() + 
+  #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  theme(legend.position = 'right')
+
+#p3
+ggplotly(p3)
+```
+
+##### Close Price
+
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
+rm(p3)
+
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+p4 <- yr_2018 %>% 
+  ggplot(aes(x = index, y = close, group = Model, color = Model)) + 
+  geom_line() + 
+  #scale_color_viridis(discrete = TRUE) + 
+  labs(title = '1 min Close Price Forecasting', 
+       subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  #scale_color_economist() + 
+  #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  theme(legend.position = 'right')
+
+#p4
+ggplotly(p4)
+```
+
+Kindly refer to [`Traceback-HFT.R`](https://github.com/englianhu/binary.com-interview-question/blob/master/Traceback-HFT.R) for more information. Here I tried to recalculate dataset from year `2018-01-01` to `2018-07-09` but the outcome is same. Here I forced to omit the mentioned dataset.
+
+```{r, cache = TRUE, warning = FALSE, eval = FALSE, results = 'asis'}
 ## ------------ eval = FALSE -------------------
 ## Due to high volume dataset and heavily ploting, here I ommit it.
 yr_2018 %>% 
@@ -4568,7 +4679,7 @@ It's useful to record some information about how your file was created.
 - GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
 - Additional session information:
 
-```{r, warning = FALSE, results = 'asis'}
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
 suppressMessages(require('dplyr', quietly = TRUE))
 suppressMessages(require('magrittr', quietly = TRUE))
 suppressMessages(require('formattable', quietly = TRUE))
