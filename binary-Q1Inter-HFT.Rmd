@@ -630,16 +630,16 @@ names(cr_code) <- c('AUDUSD', 'EURUSD', 'GBPUSD', 'USDCHF', 'USDCAD', 'USDCNY', 
 data_m1 <- read_rds(paste0(dtr1s, '/data_m1.rds'))
 
 tb1 <- data_m1 %>% ddply(.(year, week), head, 1) %>% 
-  kable(caption = 'Weekly Initial Data Point') %>% 
+  kbl('html', caption = 'Weekly Initial Data Point', escape = FALSE) %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
 
 tb1
 ```
 
-```{r warning=FALSE, message=FALSE, echo=FALSE}
+```{r warning=FALSE, message=FALSE}
 tb2 <- data_m1 %>% ddply(.(year, week), tail, 1) %>% 
-  kable(caption = 'Weekly Final Data Point') %>% 
+  kbl('html', caption = 'Weekly Final Data Point', escape = FALSE) %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
   scroll_box(width = '100%', height = '400px')
 
@@ -3090,7 +3090,10 @@ write(grph_json, 'data/fx/USDJPY/grph_json.json')
 
 ```{r warning = FALSE, results = 'asis'}
 grph <- readRDS('data/fx/USDJPY/grph.rds')
-data.frame(grph)[c(1:5, (nrow(grph)-5):nrow(grph)),]
+data.frame(grph)[c(1:5, (nrow(grph)-5):nrow(grph)),] %>% 
+  kbl('html', caption = 'Data Sample', escape = FALSE) %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '100%')
 ```
 
 the dataset above has `r paste(dim(grph), 'x')` dimensions.
