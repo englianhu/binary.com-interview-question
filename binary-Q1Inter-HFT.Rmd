@@ -4072,7 +4072,7 @@ tb12 <- best_model %>%
 tb12
 ```
 
-Above table summarized the total observations with `mape`, `smape`, `mse` and `rmse` values (which is nested summarize <span style='color:red'>not daily settlement</span>), we can interpret from above table :
+Above table summarized the total observations with `mape`, `smape`, `mse` and `rmse` values (which is not nested summarize <span style='color:red'>not daily settlement for P&L</span>), we can interpret from above table :
 
 - Weekly or `7200 mins` length's dataset with `msts(seasonal.periods = c(1440, 7200)) %>% tbats %>% forecast(h = 1440)`.
 - Quarterly length's dataset with `tk_ts(frequency = 1440) %>% forecast(h=1440)`.
@@ -4403,9 +4403,354 @@ tb15
 
 # Conclusion
 
+## Summary
+
 From the backtest, we concludes that high-frequency-trading **1 min per unit** (`ETS`:0.46 and `auto.arima`:0.69) more accurate than interday-trading **1 day per unit**.
 
 <span style='color:goldenrod'>*High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers*</span> introduce... suggest... DCC-MIDAS etc.
+
+By refer to section [#713_Unexpected_Error], here I omitted the data from year `2018-01-01` to `2018-07-09` but the outcome is same. Here I forced to omit the mentioned dataset.
+
+## Dataset Filtering
+
+### Overall Dataset from `2015-01-05` to `2017-12-31`
+
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
+ftl1 <- seasonal_m1[as_date(index) <= as_date('2017-12-31')]
+
+tb16 <- ftl1 %>% 
+  mutate(
+    open.mape = ifelse(
+      rank(open.mape) <= 3, 
+      cell_spec(
+        paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    open.smape = ifelse(
+      rank(open.smape) <= 3, 
+      cell_spec(
+        paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    open.mse = ifelse(
+      rank(open.mse) <= 3, 
+      cell_spec(
+        paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    open.rmse = ifelse(
+      rank(open.rmse) <= 3, 
+      cell_spec(
+        paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    
+    high.mape = ifelse(
+      rank(high.mape) <= 3, 
+      cell_spec(
+        paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    high.smape = ifelse(
+      rank(high.smape) <= 3, 
+      cell_spec(
+        paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    high.mse = ifelse(
+      rank(high.mse) <= 3, 
+      cell_spec(
+        paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    high.rmse = ifelse(
+      rank(high.rmse) <= 3, 
+      cell_spec(
+        paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    
+    low.mape = ifelse(
+      rank(low.mape) <= 3, 
+      cell_spec(
+        paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    low.smape = ifelse(
+      rank(low.smape) <= 3, 
+      cell_spec(
+        paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    low.mse = ifelse(
+      rank(low.mse) <= 3, 
+      cell_spec(
+        paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    low.rmse = ifelse(
+      rank(low.rmse) <= 3, 
+      cell_spec(
+        paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    
+    close.mape = ifelse(
+      rank(close.mape) <= 3, 
+      cell_spec(
+        paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    close.smape = ifelse(
+      rank(close.smape) <= 3, 
+      cell_spec(
+        paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    close.mse = ifelse(
+      rank(close.mse) <= 3, 
+      cell_spec(
+        paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    close.rmse = ifelse(
+      rank(close.rmse) <= 3, 
+      cell_spec(
+        paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE))) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'DarkGrey') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(3, background = 'LightGray') %>% 
+  column_spec(4, background = 'Gainsboro') %>% 
+  column_spec(5, background = 'LightGray') %>%   
+  column_spec(6, background = 'Gainsboro') %>% 
+  column_spec(7, background = 'LightGray') %>% 
+  column_spec(8, background = 'Gainsboro') %>% 
+  column_spec(9, background = 'LightGray') %>%   
+  column_spec(10, background = 'Gainsboro') %>% 
+  column_spec(11, background = 'LightGray') %>% 
+  column_spec(12, background = 'Gainsboro') %>% 
+  column_spec(13, background = 'LightGray') %>%   
+  column_spec(14, background = 'Gainsboro') %>% 
+  column_spec(15, background = 'LightGray') %>% 
+  column_spec(16, background = 'Gainsboro') %>% 
+  column_spec(17, background = 'LightGray') %>%   
+  column_spec(18, background = 'Gainsboro') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%')#, height = '400px')
+
+tb16
+```
+
+Above table summarized the total observations with `mape`, `smape`, `mse` and `rmse` values (which is not nested summarize <span style='color:red'>not daily settlement for P&L</span>).
+
+### Daily Dataset from `2015-01-05` to `2017-12-31`
+
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
+daily.sm <- readRDS('data/fx/USDJPY/best_m.rds')
+ftl2 <- daily.sm[as_date(index) <= as_date('2017-12-31')]
+
+tb17 <- ftl2 %>% 
+  mutate(
+    open.mape = ifelse(
+      rank(open.mape) <= 3, 
+      cell_spec(
+        paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    open.smape = ifelse(
+      rank(open.smape) <= 3, 
+      cell_spec(
+        paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    open.mse = ifelse(
+      rank(open.mse) <= 3, 
+      cell_spec(
+        paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    open.rmse = ifelse(
+      rank(open.rmse) <= 3, 
+      cell_spec(
+        paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    
+    high.mape = ifelse(
+      rank(high.mape) <= 3, 
+      cell_spec(
+        paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    high.smape = ifelse(
+      rank(high.smape) <= 3, 
+      cell_spec(
+        paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    high.mse = ifelse(
+      rank(high.mse) <= 3, 
+      cell_spec(
+        paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    high.rmse = ifelse(
+      rank(high.rmse) <= 3, 
+      cell_spec(
+        paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    
+    low.mape = ifelse(
+      rank(low.mape) <= 3, 
+      cell_spec(
+        paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    low.smape = ifelse(
+      rank(low.smape) <= 3, 
+      cell_spec(
+        paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    low.mse = ifelse(
+      rank(low.mse) <= 3, 
+      cell_spec(
+        paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    low.rmse = ifelse(
+      rank(low.rmse) <= 3, 
+      cell_spec(
+        paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    
+    close.mape = ifelse(
+      rank(close.mape) <= 3, 
+      cell_spec(
+        paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    close.smape = ifelse(
+      rank(close.smape) <= 3, 
+      cell_spec(
+        paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    close.mse = ifelse(
+      rank(close.mse) <= 3, 
+      cell_spec(
+        paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    close.rmse = ifelse(
+      rank(close.rmse) <= 3, 
+      cell_spec(
+        paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE))) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min summarised to 1 day per unit)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'DarkGrey') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(3, background = 'LightGray') %>% 
+  column_spec(4, background = 'Gainsboro') %>% 
+  column_spec(5, background = 'LightGray') %>%   
+  column_spec(6, background = 'Gainsboro') %>% 
+  column_spec(7, background = 'LightGray') %>% 
+  column_spec(8, background = 'Gainsboro') %>% 
+  column_spec(9, background = 'LightGray') %>%   
+  column_spec(10, background = 'Gainsboro') %>% 
+  column_spec(11, background = 'LightGray') %>% 
+  column_spec(12, background = 'Gainsboro') %>% 
+  column_spec(13, background = 'LightGray') %>%   
+  column_spec(14, background = 'Gainsboro') %>% 
+  column_spec(15, background = 'LightGray') %>% 
+  column_spec(16, background = 'Gainsboro') %>% 
+  column_spec(17, background = 'LightGray') %>%   
+  column_spec(18, background = 'Gainsboro') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%')#, height = '400px')
+
+tb17
+```
+
+Above table summarized the daily `mape`, `smape`, `mse` and `rmse` values and then summarized again the models (which is nested summarize <span style='color:red'>due to daily settlement for P&L</span>).
 
 - [Time Series Forecasting, a Summarize of Data visualization and prediction](https://rpubs.com/tedding/long-term-time-series-forecasting)
 - [Time Series Analysis and Forecasting with the TSstudio Package](https://rpubs.com/ramkrisp/TSstudioDemo)
@@ -4511,7 +4856,6 @@ wkb #%>%
 
 ```{r, cache = TRUE, warning = FALSE, results = 'asis'}
 ## Due to the low precision and low accuracy, here I plot the graph and rerun the code to check the models.
-
 yr_2018 <- data.table(seasonal_m1)[as_date(index) > as_date('2017-12-31')]
 
 dy.qt_dy.yr_2018 <- yr_2018[Model == 'tbats' & Period %in% c('dy.qt', 'dy.yr')]
@@ -4549,22 +4893,24 @@ yr_2018 <- rbind(yr_2018, prc)
 yr_2018 <- data.table(yr_2018)[order(index)]
 rm(prc)
 
-mDT <- melt(yr_2018,
-            id.vars       = 'Model',
-            measure.vars  = c('open', 'high', 'low', 'close'),
-            variable.name = 'Variable',
-            value.name    = 'Price')
+mDT <- yr_2018 %>% pivot_longer(!c(index, Model), names_to = 'Variable', values_to = 'Price')
 
 mDT %<>% 
   tidyr::unite(Model, Model:Variable) %>% 
   data.table
 
 ## ------------------------------------------
-plt_s1
-plt_s2
+plt_s1 %>% 
+  kbl('html', caption = 'Data Sample', escape = FALSE) %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '100%')
+plt_s2 %>% 
+  kbl('html', caption = 'Data Sample', escape = FALSE) %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
+  scroll_box(width = '100%', height = '100%')
 ```
 
-```{r, cache = TRUE, warning = FALSE, results = 'asis'}
+```{r warning = FALSE, cache = TRUE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
 p1 <- yr_2018 %>% 
   ggplot(aes(x = index, y = open, group = Model, color = Model)) + 
@@ -4583,9 +4929,10 @@ p1 <- yr_2018 %>%
   #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
   theme(legend.position = 'right')
 
-#p1
-ply1 <- ggplotly(p1)
-ply1
+## Due to heavily loading in plotly graph, here I use ggplot.
+#ply1 <- ggplotly(p1)
+#ply1
+p1
 ```
 
 ##### High Price
@@ -4607,9 +4954,10 @@ p2 <- yr_2018 %>%
   #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
   theme(legend.position = 'right')
 
-#p2
-ply2 <- ggplotly(p2)
-ply2
+## Due to heavily loading in plotly graph, here I use ggplot.
+#ply2 <- ggplotly(p2)
+#ply2
+p2
 ```
 
 ##### Low Price
@@ -4631,9 +4979,10 @@ p3 <- yr_2018 %>%
   #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
   theme(legend.position = 'right')
 
-#p3
-ply3 <- ggplotly(p3)
-ply3
+## Due to heavily loading in plotly graph, here I use ggplot.
+#ply3 <- ggplotly(p3)
+#ply3
+p3
 ```
 
 ##### Close Price
@@ -4655,9 +5004,10 @@ p4 <- yr_2018 %>%
   #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
   theme(legend.position = 'right')
 
-#p4
-ply4 <- ggplotly(p4)
-ply4
+## Due to heavily loading in plotly graph, here I use ggplot.
+#ply4 <- ggplotly(p4)
+#ply4
+p4
 ```
 
 ```{r, cache = TRUE, warning = FALSE, results = 'asis'}
@@ -4679,9 +5029,10 @@ p5 <- mDT %>%
   #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
   theme(legend.position = 'right')
 
-#p1
-ply5 <- ggplotly(p5)
-ply5
+## Due to heavily loading in plotly graph, here I use ggplot.
+#ply5 <- ggplotly(p5)
+#ply5
+p5
 ```
 
 Kindly refer to [`Traceback-HFT.R`](https://github.com/englianhu/binary.com-interview-question/blob/master/Traceback-HFT.R) for more information. Here I tried to recalculate dataset from year `2018-01-01` to `2018-07-09` but the outcome is same. Here I forced to omit the mentioned dataset.
