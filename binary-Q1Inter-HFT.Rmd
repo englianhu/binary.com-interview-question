@@ -4407,7 +4407,7 @@ tb15
 
 From the backtest, we concludes that high-frequency-trading **1 min per unit** (`ETS`:0.46 and `auto.arima`:0.69) more accurate than interday-trading **1 day per unit**.
 
-<span style='color:goldenrod'>*High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers*</span> introduce... suggest... DCC-MIDAS etc.
+<span style='color:goldenrod'>*High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers*</span> introduce... suggest... DCC-MIDAS etc. Due to heavily .
 
 By refer to section [#713_Unexpected_Error], here I omitted the data from year `2018-01-01` to `2018-07-09` but the outcome is same. Here I forced to omit the mentioned dataset.
 
@@ -4416,9 +4416,53 @@ By refer to section [#713_Unexpected_Error], here I omitted the data from year `
 ### Overall Dataset from `2015-01-05` to `2017-12-31`
 
 ```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
-ftl1 <- seasonal_m1[as_date(index) <= as_date('2017-12-31')]
+if(!exists('seasonal_m1')) {
+  seasonal_m1 <- read_rds('data/fx/USDJPY/seasonal_m1.rds')}
+ftl1 <- seasonal_m1 %>% 
+  filter(index <= as_date('2017-12-31'))
+ftl1 %<>% data.table()
 
-tb16 <- ftl1 %>% 
+m.op <- ftl1[, {
+    open = open
+    open.Point.Forecast = open.Point.Forecast
+    .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+            open.smape = SMAPE(open, open.Point.Forecast), 
+            open.mse = MSE(open, open.Point.Forecast), 
+            open.rmse = RMSE(open, open.Point.Forecast)), 
+        by=.(Model, Period)]}][order(Model, Period), ]
+
+m.hi <- ftl1[, {
+    high = high
+    high.Point.Forecast = high.Point.Forecast
+    .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+            high.smape = SMAPE(high, high.Point.Forecast), 
+            high.mse = MSE(high, high.Point.Forecast), 
+            high.rmse = RMSE(high, high.Point.Forecast)), 
+        by=.(Model, Period)]}][order(Model, Period), ]
+
+m.lo <- ftl1[, {
+    low = low
+    low.Point.Forecast = low.Point.Forecast
+    .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+            low.smape = SMAPE(low, low.Point.Forecast), 
+            low.mse = MSE(low, low.Point.Forecast), 
+            low.rmse = RMSE(low, low.Point.Forecast)), 
+        by=.(Model, Period)]}][order(Model, Period), ]
+
+m.cl <- ftl1[, {
+    close = close
+    close.Point.Forecast = close.Point.Forecast
+    .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+            close.smape = SMAPE(close, close.Point.Forecast), 
+            close.mse = MSE(close, close.Point.Forecast), 
+            close.rmse = RMSE(close, close.Point.Forecast)), 
+        by=.(Model, Period)]}][order(Model, Period), ]
+
+ftl_dat1 <- join_all(list(m.op, m.hi, m.lo, m.cl)) %>% tibble
+```
+
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
+tb16 <- ftl_dat1 %>% 
   mutate(
     open.mape = ifelse(
       rank(open.mape) <= 3, 
@@ -4556,23 +4600,23 @@ tb16 <- ftl1 %>%
   row_spec(0, background = 'DimGrey') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
   column_spec(2, background = 'DarkGrey') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  column_spec(3, background = 'LightGray') %>% 
-  column_spec(4, background = 'Gainsboro') %>% 
-  column_spec(5, background = 'LightGray') %>%   
-  column_spec(6, background = 'Gainsboro') %>% 
-  column_spec(7, background = 'LightGray') %>% 
-  column_spec(8, background = 'Gainsboro') %>% 
-  column_spec(9, background = 'LightGray') %>%   
-  column_spec(10, background = 'Gainsboro') %>% 
-  column_spec(11, background = 'LightGray') %>% 
-  column_spec(12, background = 'Gainsboro') %>% 
-  column_spec(13, background = 'LightGray') %>%   
-  column_spec(14, background = 'Gainsboro') %>% 
-  column_spec(15, background = 'LightGray') %>% 
-  column_spec(16, background = 'Gainsboro') %>% 
-  column_spec(17, background = 'LightGray') %>%   
-  column_spec(18, background = 'Gainsboro') %>% 
+  column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>%   
+  column_spec(7, background = 'Gainsboro') %>% 
+  column_spec(8, background = 'LightGray') %>% 
+  column_spec(9, background = 'Gainsboro') %>% 
+  column_spec(10, background = 'LightGray') %>%   
+  column_spec(11, background = 'Gainsboro') %>% 
+  column_spec(12, background = 'LightGray') %>% 
+  column_spec(13, background = 'Gainsboro') %>% 
+  column_spec(14, background = 'LightGray') %>%   
+  column_spec(15, background = 'Gainsboro') %>% 
+  column_spec(16, background = 'LightGray') %>% 
+  column_spec(17, background = 'Gainsboro') %>% 
+  column_spec(18, background = 'LightGray') %>%   
+  column_spec(19, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
@@ -4585,10 +4629,76 @@ Above table summarized the total observations with `mape`, `smape`, `mse` and `r
 ### Daily Dataset from `2015-01-05` to `2017-12-31`
 
 ```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
-daily.sm <- readRDS('data/fx/USDJPY/best_m.rds')
-ftl2 <- daily.sm[as_date(index) <= as_date('2017-12-31')]
+open.accr <- ftl1[, {
+  open = open
+  open.Point.Forecast = open.Point.Forecast
+  .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+          open.smape = SMAPE(open, open.Point.Forecast), 
+          open.mse = MSE(open, open.Point.Forecast), 
+          open.rmse = RMSE(open, open.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
 
-tb17 <- ftl2 %>% 
+high.accr <- ftl1[, {
+  high = high
+  high.Point.Forecast = high.Point.Forecast
+  .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+          high.smape = SMAPE(high, high.Point.Forecast), 
+          high.mse = MSE(high, high.Point.Forecast), 
+          high.rmse = RMSE(high, high.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+low.accr <- ftl1[, {
+  low = low
+  low.Point.Forecast = low.Point.Forecast
+  .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+          low.smape = SMAPE(low, low.Point.Forecast), 
+          low.mse = MSE(low, low.Point.Forecast), 
+          low.rmse = RMSE(low, low.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+close.accr <- ftl1[, {
+  close = close
+  close.Point.Forecast = close.Point.Forecast
+  .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+          close.smape = SMAPE(close, close.Point.Forecast), 
+          close.mse = MSE(close, close.Point.Forecast), 
+          close.rmse = RMSE(close, close.Point.Forecast)), 
+      by={index=as_date(index)}]}, 
+  by=.(Model, Period)]
+
+open.sm <- open.accr[, list(open.mape = mean(open.mape), 
+                            open.smape = mean(open.smape), 
+                            open.mse = mean(open.mse), 
+                            open.rmse = mean(open.rmse)), 
+                       by=.(Model, Period)]
+
+high.sm <- high.accr[, list(high.mape = mean(high.mape), 
+                            high.smape = mean(high.smape), 
+                            high.mse = mean(high.mse), 
+                            high.rmse = mean(high.rmse)), 
+                       by=.(Model, Period)]
+
+low.sm <- low.accr[, list(low.mape = mean(low.mape), 
+                          low.smape = mean(low.smape), 
+                          low.mse = mean(low.mse), 
+                          low.rmse = mean(low.rmse)), 
+                       by=.(Model, Period)]
+
+close.sm <- close.accr[, list(close.mape = mean(close.mape), 
+                              close.smape = mean(close.smape), 
+                              close.mse = mean(close.mse), 
+                              close.rmse = mean(close.rmse)), 
+                       by=.(Model, Period)]
+
+ftl_dat2 <- join_all(list(open.sm, high.sm, low.sm, close.sm)) %>% 
+  tibble
+```
+
+```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
+tb17 <- ftl_dat2 %>% 
   mutate(
     open.mape = ifelse(
       rank(open.mape) <= 3, 
@@ -4903,11 +5013,11 @@ mDT %<>%
 plt_s1 %>% 
   kbl('html', caption = 'Data Sample', escape = FALSE) %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
-  scroll_box(width = '100%', height = '100%')
+  scroll_box(width = '100%', height = '400px')
 plt_s2 %>% 
   kbl('html', caption = 'Data Sample', escape = FALSE) %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
-  scroll_box(width = '100%', height = '100%')
+  scroll_box(width = '100%', height = '400px')
 ```
 
 ```{r warning = FALSE, cache = TRUE, results = 'asis'}
@@ -5106,6 +5216,7 @@ if (nrow(sys1) == 9 & nrow(sys2) == 8) {
 cbind(sys1, sys2) %>% 
   kbl(caption = 'Additional session information:') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  row_spec(0, background = 'DimGrey') %>% 
   row_spec(9, bold = T, color = 'white', background = '#D7261E')
 ```
 
