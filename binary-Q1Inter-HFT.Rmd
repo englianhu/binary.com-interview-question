@@ -28,11 +28,12 @@ suppressPackageStartupMessages(require('BBmisc'))
 # suppressPackageStartupMessages(require('rmsfuns'))
 
 pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'dygraphs', 
-          'devtools','readr', 'lubridate', 'data.table', 
+          'devtools','readr', 'lubridate', 'data.table', 'reprex', 
           'feather', 'purrr', 'quantmod', 'tidyquant', 'plotly', 
           'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'jsonlite', 
           'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tdplyr', 
           'tidyverse', 'memoise', 'htmltools', 'formattable', 
+          'dash', 'dashCoreComponents', 'dashHtmlComponents', ##https://dashr.plotly.com
           'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
           'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
@@ -1363,11 +1364,11 @@ A seasonal ARIMA model is formed by including additional seasonal terms in the A
 |         |             ↑                  |             ↑                 |
 |         | Non-seasonal part	of the model | Seasonal part of the model    |
 
-where m = number of observations per year. We use uppercase notation for the seasonal parts of the model, and lowercase notation for the non-seasonal parts of the model.
+where `m = number of observations per year`. We use uppercase notation for the seasonal parts of the model, and lowercase notation for the non-seasonal parts of the model.
 
 The seasonal part of the model consists of terms that are similar to the non-seasonal components of the model, but involve backshifts of the seasonal period. For example, an $ARIMA(1,1,1)(1,1,1)_{4}$ model (without a constant) is for quarterly data (m = 4), and can be written as
 
-$$(1 - \phi_{1}B)~(1 - \Phi_{1}B^{4}) (1 - B) (1 - B^{4})y_{t} = (1 + \theta_{1}B)~ (1 + \Theta_{1}B^{4})\varepsilon_{t}$$
+$$(1 - {\color{Red}\phi_{1}}B)~(1 - {\color{Red}\Phi_{1}}B^{4}) (1 - B) (1 - B^{4})y_{t} = (1 + {\color{Red}\theta_{1}}B)~ (1 + {\color{Red}\Theta_{1}}B^{4})\varepsilon_{t}$$
 
 The additional seasonal terms are simply multiplied by the non-seasonal terms.
 
@@ -2528,6 +2529,7 @@ for (dt in timeID) {
 ```
 
 ```{r, cache = TRUE, eval=FALSE}
+seasonal_m1 <- read_rds('data/fx/USDJPY/seasonal_m1.rds')
 yr_2018 <- data.table(seasonal_m1)[as_date(index) > as_date('2017-12-31')]
 
 dy.qt_dy.yr_2018 <- yr_2018[Model == 'tbats' & Period %in% c('dy.qt', 'dy.yr')]
@@ -4484,7 +4486,7 @@ microbenchmark(seq(1L, 100000000L), seq(1, 100000000), seq(1L, 1e+08), seq(1, 1e
 
 <span style='color:red'>**Small Mistake**</span>
 
-Here I noticed that there have `Saturday` and `Sunday` trading days as show below when I continue R&D after 2 years from 2018. It is not a big problem since this paper only compare the models and choose the best fit model for high-frequency-trading.
+Here I noticed that there have transactions in `Saturday` and `Sunday` as show below when I continue R&D after 2 years from 2018 [How Do Orders Execute Over The Weekend?](https://www.fxcm.com/markets/insights/how-do-orders-execute-weekend). It is not a big problem since this paper only compare the models and choose the best fit model for high-frequency-trading.
 
 ```{r}
 dt_data_m1 <- na.omit(data.table(data_m1))
@@ -4499,21 +4501,22 @@ dtb %>%
 ## weekdays breakdown
 wkb <- dtb %>% 
     mutate_if(is.Date, weekdays) %>% mutate_if(is.character, as.factor)
-wkb %>% 
-  dplyr::filter(V1 != 'Monday')
+wkb #%>% 
+#  dplyr::filter(V1 != 'Monday')
 ```
 
 ### Unexpected Error
 
 ##### Open Price
 
-```{r}
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
 ## Due to the low precision and low accuracy, here I plot the graph and rerun the code to check the models.
+
 yr_2018 <- data.table(seasonal_m1)[as_date(index) > as_date('2017-12-31')]
 
 dy.qt_dy.yr_2018 <- yr_2018[Model == 'tbats' & Period %in% c('dy.qt', 'dy.yr')]
 
-yr_2018[, {
+plt_s1 <- yr_2018[, {
   open = open
   open.Point.Forecast = open.Point.Forecast
   .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
@@ -4523,7 +4526,7 @@ yr_2018[, {
       by={index=as_date(index)}]}, 
   by=.(Model, Period)]
 
-dy.qt_dy.yr_2018[, {
+plt_s2 <- dy.qt_dy.yr_2018[, {
   open = open
   open.Point.Forecast = open.Point.Forecast
   .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
@@ -4532,9 +4535,9 @@ dy.qt_dy.yr_2018[, {
           open.rmse = RMSE(open, open.Point.Forecast)), 
       by={index=as_date(index)}]}, 
   by=.(Model, Period)]
-```
 
-```{r, cache = TRUE, warning = FALSE, results = 'asis'}
+## ------------------------------------------
+##modify dataset
 yr_2018 %<>% 
   tidyr::unite(Model, Model:Period) %>% 
   data.table
@@ -4546,6 +4549,22 @@ yr_2018 <- rbind(yr_2018, prc)
 yr_2018 <- data.table(yr_2018)[order(index)]
 rm(prc)
 
+mDT <- melt(yr_2018,
+            id.vars       = 'Model',
+            measure.vars  = c('open', 'high', 'low', 'close'),
+            variable.name = 'Variable',
+            value.name    = 'Price')
+
+mDT %<>% 
+  tidyr::unite(Model, Model:Variable) %>% 
+  data.table
+
+## ------------------------------------------
+plt_s1
+plt_s2
+```
+
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
 p1 <- yr_2018 %>% 
   ggplot(aes(x = index, y = open, group = Model, color = Model)) + 
@@ -4553,7 +4572,7 @@ p1 <- yr_2018 %>%
   #scale_colour_gradient2_tableau(palette = names(palettes)[1]) + #first palettes list in name
   #scale_color_viridis(discrete = TRUE) + 
   labs(title = '1 min Open Price Forecasting', 
-       subtitle = paste('From', range(unique(grph$index))[1L], 'to', range(unique(grph$index))[2L]), 
+       subtitle = paste('From', range(unique(yr_2018$index))[1L], 'to', range(unique(yr_2018$index))[2L]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
   theme_economist() + 
@@ -4565,7 +4584,8 @@ p1 <- yr_2018 %>%
   theme(legend.position = 'right')
 
 #p1
-ggplotly(p1)
+ply1 <- ggplotly(p1)
+ply1
 ```
 
 ##### High Price
@@ -4579,7 +4599,7 @@ p2 <- yr_2018 %>%
   geom_line() + 
   #scale_color_viridis(discrete = TRUE) + 
   labs(title = '1 min High Price Forecasting', 
-       subtitle = paste('From', range(unique(grph$index))[1L], 'to', range(unique(grph$index))[2L]), 
+       subtitle = paste('From', range(unique(yr_2018$index))[1L], 'to', range(unique(yr_2018$index))[2L]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
   theme_economist() + 
@@ -4588,7 +4608,8 @@ p2 <- yr_2018 %>%
   theme(legend.position = 'right')
 
 #p2
-ggplotly(p2)
+ply2 <- ggplotly(p2)
+ply2
 ```
 
 ##### Low Price
@@ -4602,7 +4623,7 @@ p3 <- yr_2018 %>%
   geom_line() + 
   #scale_color_viridis(discrete = TRUE) + 
   labs(title = '1 min Low Price Forecasting', 
-       subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
+       subtitle = paste('From', range(unique(yr_2018$index))[1], 'to', range(unique(yr_2018$index))[2]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
   theme_economist() + 
@@ -4611,7 +4632,8 @@ p3 <- yr_2018 %>%
   theme(legend.position = 'right')
 
 #p3
-ggplotly(p3)
+ply3 <- ggplotly(p3)
+ply3
 ```
 
 ##### Close Price
@@ -4625,7 +4647,7 @@ p4 <- yr_2018 %>%
   geom_line() + 
   #scale_color_viridis(discrete = TRUE) + 
   labs(title = '1 min Close Price Forecasting', 
-       subtitle = paste('From', range(unique(grph$index))[1], 'to', range(unique(grph$index))[2]), 
+       subtitle = paste('From', range(unique(yr_2018$index))[1], 'to', range(unique(yr_2018$index))[2]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
   theme_economist() + 
@@ -4634,7 +4656,32 @@ p4 <- yr_2018 %>%
   theme(legend.position = 'right')
 
 #p4
-ggplotly(p4)
+ply4 <- ggplotly(p4)
+ply4
+```
+
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+p5 <- mDT %>% 
+  ggplot(aes(x = index, y = Price, group = Model, color = Model)) + 
+  geom_line() + 
+  #scale_colour_gradient2_tableau(palette = names(palettes)[1]) + #first palettes list in name
+  #scale_color_viridis(discrete = TRUE) + 
+  labs(title = '1 min Open Price Forecasting', 
+       subtitle = paste('From', range(unique(mDT$index))[1L], 'to', range(unique(mDT$index))[2L]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  #scale_color_economist() + 
+  ##scale_fill_manual(values = tableau_colours) + 
+  #scale_color_brewer(tableau_colours) + 
+  #scale_color_jcolors(palette = palettes2$`Tableau 20`$value) + #choose color set among palettes
+  #theme(axis.text.x = element_text(hjust = c(0, 0.5, 0.5, 0.5, 1))) + 
+  theme(legend.position = 'right')
+
+#p1
+ply5 <- ggplotly(p5)
+ply5
 ```
 
 Kindly refer to [`Traceback-HFT.R`](https://github.com/englianhu/binary.com-interview-question/blob/master/Traceback-HFT.R) for more information. Here I tried to recalculate dataset from year `2018-01-01` to `2018-07-09` but the outcome is same. Here I forced to omit the mentioned dataset.
