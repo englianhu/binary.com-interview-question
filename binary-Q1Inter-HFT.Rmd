@@ -4966,6 +4966,7 @@ wkb #%>%
 
 ```{r, cache = TRUE, warning = FALSE, results = 'asis'}
 ## Due to the low precision and low accuracy, here I plot the graph and rerun the code to check the models.
+if(!exists('seasonal_m1')) seasonal_m1 <- read_rds('data/fx/USDJPY/seasonal_m1.rds')
 yr_2018 <- data.table(seasonal_m1)[as_date(index) > as_date('2017-12-31')]
 
 dy.qt_dy.yr_2018 <- yr_2018[Model == 'tbats' & Period %in% c('dy.qt', 'dy.yr')]
@@ -5119,6 +5120,8 @@ p4 <- yr_2018 %>%
 #ply4
 p4
 ```
+
+##### OHLC Price
 
 ```{r, cache = TRUE, warning = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
