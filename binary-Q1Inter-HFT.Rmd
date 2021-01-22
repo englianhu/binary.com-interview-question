@@ -32,7 +32,7 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'dygraphs',
           'feather', 'purrr', 'quantmod', 'tidyquant', 'plotly', 
           'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'jsonlite', 
           'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tdplyr', 
-          'tidyverse', 'memoise', 'htmltools', 'formattable', 
+          'tidyverse', 'memoise', 'htmltools', 'formattable', 'rbokeh', 
           'dash', 'dashCoreComponents', 'dashHtmlComponents', ##https://dashr.plotly.com
           'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
@@ -1119,7 +1119,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > as_date('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-05')] #2015-01-11
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1174,7 +1174,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > as_date('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-05')] #2015-01-11
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1229,7 +1229,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > as_date('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-05')] #2015-01-11
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -1284,7 +1284,7 @@ timeID <- data_m1$index %>%
   as_date %>% 
   unique %>% 
   sort
-timeID %<>% .[. > as_date('2015-01-11')]
+timeID %<>% .[. > as_date('2015-01-05')] #2015-01-11
 
 for (dt in timeID) {
   smp <- data_m1 %>% 
@@ -5146,6 +5146,13 @@ p5 <- mDT %>%
 #ply5 <- ggplotly(p5)
 #ply5
 p5
+```
+
+```{r, cache = TRUE, warning = FALSE, results = 'asis'}
+figure(legend_location = 'top_left') %>%
+    ly_lines(Price, group = Model, data = mDT, 
+             color = Model, hover = Price)
+
 ```
 
 Kindly refer to [`Traceback-HFT.R`](https://github.com/englianhu/binary.com-interview-question/blob/master/Traceback-HFT.R) for more information. Here I tried to recalculate dataset from year `2018-01-01` to `2018-07-09` but the outcome is same. Here I forced to omit the mentioned dataset.

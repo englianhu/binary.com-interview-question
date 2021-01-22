@@ -109,20 +109,20 @@ data_m1 %<>%
   dplyr::select(index, open, high, low, close)
 }
 
-
+# --------- eval=FALSE ---------
+#sq <- seq(1 , length(data_m1$index), by = 7200)
+#sets <- list()
 timeID <- data_m1$index %>% 
   as_date %>% 
   unique %>% 
   sort
 timeID %<>% .[. > as_date('2015-01-05')]
 
-
-
 for (dt in timeID) {
   smp <- data_m1 %>% 
     tk_xts(silent = TRUE)
   dt %<>% as_date
-  smp <- smp[paste0(dt %m-% months(3) + seconds(59), '/', dt + seconds(59))]
+  smp <- smp[paste0(dt %m-% months(1) + seconds(59), '/', dt + seconds(59))]
   
   sets <- smp %>% 
     tk_ts(frequency = 7200) %>% 
@@ -150,11 +150,11 @@ for (dt in timeID) {
   if (!dir.exists(paste0('data/fx/USDJPY'))) 
     dir.create(paste0('data/fx/USDJPY'))
   
-  saveRDS(sets, paste0('data/fx/USDJPY/sets.qt.7200.', 
+  saveRDS(sets, paste0('data/fx/USDJPY/sets.mo.7200.', 
                        as_date(sets$forecast$index[1]), '.rds'))
   
   cat(paste0(
-    'data/fx/USDJPY/sets.qt.7200.', 
+    'data/fx/USDJPY/sets.mo.7200.', 
     as_date(sets$forecast$index[1]), '.rds saved!\n'))
   }
 
