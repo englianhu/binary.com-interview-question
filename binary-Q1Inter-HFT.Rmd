@@ -5149,6 +5149,9 @@ p5
 ```
 
 ```{r, cache = TRUE, warning = FALSE, results = 'asis'}
+## rbokeh package
+## https://www.htmlwidgets.org/showcase_rbokeh.html
+## https://hafen.github.io/rbokeh/articles/rbokeh.html
 figure(legend_location = 'top_left') %>%
     ly_lines(Price, group = Model, data = mDT, 
              color = Model, hover = Price)
