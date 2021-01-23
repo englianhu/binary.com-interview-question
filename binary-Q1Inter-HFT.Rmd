@@ -2876,74 +2876,77 @@ fls <- paste0('data/fx/USDJPY/', list.files(
 # read_rds(grep('sets', fls, value = TRUE)[1])
 # read_rds(grep('mts', fls, value = TRUE)[1]) %>% as_tibble
 
-seasonal_m <- llply(fls, function(x) {
+seasonal_m <- llply(1:length(fls), function(i) {
+  
+  x <- fls[i]
+  y <- list()
   
   if(str_detect(x, 'sets.wk.1440.')) {
-    read_rds(x)$forecast %>% 
+    y[[i]] <- read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('wk.1440'))
     
   } else if(str_detect(x, 'sets.mo.1440.')) {
-    read_rds(x)$forecast %>% 
+    y[[i]] <- read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('mo.1440'))
     
   } else if(str_detect(x, 'sets.qt.1440.')) {
-    read_rds(x)$forecast %>% 
+    y[[i]] <- read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('qt.1440'))
     
   } else if(str_detect(x, 'sets.yr.1440.')) {
-    read_rds(x)$forecast %>% 
+    y[[i]] <- read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('yr.1440'))
     
   } else if(str_detect(x, 'sets.wk.7200.')) {
-    read_rds(x)$forecast %>% 
+    y[[i]] <- read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('wk.7200'))
     
   } else if(str_detect(x, 'sets.mo.7200.')) {
-    read_rds(x)$forecast %>% 
+    y[[i]] <- read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('mo.7200'))
     
   } else if(str_detect(x, 'sets.qt.7200.')) {
-    read_rds(x)$forecast %>% 
+    y[[i]] <- read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('qt.7200'))
     
   } else if(str_detect(x, 'sets.yr.7200.')) {
-    read_rds(x)$forecast %>% 
+    y[[i]] <- read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('yr.7200'))
     
   } else if(str_detect(x, 'mts.dy.wk.[0-9]{4}')) {
-    read_rds(x) %>% 
+    y[[i]] <- read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('dy.wk'))
     
   } else if(str_detect(x, 'mts.dy.qt.[0-9]{4}')) {
-    read_rds(x) %>% 
+    y[[i]] <- read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('dy.qt'))
     
   } else if(str_detect(x, 'mts.dy.yr.[0-9]{4}')) {
-    read_rds(x) %>% 
+    y[[i]] <- read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('dy.yr'))
     
   } else if(str_detect(x, 'mts.wk.qt.[0-9]{4}')) {
-    read_rds(x) %>% 
+    y[[i]] <- read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('wk.qt'))
     
   } else if(str_detect(x, 'mts.wk.qt.[0-9]{4}')) {
-    read_rds(x) %>% 
+    y[[i]] <- read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('wk.yr'))
     
   } else if(str_detect(x, 'mts.qt.yr.[0-9]{4}')) {
-    read_rds(x) %>% 
+    y[[i]] <- read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('qt.yr'))
     
   }  else if(str_detect(x, 'mts.dy.wk.mo.[0-9]{4}')) {
-    read_rds(x) %>% 
+    y[[i]] <- read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('dy.wk.mo'))
     
   } else if(str_detect(x, 'mts.dy.wk.mo.qt.[0-9]{4}')) {
-    read_rds(x) %>% 
+    y[[i]] <- read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('dy.wk.mo.qt'))
     
   } else if(str_detect(x, 'mts.dy.wk.mo.yr.[0-9]{4}')) {
-    read_rds(x) %>% 
+    y[[i]] <- read_rds(x) %>% 
       mutate(Model = factor('tbats'), Period = factor('dy.wk.mo.yr'))
     
   } else {
