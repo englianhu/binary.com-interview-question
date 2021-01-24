@@ -670,6 +670,9 @@ tb3 <- data_m1 %>% mutate(
 
 tb3
 ```
+```{r include = FALSE}
+rm(tb3)
+```
 
 ```{r, cache = TRUE, warning = FALSE, eval=FALSE}
 # -------- eval=FALSE -----------
@@ -753,6 +756,9 @@ tb4 <- data_m1 %>% mutate(
 #  scroll_box(width = '100%', height = '400px')
 
 tb4
+```
+```{r include = FALSE}
+rm(tb4)
 ```
 
 ```{js}
@@ -2958,7 +2964,7 @@ seasonal_m <- llply(1:length(fls), function(i) {
                  'open.Point.Forecast', 'high.Point.Forecast', 
                  'low.Point.Forecast','close.Point.Forecast')]
   #saveRDS(y[[i]], x)
-  cat(x, '\n')
+  #cat(x, '\n')
   
   }) %>% 
   bind_rows %>% 
@@ -3057,6 +3063,12 @@ seasonal_m1 <- join(data_m1, seasonal_m) %>%
 
 seasonal_m1 %<>% na.omit
 
+seasonal_m1 %<>% .[c('index', 'Model', 'Period', 
+                'open', 'high', 'low', 'close', 
+                'open.Point.Forecast', 'high.Point.Forecast', 
+                'low.Point.Forecast','close.Point.Forecast')]
+seasonal_m1 %<>% data.table
+
 ## don't use complete.cases() since there has some NA elements in ts models.
 #seasonal_m <- seasonal_m[complete.cases(seasonal_m),]
 write_rds(seasonal_m1, 'data/fx/USDJPY/seasonal_m1.rds')
@@ -3112,8 +3124,16 @@ write(grph_json, 'data/fx/USDJPY/grph_json.json')
 grph <- readRDS('data/fx/USDJPY/grph.rds')
 data.frame(grph)[c(1:5, (nrow(grph)-5):nrow(grph)),] %>% 
   kbl('html', caption = 'Data Sample', escape = FALSE) %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>%
-  scroll_box(width = '100%', height = '100%')
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'LightSlateGrey') %>% 
+  column_spec(3, background = 'DarkGrey') %>% 
+  column_spec(5, background = 'DarkGrey') %>% 
+  column_spec(7, background = 'DarkGrey') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%')#, height = '400px')
 ```
 
 the dataset above has `r paste(dim(grph), 'x')` dimensions.
@@ -3224,11 +3244,13 @@ p1 <- grph %>%
 p1
 ```
 
+```{r include = FALSE}
+rm(p1)
+```
+
 ##### High Price
 
 ```{r, cache = TRUE, warning = FALSE, results = 'asis'}
-rm(p1)
-
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
 p2 <- grph %>% 
   ggplot(aes(x = index, y = high, group = Model, color = Model)) + 
@@ -3247,11 +3269,13 @@ p2 <- grph %>%
 p2
 ```
 
+```{r include = FALSE}
+rm(p2)
+```
+
 ##### Low Price
 
 ```{r, cache = TRUE, warning = FALSE, results = 'asis'}
-rm(p2)
-
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
 p3 <- grph %>% 
   ggplot(aes(x = index, y = low, group = Model, color = Model)) + 
@@ -3270,11 +3294,13 @@ p3 <- grph %>%
 p3
 ```
 
+```{r include = FALSE}
+rm(p3)
+```
+
 ##### Close Price
 
 ```{r, cache = TRUE, warning = FALSE, results = 'asis'}
-rm(p3)
-
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
 p4 <- grph %>% 
   ggplot(aes(x = index, y = close, group = Model, color = Model)) + 
@@ -3291,6 +3317,10 @@ p4 <- grph %>%
 
 #ggplotly(p4)
 p4
+```
+
+```{r include = FALSE}
+rm(p4)
 ```
 
 #### MSE Table
@@ -3379,8 +3409,11 @@ tb6 <- mse1 %>%
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
 
-rm(mse1)
 tb6
+```
+
+```{r include = FALSE}
+rm(mse1, tb6)
 ```
 
 from above models we know the βest model.
@@ -3534,6 +3567,10 @@ tb7 <- daily.sm %>%
 tb7
 ```
 
+```{r include = FALSE}
+rm(tb7)
+```
+
 #### High Price
 
 ```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
@@ -3586,6 +3623,10 @@ tb8 <- daily.sm %>%
   scroll_box(width = '100%')#, height = '400px')
 
 tb8
+```
+
+```{r include = FALSE}
+rm(tb8)
 ```
 
 #### Low Price
@@ -3642,6 +3683,10 @@ tb9 <- daily.sm %>%
 tb9
 ```
 
+```{r include = FALSE}
+rm(tb9)
+```
+
 #### Close Price
 
 ```{r, cache = TRUE, warning = FALSE, message = FALSE, results = 'asis'}
@@ -3694,6 +3739,10 @@ tb10 <- daily.sm %>%
   scroll_box(width = '100%')#, height = '400px')
 
 tb10
+```
+
+```{r include = FALSE}
+rm(tb10)
 ```
 
 #### Summary
@@ -3859,6 +3908,10 @@ tb11 <- daily.sm %>%
   scroll_box(width = '100%')#, height = '400px')
 
 tb11
+```
+
+```{r include = FALSE}
+rm(tb11)
 ```
 
 Above table summarized the daily `mape`, `smape`, `mse` and `rmse` values and then summarized again the models (which is nested summarize <span style='color:red'>due to daily settlement</span>), we can interpret from above table :
@@ -4090,6 +4143,10 @@ tb12 <- best_model %>%
 tb12
 ```
 
+```{r include = FALSE}
+rm(tb12)
+```
+
 Above table summarized the total observations with `mape`, `smape`, `mse` and `rmse` values (which is not nested summarize <span style='color:red'>not daily settlement for P&L</span>), we can interpret from above table :
 
 - Weekly or `7200 mins` length's dataset with `msts(seasonal.periods = c(1440, 7200)) %>% tbats %>% forecast(h = 1440)`.
@@ -4270,6 +4327,10 @@ tb13 <- cmp %>%
 tb13
 ```
 
+```{r include = FALSE}
+rm(cmp, tb13)
+```
+
 [Application of `auto.arima()` on both `ts()` and `msts()` seasonal datasets](https://stackoverflow.com/questions/65699784/application-of-auto-arima-on-both-ts-and-msts-seasonal-dataset) compare the `ts()` and `msts()` sarima models.
 
 ## 1 day per unit
@@ -4368,6 +4429,10 @@ tb14 <- ETS.MSE %>% mutate(
 tb14
 ```
 
+```{r include = FALSE}
+rm(tb14)
+```
+
 *Source : [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E)*
 
 From above `MSE` comparison with intraday-dataset, we know that the intraday data will be more accurate than just daily dataset.
@@ -4417,6 +4482,10 @@ tb15 <- ARIMA.MSE %>%
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))
 
 tb15
+```
+
+```{r include = FALSE}
+rm(tb15)
 ```
 
 # Conclusion
@@ -4640,6 +4709,10 @@ tb16 <- ftl_dat1 %>%
   scroll_box(width = '100%')#, height = '400px')
 
 tb16
+```
+
+```{r include = FALSE}
+rm(tb16)
 ```
 
 Above table summarized the total observations with `mape`, `smape`, `mse` and `rmse` values (which is not nested summarize <span style='color:red'>not daily settlement for P&L</span>).
@@ -4878,6 +4951,10 @@ tb17 <- ftl_dat2 %>%
 tb17
 ```
 
+```{r include = FALSE}
+rm(tb17)
+```
+
 Above table summarized the daily `mape`, `smape`, `mse` and `rmse` values and then summarized again the models (which is nested summarize <span style='color:red'>due to daily settlement for P&L</span>).
 
 - [Time Series Forecasting, a Summarize of Data visualization and prediction](https://rpubs.com/tedding/long-term-time-series-forecasting)
@@ -5064,6 +5141,10 @@ p1 <- yr_2018 %>%
 p1
 ```
 
+```{r include = FALSE}
+rm(p1)
+```
+
 ##### High Price
 
 ```{r, cache = TRUE, warning = FALSE, results = 'asis'}
@@ -5087,6 +5168,10 @@ p2 <- yr_2018 %>%
 #ply2 <- ggplotly(p2)
 #ply2
 p2
+```
+
+```{r include = FALSE}
+rm(p2)
 ```
 
 ##### Low Price
@@ -5114,6 +5199,10 @@ p3 <- yr_2018 %>%
 p3
 ```
 
+```{r include = FALSE}
+rm(p3)
+```
+
 ##### Close Price
 
 ```{r, cache = TRUE, warning = FALSE, results = 'asis'}
@@ -5137,6 +5226,10 @@ p4 <- yr_2018 %>%
 #ply4 <- ggplotly(p4)
 #ply4
 p4
+```
+
+```{r include = FALSE}
+rm(p4)
 ```
 
 ##### OHLC Price
@@ -5166,7 +5259,11 @@ p5 <- mDT %>%
 p5
 ```
 
-```{r, cache = TRUE, warning = FALSE, results = 'asis'}
+```{r include = FALSE}
+rm(p5)
+```
+
+```{r, cache = TRUE, warning = FALSE, eval = FALSE, results = 'asis'}
 ## rbokeh package
 ## https://www.htmlwidgets.org/showcase_rbokeh.html
 ## https://hafen.github.io/rbokeh/articles/rbokeh.html
@@ -5248,6 +5345,11 @@ cbind(sys1, sys2) %>%
   kbl(caption = 'Additional session information:') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   row_spec(0, background = 'DimGrey') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'DarkGrey') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(3, background = 'CornflowerBlue') %>% 
+  column_spec(4, background = 'DarkGrey') %>% 
   row_spec(9, bold = T, color = 'white', background = '#D7261E')
 ```
 
