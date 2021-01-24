@@ -2884,7 +2884,7 @@ seasonal_m <- llply(1:length(fls), function(i) {
   if(str_detect(x, 'sets.wk.1440.')) {
     y[[i]] <- read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('wk.1440'))
-    
+
   } else if(str_detect(x, 'sets.mo.1440.')) {
     y[[i]] <- read_rds(x)$forecast %>% 
       mutate(Model = factor('ts'), Period = factor('mo.1440'))
@@ -2938,8 +2938,9 @@ seasonal_m <- llply(1:length(fls), function(i) {
       mutate(Model = factor('tbats'), Period = factor('qt.yr'))
     
   }  else if(str_detect(x, 'mts.dy.wk.mo.[0-9]{4}')) {
-    y[[i]] <- read_rds(x) %>% 
-      mutate(Model = factor('tbats'), Period = factor('dy.wk.mo'))
+    y[[i]] <- read_rds(x) %>% # i = 2077
+      mutate(Model = factor('tbats'), Period = factor('dy.wk.mo'))# %>% 
+            #dplyr::rename(high.Point.Forecast = high.high.Point.Forecast)
     
   } else if(str_detect(x, 'mts.dy.wk.mo.qt.[0-9]{4}')) {
     y[[i]] <- read_rds(x) %>% 
@@ -2952,6 +2953,13 @@ seasonal_m <- llply(1:length(fls), function(i) {
   } else {
     cat('No such files.\n')
   }
+  
+  y[[i]] %<>% .[c('index', 'Model', 'Period', 
+                 'open.Point.Forecast', 'high.Point.Forecast', 
+                 'low.Point.Forecast','close.Point.Forecast')]
+  #saveRDS(y[[i]], x)
+  cat(x, '\n')
+  
   }) %>% 
   bind_rows %>% 
   as_tibble
@@ -2963,17 +2971,21 @@ seasonal_m <- llply(1:length(fls), function(i) {
 #              'low.Hi.95', 'open.Hi.80', 'open.Lo.95', 'open.Hi.95', 
 #              'open.Lo.80', 'high.Lo.80', 'low.Lo.80', 'close.Lo.80')] <- NULL
 
+#a1 <- rbind(aa1, aa2)
+#a2 <- rbind(aa3, aa4)
+#seasonal_m <- rbind(a1, a2)
+
 ## don't use complete.cases() since there has some NA elements in ts models.
 #seasonal_m <- seasonal_m[complete.cases(seasonal_m),]
 #dataset with 23
-write_rds(seasonal_m, 'data/fx/USDJPY/seasonal_m.rds')
-seasonal_m1 <- seasonal_m
-rm(seasonal_m, data_m1)
+#write_rds(seasonal_m, 'data/fx/USDJPY/seasonal_m.rds')
+#seasonal_m1 <- seasonal_m
+#rm(seasonal_m, data_m1)
 
-seasonal_m1 %<>% 
-  .[c('index','Model','Period',
-  'open.Point.Forecast','high.Point.Forecast',
-  'low.Point.Forecast','close.Point.Forecast')]#,
+#seasonal_m1 %<>% 
+#  .[c('index','Model','Period',
+#  'open.Point.Forecast','high.Point.Forecast',
+#  'low.Point.Forecast','close.Point.Forecast')]#,
 #  'open.Point.Forecast.Hi 80','open.Point.Forecast.Lo 80',
 #  'open.Point.Forecast.Lo 95','open.Point.Forecast.Hi 95',
 #  'high.Point.Forecast.Lo 80','high.Point.Forecast.Hi 80',
@@ -3023,14 +3035,17 @@ seasonal_m1 %<>%
 
 ##The last observation of Friday is Saturday 00:00:00 but not next Monday 00:00:00. Therefore the Saturday forecasted price will not be merge with Next Monday market price.
 #comp %<>% .[colSums(!is.na(.)) > 0]
-seasonal_m1 <- join(data_m1, seasonal_m1) %>% 
+#seasonal_m1 <- join(data_m1, seasonal_m1) %>% 
+#  bind_rows %>% 
+#  as_tibble
+seasonal_m1 <- join(data_m1, seasonal_m) %>% 
   bind_rows %>% 
   as_tibble
 
-seasonal_m1 %<>% 
-  .[c('index','Model','Period','open','high','low','close',
-  'open.Point.Forecast','high.Point.Forecast',
-  'low.Point.Forecast','close.Point.Forecast')]#,
+#seasonal_m1 %<>% 
+#  .[c('index','Model','Period','open','high','low','close',
+#  'open.Point.Forecast','high.Point.Forecast',
+#  'low.Point.Forecast','close.Point.Forecast')]#,
 #  'open.Point.Forecast.Hi 80','open.Point.Forecast.Lo 80',
 #  'open.Point.Forecast.Lo 95','open.Point.Forecast.Hi 95',
 #  'high.Point.Forecast.Lo 80','high.Point.Forecast.Hi 80',
