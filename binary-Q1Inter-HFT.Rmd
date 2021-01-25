@@ -33,12 +33,13 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'dygraphs',
           'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'jsonlite', 
           'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tdplyr', 
           'tidyverse', 'memoise', 'htmltools', 'formattable', 'rbokeh', 
-          'dash', 'dashCoreComponents', 'dashHtmlComponents', ##https://dashr.plotly.com
+          'dash', 'dashCoreComponents', 'dashHtmlComponents', 'dtplyr',  ##https://dashr.plotly.com
           'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
           'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
           'stringr', 'pacman', 'profmem', 'DescTools', 'ggthemes', 
-          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes')
+          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
+          'fable', 'fabletools')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
@@ -3083,7 +3084,7 @@ write_rds(seasonal_m1, 'data/fx/USDJPY/seasonal_m1.rds')
 ## ------------------------------------------
 ```
 
-```{r, warning = FALSE, message = FALSE}
+```{r message=FALSE, warning=FALSE}
 #dir('data/fx/USDJPY', pattern = '*.z') %>% 
 #  llply(., function(x) {
 #    suppressAll(unzip(paste0('data/fx/USDJPY/', x)))
@@ -4320,7 +4321,8 @@ cmp1 <- join(fr_ts.sample, fr_msts.sample) %>%
 lst1 <- list.files('data/fx/USDJPY', pattern = '^mts.*.2015-01-12.rds$')
 cmp2 <- llply(lst1, function(x) {
     readRDS(paste0('data/fx/USDJPY/', x)) %>% 
-    dplyr::select(contains(c('index', 'open.Point.Forecast'))) %>% .[,1:2]
+    dplyr::select(contains(c('index', 'open.Point.Forecast'))) %>% 
+    .[,1:2]
   })
 names(cmp2) <- str_replace_all(lst1, '.[1-9].*', '')
 cmp2 %<>% ldply %>% 
@@ -4333,7 +4335,8 @@ cmp2 <- data.frame(open = cmp1$open, cmp2) %>%
 lst2 <- list.files('data/fx/USDJPY', pattern = '^sets.*.2015-01-12.rds$')
 cmp3 <- llply(lst2, function(x) {
     readRDS(paste0('data/fx/USDJPY/', x))$forecast %>% 
-    dplyr::select(contains(c('index', 'open.Point.Forecast'))) %>% .[1:1440,1:2]
+    dplyr::select(contains(c('index', 'open.Point.Forecast'))) %>% 
+    .[1:1440,1:2]
   })
 names(cmp3) <- substr(lst2, 1, 12) #manual filter characters
 cmp3 %<>% ldply %>% 
@@ -4347,73 +4350,87 @@ cmp3 <- data.frame(open = cmp1$open, cmp3) %>%
 cmp1 <- data.frame(
   Model = c('sarima_ts', 'sarima_msts'), 
   n = nrow(cmp1), 
-  mape = c(MAPE(cmp1$open, cmp1$sarima_ts), 
-           MAPE(cmp1$open, cmp1$sarima_msts)), 
-  smape = c(SMAPE(cmp1$open, cmp1$sarima_ts), 
-            SMAPE(cmp1$open, cmp1$sarima_msts)), 
-  mse = c(MSE(cmp1$open, cmp1$sarima_ts), 
-          MSE(cmp1$open, cmp1$sarima_msts)), 
-  rmse = c(RMSE(cmp1$open, cmp1$sarima_ts), 
-           RMSE(cmp1$open, cmp1$sarima_msts))) %>% 
-  tibble
+  mae = c(MAE(cmp1$open, cmp1$sarima_ts, na.rm = TRUE), 
+           MAE(cmp1$open, cmp1$sarima_msts, na.rm = TRUE)), 
+  mape = c(MAPE(cmp1$open, cmp1$sarima_ts, na.rm = TRUE), 
+           MAPE(cmp1$open, cmp1$sarima_msts, na.rm = TRUE)), 
+  smape = c(SMAPE(cmp1$open, cmp1$sarima_ts, na.rm = TRUE), 
+            SMAPE(cmp1$open, cmp1$sarima_msts, na.rm = TRUE)), 
+  mse = c(MSE(cmp1$open, cmp1$sarima_ts, na.rm = TRUE), 
+          MSE(cmp1$open, cmp1$sarima_msts, na.rm = TRUE)), 
+  rmse = c(RMSE(cmp1$open, cmp1$sarima_ts, na.rm = TRUE), 
+           RMSE(cmp1$open, cmp1$sarima_msts, na.rm = TRUE))) %>% 
+  as_tibble
 
 cmp2 <- data.frame(
-  Model = names(cmp2)[3:ncol(cmp2)], 
+  Model = names(cmp2[3:ncol(cmp2)]), 
   n = nrow(cmp2), 
-  mape = c(MAPE(cmp2$open, cmp2$mts.dy.qt), 
-           MAPE(cmp2$open, cmp2$mts.dy.wk), 
-           MAPE(cmp2$open, cmp2$mts.dy.wk.mo), 
-           MAPE(cmp2$open, cmp2$mts.dy.yr)), 
-  smape = c(SMAPE(cmp2$open, cmp2$mts.dy.qt), 
-            SMAPE(cmp2$open, cmp2$mts.dy.wk), 
-            SMAPE(cmp2$open, cmp2$mts.dy.wk.mo), 
-            SMAPE(cmp2$open, cmp2$mts.dy.yr)), 
-  mse = c(MSE(cmp2$open, cmp2$mts.dy.qt), 
-          MSE(cmp2$open, cmp2$mts.dy.wk), 
-          MSE(cmp2$open, cmp2$mts.dy.wk.mo), 
-          MSE(cmp2$open, cmp2$mts.dy.yr)), 
-  rmse = c(RMSE(cmp2$open, cmp2$mts.dy.qt), 
-           RMSE(cmp2$open, cmp2$mts.dy.wk), 
-           RMSE(cmp2$open, cmp2$mts.dy.wk.mo), 
-           RMSE(cmp2$open, cmp2$mts.dy.yr))) %>% 
-  tibble
+  mae = c(MAE(cmp2$open, cmp2$mts.dy.qt, na.rm = TRUE), 
+          MAE(cmp2$open, cmp2$mts.dy.wk, na.rm = TRUE), 
+          MAE(cmp2$open, cmp2$mts.dy.wk.mo, na.rm = TRUE), 
+          MAE(cmp2$open, cmp2$mts.dy.yr, na.rm = TRUE)), 
+  mape = c(MAPE(cmp2$open, cmp2$mts.dy.qt, na.rm = TRUE), 
+           MAPE(cmp2$open, cmp2$mts.dy.wk, na.rm = TRUE), 
+           MAPE(cmp2$open, cmp2$mts.dy.wk.mo, na.rm = TRUE), 
+           MAPE(cmp2$open, cmp2$mts.dy.yr, na.rm = TRUE)), 
+  smape = c(SMAPE(cmp2$open, cmp2$mts.dy.qt, na.rm = TRUE), 
+            SMAPE(cmp2$open, cmp2$mts.dy.wk, na.rm = TRUE), 
+            SMAPE(cmp2$open, cmp2$mts.dy.wk.mo, na.rm = TRUE), 
+            SMAPE(cmp2$open, cmp2$mts.dy.yr, na.rm = TRUE)), 
+  mse = c(MSE(cmp2$open, cmp2$mts.dy.qt, na.rm = TRUE), 
+          MSE(cmp2$open, cmp2$mts.dy.wk, na.rm = TRUE), 
+          MSE(cmp2$open, cmp2$mts.dy.wk.mo, na.rm = TRUE), 
+          MSE(cmp2$open, cmp2$mts.dy.yr, na.rm = TRUE)), 
+  rmse = c(RMSE(cmp2$open, cmp2$mts.dy.qt, na.rm = TRUE), 
+           RMSE(cmp2$open, cmp2$mts.dy.wk, na.rm = TRUE), 
+           RMSE(cmp2$open, cmp2$mts.dy.wk.mo, na.rm = TRUE), 
+           RMSE(cmp2$open, cmp2$mts.dy.yr, na.rm = TRUE))) %>% 
+  as_tibble
 
 cmp3 <- data.frame(
   Model = names(cmp3)[3:ncol(cmp3)], 
   n = nrow(cmp3), 
-  mape = c(MAPE(cmp3$open, cmp3$sets.mo.1440), 
-           MAPE(cmp3$open, cmp3$sets.mo.7200), 
-           MAPE(cmp3$open, cmp3$sets.qt.1440), 
-           MAPE(cmp3$open, cmp3$sets.qt.7200), 
-           MAPE(cmp3$open, cmp3$sets.wk.1440), 
-           MAPE(cmp3$open, cmp3$sets.wk.7200), 
-           MAPE(cmp3$open, cmp3$sets.yr.1440), 
-           MAPE(cmp3$open, cmp3$sets.yr.7200)), 
-  smape = c(SMAPE(cmp3$open, cmp3$sets.mo.1440), 
-            SMAPE(cmp3$open, cmp3$sets.mo.7200), 
-            SMAPE(cmp3$open, cmp3$sets.qt.1440), 
-            SMAPE(cmp3$open, cmp3$sets.qt.7200), 
-            SMAPE(cmp3$open, cmp3$sets.wk.1440), 
-            SMAPE(cmp3$open, cmp3$sets.wk.7200), 
-            SMAPE(cmp3$open, cmp3$sets.yr.1440), 
-            SMAPE(cmp3$open, cmp3$sets.yr.7200)), 
-  mse = c(MSE(cmp3$open, cmp3$sets.mo.1440), 
-          MSE(cmp3$open, cmp3$sets.mo.7200), 
-          MSE(cmp3$open, cmp3$sets.qt.1440), 
-          MSE(cmp3$open, cmp3$sets.qt.7200), 
-          MSE(cmp3$open, cmp3$sets.wk.1440), 
-          MSE(cmp3$open, cmp3$sets.wk.7200), 
-          MSE(cmp3$open, cmp3$sets.yr.1440), 
-          MSE(cmp3$open, cmp3$sets.yr.7200)), 
-  rmse = c(RMSE(cmp3$open, cmp3$sets.mo.1440), 
-           RMSE(cmp3$open, cmp3$sets.mo.7200), 
-           RMSE(cmp3$open, cmp3$sets.qt.1440), 
-           RMSE(cmp3$open, cmp3$sets.qt.7200), 
-           RMSE(cmp3$open, cmp3$sets.wk.1440), 
-           RMSE(cmp3$open, cmp3$sets.wk.7200), 
-           RMSE(cmp3$open, cmp3$sets.yr.1440), 
-           RMSE(cmp3$open, cmp3$sets.yr.7200))) %>% 
-  tibble
+  mae = c(MAE(cmp3$open, cmp3$sets.mo.1440, na.rm = TRUE), 
+          MAE(cmp3$open, cmp3$sets.mo.7200, na.rm = TRUE), 
+          MAE(cmp3$open, cmp3$sets.qt.1440, na.rm = TRUE), 
+          MAE(cmp3$open, cmp3$sets.qt.7200, na.rm = TRUE), 
+          MAE(cmp3$open, cmp3$sets.wk.1440, na.rm = TRUE), 
+          MAE(cmp3$open, cmp3$sets.wk.7200, na.rm = TRUE), 
+          MAE(cmp3$open, cmp3$sets.yr.1440, na.rm = TRUE), 
+          MAE(cmp3$open, cmp3$sets.yr.7200, na.rm = TRUE)), 
+  mape = c(MAPE(cmp3$open, cmp3$sets.mo.1440, na.rm = TRUE), 
+           MAPE(cmp3$open, cmp3$sets.mo.7200, na.rm = TRUE), 
+           MAPE(cmp3$open, cmp3$sets.qt.1440, na.rm = TRUE), 
+           MAPE(cmp3$open, cmp3$sets.qt.7200, na.rm = TRUE), 
+           MAPE(cmp3$open, cmp3$sets.wk.1440, na.rm = TRUE), 
+           MAPE(cmp3$open, cmp3$sets.wk.7200, na.rm = TRUE), 
+           MAPE(cmp3$open, cmp3$sets.yr.1440, na.rm = TRUE), 
+           MAPE(cmp3$open, cmp3$sets.yr.7200, na.rm = TRUE)), 
+  smape = c(SMAPE(cmp3$open, cmp3$sets.mo.1440, na.rm = TRUE), 
+            SMAPE(cmp3$open, cmp3$sets.mo.7200, na.rm = TRUE), 
+            SMAPE(cmp3$open, cmp3$sets.qt.1440, na.rm = TRUE), 
+            SMAPE(cmp3$open, cmp3$sets.qt.7200, na.rm = TRUE), 
+            SMAPE(cmp3$open, cmp3$sets.wk.1440, na.rm = TRUE), 
+            SMAPE(cmp3$open, cmp3$sets.wk.7200, na.rm = TRUE), 
+            SMAPE(cmp3$open, cmp3$sets.yr.1440, na.rm = TRUE), 
+            SMAPE(cmp3$open, cmp3$sets.yr.7200, na.rm = TRUE)), 
+  mse = c(MSE(cmp3$open, cmp3$sets.mo.1440, na.rm = TRUE), 
+          MSE(cmp3$open, cmp3$sets.mo.7200, na.rm = TRUE), 
+          MSE(cmp3$open, cmp3$sets.qt.1440, na.rm = TRUE), 
+          MSE(cmp3$open, cmp3$sets.qt.7200, na.rm = TRUE), 
+          MSE(cmp3$open, cmp3$sets.wk.1440, na.rm = TRUE), 
+          MSE(cmp3$open, cmp3$sets.wk.7200, na.rm = TRUE), 
+          MSE(cmp3$open, cmp3$sets.yr.1440, na.rm = TRUE), 
+          MSE(cmp3$open, cmp3$sets.yr.7200, na.rm = TRUE)), 
+  rmse = c(RMSE(cmp3$open, cmp3$sets.mo.1440, na.rm = TRUE), 
+           RMSE(cmp3$open, cmp3$sets.mo.7200, na.rm = TRUE), 
+           RMSE(cmp3$open, cmp3$sets.qt.1440, na.rm = TRUE), 
+           RMSE(cmp3$open, cmp3$sets.qt.7200, na.rm = TRUE), 
+           RMSE(cmp3$open, cmp3$sets.wk.1440, na.rm = TRUE), 
+           RMSE(cmp3$open, cmp3$sets.wk.7200, na.rm = TRUE), 
+           RMSE(cmp3$open, cmp3$sets.yr.1440, na.rm = TRUE), 
+           RMSE(cmp3$open, cmp3$sets.yr.7200, na.rm = TRUE))) %>% 
+  as_tibble
 
 cmp <- bind_rows(cmp1, cmp2, cmp3) %>% 
   as_tibble
@@ -4422,6 +4439,14 @@ cmp <- bind_rows(cmp1, cmp2, cmp3) %>%
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
 tb13 <- cmp %>% 
   mutate(
+    mae = ifelse(
+      rank(mae) <= 3, 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
     mape = ifelse(
       rank(mape) <= 3, 
       cell_spec(
@@ -4459,10 +4484,12 @@ tb13 <- cmp %>%
   row_spec(0, background = 'DimGrey') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
   column_spec(2, background = 'DarkGrey') %>% 
-  column_spec(3, background = 'Gainsboro') %>% 
-  column_spec(4, background = 'LightGray') %>% 
-  column_spec(5, background = 'Gainsboro') %>% 
-  column_spec(6, background = 'LightGray') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(3, background = 'LightGray') %>% 
+  column_spec(4, background = 'Gainsboro') %>% 
+  column_spec(5, background = 'LightGray') %>% 
+  column_spec(6, background = 'Gainsboro') %>% 
+  column_spec(7, background = 'LightGray') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
@@ -4631,15 +4658,7 @@ tb15
 rm(tb15)
 ```
 
-# Conclusion
-
-## Summary
-
-From the backtest, we concludes that high-frequency-trading **1 min per unit** (`ETS`:0.46 and `auto.arima`:0.69) more accurate than interday-trading **1 day per unit**.
-
-<span style='color:goldenrod'>*High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers*</span> introduce... suggest... DCC-MIDAS etc. Due to heavily .
-
-By refer to section [#713_Unexpected_Error], here I omitted the data from year `2018-01-01` to `2018-07-09` but the outcome is same. Here I forced to omit the mentioned dataset.
+By refer to section [7.1.3 Unexpected Error](https://rpubs.com/englianhu/binary-Q1Inter-HFT.html#713_Unexpected_Error), here I omitted the data from year `2018-01-01` to `2018-07-09` but the outcome is same. Here I forced to omit the mentioned dataset.
 
 ## Filtered Dataset From `2015-01-05` to `2017-12-31`
 
@@ -4650,8 +4669,11 @@ By refer to section [#713_Unexpected_Error], here I omitted the data from year `
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
 if(!exists('seasonal_m1')) {
   seasonal_m1 <- read_rds('data/fx/USDJPY/seasonal_m1.rds')}
-ftl1 <- filter(seasonal_m1, index <= as_date('2017-12-31'))
-ftl1 %<>% data.table()
+
+## https://dtplyr.tidyverse.org for future use, otherwise need to recode and rerun.
+ftl1 <- seasonal_m1 %>% lazy_dt()
+ftl1 %<>% filter(index <= as_date('2017-12-31'))
+ftl1 %<>% as.data.table()
 #setkey(ftl1)
 setkeyv(ftl1, c('index', 'Model', 'Period'))
 ```
@@ -4660,7 +4682,9 @@ setkeyv(ftl1, c('index', 'Model', 'Period'))
 m.op <- ftl1[, {
     open = open
     open.Point.Forecast = open.Point.Forecast
-    .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+    .SD[, .(.N, 
+            open.mae = MAE(open, open.Point.Forecast), 
+            open.mape = MAPE(open, open.Point.Forecast), 
             open.smape = SMAPE(open, open.Point.Forecast), 
             open.mse = MSE(open, open.Point.Forecast), 
             open.rmse = RMSE(open, open.Point.Forecast)), 
@@ -4669,7 +4693,9 @@ m.op <- ftl1[, {
 m.hi <- ftl1[, {
     high = high
     high.Point.Forecast = high.Point.Forecast
-    .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+    .SD[, .(.N, 
+            high.mae = MAE(high, high.Point.Forecast), 
+            high.mape = MAPE(high, high.Point.Forecast), 
             high.smape = SMAPE(high, high.Point.Forecast), 
             high.mse = MSE(high, high.Point.Forecast), 
             high.rmse = RMSE(high, high.Point.Forecast)), 
@@ -4678,7 +4704,9 @@ m.hi <- ftl1[, {
 m.lo <- ftl1[, {
     low = low
     low.Point.Forecast = low.Point.Forecast
-    .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+    .SD[, .(.N, 
+            low.mae = MAE(low, low.Point.Forecast), 
+            low.mape = MAPE(low, low.Point.Forecast), 
             low.smape = SMAPE(low, low.Point.Forecast), 
             low.mse = MSE(low, low.Point.Forecast), 
             low.rmse = RMSE(low, low.Point.Forecast)), 
@@ -4687,13 +4715,15 @@ m.lo <- ftl1[, {
 m.cl <- ftl1[, {
     close = close
     close.Point.Forecast = close.Point.Forecast
-    .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+    .SD[, .(.N, 
+            close.mae = MAE(close, close.Point.Forecast), 
+            close.mape = MAPE(close, close.Point.Forecast), 
             close.smape = SMAPE(close, close.Point.Forecast), 
             close.mse = MSE(close, close.Point.Forecast), 
             close.rmse = RMSE(close, close.Point.Forecast)), 
         by=.(Model, Period)]}][order(Model, Period), ]
 
-ftl_dat1 <- join_all(list(m.op, m.hi, m.lo, m.cl)) %>% 
+ftl_dat1a <- join_all(list(m.op, m.hi, m.lo, m.cl)) %>% 
   as_tibble
 ```
 
@@ -4702,8 +4732,16 @@ The models `r paste(unique(ftl1$Period)[str_detect(unique(ftl1$Period), '7200')]
 #### Overall Dataset
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-tb16 <- ftl_dat1 %>% 
+tb16 <- ftl_dat1a %>% 
   mutate(
+    open.mae = ifelse(
+      rank(open.mape) <= 3, 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
     open.mape = ifelse(
       rank(open.mape) <= 3, 
       cell_spec(
@@ -4855,8 +4893,9 @@ tb16 <- ftl_dat1 %>%
   column_spec(15, background = 'Gainsboro') %>% 
   column_spec(16, background = 'LightGray') %>% 
   column_spec(17, background = 'Gainsboro') %>% 
-  column_spec(18, background = 'LightGray') %>%   
+  column_spec(18, background = 'LightGray') %>% 
   column_spec(19, background = 'Gainsboro') %>% 
+  column_spec(20, background = 'LightGray') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
@@ -4876,7 +4915,9 @@ Above table summarized the total observations with `mape`, `smape`, `mse` and `r
 open.accr <- ftl1[, {
   open = open
   open.Point.Forecast = open.Point.Forecast
-  .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+  .SD[, .(.N, 
+          open.mae = MAE(open, open.Point.Forecast), 
+          open.mape = MAPE(open, open.Point.Forecast), 
           open.smape = SMAPE(open, open.Point.Forecast), 
           open.mse = MSE(open, open.Point.Forecast), 
           open.rmse = RMSE(open, open.Point.Forecast)), 
@@ -4886,7 +4927,9 @@ open.accr <- ftl1[, {
 high.accr <- ftl1[, {
   high = high
   high.Point.Forecast = high.Point.Forecast
-  .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+  .SD[, .(.N, 
+          high.mae = MAE(high, high.Point.Forecast), 
+          high.mape = MAPE(high, high.Point.Forecast), 
           high.smape = SMAPE(high, high.Point.Forecast), 
           high.mse = MSE(high, high.Point.Forecast), 
           high.rmse = RMSE(high, high.Point.Forecast)), 
@@ -4896,7 +4939,9 @@ high.accr <- ftl1[, {
 low.accr <- ftl1[, {
   low = low
   low.Point.Forecast = low.Point.Forecast
-  .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+  .SD[, .(.N, 
+          low.mae = MAE(low, low.Point.Forecast), 
+          low.mape = MAPE(low, low.Point.Forecast), 
           low.smape = SMAPE(low, low.Point.Forecast), 
           low.mse = MSE(low, low.Point.Forecast), 
           low.rmse = RMSE(low, low.Point.Forecast)), 
@@ -4906,44 +4951,66 @@ low.accr <- ftl1[, {
 close.accr <- ftl1[, {
   close = close
   close.Point.Forecast = close.Point.Forecast
-  .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+  .SD[, .(.N, 
+          close.mae = MAE(close, close.Point.Forecast), 
+          close.mape = MAPE(close, close.Point.Forecast), 
           close.smape = SMAPE(close, close.Point.Forecast), 
           close.mse = MSE(close, close.Point.Forecast), 
           close.rmse = RMSE(close, close.Point.Forecast)), 
       by={index=as_date(index)}]}, 
   by=.(Model, Period)]
 
-open.sm <- open.accr[, list(open.mape = mean(open.mape), 
-                            open.smape = mean(open.smape), 
-                            open.mse = mean(open.mse), 
-                            open.rmse = mean(open.rmse)), 
-                       by=.(Model, Period)]
+open.sm <- open.accr[, list(
+  N = mean(N), 
+  open.mae = mean(open.mae), 
+  open.mape = mean(open.mape), 
+  open.smape = mean(open.smape), 
+  open.mse = mean(open.mse), 
+  open.rmse = mean(open.rmse)), 
+  by=.(Model, Period)]
 
-high.sm <- high.accr[, list(high.mape = mean(high.mape), 
-                            high.smape = mean(high.smape), 
-                            high.mse = mean(high.mse), 
-                            high.rmse = mean(high.rmse)), 
-                       by=.(Model, Period)]
+high.sm <- high.accr[, list(
+  N = mean(N), 
+  high.mae = mean(high.mae), 
+  high.mape = mean(high.mape), 
+  high.smape = mean(high.smape), 
+  high.mse = mean(high.mse), 
+  high.rmse = mean(high.rmse)), 
+  by=.(Model, Period)]
 
-low.sm <- low.accr[, list(low.mape = mean(low.mape), 
-                          low.smape = mean(low.smape), 
-                          low.mse = mean(low.mse), 
-                          low.rmse = mean(low.rmse)), 
-                       by=.(Model, Period)]
+low.sm <- low.accr[, list(
+  N = mean(N), 
+  low.mae = mean(low.mae), 
+  low.mape = mean(low.mape), 
+  low.smape = mean(low.smape), 
+  low.mse = mean(low.mse), 
+  low.rmse = mean(low.rmse)), 
+  by=.(Model, Period)]
 
-close.sm <- close.accr[, list(close.mape = mean(close.mape), 
-                              close.smape = mean(close.smape), 
-                              close.mse = mean(close.mse), 
-                              close.rmse = mean(close.rmse)), 
-                       by=.(Model, Period)]
+close.sm <- close.accr[, list(
+  N = mean(N), 
+  close.mae = mean(close.mae), 
+  close.mape = mean(close.mape), 
+  close.smape = mean(close.smape), 
+  close.mse = mean(close.mse), 
+  close.rmse = mean(close.rmse)), 
+  by=.(Model, Period)]
 
-ftl_dat2 <- join_all(list(open.sm, high.sm, low.sm, close.sm)) %>% 
+ftl_dat1b <- join_all(list(open.sm, high.sm, low.sm, close.sm)) %>% 
   as_tibble
 ```
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-tb17 <- ftl_dat2 %>% 
+tb17 <- ftl_dat1b %>% 
   mutate(
+    open.mae = ifelse(
+      rank(open.mae) <= 3, 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
     open.mape = ifelse(
       rank(open.mape) <= 3, 
       cell_spec(
@@ -5081,22 +5148,24 @@ tb17 <- ftl_dat2 %>%
   column_spec(1, background = 'CornflowerBlue') %>% 
   column_spec(2, background = 'DarkGrey') %>% 
   #column_spec(3, background = 'LightSlateGrey') %>% 
-  column_spec(3, background = 'LightGray') %>% 
-  column_spec(4, background = 'Gainsboro') %>% 
-  column_spec(5, background = 'LightGray') %>%   
-  column_spec(6, background = 'Gainsboro') %>% 
-  column_spec(7, background = 'LightGray') %>% 
-  column_spec(8, background = 'Gainsboro') %>% 
-  column_spec(9, background = 'LightGray') %>%   
-  column_spec(10, background = 'Gainsboro') %>% 
-  column_spec(11, background = 'LightGray') %>% 
-  column_spec(12, background = 'Gainsboro') %>% 
-  column_spec(13, background = 'LightGray') %>%   
-  column_spec(14, background = 'Gainsboro') %>% 
-  column_spec(15, background = 'LightGray') %>% 
-  column_spec(16, background = 'Gainsboro') %>% 
-  column_spec(17, background = 'LightGray') %>%   
-  column_spec(18, background = 'Gainsboro') %>% 
+  column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>%   
+  column_spec(7, background = 'Gainsboro') %>% 
+  column_spec(8, background = 'LightGray') %>% 
+  column_spec(9, background = 'Gainsboro') %>% 
+  column_spec(10, background = 'LightGray') %>%   
+  column_spec(11, background = 'Gainsboro') %>% 
+  column_spec(12, background = 'LightGray') %>% 
+  column_spec(13, background = 'Gainsboro') %>% 
+  column_spec(14, background = 'LightGray') %>%   
+  column_spec(15, background = 'Gainsboro') %>% 
+  column_spec(16, background = 'LightGray') %>% 
+  column_spec(17, background = 'Gainsboro') %>% 
+  column_spec(18, background = 'LightGray') %>%   
+  column_spec(19, background = 'Gainsboro') %>% 
+  column_spec(20, background = 'LightGray') %>%   
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
@@ -5116,13 +5185,15 @@ Above table summarized the daily `mape`, `smape`, `mse` and `rmse` values and th
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
 ftl2 <- unique(ftl1, fromLast = FALSE, by = c('index', 'Period'))#[Period == 'mo.7200']#[11440:12900]#[order(index)]
-setkey(ftl2)
+#setkey(ftl2)
 setkeyv(ftl2, c('index', 'Model', 'Period'))
 
 m.op <- ftl2[, {
     open = open
     open.Point.Forecast = open.Point.Forecast
-    .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+    .SD[, .(.N, 
+            open.mae = MAE(open, open.Point.Forecast), 
+            open.mape = MAPE(open, open.Point.Forecast), 
             open.smape = SMAPE(open, open.Point.Forecast), 
             open.mse = MSE(open, open.Point.Forecast), 
             open.rmse = RMSE(open, open.Point.Forecast)), 
@@ -5131,7 +5202,9 @@ m.op <- ftl2[, {
 m.hi <- ftl2[, {
     high = high
     high.Point.Forecast = high.Point.Forecast
-    .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+    .SD[, .(.N, 
+            high.mae = MAE(high, high.Point.Forecast), 
+            high.mape = MAPE(high, high.Point.Forecast), 
             high.smape = SMAPE(high, high.Point.Forecast), 
             high.mse = MSE(high, high.Point.Forecast), 
             high.rmse = RMSE(high, high.Point.Forecast)), 
@@ -5140,7 +5213,9 @@ m.hi <- ftl2[, {
 m.lo <- ftl2[, {
     low = low
     low.Point.Forecast = low.Point.Forecast
-    .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+    .SD[, .(.N, 
+            low.mae = MAE(low, low.Point.Forecast), 
+            low.mape = MAPE(low, low.Point.Forecast), 
             low.smape = SMAPE(low, low.Point.Forecast), 
             low.mse = MSE(low, low.Point.Forecast), 
             low.rmse = RMSE(low, low.Point.Forecast)), 
@@ -5149,13 +5224,15 @@ m.lo <- ftl2[, {
 m.cl <- ftl2[, {
     close = close
     close.Point.Forecast = close.Point.Forecast
-    .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+    .SD[, .(.N, 
+            close.mae = MAE(close, close.Point.Forecast), 
+            close.mape = MAPE(close, close.Point.Forecast), 
             close.smape = SMAPE(close, close.Point.Forecast), 
             close.mse = MSE(close, close.Point.Forecast), 
             close.rmse = RMSE(close, close.Point.Forecast)), 
         by=.(Model, Period)]}][order(Model, Period), ]
 
-ftl_dat2 <- join_all(list(m.op, m.hi, m.lo, m.cl)) %>% 
+ftl_dat2a <- join_all(list(m.op, m.hi, m.lo, m.cl)) %>% 
   as_tibble
 ```
 
@@ -5166,8 +5243,16 @@ Here I filtered to be unique forecasted price but `7200` mins in advanced per we
 #### Overall Dataset
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-tb18 <- ftl_dat2 %>% 
+tb18 <- ftl_dat2a %>% 
   mutate(
+    open.mae = ifelse(
+      rank(open.mae) <= 3, 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
     open.mape = ifelse(
       rank(open.mape) <= 3, 
       cell_spec(
@@ -5319,8 +5404,9 @@ tb18 <- ftl_dat2 %>%
   column_spec(15, background = 'Gainsboro') %>% 
   column_spec(16, background = 'LightGray') %>% 
   column_spec(17, background = 'Gainsboro') %>% 
-  column_spec(18, background = 'LightGray') %>%   
+  column_spec(18, background = 'LightGray') %>% 
   column_spec(19, background = 'Gainsboro') %>% 
+  column_spec(20, background = 'LightGray') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
@@ -5340,7 +5426,9 @@ Above table summarized the total observations with `mape`, `smape`, `mse` and `r
 open.accr <- ftl2[, {
   open = open
   open.Point.Forecast = open.Point.Forecast
-  .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+  .SD[, .(.N, 
+          open.mae = MAE(open, open.Point.Forecast), 
+          open.mape = MAPE(open, open.Point.Forecast), 
           open.smape = SMAPE(open, open.Point.Forecast), 
           open.mse = MSE(open, open.Point.Forecast), 
           open.rmse = RMSE(open, open.Point.Forecast)), 
@@ -5350,7 +5438,9 @@ open.accr <- ftl2[, {
 high.accr <- ftl2[, {
   high = high
   high.Point.Forecast = high.Point.Forecast
-  .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+  .SD[, .(.N, 
+          high.mae = MAE(high, high.Point.Forecast), 
+          high.mape = MAPE(high, high.Point.Forecast), 
           high.smape = SMAPE(high, high.Point.Forecast), 
           high.mse = MSE(high, high.Point.Forecast), 
           high.rmse = RMSE(high, high.Point.Forecast)), 
@@ -5360,7 +5450,9 @@ high.accr <- ftl2[, {
 low.accr <- ftl2[, {
   low = low
   low.Point.Forecast = low.Point.Forecast
-  .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+  .SD[, .(.N, 
+          low.mae = MAE(low, low.Point.Forecast), 
+          low.mape = MAPE(low, low.Point.Forecast), 
           low.smape = SMAPE(low, low.Point.Forecast), 
           low.mse = MSE(low, low.Point.Forecast), 
           low.rmse = RMSE(low, low.Point.Forecast)), 
@@ -5370,44 +5462,66 @@ low.accr <- ftl2[, {
 close.accr <- ftl2[, {
   close = close
   close.Point.Forecast = close.Point.Forecast
-  .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+  .SD[, .(.N, 
+          close.mae = MAE(close, close.Point.Forecast), 
+          close.mape = MAPE(close, close.Point.Forecast), 
           close.smape = SMAPE(close, close.Point.Forecast), 
           close.mse = MSE(close, close.Point.Forecast), 
           close.rmse = RMSE(close, close.Point.Forecast)), 
       by={index=as_date(index)}]}, 
   by=.(Model, Period)]
 
-open.sm <- open.accr[, list(open.mape = mean(open.mape), 
-                            open.smape = mean(open.smape), 
-                            open.mse = mean(open.mse), 
-                            open.rmse = mean(open.rmse)), 
-                       by=.(Model, Period)]
+open.sm <- open.accr[, list(
+  N = mean(N), 
+  open.mae = mean(open.mae), 
+  open.mape = mean(open.mape), 
+  open.smape = mean(open.smape), 
+  open.mse = mean(open.mse), 
+  open.rmse = mean(open.rmse)), 
+  by=.(Model, Period)]
 
-high.sm <- high.accr[, list(high.mape = mean(high.mape), 
-                            high.smape = mean(high.smape), 
-                            high.mse = mean(high.mse), 
-                            high.rmse = mean(high.rmse)), 
-                       by=.(Model, Period)]
+high.sm <- high.accr[, list(
+  N = mean(N), 
+  high.mae = mean(high.mae), 
+  high.mape = mean(high.mape), 
+  high.smape = mean(high.smape), 
+  high.mse = mean(high.mse), 
+  high.rmse = mean(high.rmse)), 
+  by=.(Model, Period)]
 
-low.sm <- low.accr[, list(low.mape = mean(low.mape), 
-                          low.smape = mean(low.smape), 
-                          low.mse = mean(low.mse), 
-                          low.rmse = mean(low.rmse)), 
-                       by=.(Model, Period)]
+low.sm <- low.accr[, list(
+  N = mean(N), 
+  low.mae = mean(low.mae), 
+  low.mape = mean(low.mape), 
+  low.smape = mean(low.smape), 
+  low.mse = mean(low.mse), 
+  low.rmse = mean(low.rmse)), 
+  by=.(Model, Period)]
 
-close.sm <- close.accr[, list(close.mape = mean(close.mape), 
-                              close.smape = mean(close.smape), 
-                              close.mse = mean(close.mse), 
-                              close.rmse = mean(close.rmse)), 
-                       by=.(Model, Period)]
+close.sm <- close.accr[, list(
+  N = mean(N), 
+  close.mae = mean(close.mae), 
+  close.mape = mean(close.mape), 
+  close.smape = mean(close.smape), 
+  close.mse = mean(close.mse), 
+  close.rmse = mean(close.rmse)), 
+  by=.(Model, Period)]
 
-ftl_dat2 <- join_all(list(open.sm, high.sm, low.sm, close.sm)) %>% 
+ftl_dat2b <- join_all(list(open.sm, high.sm, low.sm, close.sm)) %>% 
   as_tibble
 ```
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-tb19 <- ftl_dat2 %>% 
+tb19 <- ftl_dat2b %>% 
   mutate(
+    open.mae = ifelse(
+      rank(open.mae) <= 3, 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
     open.mape = ifelse(
       rank(open.mape) <= 3, 
       cell_spec(
@@ -5545,22 +5659,24 @@ tb19 <- ftl_dat2 %>%
   column_spec(1, background = 'CornflowerBlue') %>% 
   column_spec(2, background = 'DarkGrey') %>% 
   #column_spec(3, background = 'LightSlateGrey') %>% 
-  column_spec(3, background = 'LightGray') %>% 
-  column_spec(4, background = 'Gainsboro') %>% 
-  column_spec(5, background = 'LightGray') %>%   
-  column_spec(6, background = 'Gainsboro') %>% 
-  column_spec(7, background = 'LightGray') %>% 
-  column_spec(8, background = 'Gainsboro') %>% 
-  column_spec(9, background = 'LightGray') %>%   
-  column_spec(10, background = 'Gainsboro') %>% 
-  column_spec(11, background = 'LightGray') %>% 
-  column_spec(12, background = 'Gainsboro') %>% 
-  column_spec(13, background = 'LightGray') %>%   
-  column_spec(14, background = 'Gainsboro') %>% 
-  column_spec(15, background = 'LightGray') %>% 
-  column_spec(16, background = 'Gainsboro') %>% 
-  column_spec(17, background = 'LightGray') %>%   
-  column_spec(18, background = 'Gainsboro') %>% 
+  column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>%   
+  column_spec(7, background = 'Gainsboro') %>% 
+  column_spec(8, background = 'LightGray') %>% 
+  column_spec(9, background = 'Gainsboro') %>% 
+  column_spec(10, background = 'LightGray') %>%   
+  column_spec(11, background = 'Gainsboro') %>% 
+  column_spec(12, background = 'LightGray') %>% 
+  column_spec(13, background = 'Gainsboro') %>% 
+  column_spec(14, background = 'LightGray') %>%   
+  column_spec(15, background = 'Gainsboro') %>% 
+  column_spec(16, background = 'LightGray') %>% 
+  column_spec(17, background = 'Gainsboro') %>% 
+  column_spec(18, background = 'LightGray') %>%  
+  column_spec(19, background = 'Gainsboro') %>% 
+  column_spec(20, background = 'LightGray') %>%  
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
@@ -5580,13 +5696,15 @@ Above table summarized the daily `mape`, `smape`, `mse` and `rmse` values and th
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
 ftl3 <- unique(ftl1, fromLast = TRUE, by = c('index', 'Period'))#[Period == 'mo.7200']#[11440:12900]#[order(index)]
-setkey(ftl3)
+#setkey(ftl3)
 setkeyv(ftl3, c('index', 'Model', 'Period'))
 
 m.op <- ftl3[, {
     open = open
     open.Point.Forecast = open.Point.Forecast
-    .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+    .SD[, .(.N, 
+            open.mae = MAE(open, open.Point.Forecast), 
+            open.mape = MAPE(open, open.Point.Forecast), 
             open.smape = SMAPE(open, open.Point.Forecast), 
             open.mse = MSE(open, open.Point.Forecast), 
             open.rmse = RMSE(open, open.Point.Forecast)), 
@@ -5595,7 +5713,9 @@ m.op <- ftl3[, {
 m.hi <- ftl3[, {
     high = high
     high.Point.Forecast = high.Point.Forecast
-    .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+    .SD[, .(.N, 
+            high.mae = MAE(high, high.Point.Forecast), 
+            high.mape = MAPE(high, high.Point.Forecast), 
             high.smape = SMAPE(high, high.Point.Forecast), 
             high.mse = MSE(high, high.Point.Forecast), 
             high.rmse = RMSE(high, high.Point.Forecast)), 
@@ -5604,7 +5724,9 @@ m.hi <- ftl3[, {
 m.lo <- ftl3[, {
     low = low
     low.Point.Forecast = low.Point.Forecast
-    .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+    .SD[, .(.N, 
+            low.mae = MAE(low, low.Point.Forecast), 
+            low.mape = MAPE(low, low.Point.Forecast), 
             low.smape = SMAPE(low, low.Point.Forecast), 
             low.mse = MSE(low, low.Point.Forecast), 
             low.rmse = RMSE(low, low.Point.Forecast)), 
@@ -5613,13 +5735,15 @@ m.lo <- ftl3[, {
 m.cl <- ftl3[, {
     close = close
     close.Point.Forecast = close.Point.Forecast
-    .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+    .SD[, .(.N, 
+            close.mae = MAE(close, close.Point.Forecast), 
+            close.mape = MAPE(close, close.Point.Forecast), 
             close.smape = SMAPE(close, close.Point.Forecast), 
             close.mse = MSE(close, close.Point.Forecast), 
             close.rmse = RMSE(close, close.Point.Forecast)), 
         by=.(Model, Period)]}][order(Model, Period), ]
 
-ftl_dat3 <- join_all(list(m.op, m.hi, m.lo, m.cl)) %>% 
+ftl_dat3a <- join_all(list(m.op, m.hi, m.lo, m.cl)) %>% 
   as_tibble
 ```
 
@@ -5630,8 +5754,16 @@ Here I filtered to be unique forecasted price but `7200` mins in advanced per we
 #### Overall Dataset
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-tb20 <- ftl_dat3 %>% 
+tb20 <- ftl_dat3a %>% 
   mutate(
+    open.mae = ifelse(
+      rank(open.mae) <= 3, 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
     open.mape = ifelse(
       rank(open.mape) <= 3, 
       cell_spec(
@@ -5783,8 +5915,9 @@ tb20 <- ftl_dat3 %>%
   column_spec(15, background = 'Gainsboro') %>% 
   column_spec(16, background = 'LightGray') %>% 
   column_spec(17, background = 'Gainsboro') %>% 
-  column_spec(18, background = 'LightGray') %>%   
+  column_spec(18, background = 'LightGray') %>% 
   column_spec(19, background = 'Gainsboro') %>% 
+  column_spec(20, background = 'LightGray') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
@@ -5804,7 +5937,9 @@ Above table summarized the total observations with `mape`, `smape`, `mse` and `r
 open.accr <- ftl3[, {
   open = open
   open.Point.Forecast = open.Point.Forecast
-  .SD[, .(.N, open.mape = MAPE(open, open.Point.Forecast), 
+  .SD[, .(.N, 
+          open.mae = MAE(open, open.Point.Forecast), 
+          open.mape = MAPE(open, open.Point.Forecast), 
           open.smape = SMAPE(open, open.Point.Forecast), 
           open.mse = MSE(open, open.Point.Forecast), 
           open.rmse = RMSE(open, open.Point.Forecast)), 
@@ -5814,7 +5949,9 @@ open.accr <- ftl3[, {
 high.accr <- ftl3[, {
   high = high
   high.Point.Forecast = high.Point.Forecast
-  .SD[, .(.N, high.mape = MAPE(high, high.Point.Forecast), 
+  .SD[, .(.N, 
+          high.mae = MAE(high, high.Point.Forecast), 
+          high.mape = MAPE(high, high.Point.Forecast), 
           high.smape = SMAPE(high, high.Point.Forecast), 
           high.mse = MSE(high, high.Point.Forecast), 
           high.rmse = RMSE(high, high.Point.Forecast)), 
@@ -5824,7 +5961,9 @@ high.accr <- ftl3[, {
 low.accr <- ftl3[, {
   low = low
   low.Point.Forecast = low.Point.Forecast
-  .SD[, .(.N, low.mape = MAPE(low, low.Point.Forecast), 
+  .SD[, .(.N, 
+          low.mae = MAE(low, low.Point.Forecast), 
+          low.mape = MAPE(low, low.Point.Forecast), 
           low.smape = SMAPE(low, low.Point.Forecast), 
           low.mse = MSE(low, low.Point.Forecast), 
           low.rmse = RMSE(low, low.Point.Forecast)), 
@@ -5834,44 +5973,66 @@ low.accr <- ftl3[, {
 close.accr <- ftl3[, {
   close = close
   close.Point.Forecast = close.Point.Forecast
-  .SD[, .(.N, close.mape = MAPE(close, close.Point.Forecast), 
+  .SD[, .(.N, 
+          close.mae = MAE(close, close.Point.Forecast), 
+          close.mape = MAPE(close, close.Point.Forecast), 
           close.smape = SMAPE(close, close.Point.Forecast), 
           close.mse = MSE(close, close.Point.Forecast), 
           close.rmse = RMSE(close, close.Point.Forecast)), 
       by={index=as_date(index)}]}, 
   by=.(Model, Period)]
 
-open.sm <- open.accr[, list(open.mape = mean(open.mape), 
-                            open.smape = mean(open.smape), 
-                            open.mse = mean(open.mse), 
-                            open.rmse = mean(open.rmse)), 
-                       by=.(Model, Period)]
+open.sm <- open.accr[, list(
+  N = mean(N), 
+  open.mae = mean(open.mae), 
+  open.mape = mean(open.mape), 
+  open.smape = mean(open.smape), 
+  open.mse = mean(open.mse), 
+  open.rmse = mean(open.rmse)), 
+  by=.(Model, Period)]
 
-high.sm <- high.accr[, list(high.mape = mean(high.mape), 
-                            high.smape = mean(high.smape), 
-                            high.mse = mean(high.mse), 
-                            high.rmse = mean(high.rmse)), 
-                       by=.(Model, Period)]
+high.sm <- high.accr[, list(
+  N = mean(N), 
+  high.mae = mean(high.mae), 
+  high.mape = mean(high.mape), 
+  high.smape = mean(high.smape), 
+  high.mse = mean(high.mse), 
+  high.rmse = mean(high.rmse)), 
+  by=.(Model, Period)]
 
-low.sm <- low.accr[, list(low.mape = mean(low.mape), 
-                          low.smape = mean(low.smape), 
-                          low.mse = mean(low.mse), 
-                          low.rmse = mean(low.rmse)), 
-                       by=.(Model, Period)]
+low.sm <- low.accr[, list(
+  N = mean(N), 
+  low.mae = mean(low.mae), 
+  low.mape = mean(low.mape), 
+  low.smape = mean(low.smape), 
+  low.mse = mean(low.mse), 
+  low.rmse = mean(low.rmse)), 
+  by=.(Model, Period)]
 
-close.sm <- close.accr[, list(close.mape = mean(close.mape), 
-                              close.smape = mean(close.smape), 
-                              close.mse = mean(close.mse), 
-                              close.rmse = mean(close.rmse)), 
-                       by=.(Model, Period)]
+close.sm <- close.accr[, list(
+  N = mean(N), 
+  close.mae = mean(close.mae), 
+  close.mape = mean(close.mape), 
+  close.smape = mean(close.smape), 
+  close.mse = mean(close.mse), 
+  close.rmse = mean(close.rmse)), 
+  by=.(Model, Period)]
 
-ftl_dat3 <- join_all(list(open.sm, high.sm, low.sm, close.sm)) %>% 
-  tibble
+ftl_dat3b <- join_all(list(open.sm, high.sm, low.sm, close.sm)) %>% 
+  as_tibble
 ```
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-tb21 <- ftl_dat3 %>% 
+tb21 <- ftl_dat3b %>% 
   mutate(
+    open.mae = ifelse(
+      rank(open.mae) <= 3, 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
     open.mape = ifelse(
       rank(open.mape) <= 3, 
       cell_spec(
@@ -6009,22 +6170,24 @@ tb21 <- ftl_dat3 %>%
   column_spec(1, background = 'CornflowerBlue') %>% 
   column_spec(2, background = 'DarkGrey') %>% 
   #column_spec(3, background = 'LightSlateGrey') %>% 
-  column_spec(3, background = 'LightGray') %>% 
-  column_spec(4, background = 'Gainsboro') %>% 
-  column_spec(5, background = 'LightGray') %>%   
-  column_spec(6, background = 'Gainsboro') %>% 
-  column_spec(7, background = 'LightGray') %>% 
-  column_spec(8, background = 'Gainsboro') %>% 
-  column_spec(9, background = 'LightGray') %>%   
-  column_spec(10, background = 'Gainsboro') %>% 
-  column_spec(11, background = 'LightGray') %>% 
-  column_spec(12, background = 'Gainsboro') %>% 
-  column_spec(13, background = 'LightGray') %>%   
-  column_spec(14, background = 'Gainsboro') %>% 
-  column_spec(15, background = 'LightGray') %>% 
-  column_spec(16, background = 'Gainsboro') %>% 
-  column_spec(17, background = 'LightGray') %>%   
-  column_spec(18, background = 'Gainsboro') %>% 
+  column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>%   
+  column_spec(7, background = 'Gainsboro') %>% 
+  column_spec(8, background = 'LightGray') %>% 
+  column_spec(9, background = 'Gainsboro') %>% 
+  column_spec(10, background = 'LightGray') %>%   
+  column_spec(11, background = 'Gainsboro') %>% 
+  column_spec(12, background = 'LightGray') %>% 
+  column_spec(13, background = 'Gainsboro') %>% 
+  column_spec(14, background = 'LightGray') %>%   
+  column_spec(15, background = 'Gainsboro') %>% 
+  column_spec(16, background = 'LightGray') %>% 
+  column_spec(17, background = 'Gainsboro') %>% 
+  column_spec(18, background = 'LightGray') %>% 
+  column_spec(19, background = 'Gainsboro') %>% 
+  column_spec(20, background = 'LightGray') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%')#, height = '400px')
@@ -6038,12 +6201,239 @@ rm(tb21)
 
 Above table summarized the daily `mape`, `smape`, `mse` and `rmse` values and then summarized again the models (which is nested summarize <span style='color:red'>due to daily settlement for P&L</span>).
 
+#### Comparison All Filtered Data  Models
+
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
+compf <- list(
+  'Unfilter Overall' = ftl_dat1a, 
+  'Unfilter Daily' = ftl_dat1b, 
+  'from First Overall' = ftl_dat2a, 
+  'from First Daily' = ftl_dat2b, 
+  'from Last Oervall' = ftl_dat3a, 
+  'from Last Daily' = ftl_dat3b) %>% 
+    ldply %>% 
+    as_tibble %>% 
+    mutate(.id = factor(.id))
+```
+
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
+tb22 <- compf %>% 
+  mutate(
+    open.mae = ifelse(
+      rank(open.mae) <= 3, 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mae, 7), ' (rank: ', sprintf('%1.f', rank(open.mae)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    open.mape = ifelse(
+      rank(open.mape) <= 3, 
+      cell_spec(
+        paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mape, 7), ' (rank: ', sprintf('%1.f', rank(open.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    open.smape = ifelse(
+      rank(open.smape) <= 3, 
+      cell_spec(
+        paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.smape, 7), ' (rank: ', sprintf('%1.f', rank(open.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    open.mse = ifelse(
+      rank(open.mse) <= 3, 
+      cell_spec(
+        paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.mse, 7), ' (rank: ', sprintf('%1.f', rank(open.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    open.rmse = ifelse(
+      rank(open.rmse) <= 3, 
+      cell_spec(
+        paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(open.rmse, 7), ' (rank: ', sprintf('%1.f', rank(open.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    
+    high.mape = ifelse(
+      rank(high.mape) <= 3, 
+      cell_spec(
+        paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.mape, 7), ' (rank: ', sprintf('%1.f', rank(high.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    high.smape = ifelse(
+      rank(high.smape) <= 3, 
+      cell_spec(
+        paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.smape, 7), ' (rank: ', sprintf('%1.f', rank(high.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    high.mse = ifelse(
+      rank(high.mse) <= 3, 
+      cell_spec(
+        paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.mse, 7), ' (rank: ', sprintf('%1.f', rank(high.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    high.rmse = ifelse(
+      rank(high.rmse) <= 3, 
+      cell_spec(
+        paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(high.rmse, 7), ' (rank: ', sprintf('%1.f', rank(high.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    
+    low.mape = ifelse(
+      rank(low.mape) <= 3, 
+      cell_spec(
+        paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.mape, 7), ' (rank: ', sprintf('%1.f', rank(low.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    low.smape = ifelse(
+      rank(low.smape) <= 3, 
+      cell_spec(
+        paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.smape, 7), ' (rank: ', sprintf('%1.f', rank(low.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    low.mse = ifelse(
+      rank(low.mse) <= 3, 
+      cell_spec(
+        paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.mse, 7), ' (rank: ', sprintf('%1.f', rank(low.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    low.rmse = ifelse(
+      rank(low.rmse) <= 3, 
+      cell_spec(
+        paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(low.rmse, 7), ' (rank: ', sprintf('%1.f', rank(low.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    
+    close.mape = ifelse(
+      rank(close.mape) <= 3, 
+      cell_spec(
+        paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.mape, 7), ' (rank: ', sprintf('%1.f', rank(close.mape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    close.smape = ifelse(
+      rank(close.smape) <= 3, 
+      cell_spec(
+        paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.smape, 7), ' (rank: ', sprintf('%1.f', rank(close.smape)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    close.mse = ifelse(
+      rank(close.mse) <= 3, 
+      cell_spec(
+        paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.mse, 7), ' (rank: ', sprintf('%1.f', rank(close.mse)), ')'), 
+        'html', color = 'grey', italic = TRUE)), 
+    close.rmse = ifelse(
+      rank(close.rmse) <= 3, 
+      cell_spec(
+        paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
+        'html', color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(close.rmse, 7), ' (rank: ', sprintf('%1.f', rank(close.rmse)), ')'), 
+        'html', color = 'grey', italic = TRUE))) %>% 
+  kbl('html', caption = 'Comparison of Models (1 min per unit)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey') %>% 
+  column_spec(1, background = '#4E79A7') %>% 
+  column_spec(2, background = 'CornflowerBlue') %>% 
+  column_spec(3, background = 'CornflowerBlue') %>% 
+  column_spec(4, background = '#5b65a7') %>% 
+  #column_spec(5, background = '#A0CBE8') %>% 
+  column_spec(5, background = 'LightGray') %>% 
+  column_spec(6, background = 'Gainsboro') %>% 
+  column_spec(7, background = 'LightGray') %>% 
+  column_spec(8, background = 'Gainsboro') %>% 
+  column_spec(9, background = 'LightGray') %>%   
+  column_spec(10, background = 'Gainsboro') %>% 
+  column_spec(11, background = 'LightGray') %>% 
+  column_spec(12, background = 'Gainsboro') %>% 
+  column_spec(13, background = 'LightGray') %>%   
+  column_spec(14, background = 'Gainsboro') %>% 
+  column_spec(15, background = 'LightGray') %>% 
+  column_spec(16, background = 'Gainsboro') %>% 
+  column_spec(17, background = 'LightGray') %>%   
+  column_spec(18, background = 'Gainsboro') %>% 
+  column_spec(19, background = 'LightGray') %>% 
+  column_spec(20, background = 'Gainsboro') %>% 
+  column_spec(21, background = 'LightGray') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%')#, height = '400px')
+
+tb22
+```
+
+```{r include = FALSE}
+rm(tb22)
+```
+
+# Conclusion
+
+## Summary
+
+From the backtest, we concludes that high-frequency-trading **1 min per unit** (`ETS`:0.46 and `auto.arima`:0.69) more accurate than interday-trading **1 day per unit**.
+
+![](www/accuracy_1.png)
+
+![](www/accuracy_2.png)
+
+> To take a non-seasonal example, consider the Google stock price. The following graph shows the 200 observations ending on 6 Dec 2013, along with forecasts of the next 40 days obtained from three different methods.
+
+![](www/accuracy_3.png)
+
+*source : [Scaled errors & Examples](https://otexts.com/fpp2/accuracy.html#scaled-errors)*
+
+There has an function in `accuracy()` in [`tidyverts/fabletools`](https://github.com/tidyverts/fabletools/blob/master/R/accuracy.R) while I saved the dataset in `actual price` and `predicted price`, here I omit but will use in future.
+
+- [<span style='color:goldenrod'>*3.4 Evaluating forecast accuracy</span> in Forecasting: Principles and Practice](https://otexts.com/fpp2/accuracy.html)
+- [常见损失函数和评价指标总结（附代码）](http://www.360doc.com/content/20/0123/09/32196507_887557310.shtml)
+- [Forecast KPIs: RMSE, MAE, MAPE & Bias](https://towardsdatascience.com/forecast-kpi-rmse-mae-mape-bias-cdc5703d242d)
+- [Which is the best accuracy measuring criteria among rmse, mae & mape?](https://stats.stackexchange.com/questions/59493/which-is-the-best-accuracy-measuring-criteria-among-rmse-mae-mape)
+- [What is the different MAE, MAPE, MSE, and RMSE](https://www.kaggle.com/learn-forum/52081accuracy)
+
 ## Future Studies
+
+<span style='color:goldenrod'>*High- and Low-Frequency Correlations in European Government Bond Spreads and Their Macroeconomic Drivers*</span> introduce... suggest... DCC-MIDAS etc. Due to heavily calculation, I will put it as referenc in another studies.
 
 - [Time Series Forecasting, a Summarize of Data visualization and prediction](https://rpubs.com/tedding/long-term-time-series-forecasting)
 - [Time Series Analysis and Forecasting with the TSstudio Package](https://rpubs.com/ramkrisp/TSstudioDemo)
+- [How can I properly forecast sales with skewed data?](https://stats.stackexchange.com/a/175114/68357)
 
-`sarimax`, `tbats with xreg` I will also compare the `fracdiff()` models.
+Below models : 
+
+- sarimax
+- tbats with xreg
+- `fracdiff()`
+- `afimax`
+- High-Frequency-Trading GARCH
+- midas
 
 ```{r, option, echo = FALSE}
 ## Set options back to original options
@@ -6114,6 +6504,61 @@ Unit: seconds
 ## https://stackoverflow.com/questions/7014387/whats-the-difference-between-1l-and-1
 microbenchmark(seq(1L, 100000000L), seq(1, 100000000), seq(1L, 1e+08), seq(1, 1e+08L), seq(1L, 10L^8L), seq(1, 10^8))
 ```
+
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
+if(!exists('seasonal_m1')) {
+  seasonal_m1 <- read_rds('data/fx/USDJPY/seasonal_m1.rds')}
+
+## https://dtplyr.tidyverse.org for future use, otherwise need to recode and rerun.
+test1 <- seasonal_m1 %>% lazy_dt()
+test1 %<>% filter(index <= as_date('2017-12-31'))
+test2 <- test1 %>% as.data.table()
+#setkey(test2)
+setkeyv(test2, c('index', 'Model', 'Period'))
+
+## ---------------------------------------------
+## data.table
+microbenchmark(
+  test_data.table <- test2[, {
+    open = open
+    open.Point.Forecast = open.Point.Forecast
+    .SD[, .(.N, 
+            open.mae = MAE(open, open.Point.Forecast, na.rm = TRUE), 
+            open.mape = MAPE(open, open.Point.Forecast, na.rm = TRUE), 
+            open.smape = SMAPE(open, open.Point.Forecast, na.rm = TRUE), 
+            open.mse = MSE(open, open.Point.Forecast, na.rm = TRUE), 
+            open.rmse = RMSE(open, open.Point.Forecast, na.rm = TRUE)), 
+        by=.(Model, Period)]}][order(Model, Period), ], 
+  ## dtplyr & dplyr
+  test_dtplyr <- test1 %>% 
+    #filter(index <= as_date('2017-12-31')) %>% 
+    mutate(
+      open.mae = MAE(open, open.Point.Forecast, na.rm = TRUE), 
+      open.mape = MAPE(open, open.Point.Forecast, na.rm = TRUE), 
+      open.smape = SMAPE(open, open.Point.Forecast, na.rm = TRUE), 
+      open.mse = MSE(open, open.Point.Forecast, na.rm = TRUE), 
+      open.rmse = RMSE(open, open.Point.Forecast, na.rm = TRUE)) %>% 
+    group_by(Model, Period) %>% 
+    summarise(
+      open.mae = MAE(open, open.Point.Forecast, na.rm = TRUE), 
+      open.mape = MAPE(open, open.Point.Forecast, na.rm = TRUE), 
+      open.smape = SMAPE(open, open.Point.Forecast, na.rm = TRUE), 
+      open.mse = MSE(open, open.Point.Forecast, na.rm = TRUE), 
+      open.rmse = RMSE(open, open.Point.Forecast, na.rm = TRUE)) %>% 
+    as_tibble())
+```
+
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
+## output data.table
+test_data.table
+
+## output dtplyr
+test_dtplyr
+```
+
+- https://dtplyr.tidyverse.org
+- https://atrebas.github.io/post/2019-03-03-datatable-dplyr
+- http://brooksandrew.github.io/simpleblog/articles/advanced-data-table
 
 ### Small Mistake
 
