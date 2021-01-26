@@ -6,17 +6,20 @@ if(!suppressPackageStartupMessages(require('BBmisc'))) {
 suppressPackageStartupMessages(require('BBmisc'))
 # suppressPackageStartupMessages(require('rmsfuns'))
 
-pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 
-          'devtools','readr', 'lubridate', 'data.table', 
-          'feather', 'purrr', 'quantmod', 'tidyquant', 
-          'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'plotly', 
-          'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 
-          'tidyverse', 'memoise', 'htmltools', 'formattable', 
-          'zoo', 'forecast', 'seasonal', 'seasonalview', 'dygraphs', 
+pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'dygraphs', 
+          'devtools','readr', 'lubridate', 'data.table', 'reprex', 
+          'feather', 'purrr', 'quantmod', 'tidyquant', 'plotly', 
+          'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'jsonlite', 
+          'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tdplyr', 
+          'tidyverse', 'memoise', 'htmltools', 'formattable', 'rbokeh', 
+          'dash', 'dashCoreComponents', 'dashHtmlComponents', 'dtplyr', 
+          ##https://dashr.plotly.com
+          'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
           'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
           'stringr', 'pacman', 'profmem', 'DescTools', 'ggthemes', 
-          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes')
+          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
+          'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
 
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
