@@ -36,7 +36,7 @@ suppressPackageStartupMessages(require('BBmisc'))
 pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'dygraphs', 
           'devtools','readr', 'lubridate', 'data.table', 'reprex', 
           'feather', 'purrr', 'quantmod', 'tidyquant', 'plotly', 
-          'tibbletime', 'furrr', 'flyingfox', 'tidyr', 'jsonlite', 
+          'furrr', 'flyingfox', 'tidyr', 'jsonlite', 
           'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tdplyr', 
           'tidyverse', 'memoise', 'htmltools', 'formattable', 'rbokeh', 
           'dash', 'dashCoreComponents', 'dashHtmlComponents', 'dtplyr', 
@@ -45,13 +45,12 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'dygraphs',
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
           'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
           'stringr', 'pacman', 'profmem', 'DescTools', 'ggthemes', 
-          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
-          'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
+          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 'tsibble', 
+          'fable', 'fabletools', 'tsibbledata', 'tibbletime', 'feasts', 
+          'Rfast', 'Metrics', 'MLmetrics', 'fpp3', 'prophet', 'fasster')
 
-## https://www.jianshu.com/p/4beb3d34ced2
-#unlink('C:/Program Files/R/R-4.0.3/library/withr', recursive = TRUE)
-#install.packages('withr', dependencies = TRUE, INSTALL_opts = '--no-lock')
-
+# https://tidyverts.github.io/tidy-forecasting-principles/tsibble.html
+# https://facebook.github.io/prophet/docs/quick_start.html
 # https://github.com/mpiktas/midasr
 # https://github.com/onnokleen/mfGARCH
 # devtools::install_github("business-science/tibbletime")
@@ -103,6 +102,14 @@ knitr::opts_chunk$set(cache = TRUE, warning = FALSE,
 rm(pkgs, funs)
 ```
 
+There has few tools :
+
+- [<span style='color:goldenrod'>Introduction to `fable` packages</span>](https://tidyverts.github.io/tidy-forecasting-principles)
+- [<span style='color:goldenrod'>Introduction to `prophet` packages</span>](https://facebook.github.io/prophet/docs/installation.html)
+- [<span style='color:goldenrod'>Introduction to `fasster` packages</span>](https://github.com/tidyverts/fasster)
+
+Kindly read through [<span style='color:goldenrod'>**Forecasting: Principles and Practice (3rd Edt)**</span>](https://otexts.com/fpp3) to learn time series data modeling and forecasting.
+
 <span style='color:red'>**Progress Function**</span>
 
 ```{r}
@@ -136,7 +143,7 @@ task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^mts|^set
   	  
 	    y = y[y >= timeID0]
       
-      x = list.files(paste0('C:/Users/User/Documents/GitHub/binary.com-interview-question-data/fx/USDJPY/'), pattern = .pattern) %>% 
+      x = list.files(paste0('C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/'), pattern = .pattern) %>% 
 	      str_replace_all('.rds', '') %>% 
 		  str_replace_all('.201', '_201') %>% 
 		  str_split_fixed('_', '2') %>% 
@@ -185,7 +192,7 @@ task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^mts|^set
 	
 	  y = y[y >= timeID0]
     
-      x = list.files(paste0('C:/Users/User/Documents/GitHub/binary.com-interview-question-data/fx/USDJPY/'), pattern = .pattern) %>% 
+      x = list.files(paste0('C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/'), pattern = .pattern) %>% 
 	      str_replace_all('.rds', '') %>% 
 		  str_replace_all('.201', '_201') %>% 
 		  str_split_fixed('_', '2') %>% 
@@ -374,7 +381,8 @@ There might probably because of Christmas to postpone 1 day, here I forecast `72
 
 ```{r, warning = FALSE, message = FALSE}
 ## save files if not exists
-if(file.exists('C:/Users/User/Documents/GitHub/binary.com-interview-question-data/fx/USDJPY/dsmp.rds')) saveRDS(dsmp, 'data/fx/USDJPY/dsmp.rds')
+if(file.exists('C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/dsmp.rds')) {
+  saveRDS(dsmp, 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/dsmp.rds')}
 ```
 
 # Modelling
@@ -391,16 +399,16 @@ I set the length of data as weekly (`7200` minutes which is 5 trading days) and 
 # --------- eval=FALSE ---------
 timeID <- unique(dsmp$date_1m)
 bse <- dsmp[year == 2016]$date_1m[1] #"2016-01-04" #1st trading date in 2nd year
-timeID %<>% .[. > bse]
-#timeID %<>% .[. > as_date('2016-01-04')]
-
-if(is.data.table(dsmp)) dsmp %<>% lazy_dt
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+vrb <- 7200 #last 7200 observations DT[(.N - (vrb - 1)):.N]
+frb <- 1440
 
 for (i in 1:length(timeID)) {
-  smp <- dsmp %>% 
-    tk_xts(silent = TRUE)
-  dt %<>% as_date
-  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
+  smp <- dsmp[date_1m < timeID[i]][(.N - (vrb - 1)):.N]
+  frc <- dsmp[date_1m >= timeID[i]][1:frb]
+  smp1 <- smp[, .(index, close)] %>% lazy_dt
+  frc1 <- smp[, .(index, close)] %>% lazy_dt
   
   sets <- smp %>% 
     tk_ts(frequency = 1440) %>% 

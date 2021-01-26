@@ -150,7 +150,17 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 # Quantitative Trading
 
+### 1.1) <span style='color:RoyalBlue'>Abstract</span>
+
 There has already 2 years passed by while [Binary.com-is-Rebranding-to-Deriv.com](https://derivdotcom.medium.com/binary-com-is-rebranding-to-deriv-com-and-here-is-everything-you-need-to-know-6f4a8513c84b), Here I summarized some previous research papers in [Binary.com → Deriv.com](https://englianhu.medium.com/binary-com-deriv-com-6058cdbfc3a1) and continue from this high-frequency-trading. Here I am not apply job but for research purpose.
+
+<span style='color:red'>**I moved the data to <https://github.com/englianhu/binary.com-interview-question-data>.**</span>
+
+[Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV) review the seasonal models.
+
+### 1.2) <span style='color:red'>Blooper</span>
+
+[Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:red'>Blooper</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT) built seasonal models.
 
 ---
 
