@@ -135,7 +135,7 @@ frb <- 1440
 i = 1
 
 train <- dsmp[date < timeID[i]][(.N - (vrb - 1)):.N]
-ctr <- (train[,(sq)][1]):(train[,(sq)][.N] + frb)
+ctr <- (train[,(sq)][1]):(train[.N,(sq)] + frb)
 
 ## convert to tsibble data
 train %<>% 
