@@ -123,6 +123,47 @@ fc <- fit %>%
 fc %>% fabletools::accuracy(train_test)
 ```
 
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
+## filter data by date
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+vrb <- 7200 #last 7200 observations DT[(.N - (vrb - 1)):.N]
+frb <- 1440
+
+i = 1
+
+train <- dsmp[date < timeID[i]][(.N - (vrb - 1)):.N]
+ctr <- (train[,(sq)][1]):(train[,(sq)][.N] + frb)
+
+## convert to tsibble data
+train %<>% 
+  as_tsibble(key = close, index = index)
+
+train_test <- dsmp[sq %in% ctr] %>% 
+  as_tsibble(key = close, index = index)
+
+## modeling
+fit <- train %>% 
+  model(
+    ets = ETS(close), 
+    #ets_bc = ETS(box_cox(close, 0.3)),
+    arima = ARIMA(close), 
+    rw = RW(close), 
+    rw_df = RW(close ~ drift()), 
+    naive = NAIVE(close), 
+    snaive = SNAIVE(close)
+    )
+
+## forecast
+fc <- fit %>% 
+  forecast(h = frb)
+
+## accuracy
+fc %>% fabletools::accuracy(train_test)
+```
+
 #### `timetk::tk_ts()`
 
 [Chapter 12 Advanced forecasting methods in **Forecasting: Principles and Practice (3rd Edt)**](https://otexts.com/fpp3/advanced.html)
