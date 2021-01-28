@@ -371,7 +371,7 @@ if(!exists('dsmp')) {
 
 # Modelling
 
-## Due to I have annually length dataset, here I start my 1st forecast date from 1st trading datetime of 2016 (`r dsmp)[year == 2016]$date_1m[1]` which is 2nd year in dataset).
+Due to I have annually length dataset, here I start my 1st forecast date from 1st trading datetime of 2016 (`r dsmp)[year == 2016]$date_1m[1]` which is 2nd year in dataset).
 
 ## Seasonal `ts()`
 
@@ -380,6 +380,8 @@ if(!exists('dsmp')) {
 #### Seasonal Data Modeling
 
 I set the length of data as weekly (`7200` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+[*Chapter 7 Multivariate TS Analysis* in **Introduction to Time Series Analysis and Forecasting in R**](https://bookdown.org/singh_pratap_tejendra/intro_time_series_r/multivariate-ts-analysis.html), but I use univariate due to some errors as mentioned in beginning.
 
 I tried to use `weeks(1)`, `months(3)`, `years(1)` but there is not constant observations, we can refer to [`The seasonal period`](https://otexts.com/fpp3/tsibble-objects.html).
 
@@ -395,10 +397,10 @@ timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 7200 #last 7200 observations DT[(.N - (data_len - 1)):.N]
+data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
 hrz1 <- 1440
 
-for (i in 1:8) { #Here I print 8 elements as examples
+for (i in c(1, 6:8, length(timeID) - 1, length(timeID))) { #Here I print 8 elements as examples
   
   if(i == 1) {
     
@@ -430,15 +432,18 @@ for (i in 1:8) { #Here I print 8 elements as examples
     print(sets %>% as.data.table)
     
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
 
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
+    cat('\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
     cat('\n\n')
     
   } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+    
+    
+  } else if(i == length(timeID)) {
     
     
   } else  {
@@ -474,13 +479,14 @@ for (i in 1:8) { #Here I print 8 elements as examples
     print(sets %>% as.data.table)
     
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
+
+    cat('\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
+    cat('\n\n')
     
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
   }
 }
 ```
@@ -495,11 +501,11 @@ timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 7200 #last 7200 observations DT[(.N - (data_len - 1)):.N]
+data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
 hrz1 <- 1440
 
 for (i in 1:length(timeID)) {
-  
+
   if(i == 1) {
     
     cat('\n')
@@ -530,15 +536,18 @@ for (i in 1:length(timeID)) {
     print(sets %>% as.data.table)
     
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
 
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
+    cat('\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
     cat('\n\n')
     
   } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+    
+    
+  } else if(i == length(timeID)) {
     
     
   } else  {
@@ -574,12 +583,12 @@ for (i in 1:length(timeID)) {
     print(sets %>% as.data.table)
     
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
     
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
+    cat('\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
     cat('\n\n')
   }
 }
@@ -595,7 +604,7 @@ timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 22 * 1440 #last 31680 observations DT[(.N - (data_len - 1)):.N]
+data_len <- 22 * 1440 #last 31680  observations dsmp[(.N - (data_len - 1)):.N]
 hrz1 <- 1440
 
 for (i in 1:length(timeID)) {
@@ -604,15 +613,9 @@ for (i in 1:length(timeID)) {
     
     cat('\n')
     cat('===========================================\n')
-    cat('train[', i, ']\n')
-    print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
+    train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-    
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
-    
-    print(train_test <- dsmp[sq %in% ctr])
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -623,40 +626,25 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_31680_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
 
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_31680_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
-    
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
+
   } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+    
+    
+  } else if(i == length(timeID)) {
     
     
   } else  {
     
     lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
-    
-    cat('\n')
-    cat('===========================================\n')
-    cat('train[', i, ']\n')
-    
-    print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+    train <- dsmp[(lst_sq - data_len + 1):lst_sq]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-    
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
-    
-    print(train_test <- dsmp[sq %in% ctr])
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -667,20 +655,12 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_31680_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
     
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_31680_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
   }
 }
 ```
@@ -695,7 +675,7 @@ timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 3 * 22 * 1440 #last 95040 observations DT[(.N - (data_len - 1)):.N]
+data_len <- 3 * 22 * 1440 #last 95040  observations dsmp[(.N - (data_len - 1)):.N]
 hrz1 <- 1440
 
 for (i in 1:length(timeID)) {
@@ -704,15 +684,9 @@ for (i in 1:length(timeID)) {
     
     cat('\n')
     cat('===========================================\n')
-    cat('train[', i, ']\n')
-    print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
+    train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-    
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
-    
-    print(train_test <- dsmp[sq %in% ctr])
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -723,40 +697,25 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
 
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
-    
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
+
   } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+    
+    
+  } else if(i == length(timeID)) {
     
     
   } else  {
     
     lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
-    
-    cat('\n')
-    cat('===========================================\n')
-    cat('train[', i, ']\n')
-    
-    print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+    train <- dsmp[(lst_sq - data_len + 1):lst_sq]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-    
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
-    
-    print(train_test <- dsmp[sq %in% ctr])
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -767,20 +726,12 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
     
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
   }
 }
 ```
@@ -795,7 +746,7 @@ timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 52 * 5 * 1440 #last 374400 observations DT[(.N - (data_len - 1)):.N]
+data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
 hrz1 <- 1440
 
 for (i in 1:length(timeID)) {
@@ -804,15 +755,9 @@ for (i in 1:length(timeID)) {
     
     cat('\n')
     cat('===========================================\n')
-    cat('train[', i, ']\n')
-    print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
+    train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-    
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
-    
-    print(train_test <- dsmp[sq %in% ctr])
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -823,40 +768,25 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
-
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
     
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
+  
   } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+    
+    
+  } else if(i == length(timeID)) {
     
     
   } else  {
     
     lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
-    
-    cat('\n')
-    cat('===========================================\n')
-    cat('train[', i, ']\n')
-    
-    print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+    train <- dsmp[(lst_sq - data_len + 1):lst_sq]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-    
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
-    
-    print(train_test <- dsmp[sq %in% ctr])
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -867,20 +797,12 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
     
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
   }
 }
 ```
@@ -897,8 +819,9 @@ timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 7200 #last 7200 observations DT[(.N - (data_len - 1)):.N]
+data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
 hrz1 <- 7200
+hrz2 <- 1440
 
 for (i in 1:length(timeID)) {
   
@@ -932,18 +855,72 @@ for (i in 1:length(timeID)) {
     print(sets %>% as.data.table)
     
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
 
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
+    cat('\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
     cat('\n\n')
     
+  } else if(i > (length(timeID) - hrz1/hrz2) & i != length(timeID)) {
+    
+    lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+    ## filter the length of forecasted data to fit with train_test data 
+    ##   when the length of forecasted data more then length of test data.
+    #lst_date <- timeID[(length(timeID) - (hrz1/hrz2)):length(timeID)]
+    lst_date <- timeID[timeID >= timeID[i]]
+    lst_date_sq <- grep(
+      timeID[i], timeID[(length(timeID) - (hrz1/hrz2 - 1)):length(timeID)])
+    
+    cat('\n')
+    cat('===========================================\n')
+    cat('train[', i, ']\n')
+    
+    print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+    ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+    
+    cat('\n')
+    cat('-------------------------------------------\n')
+    cat('train_test[', i, ']\n')
+    
+    print(train_test <- dsmp[sq %in% ctr])
+    
+    sets <- train[, .(index, close)] %>% 
+      tk_ts(frequency = hrz1) %>% 
+      forecast(h = hrz1) %>% 
+      tk_tbl
+    
+    sets <- sets[1:(hrz1 - (hrz2 * lst_date_sq)),] %>% 
+      dplyr::mutate(index = train_test[
+        (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$index, 
+        mk.price = train_test[
+          (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$close) %>% 
+      dplyr::rename(fc.price = `Point Forecast`) %>% 
+      dplyr::select(index, mk.price, fc.price)
+    
+    cat('\n')
+    cat('-------------------------------------------\n')
+    cat('forecast[', i, ']\n')
+    
+    print(sets %>% as.data.table)
+    
+    saveRDS(sets, paste0(
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+      as_date(sets$index[1]), '.rds'))
+    
+    cat('\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
+    cat('\n\n')    
+	
   } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
     
     
-  } else  {
+  } else if(i == length(timeID)) {
+    
+    
+  } else {
     
     lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
     
@@ -976,18 +953,18 @@ for (i in 1:length(timeID)) {
     print(sets %>% as.data.table)
     
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
     
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
+    cat('\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
     cat('\n\n')
   }
 }
 ```
 
-#### Mn >> Dy
+#### Mn >> Wk
 
 I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
 
@@ -997,8 +974,9 @@ timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 22 * 1440 #last 31680 observations DT[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
+data_len <- 22 * 1440 #last 31680  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 7200
+hrz2 <- 1440
 
 for (i in 1:length(timeID)) {
   
@@ -1006,15 +984,9 @@ for (i in 1:length(timeID)) {
     
     cat('\n')
     cat('===========================================\n')
-    cat('train[', i, ']\n')
-    print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
+    train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-    
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
-    
-    print(train_test <- dsmp[sq %in% ctr])
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -1025,40 +997,60 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_31680_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
-
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_31680_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
     
-  } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
     
-    
-  } else  {
+  } else if(i > (length(timeID) - hrz1/hrz2) & i != length(timeID)) {
     
     lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+    ## filter the length of forecasted data to fit with train_test data 
+    ##   when the length of forecasted data more then length of test data.
+    #lst_date <- timeID[(length(timeID) - (hrz1/hrz2)):length(timeID)]
+    lst_date <- timeID[timeID >= timeID[i]]
+    lst_date_sq <- grep(
+      timeID[i], timeID[(length(timeID) - (hrz1/hrz2 - 1)):length(timeID)])
     
     cat('\n')
     cat('===========================================\n')
-    cat('train[', i, ']\n')
-    
-    print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+    train <- dsmp[(lst_sq - data_len + 1):lst_sq]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+    train_test <- dsmp[sq %in% ctr]
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
+    sets <- train[, .(index, close)] %>% 
+      tk_ts(frequency = hrz1) %>% 
+      forecast(h = hrz1) %>% 
+      tk_tbl
     
-    print(train_test <- dsmp[sq %in% ctr])
+    sets <- sets[1:(hrz1 - (hrz2 * lst_date_sq)),] %>% 
+      dplyr::mutate(index = train_test[
+        (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$index, 
+        mk.price = train_test[
+          (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$close) %>% 
+      dplyr::rename(fc.price = `Point Forecast`) %>% 
+      dplyr::select(index, mk.price, fc.price)
+    
+    saveRDS(sets, paste0(
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+      as_date(sets$index[1]), '.rds'))
+    
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
+  } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+    
+    
+  } else if(i == length(timeID)) {
+    
+    
+  } else {
+    
+    lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+    train <- dsmp[(lst_sq - data_len + 1):lst_sq]
+    ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -1069,25 +1061,17 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_31680_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
     
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_31680_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
   }
 }
 ```
 
-#### Qt >> Dy
+#### Qt >> Wk
 
 I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
 
@@ -1097,8 +1081,9 @@ timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 3 * 22 * 1440 #last 95040 observations DT[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
+data_len <- 3 * 22 * 1440 #last 95040  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 7200
+hrz2 <- 1440
 
 for (i in 1:length(timeID)) {
   
@@ -1106,15 +1091,9 @@ for (i in 1:length(timeID)) {
     
     cat('\n')
     cat('===========================================\n')
-    cat('train[', i, ']\n')
-    print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
+    train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-    
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
-    
-    print(train_test <- dsmp[sq %in% ctr])
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -1125,40 +1104,60 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
-
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
     
-  } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
     
-    
-  } else  {
+  } else if(i > (length(timeID) - hrz1/hrz2) & i != length(timeID)) {
     
     lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+    ## filter the length of forecasted data to fit with train_test data 
+    ##   when the length of forecasted data more then length of test data.
+    #lst_date <- timeID[(length(timeID) - (hrz1/hrz2)):length(timeID)]
+    lst_date <- timeID[timeID >= timeID[i]]
+    lst_date_sq <- grep(
+      timeID[i], timeID[(length(timeID) - (hrz1/hrz2 - 1)):length(timeID)])
     
     cat('\n')
     cat('===========================================\n')
-    cat('train[', i, ']\n')
-    
-    print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+    train <- dsmp[(lst_sq - data_len + 1):lst_sq]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+    train_test <- dsmp[sq %in% ctr]
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
+    sets <- train[, .(index, close)] %>% 
+      tk_ts(frequency = hrz1) %>% 
+      forecast(h = hrz1) %>% 
+      tk_tbl
     
-    print(train_test <- dsmp[sq %in% ctr])
+    sets <- sets[1:(hrz1 - (hrz2 * lst_date_sq)),] %>% 
+      dplyr::mutate(index = train_test[
+        (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$index, 
+        mk.price = train_test[
+          (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$close) %>% 
+      dplyr::rename(fc.price = `Point Forecast`) %>% 
+      dplyr::select(index, mk.price, fc.price)
+    
+    saveRDS(sets, paste0(
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+      as_date(sets$index[1]), '.rds'))
+    
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
+  } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+    
+    
+  } else if(i == length(timeID)) {
+    
+    
+  } else {
+    
+    lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+    train <- dsmp[(lst_sq - data_len + 1):lst_sq]
+    ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -1169,25 +1168,17 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
     
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
   }
 }
 ```
 
-#### Yr >> Dy
+#### Yr >> Wk
 
 I set the length of data as quarterly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
 
@@ -1197,8 +1188,9 @@ timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 52 * 5 * 1440 #last 374400 observations DT[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
+data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 7200
+hrz2 <- 1440
 
 for (i in 1:length(timeID)) {
   
@@ -1206,15 +1198,9 @@ for (i in 1:length(timeID)) {
     
     cat('\n')
     cat('===========================================\n')
-    cat('train[', i, ']\n')
-    print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
+    train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-    
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
-    
-    print(train_test <- dsmp[sq %in% ctr])
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -1225,40 +1211,60 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
-
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
     
-  } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
     
-    
-  } else  {
+  } else if(i > (length(timeID) - hrz1/hrz2) & i != length(timeID)) {
     
     lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+    ## filter the length of forecasted data to fit with train_test data 
+    ##   when the length of forecasted data more then length of test data.
+    #lst_date <- timeID[(length(timeID) - (hrz1/hrz2)):length(timeID)]
+    lst_date <- timeID[timeID >= timeID[i]]
+    lst_date_sq <- grep(
+      timeID[i], timeID[(length(timeID) - (hrz1/hrz2 - 1)):length(timeID)])
     
     cat('\n')
     cat('===========================================\n')
-    cat('train[', i, ']\n')
-    
-    print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+    train <- dsmp[(lst_sq - data_len + 1):lst_sq]
     ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+    train_test <- dsmp[sq %in% ctr]
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('train_test[', i, ']\n')
+    sets <- train[, .(index, close)] %>% 
+      tk_ts(frequency = hrz1) %>% 
+      forecast(h = hrz1) %>% 
+      tk_tbl
     
-    print(train_test <- dsmp[sq %in% ctr])
+    sets <- sets[1:(hrz1 - (hrz2 * lst_date_sq)),] %>% 
+      dplyr::mutate(index = train_test[
+        (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$index, 
+        mk.price = train_test[
+          (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$close) %>% 
+      dplyr::rename(fc.price = `Point Forecast`) %>% 
+      dplyr::select(index, mk.price, fc.price)
+    
+    saveRDS(sets, paste0(
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+      as_date(sets$index[1]), '.rds'))
+    
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
+  } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+    
+    
+  } else if(i == length(timeID)) {
+    
+    
+  } else {
+    
+    lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+    train <- dsmp[(lst_sq - data_len + 1):lst_sq]
+    ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+    train_test <- dsmp[sq %in% ctr]
     
     sets <- train[, .(index, close)] %>% 
       tk_ts(frequency = hrz1) %>% 
@@ -1269,20 +1275,12 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    cat('\n')
-    cat('-------------------------------------------\n')
-    cat('forecast[', i, ']\n')
-    
-    print(sets %>% as.data.table)
-    
     saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_7200_1440.', 
+      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
       as_date(sets$index[1]), '.rds'))
     
-    cat('\n\n')
-    cat(i, '=', paste0('~/data/fx/USDJPY/ts_7200_1440.', 
-                       as_date(sets$index[1]), '.rds saved!\n\n'))
-    cat('\n\n')
+    cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
+                       as_date(sets$index[1]), '.rds saved!\n'))
   }
 }
 ```
@@ -1859,15 +1857,9 @@ for (dt in timeID) {
 
 Due to above model consume few hours, here I can only use a sample to compare the accuracy.
 
-## TBATS `forecast::tbats()`
+## Seasonal `msts() & tbats()`
 
 ### Modelling
-
-- [R/msts.R](https://rdrr.io/cran/forecast/src/R/msts.R) introduced a multi seasonal time series objects, intended to be used for models that support multiple seasonal periods. The msts class inherits from the ts class and has an additional "msts" attribute which contains the vector of seasonal periods. All methods that work on a ts class, should also work on a msts class.
-- [About `tbats`](https://stats.stackexchange.com/tags/tbats/info) talk about the model `tbats`.
-- [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re) introduced 3 seasonal modelling.
-- [How to store forecasted values using 'forecast' library in R into a CSV file?](https://stackoverflow.com/questions/37818975/how-to-store-forecasted-values-using-forecast-library-in-r-into-a-csv-file) talk about how to retrieve the forecasted values.
-- [Forecasting Time Series with Complex Seasonal Patterns using Exponential Smoothing](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Forecasting%20Time%20Series%20with%20Complex%20Seasonal%20Patterns%20using%20Exponential%20Smoothing.pdf) introduce a nested seasonal exponential smoothing model and concludes that trigonometric `tbats` model produce lower RMSE and better than `BATS` model.
 
 ### Nested Daily-Weekly Model
 
