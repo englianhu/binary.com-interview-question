@@ -1285,415 +1285,337 @@ for (i in 1:length(timeID)) {
 }
 ```
 
-## Seasonal ARIMA
+## Exponential `ets()`
 
-### Introduce SARIMA
+### Daily Seasonal Data
 
-- [Seasonal model with auto.arima](https://stats.stackexchange.com/questions/355839/seasonal-model-with-auto-arima)
-- [Seasonality not taken account of in `auto.arima()`](https://stats.stackexchange.com/questions/213201/seasonality-not-taken-account-of-in-auto-arima) ask about why there has no 
-- [8.5 Non-seasonal ARIMA models](https://otexts.org/fpp2/non-seasonal-arima.html) introduce a non-seasonal ARIMA model.
-- [8.9 Seasonal ARIMA models](https://otexts.org/fpp2/seasonal-arima.html) introduce the arima and also sarima models, teach we how to get the `P,D,Q`.
-- [Seasonality in `auto.arima()` from forecast package](https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package) ask the question which is what I am trying to know (normal arima model only get `(p,d,q)` but not `(P,D,Q)`). The answer is do NOT set both `approximation` and `stepwise` to `FALSE`.
-- [Is there a way to force seasonality from `auto.arima`](https://stackoverflow.com/questions/37046275/is-there-a-way-to-force-seasonality-from-auto-arima) ask about how to model a force-seasonal-ARIMA. The topic talk about the `D` parameter in `auto.arima` which governs seasonal differencing. The example shows that `D=1` will get a smaller AIC/BIC figures than default `D=NULL`.
-- [Why does `auto.arima` drop my seasonality component when `stepwise=FALSE` and `approximation=FALSE`](https://stackoverflow.com/questions/24390859/why-does-auto-arima-drop-my-seasonality-component-when-stepwise-false-and-approx) ask about why the `stepwise=FALSE` and `approximation=FALSE` got the better AIC than default model. The answer describe that normally `max.order=5` where we can get a better truly seasonal model, just increase the `max.order=10`. There is not too much gained using `approximation=FALSE`. What that does is force it to evaluate the likelihood more accurately for each model, but the approximation is quite good and much faster, so is usually acceptable.
-- [How to read p,d and q of `auto.arima()`?](https://stats.stackexchange.com/questions/178577/how-to-read-p-d-and-q-of-auto-arima) ask about what is the meaning of `a$arma` and somebody answer the help page in `auto.arima()` has descibe that `a$arma` is `(p, q, P, Q, s, d, D)`.
-- [In R, `auto.arima` fails to capture seasonality](https://stackoverflow.com/questions/43600827/in-r-auto.arima-fails-to-capture-seasonality) simulate an annual dataset with set `trace=TRUE`, `stepwise=FALSE` and `D=1` but didn't provides the answer to get optimal `P,D,Q`.
-- [How I can get best arima model in R (closed)](https://stats.stackexchange.com/questions/160343/how-i-can-get-best-arima-model-in-r) only say the `auto.arima()` able get the best model, however does not provides the answer how to get the optimal `P,D,Q` instead of only `p,d,q`.
-- [how to extract integration order (d) from auto.arima](https://stackoverflow.com/questions/19483952/how-to-extract-integration-order-d-from-auto-arima) ask that the `ndiffs()` sometimes give the different resukt than best model, describe the `a$arma`. More generally, the order `(d)` is the next to last element; the seasonal order `(D)` is the last. So `a$arma[length(a$arma)-1]` is the order d and `a$arma[length(a$arma)]` is the seasonal order.
-- [How to read p,d and q of `auto.arima()`?](https://stats.stackexchange.com/questions/178577/how-to-read-p-d-and-q-of-auto-arima) describe the help page in `auto.arima()` has descibe that `a$arma` is `(p, q, P, Q, d, D)`.
-- [How to interpret the second part of an auto arima result in R?](https://stackoverflow.com/questions/47119765/how-to-interpret-the-second-part-of-an-auto-arima-result-in-r) interpret the seasonal arima model.
-- [extract ARIMA specificaiton](https://stackoverflow.com/questions/23617662/extract-arima-specificaiton) provides a function how to extract the `a$arma[c(1, 6, 2, 3, 7, 4, 5)]` from an `auto.arima()`.
-- [How to include seasonality in auto arima with regressors in R?](https://stats.stackexchange.com/questions/295004/how-to-include-seasonality-in-auto-arima-with-regressors-in-r) use a `xreg` for seasonal model.
-- [Step-by-Step Graphic Guide to Forecasting through ARIMA Modeling using R – Manufacturing Case Study Example (Part 4)](http://ucanalytics.com/blogs/step-by-step-graphic-guide-to-forecasting-through-arima-modeling-in-r-manufacturing-case-study-example/) forecast seasonal sales by using `auto.arima()`.
-- [Frequency parameter and its impact on auto.arima results](https://stats.stackexchange.com/questions/187304/frequency-parameter-and-its-impact-on-auto-arima-results)^[[Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) describe very details on the `seasonal period` parameters determination.] ask about the determination of frequency parameter for `seasonal period` where the author of `forecast` package provides a details and concise answer.
-- [`auto.arima` Warns `NaNs` Produced on Std abnor](https://stats.stackexchange.com/questions/26999/auto-arima-warns-nans-produced-on-std-abnor) suggested set `stepwise=FALSE` and `approximation=FALSE` is better model.
-
-> If you look at the help file of auto.arima and navigate to the section "Value", you are directed to the help file of arima function and there you find the following (under the section "Value") regarding the arma slot:
-A compact form of the specification, as a vector giving the number of AR, MA, seasonal AR and seasonal MA coefficients, plus the period and the number of non-seasonal and seasonal differences.
-That is what the seven elements you reported correspond to. In your case, you have a non-seasonal `ARIMA(1,2,0)`.
-
-*Source : How to read p,d and q of `auto.arima()`? (which is 1 among the reference link above.)*
-
-> So far, we have restricted our attention to non-seasonal data and non-seasonal ARIMA models. However, ARIMA models are also capable of modelling a wide range of seasonal data.
-A seasonal ARIMA model is formed by including additional seasonal terms in the ARIMA models we have seen so far. It is written as follows:
-
-| ARIMA   | $\underbrace{(p, d, q)}$       | $\underbrace{(P, D, Q)_{m}}$  |
-|:-------:|:------------------------------:|:-----------------------------:|
-|         |             ↑                  |             ↑                 |
-|         | Non-seasonal part	of the model | Seasonal part of the model    |
-
-where `m = number of observations per year`. We use uppercase notation for the seasonal parts of the model, and lowercase notation for the non-seasonal parts of the model.
-
-The seasonal part of the model consists of terms that are similar to the non-seasonal components of the model, but involve backshifts of the seasonal period. For example, an $ARIMA(1,1,1)(1,1,1)_{4}$ model (without a constant) is for quarterly data (m = 4), and can be written as
-
-$$(1 - {\color{Red}\phi_{1}}B)~(1 - {\color{Red}\Phi_{1}}B^{4}) (1 - B) (1 - B^{4})y_{t} = (1 + {\color{Red}\theta_{1}}B)~ (1 + {\color{Red}\Theta_{1}}B^{4})\varepsilon_{t}$$
-
-The additional seasonal terms are simply multiplied by the non-seasonal terms.
-
-`auto.arima(euretail, stepwise=FALSE, approximation=FALSE)` is better than `auto.arima(euretail)`.
-
-> The `auto.arima()` function uses `nsdiffs()` to determine D (the number of seasonal differences to use), and `ndiffs()` to determine d (the number of ordinary differences to use). The selection of the other model parameters `(p, q, P and Q)` are all determined by minimizing the AICc, as with non-seasonal ARIMA models.
- 
-*Source : 8.9 Seasonal ARIMA models (which is 1 among the reference link above.)*
-
-Above *8.5 Non-seasonal ARIMA models* reference link describe the `auto.arima()` and the default setting is `seasonal=TRUE` where it will automatically model^[help of `auto.arima()` describe the `seasonal : If FALSE, restricts search to non-seasonal models.`] .
-
-> The default arguments are designed for rapid estimation of models for many time series. If you are analysing just one time series, and can afford to take some more time, it is recommended that you set stepwise=FALSE and approximation=FALSE.
-Non-stepwise selection can be slow, especially for seasonal data. The stepwise algorithm outlined in Hyndman & Khandakar (2008) is used except that the default method for selecting seasonal differences is now based on an estimate of seasonal strength (Wang, Smith & Hyndman, 2006) rather than the Canova-Hansen test. There are also some other minor variations to the algorithm described in Hyndman and Khandakar (2008).
-
-*Source : help section of `auto.arima()`.*
-
->`ARIMA(2,1,1)(1,0,0)[12]` is seasonal ARIMA. `[12]` stands for number of periods in season, i.e. months in year in this case. `(1,0,0)` stands for seasonal part of model. Take a look at [this](https://onlinecourses.science.psu.edu/stat510/node/67).
-
-*Source : extract ARIMA specificaiton (which is 1 among the reference link above.)*
-
-> You can force a seasonal model by setting `D=1`, although `auto.arima()` runs for quite some time with forced seasonality. (Note that the information criteria are not comparable between the original and the differenced series.)
-$$
-\begin{array}{l,l,l}
-&\text{Training} & \text{Test}\\
-\mathrm{ARIMA}(2,1,1) & 5.729 & 7.657\\
-\mathrm{SARIMA}(1,1,0)_{52}\text{ with drift} & 6.481 & 7.390\\
-\text{3 harmonics, }\mathrm{ARIMA}(2,1,0) & 5.578 & 5.151\\
-\text{4 harmonics, }\mathrm{ARIMA}(2,1,1) & 5.219 & 5.188
-\end{array}
-$$
-
-*Source : Seasonality not taken account of in `auto.arima()` (which is 1 among the reference link above.)*
-
-> The problem with fitting seasonal ARIMA to daily data is that the "seasonal component" may only operate on the weekends or maybe just the weekdays thus overall there is a non-significnat "seasonal component". Now what you have to do is to augment your data set with 6 dummies representing the days of the week and perhaps monthly indicators to represent annual effects. Now consider incorporating events such as holidays and include any lead, contemoraneous or lag effect around these known variables. No there may be unusual values (pulses) or level shifts or local time trends in the data. Furthermore the day-of-the-week effects may have changed over time e.g. there was no Saturday effect for the first 20 weeks but a Saturday effect for the last 50 weeks.If you wish to post tour daily data I will give it a try and maybe other readers of the list might also contribute their analysis to help guide you through this.
-
-*Source : Auto.arima with daily data: how to capture seasonality/periodicity?*
-
-### Modelling SARIMA
-
-#### Seasonal Data
-
-- [*Seasonality not taken account of in `auto.arima()`*](https://stats.stackexchange.com/a/213455/68357) compares few models and concludes that the harmonics ARIMA is the best fit model.
-- Non-stepwise model will slow down the seasonal model.
-- `a$arma[c(1, 6, 2, 3, 7, 4, 5)]` is $(p,d,q)(P,D,Q)_{s}$.
-- [How does R's auto.arima() function determine the order of differencing when estimating a regression with seasonal ARIMA abnors?](https://stats.stackexchange.com/questions/30220/how-does-rs-auto-arima-function-determine-the-order-of-differencing-when-esti?answertab=votes#tab-top) talk about the OCSB test where [Major changes to the forecast package](https://robjhyndman.com/hyndsight/forecast3/) describe the improvement in `forecast` package.
-- [Frequency parameter and its impact on auto.arima results](https://stats.stackexchange.com/questions/187304/frequency-parameter-and-its-impact-on-auto-arima-results) talk about the frequency parameter for `seasonal period` while the author of `forecast` package provides [Seasonal periods](https://robjhyndman.com/hyndsight/seasonal-periods/) where describe very details on the `seasonal period` parameters determination.
-- [Auto.arima with daily data: how to capture seasonality/periodicity?](https://stats.stackexchange.com/questions/14742/auto-arima-with-daily-data-how-to-capture-seasonality-periodicity), the author of `forecast` package answered `salests <- ts(data,start=2010,frequency=7)` and `modArima <- auto.arima(salests)` for weekly seasonality determination.
-- [Why is this xts frequency always 1?](https://stackoverflow.com/questions/34454947/why-is-this-xts-frequency-always-1)
-
->**Improved auto.arima()**
-The `auto.arima()` function is widely used for automatically selecting ARIMA models. It works quite well, except that selection of $D$, the order of seasonal differencing, has always been poor. Up until now, the default has been to use the Canova-Hansen test to select $D$. Because the CH test has a null hypothesis of deterministic seasonality based on dummy variables, the function will often select $D=0$. So I’ve now switched to using the OCSB test for selecting $D$ which has a null hypothesis involving a seasonal difference, so it is much more likely to choose $D=1$ than previously. I’ve done extensive testing of the forecasts obtained under the two methods, and the OCSB test leads to better forecasts. Hence it is now the default. This means that the function may return a different ARIMA model than previously when the data are seasonal.
-A separate function for selecting the seasonal order has also been made visible. So you can now call `nsdiffs()` to find the recommended number of seasonal differences without calling auto.arima(). There is also a `ndiffs()` function for selecting the number of first differences. Within `auto.arima()`, `nsdiffs()` is called first to select $D$, and then `ndiffs()` is applied to `diff(x,D)` if $D > 0$ or to $x$ if $D=0$.
-
-> **Double-seasonal Holt-Winters**
-The new dshw() function implements *Taylor’s (2003)* double-seasonal Holt-Winters method. This allows for two levels of seasonality. For example, with hourly data, there is often a daily period of 24 and a weekly period of 168. These are modelled separately in the `dshw()` function.
-
-> I am planning some major new functionality to extend this to the various types of complex seasonality discussed in my recent JASA paper. Hopefully that will be ready in the next few weeks – I have a research assistant working on the new code.
-
-*Source : Major changes to the forecast package*
-
-- [Forecasting Daily Data with Multiple Seasonality in R](http://www.dbenson.co.uk/Rparts/subpages/forecastR/) provides the example for seasonal modelling. Now we start modelling harmonics model (which is using `xreg`).
-- [R/msts.R](https://rdrr.io/cran/forecast/src/R/msts.R) introduced a multi seasonal time series objects, intended to be used for models that support multiple seasonal periods. The msts class inherits from the ts class and has an additional "msts" attribute which contains the vector of seasonal periods. All methods that work on a ts class, should also work on a msts class.
-- [Multiseasonal models for multivariate time series](https://stats.stackexchange.com/questions/355746/multiseasonal-models-for-multivariate-time-series) and [Forecast double seasonal time series with multiple linear regression in R](https://petolau.github.io/Forecast-double-seasonal-time-series-with-multiple-linear-regression-in-R/) provides example for multi-seasonal modelling.
-- [How to setup `xreg` argument in `auto.arima()` in R? [closed]](https://stats.stackexchange.com/questions/41070/how-to-setup-xreg-argument-in-auto-arima-in-r) using `xreg` for multivariate modelling.
-- [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re) introduced 3 seasonal modelling.
-- [R - Putting time series with frequency of 20 min into the function `stl()`](https://stackoverflow.com/questions/17738746/r-putting-time-series-with-frequency-of-20-min-into-the-function-stl)
-- ["Frequency" value for seconds/minutes intervals data in R](https://stats.stackexchange.com/questions/120806/frequency-value-for-seconds-minutes-intervals-data-in-r)
-- [Time Series and Forecasting using R](http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/)
-
-```
-library(forecast)
-# create some artifical data
-modelfitsample <- data.frame(Customer_Visit=rpois(49,3000),Weekday=rep(1:7,7),
-                             Christmas=c(rep(0,40),1,rep(0,8)),Day=1:49)
-
-# Create matrix of numeric predictors
-xreg <- cbind(Weekday=model.matrix(~as.factor(modelfitsample$Weekday)), 
-                  Day=modelfitsample$Day,
-              Christmas=modelfitsample$Christmas)
-
-# Remove intercept
-xreg <- xreg[,-1]
-
-# Rename columns
-colnames(xreg) <- c("Mon","Tue","Wed","Thu","Fri","Sat","Day","Christmas")
-
-# Variable to be modelled
-visits <- ts(modelfitsample$Customer_Visit, frequency=7)
-
-# Find ARIMAX model
-modArima <- auto.arima(visits, xreg=xreg)
-```
-
-*Source : [How to setup `xreg` argument in `auto.arima()` in R? [closed]](https://stats.stackexchange.com/questions/41070/how-to-setup-xreg-argument-in-auto-arima-in-r)*
-
-```
-library(forecast)
-ts_ <- ts(PaulsData$Temperature, frequency = 1)
-msts_ <- msts(ts_, c(7,30,365))
-fit <- auto.arima(ts_, seasonal=F, xreg=fourier(msts_, K=c(3,5,10)))  # i,j,k
-```
-
-*Source : [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re)*
-
-```{r, eval = FALSE}
-ts_ <- data_m1$close %>% 
-  ts()
-mts_ <- data_m1 %>% 
-  msts(seasonal.periods = c(1440, 7200), start = index(.)[1])
-fit1 <- auto.arima(ts_, seasonal = FALSE, xreg=fourier(mts_, K=c(3,5,10)))
-fit2 <- auto.arima(ts_, seasonal = FALSE, xreg=mts_)
-fit3 <- auto.arima(ts_, D = 1, xreg=mts_)
-
-## https://stackoverflow.com/questions/12161984/how-to-elegantly-convert-datetime-from-decimal-to-d-m-y-hms
-## https://stackoverflow.com/questions/17738746/r-putting-time-series-with-frequency-of-20-min-into-the-function-stl
-## https://stats.stackexchange.com/questions/120806/frequency-value-for-seconds-minutes-intervals-data-in-r
-## http://manishbarnwal.com/blog/2017/05/03/time_series_and_forecasting_using_R/
-smp %>% 
-  tk_ts(start = index(index)[1], frequency = c(1440, 7200)) %>% 
-  forecast %>% 
-  llply(tk_tbl)
-```
-
-#### Weekly >> Daily `ts()`
-
-Here I use `ts()` for seasonal data modeling and set `auto.arima(D = 1, seasonal = TRUE)` as **sarima** model, **sarimax** models will be modeled in next paper.
-
-- [Auto.arima with xreg in R, restriction on forecast periods](https://datascience.stackexchange.com/questions/53955/auto-arima-with-xreg-in-r-restriction-on-forecast-periods)
-- [How to setup xreg argument in auto.arima() in R?](https://stats.stackexchange.com/questions/41070/how-to-setup-xreg-argument-in-auto-arima-in-r)
-- [Introducing seasonality to an ARIMA model in R](https://stats.stackexchange.com/questions/329433/introducing-seasonality-to-an-arima-model-in-r)
-- [Seasonality not taken account of in `auto.arima()`](https://stats.stackexchange.com/questions/213201/seasonality-not-taken-account-of-in-auto-arima)
-- [purrr auto.arima xreg combination](https://stackoverflow.com/questions/52096188/purrr-auto-arima-xreg-combination)
-- [Forecasting using R - Dynamic Regression (ch5).pdf](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/a26550f8fa1280e4d77cd92d2420fe57cba9d0bb/reference/Forecasting%20using%20R%20-%20Dynamic%20Regression%20(ch5).pdf)
-- [Daily timeseries forecasting, with weekly and annual cycle](https://stackoverflow.com/questions/35649734/daily-timeseries-forecasting-with-weekly-and-annual-cycle)
-- [Forecasting Daily Data with Multiple Seasonality in R](http://www.dbenson.co.uk/Rparts/subpages/forecastR)
-- [**Time Series Forecasting, a Summarize of Data visualization and prediction**](https://rpubs.com/tedding/long-term-time-series-forecasting)
-- [Time Series Analysis and Forecasting with the TSstudio Package](https://rpubs.com/ramkrisp/TSstudioDemo)
-- [Find Arima equation using auto.arima, daily long-term data (msts), 3 seasonal regressors, and calculating K in fourier](https://stats.stackexchange.com/questions/135521/find-arima-equation-using-auto-arima-daily-long-term-data-msts-3-seasonal-re)
-
-I set the length of dataset as nested seasonal dataset as weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
-
-```{r, eval = FALSE}
-# --------- eval=FALSE ---------
-# sample, not run
-> suppressWarnings(Y2015W1 %>% 
-                     tk_xts %>% 
-                     to.daily %>% 
-                     Cl %>% 
-                     opt_arma(arma=TRUE))
-Using column `index` for date_var.
-p d q P D Q s 
-0 0 0 0 0 0 1
-```
-
-```{r, eval = FALSE}
-# --------- eval=FALSE ---------
-# eval(parse(text = paste0(fs, "<- read_rds('", fls[[7]], "') %>% as_tibble")))
-# sample, not run
-
-sarima <- list()
-for(i in (1:length(fs))) {
-    smp <- data_m1 %>% tk_xts(silent = TRUE)
-    timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
-      .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
-    
-    if (dt %in% timeID) {
-      smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - seconds(59))]
-      
-      sarima[[i]] <- tryCatch({llply(price_type, function(y) {
-        df = auto.arima(smp, parallel=FALSE, num.cores = 2)
-        df = data.frame(Date = index(df$latestPrice[1]), 
-                        Type = paste0(names(df$latestPrice), '.', y), 
-                        df$latestPrice, df$forecastPrice, t(df$AIC))
-        names(df)[4] %<>% str_replace_all('1', 'T+1')
-        df
-      }) %>% as_tibble %>% bind_rows}, abnor = function(e) NULL)
-      
-      if (!dir.exists(paste0('data/fx/', names(sarima[[i]])[3]))) 
-        dir.create(paste0('data/fx/', names(sarima[[i]])[3]))
-      
-      saveRDS(sarima[[i]], paste0(
-        'data/fx/', names(sarima[[i]])[3], '/sarima.', 
-        unique(sarima[[i]]$Date), '.rds'))
-      
-      cat(paste0(
-        'data/fx/', names(sarima[[i]])[3], '/sarima.', 
-        unique(sarima[[i]]$Date), '.rds saved!\n'))
+```{r eval = FALSE}
+tseas <- function(timeID, data = dsmp, data_len, 
+                  hrz1 = c(1440, 7200), hrz2 = 1440, .model) {
+	
+	if(hrz1 == 1440) {
+	  
+	  tmp <- llply(1:length(timeID), function(i) {
+	    if(i == 1) {
+	      
+	      cat('\n')
+        cat('===========================================\n')
+        cat('train[', i, ']\n')
+        print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+        
+        cat('\n')
+        cat('-------------------------------------------\n')
+        cat('train_test[', i, ']\n')
+        
+        print(train_test <- dsmp[sq %in% ctr])
+        
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        cat('\n')
+        cat('-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        
+        print(sets %>% as.data.table)
+        
+        saveRDS(sets, paste0(
+          dtr, 'data/fx/USDJPY/ets_', .model, '_', data_len, 
+          '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
+        
+        cat('\n')
+        cat(i, '=', paste0('~/data/fx/USDJPY/ets_', .model, '_', 
+                           data_len, '_', hrz1, '.', 
+                           as_date(sets$index[1]), '.rds saved!\n'))
+        cat('\n\n')
+        
+      } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+        
+        
+      } else if(i == length(timeID)) {
+        
+        
+      } else  {
+        
+        lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+        
+        cat('\n')
+        cat('===========================================\n')
+        cat('train[', i, ']\n')
+        
+        print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+        
+        cat('\n')
+        cat('-------------------------------------------\n')
+        cat('train_test[', i, ']\n')
+        
+        print(train_test <- dsmp[sq %in% ctr])
+        
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+          
+        cat('\n')
+        cat('-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        
+        print(sets %>% as.data.table)
+        
+        saveRDS(sets, paste0(
+          dtr, 'data/fx/USDJPY/ets_', .model, '_', data_len, 
+          '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
+        
+        cat('\n')
+        cat(i, '=', paste0('~/data/fx/USDJPY/ets_', .model, '_', 
+                           data_len, '_', hrz1, '.', 
+                           as_date(sets$index[1]), '.rds saved!\n'))
+        cat('\n\n')
       }
-  }
+    })
+	} else if(hrz1 == 7200) {
+	  
+	  tmp <- llply(1:length(timeID), function(i) {
+	    
+	    if(i == 1) {
+	      
+	      cat('\n')
+        cat('===========================================\n')
+        cat('train[', i, ']\n')
+        print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+        
+        cat('\n')
+        cat('-------------------------------------------\n')
+        cat('train_test[', i, ']\n')
+        
+        print(train_test <- dsmp[sq %in% ctr])
+        
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        cat('\n')
+        cat('-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        
+        print(sets %>% as.data.table)
+        
+        saveRDS(sets, paste0(
+          dtr, 'data/fx/USDJPY/ets_', .model, '_', data_len, 
+          '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
+        
+        cat('\n')
+        cat(i, '=', paste0('~/data/fx/USDJPY/ets_', .model, '_', 
+                           data_len, '_', hrz1, '.', 
+                           as_date(sets$index[1]), '.rds saved!\n'))
+        cat('\n\n')
+        
+      } else if(i > (length(timeID) - hrz1/hrz2) & i != length(timeID)) {
+        
+        lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+        ## filter the length of forecasted data to fit with train_test data 
+        ##   when the length of forecasted data more then length of test data.
+        #lst_date <- timeID[(length(timeID) - (hrz1/hrz2)):length(timeID)]
+        lst_date <- timeID[timeID >= timeID[i]]
+        lst_date_sq <- grep(
+          timeID[i], timeID[(length(timeID) - (hrz1/hrz2 - 1)):length(timeID)])
+        
+        cat('\n')
+        cat('===========================================\n')
+        cat('train[', i, ']\n')
+        
+        print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+        
+        cat('\n')
+        cat('-------------------------------------------\n')
+        cat('train_test[', i, ']\n')
+        
+        print(train_test <- dsmp[sq %in% ctr])
+        
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
+          tk_tbl
+        
+        sets <- sets[1:(hrz1 - (hrz2 * lst_date_sq)),] %>% 
+          dplyr::mutate(index = train_test[
+            (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$index, 
+            mk.price = train_test[
+              (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        cat('\n')
+        cat('-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        
+        print(sets %>% as.data.table)
+        
+        saveRDS(sets, paste0(
+          dtr, 'data/fx/USDJPY/ets_', .model, '_', data_len, 
+          '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
+        
+        cat('\n')
+        cat(i, '=', paste0('~/data/fx/USDJPY/ets_', .model, '_', 
+                           data_len, '_', hrz1, '.', 
+                           as_date(sets$index[1]), '.rds saved!\n'))
+        cat('\n\n')
+        
+      } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+        
+        
+      } else if(i == length(timeID)) {
+        
+        
+      } else {
+        
+        lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+        
+        cat('\n')
+        cat('===========================================\n')
+        cat('train[', i, ']\n')
+        
+        print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+        
+        cat('\n')
+        cat('-------------------------------------------\n')
+        cat('train_test[', i, ']\n')
+        
+        print(train_test <- dsmp[sq %in% ctr])
+        
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        cat('\n')
+        cat('-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        
+        print(sets %>% as.data.table)
+        
+        saveRDS(sets, paste0(
+          dtr, 'data/fx/USDJPY/ets_', .model, '_', data_len, 
+          '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
+        
+        cat('\n')
+        cat(i, '=', paste0('~/data/fx/USDJPY/ets_', .model, '_', 
+                           data_len, '_', hrz1, '.', 
+                           as_date(sets$index[1]), '.rds saved!\n'))
+        cat('\n\n')
+      }
+	  })
+	  
+	} else {
+	   
+	  
+	}
+  return(tmp)
+}
 ```
+
+#### Wk >> Dy
+
+I set the length of data as weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
-# sample, not run
-smp <- data_m1 %>% tk_xts(silent = TRUE)
-timeID <- c(index(smp), xts::last(index(smp)) + minutes(1)) %>% 
-  .[. > force_tz(ymd_hms('2015-01-05 00:00:00 EET'))]
-dt <- timeID[1]
-smp <- smp[paste0(dt, '/', dt %m+% weeks(1) - seconds(59))]
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 7200
+hrz2 <- 1440
 
-smp %>% tk_ts %>% forecast %>% llply(tk_tbl)
+## set all models provided by ets function.
+ets.m <- c('AAN', 'AAZ', 'ANN', 'ANZ', 'AZN', 'AZZ', 'MAN', 'MAZ', 'MMN', 
+            'MMZ', 'MNN', 'MNZ', 'MZN', 'MZZ', 'ZAN', 'ZAZ', 'ZMN', 'ZMZ', 
+            'ZNN', 'ZNZ', 'ZZN', 'ZZZ')
 
-mts <- multi_seasons(smp)
-aar <- multi_seasons(smp, auto_arima=TRUE)
-
+source('function/tseas.R')
 ```
 
-Below `Arima()` and `auto.arima()` functions prove that `auto.arima()` is better model since it auto adjust the best `arima(p,d,q)` values.
-
-```{r, eval = FALSE}
-# --------- eval=FALSE ---------
-# sample, not run
-> n <- 2000
-> m <- 200
-> y <- ts(rnorm(n) + (1:n)%%100/30, f=m)
-
-> library(forecast)
-> fit <- Arima(y, order=c(2,0,1), xreg=fourier(y, K=4))
-> fit
-Series: y 
-Regression with ARIMA(2,0,1) abnors 
-
-Coefficients:
-         ar1     ar2      ma1  intercept  S1-200  C1-200   S2-200   C2-200  S3-200   C3-200   S4-200
-      0.3846  0.0649  -0.2794     1.6168  0.0354  0.0308  -1.0026  -0.0222  0.0677  -0.0163  -0.5295
-s.e.  0.1588  0.0324   0.1584     0.0320  0.0453  0.0452   0.0452   0.0451  0.0450   0.0450   0.0448
-      C4-200
-      0.0059
-s.e.  0.0447
-
-sigma^2 estimated as 1.204:  log likelihood=-3017.65
-AIC=6061.3   AICc=6061.49   BIC=6134.11
-
-> fit2 <- auto.arima(y, seasonal=FALSE, xreg=fourier(y, K=4))
-> fit2
-Series: y 
-Regression with ARIMA(1,0,2) abnors 
-
-Coefficients:
-         ar1      ma1     ma2  intercept  S1-200  C1-200   S2-200   C2-200  S3-200   C3-200   S4-200
-      0.4605  -0.3566  0.0605     1.6168  0.0354  0.0309  -1.0026  -0.0222  0.0677  -0.0164  -0.5296
-s.e.  0.1319   0.1322  0.0297     0.0319  0.0451  0.0451   0.0450   0.0450  0.0449   0.0449   0.0447
-      C4-200
-      0.0057
-s.e.  0.0447
-
-sigma^2 estimated as 1.204:  log likelihood=-3017.44
-AIC=6060.87   AICc=6061.06   BIC=6133.69
-
-> fit$aic
-[1] 6061.302
-> fit2$aic
-[1] 6060.873
+```{r}
+llply(ets.m, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
 ```
 
-**Modeling**
+#### Mn >> Dy
 
-```{r, eval = FALSE}
-# --------- eval=FALSE ---------
-# measure as sample take from next chunk
-timeID <- data_m1$index %>% 
-  as_date %>% 
-  unique %>% 
-  sort
-timeID %<>% .[. > as_date('2015-01-11')]
-dt <- timeID[1]
+I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
 
-smp <- data_m1 %>% 
-    tk_xts(silent = TRUE)
-dt %<>% as_date
-smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
 
-sarimats <- smp %>% 
-    tk_ts(frequency = 1440)
+#### Qt >> Dy
 
-## 
-fit_ts <- auto.arima(Op(sarimats), D = 1)#, trace = TRUE)
-saveRDS(fit_ts, 'data/fx/USDJPY/sarima_ts_sample.rds')
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
 
-## 
-fr_ts <- forecast(fit_ts, h = 1440)
-saveRDS(fr_ts, 'data/fx/USDJPY/sarima_frts_sample.rds')
 
-## 
-sq <- smp %>% 
-  tail(1) %>% 
-  index
-if(weekdays(sq) == '土曜日'|weekdays(sq) == 'Saturday') sq <- sq + days(2)
-sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
-fr_ts.sample <- as_tibble(data.frame(index = sq, fr_ts)) %>% 
-  dplyr::select(index, Point.Forecast)
-dt.sample <- dplyr::filter(data_m1, index %in% fr_ts.sample$index) %>% 
-  dplyr::select(index, open)
-fr_ts.sample <- join(dt.sample, fr_ts.sample) %>% 
-  as_tibble %>% 
-  dplyr::rename(sarima_ts = Point.Forecast)
+#### Yr >> Dy
 
-if(!dir.exists(paste0('data/fx/USDJPY'))) 
-    dir.create(paste0('data/fx/USDJPY'))
+I set the length of data as quarterly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
 
-saveRDS(fr_ts.sample, paste0('data/fx/USDJPY/fr_ts.sample.wk.1440.', 
-                         as_date(fr_ts.sample$index[1]), '.rds'))
 
-cat(paste0(
-    'data/fx/USDJPY/fr_ts.sample.wk.1440.', 
-    as_date(fr_ts.sample$index[1]), '.rds saved!\n'))
-```
+### Weekly Seasonal Data
 
-Due to above model consume few hours, here I can only use a sample to compare the accuracy.
+#### Wk >> Wk
 
-```{r, eval = FALSE}
-# --------- eval=FALSE ---------
-#Not run
-#sq <- seq(1 , length(data_m1$index), by = 1440)
-#sets <- list()
-timeID <- data_m1$index %>% 
-  as_date %>% 
-  unique %>% 
-  sort
-timeID %<>% .[. > as_date('2015-01-11')]
+I set the length of data as weekly (`5 days * 1440 mins = 7200 mins` minutes which is 22 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
 
-for (dt in timeID) {
-  smp <- data_m1 %>% 
-    tk_xts(silent = TRUE)
-  dt %<>% as_date
-  smp <- smp[paste0(dt %m-% weeks(1) + seconds(59), '/', dt + seconds(59))]
-  
-  sarimats <- smp %>% 
-    tk_ts(frequency = 1440)
-    #https://stackoverflow.com/a/37046276/3806250 #auto.arima(x, D = 1)
-    #https://stackoverflow.com/a/37400899/3806250 #auto.arima(x, seasonal = TRUE)
-  
-  sarimats <- llply(., function(x) {
-    auto.arima(x, D = 1) %>% #, trace = TRUE) %>% 
-      forecast(h = 1440)
-    }) %>% 
-    llply(tk_tbl)
-  
-  ## ----------------------------------------
-  ## Not yet test run
-  sq <- smp %>% 
-    tail(1) %>% 
-    index
-  if(weekdays(sq) == '土曜日'|weekdays(sq) == 'Saturday') sq <- sq + days(2)
-  sq <- seq(from = sq + minutes(1), sq + days(1), by = 'min')
-  dtf <- as_tibble(data.frame(index = sq, sarimats)) %>% 
-    dplyr::select(index, Point.Forecast)
-  dts <- dplyr::filter(data_m1, index %in% dtf$index) %>% 
-    dplyr::select(index, open)
-  dtf <- join(dt.sample, dtf) %>% 
-    as_tibble
-  
-  if(!dir.exists(paste0('data/fx/USDJPY'))) 
-    dir.create(paste0('data/fx/USDJPY'))
 
-  saveRDS(dtf, paste0('data/fx/USDJPY/sarima_ts.wk.1440.', 
-                        as_date(dtf$index[1]), '.rds'))
+#### Mn >> Wk
 
-  cat(paste0('data/fx/USDJPY/sarima_ts.wk.1440.', 
-             as_date(dtf$index[1]), '.rds saved!\n'))
-  ## ----------------------------------------
-  }
-```
+I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
 
-#### Monthly >> Weekly >> Daily `ts()`
 
-I set the length of dataset as 3 level nested seasonal dataset as monthly (), weekly (1 week = 5 trading days = 7200 minutes) and daily (1 trading day = 1440 minutes).
+#### Qt >> Wk
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
+
+
+#### Yr >> Wk
+
+I set the length of data as quarterly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
+
+
+## Sarima `auto.arima()`
+
+### `ts()`
+
+#### Wk >> Dy
+
+#### Mn >> Wk >> Dy `ts()`
 
 #### Yearly >> Weekly >> Daily `ts()`
 
