@@ -1,4 +1,4 @@
-tseas <- function(timeID, data = dsmp, data_len, 
+mstseas <- function(timeID, data = dsmp, data_len, 
                   hrz1 = c(1440, 7200), hrz2 = 1440, .model) {
   
   if(hrz1 == 1440) {
