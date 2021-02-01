@@ -1700,16 +1700,185 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 
 I set the length of data as yearly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
 
+## Exponential `msts()` & `hw()`
+
+### Daily Seasonal Data
+
+#### Modelling
+
+
+
+
+
+```
+https://stackoverflow.com/questions/62424961/how-can-i-apply-seasonal-exponential-smoothing-forecasting-method-to-hourly-data
+```
+
+
+
+
+
+
+```{r eval = FALSE}
+## set all models provided by ets function.
+ets.m <- c('AAN', 'AAZ', 'ANN', 'ANZ', 'AZN', 'AZZ', 'MAN', 'MAZ', 'MMN', 
+            'MMZ', 'MNN', 'MNZ', 'MZN', 'MZZ', 'ZAN', 'ZAZ', 'ZMN', 'ZMZ', 
+            'ZNN', 'ZNZ', 'ZZN', 'ZZZ')
+
+```
+
+Refer to above function or load below r function.
+
+```{r}
+## set all models provided by ets function.
+ets.m <- c('AAN', 'AAZ', 'ANN', 'ANZ', 'AZN', 'AZZ', 'MAN', 'MAZ', 'MMN', 
+            'MMZ', 'MNN', 'MNZ', 'MZN', 'MZZ', 'ZAN', 'ZAZ', 'ZMN', 'ZMZ', 
+            'ZNN', 'ZNZ', 'ZZN', 'ZZZ')
+
+source('function/mstseas.R')
+```
+
+#### (Wk ∈ Mn) >> Dy
+
+I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `22 days * 1440 mins = 31680 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+llply(ets.m, function(md) {
+  mstseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+```
+
+#### (Wk ∈ Qt) >> Dy
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+#### (Wk ∈ Yr) >> Dy
+
+I set the length of data as yearly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `52 weeks * 5 days * 1440 mins = 374400 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+#### (Mn ∈ Qt) >> Dy
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
+- seasonal `22 days * 1440 mins = 31680 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+### Weekly Seasonal Data
+
+#### Modelling
+
+```{r eval = FALSE}
+## set all models provided by ets function.
+ets.m <- c('AAN', 'AAZ', 'ANN', 'ANZ', 'AZN', 'AZZ', 'MAN', 'MAZ', 'MMN', 
+            'MMZ', 'MNN', 'MNZ', 'MZN', 'MZZ', 'ZAN', 'ZAZ', 'ZMN', 'ZMZ', 
+            'ZNN', 'ZNZ', 'ZZN', 'ZZZ')
+
+```
+
+Refer to above function or load below r function.
+
+```{r}
+## set all models provided by ets function.
+ets.m <- c('AAN', 'AAZ', 'ANN', 'ANZ', 'AZN', 'AZZ', 'MAN', 'MAZ', 'MMN', 
+            'MMZ', 'MNN', 'MNZ', 'MZN', 'MZZ', 'ZAN', 'ZAZ', 'ZMN', 'ZMZ', 
+            'ZNN', 'ZNZ', 'ZZN', 'ZZZ')
+
+source('function/mstseas.R')
+```
+
+#### (Wk ∈ Mn) >> Wk
+
+I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `7200` minutes (`7200` minutes is 5 trading day).
+
+- data observation length `22 days * 1440 mins = 31680 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `7200 mins`
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+llply(ets.m, function(md) {
+  mstseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+```
+
+#### (Wk ∈ Qt) >> Wk
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `7200` minutes (`7200` minutes is 5 trading day).
+
+- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `7200 mins`
+
+#### (Wk ∈ Yr) >> Wk
+
+I set the length of data as yearly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `7200` minutes (`7200` minutes is 5 trading day).
+
+- data observation length `52 weeks * 5 days * 1440 mins = 374400 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `7200 mins`
+
+#### (Mn ∈ Qt) >> Wk
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `7200` minutes (`7200` minutes is 5 trading day).
+
+- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
+- seasonal `22 days * 1440 mins = 31680 mins`
+- sub-seasonal `1440 mins`
+- forecast `7200 mins`
+
 # Comparison
 
 ## 1 min per unit
+
+### Seasonal `ts` and `msts`
 
 Here I read the saved models.
 
 ```{r, eval=FALSE, warning = FALSE, message = FALSE}
 ## Get all files.
 fls <- paste0(dtr, 'data/fx/USDJPY/') %>% 
-  list.files(., pattern = '^ts_')
+  list.files(., pattern = '^ts_|^ets_|^msts_')
 
 fls_pth <- paste0(dtr, 'data/fx/USDJPY/', fls)
 
@@ -1719,15 +1888,7 @@ mds <- ldply(1:length(fls), function(i) {
         str_replace_all('.rds', '') %>% 
         str_split('_|\\.') %>% 
         .[[1]]
-    
-    if(any(str_detect(nms, 'ets'))) {
-      nms <- nms
-    } else {
-      nms <- c(nms[1], rep(NA, 2), nms[2:length(nms)]) }
-    
-    names(nms) <- c('t_series', 'model', 'sub_model', 
-                    'data_min', 'fc_min', 'date')
-    
+    names(nms) <- c('model', 'sub_model', 'data_min', 'fc_min', 'date')
     datset2 <- t(nms) %>% 
       data.frame %>% 
       mutate(model =factor(model), sub_model = factor(sub_model), 
@@ -1737,9 +1898,8 @@ mds <- ldply(1:length(fls), function(i) {
     datset <- read_rds(fls_pth[i])
     
     res <- tibble(datset2, datset) %>% 
-      dplyr::select(index, t_series, model, sub_model, data_min, 
+      dplyr::select(index, model, sub_model, data_min, 
                     fc_min, date, mk.price, fc.price)
-    cat(nms, '\n')
     
     return(res)
     

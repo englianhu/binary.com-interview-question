@@ -35,11 +35,11 @@ tseas <- function(timeID, data = dsmp, data_len,
         print(sets %>% as.data.table)
         
         saveRDS(sets, paste0(
-          dtr, 'data/fx/USDJPY/ets_', .model, '_', data_len, 
+          dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', data_len, 
           '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
         
         cat('\n')
-        cat(i, '=', paste0('~/data/fx/USDJPY/ets_', .model, '_', 
+        cat(i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
                            data_len, '_', hrz1, '.', 
                            as_date(sets$index[1]), '.rds saved!\n'))
         cat('\n\n')
@@ -85,11 +85,11 @@ tseas <- function(timeID, data = dsmp, data_len,
         print(sets %>% as.data.table)
         
         saveRDS(sets, paste0(
-          dtr, 'data/fx/USDJPY/ets_', .model, '_', data_len, 
+          dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', data_len, 
           '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
         
         cat('\n')
-        cat(i, '=', paste0('~/data/fx/USDJPY/ets_', .model, '_', 
+        cat(i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
                            data_len, '_', hrz1, '.', 
                            as_date(sets$index[1]), '.rds saved!\n'))
         cat('\n\n')
@@ -131,11 +131,11 @@ tseas <- function(timeID, data = dsmp, data_len,
         print(sets %>% as.data.table)
         
         saveRDS(sets, paste0(
-          dtr, 'data/fx/USDJPY/ets_', .model, '_', data_len, 
+          dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', data_len, 
           '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
         
         cat('\n')
-        cat(i, '=', paste0('~/data/fx/USDJPY/ets_', .model, '_', 
+        cat(i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
                            data_len, '_', hrz1, '.', 
                            as_date(sets$index[1]), '.rds saved!\n'))
         cat('\n\n')
@@ -186,11 +186,11 @@ tseas <- function(timeID, data = dsmp, data_len,
         print(sets %>% as.data.table)
         
         saveRDS(sets, paste0(
-          dtr, 'data/fx/USDJPY/ets_', .model, '_', data_len, 
+          dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', data_len, 
           '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
         
         cat('\n')
-        cat(i, '=', paste0('~/data/fx/USDJPY/ets_', .model, '_', 
+        cat(i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
                            data_len, '_', hrz1, '.', 
                            as_date(sets$index[1]), '.rds saved!\n'))
         cat('\n\n')
@@ -236,11 +236,11 @@ tseas <- function(timeID, data = dsmp, data_len,
         print(sets %>% as.data.table)
         
         saveRDS(sets, paste0(
-          dtr, 'data/fx/USDJPY/ets_', .model, '_', data_len, 
+          dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', data_len, 
           '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
         
         cat('\n')
-        cat(i, '=', paste0('~/data/fx/USDJPY/ets_', .model, '_', 
+        cat(i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
                            data_len, '_', hrz1, '.', 
                            as_date(sets$index[1]), '.rds saved!\n'))
         cat('\n\n')

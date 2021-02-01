@@ -1,5 +1,7 @@
 mstseas <- function(timeID, data = dsmp, data_len, 
-                  hrz1 = c(1440, 7200), hrz2 = 1440, .model) {
+                    seasonal.periods = c(1440, 1440 * 5), 
+                    hrz1 = c(1440, 7200, 31680, 95040, 374400), 
+                    hrz2 = 1440, .model) {
   
   if(hrz1 == 1440) {
     
@@ -19,7 +21,7 @@ mstseas <- function(timeID, data = dsmp, data_len,
         print(train_test <- dsmp[sq %in% ctr])
         
         sets <- train[, .(index, close)] %>% 
-          tk_ts(frequency = hrz1) %>% 
+          msts(seasonal.periods = seasonal.periods) %>% 
           ets(model = .model) %>% 
           forecast(h = hrz1) %>% 
           tk_tbl %>% 
@@ -69,7 +71,7 @@ mstseas <- function(timeID, data = dsmp, data_len,
         print(train_test <- dsmp[sq %in% ctr])
         
         sets <- train[, .(index, close)] %>% 
-          tk_ts(frequency = hrz1) %>% 
+          msts(seasonal.periods = seasonal.periods) %>% 
           ets(model = .model) %>% 
           forecast(h = hrz1) %>% 
           tk_tbl %>% 
@@ -115,7 +117,7 @@ mstseas <- function(timeID, data = dsmp, data_len,
         print(train_test <- dsmp[sq %in% ctr])
         
         sets <- train[, .(index, close)] %>% 
-          tk_ts(frequency = hrz1) %>% 
+          msts(seasonal.periods = seasonal.periods) %>% 
           ets(model = .model) %>% 
           forecast(h = hrz1) %>% 
           tk_tbl %>% 
@@ -166,7 +168,7 @@ mstseas <- function(timeID, data = dsmp, data_len,
         print(train_test <- dsmp[sq %in% ctr])
         
         sets <- train[, .(index, close)] %>% 
-          tk_ts(frequency = hrz1) %>% 
+          msts(seasonal.periods = seasonal.periods) %>% 
           ets(model = .model) %>% 
           forecast(h = hrz1) %>% 
           tk_tbl
@@ -220,7 +222,7 @@ mstseas <- function(timeID, data = dsmp, data_len,
         print(train_test <- dsmp[sq %in% ctr])
         
         sets <- train[, .(index, close)] %>% 
-          tk_ts(frequency = hrz1) %>% 
+          msts(seasonal.periods = seasonal.periods) %>% 
           ets(model = .model) %>% 
           forecast(h = hrz1) %>% 
           tk_tbl %>% 
