@@ -3565,6 +3565,7 @@ Here I summarize 1440 of 1 min data to be 1 day and choose the best fitted model
 
 ## https://tysonbarrett.com/jekyll/update/2019/10/06/datatable_memory/
 ## http://brooksandrew.github.io/simpleblog/articles/advanced-data-table/
+## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/
 seasonal_m1 <- data.table(seasonal_m1)
 setorder(seasonal_m1, index)
 

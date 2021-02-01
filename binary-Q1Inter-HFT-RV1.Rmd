@@ -436,10 +436,11 @@ for (i in c(1, 6:8, length(timeID) - 1, length(timeID))) { #Here I print 8 eleme
     
     print(sets %>% as.data.table)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
-
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    if(!file.exists(fl_pth)) saveRDS(sets, fl_pth)
+    
     cat('\n')
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -484,10 +485,11 @@ for (i in c(1, 6:8, length(timeID) - 1, length(timeID))) { #Here I print 8 eleme
     
     print(sets %>% as.data.table)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
-
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    if(!file.exists(fl_pth)) saveRDS(sets, fl_pth)
+    
     cat('\n')
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -542,10 +544,11 @@ for (i in 1:length(timeID)) {
     
     print(sets %>% as.data.table)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
-
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
+    
     cat('\n')
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -590,9 +593,10 @@ for (i in 1:length(timeID)) {
     
     print(sets %>% as.data.table)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat('\n')
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
@@ -635,10 +639,11 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
-
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
+    
     cat(i, '=', paste0('~/data/fx/USDJPY/ts', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
     rm(sets)
@@ -665,9 +670,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -708,10 +714,11 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
-
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
+    
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
     rm(sets)
@@ -738,9 +745,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -781,9 +789,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -811,9 +820,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -869,10 +879,11 @@ for (i in 1:length(timeID)) {
     
     print(sets %>% as.data.table)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
-
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
+    
     cat('\n')
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -921,9 +932,10 @@ for (i in 1:length(timeID)) {
     
     print(sets %>% as.data.table)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat('\n')
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
@@ -969,9 +981,10 @@ for (i in 1:length(timeID)) {
     
     print(sets %>% as.data.table)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat('\n')
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
@@ -1015,9 +1028,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -1052,9 +1066,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -1082,9 +1097,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -1126,9 +1142,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -1163,9 +1180,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -1193,9 +1211,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -1238,9 +1257,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -1275,9 +1295,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -1305,9 +1326,10 @@ for (i in 1:length(timeID)) {
       dplyr::rename(fc.price = `Point Forecast`) %>% 
       dplyr::select(index, mk.price, fc.price)
     
-    saveRDS(sets, paste0(
-      dtr, 'data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
-      as_date(sets$index[1]), '.rds'))
+    fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+    
+    saveRDS(sets, fl_pth)
     
     cat(i, '=', paste0('~/data/fx/USDJPY/ts_', data_len, '_', hrz1, '.', 
                        as_date(sets$index[1]), '.rds saved!\n'))
@@ -1366,9 +1388,10 @@ tseas <- function(timeID, data = dsmp, data_len,
         
         print(sets %>% as.data.table)
         
-        saveRDS(sets, paste0(
-          dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', data_len, 
-          '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
+        fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_ets_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+        
+        saveRDS(sets, fl_pth)
         
         cat('\n')
         cat(i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
@@ -1416,9 +1439,10 @@ tseas <- function(timeID, data = dsmp, data_len,
         
         print(sets %>% as.data.table)
         
-        saveRDS(sets, paste0(
-          dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', data_len, 
-          '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
+        fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_ets_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+        
+        saveRDS(sets, fl_pth)
         
         cat('\n')
         cat(i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
@@ -1462,9 +1486,11 @@ tseas <- function(timeID, data = dsmp, data_len,
         
         print(sets %>% as.data.table)
         
-        saveRDS(sets, paste0(
-          dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', data_len, 
-          '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
+        
+        fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_ets_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+        
+        saveRDS(sets, fl_pth)
         
         cat('\n')
         cat(i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
@@ -1517,9 +1543,10 @@ tseas <- function(timeID, data = dsmp, data_len,
         
         print(sets %>% as.data.table)
         
-        saveRDS(sets, paste0(
-          dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', data_len, 
-          '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
+        fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_ets_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+        
+        saveRDS(sets, fl_pth)
         
         cat('\n')
         cat(i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
@@ -1567,9 +1594,10 @@ tseas <- function(timeID, data = dsmp, data_len,
         
         print(sets %>% as.data.table)
         
-        saveRDS(sets, paste0(
-          dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', data_len, 
-          '_', hrz1, '.', as_date(sets$index[1]), '.rds'))
+        fl_pth <- paste0(dtr, 'data/fx/USDJPY/ts_ets_', data_len, 
+                     '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+        
+        saveRDS(sets, fl_pth)
         
         cat('\n')
         cat(i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
@@ -1739,6 +1767,7 @@ mds <- ldply(1:length(fls), function(i) {
     res <- tibble(datset2, datset) %>% 
       dplyr::select(index, t_series, model, sub_model, data_min, 
                     fc_min, date, mk.price, fc.price)
+	res <- res[!is.na(mk.price),]
     cat(nms, '\n')
     
     return(res)
@@ -1746,10 +1775,19 @@ mds <- ldply(1:length(fls), function(i) {
 }) %>% 
   as_tibble
 
+## https://tysonbarrett.com/jekyll/update/2019/10/06/datatable_memory/
+## http://brooksandrew.github.io/simpleblog/articles/advanced-data-table/
+## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/
+
+## Due to files size more than 1GB and over 0.1 billion observation, here I save into 3 files.
+
 ```
 
 ```{r message=FALSE, warning=FALSE}
-mds <- read_rds('data/fx/USDJPY/seasonal_m1.rds')
+mds_ts <- read_rds('data/fx/USDJPY/mds_ts.rds')
+mds_ets_AAN_MAZ <- read_rds('data/fx/USDJPY/mds_ets_AAN_MAZ.rds')
+mds_ets_MMN_ZAN <- read_rds('data/fx/USDJPY/mds_ets_MMN_ZAN.rds')
+mds_ets_ZAZ_ZZZ <- read_rds('data/fx/USDJPY/mds_ets_ZAZ_ZZZ.rds')
 ```
 
 #### Line Graph & Trend
