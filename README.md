@@ -156,7 +156,10 @@ There has already 2 years passed by while [Binary.com-is-Rebranding-to-Deriv.com
 
 <span style='color:red'>**I moved the data to <https://github.com/englianhu/binary.com-interview-question-data>.**</span>
 
-[Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV) review the seasonal models.
+Below are some seasonal time series models: 
+
+- [Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) (in RPubs.com)
+- [Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (in RStudioConnect.com)
 
 ### 1.2) <span style='color:red'>Blooper</span>
 
