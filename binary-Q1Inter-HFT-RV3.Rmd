@@ -1,0 +1,799 @@
+---
+title: "<img src='www/deriv.jpg' width='240'>"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part III)**</span>](https://github.com/englianhu/binary.com-interview-question)"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/quantitative trader 1.jpg' width='13'> <img src='www/RYU.jpg' width='15'> <img src='www/ENG.jpg' width='24'> ® <img src='www/xueba1.jpg' width='14'>"
+date: "`r lubridate::today('Asia/Tokyo')`"
+output:
+  html_document: 
+    mathjax: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+    code_folding: hide
+    css: CSSBackgrounds.css
+---
+
+<br>
+<span style='color:green'>**Theme Song**</span>
+<br>
+
+<audio src="music/Mika - Elle me dit (happy song to be millionaire).mp3" controls></audio>
+<br>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>Elle me dit</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>她对我说</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>She told me</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>彼女は私に言う</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>écris une chanson contente</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>写一首欢快的歌</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>Write a happy song</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>幸せな歌を書く</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>Pas une chanson déprimante</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>而不是悲伤的歌</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>Not a depressing song</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>気のめいるような歌ではない</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>Une chanson que tout le monde aime</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>一首让所有人都喜欢的歌</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>A song that everyone loves</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>みんなが大好きな曲</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>Elle me dit</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>她对我说</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>She told me</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>彼女は私に言う</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:azure'>Tu deviendras milliardaire</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>你将成为亿万富翁</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>You will become a millionaire</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>あなたは億万長者になります</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>Tu auras de quoi être fier</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>你将为此感到骄傲</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>You will be proud</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>あなたは誇りに思うでしょう</span>
+
+------
+
+<br>
+
+# Introduction
+
+Due to below issues from [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT), here I review the research by using same dataset as we can know from below **Part I**.
+
+- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) (in RPubs.com)
+- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (in RStudioConnect.com)
+
+In this paper I am using sarima models.
+
+<span style='color:green'>**Load Packages**</span>
+
+```{r setup, warning = FALSE, message = FALSE}
+if(!suppressPackageStartupMessages(require('BBmisc'))) {
+  install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
+}
+suppressPackageStartupMessages(require('BBmisc'))
+# suppressPackageStartupMessages(require('rmsfuns'))
+
+pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
+          'devtools','readr', 'lubridate', 'data.table', 'reprex', 
+          'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 
+          'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tdplyr', 
+          'tidyverse', 'memoise', 'htmltools', 'formattable', 'dtplyr', 
+          'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
+          'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
+          'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
+          'stringr', 'pacman', 'profmem', 'ggthemes', 'flyingfox', 
+          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 'gtools', 
+          'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
+
+suppressAll(lib(pkgs))
+# load_pkg(pkgs)
+
+.dtr <- 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/'
+
+## Set the timezone but not change the datetime
+Sys.setenv(TZ = 'Asia/Tokyo')
+## options(knitr.table.format = 'html') will set all kableExtra tables to be 'html', otherwise need to set the parameter on every single table.
+options(warn = -1, knitr.table.format = 'html')#, digits.secs = 6)
+
+## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
+knitr::opts_chunk$set(cache = TRUE, warning = FALSE, 
+                      message = FALSE, cache.lazy = FALSE)
+
+rm(pkgs)
+```
+
+<span style='color:green'>**Progress Function**</span>
+
+```{r}
+task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^sarima_', .loops = TRUE) {
+  ## ------------- 定时查询进度 ----------------------
+  ## 每分钟自动查询与更新以上模拟预测汇价进度（储存文件量）。
+  require('magrittr')
+  require('tibble')
+  
+  if(!is.data.frame(class(mbase))) { 
+	mbase %<>% data.frame
+  }
+  
+  if (.loops == TRUE) {
+    while(1) {
+      cat('Current Tokyo Time :', as.character(now('Asia/Tokyo')), '\n\n')
+      
+      y = as_date(mbase$index) %>% 
+			unique
+      y <- y[weekdays(y) != 'Saturday'] #filter and omit the weekly last price which is 12:00am on saturday
+	    datee = y
+	    
+	    if(is.null(timeID0)) { 
+		    timeID0 = y[1]
+	    } else if (is.Date(timeID0)) { 
+		    timeID0 = as_date(timeID0)
+	    } else {
+		    timeID0 = as_date(mbase$index) %>% 
+		    unique
+	    }
+  	  
+	    y = y[y >= timeID0]
+      
+      x = list.files(paste0(.dtr, 'data/fx/USDJPY/'), pattern = .pattern) %>% 
+	      str_replace_all('.rds', '') %>% 
+		  str_replace_all('.201', '_201') %>% 
+		  str_split_fixed('_', '2') %>% 
+		  as_tibble %>% 
+		  dplyr::rename('Model' = 'V1', 'Date' = 'V2') %>% 
+		  dplyr::mutate(Model = factor(Model), Date = as_date(Date))
+		
+	  x = join(tibble(Date = datee), x) %>% 
+		  as_tibble	  
+	  x %<>% na.omit
+	  
+      x %<>% dplyr::mutate(binary = if_else(is.na(Model), 0, 1)) %>% 
+		  spread(Model, binary)
+      
+      z <- ldply(x[,-1], function(zz) {
+		  na.omit(zz) %>% length }) %>% 
+		  dplyr::rename(x = V1) %>% 
+		  dplyr::mutate(n = length(y), progress = percent(x/n))
+      
+      print(z)
+      
+      prg = sum(z$x)/sum(z$n)
+      cat('\n================', as.character(percent(prg)), '================\n\n')
+      
+      if (prg == 1) break #倘若进度达到100%就停止更新。
+      
+      Sys.sleep(scs) #以上ldply()耗时3~5秒，而休息时间60秒。
+    }
+  } else {
+    
+    cat('Current Tokyo Time :', as.character(now('Asia/Tokyo')), '\n\n')
+      
+    
+      y = as_date(mbase$index) %>% 
+			unique
+	  datee = y
+		
+	  if(is.null(timeID0)) { 
+		  timeID0 = y[1]
+	  } else if (is.Date(timeID0)) { 
+		  timeID0 = as_date(timeID0)
+	  } else {
+		  timeID0 = as_date(mbase$index) %>% 
+		  unique
+	  }
+	
+	  y = y[y >= timeID0]
+    
+      x = list.files(paste0(.dtr, 'data/fx/USDJPY/'), pattern = .pattern) %>% 
+	      str_replace_all('.rds', '') %>% 
+		  str_replace_all('.201', '_201') %>% 
+		  str_split_fixed('_', '2') %>% 
+		  as_tibble %>% 
+		  dplyr::rename('Model' = 'V1', 'Date' = 'V2') %>% 
+		  dplyr::mutate(Model = factor(Model), Date = as_date(Date))
+		
+	  x = join(tibble(Date = datee), x) %>% 
+		  as_tibble
+	  x %<>% na.omit
+	  
+      x %<>% dplyr::mutate(binary = if_else(is.na(Model), 0, 1)) %>% 
+		  spread(Model, binary)
+        
+      z <- ldply(x[,-1], function(zz) {
+		  na.omit(zz) %>% length }) %>% 
+		  dplyr::rename(x = V1) %>% 
+		  dplyr::mutate(n = length(y), progress = percent(x/n))
+                
+    print(z)
+    
+    prg = sum(z$x)/sum(z$n)
+    cat('\n================', as.character(percent(prg)), '================\n\n')
+    }
+  }
+```
+
+# Data
+
+## Read Data
+
+```{r read-data, warning = FALSE, message = FALSE}
+## check if data path set
+if(!exists('dtr')) {
+  dtr <- 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/'}
+
+## save files if not exists
+if(!file.exists(paste0(dtr, 'data/fx/USDJPY/dsmp.rds')) & exists('dsmp')) {
+  saveRDS(dsmp, paste0(dtr, 'data/fx/USDJPY/dsmp.rds'))}
+
+## read files if not exists
+if(!exists('dsmp')) {
+  dsmp <- readRDS(paste0(dtr, 'data/fx/USDJPY/dsmp.rds'))}
+```
+
+```{r smp-data, warning = FALSE, message = FALSE, results = 'asis'}
+## plot sample data
+dsmp[c(1:3, (nrow(dsmp)-3):nrow(dsmp)),] %>% 
+  kbl(caption = '1 min Close Price Dataset', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd
+  row_spec(0, background = 'DimGrey', color = 'gold', bold = TRUE) %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'Gray') %>% 
+  column_spec(3, background = 'DarkGrey') %>% 
+  column_spec(4, background = 'Gray') %>% 
+  column_spec(5, background = 'DarkGrey') %>% 
+  column_spec(6, background = '#4897D8') %>% 
+  column_spec(7, background = '#556DAC') %>% 
+  column_spec(8, background = '#92AAC7') %>% 
+  column_spec(9, background = '#556DAC') %>% 
+  column_spec(10, background = '#375E97') %>% 
+  column_spec(11, background = 'CornflowerBlue') %>% 
+  column_spec(12, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+```
+
+*source : `r paste0(dim(dsmp), collapse = ' x ')`*
+
+From above table, we can know the dataset gather from `r paste(range(dsmp$date), collapse = ' to ')` which is used in [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1).
+
+# Modelling
+
+Here I start my 1st forecast date from 1st trading datetime of 2016 (`r dsmp[year == 2016]$date[1]` which is 2nd year in dataset) which is used in [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1).
+
+## Sarima `ts()` & `auto.arima()`
+
+### Seasonal Data Modeling
+
+I set the length of data as weekly (`7200` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+Here I only use `7200` to forecast `1440` as we can know that's the optimal volume of observation data as we know from [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1).
+
+### Wk >> Dy
+
+I set the length of data as weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- [<span style='color:white; background-color:LightSlateGrey;'>*8.7 ARIMA modelling in R*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/arima-r.html)
+- [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
+- [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
+
+```{r sarima, eval = FALSE}
+sarima <- function(timeID, data = dsmp, data_len, hrz1 = 1440, 
+                   .model = .model, .d = .d, .D = .D, 
+                   seas = seas, .order = .order, .seas = .seas, 
+                   stationary = stationary, trace = trace, 
+                   ic = ic, stepwise = stepwise, nmodels = nmodels, 
+                   #approximation = (length(x) > 150 | frequency(x) > 12), 
+                   truncate = truncate, #x = y, method = NULL, 
+                   xreg = xreg, test = test, test.args = test.args, 
+                   seasonal.test = seasonal.test, 
+                   seasonal.test.args = seasonal.test.args, 
+                   allowdrift = allowdrift, allowmean = allowmean, 
+                   lambda = lambda, biasadj = biasadj, parallel = parallel, 
+                   num.cores = num.cores, include.mean = include.mean, 
+                   #xreg = NULL, include.constant, 
+                   include.drift = include.drift, model = model, 
+                   #lambda = model$lambda, x = y, biasadj = FALSE, 
+                   method = method) {
+  
+  tmp <- llply(1:length(timeID), function(i) {
+    
+    if(i == 1) {
+      
+      cat('\n===========================================\n')
+      cat('train[', i, ']\n')
+      print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
+      ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+      
+      cat('\n-------------------------------------------\n')
+      cat('train_test[', i, ']\n')
+      print(train_test <- dsmp[sq %in% ctr])
+      
+      srm <- train[, .(index, close)] %>% 
+        tk_ts(frequency = hrz1)
+      
+      if(.model == 'auto') {
+        
+        srm <- tryCatch({
+          auto.arima(srm, d = .d, D = .D, seasonal = seas, 
+                     stationary = stationary, trace = trace, 
+                     ic = ic, stepwise = stepwise, nmodels = nmodels, 
+                     #approximation = approximation, 
+                     method = method, truncate = truncate, #x = y, 
+                     xreg = xreg, test = test, lambda = lambda, 
+                     test.args = test.args, allowdrift = allowdrift, 
+                     seasonal.test = seasonal.test, 
+                     seasonal.test.args = seasonal.test.args, 
+                     allowmean = allowmean, biasadj = biasadj, 
+                     parallel = parallel, num.cores = num.cores)
+        }, error = function(err) NULL)
+        
+      } else if (.model == 'Arima') {
+        
+        srm <- tryCatch({
+          Arima(srm, order = .order, seasonal = .seas, 
+                xreg = xreg, include.mean = include.mean, 
+                include.drift = include.drift, 
+                #include.constant = include.constant, 
+                #model = model, lambda = lambda, x = y, 
+                biasadj = biasadj, method = method)
+          }, error = function(err) NULL)
+        
+      } else {
+        
+      }
+      
+      if(!is.null(srm)) {
+        srm %<>% 
+          forecast::forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        cat('\n-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        print(srm %>% as.data.table)
+      }
+      
+      if(.model == 'auto') {
+        nms <- paste0(.model, '_d', .d, 'D', .D, 
+                      '_seas', seas, '_', data_len, '_', 
+                      hrz1, '.', as_date(srm$index[1]), '.rds')
+        
+      } else if (.model == 'Arima') {
+        nms <- paste0(.model, '_arma', 
+          paste(.order, collapse = ''), '_seas', 
+          paste(.seas, collapse = ''), '_', data_len, '_', 
+          hrz1, '.', as_date(srm$index[1]), '.rds')
+        
+      } else {
+        
+      }
+      
+      saveRDS(srm, paste0(
+        dtr, 'data/fx/USDJPY/sarima_', nms))
+      cat('\n', i, '=', nms, '\n\n')
+      rm(srm)
+      
+    } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+      
+      
+    } else if(i == length(timeID)) {
+      
+      
+    } else  {
+      
+      lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+      
+      cat('\n===========================================\n')
+      cat('train[', i, ']\n')
+      print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+      ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+      
+      cat('\n-------------------------------------------\n')
+      cat('train_test[', i, ']\n')
+      print(train_test <- dsmp[sq %in% ctr])
+      
+      srm <- train[, .(index, close)] %>% 
+        tk_ts(frequency = hrz1)
+      
+      if(.model == 'auto') {
+        
+        srm <- tryCatch({
+          auto.arima(srm, d = .d, D = .D, seasonal = seas, 
+                     stationary = stationary, trace = trace, 
+                     ic = ic, stepwise = stepwise, nmodels = nmodels, 
+                     #approximation = approximation, 
+                     method = method, truncate = truncate, #x = y, 
+                     xreg = xreg, test = test, lambda = lambda, 
+                     test.args = test.args, allowdrift = allowdrift, 
+                     seasonal.test = seasonal.test, 
+                     seasonal.test.args = seasonal.test.args, 
+                     allowmean = allowmean, biasadj = biasadj, 
+                     parallel = parallel, num.cores = num.cores)
+        }, error = function(err) NULL)
+        
+      } else if (.model == 'Arima') {
+        
+        srm <- tryCatch({
+          Arima(srm, order = .order, seasonal = .seas, 
+                xreg = xreg, include.mean = include.mean, 
+                include.drift = include.drift, 
+                #include.constant = include.constant, 
+                #model = model, lambda = lambda, x = y, 
+                biasadj = biasadj, method = method)
+        }, error = function(err) NULL)
+        
+      } else {
+        
+      }
+      
+      if(!is.null(srm)) {
+        srm %<>% 
+          forecast::forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        cat('\n-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        print(srm %>% as.data.table)
+      }
+      
+      if(.model == 'auto') {
+        nms <- paste0(.model, '_d', .d, 'D', .D, 
+                      '_seas', seas, '_', data_len, '_', 
+                      hrz1, '.', as_date(srm$index[1]), '.rds')
+        
+      } else if (.model == 'Arima') {
+        nms <- paste0(.model, '_arma', 
+                      paste(.order, collapse = ''), '_seas', 
+                      paste(.seas, collapse = ''), '_', data_len, '_', 
+                      hrz1, '.', as_date(srm$index[1]), '.rds')
+        
+      } else {
+        
+      }
+      
+      saveRDS(srm, paste0(
+        dtr, 'data/fx/USDJPY/sarima_', nms))
+      cat('\n', i, '=', nms, '\n\n')
+      rm(srm)
+    }
+  })
+  return(tmp)
+}
+```
+
+```{r}
+source('function/sarima.R')
+```
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+timeID %<>% .[1:6] ##Take 6 dates as sample
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+
+.model = c('auto', 'Arima')
+# .model %<>% .[1]
+# .model %<>% .[2]
+.d = 0:2
+.D = 0:1 
+seas = c(TRUE, FALSE)
+## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
+#approximation = c(TRUE, FALSE)
+#stepwise = c(TRUE, FALSE)
+
+## .order = c(0, 0, 0)
+.order = gtools::permutations(6, 3, 0:5, repeats = TRUE) %>% 
+  as_tibble %>% 
+  dplyr::rename(p = V1, d = V2, q = V3) %>% 
+  dplyr::filter(d <= 2)
+
+## .seas = c(0, 0, 0)
+.seas = gtools::permutations(6, 3, 0:5, repeats = TRUE) %>% 
+  as_tibble %>% 
+  dplyr::rename(P = V1, D = V2, Q = V3) %>% 
+  dplyr::filter(D <= 1)
+```
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+llply(.model, function(md) {
+  
+  if(md == 'auto') {
+    srm0 <- llply(.d, function(d) {
+      srm1 <- llply(.D, function(D) {
+        srm2 <- llply(seas, function(ss) {
+          srm3 <- llply(timeID, function(dte) {
+            res <- sarima(
+              timeID = dte, dsmp, 
+              data_len = data_len, hrz1 = hrz1, 
+              .model = md, .d = d, .D = D, 
+              seas = ss, stationary = FALSE, trace = FALSE, 
+              ic = c('aicc', 'aic', 'bic'), 
+              stepwise = TRUE, nmodels = 94, 
+              #approximation=(length(x)>150|frequency(x)>12), 
+              truncate = NULL, method = NULL, #x = y, 
+              xreg = NULL, test = c('kpss', 'adf', 'pp'), 
+              test.args = list(), 
+              seasonal.test = c('seas', 'ocsb', 'hegy', 'ch'), 
+              seasonal.test.args = list(), 
+              allowdrift = TRUE, allowmean = TRUE, lambda = NULL, 
+              biasadj = FALSE, parallel = FALSE, num.cores = 2)
+            })
+          })
+        })
+      })
+    
+  } else if (md == 'Arima') {
+    srm0 <- llply(1:nrow(.order), function(i) {
+      srm1 <- llply(1:nrow(.seas), function(j) {
+        srm2 <- llply(timeID, function(dte) {
+          res <- sarima(
+            timeID = dte, dsmp, 
+            data_len = data_len, hrz1 = hrz1, 
+            .model = md, .order = unlist(.order[i,]), 
+            .seas = unlist(.seas[j,]), xreg = NULL, 
+            include.mean = TRUE, include.drift = FALSE, 
+            #include.constant = include.constant, 
+            #model = NULL, lambda = lambda, x = y, 
+            biasadj = FALSE, method = c('CSS-ML', 'ML', 'CSS'))
+        })
+      })
+    })
+    
+  } else {
+    
+  }
+  return(srm)
+})
+```
+
+## Sarima `msts()` & `auto.arima()`
+
+[Multiple and long seasonality for a SARIMA model in R](https://stats.stackexchange.com/questions/109835/multiple-and-long-seasonality-for-a-sarima-model-in-r)
+
+## Sarima `fable`
+
+https://otexts.com/fpp3/seasonal-arima.html
+
+## `arfima()`
+
+- [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+- [binary.com 面试试题 I - GARCH模型中的`ARCH in Mean`](https://rpubs.com/englianhu/binary-Q1-archm)
+
+## `msts()` & `hw()`
+
+> After looking a bit more, I've came across this question where a user wanted to use the hw method to forecast half-hourly electricity demand using the taylor dataset available in the forecast package.
+
+> As Professor Rob Hyndman suggest in the response to the linked question, the double seasonal Holt Winters model method dshw from the forecast package can be used to deal with half-hourly data.
+
+> After removing the yearly seasonality parameter (seasonal.periods = 8760) in the definition of my msts object, I've ran the model and it provided a pretty accurate result.
+
+[How can I apply Seasonal Exponential Smoothing forecasting method to hourly data in R](https://stackoverflow.com/a/62430549/3806250)
+
+## `msts()` & `tbats()`
+
+### Seasonal Data Modeling
+
+I set the length of data as weekly (`7200` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+[*Chapter 7 Multivariate TS Analysis* in **Introduction to Time Series Analysis and Forecasting in R**](https://bookdown.org/singh_pratap_tejendra/intro_time_series_r/multivariate-ts-analysis.html), but I use univariate due to some errors as mentioned in beginning.
+
+I tried to use `weeks(1)`, `months(1)`, `months(3)`, `years(1)` but there is not constant observations, we can refer to [`The seasonal period`](https://otexts.com/fpp3/tsibble-objects.html).
+
+Here I filter up the data as below :
+
+- `5 days * 1440 mins = 7200 mins` = weekly
+- `22 days * 1440 mins = 31680 mins` = monthly
+- `3 months * 22 days * 1440 mins = 95040 mins` = quarterly
+- `52 weeks * 5 days * 1440 mins = 374400 mins` = yearly
+
+### (Wk ∈ Mn) >> Dy
+
+I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `22 days * 1440 mins = 31680 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+llply(ets.m, function(md) {
+  mstseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+```
+
+### (Wk ∈ Qt) >> Dy
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+### (Wk ∈ Yr) >> Dy
+
+I set the length of data as yearly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `52 weeks * 5 days * 1440 mins = 374400 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+### (Mn ∈ Qt) >> Dy
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
+- seasonal `22 days * 1440 mins = 31680 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+# Comparison
+
+## Read Models
+
+### Grouped Models
+
+Here I read the saved models.
+
+Due to the models only forecast `1440 mins` (but not `7200 mins`) in advance, here I no need to filter the forecast price.
+
+# Conclusion
+
+## Summary
+
+## Final Conclude
+
+From final stage models comparison, we know that ******* is the <span style='color:white; background-color:#DE5D83;'>**β**est model</span>.
+
+## Future Studies
+
+Next papers will compare `tbats`, `midas`, `sarimax` etc.
+
+```{r opt, echo = FALSE}
+## Set options back to original options
+options(warn = 0)
+```
+
+# Appendix
+
+## Blooper
+
+## Documenting File Creation 
+
+It's useful to record some information about how your file was created.
+
+- File creation date: 2021-02-03
+- File latest updated date: `r today('Asia/Tokyo')`
+- `r R.version.string`
+- R version (short form): `r getRversion()`
+- [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+- File version: 1.0.0
+- Author Profile: [®γσ, Eng Lian Hu](https://github.com/scibrokes/owner)
+- GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
+- Additional session information:
+
+```{r info, warning = FALSE, results = 'asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('magrittr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+suppressMessages(require('knitr', quietly = TRUE))
+suppressMessages(require('kableExtra', quietly = TRUE))
+
+sys1 <- devtools::session_info()$platform %>% 
+  unlist %>% data.frame(Category = names(.), session_info = .)
+rownames(sys1) <- NULL
+
+sys2 <- data.frame(Sys.info()) %>% 
+  dplyr::mutate(Category = rownames(.)) %>% .[2:1]
+names(sys2)[2] <- c('Sys.info')
+rownames(sys2) <- NULL
+
+if (nrow(sys1) == 9 & nrow(sys2) == 8) {
+  sys2 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST🗾')))
+} else {
+  sys1 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST🗾')))
+}
+
+sys <- cbind(sys1, sys2) %>% 
+  kbl(caption = 'Additional session information:') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue', color = 'red') %>% 
+  column_spec(2, background = 'grey', color = 'black') %>% 
+  column_spec(3, background = 'CornflowerBlue', color = 'blue') %>% 
+  column_spec(4, background = 'grey', color = 'white') %>% 
+  row_spec(9, bold = T, color = 'yellow', background = '#D7261E')
+
+rm(sys1, sys2)
+sys
+```
+
+## Reference
+
+01. [<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:red'>(Blooper)</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)
+02. [<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) (in RPubs.com)
+03. [<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (in RStudioConnect.com)
+04. [binary.com 面试试题 I - GARCH模型中的`ARCH in Mean`](https://rpubs.com/englianhu/binary-Q1-archm)
+05. [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+06. [Forecasting: Principles and Practice](https://otexts.com/fpp3)
+07. [Tableau 100 Color Palettes](https://public.tableau.com/en-us/gallery/100-color-palettes)
+
+<br>
+
+---
+
+<br>
+
+<span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of <img src='www/scb-logo3rs.jpg' width='18'> [Sςιβrοκεrs Trαdιηg ®️](http://www.scibrokes.com) 経営企業**</span>

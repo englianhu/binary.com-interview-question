@@ -1,6 +1,6 @@
 ---
 title: "<img src='www/deriv.jpg' width='240'>"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://github.com/englianhu/binary.com-interview-question)"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part III)**</span>](https://github.com/englianhu/binary.com-interview-question)"
 author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/quantitative trader 1.jpg' width='13'> <img src='www/RYU.jpg' width='15'> <img src='www/ENG.jpg' width='24'> ® <img src='www/xueba1.jpg' width='14'>"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
@@ -104,7 +104,12 @@ Due to below issues from [<span style='color:#DE5D83; background-color:black;'>*
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) (in RPubs.com)
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (in RStudioConnect.com)
 
-In this paper I am using sarima models.
+Here I use the <span style='color:white; background-color:#DE5D83;'>**β**est model</span> (ETS `MNZ` & `MNZ`) from above study but adjust the data size as we can know from next section.
+
+The purpose of adjust the data size to be intraday :
+
+- compare if improve the accuracy.
+- easier the workload for other models comparison (use minimum data size to get optimal model).
 
 <span style='color:green'>**Load Packages**</span>
 
@@ -138,7 +143,7 @@ Sys.setenv(TZ = 'Asia/Tokyo')
 options(warn = -1, knitr.table.format = 'html')#, digits.secs = 6)
 
 ## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE, 
+knitr::opts_chunk$set(warning = FALSE, #cache = TRUE, 
                       message = FALSE, cache.lazy = FALSE)
 
 rm(pkgs)
@@ -300,95 +305,46 @@ dsmp[c(1:3, (nrow(dsmp)-3):nrow(dsmp)),] %>%
 
 From above table, we can know the dataset gather from `r paste(range(dsmp$date), collapse = ' to ')` which is used in [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1).
 
-# Modelling
+# `ETS` Modelling
+
+## Seasonal Data Modeling
 
 Here I start my 1st forecast date from 1st trading datetime of 2016 (`r dsmp[year == 2016]$date[1]` which is 2nd year in dataset) which is used in [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1).
 
-## Sarima `ts()` & `auto.arima()`
+The default data size `7200` to forecast `1440` as we can know that's the optimal volume of observation data as we know from [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) to compare with below seasonality.
 
-### Seasonal Data Modeling
+## Daily Seasonal Data
 
-I set the length of data as weekly (`7200` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
+### Modelling
 
-Here I only use `7200` to forecast `1440` as we can know that's the optimal volume of observation data as we know from [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1).
-
-### Wk >> Dy
-
-I set the length of data as weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
 
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.7 ARIMA modelling in R*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/arima-r.html)
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
 - [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
 
-```{r sarima, eval = FALSE}
-sarima <- function(timeID, data = dsmp, data_len, hrz1 = 1440, 
-                   .model = .model, .d = .d, .D = .D, 
-                   seas = seas, .order = .order, .seas = .seas, 
-                   stationary = stationary, trace = trace, 
-                   ic = ic, stepwise = stepwise, nmodels = nmodels, 
-                   #approximation = (length(x) > 150 | frequency(x) > 12), 
-                   truncate = truncate, #x = y, method = NULL, 
-                   xreg = xreg, test = test, test.args = test.args, 
-                   seasonal.test = seasonal.test, 
-                   seasonal.test.args = seasonal.test.args, 
-                   allowdrift = allowdrift, allowmean = allowmean, 
-                   lambda = lambda, biasadj = biasadj, parallel = parallel, 
-                   num.cores = num.cores, include.mean = include.mean, 
-                   #xreg = NULL, include.constant, 
-                   include.drift = include.drift, model = model, 
-                   #lambda = model$lambda, x = y, biasadj = FALSE, 
-                   method = method) {
+```{r tseas, eval = FALSE}
+tseas <- function(timeID, data = dsmp, data_len, 
+                  hrz1 = c(1440, 7200), hrz2 = 1440, .model) {
   
-  tmp <- llply(1:length(timeID), function(i) {
+  if(hrz1 <= 7200) {
     
-    if(i == 1) {
-      
-      cat('\n===========================================\n')
-      cat('train[', i, ']\n')
-      print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
-      ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-      
-      cat('\n-------------------------------------------\n')
-      cat('train_test[', i, ']\n')
-      print(train_test <- dsmp[sq %in% ctr])
-      
-      srm <- train[, .(index, close)] %>% 
-        tk_ts(frequency = hrz1)
-      
-      if(.model == 'auto') {
+    tmp <- llply(1:length(timeID), function(i) {
+      if(i == 1) {
         
-        srm <- tryCatch({
-          auto.arima(srm, d = .d, D = .D, seasonal = seas, 
-                     stationary = stationary, trace = trace, 
-                     ic = ic, stepwise = stepwise, nmodels = nmodels, 
-                     #approximation = approximation, 
-                     method = method, truncate = truncate, #x = y, 
-                     xreg = xreg, test = test, lambda = lambda, 
-                     test.args = test.args, allowdrift = allowdrift, 
-                     seasonal.test = seasonal.test, 
-                     seasonal.test.args = seasonal.test.args, 
-                     allowmean = allowmean, biasadj = biasadj, 
-                     parallel = parallel, num.cores = num.cores)
-        }, error = function(err) NULL)
+        cat('\n===========================================\n')
+        cat('train[', i, ']\n')
+        print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
         
-      } else if (.model == 'Arima') {
+        cat('\n-------------------------------------------\n')
+        cat('train_test[', i, ']\n')
+        print(train_test <- dsmp[sq %in% ctr])
         
-        srm <- tryCatch({
-          Arima(srm, order = .order, seasonal = .seas, 
-                xreg = xreg, include.mean = include.mean, 
-                include.drift = include.drift, 
-                #include.constant = include.constant, 
-                #model = model, lambda = lambda, x = y, 
-                biasadj = biasadj, method = method)
-          }, error = function(err) NULL)
-        
-      } else {
-        
-      }
-      
-      if(!is.null(srm)) {
-        srm %<>% 
-          forecast::forecast(h = hrz1) %>% 
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
           tk_tbl %>% 
           dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
                         mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
@@ -397,85 +353,41 @@ sarima <- function(timeID, data = dsmp, data_len, hrz1 = 1440,
         
         cat('\n-------------------------------------------\n')
         cat('forecast[', i, ']\n')
-        print(srm %>% as.data.table)
-      }
-      
-      if(.model == 'auto') {
-        nms <- paste0(.model, '_d', .d, 'D', .D, 
-                      '_seas', seas, '_', data_len, '_', 
-                      hrz1, '.', as_date(srm$index[1]), '.rds')
+        print(sets %>% as.data.table)
         
-      } else if (.model == 'Arima') {
-        nms <- paste0(.model, '_arma', 
-          paste(.order, collapse = ''), '_seas', 
-          paste(.seas, collapse = ''), '_', data_len, '_', 
-          hrz1, '.', as_date(srm$index[1]), '.rds')
+        fl_pth <- paste0(.dtr, 'data/fx/USDJPY/ts_ets_', data_len, 
+                         '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+        saveRDS(sets, fl_pth)
         
-      } else {
+        cat('\n', i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
+                                 data_len, '_', hrz1, '.', 
+                                 as_date(sets$index[1]), '.rds saved!'))
+        cat('\n\n')
+        rm(sets)
         
-      }
-      
-      saveRDS(srm, paste0(
-        dtr, 'data/fx/USDJPY/sarima_', nms))
-      cat('\n', i, '=', nms, '\n\n')
-      rm(srm)
-      
-    } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
-      
-      
-    } else if(i == length(timeID)) {
-      
-      
-    } else  {
-      
-      lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
-      
-      cat('\n===========================================\n')
-      cat('train[', i, ']\n')
-      print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
-      ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-      
-      cat('\n-------------------------------------------\n')
-      cat('train_test[', i, ']\n')
-      print(train_test <- dsmp[sq %in% ctr])
-      
-      srm <- train[, .(index, close)] %>% 
-        tk_ts(frequency = hrz1)
-      
-      if(.model == 'auto') {
+      } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
         
-        srm <- tryCatch({
-          auto.arima(srm, d = .d, D = .D, seasonal = seas, 
-                     stationary = stationary, trace = trace, 
-                     ic = ic, stepwise = stepwise, nmodels = nmodels, 
-                     #approximation = approximation, 
-                     method = method, truncate = truncate, #x = y, 
-                     xreg = xreg, test = test, lambda = lambda, 
-                     test.args = test.args, allowdrift = allowdrift, 
-                     seasonal.test = seasonal.test, 
-                     seasonal.test.args = seasonal.test.args, 
-                     allowmean = allowmean, biasadj = biasadj, 
-                     parallel = parallel, num.cores = num.cores)
-        }, error = function(err) NULL)
         
-      } else if (.model == 'Arima') {
+      } else if(i == length(timeID)) {
         
-        srm <- tryCatch({
-          Arima(srm, order = .order, seasonal = .seas, 
-                xreg = xreg, include.mean = include.mean, 
-                include.drift = include.drift, 
-                #include.constant = include.constant, 
-                #model = model, lambda = lambda, x = y, 
-                biasadj = biasadj, method = method)
-        }, error = function(err) NULL)
         
-      } else {
+      } else  {
         
-      }
-      
-      if(!is.null(srm)) {
-        srm %<>% 
-          forecast::forecast(h = hrz1) %>% 
+        lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+        
+        cat('\n===========================================\n')
+        cat('train[', i, ']\n')
+        print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+        
+        cat('\n-------------------------------------------\n')
+        cat('train_test[', i, ']\n')
+        print(train_test <- dsmp[sq %in% ctr])
+        
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
           tk_tbl %>% 
           dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
                         mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
@@ -484,172 +396,260 @@ sarima <- function(timeID, data = dsmp, data_len, hrz1 = 1440,
         
         cat('\n-------------------------------------------\n')
         cat('forecast[', i, ']\n')
-        print(srm %>% as.data.table)
-      }
-      
-      if(.model == 'auto') {
-        nms <- paste0(.model, '_d', .d, 'D', .D, 
-                      '_seas', seas, '_', data_len, '_', 
-                      hrz1, '.', as_date(srm$index[1]), '.rds')
+        print(sets %>% as.data.table)
         
-      } else if (.model == 'Arima') {
-        nms <- paste0(.model, '_arma', 
-                      paste(.order, collapse = ''), '_seas', 
-                      paste(.seas, collapse = ''), '_', data_len, '_', 
-                      hrz1, '.', as_date(srm$index[1]), '.rds')
+        fl_pth <- paste0(.dtr, 'data/fx/USDJPY/ts_ets_', data_len, 
+                         '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+        saveRDS(sets, fl_pth)
+        
+        cat('\n', i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
+                                 data_len, '_', hrz1, '.', 
+                                 as_date(sets$index[1]), '.rds saved!'))
+        cat('\n\n')
+        rm(sets)
+      }
+    })
+  } else if(hrz1 == 7200) {
+    
+    tmp <- llply(1:length(timeID), function(i) {
+      
+      if(i == 1) {
+        
+        cat('\n===========================================\n')
+        cat('train[', i, ']\n')
+        print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+        
+        cat('\n-------------------------------------------\n')
+        cat('train_test[', i, ']\n')
+        print(train_test <- dsmp[sq %in% ctr])
+        
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        cat('\n-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        print(sets %>% as.data.table)
+
+        fl_pth <- paste0(.dtr, 'data/fx/USDJPY/ts_ets_', data_len, 
+                         '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+        saveRDS(sets, fl_pth)
+        
+        cat('\n', i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
+                                 data_len, '_', hrz1, '.', 
+                                 as_date(sets$index[1]), '.rds saved!'))
+        cat('\n\n')
+        rm(sets)
+        
+      } else if(i > (length(timeID) - hrz1/hrz2) & i != length(timeID)) {
+        
+        lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+        ## filter the length of forecasted data to fit with train_test data 
+        ##   when the length of forecasted data more then length of test data.
+        #lst_date <- timeID[(length(timeID) - (hrz1/hrz2)):length(timeID)]
+        lst_date <- timeID[timeID >= timeID[i]]
+        lst_date_sq <- grep(
+          timeID[i], timeID[
+            (length(timeID) - (hrz1/hrz2 - 1)):length(timeID)])
+        
+        cat('\n===========================================\n')
+        cat('train[', i, ']\n')
+        print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+        
+        cat('\n-------------------------------------------\n')
+        cat('train_test[', i, ']\n')
+        print(train_test <- dsmp[sq %in% ctr])
+        
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
+          tk_tbl
+        
+        sets <- sets[1:(hrz1 - (hrz2 * lst_date_sq)),] %>% 
+          dplyr::mutate(index = train_test[
+            (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$index, 
+            mk.price = train_test[
+              (.N - (hrz1 - (hrz2 * lst_date_sq)) + 1):.N, ]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        cat('\n-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        print(sets %>% as.data.table)
+        
+        fl_pth <- paste0(.dtr, 'data/fx/USDJPY/ts_ets_', data_len, 
+                         '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+        saveRDS(sets, fl_pth)
+        
+        cat('\n', i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
+                                 data_len, '_', hrz1, '.', 
+                                 as_date(sets$index[1]), '.rds saved!'))
+        cat('\n\n')
+        rm(sets)
+        
+      } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+        
+        
+      } else if(i == length(timeID)) {
+        
         
       } else {
         
+        lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+        
+        cat('\n===========================================\n')
+        cat('train[', i, ']\n')
+        print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+        
+        cat('\n-------------------------------------------\n')
+        cat('train_test[', i, ']\n')
+        print(train_test <- dsmp[sq %in% ctr])
+        
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        cat('\n-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        print(sets %>% as.data.table)
+        
+        fl_pth <- paste0(.dtr, 'data/fx/USDJPY/ts_ets_', data_len, 
+                         '_', hrz1, '.', as_date(sets$index[1]), '.rds')
+        saveRDS(sets, fl_pth)
+        
+        cat('\n', i, '=', paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
+                                 data_len, '_', hrz1, '.', 
+                                 as_date(sets$index[1]), '.rds saved!'))
+        cat('\n\n')
+        rm(sets)
       }
-      
-      saveRDS(srm, paste0(
-        dtr, 'data/fx/USDJPY/sarima_', nms))
-      cat('\n', i, '=', nms, '\n\n')
-      rm(srm)
-    }
-  })
+    })
+    
+  } else {
+    
+    
+  }
   return(tmp)
 }
 ```
 
+Refer to above function or load below r function.
+
 ```{r}
-source('function/sarima.R')
+## best ETS models by referred to Interday High Frequency Trading Models Comparison Review (Part I).
+ets.m <- c('MNN', 'MNZ')
+source('function/tseas.R')
 ```
+
+### Dy >> Dy
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `1440 mins` (`1440 mins` is a trading day).
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
-timeID %<>% .[1:6] ##Take 6 dates as sample
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
+data_len <- 1440 #last 1440  observations dsmp[(.N - (data_len - 1)):.N]
 hrz1 <- 1440
+hrz2 <- 1440
 
-.model = c('auto', 'Arima')
-# .model %<>% .[1]
-# .model %<>% .[2]
-.d = 0:2
-.D = 0:1 
-seas = c(TRUE, FALSE)
-## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
-#approximation = c(TRUE, FALSE)
-#stepwise = c(TRUE, FALSE)
-
-## .order = c(0, 0, 0)
-.order = gtools::permutations(6, 3, 0:5, repeats = TRUE) %>% 
-  as_tibble %>% 
-  dplyr::rename(p = V1, d = V2, q = V3) %>% 
-  dplyr::filter(d <= 2)
-
-## .seas = c(0, 0, 0)
-.seas = gtools::permutations(6, 3, 0:5, repeats = TRUE) %>% 
-  as_tibble %>% 
-  dplyr::rename(P = V1, D = V2, Q = V3) %>% 
-  dplyr::filter(D <= 1)
+llply(ets.m, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
 ```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_1440_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Dy >> 12Hr
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `720 mins` (`720 mins` is half trading day).
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
-llply(.model, function(md) {
-  
-  if(md == 'auto') {
-    srm0 <- llply(.d, function(d) {
-      srm1 <- llply(.D, function(D) {
-        srm2 <- llply(seas, function(ss) {
-          srm3 <- llply(timeID, function(dte) {
-            res <- sarima(
-              timeID = dte, dsmp, 
-              data_len = data_len, hrz1 = hrz1, 
-              .model = md, .d = d, .D = D, 
-              seas = ss, stationary = FALSE, trace = FALSE, 
-              ic = c('aicc', 'aic', 'bic'), 
-              stepwise = TRUE, nmodels = 94, 
-              #approximation=(length(x)>150|frequency(x)>12), 
-              truncate = NULL, method = NULL, #x = y, 
-              xreg = NULL, test = c('kpss', 'adf', 'pp'), 
-              test.args = list(), 
-              seasonal.test = c('seas', 'ocsb', 'hegy', 'ch'), 
-              seasonal.test.args = list(), 
-              allowdrift = TRUE, allowmean = TRUE, lambda = NULL, 
-              biasadj = FALSE, parallel = FALSE, num.cores = 2)
-            })
-          })
-        })
-      })
-    
-  } else if (md == 'Arima') {
-    srm0 <- llply(1:nrow(.order), function(i) {
-      srm1 <- llply(1:nrow(.seas), function(j) {
-        srm2 <- llply(timeID, function(dte) {
-          res <- sarima(
-            timeID = dte, dsmp, 
-            data_len = data_len, hrz1 = hrz1, 
-            .model = md, .order = unlist(.order[i,]), 
-            .seas = unlist(.seas[j,]), xreg = NULL, 
-            include.mean = TRUE, include.drift = FALSE, 
-            #include.constant = include.constant, 
-            #model = NULL, lambda = lambda, x = y, 
-            biasadj = FALSE, method = c('CSS-ML', 'ML', 'CSS'))
-        })
-      })
-    })
-    
-  } else {
-    
-  }
-  return(srm)
-})
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 1440 #last 1440  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 720
+hrz2 <- 720
+
+llply(ets.m, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
 ```
 
-## Sarima `msts()` & `auto.arima()`
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_7200_1440.2016-01-04.rds'))
 
-[Multiple and long seasonality for a SARIMA model in R](https://stats.stackexchange.com/questions/109835/multiple-and-long-seasonality-for-a-sarima-model-in-r)
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 7200 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
 
-## Sarima `fable`
+*source : `r paste0(dim(smp), collapse = ' x ')`*
 
-https://otexts.com/fpp3/seasonal-arima.html
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
 
-## `arfima()`
+### Dy >> 6Hr
 
-- [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
-- [binary.com 面试试题 I - GARCH模型中的`ARCH in Mean`](https://rpubs.com/englianhu/binary-Q1-archm)
-
-## `msts()` & `hw()`
-
-> After looking a bit more, I've came across this question where a user wanted to use the hw method to forecast half-hourly electricity demand using the taylor dataset available in the forecast package.
-
-> As Professor Rob Hyndman suggest in the response to the linked question, the double seasonal Holt Winters model method dshw from the forecast package can be used to deal with half-hourly data.
-
-> After removing the yearly seasonality parameter (seasonal.periods = 8760) in the definition of my msts object, I've ran the model and it provided a pretty accurate result.
-
-[How can I apply Seasonal Exponential Smoothing forecasting method to hourly data in R](https://stackoverflow.com/a/62430549/3806250)
-
-## `msts()` & `tbats()`
-
-### Seasonal Data Modeling
-
-I set the length of data as weekly (`7200` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
-
-[*Chapter 7 Multivariate TS Analysis* in **Introduction to Time Series Analysis and Forecasting in R**](https://bookdown.org/singh_pratap_tejendra/intro_time_series_r/multivariate-ts-analysis.html), but I use univariate due to some errors as mentioned in beginning.
-
-I tried to use `weeks(1)`, `months(1)`, `months(3)`, `years(1)` but there is not constant observations, we can refer to [`The seasonal period`](https://otexts.com/fpp3/tsibble-objects.html).
-
-Here I filter up the data as below :
-
-- `5 days * 1440 mins = 7200 mins` = weekly
-- `22 days * 1440 mins = 31680 mins` = monthly
-- `3 months * 22 days * 1440 mins = 95040 mins` = quarterly
-- `52 weeks * 5 days * 1440 mins = 374400 mins` = yearly
-
-### (Wk ∈ Mn) >> Dy
-
-I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
-
-- data observation length `22 days * 1440 mins = 31680 mins`
-- seasonal `5 days * 1440 mins = 7200 mins`
-- sub-seasonal `1440 mins`
-- forecast `1440 mins`
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `360 mins` (`360 mins` is 6 hours in a trading day).
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
@@ -662,38 +662,736 @@ hrz1 <- 1440
 hrz2 <- 1440
 
 llply(ets.m, function(md) {
-  mstseas(timeID = timeID, dsmp, 
+  tseas(timeID = timeID, dsmp, 
         data_len = data_len, hrz1 = hrz1, 
         hrz2 = hrz2, .model = md)
   })
 ```
 
-### (Wk ∈ Qt) >> Dy
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_7200_1440.2016-01-04.rds'))
 
-I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 7200 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
 
-- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
-- seasonal `5 days * 1440 mins = 7200 mins`
-- sub-seasonal `1440 mins`
-- forecast `1440 mins`
+*source : `r paste0(dim(smp), collapse = ' x ')`*
 
-### (Wk ∈ Yr) >> Dy
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
 
-I set the length of data as yearly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+### Dy >> 4Hr
 
-- data observation length `52 weeks * 5 days * 1440 mins = 374400 mins`
-- seasonal `5 days * 1440 mins = 7200 mins`
-- sub-seasonal `1440 mins`
-- forecast `1440 mins`
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `240 mins` (`240 mins` is 4 hours in a trading day).
 
-### (Mn ∈ Qt) >> Dy
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 22 * 1440 #last 31680  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
 
-I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
 
-- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
-- seasonal `22 days * 1440 mins = 31680 mins`
-- sub-seasonal `1440 mins`
-- forecast `1440 mins`
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_31680_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 31680 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Dy >> 3Hr
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `180 mins` (`180 mins` is 3 hours in a trading day).
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 3 * 22 * 1440 #last 95040  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_95040_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 95040 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Dy >> 2Hr
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `120 mins` (`120 mins` is 2 hours in a trading day).
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Dy >> 1Hr
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `60 mins` (`60 mins` is 1 hours in a trading day).
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Dy >> 30mins
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `30 mins` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Dy >> 20mins
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `20 mins` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Dy >> 10mins
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `10 mins` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Dy >> 5mins
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `5 mins` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Dy >> 3mins
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `3 mins` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Dy >> 1min
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 1440
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+## Weekly Seasonal Data
+
+### Modelling
+
+```{r}
+## set all models provided by ets function.
+if(!exists('ets.m')) {
+  ets.m <- c('MNN', 'MNZ') }
+if(!exists('tseas')) source('function/tseas.R')
+```
+
+### Wk >> 12Hr
+
+I set the length of data as weekly (`5 days * 1440 mins = 7200 mins` minutes which is 22 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 7200
+hrz2 <- 1440
+
+llply(ets.m, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_7200_7200.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 7200 forecast 7200)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Wk >> 6Hr
+
+I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 22 * 1440 #last 31680  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 7200
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_31680_7200.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 31680 forecast 7200)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Wk >> 3Hr
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 3 * 22 * 1440 #last 95040  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 7200
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_95040_7200.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 95040 forecast 7200)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Wk >> 1Hr
+
+I set the length of data as yearly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days) to forecast `7200` minutes (`7200` minutes is 5 trading day).
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 7200
+hrz2 <- 1440
+
+## based on the report, here I retrieved back and use the best model with different data size.
+bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
+
+llply(bmd, function(md) {
+  tseas(timeID = timeID, dsmp, 
+        data_len = data_len, hrz1 = hrz1, 
+        hrz2 = hrz2, .model = md)
+  })
+
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_7200.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 7200)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+```{r, include = FALSE}
+if(exists('bse')) rm(bse)
+if(exists('ctr')) rm(ctr)
+if(exists('data_len')) rm(data_len)
+if(exists('ets.m')) rm(ets.m)
+if(exists('hrz1')) rm(hrz1)
+if(exists('hrz2')) rm(hrz2)
+if(exists('i')) rm(i)
+if(exists('lst_sq')) rm(lst_sq)
+if(exists('timeID')) rm(timeID)
+```
 
 # Comparison
 
@@ -703,15 +1401,1125 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 
 Here I read the saved models.
 
-Due to the models only forecast `1440 mins` (but not `7200 mins`) in advance, here I no need to filter the forecast price.
+```{r, eval = FALSE}
+## Get all files.
+fls <- paste0(.dtr, 'data/fx/USDJPY/') %>% 
+  list.files(., pattern = '^ts_')
+
+fls_pth <- paste0(.dtr, 'data/fx/USDJPY/', fls)
+
+mds <- ldply(1:length(fls), function(i) {
+    
+    nms <- fls[i] %>% 
+        str_replace_all('.rds', '') %>% 
+        str_split('_|\\.') %>% 
+        .[[1]]
+    
+    if(any(str_detect(nms, 'ets'))) {
+      nms <- nms
+    } else {
+      nms <- c(nms[1], rep(NA, 2), nms[2:length(nms)]) }
+    
+    names(nms) <- c('t_series', 'model', 'sub_model', 
+                    'data_min', 'fc_min', 'date')
+    
+    datset2 <- t(nms) %>% 
+      data.frame %>% 
+      mutate(model =factor(model), sub_model = factor(sub_model), 
+             data_min = as.numeric(data_min), 
+             fc_min = as.numeric(fc_min), date = as_date(date))
+    
+    datset <- read_rds(fls_pth[i])
+    
+    res <- tibble(datset2, datset) %>% 
+      dplyr::select(index, t_series, model, sub_model, data_min, 
+                    fc_min, date, mk.price, fc.price)
+    res <- res[!is.na('mk.price'),]
+    cat(nms, '\n')
+    
+    return(res)
+    
+}) %>% 
+  as_tibble
+
+## https://tysonbarrett.com/jekyll/update/2019/10/06/datatable_memory/
+## http://brooksandrew.github.io/simpleblog/articles/advanced-data-table/
+## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/
+
+## Due to files size more than 1GB and over 0.1 billion observation, here I save into 4 files.
+saveRDS(mds_ts, paste0(.dtr, 'data/fx/USDJPY/mds_ts.rds'))
+
+saveRDS(mds_ets_AAN_MAZ, 
+         paste0(.dtr, 'data/fx/USDJPY/mds_ets_AAN_MAZ.rds'))
+
+saveRDS(mds_ets_MMN_ZAN, 
+         paste0(.dtr, 'data/fx/USDJPY/mds_ets_MMN_ZAN.rds'))
+
+saveRDS(mds_ets_ZAZ_ZZZ, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_ZAZ_ZZZ.rds'))
+```
+
+```{r, eval = FALSE}
+mds_ts <- read_rds(
+  paste0(.dtr, 'data/fx/USDJPY/mds_ts.rds'))
+
+mds_ets_AAN_MAZ <- read_rds(
+  paste0(.dtr, 'data/fx/USDJPY/mds_ets_AAN_MAZ.rds'))
+
+mds_ets_MMN_ZAN <- read_rds(
+  paste0(.dtr, 'data/fx/USDJPY/mds_ets_MMN_ZAN.rds'))
+
+mds_ets_ZAZ_ZZZ <- read_rds(
+  paste0(.dtr, 'data/fx/USDJPY/mds_ets_ZAZ_ZZZ.rds'))
+```
+
+### Long Format
+
+```{r, eval = FALSE}
+rm(list = ls())
+
+if(!exists('mds_ts')) {
+  mds_ts <- read_rds(paste0(.dtr, 'data/fx/USDJPY/mds_ts.rds')) }
+
+mds_ts_cmp <- mds_ts %>% 
+    tidyr::unite(model, c(t_series, data_min, fc_min)) %>% 
+    as.data.table %>% 
+    .[, .(index, model, mk.price, fc.price)]
+
+mds_ts_cmp <- unique(mds_ts_cmp[, .(index, model, mk.price, fc.price)])
+
+## save dataset in data.table format
+saveRDS(mds_ts_cmp, paste0(.dtr, 'data/fx/USDJPY/mds_ts_cmp.rds'))
+
+## convert to long format for plot chart
+prc <- unique(mds_ts_cmp[, .(index, model, mk.price)])
+prc <- prc[, model := 'actual'][]
+setnames(prc, old = 'mk.price', new = 'price')
+prc <- unique(prc)
+
+mds_ts_grph <- unique(mds_ts_cmp[, .(index, model, fc.price)])
+setnames(mds_ts_grph, old = 'fc.price', new = 'price')
+
+mds_ts_grph <- rbind(mds_ts_grph, prc)
+mds_ts_grph <- data.table(mds_ts_grph)[order(index)]
+rm(prc)
+
+## save dataset in data.table format
+saveRDS(mds_ts_grph, paste0(.dtr, 'data/fx/USDJPY/mds_ts_grph.rds'))
+```
+
+```{r, eval = FALSE}
+rm(list = ls())
+
+if(!exists('mds_ets_AAN_MAZ')) {
+  mds_ets_AAN_MAZ <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_AAN_MAZ.rds')) }
+
+mds_ets_AAN_MAZ_cmp <- mds_ets_AAN_MAZ %>% 
+    tidyr::unite(model, t_series:fc_min) %>% #different with mds_ts_cmp
+    as.data.table %>% 
+    .[, .(index, model, mk.price, fc.price)]
+
+mds_ets_AAN_MAZ_cmp <- unique(
+  mds_ets_AAN_MAZ_cmp[, .(index, model, mk.price, fc.price)])
+
+## save dataset in data.table format
+saveRDS(mds_ets_AAN_MAZ_cmp, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_AAN_MAZ_cmp.rds'))
+
+## convert to long format for plot chart
+prc <- unique(mds_ets_AAN_MAZ_cmp[, .(index, model, mk.price)])
+prc <- prc[, model := 'actual'][]
+setnames(prc, old = 'mk.price', new = 'price')
+prc <- unique(prc)
+
+mds_ets_AAN_MAZ_grph <- unique(
+  mds_ets_AAN_MAZ_cmp[, .(index, model, fc.price)])
+setnames(mds_ets_AAN_MAZ_grph, old = 'fc.price', new = 'price')
+
+mds_ets_AAN_MAZ_grph <- rbind(mds_ets_AAN_MAZ_grph, prc)
+mds_ets_AAN_MAZ_grph <- data.table(mds_ets_AAN_MAZ_grph)[order(index)]
+rm(prc)
+
+## save dataset in data.table format
+saveRDS(mds_ets_AAN_MAZ_grph, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_AAN_MAZ_grph.rds'))
+```
+
+```{r, eval = FALSE}
+rm(list = ls())
+
+if(!exists('mds_ets_MMN_ZAN')) {
+  mds_ets_MMN_ZAN <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MMN_ZAN.rds')) }
+
+mds_ets_MMN_ZAN_cmp <- mds_ets_MMN_ZAN %>% 
+    tidyr::unite(model, t_series:fc_min) %>%  #different with mds_ts_cmp
+    as.data.table %>% 
+    .[, .(index, model, mk.price, fc.price)]
+
+mds_ets_MMN_ZAN_cmp <- unique(
+  mds_ets_MMN_ZAN_cmp[, .(index, model, mk.price, fc.price)])
+
+## save dataset in data.table format
+saveRDS(mds_ets_MMN_ZAN_cmp, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MMN_ZAN_cmp.rds'))
+
+## convert to long format for plot chart
+prc <- unique(mds_ets_MMN_ZAN_cmp[, .(index, model, mk.price)])
+prc <- prc[, model := 'actual'][]
+setnames(prc, old = 'mk.price', new = 'price')
+prc <- unique(prc)
+
+mds_ets_MMN_ZAN_grph <- unique(
+  mds_ets_MMN_ZAN_cmp[, .(index, model, fc.price)])
+setnames(mds_ets_MMN_ZAN_grph, old = 'fc.price', new = 'price')
+
+mds_ets_MMN_ZAN_grph <- rbind(mds_ets_MMN_ZAN_grph, prc)
+mds_ets_MMN_ZAN_grph <- data.table(mds_ets_MMN_ZAN_grph)[order(index)]
+rm(prc)
+
+## save dataset in data.table format
+saveRDS(mds_ets_MMN_ZAN_grph, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MMN_ZAN_grph.rds'))
+```
+
+```{r, eval = FALSE}
+rm(list = ls())
+
+if(!exists('mds_ets_ZAZ_ZZZ')) {
+  mds_ets_ZAZ_ZZZ <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_ZAZ_ZZZ.rds')) }
+
+mds_ets_ZAZ_ZZZ_cmp <- mds_ets_ZAZ_ZZZ %>% 
+    tidyr::unite(model, t_series:fc_min) %>%  #different with mds_ts_cmp
+    as.data.table %>% 
+    .[, .(index, model, mk.price, fc.price)]
+
+mds_ets_ZAZ_ZZZ_cmp <- unique(
+  mds_ets_ZAZ_ZZZ_cmp[, .(index, model, mk.price, fc.price)])
+
+## save dataset in data.table format
+saveRDS(mds_ets_ZAZ_ZZZ_cmp, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_ZAZ_ZZZ_cmp.rds'))
+
+## convert to long format for plot chart
+prc <- unique(mds_ets_ZAZ_ZZZ_cmp[, .(index, model, mk.price)])
+prc <- prc[, model := 'actual'][]
+setnames(prc, old = 'mk.price', new = 'price')
+prc <- unique(prc)
+
+mds_ets_ZAZ_ZZZ_grph <- unique(
+  mds_ets_ZAZ_ZZZ_cmp[, .(index, model, fc.price)])
+setnames(mds_ets_ZAZ_ZZZ_grph, old = 'fc.price', new = 'price')
+
+mds_ets_ZAZ_ZZZ_grph <- rbind(mds_ets_ZAZ_ZZZ_grph, prc)
+mds_ets_ZAZ_ZZZ_grph <- data.table(mds_ets_ZAZ_ZZZ_grph)[order(index)]
+rm(prc)
+
+## save dataset in data.table format
+saveRDS(mds_ets_ZAZ_ZZZ_grph, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_ZAZ_ZZZ_grph.rds'))
+```
+
+```{r}
+if(!exists('mds_ts_grph')) {
+  mds_ts_grph <- readRDS(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ts_grph.rds')) }
+
+if(!exists('mds_ets_AAN_MAZ_grph')) {
+  mds_ets_AAN_MAZ_grph <- readRDS(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_AAN_MAZ_grph.rds')) }
+
+if(!exists('mds_ets_MMN_ZAN_grph')) {
+  mds_ets_MMN_ZAN_grph <- readRDS(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MMN_ZAN_grph.rds')) }
+
+if(!exists('mds_ets_ZAZ_ZZZ_grph')) {
+  mds_ets_ZAZ_ZZZ_grph <- readRDS(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_ZAZ_ZZZ_grph.rds')) }
+```
+
+```{r, warning = FALSE, results = 'asis'}
+data.frame(mds_ts_grph)[
+  c(1:5, (nrow(mds_ts_grph)-5):nrow(mds_ts_grph)),] %>% 
+  kbl(caption = 'Data Sample', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'grey') %>% 
+  column_spec(3, background = '#556DAC') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(mds_ts_grph), collapse = ' x ')`*
+
+## Line Chart
+
+```{r, eval = FALSE, warning = FALSE, results = 'asis'}
+## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
+plt <- mds_ts_grph %>% 
+  ggplot(aes(x = index, y = price, group = model, color = model)) + 
+  geom_line() + 
+
+  labs(title = '1 min Open Price Forecasting', 
+       subtitle = paste('From', range(unique(mds_ts_grph$index))[1L], 'to', range(unique(mds_ts_grph$index))[2L]), 
+       caption = "Data source: fxcm") + 
+  ylab('Exchange Rates USD/JPY') + 
+  theme_economist() + 
+  theme(legend.position = 'right')
+
+#ggplotly(plt)
+plt
+```
+
+Due to the high volume of data, here I skip the **line chart**.
+
+```{r, include = FALSE}
+if(exists('plt')) rm(plt)
+```
+
+## Table
+
+### `unique(x, fromLast = FALSE)` Dataset
+
+Below table compares the models.
+
+```{r, eval = FALSE}
+if(!exists('mds_ts_cmp')) {
+  mds_ts_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ts_cmp.rds')) }
+
+if(!exists('mds_ets_AAN_MAZ_cmp')) {
+  mds_ets_AAN_MAZ_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_AAN_MAZ_cmp.rds')) }
+
+if(!exists('mds_ets_MMN_ZAN_cmp')) {
+  mds_ets_MMN_ZAN_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MMN_ZAN_cmp.rds')) }
+
+if(!exists('mds_ets_ZAZ_ZZZ_cmp')) {
+    mds_ets_ZAZ_ZZZ_cmp <- read_rds(
+      paste0(.dtr, 'data/fx/USDJPY/mds_ets_ZAZ_ZZZ_cmp.rds')) }
+```
+
+```{r, eval = FALSE}
+rm(list = ls())
+
+## report for mds_ts_cmp
+if(!exists('mds_ts_cmp')) {
+  mds_ts_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ts_cmp.rds')) }
+
+if(!is.data.table('mds_ts_cmp')) mds_ts_cmp %<>% as.data.table
+
+mds_ts_cmp <- unique(
+  mds_ts_cmp, fromLast = FALSE, by = c('index', 'model'))
+
+rp1 <- mds_ts_cmp[, {
+  mk.price = mk.price
+  fc.price = fc.price
+  .SD[, .(.N, 
+          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
+          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
+          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
+          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
+          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
+      by=.(model)]}][order(model), ]
+
+rm(mds_ts_cmp)
+
+## report for mds_ets_AAN_MAZ_cmp
+if(!exists('mds_ets_AAN_MAZ_cmp')) {
+  mds_ets_AAN_MAZ_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_AAN_MAZ_cmp.rds')) }
+
+if(!is.data.table('mds_ets_AAN_MAZ_cmp')) {
+  mds_ets_AAN_MAZ_cmp %<>% as.data.table }
+
+mds_ets_AAN_MAZ_cmp <- unique(
+  mds_ets_AAN_MAZ_cmp, fromLast = FALSE, by = c('index', 'model'))
+
+rp2 <- mds_ets_AAN_MAZ_cmp[, {
+  mk.price = mk.price
+  fc.price = fc.price
+  .SD[, .(.N, 
+          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
+          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
+          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
+          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
+          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
+      by=.(model)]}][order(model), ]
+
+rm(mds_ets_AAN_MAZ_cmp)
+
+## report for mds_ets_MMN_ZAN_cmp
+if(!exists('mds_ets_MMN_ZAN_cmp')) {
+  mds_ets_MMN_ZAN_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MMN_ZAN_cmp.rds')) }
+
+if(!is.data.table('mds_ets_MMN_ZAN_cmp')) {
+  mds_ets_MMN_ZAN_cmp %<>% as.data.table }
+
+mds_ets_MMN_ZAN_cmp <- unique(
+  mds_ets_MMN_ZAN_cmp, fromLast = FALSE, by = c('index', 'model'))
+
+rp3 <- mds_ets_MMN_ZAN_cmp[, {
+  mk.price = mk.price
+  fc.price = fc.price
+  .SD[, .(.N, 
+          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
+          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
+          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
+          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
+          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
+      by=.(model)]}][order(model), ]
+
+rm(mds_ets_MMN_ZAN_cmp)
+
+## report for mds_ets_ZAZ_ZZZ_cmp
+if(!exists('mds_ets_ZAZ_ZZZ_cmp')) {
+    mds_ets_ZAZ_ZZZ_cmp <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_ZAZ_ZZZ_cmp.rds')) }
+
+if(!is.data.table('mds_ets_ZAZ_ZZZ_cmp')) {
+  mds_ets_ZAZ_ZZZ_cmp %<>% as.data.table }
+
+mds_ets_ZAZ_ZZZ_cmp <- unique(
+  mds_ets_ZAZ_ZZZ_cmp, fromLast = FALSE, by = c('index', 'model'))
+
+rp4 <- mds_ets_ZAZ_ZZZ_cmp[, {
+  mk.price = mk.price
+  fc.price = fc.price
+  .SD[, .(.N, 
+          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
+          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
+          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
+          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
+          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
+      by=.(model)]}][order(model), ]
+
+rm(mds_ets_ZAZ_ZZZ_cmp)
+
+## report
+rp_fLF <- rbindlist(list(rp1, rp2, rp3, rp4), idcol = TRUE)
+
+rm(rp1, rp2, rp3, rp4)
+saveRDS(rp_fLF, paste0(.dtr, 'data/fx/USDJPY/rp_fLF.rds'))
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+rp_fLF <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp_fLF.rds'))
+
+rp_tbl <- rp_fLF %>% 
+  dplyr::mutate(
+    mae = ifelse(
+      rank(mae) <= 3, 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mape = ifelse(
+      rank(mape) <= 3, 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    rmse = ifelse(
+      rank(rmse) <= 3, 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    smape = ifelse(
+      rank(smape) <= 3, 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mse = ifelse(
+      rank(mse) <= 3, 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'grey', italic = TRUE))) %>% 
+  kbl(caption = 'Accurcy Report (Forecasted Up to Max 7200 mins)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(4, background = 'Gainsboro') %>% 
+  column_spec(5, background = 'LightGray') %>% 
+  column_spec(6, background = 'Gainsboro') %>% 
+  column_spec(7, background = 'LightGray') %>% 
+  column_spec(8, background = 'Gainsboro') %>%  
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+
+rp_tbl
+```
+
+*source : `r paste0(dim(rp_tbl), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('rp_tbl')) rm(rp_tbl)
+```
+
+from above models we know the **βest model**.
+
+### `unique(x, fromLast = TRUE)` Dataset
+
+Below table compares the models.
+
+```{r, eval = FALSE}
+if(!exists('mds_ts_cmp')) {
+  mds_ts_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ts_cmp.rds')) }
+
+if(!exists('mds_ets_AAN_MAZ_cmp')) {
+  mds_ets_AAN_MAZ_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_AAN_MAZ_cmp.rds')) }
+
+if(!exists('mds_ets_MMN_ZAN_cmp')) {
+  mds_ets_MMN_ZAN_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MMN_ZAN_cmp.rds')) }
+
+if(!exists('mds_ets_ZAZ_ZZZ_cmp')) {
+    mds_ets_ZAZ_ZZZ_cmp <- read_rds(
+      paste0(.dtr, 'data/fx/USDJPY/mds_ets_ZAZ_ZZZ_cmp.rds')) }
+```
+
+```{r, eval = FALSE}
+rm(list = ls())
+
+## report for mds_ts_cmp
+if(!exists('mds_ts_cmp')) {
+  mds_ts_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ts_cmp.rds')) }
+
+if(!is.data.table('mds_ts_cmp')) mds_ts_cmp %<>% as.data.table
+
+mds_ts_cmp <- unique(
+  mds_ts_cmp, fromLast = TRUE, by = c('index', 'model'))
+
+rp1 <- mds_ts_cmp[, {
+  mk.price = mk.price
+  fc.price = fc.price
+  .SD[, .(.N, 
+          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
+          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
+          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
+          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
+          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
+      by=.(model)]}][order(model), ]
+
+rm(mds_ts_cmp)
+
+## report for mds_ets_AAN_MAZ_cmp
+if(!exists('mds_ets_AAN_MAZ_cmp')) {
+  mds_ets_AAN_MAZ_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_AAN_MAZ_cmp.rds')) }
+
+if(!is.data.table('mds_ets_AAN_MAZ_cmp')) {
+  mds_ets_AAN_MAZ_cmp %<>% as.data.table }
+
+mds_ets_AAN_MAZ_cmp <- unique(
+  mds_ets_AAN_MAZ_cmp, fromLast = TRUE, by = c('index', 'model'))
+
+rp2 <- mds_ets_AAN_MAZ_cmp[, {
+  mk.price = mk.price
+  fc.price = fc.price
+  .SD[, .(.N, 
+          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
+          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
+          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
+          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
+          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
+      by=.(model)]}][order(model), ]
+
+rm(mds_ets_AAN_MAZ_cmp)
+
+## report for mds_ets_MMN_ZAN_cmp
+if(!exists('mds_ets_MMN_ZAN_cmp')) {
+  mds_ets_MMN_ZAN_cmp <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MMN_ZAN_cmp.rds')) }
+
+if(!is.data.table('mds_ets_MMN_ZAN_cmp')) {
+  mds_ets_MMN_ZAN_cmp %<>% as.data.table }
+
+mds_ets_MMN_ZAN_cmp <- unique(
+  mds_ets_MMN_ZAN_cmp, fromLast = TRUE, by = c('index', 'model'))
+
+rp3 <- mds_ets_MMN_ZAN_cmp[, {
+  mk.price = mk.price
+  fc.price = fc.price
+  .SD[, .(.N, 
+          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
+          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
+          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
+          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
+          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
+      by=.(model)]}][order(model), ]
+
+rm(mds_ets_MMN_ZAN_cmp)
+
+## report for mds_ets_ZAZ_ZZZ_cmp
+if(!exists('mds_ets_ZAZ_ZZZ_cmp')) {
+    mds_ets_ZAZ_ZZZ_cmp <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_ZAZ_ZZZ_cmp.rds')) }
+
+if(!is.data.table('mds_ets_ZAZ_ZZZ_cmp')) {
+  mds_ets_ZAZ_ZZZ_cmp %<>% as.data.table }
+
+mds_ets_ZAZ_ZZZ_cmp <- unique(
+  mds_ets_ZAZ_ZZZ_cmp, fromLast = TRUE, by = c('index', 'model'))
+
+rp4 <- mds_ets_ZAZ_ZZZ_cmp[, {
+  mk.price = mk.price
+  fc.price = fc.price
+  .SD[, .(.N, 
+          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
+          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
+          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
+          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
+          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
+      by=.(model)]}][order(model), ]
+
+rm(mds_ets_ZAZ_ZZZ_cmp)
+
+## report
+rp_fLT <- rbindlist(list(rp1, rp2, rp3, rp4), idcol = TRUE)
+
+rm(rp1, rp2, rp3, rp4)
+saveRDS(rp_fLT, paste0(.dtr, 'data/fx/USDJPY/rp_fLT.rds'))
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+rp_fLT <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp_fLT.rds'))
+
+rp_tbl <- rp_fLT %>% 
+  dplyr::mutate(
+    mae = ifelse(
+      rank(mae) <= 3, 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mape = ifelse(
+      rank(mape) <= 3, 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    rmse = ifelse(
+      rank(rmse) <= 3, 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    smape = ifelse(
+      rank(smape) <= 3, 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mse = ifelse(
+      rank(mse) <= 3, 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'grey', italic = TRUE))) %>% 
+  kbl(caption = 'Accurcy Report (Forecasted 1440 mins)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(4, background = 'Gainsboro') %>% 
+  column_spec(5, background = 'LightGray') %>% 
+  column_spec(6, background = 'Gainsboro') %>% 
+  column_spec(7, background = 'LightGray') %>% 
+  column_spec(8, background = 'Gainsboro') %>%  
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+
+rp_tbl
+```
+
+*source : `r paste0(dim(rp_tbl), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('rp_tbl')) rm(rp_tbl)
+```
+
+from above models we know the **βest model**.
+
+### Summary
+
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
+rp_fLF <- rp_fLF[, arrange := 'from_first'][]
+rp_fLT <- rp_fLT[, arrange := 'from_last'][]
+
+rp <- rbindlist(list(rp_fLF, rp_fLT))
+rp <- rp[, .(.id, model, arrange, N, mae, mape, rmse, smape, mse)]
+rp %<>% unique
+
+sum <- rp[mae == min(mae) | mape == min(mape) | rmse == min(rmse) | smape == min(smape) | mse == min(mse)]
+
+sum %>% 
+  dplyr::mutate(
+    mae = ifelse(
+      rank(mae) <= 3, 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mape = ifelse(
+      rank(mape) <= 3, 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    rmse = ifelse(
+      rank(rmse) <= 3, 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    smape = ifelse(
+      rank(smape) <= 3, 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mse = ifelse(
+      rank(mse) <= 3, 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'grey', italic = TRUE))) %>% 
+  kbl(caption = 'Accurcy Report (Initial Stage Comparison)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  column_spec(3, background = 'grey') %>% 
+  column_spec(4, background = 'LightSlateGrey') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>% 
+  column_spec(7, background = 'Gainsboro') %>% 
+  column_spec(8, background = 'LightGray') %>% 
+  column_spec(9, background = 'Gainsboro') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(sum), collapse = ' x ')`*
 
 # Conclusion
 
-## Summary
+## Initial Summary
+
+From initial stage models comparison, we know that `r unique(sum$model)[1]` and `r unique(sum$model)[2]` is the <span style='color:white; background-color:#DE5D83;'>**β**est model</span>.
+
+## Small Adjustment
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+rp_ts <- rp[, {
+    .SD[, .(model = model, 
+            ts = str_detect(model, '^ts_[0-9]'), 
+            arrange = arrange, 
+            mae = mae, 
+            mape = mape, 
+            rmse = rmse, 
+            smape = smape, 
+            mse = mse), ]}][ts == TRUE, !('ts')]
+rp_ts %<>% unique
+
+rp_ts %>% 
+  dplyr::mutate(
+    mae = ifelse(
+      rank(mae) <= 3, 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mape = ifelse(
+      rank(mape) <= 3, 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    rmse = ifelse(
+      rank(rmse) <= 3, 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    smape = ifelse(
+      rank(smape) <= 3, 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mse = ifelse(
+      rank(mse) <= 3, 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'grey', italic = TRUE))) %>% 
+  kbl(caption = 'Accurcy Report (time series)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>% 
+  column_spec(7, background = 'Gainsboro') %>%  
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+```
+
+*source : `r paste0(dim(rp_ts), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('rp_ts')) rm(rp_ts)
+```
+
+As we can know from `ts` Here I use the <span style='color:white; background-color:#DE5D83;'>**β**est model</span> but adjust the data size to compare.
+
+```{r, eval = FALSE}
+## Get all MNN & MNZ files.
+MNN_MNZ <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN|^ts_ets_MNZ')
+fls_pth <- paste0(.dtr, 'data/fx/USDJPY/', MNN_MNZ)
+
+## read files
+ex_mds_ets_MNN_MNZ <- ldply(1:length(MNN_MNZ), function(i) {
+    
+    nms <- MNN_MNZ[i] %>% 
+        str_replace_all('^ex_|.rds$', '') %>% 
+        str_split('_|\\.') %>% 
+        .[[1]]
+    
+    if(any(str_detect(nms, 'ets'))) {
+      nms <- nms
+    } else {
+      nms <- c(nms[1], rep(NA, 2), nms[2:length(nms)]) }
+    
+    names(nms) <- c('t_series', 'model', 'sub_model', 
+                    'data_min', 'fc_min', 'date')
+    
+    datset2 <- t(nms) %>% 
+      data.frame %>% 
+      mutate(model =factor(model), sub_model = factor(sub_model), 
+             data_min = as.numeric(data_min), 
+             fc_min = as.numeric(fc_min), date = as_date(date))
+    
+    datset <- read_rds(fls_pth[i])
+    
+    res <- tibble(datset2, datset) %>% 
+      dplyr::select(index, t_series, model, sub_model, data_min, 
+                    fc_min, date, mk.price, fc.price)
+    res <- res[!is.na('mk.price'),]
+    cat(nms, '\n')
+    
+    return(res)
+    
+}) %>% 
+  as_tibble
+
+saveRDS(ex_mds_ets_MNN_MNZ, 
+         paste0(.dtr, 'data/fx/USDJPY/ex_mds_ets_MNN_MNZ.rds'))
+
+rm(list = ls())
+
+## MNN & MNZ ets models
+if(!exists('ex_mds_ets_MNN_MNZ')) {
+  ex_mds_ets_MNN_MNZ <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/ex_mds_ets_MNN_MNZ.rds')) }
+
+ex_mds_ets_MNN_MNZ_cmp <- ex_mds_ets_MNN_MNZ %>% 
+    tidyr::unite(model, t_series:fc_min) %>%  #different with mds_ts_cmp
+    as.data.table %>% 
+    .[, .(index, model, mk.price, fc.price)]
+
+ex_mds_ets_MNN_MNZ_cmp <- unique(
+  ex_mds_ets_MNN_MNZ_cmp[, .(index, model, mk.price, fc.price)])
+
+## save dataset in data.table format
+saveRDS(ex_mds_ets_MNN_MNZ_cmp, 
+        paste0(.dtr, 'data/fx/USDJPY/ex_mds_ets_MNN_MNZ_cmp.rds'))
+```
+
+<span style='color:green'>**MNN_MNZ_rp_fLF**</span>
+
+```{r, eval = FALSE}
+rm(list = ls())
+
+## report for ex_mds_ets_MNN_MNZ_cmp
+if(!exists('ex_mds_ets_MNN_MNZ_cmp')) {
+    ex_mds_ets_MNN_MNZ_cmp <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/ex_mds_ets_MNN_MNZ_cmp.rds')) }
+
+if(!is.data.table('ex_mds_ets_MNN_MNZ_cmp')) {
+  ex_mds_ets_MNN_MNZ_cmp %<>% as.data.table }
+
+ex_mds_ets_MNN_MNZ_cmp <- unique(
+  ex_mds_ets_MNN_MNZ_cmp, fromLast = FALSE, by = c('index', 'model')) %>% 
+  na.omit
+
+MNN_MNZ_rp_fLF <- ex_mds_ets_MNN_MNZ_cmp[, {
+  mk.price = mk.price
+  fc.price = fc.price
+  .SD[, .(.N, 
+          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
+          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
+          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
+          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
+          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
+      by=.(model)]}][order(model), ]
+
+rm(ex_mds_ets_MNN_MNZ_cmp)
+
+## report
+saveRDS(MNN_MNZ_rp_fLF, paste0(.dtr, 'data/fx/USDJPY/MNN_MNZ_rp_fLF.rds'))
+```
+
+<span style='color:green'>**MNN_MNZ_rp_fLT**</span>
+
+```{r, eval = FALSE}
+rm(list = ls())
+
+## report for ex_mds_ets_MNN_MNZ_cmp
+if(!exists('ex_mds_ets_MNN_MNZ_cmp')) {
+    ex_mds_ets_MNN_MNZ_cmp <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/ex_mds_ets_MNN_MNZ_cmp.rds')) }
+
+if(!is.data.table('ex_mds_ets_MNN_MNZ_cmp')) {
+  ex_mds_ets_MNN_MNZ_cmp %<>% as.data.table }
+
+ex_mds_ets_MNN_MNZ_cmp <- unique(
+  ex_mds_ets_MNN_MNZ_cmp, fromLast = TRUE, by = c('index', 'model')) %>% 
+  na.omit
+
+MNN_MNZ_rp_fLT <- ex_mds_ets_MNN_MNZ_cmp[, {
+  mk.price = mk.price
+  fc.price = fc.price
+  .SD[, .(.N, 
+          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
+          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
+          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
+          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
+          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
+      by=.(model)]}][order(model), ]
+
+rm(ex_mds_ets_MNN_MNZ_cmp)
+
+## report
+saveRDS(MNN_MNZ_rp_fLT, paste0(.dtr, 'data/fx/USDJPY/MNN_MNZ_rp_fLT.rds'))
+```
+
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
+## report for MNN_MNZ_rp_fLF
+if(!exists('MNN_MNZ_rp_fLF')) {
+    MNN_MNZ_rp_fLF <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/MNN_MNZ_rp_fLF.rds')) }
+
+## report for MNN_MNZ_rp_fLT
+if(!exists('MNN_MNZ_rp_fLT')) {
+    MNN_MNZ_rp_fLT <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/MNN_MNZ_rp_fLT.rds')) }
+
+MNN_MNZ_rp_fLF <- MNN_MNZ_rp_fLF[, arrange := 'from_first'][]
+MNN_MNZ_rp_fLT <- MNN_MNZ_rp_fLT[, arrange := 'from_last'][]
+
+rp <- rbindlist(list(MNN_MNZ_rp_fLF, MNN_MNZ_rp_fLT))
+rp <- rp[, .(model, arrange, N, mae, mape, rmse, smape, mse)]
+rp %<>% unique
+
+rm(MNN_MNZ_rp_fLF, MNN_MNZ_rp_fLT)
+```
+
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
+rp %>% 
+  dplyr::mutate(
+    mae = ifelse(
+      rank(mae) <= 3, 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mape = ifelse(
+      rank(mape) <= 3, 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    rmse = ifelse(
+      rank(rmse) <= 3, 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    smape = ifelse(
+      rank(smape) <= 3, 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mse = ifelse(
+      rank(mse) <= 3, 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'grey', italic = TRUE))) %>% 
+  kbl(caption = 'Accurcy Report (MNN & MNZ ETS Models)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>% 
+  column_spec(7, background = 'Gainsboro') %>% 
+  column_spec(8, background = 'LightGray') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+```
+
+*source : `r paste0(dim(rp), collapse = ' x ')`*
+
+from above models we know the **βest model**.
+
+```{r, warning = FALSE, message = FALSE, results = 'asis'}
+sum <- rp[mae == min(mae) | mape == min(mape) | rmse == min(rmse) | smape == min(smape) | mse == min(mse)]
+
+sum %>% 
+  dplyr::mutate(
+    mae = ifelse(
+      rank(mae) <= 3, 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mape = ifelse(
+      rank(mape) <= 3, 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    rmse = ifelse(
+      rank(rmse) <= 3, 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    smape = ifelse(
+      rank(smape) <= 3, 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mse = ifelse(
+      rank(mse) <= 3, 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'grey', italic = TRUE))) %>% 
+  kbl(caption = 'Accurcy Report (Final Stage Comparison)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>% 
+  column_spec(7, background = 'Gainsboro') %>% 
+  column_spec(8, background = 'LightGray') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(sum), collapse = ' x ')`*
 
 ## Final Conclude
 
-From final stage models comparison, we know that ******* is the <span style='color:white; background-color:#DE5D83;'>**β**est model</span>.
+From final stage models comparison, we know that `r unique(sum$model)[1]` and `r unique(sum$model)[2]` is the <span style='color:white; background-color:#DE5D83;'>**β**est model</span>.
 
 ## Future Studies
 
