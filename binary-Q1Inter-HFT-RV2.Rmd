@@ -323,11 +323,17 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
 - [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
 
+Refer to above function or load below r function.
+
+### Dy >> Dy
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `1440 mins` (`24 hrs * 60 mins = 1440 mins` is a trading day).
+
 ```{r tseas, eval = FALSE}
 tseas <- function(timeID, data = dsmp, data_len, 
                   hrz1 = c(1440, 7200), hrz2 = 1440, .model) {
   
-  if(hrz1 <= 7200) {
+  if(hrz1 == 1440) {
     
     tmp <- llply(1:length(timeID), function(i) {
       if(i == 1) {
@@ -549,25 +555,16 @@ tseas <- function(timeID, data = dsmp, data_len,
 }
 ```
 
-Refer to above function or load below r function.
-
-```{r}
-## best ETS models by referred to Interday High Frequency Trading Models Comparison Review (Part I).
-ets.m <- c('MNN', 'MNZ')
-source('function/tseas.R')
-```
-
-### Dy >> Dy
-
-I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `1440 mins` (`1440 mins` is a trading day).
-
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/tseas.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 1440 #last 1440  observations dsmp[(.N - (data_len - 1)):.N]
+data_len <- 1440
 hrz1 <- 1440
 hrz2 <- 1440
 
@@ -604,22 +601,71 @@ if(exists('smp')) rm(smp)
 
 ### Dy >> 12Hr
 
-I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `720 mins` (`720 mins` is half trading day).
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `720 mins` (`12 hrs * 60 mins = 720 mins` is half trading day).
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz720.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 1440 #last 1440  observations dsmp[(.N - (data_len - 1)):.N]
+data_len <- 1440
 hrz1 <- 720
-hrz2 <- 720
 
 llply(ets.m, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+  dl1440_hrz720(timeID = timeID, dsmp, 
+                data_len = data_len, hrz1 = hrz1, 
+                .model = md)
+  })
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_7200_1440.2016-01-04.rds'))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 7200 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+```
+
+### Dy >> 8Hr
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `480 mins` (`8 hrs * 60 mins = 480 mins` is 8 hours in a trading day).
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz480.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 1440
+hrz1 <- 480
+
+llply(ets.m, function(md) {
+  dl1440_hrz480(timeID = timeID, dsmp, 
+                data_len = data_len, hrz1 = hrz1, 
+                .model = md)
   })
 ```
 
@@ -649,22 +695,24 @@ if(exists('smp')) rm(smp)
 
 ### Dy >> 6Hr
 
-I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `360 mins` (`360 mins` is 6 hours in a trading day).
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `360 mins` (`6 hrs * 60 mins = 360 mins` is 6 hours in a trading day).
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz360.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
-hrz2 <- 1440
+data_len <- 1440
+hrz1 <- 360
 
 llply(ets.m, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+  dl1440_hrz360(timeID = timeID, dsmp, 
+                data_len = data_len, hrz1 = hrz1, 
+                .model = md)
   })
 ```
 
@@ -694,25 +742,24 @@ if(exists('smp')) rm(smp)
 
 ### Dy >> 4Hr
 
-I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `240 mins` (`240 mins` is 4 hours in a trading day).
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `240 mins` (`4 hrs * 60 mins = 240 mins` is 4 hours in a trading day).
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz240.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 22 * 1440 #last 31680  observations dsmp[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
-hrz2 <- 1440
+data_len <- 1440
+hrz1 <- 240
 
-## based on the report, here I retrieved back and use the best model with different data size.
-bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
-
-llply(bmd, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+llply(ets.m, function(md) {
+  dl1440_hrz240(timeID = timeID, dsmp, 
+                data_len = data_len, hrz1 = hrz1, 
+                .model = md)
   })
 ```
 
@@ -742,25 +789,24 @@ if(exists('smp')) rm(smp)
 
 ### Dy >> 3Hr
 
-I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `180 mins` (`180 mins` is 3 hours in a trading day).
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `180 mins` (`3 hrs * 60 mins = 180 mins` is 3 hours in a trading day).
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz180.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 3 * 22 * 1440 #last 95040  observations dsmp[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
-hrz2 <- 1440
+data_len <- 1440
+hrz1 <- 180
 
-## based on the report, here I retrieved back and use the best model with different data size.
-bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
-
-llply(bmd, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+llply(ets.m, function(md) {
+  dl1440_hrz180(timeID = timeID, dsmp, 
+                data_len = data_len, hrz1 = hrz1, 
+                .model = md)
   })
 ```
 
@@ -790,27 +836,25 @@ if(exists('smp')) rm(smp)
 
 ### Dy >> 2Hr
 
-I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `120 mins` (`120 mins` is 2 hours in a trading day).
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `120 mins` (`2 hrs * 60 mins = 120 mins` is 2 hours in a trading day).
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz120.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
-hrz2 <- 1440
+data_len <- 1440
+hrz1 <- 120
 
-## based on the report, here I retrieved back and use the best model with different data size.
-bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
-
-llply(bmd, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+llply(ets.m, function(md) {
+  dl1440_hrz120(timeID = timeID, dsmp, 
+                data_len = data_len, hrz1 = hrz1, 
+                .model = md)
   })
-
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
@@ -839,27 +883,25 @@ if(exists('smp')) rm(smp)
 
 ### Dy >> 1Hr
 
-I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `60 mins` (`60 mins` is 1 hours in a trading day).
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `60 mins` (`1 hr * 60 mins = 60 mins` is 1 hour in a trading day).
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz60.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
-hrz2 <- 1440
+data_len <- 1440
+hrz1 <- 60
 
-## based on the report, here I retrieved back and use the best model with different data size.
-bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
-
-llply(bmd, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+llply(ets.m, function(md) {
+  dl1440_hrz60(timeID = timeID, dsmp, 
+               data_len = data_len, hrz1 = hrz1, 
+               .model = md)
   })
-
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
@@ -892,23 +934,21 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz30.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
-hrz2 <- 1440
+data_len <- 1440
+hrz1 <- 30
 
-## based on the report, here I retrieved back and use the best model with different data size.
-bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
-
-llply(bmd, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+llply(ets.m, function(md) {
+  dl1440_hrz30(timeID = timeID, dsmp, 
+               data_len = data_len, hrz1 = hrz1, 
+               .model = md)
   })
-
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
@@ -941,23 +981,21 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz20.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
-hrz2 <- 1440
+data_len <- 1440
+hrz1 <- 20
 
-## based on the report, here I retrieved back and use the best model with different data size.
-bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
-
-llply(bmd, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+llply(ets.m, function(md) {
+  dl1440_hrz20(timeID = timeID, dsmp, 
+               data_len = data_len, hrz1 = hrz1, 
+               .model = md)
   })
-
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
@@ -990,23 +1028,21 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz10.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
-hrz2 <- 1440
+data_len <- 1440
+hrz1 <- 10
 
-## based on the report, here I retrieved back and use the best model with different data size.
-bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
-
-llply(bmd, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+llply(ets.m, function(md) {
+  dl1440_hrz10(timeID = timeID, dsmp, 
+               data_len = data_len, hrz1 = hrz1, 
+               .model = md)
   })
-
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
@@ -1039,23 +1075,21 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz5.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
-hrz2 <- 1440
+data_len <- 1440
+hrz1 <- 5
 
-## based on the report, here I retrieved back and use the best model with different data size.
-bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
-
-llply(bmd, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+llply(ets.m, function(md) {
+  dl1440_hrz5(timeID = timeID, dsmp, 
+              data_len = data_len, hrz1 = hrz1, 
+              .model = md)
   })
-
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
@@ -1088,23 +1122,21 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz3.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
-hrz2 <- 1440
+data_len <- 1440
+hrz1 <- 3
 
-## based on the report, here I retrieved back and use the best model with different data size.
-bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
-
-llply(bmd, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+llply(ets.m, function(md) {
+  dl1440_hrz3(timeID = timeID, dsmp, 
+              data_len = data_len, hrz1 = hrz1, 
+              .model = md)
   })
-
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
@@ -1137,23 +1169,21 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/dl1440_hrz1.R')
+
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 52 * 5 * 1440 #last 374400  observations dsmp[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
-hrz2 <- 1440
+data_len <- 1440
+hrz1 <- 1
 
-## based on the report, here I retrieved back and use the best model with different data size.
-bmd <- ets.m[ets.m %in% c('MNN', 'MNZ')]
-
-llply(bmd, function(md) {
-  tseas(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        hrz2 = hrz2, .model = md)
+llply(ets.m, function(md) {
+  dl1440_hrz1(timeID = timeID, dsmp, 
+              data_len = data_len, hrz1 = hrz1, 
+              .model = md)
   })
-
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}

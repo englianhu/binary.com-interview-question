@@ -52,12 +52,28 @@ if(!exists('dsmp')) {
 
 
 ## best ETS models by referred to Interday High Frequency Trading Models Comparison Review (Part I).
-ets.m <- c('MNN', 'MNZ')
-source('function/tseas.R')
+#ets.m <- c('MNN', 'MNZ')
+ets.m <- 'MNN'
+source('function/tseas_intraday.R')
 
 
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 1440 #last 1440  observations dsmp[(.N - (data_len - 1)):.N]
+hrz1 <- 720
+hrz2 <- 720
+
+llply(ets.m, function(md) {
+  tseas_intraday(timeID = timeID, dsmp, 
+                 data_len = data_len, hrz1 = hrz1, 
+                 hrz2 = hrz2, .model = md)
+  })
 
 
+#########################################################################
 ## Check forecast files observations
 lst <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNZ_1440_1440|^ts_ets_MNN_1440_1440')
 
@@ -65,16 +81,15 @@ cnt <- lst %>% ldply(., function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/', x))
 cnt
 
 ## Check forecast files observations
-lst <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_720.')
-nms <- str_extract_all(lst, '[0-9]{4}.[0-9]{2}.[0-9]{2}') %>% unlist
-names(lst) <- nms
-lst %<>% .[sort(names(lst))]
-lst
+lst <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_720')
+lst <- matrix(lst, ncol = 2) %>% t %>% as.vector
+c(head(lst), tail(lst))
 
-cnt <- lst %>% ldply(., function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/', x)) %>% nrow})
+cnt <- lst %>% ldply(., function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/', x)) %>% nrow}) %>% as.data.table
 cnt
 
-lst %>% llply(., function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/', x))})
+c(head(lst), tail(lst)) %>% llply(., function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/', x)) %>% as.data.table})
+
 
 
 
