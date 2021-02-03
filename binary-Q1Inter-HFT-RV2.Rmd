@@ -124,7 +124,7 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr',
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
           'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
           'stringr', 'pacman', 'profmem', 'ggthemes', 'flyingfox', 
-          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
+          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 'gtools', 
           'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
 
 suppressAll(lib(pkgs))
@@ -322,58 +322,103 @@ I set the length of data as weekly (`5 days * 1440 mins = 7200 mins` minutes whi
 
 ```{r sarima, eval = FALSE}
 sarima <- function(timeID, data = dsmp, data_len, hrz1 = 1440, 
-                   .model = c('auto', 'Arima'), .d = NA, .D = NA, 
-                   .order = c(0, 0, 0), .seasonal = c(0, 0, 0)) {
+                   .model = .model, .d = .d, .D = .D, 
+                   seas = seas, .order = .order, .seas = .seas, 
+                   stationary = stationary, trace = trace, 
+                   ic = ic, stepwise = stepwise, nmodels = nmodels, 
+                   #approximation = (length(x) > 150 | frequency(x) > 12), 
+                   truncate = truncate, #x = y, method = NULL, 
+                   xreg = xreg, test = test, test.args = test.args, 
+                   seasonal.test = seasonal.test, 
+                   seasonal.test.args = seasonal.test.args, 
+                   allowdrift = allowdrift, allowmean = allowmean, 
+                   lambda = lambda, biasadj = biasadj, parallel = parallel, 
+                   num.cores = num.cores, include.mean = include.mean, 
+                   #xreg = NULL, include.constant, 
+                   include.drift = include.drift, model = model, 
+                   #lambda = model$lambda, x = y, biasadj = FALSE, 
+                   method = method) {
   
   tmp <- llply(1:length(timeID), function(i) {
+    
     if(i == 1) {
       
-      cat('\n')
-      cat('===========================================\n')
+      cat('\n===========================================\n')
       cat('train[', i, ']\n')
       print(train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N])
       ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
       
-      cat('\n')
-      cat('-------------------------------------------\n')
+      cat('\n-------------------------------------------\n')
       cat('train_test[', i, ']\n')
-      
       print(train_test <- dsmp[sq %in% ctr])
       
       srm <- train[, .(index, close)] %>% 
         tk_ts(frequency = hrz1)
       
       if(.model == 'auto') {
-        srm %<>% auto.arima(d = .d, D = .D)
+        
+        srm <- tryCatch({
+          auto.arima(srm, d = .d, D = .D, seasonal = seas, 
+                     stationary = stationary, trace = trace, 
+                     ic = ic, stepwise = stepwise, nmodels = nmodels, 
+                     #approximation = approximation, 
+                     method = method, truncate = truncate, #x = y, 
+                     xreg = xreg, test = test, lambda = lambda, 
+                     test.args = test.args, allowdrift = allowdrift, 
+                     seasonal.test = seasonal.test, 
+                     seasonal.test.args = seasonal.test.args, 
+                     allowmean = allowmean, biasadj = biasadj, 
+                     parallel = parallel, num.cores = num.cores)
+        }, error = function(err) NULL)
         
       } else if (.model == 'Arima') {
-        srm %<>% Arima(order = .order, seasonal = .seasonal)
+        
+        srm <- tryCatch({
+          Arima(srm, order = .order, seasonal = .seas, 
+                xreg = xreg, include.mean = include.mean, 
+                include.drift = include.drift, 
+                #include.constant = include.constant, 
+                #model = model, lambda = lambda, x = y, 
+                biasadj = biasadj, method = method)
+          }, error = function(err) NULL)
+        
+      } else {
+        
       }
       
-      srm %<>% 
-        forecast(h = hrz1) %>% 
-        tk_tbl %>% 
-        dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
-                      mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
-        dplyr::rename(fc.price = `Point Forecast`) %>% 
-        dplyr::select(index, mk.price, fc.price)
+      if(!is.null(srm)) {
+        srm %<>% 
+          forecast::forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        cat('\n-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        print(srm %>% as.data.table)
+      }
       
-      cat('\n')
-      cat('-------------------------------------------\n')
-      cat('forecast[', i, ']\n')
-      
-      print(srm %>% as.data.table)
+      if(.model == 'auto') {
+        nms <- paste0(.model, '_d', .d, 'D', .D, 
+                      '_seas', seas, '_', data_len, '_', 
+                      hrz1, '.', as_date(srm$index[1]), '.rds')
+        
+      } else if (.model == 'Arima') {
+        nms <- paste0(.model, '_arma', 
+          paste(.order, collapse = ''), '_seas', 
+          paste(.seas, collapse = ''), '_', data_len, '_', 
+          hrz1, '.', as_date(srm$index[1]), '.rds')
+        
+      } else {
+        
+      }
       
       saveRDS(srm, paste0(
-        dtr, 'data/fx/USDJPY/sarima_', .model, '_', data_len, 
-        '_', hrz1, '.', as_date(srm$index[1]), '.rds'))
-      
-      cat('\n')
-      cat(i, '=', paste0('~/data/fx/USDJPY/sarima_', .model, '_', 
-                         data_len, '_', hrz1, '.', 
-                         as_date(srm$index[1]), '.rds saved!\n'))
-      cat('\n\n')
-      rm(sets)
+        dtr, 'data/fx/USDJPY/sarima_', nms))
+      cat('\n', i, '=', nms, '\n\n')
+      rm(srm)
       
     } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
       
@@ -385,52 +430,81 @@ sarima <- function(timeID, data = dsmp, data_len, hrz1 = 1440,
       
       lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
       
-      cat('\n')
-      cat('===========================================\n')
+      cat('\n===========================================\n')
       cat('train[', i, ']\n')
-      
       print(train <- dsmp[(lst_sq - data_len + 1):lst_sq])
       ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
       
-      cat('\n')
-      cat('-------------------------------------------\n')
+      cat('\n-------------------------------------------\n')
       cat('train_test[', i, ']\n')
-      
       print(train_test <- dsmp[sq %in% ctr])
       
       srm <- train[, .(index, close)] %>% 
         tk_ts(frequency = hrz1)
       
       if(.model == 'auto') {
-        srm %<>% auto.arima(d = .d, D = .D)
+        
+        srm <- tryCatch({
+          auto.arima(srm, d = .d, D = .D, seasonal = seas, 
+                     stationary = stationary, trace = trace, 
+                     ic = ic, stepwise = stepwise, nmodels = nmodels, 
+                     #approximation = approximation, 
+                     method = method, truncate = truncate, #x = y, 
+                     xreg = xreg, test = test, lambda = lambda, 
+                     test.args = test.args, allowdrift = allowdrift, 
+                     seasonal.test = seasonal.test, 
+                     seasonal.test.args = seasonal.test.args, 
+                     allowmean = allowmean, biasadj = biasadj, 
+                     parallel = parallel, num.cores = num.cores)
+        }, error = function(err) NULL)
         
       } else if (.model == 'Arima') {
-        srm %<>% Arima(order = .order, seasonal = .seasonal)
+        
+        srm <- tryCatch({
+          Arima(srm, order = .order, seasonal = .seas, 
+                xreg = xreg, include.mean = include.mean, 
+                include.drift = include.drift, 
+                #include.constant = include.constant, 
+                #model = model, lambda = lambda, x = y, 
+                biasadj = biasadj, method = method)
+        }, error = function(err) NULL)
+        
+      } else {
+        
       }
       
-      srm %<>% 
-        forecast(h = hrz1) %>% 
-        tk_tbl %>% 
-        dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
-                      mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
-        dplyr::rename(fc.price = `Point Forecast`) %>% 
-        dplyr::select(index, mk.price, fc.price)
+      if(!is.null(srm)) {
+        srm %<>% 
+          forecast::forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        cat('\n-------------------------------------------\n')
+        cat('forecast[', i, ']\n')
+        print(srm %>% as.data.table)
+      }
       
-      cat('\n')
-      cat('-------------------------------------------\n')
-      cat('forecast[', i, ']\n')
-      
-      print(srm %>% as.data.table)
+      if(.model == 'auto') {
+        nms <- paste0(.model, '_d', .d, 'D', .D, 
+                      '_seas', seas, '_', data_len, '_', 
+                      hrz1, '.', as_date(srm$index[1]), '.rds')
+        
+      } else if (.model == 'Arima') {
+        nms <- paste0(.model, '_arma', 
+                      paste(.order, collapse = ''), '_seas', 
+                      paste(.seas, collapse = ''), '_', data_len, '_', 
+                      hrz1, '.', as_date(srm$index[1]), '.rds')
+        
+      } else {
+        
+      }
       
       saveRDS(srm, paste0(
-        dtr, 'data/fx/USDJPY/sarima_', .model, '_', data_len, 
-        '_', hrz1, '.', as_date(srm$index[1]), '.rds'))
-      
-      cat('\n')
-      cat(i, '=', paste0('~/data/fx/USDJPY/sarima_', .model, '_', 
-                         data_len, '_', hrz1, '.', 
-                         as_date(srm$index[1]), '.rds saved!\n'))
-      cat('\n\n')
+        dtr, 'data/fx/USDJPY/sarima_', nms))
+      cat('\n', i, '=', nms, '\n\n')
       rm(srm)
     }
   })
@@ -447,28 +521,90 @@ source('function/sarima.R')
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
+timeID %<>% .[1:6] ##Take 6 dates as sample
 #timeID %<>% .[. >= as_date('2016-01-04')]
 data_len <- 7200 #last 7200  observations dsmp[(.N - (data_len - 1)):.N]
 hrz1 <- 1440
 
 .model = c('auto', 'Arima')
-.model = c('auto', 'Arima')
-.d = NA
-.D = NA 
-.order = c(0, 0, 0)
-.seasonal = c(0, 0, 0)
+# .model %<>% .[1]
+# .model %<>% .[2]
+.d = 0:2
+.D = 0:1 
+seas = c(TRUE, FALSE)
+## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
+#approximation = c(TRUE, FALSE)
+#stepwise = c(TRUE, FALSE)
 
+## .order = c(0, 0, 0)
+.order = gtools::permutations(6, 3, 0:5, repeats = TRUE) %>% 
+  as_tibble %>% 
+  dplyr::rename(p = V1, d = V2, q = V3) %>% 
+  dplyr::filter(d <= 2)
+
+## .seas = c(0, 0, 0)
+.seas = gtools::permutations(6, 3, 0:5, repeats = TRUE) %>% 
+  as_tibble %>% 
+  dplyr::rename(P = V1, D = V2, Q = V3) %>% 
+  dplyr::filter(D <= 1)
+```
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
 llply(.model, function(md) {
-  sarima(timeID = timeID, dsmp, 
-        data_len = data_len, hrz1 = hrz1, 
-        .model = md, 
-        .d = .d, .D = .D, 
-        .order = c(0, 0, 0), 
-        .seasonal = c(0, 0, 0))
-  })
+  
+  if(md == 'auto') {
+    srm0 <- llply(.d, function(d) {
+      srm1 <- llply(.D, function(D) {
+        srm2 <- llply(seas, function(ss) {
+          srm3 <- llply(timeID, function(dte) {
+            res <- sarima(
+              timeID = dte, dsmp, 
+              data_len = data_len, hrz1 = hrz1, 
+              .model = md, .d = d, .D = D, 
+              seas = ss, stationary = FALSE, trace = FALSE, 
+              ic = c('aicc', 'aic', 'bic'), 
+              stepwise = TRUE, nmodels = 94, 
+              #approximation=(length(x)>150|frequency(x)>12), 
+              truncate = NULL, method = NULL, #x = y, 
+              xreg = NULL, test = c('kpss', 'adf', 'pp'), 
+              test.args = list(), 
+              seasonal.test = c('seas', 'ocsb', 'hegy', 'ch'), 
+              seasonal.test.args = list(), 
+              allowdrift = TRUE, allowmean = TRUE, lambda = NULL, 
+              biasadj = FALSE, parallel = FALSE, num.cores = 2)
+            })
+          })
+        })
+      })
+    
+  } else if (md == 'Arima') {
+    srm0 <- llply(1:nrow(.order), function(i) {
+      srm1 <- llply(1:nrow(.seas), function(j) {
+        srm2 <- llply(timeID, function(dte) {
+          res <- sarima(
+            timeID = dte, dsmp, 
+            data_len = data_len, hrz1 = hrz1, 
+            .model = md, .order = unlist(.order[i,]), 
+            .seas = unlist(.seas[j,]), xreg = NULL, 
+            include.mean = TRUE, include.drift = FALSE, 
+            #include.constant = include.constant, 
+            #model = NULL, lambda = lambda, x = y, 
+            biasadj = FALSE, method = c('CSS-ML', 'ML', 'CSS'))
+        })
+      })
+    })
+    
+  } else {
+    
+  }
+  return(srm)
+})
 ```
 
 ## Sarima `msts()` & `auto.arima()`
+
+[Multiple and long seasonality for a SARIMA model in R](https://stats.stackexchange.com/questions/109835/multiple-and-long-seasonality-for-a-sarima-model-in-r)
 
 ## Sarima `fable`
 
