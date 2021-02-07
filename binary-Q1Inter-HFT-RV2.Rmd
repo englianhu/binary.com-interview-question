@@ -1824,7 +1824,7 @@ if(!exists('mds_ets_MNN_intraday')) {
 mds_ets_MNN_intraday <- rbind(mds_ets_MNN_7200_1440, mds_ets_MNN_intraday)
 
 mds_ets_MNN_intraday_cmp <- mds_ets_MNN_intraday %>% 
-    tidyr::unite(model, t_series:fc_min) %>%  #different with mds_ts_cmp
+    tidyr::unite(model, t_series:part) %>%  #different with mds_ts_cmp
     as.data.table %>% 
     .[, .(index, model, mk.price, fc.price)]
 
