@@ -555,10 +555,142 @@ tseas <- function(timeID, data = dsmp, data_len,
 }
 ```
 
+```{r intra_1440, eval = FALSE}
+intra_1440 <- function(timeID, data = dsmp, data_len, 
+                          hrz1 = 60, .model, vb = TRUE) {
+  ## data_len 1440; hrz1 = 60
+  intr <- data_len/hrz1
+  
+  tmp <- llply(1:length(timeID), function(i) {
+    if(i == 1) {
+      
+      tmp2 <-llply(1:intr, function(j) {
+        
+        if(j == 1) {
+          train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N]
+        } else  {
+          
+          lst_sq <- dsmp[date < timeID[i]][(.N - (hrz1 * (intr - j + 1) - 1))]$sq
+          train <- dsmp[lst_sq:(lst_sq + data_len - 1)]
+        }
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+        
+        if(vb == TRUE) {
+          cat('\n===========================================\n')
+          cat('train[', i, '-', j, ']\n')
+          print(train)
+        }
+        
+        train_test <- dsmp[sq %in% ctr]
+        if(vb == TRUE) {
+          cat('\n-------------------------------------------\n')
+          cat('train_test[', i, '-', j, ']\n')
+          print(train_test)
+        }
+        
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        if(vb == TRUE) {
+          cat('\n-------------------------------------------\n')
+          cat('forecast[', i, '-', j, ']\n')
+          print(sets %>% as.data.table)
+        }
+        
+        fl_pth <- paste0(.dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', 
+                         data_len, '_', hrz1, '.p', j, '.', 
+                         as_date(sets$index[1]), '.rds')
+        saveRDS(sets, fl_pth)
+        
+        cat('\n', i, '-', j, '=', 
+            paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
+                   data_len, '_', hrz1, '.p', j, '.', 
+                   as_date(sets$index[1]), '.rds saved!'))
+        cat('\n\n')
+        rm(sets)
+      })
+      return(tmp2)
+      
+    } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
+      
+      
+    } else if(i == length(timeID)) {
+      
+      
+    } else  {
+      
+      tmp2 <-llply(1:intr, function(j) {
+        
+        if(j == 1) {
+          lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1
+          
+        } else {
+          lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1 + hrz1 * (j - 1)
+        }
+        
+        train <- dsmp[(lst_sq - data_len + 1):lst_sq]
+        ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
+        
+        if(vb == TRUE) {
+          cat('\n===========================================\n')
+          cat('train[', i, '-', j, ']\n')
+          print(train)
+        }
+        
+        train_test <- dsmp[sq %in% ctr]
+        if(vb == TRUE) {
+          cat('\n-------------------------------------------\n')
+          cat('train_test[', i, '-', j, ']\n')
+          print(train_test)
+        }
+        
+        sets <- train[, .(index, close)] %>% 
+          tk_ts(frequency = hrz1) %>% 
+          ets(model = .model) %>% 
+          forecast(h = hrz1) %>% 
+          tk_tbl %>% 
+          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
+                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
+          dplyr::rename(fc.price = `Point Forecast`) %>% 
+          dplyr::select(index, mk.price, fc.price)
+        
+        if(vb == TRUE) {
+          cat('\n-------------------------------------------\n')
+          cat('forecast[', i, '-', j, ']\n')
+          print(sets %>% as.data.table)
+        }
+        
+        fl_pth <- paste0(.dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', 
+                         data_len, '_', hrz1, '.p', j, '.', 
+                         as_date(sets$index[1]), '.rds')
+        saveRDS(sets, fl_pth)
+        
+        cat('\n', i, '-', j, '=', 
+            paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
+                   data_len, '_', hrz1, '.p', j, '.', 
+                   as_date(sets$index[1]), '.rds saved!'))
+        cat('\n\n')
+        rm(sets)
+      })
+      return(tmp2)
+    }
+  })
+  return(tmp)
+}
+```
+
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
 source('function/tseas.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -576,7 +708,8 @@ llply(ets.m, function(md) {
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_1440_1440.2016-01-04.rds'))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_1440')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -597,6 +730,7 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 12Hr
@@ -606,7 +740,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz720.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -616,14 +750,15 @@ data_len <- 1440
 hrz1 <- 720
 
 llply(ets.m, function(md) {
-  dl1440_hrz720(timeID = timeID, dsmp, 
-                data_len = data_len, hrz1 = hrz1, 
-                .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_7200_1440.2016-01-04.rds'))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_720')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -644,6 +779,7 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 8Hr
@@ -653,7 +789,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz480.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -663,14 +799,15 @@ data_len <- 1440
 hrz1 <- 480
 
 llply(ets.m, function(md) {
-  dl1440_hrz480(timeID = timeID, dsmp, 
-                data_len = data_len, hrz1 = hrz1, 
-                .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_7200_1440.2016-01-04.rds'))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_480')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -691,6 +828,7 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 6Hr
@@ -700,7 +838,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz360.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -710,14 +848,15 @@ data_len <- 1440
 hrz1 <- 360
 
 llply(ets.m, function(md) {
-  dl1440_hrz360(timeID = timeID, dsmp, 
-                data_len = data_len, hrz1 = hrz1, 
-                .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_7200_1440.2016-01-04.rds'))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_360')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -738,6 +877,7 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 4Hr
@@ -747,7 +887,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz240.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -757,14 +897,15 @@ data_len <- 1440
 hrz1 <- 240
 
 llply(ets.m, function(md) {
-  dl1440_hrz240(timeID = timeID, dsmp, 
-                data_len = data_len, hrz1 = hrz1, 
-                .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_31680_1440.2016-01-04.rds'))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_240')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -785,6 +926,7 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 3Hr
@@ -794,7 +936,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz180.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -804,14 +946,15 @@ data_len <- 1440
 hrz1 <- 180
 
 llply(ets.m, function(md) {
-  dl1440_hrz180(timeID = timeID, dsmp, 
-                data_len = data_len, hrz1 = hrz1, 
-                .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_95040_1440.2016-01-04.rds'))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_180')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -832,6 +975,7 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 2Hr
@@ -841,7 +985,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz120.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -851,14 +995,15 @@ data_len <- 1440
 hrz1 <- 120
 
 llply(ets.m, function(md) {
-  dl1440_hrz120(timeID = timeID, dsmp, 
-                data_len = data_len, hrz1 = hrz1, 
-                .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_120')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -879,6 +1024,7 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 1Hr
@@ -888,7 +1034,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz60.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -898,14 +1044,15 @@ data_len <- 1440
 hrz1 <- 60
 
 llply(ets.m, function(md) {
-  dl1440_hrz60(timeID = timeID, dsmp, 
-               data_len = data_len, hrz1 = hrz1, 
-               .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_60')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -926,6 +1073,7 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 30mins
@@ -935,7 +1083,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz30.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -945,14 +1093,15 @@ data_len <- 1440
 hrz1 <- 30
 
 llply(ets.m, function(md) {
-  dl1440_hrz30(timeID = timeID, dsmp, 
-               data_len = data_len, hrz1 = hrz1, 
-               .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_30')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -973,6 +1122,7 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 20mins
@@ -982,7 +1132,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz20.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -992,14 +1142,15 @@ data_len <- 1440
 hrz1 <- 20
 
 llply(ets.m, function(md) {
-  dl1440_hrz20(timeID = timeID, dsmp, 
-               data_len = data_len, hrz1 = hrz1, 
-               .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_20')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -1020,6 +1171,56 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### Dy >> 15mins
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `15 mins` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_1440.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 1440
+hrz1 <- 15
+
+llply(ets.m, function(md) {
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
+  })
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_15')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 10mins
@@ -1029,7 +1230,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz10.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -1039,14 +1240,15 @@ data_len <- 1440
 hrz1 <- 10
 
 llply(ets.m, function(md) {
-  dl1440_hrz10(timeID = timeID, dsmp, 
-               data_len = data_len, hrz1 = hrz1, 
-               .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
 ```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_10')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -1067,6 +1269,105 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### Dy >> 8mins
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `8 mins` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_1440.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 1440
+hrz1 <- 8
+
+llply(ets.m, function(md) {
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
+  })
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_8')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### Dy >> 6mins
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `6 mins` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_1440.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 1440
+hrz1 <- 6
+
+llply(ets.m, function(md) {
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
+  })
+```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_6')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 5mins
@@ -1076,7 +1377,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz5.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -1086,14 +1387,16 @@ data_len <- 1440
 hrz1 <- 5
 
 llply(ets.m, function(md) {
-  dl1440_hrz5(timeID = timeID, dsmp, 
-              data_len = data_len, hrz1 = hrz1, 
-              .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
-```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+```{r, eval = FALSE}
+#```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_5')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -1114,6 +1417,57 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### Dy >> 4mins
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `4 mins` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_1440.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 1440
+hrz1 <- 4
+
+llply(ets.m, function(md) {
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
+  })
+```
+
+```{r, eval = FALSE}
+#```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_4')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 3mins
@@ -1123,7 +1477,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz3.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -1133,14 +1487,16 @@ data_len <- 1440
 hrz1 <- 3
 
 llply(ets.m, function(md) {
-  dl1440_hrz3(timeID = timeID, dsmp, 
-              data_len = data_len, hrz1 = hrz1, 
-              .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
-```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+```{r, eval = FALSE}
+#```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_3')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -1161,6 +1517,57 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### Dy >> 2mins
+
+I set the length of data as Daily (`1440 mins` which is 1 trading days) to forecast `2 mins` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_1440.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 1440
+hrz1 <- 2
+
+llply(ets.m, function(md) {
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
+  })
+```
+
+```{r, eval = FALSE}
+#```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_2')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
+
+data.frame(smp)[
+  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 374400 forecast 1440)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = '#556DAC') %>% 
+  #column_spec(3, background = 'LightSlateGrey') %>% 
+  #column_spec(3, background = '#556DAC') %>% 
+  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ### Dy >> 1min
@@ -1170,7 +1577,7 @@ I set the length of data as Daily (`1440 mins` which is 1 trading days) to forec
 ```{r, eval = FALSE}
 # --------- eval=FALSE ---------
 ets.m <- 'MNN'
-source('function/dl1440_hrz1.R')
+source('function/intra_1440.R')
 
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -1180,14 +1587,16 @@ data_len <- 1440
 hrz1 <- 1
 
 llply(ets.m, function(md) {
-  dl1440_hrz1(timeID = timeID, dsmp, 
-              data_len = data_len, hrz1 = hrz1, 
-              .model = md)
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
   })
 ```
 
-```{r, warning = FALSE, message = FALSE, results='asis'}
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/ts_ets_MNN_374400_1440.2016-01-04.rds'))
+```{r, eval = FALSE}
+#```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_1')[1]
+smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
 data.frame(smp)[
   c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
@@ -1208,6 +1617,7 @@ data.frame(smp)[
 
 ```{r include = FALSE}
 if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
 ```
 
 ## Weekly Seasonal Data
@@ -1216,8 +1626,7 @@ if(exists('smp')) rm(smp)
 
 ```{r}
 ## set all models provided by ets function.
-if(!exists('ets.m')) {
-  ets.m <- c('MNN', 'MNZ') }
+if(!exists('ets.m')) ets.m <- 'MNN'
 if(!exists('tseas')) source('function/tseas.R')
 ```
 

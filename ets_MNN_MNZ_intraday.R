@@ -31,7 +31,7 @@ Sys.setenv(TZ = 'Asia/Tokyo')
 options(warn = -1, knitr.table.format = 'html')#, digits.secs = 6)
 
 ## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE, 
+knitr::opts_chunk$set(warning = FALSE, #cache = TRUE, 
                       message = FALSE, cache.lazy = FALSE)
 
 rm(pkgs)
@@ -54,7 +54,24 @@ if(!exists('dsmp')) {
 ## best ETS models by referred to Interday High Frequency Trading Models Comparison Review (Part I).
 #ets.m <- c('MNN', 'MNZ')
 ets.m <- 'MNN'
-source('function/tseas_intraday.R')
+source('function/intra_1440.R')
+
+
+#########################################################################
+# --------- eval=FALSE ---------
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 7200
+hrz1 <- 720
+intr <- data_len/hrz1
+
+llply(ets.m, function(md) {
+  intra_1440(timeID = timeID, dsmp, 
+			 data_len = data_len, hrz1 = hrz1, 
+             .model = md)
+  })
 
 
 # --------- eval=FALSE ---------
@@ -62,34 +79,55 @@ timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 1440 #last 1440  observations dsmp[(.N - (data_len - 1)):.N]
+data_len <- 7200
 hrz1 <- 720
 hrz2 <- 720
+intr <- data_len/hrz1
 
 llply(ets.m, function(md) {
-  tseas_intraday(timeID = timeID, dsmp, 
-                 data_len = data_len, hrz1 = hrz1, 
-                 hrz2 = hrz2, .model = md)
+  intra_7200(timeID = timeID[1:10], dsmp, 
+			 data_len = data_len, hrz1 = hrz1, 
+             hrz1 = hrz2, .model = md)
   })
-
 
 #########################################################################
 ## Check forecast files observations
-lst <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNZ_1440_1440|^ts_ets_MNN_1440_1440')
-
-cnt <- lst %>% ldply(., function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/', x)) %>% nrow})
+##read files 1st methods sort by list
+setfls <- llply(timeID, function(x) {
+    llply(1:intr, function(y) {
+        paste0('ts_ets_MNN_', data_len, '_', hrz1, '.p', y, '.', x)
+    }) %>% unlist
+}) %>% unlist
+avfls <- paste0(.dtr, 'data/fx/USDJPY/', setfls, '.rds')[file.exists(paste0(.dtr, 'data/fx/USDJPY/', setfls, '.rds'))]
+cnt <- avfls %>% ldply(., function(x) {readRDS(x)) %>% nrow}) %>% as.data.table
 cnt
 
-## Check forecast files observations
-lst <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = '^ts_ets_MNN_1440_720')
-lst <- matrix(lst, ncol = 2) %>% t %>% as.vector
+dtbl <- llply(avfls, function(x) {readRDS(x) %>% as.data.table})
+nms <- str_replace_all(avfls, 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/|.rds', '')
+names(dtbl) <- nms
+dtbl
+
+##read files 2nd methods, follow files on dir which is unable sort.
+ptn <- paste0('^ts_ets_MNN_', data_len, '_', hrz1, '.p')
+lst <- list.files(paste0(.dtr, 'data/fx/USDJPY'), pattern = ptn)
+lst <- matrix(lst, ncol = intr) %>% t %>% as.vector
 c(head(lst), tail(lst))
 
 cnt <- lst %>% ldply(., function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/', x)) %>% nrow}) %>% as.data.table
 cnt
 
-c(head(lst), tail(lst)) %>% llply(., function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/', x)) %>% as.data.table})
+dtbl <- llply(lst, function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/', x)) %>% as.data.table})
+dtbl
 
+
+
+llply(lst, function(x) {
+    old <- paste0(.dtr, 'data/fx/USDJPY/', x)
+    y <- str_replace_all(x, '.p', '.p_')
+    new <- paste0(.dtr, 'data/fx/USDJPY/', y)
+    file.rename(old, new)
+	cat('------------------------------------\n', x, '\n changed to \n', y, '\n')
+})
 
 
 

@@ -47,13 +47,13 @@ tseas_intraday <- function(timeID, data = dsmp, data_len,
           }
           
           fl_pth <- paste0(.dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', 
-                           data_len, '_', hrz1, '.p', j, '.', 
+                           data_len, '_', hrz1, '.p_', j, '.', 
                            as_date(sets$index[1]), '.rds')
           saveRDS(sets, fl_pth)
           
           cat('\n', i, '-', j, '=', 
               paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
-                     data_len, '_', hrz1, '.p', j, '.', 
+                     data_len, '_', hrz1, '.p_', j, '.', 
                      as_date(sets$index[1]), '.rds saved!'))
           cat('\n\n')
           rm(sets)
@@ -108,13 +108,13 @@ tseas_intraday <- function(timeID, data = dsmp, data_len,
           }
           
           fl_pth <- paste0(.dtr, 'data/fx/USDJPY/ts_ets_', .model, '_', 
-                           data_len, '_', hrz1, '.p', j, '.', 
+                           data_len, '_', hrz1, '.p_', j, '.', 
                            as_date(sets$index[1]), '.rds')
           saveRDS(sets, fl_pth)
           
           cat('\n', i, '-', j, '=', 
               paste0('~/data/fx/USDJPY/ts_ets_', .model, '_', 
-                     data_len, '_', hrz1, '.p', j, '.', 
+                     data_len, '_', hrz1, '.p_', j, '.', 
                      as_date(sets$index[1]), '.rds saved!'))
           cat('\n\n')
           rm(sets)

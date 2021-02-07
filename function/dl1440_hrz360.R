@@ -1,6 +1,6 @@
-dl1440_hrz480 <- function(timeID, data = dsmp, data_len, 
-                          hrz1 = 480, .model, vb = TRUE) {
-  ## data_len 1440; hrz1 = 480
+dl1440_hrz360 <- function(timeID, data = dsmp, data_len, 
+                          hrz1 = 360, .model, vb = TRUE) {
+  ## data_len 1440; hrz1 = 360
   intr <- data_len/hrz1
   
   tmp <- llply(1:length(timeID), function(i) {
@@ -12,10 +12,15 @@ dl1440_hrz480 <- function(timeID, data = dsmp, data_len,
           train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N]
         } else if (j == 2) {
           
+          lst_sq <- dsmp[date < timeID[i]][(.N - (hrz1 * 3 - 1))]$sq
+          train <- dsmp[lst_sq:(lst_sq + data_len - 1)]
+          
+        } else if (j == 3) {
+          
           lst_sq <- dsmp[date < timeID[i]][(.N - (hrz1 * 2 - 1))]$sq
           train <- dsmp[lst_sq:(lst_sq + data_len - 1)]
           
-        } else {
+        }  else {
           lst_sq <- dsmp[date < timeID[i]][(.N - (hrz1 - 1))]$sq
           train <- dsmp[lst_sq:(lst_sq + data_len - 1)]
         }
@@ -80,8 +85,11 @@ dl1440_hrz480 <- function(timeID, data = dsmp, data_len,
         } else if(j == 2) {
           lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1 + hrz1
           
-        } else {
+        } else if(j == 3) {
           lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1 + hrz1 * 2
+          
+        } else {
+          lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1 + hrz1 * 3
         }
         
         train <- dsmp[(lst_sq - data_len + 1):lst_sq]
