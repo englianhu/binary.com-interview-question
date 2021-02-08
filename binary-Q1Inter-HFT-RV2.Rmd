@@ -1801,18 +1801,6 @@ saveRDS(mds_ets_MNN_intraday, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday.
 ```
 
 ```{r, eval = FALSE}
-mds_ets_MNN_7200_1440 <- read_rds(
-  paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_7200_1440.rds'))
-
-mds_ets_MNN_intraday <- read_rds(
-  paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday.rds'))
-```
-
-### Long Format
-
-```{r, eval = FALSE}
-rm(list = ls())
-
 if(!exists('mds_ets_MNN_7200_1440')) {
   mds_ets_MNN_7200_1440 <- read_rds(
     paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_7200_1440.rds')) }
@@ -1821,17 +1809,37 @@ if(!exists('mds_ets_MNN_intraday')) {
   mds_ets_MNN_intraday <- read_rds(
     paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday.rds')) }
 
-mds_ets_MNN_intraday <- rbind(mds_ets_MNN_7200_1440, mds_ets_MNN_intraday)
+mds_ets_MNN_intraday <- rbind(mds_ets_MNN_7200_1440, mds_ets_MNN_intraday) %>% 
+  as.data.table
+
+saveRDS(mds_ets_MNN_intraday, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday.rds'))
+
+rm(mds_ets_MNN_7200_1440)
+
+if(file.exists(paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_7200_1440.rds'))) {
+  file.remove(paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_7200_1440.rds')) }
+```
+
+### Long Format
+
+```{r, eval = FALSE}
+rm(list = ls())
+
+if(!exists('mds_ets_MNN_intraday')) {
+  mds_ets_MNN_intraday <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday.rds')) }
 
 mds_ets_MNN_intraday_cmp <- mds_ets_MNN_intraday %>% 
-    tidyr::unite(model, t_series:part) %>%  #different with mds_ts_cmp
+    tidyr::unite(model, t_series:part) %>%
     as.data.table %>% 
-    .[, .(index, model, mk.price, fc.price)]
+    .[, .(index, model, mk.price, fc.price)] %>% as.data.table
+
+mds_ets_MNN_intraday_cmp <- as.data.table(mds_ets_MNN_intraday_cmp)
 
 ## ----------------------------------------
 ## fromLast = FALSE
 mds_ets_MNN_intraday_cmp_fLF <- unique(
-  mds_ets_MNN_intraday_cmp_fLF[, .(index, model, mk.price, fc.price)])
+  mds_ets_MNN_intraday_cmp[, .(index, model, mk.price, fc.price)], fromLast = FALSE)
 
 ## save dataset in data.table format
 saveRDS(mds_ets_MNN_intraday_cmp_fLF, 
@@ -1840,7 +1848,7 @@ saveRDS(mds_ets_MNN_intraday_cmp_fLF,
 ## ----------------------------------------
 ## fromLast = TRUE
 mds_ets_MNN_intraday_cmp_fLT <- unique(
-  mds_ets_MNN_intraday_cmp_fLT[, .(index, model, mk.price, fc.price)])
+  mds_ets_MNN_intraday_cmp[, .(index, model, mk.price, fc.price)], fromLast = TRUE)
 
 ## save dataset in data.table format
 saveRDS(mds_ets_MNN_intraday_cmp_fLT, 
@@ -1885,6 +1893,34 @@ rm(prc)
 saveRDS(mds_ets_MNN_intraday_grph_fLT, 
         paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_grph_fLT.rds'))
 ```
+
+```{r, warning = FALSE, message = FALSE, results='asis'}
+if(!exists('mds_ets_MNN_intraday')) {
+  mds_ets_MNN_intraday <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday.rds')) }
+
+## plot sample data
+mds_ets_MNN_intraday[c(1:3, (nrow(mds_ets_MNN_intraday)-3):nrow(mds_ets_MNN_intraday)),] %>% 
+  kbl(caption = 'Data Sample (ETS MNN 7200/1440 forecast intraday)', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd
+  row_spec(0, background = 'DimGrey', color = 'gold', bold = TRUE) %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(2, background = 'Gray') %>% 
+  column_spec(3, background = 'DarkGrey') %>% 
+  column_spec(4, background = 'Gray') %>% 
+  column_spec(5, background = 'DarkGrey') %>% 
+  column_spec(6, background = '#4897D8') %>% 
+  column_spec(7, background = '#375E97') %>% 
+  column_spec(8, background = 'CornflowerBlue') %>% 
+  column_spec(9, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(10, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+```
+
+*source : `r paste0(dim(mds_ets_MNN_intraday), collapse = ' x ')`*
 
 There has a small mistake in previous paper [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) but doesn't affect since I only want to compare the models and here I use the same `MNN` model and filter `unique(fromLast = FALSE)` and `unique(fromLast = TRUE)`.
 
@@ -2002,7 +2038,8 @@ if(!is.data.table('mds_ets_MNN_intraday_cmp_fLF')) {
   mds_ets_MNN_intraday_cmp_fLF %<>% as.data.table }
 
 mds_ets_MNN_intraday_cmp_fLF <- unique(
-  mds_ets_MNN_intraday_cmp_fLF, fromLast = FALSE, by = c('index', 'model'))
+  mds_ets_MNN_intraday_cmp_fLF, fromLast = FALSE, by = c('index', 'model')) %>% 
+  na.omit
 
 rp_fLF <- mds_ets_MNN_intraday_cmp_fLF[, {
   mk.price = mk.price
@@ -2067,14 +2104,14 @@ rp_tbl <- rp_fLF %>%
   kbl(caption = 'Accurcy Report (Forecasted Up to Max 1440 mins)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  column_spec(3, background = 'LightSlateGrey') %>% 
-  column_spec(4, background = 'Gainsboro') %>% 
-  column_spec(5, background = 'LightGray') %>% 
-  column_spec(6, background = 'Gainsboro') %>% 
-  column_spec(7, background = 'LightGray') %>% 
-  column_spec(8, background = 'Gainsboro') %>%  
+  #column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(1, background = '#556DAC') %>% 
+  column_spec(2, background = 'LightSlateGrey') %>% 
+  column_spec(3, background = 'Gainsboro') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>% 
+  column_spec(7, background = 'Gainsboro') %>%  
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
   ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
@@ -2107,7 +2144,8 @@ if(!is.data.table('mds_ets_MNN_intraday_cmp_fLT')) {
   mds_ets_MNN_intraday_cmp_fLT %<>% as.data.table }
 
 mds_ets_MNN_intraday_cmp_fLT <- unique(
-  mds_ets_MNN_intraday_cmp_fLT, fromLast = TRUE, by = c('index', 'model'))
+  mds_ets_MNN_intraday_cmp_fLT, fromLast = TRUE, by = c('index', 'model')) %>% 
+  na.omit
 
 rp_fLT <- mds_ets_MNN_intraday_cmp_fLT[, {
   mk.price = mk.price
@@ -2172,14 +2210,14 @@ rp_tbl <- rp_fLT %>%
   kbl(caption = 'Accurcy Report (Forecasted 1440 mins)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  column_spec(3, background = 'LightSlateGrey') %>% 
-  column_spec(4, background = 'Gainsboro') %>% 
-  column_spec(5, background = 'LightGray') %>% 
-  column_spec(6, background = 'Gainsboro') %>% 
-  column_spec(7, background = 'LightGray') %>% 
-  column_spec(8, background = 'Gainsboro') %>%  
+  #column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(1, background = '#556DAC') %>% 
+  column_spec(2, background = 'LightSlateGrey') %>% 
+  column_spec(3, background = 'Gainsboro') %>% 
+  column_spec(4, background = 'LightGray') %>% 
+  column_spec(5, background = 'Gainsboro') %>% 
+  column_spec(6, background = 'LightGray') %>% 
+  column_spec(7, background = 'Gainsboro') %>%  
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
   ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
@@ -2199,11 +2237,25 @@ from above models we know the **βest model**.
 ### Summary
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
+rm(list = ls())
+
+## report for rp_fLF and 
+if(!exists('rp_fLF')) {
+    rp_fLF <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/rp_fLF.rds')) %>% 
+      as.data.table }
+
+## report for rp_fLT and 
+if(!exists('rp_fLT')) {
+    rp_fLT <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/rp_fLT.rds')) %>% 
+      as.data.table }
+
 rp_fLF <- rp_fLF[, arrange := 'from_first'][]
 rp_fLT <- rp_fLT[, arrange := 'from_last'][]
 
 rp <- rbindlist(list(rp_fLF, rp_fLT))
-rp <- rp[, .(.id, model, arrange, N, mae, mape, rmse, smape, mse)]
+rp <- rp[, .(model, arrange, N, mae, mape, rmse, smape, mse)]
 rp %<>% unique
 
 sum <- rp[mae == min(mae) | mape == min(mape) | rmse == min(rmse) | smape == min(smape) | mse == min(mse)]
@@ -2253,15 +2305,15 @@ sum %>%
   kbl(caption = 'Accurcy Report (Initial Stage Comparison)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  column_spec(3, background = 'grey') %>% 
-  column_spec(4, background = 'LightSlateGrey') %>% 
-  column_spec(5, background = 'Gainsboro') %>% 
-  column_spec(6, background = 'LightGray') %>% 
-  column_spec(7, background = 'Gainsboro') %>% 
-  column_spec(8, background = 'LightGray') %>% 
-  column_spec(9, background = 'Gainsboro') %>% 
+  #column_spec(1, background = 'CornflowerBlue') %>% 
+  column_spec(1, background = '#556DAC') %>% 
+  column_spec(2, background = 'grey') %>% 
+  column_spec(3, background = 'LightSlateGrey') %>% 
+  column_spec(4, background = 'Gainsboro') %>% 
+  column_spec(5, background = 'LightGray') %>% 
+  column_spec(6, background = 'Gainsboro') %>% 
+  column_spec(7, background = 'LightGray') %>% 
+  column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
   scroll_box(width = '100%', fixed_thead = TRUE)
