@@ -63,14 +63,14 @@ timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 7200
-hrz1 <- 720
+data_len <- 1440
+hrz1 <- 1
 intr <- data_len/hrz1
 
 llply(ets.m, function(md) {
   intra_1440(timeID = timeID, dsmp, 
 			 data_len = data_len, hrz1 = hrz1, 
-             .model = md)
+             .model = md, vb = FALSE)
   })
 
 
@@ -108,15 +108,15 @@ dtbl
 
 ##read files 2nd methods, follow files on dir which is unable sort.
 #ptn <- paste0('^ts_ets_MNN_', data_len, '_', hrz1, '.p_[0-9]{0,}')
-ptn <- paste0('^ts_ets_MNN_1440_[0-9]{0,}.p__[0-9]{0,}')
+ptn <- paste0('^ts_ets_MNN_1440_[0-9]{0,}.p_[0-9]{0,}')
 lst <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = ptn)
 #lst <- matrix(lst, ncol = intr) %>% t %>% as.vector
 c(head(lst), tail(lst))
 
-cnt <- lst %>% ldply(., function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/', x)) %>% nrow}) %>% as.data.table
+cnt <- lst %>% ldply(., function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x)) %>% nrow}) %>% as.data.table
 cnt
 
-dtbl <- llply(lst, function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/', x)) %>% as.data.table})
+dtbl <- llply(lst, function(x) {readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x)) %>% as.data.table})
 dtbl
 
 
@@ -129,5 +129,5 @@ llply(lst, function(x) {
 	cat('------------------------------------\n', x, '\n changed to \n', y, '\n')
 })
 
-
+lst[str_detect(lst, '2017-11-01')]
 

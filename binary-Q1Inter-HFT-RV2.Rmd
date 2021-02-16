@@ -1706,7 +1706,106 @@ if(exists('timeID')) rm(timeID)
 
 ### Grouped Models
 
-Here I read the saved models.
+Here I read the saved models. As some have mentioned a possible way is using git interactive staging. This is great when you have files with different extensions
+
+```
+$ git add -i
+           staged     unstaged path
+  1:    unchanged        +0/-1 TODO
+  2:    unchanged        +1/-1 index.html
+  3:    unchanged        +5/-1 lib/simplegit.rb
+
+*** Commands ***
+  1: status     2: update      3: revert     4: add untracked
+  5: patch      6: diff        7: quit       8: help
+What now>
+```
+
+If you press 2 then enter you will get a list of available files to be added:
+
+```
+What now> 2
+           staged     unstaged path
+  1:    unchanged        +0/-1 TODO
+  2:    unchanged        +1/-1 index.html
+  3:    unchanged        +5/-1 lib/simplegit.rb
+Update>>
+```
+
+Now you just have to insert the number of the files you want to add, so if we wanted to add TODO and index.html we would type 1,2
+
+```
+Update>> 1,2
+           staged     unstaged path
+* 1:    unchanged        +0/-1 TODO
+* 2:    unchanged        +1/-1 index.html
+  3:    unchanged        +5/-1 lib/simplegit.rb
+Update>>
+```
+
+You see the * before the number? that means that the file was added.
+
+Now imagine that you have 7 files and you want to add them all except the 7th? Sure we could type `1,2,3,4,5,6` but imagine instead of 7 we have 16, that would be quite cumbersome, the good thing we don't need to type them all because we can use ranges,by typing 1-6
+
+```
+Update>> 1-6
+           staged     unstaged path
+* 1:    unchanged        +0/-1 TODO
+* 2:    unchanged        +1/-1 index.html
+* 3:    unchanged        +5/-1 lib/simplegit.rb
+* 4:    unchanged        +5/-1 file4.html
+* 5:    unchanged        +5/-1 file5.html
+* 6:    unchanged        +5/-1 file6.html
+  7:    unchanged        +5/-1 file7.html
+Update>>
+```
+
+We can even use multiple ranges, so if we want from 1 to 3 and from 5 to 7 we type 1-3, 5-7:
+
+```
+Update>> 1-3, 5-7
+           staged     unstaged path
+* 1:    unchanged        +0/-1 TODO
+* 2:    unchanged        +1/-1 index.html
+* 3:    unchanged        +5/-1 lib/simplegit.rb
+  4:    unchanged        +5/-1 file4.html
+* 5:    unchanged        +5/-1 file5.html
+* 6:    unchanged        +5/-1 file6.html
+* 7:    unchanged        +5/-1 file7.html
+Update>>
+```
+
+We can also use this to unstage files, if we type -number, so if we wanted to unstage file number 1 we would type -1:
+
+```
+Update>> -1
+           staged     unstaged path
+  1:    unchanged        +0/-1 TODO
+* 2:    unchanged        +1/-1 index.html
+* 3:    unchanged        +5/-1 lib/simplegit.rb
+  4:    unchanged        +5/-1 file4.html
+* 5:    unchanged        +5/-1 file5.html
+* 6:    unchanged        +5/-1 file6.html
+* 7:    unchanged        +5/-1 file7.html
+Update>>
+```
+
+And as you can imagine we can also unstage a range of files, so if we type -range all the files on that range would be unstaged. If we wanted to unstage all the files from 5 to 7 we would type -5-7:
+
+```
+Update>> -5-7
+           staged     unstaged path
+  1:    unchanged        +0/-1 TODO
+* 2:    unchanged        +1/-1 index.html
+* 3:    unchanged        +5/-1 lib/simplegit.rb
+  4:    unchanged        +5/-1 file4.html
+  5:    unchanged        +5/-1 file5.html
+  6:    unchanged        +5/-1 file6.html
+  7:    unchanged        +5/-1 file7.html
+Update>>
+```
+
+Source : [How to add multiple files to Git at the same time](https://stackoverflow.com/a/35943688/3806250).
 
 ```{r, eval = FALSE}
 ## Get all files.
@@ -2766,6 +2865,7 @@ sys
 05. [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 06. [Forecasting: Principles and Practice](https://otexts.com/fpp3)
 07. [Tableau 100 Color Palettes](https://public.tableau.com/en-us/gallery/100-color-palettes)
+08. [How to add multiple files to Git at the same time](https://stackoverflow.com/a/35943688/3806250)
 
 <br>
 
