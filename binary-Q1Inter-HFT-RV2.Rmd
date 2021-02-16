@@ -1285,7 +1285,7 @@ fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MN
 smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
 smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 6)', escape = FALSE) %>% 
+  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 5)', escape = FALSE) %>% 
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   column_spec(1, background = '#556DAC') %>% 
   column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
@@ -1331,7 +1331,7 @@ fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MN
 smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
 smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 6)', escape = FALSE) %>% 
+  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 4)', escape = FALSE) %>% 
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   column_spec(1, background = '#556DAC') %>% 
   column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
@@ -1377,7 +1377,7 @@ fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MN
 smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
 smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 6)', escape = FALSE) %>% 
+  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 3)', escape = FALSE) %>% 
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   column_spec(1, background = '#556DAC') %>% 
   column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
@@ -1423,7 +1423,7 @@ fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MN
 smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
 smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 6)', escape = FALSE) %>% 
+  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 2)', escape = FALSE) %>% 
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   column_spec(1, background = '#556DAC') %>% 
   column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
@@ -1465,11 +1465,15 @@ llply(ets.m, function(md) {
 
 ```{r, eval = FALSE}
 #```{r, warning = FALSE, message = FALSE, results='asis'}
-fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_1.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+smp <- ldply(fl, function(x) {
+  readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+  })
 
 smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 6)', escape = FALSE) %>% 
+  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 1)', escape = FALSE) %>% 
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   column_spec(1, background = '#556DAC') %>% 
   column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
