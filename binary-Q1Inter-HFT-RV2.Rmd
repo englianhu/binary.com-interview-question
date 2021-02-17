@@ -2621,9 +2621,10 @@ rp <- rbindlist(list(rp_fLF, rp_fLT))
 rp <- rp[, .(model, arrange, N, mae, mape, rmse, smape, mse)]
 rp %<>% unique
 
-sum <- rp[mae == min(mae) | mape == min(mape) | rmse == min(rmse) | smape == min(smape) | mse == min(mse)]
+#sum <- rp[mae == min(mae) | mape == min(mape) | rmse == min(rmse) | smape == min(smape) | mse == min(mse)]
 
-sum %>% 
+rp %>% 
+#sum %>% 
   dplyr::mutate(
     mae = ifelse(
       rank(mae) <= 3, 
@@ -2686,304 +2687,7 @@ sum %>%
 
 # Conclusion
 
-## Initial Summary
-
-From initial stage models comparison, we know that `r unique(sum$model)[1]` and `r unique(sum$model)[2]` is the <span style='color:white; background-color:#DE5D83;'>**β**est model</span>.
-
-## Small Adjustment
-
-```{r, warning = FALSE, message = FALSE, results='asis'}
-rp_ts <- rp[, {
-    .SD[, .(model = model, 
-            ts = str_detect(model, '^ts_[0-9]'), 
-            arrange = arrange, 
-            mae = mae, 
-            mape = mape, 
-            rmse = rmse, 
-            smape = smape, 
-            mse = mse), ]}][ts == TRUE, !('ts')]
-rp_ts %<>% unique
-
-rp_ts %>% 
-  dplyr::mutate(
-    mae = ifelse(
-      rank(mae) <= 3, 
-      cell_spec(
-        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
-        color = 'darkgoldenrod', bold = TRUE), 
-      cell_spec(
-        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
-        color = 'grey', italic = TRUE)), 
-    mape = ifelse(
-      rank(mape) <= 3, 
-      cell_spec(
-        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
-        color = 'darkgoldenrod', bold = TRUE), 
-      cell_spec(
-        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
-        color = 'grey', italic = TRUE)), 
-    rmse = ifelse(
-      rank(rmse) <= 3, 
-      cell_spec(
-        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
-        color = 'darkgoldenrod', bold = TRUE), 
-      cell_spec(
-        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
-        color = 'grey', italic = TRUE)), 
-    smape = ifelse(
-      rank(smape) <= 3, 
-      cell_spec(
-        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
-        color = 'darkgoldenrod', bold = TRUE), 
-      cell_spec(
-        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
-        color = 'grey', italic = TRUE)), 
-    mse = ifelse(
-      rank(mse) <= 3, 
-      cell_spec(
-        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
-        color = 'darkgoldenrod', bold = TRUE), 
-      cell_spec(
-        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
-        color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = 'Accurcy Report (time series)', escape = FALSE) %>% 
-  ## https://www.w3schools.com/cssref/css_colors.asp
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro') %>% 
-  column_spec(4, background = 'LightGray') %>% 
-  column_spec(5, background = 'Gainsboro') %>% 
-  column_spec(6, background = 'LightGray') %>% 
-  column_spec(7, background = 'Gainsboro') %>%  
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
-```
-
-*source : `r paste0(dim(rp_ts), collapse = ' x ')`*
-
-```{r include = FALSE}
-if(exists('rp_ts')) rm(rp_ts)
-```
-
-As we can know from `ts` Here I use the <span style='color:white; background-color:#DE5D83;'>**β**est model</span> but adjust the data size to compare.
-
-```{r, eval = FALSE}
-## Get all MNN & MNZ files.
-MNN_MNZ <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN|^ts_ets_MNZ')
-fls_pth <- paste0(.dtr, 'data/fx/USDJPY/intraday/', MNN_MNZ)
-
-## read files
-ex_mds_ets_MNN_MNZ <- ldply(1:length(MNN_MNZ), function(i) {
-    
-    nms <- MNN_MNZ[i] %>% 
-        str_replace_all('^ex_|.rds$', '') %>% 
-        str_split('_|\\.') %>% 
-        .[[1]]
-    
-    if(any(str_detect(nms, 'ets'))) {
-      nms <- nms
-    } else {
-      nms <- c(nms[1], rep(NA, 2), nms[2:length(nms)]) }
-    
-    names(nms) <- c('t_series', 'model', 'sub_model', 
-                    'data_min', 'fc_min', 'date')
-    
-    datset2 <- t(nms) %>% 
-      data.frame %>% 
-      mutate(model =factor(model), sub_model = factor(sub_model), 
-             data_min = as.numeric(data_min), 
-             fc_min = as.numeric(fc_min), date = as_date(date))
-    
-    datset <- read_rds(fls_pth[i])
-    
-    res <- tibble(datset2, datset) %>% 
-      dplyr::select(index, t_series, model, sub_model, data_min, 
-                    fc_min, date, mk.price, fc.price)
-    res <- res[!is.na('mk.price'),]
-    cat(nms, '\n')
-    
-    return(res)
-    
-}) %>% 
-  as_tibble
-
-saveRDS(ex_mds_ets_MNN_MNZ, 
-         paste0(.dtr, 'data/fx/USDJPY/intraday/ex_mds_ets_MNN_MNZ.rds'))
-
-rm(list = ls())
-
-## MNN & MNZ ets models
-if(!exists('ex_mds_ets_MNN_MNZ')) {
-  ex_mds_ets_MNN_MNZ <- read_rds(
-    paste0(.dtr, 'data/fx/USDJPY/intraday/ex_mds_ets_MNN_MNZ.rds')) }
-
-ex_mds_ets_MNN_MNZ_cmp <- ex_mds_ets_MNN_MNZ %>% 
-    tidyr::unite(model, t_series:fc_min) %>%  #different with mds_ts_cmp
-    as.data.table %>% 
-    .[, .(index, model, mk.price, fc.price)]
-
-ex_mds_ets_MNN_MNZ_cmp <- unique(
-  ex_mds_ets_MNN_MNZ_cmp[, .(index, model, mk.price, fc.price)])
-
-## save dataset in data.table format
-saveRDS(ex_mds_ets_MNN_MNZ_cmp, 
-        paste0(.dtr, 'data/fx/USDJPY/intraday/ex_mds_ets_MNN_MNZ_cmp.rds'))
-```
-
-<span style='color:green'>**MNN_MNZ_rp_fLF**</span>
-
-```{r, eval = FALSE}
-rm(list = ls())
-
-## report for ex_mds_ets_MNN_MNZ_cmp
-if(!exists('ex_mds_ets_MNN_MNZ_cmp')) {
-    ex_mds_ets_MNN_MNZ_cmp <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/intraday/ex_mds_ets_MNN_MNZ_cmp.rds')) }
-
-if(!is.data.table('ex_mds_ets_MNN_MNZ_cmp')) {
-  ex_mds_ets_MNN_MNZ_cmp %<>% as.data.table }
-
-ex_mds_ets_MNN_MNZ_cmp <- unique(
-  ex_mds_ets_MNN_MNZ_cmp, fromLast = FALSE, by = c('index', 'model')) %>% 
-  na.omit
-
-MNN_MNZ_rp_fLF <- ex_mds_ets_MNN_MNZ_cmp[, {
-  mk.price = mk.price
-  fc.price = fc.price
-  .SD[, .(.N, 
-          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
-          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
-          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
-          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
-          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
-      by=.(model)]}][order(model), ]
-
-rm(ex_mds_ets_MNN_MNZ_cmp)
-
-## report
-saveRDS(MNN_MNZ_rp_fLF, paste0(.dtr, 'data/fx/USDJPY/intraday/MNN_MNZ_rp_fLF.rds'))
-```
-
-<span style='color:green'>**MNN_MNZ_rp_fLT**</span>
-
-```{r, eval = FALSE}
-rm(list = ls())
-
-## report for ex_mds_ets_MNN_MNZ_cmp
-if(!exists('ex_mds_ets_MNN_MNZ_cmp')) {
-    ex_mds_ets_MNN_MNZ_cmp <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/intraday/ex_mds_ets_MNN_MNZ_cmp.rds')) }
-
-if(!is.data.table('ex_mds_ets_MNN_MNZ_cmp')) {
-  ex_mds_ets_MNN_MNZ_cmp %<>% as.data.table }
-
-ex_mds_ets_MNN_MNZ_cmp <- unique(
-  ex_mds_ets_MNN_MNZ_cmp, fromLast = TRUE, by = c('index', 'model')) %>% 
-  na.omit
-
-MNN_MNZ_rp_fLT <- ex_mds_ets_MNN_MNZ_cmp[, {
-  mk.price = mk.price
-  fc.price = fc.price
-  .SD[, .(.N, 
-          mae = MLmetrics::MAE(y_true = mk.price, y_pred = fc.price), 
-          mape = MLmetrics::MAPE(y_true = mk.price, y_pred = fc.price), 
-          rmse = MLmetrics::RMSE(y_true = mk.price, y_pred = fc.price), 
-          smape = Metrics::smape(actual = mk.price, predicted = fc.price), 
-          mse = MLmetrics::MSE(y_true = mk.price, y_pred = fc.price)), 
-      by=.(model)]}][order(model), ]
-
-rm(ex_mds_ets_MNN_MNZ_cmp)
-
-## report
-saveRDS(MNN_MNZ_rp_fLT, paste0(.dtr, 'data/fx/USDJPY/intraday/MNN_MNZ_rp_fLT.rds'))
-```
-
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
-## report for MNN_MNZ_rp_fLF
-if(!exists('MNN_MNZ_rp_fLF')) {
-    MNN_MNZ_rp_fLF <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/intraday/MNN_MNZ_rp_fLF.rds')) }
-
-## report for MNN_MNZ_rp_fLT
-if(!exists('MNN_MNZ_rp_fLT')) {
-    MNN_MNZ_rp_fLT <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/intraday/MNN_MNZ_rp_fLT.rds')) }
-
-MNN_MNZ_rp_fLF <- MNN_MNZ_rp_fLF[, arrange := 'from_first'][]
-MNN_MNZ_rp_fLT <- MNN_MNZ_rp_fLT[, arrange := 'from_last'][]
-
-rp <- rbindlist(list(MNN_MNZ_rp_fLF, MNN_MNZ_rp_fLT))
-rp <- rp[, .(model, arrange, N, mae, mape, rmse, smape, mse)]
-rp %<>% unique
-
-rm(MNN_MNZ_rp_fLF, MNN_MNZ_rp_fLT)
-```
-
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
-rp %>% 
-  dplyr::mutate(
-    mae = ifelse(
-      rank(mae) <= 3, 
-      cell_spec(
-        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
-        color = 'darkgoldenrod', bold = TRUE), 
-      cell_spec(
-        paste0(round(mae, 7), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
-        color = 'grey', italic = TRUE)), 
-    mape = ifelse(
-      rank(mape) <= 3, 
-      cell_spec(
-        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
-        color = 'darkgoldenrod', bold = TRUE), 
-      cell_spec(
-        paste0(round(mape, 7), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
-        color = 'grey', italic = TRUE)), 
-    rmse = ifelse(
-      rank(rmse) <= 3, 
-      cell_spec(
-        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
-        color = 'darkgoldenrod', bold = TRUE), 
-      cell_spec(
-        paste0(round(rmse, 7), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
-        color = 'grey', italic = TRUE)), 
-    smape = ifelse(
-      rank(smape) <= 3, 
-      cell_spec(
-        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
-        color = 'darkgoldenrod', bold = TRUE), 
-      cell_spec(
-        paste0(round(smape, 7), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
-        color = 'grey', italic = TRUE)), 
-    mse = ifelse(
-      rank(mse) <= 3, 
-      cell_spec(
-        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
-        color = 'darkgoldenrod', bold = TRUE), 
-      cell_spec(
-        paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
-        color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = 'Accurcy Report (MNN & MNZ ETS Models)', escape = FALSE) %>% 
-  ## https://www.w3schools.com/cssref/css_colors.asp
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  column_spec(3, background = 'LightSlateGrey') %>% 
-  column_spec(4, background = 'LightGray') %>% 
-  column_spec(5, background = 'Gainsboro') %>% 
-  column_spec(6, background = 'LightGray') %>% 
-  column_spec(7, background = 'Gainsboro') %>% 
-  column_spec(8, background = 'LightGray') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
-```
-
-*source : `r paste0(dim(rp), collapse = ' x ')`*
-
-from above models we know the **βest model**.
-
+## Final Conclude
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
 sum <- rp[mae == min(mae) | mape == min(mape) | rmse == min(rmse) | smape == min(smape) | mse == min(mse)]
 
@@ -3029,7 +2733,7 @@ sum %>%
       cell_spec(
         paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = 'Accurcy Report (Final Stage Comparison)', escape = FALSE) %>% 
+  kbl(caption = 'Best Model', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -3047,9 +2751,7 @@ sum %>%
 
 *source : `r paste0(dim(sum), collapse = ' x ')`*
 
-## Final Conclude
-
-From final stage models comparison, we know that `r unique(sum$model)[1]` and `r unique(sum$model)[2]` is the <span style='color:white; background-color:#DE5D83;'>**β**est model</span>.
+From table above, we know that `r unique(sum$model)[1]` and `r unique(sum$model)[2]` is the <span style='color:white; background-color:#DE5D83;'>**β**est model</span>.
 
 ## Future Studies
 
