@@ -1,6 +1,6 @@
 ---
 title: "<img src='www/deriv.jpg' width='240'>"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part III)**</span>](https://github.com/englianhu/binary.com-interview-question)"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday & Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://github.com/englianhu/binary.com-interview-question)"
 author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/quantitative trader 1.jpg' width='13'> <img src='www/RYU.jpg' width='15'> <img src='www/ENG.jpg' width='24'> ® <img src='www/xueba1.jpg' width='14'>"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
@@ -1692,6 +1692,258 @@ if(exists('smp')) rm(smp)
 if(exists('fl')) rm(fl)
 ```
 
+## Intraday Seasonal Data
+
+### 8Hr >> 1min
+
+I set the length of data as Daily (`480 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_1440.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 480
+hrz1 <- 1
+
+llply(ets.m, function(md) {
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
+  })
+```
+
+```{r, eval = FALSE}
+#```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_480_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+smp <- ldply(fl, function(x) {
+  readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+  })
+
+smp %>% 
+  kbl(caption = 'Data Sample (ETS MNN 480 forecast 1)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = '#556DAC') %>% 
+  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### 6Hr >> 1min
+
+I set the length of data as Daily (`360 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_1440.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 360
+hrz1 <- 1
+
+llply(ets.m, function(md) {
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
+  })
+```
+
+```{r, eval = FALSE}
+#```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_360_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+smp <- ldply(fl, function(x) {
+  readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+  })
+
+smp %>% 
+  kbl(caption = 'Data Sample (ETS MNN 360 forecast 1)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = '#556DAC') %>% 
+  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### 4Hr >> 1min
+
+I set the length of data as Daily (`240 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_1440.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 240
+hrz1 <- 1
+
+llply(ets.m, function(md) {
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
+  })
+```
+
+```{r, eval = FALSE}
+#```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_240_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+smp <- ldply(fl, function(x) {
+  readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+  })
+
+smp %>% 
+  kbl(caption = 'Data Sample (ETS MNN 240 forecast 1)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = '#556DAC') %>% 
+  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### 3Hr >> 1min
+
+I set the length of data as Daily (`180 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_1440.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 180
+hrz1 <- 1
+
+llply(ets.m, function(md) {
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
+  })
+```
+
+```{r, eval = FALSE}
+#```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_180_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+smp <- ldply(fl, function(x) {
+  readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+  })
+
+smp %>% 
+  kbl(caption = 'Data Sample (ETS MNN 180 forecast 1)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = '#556DAC') %>% 
+  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### 2Hr >> 1min
+
+I set the length of data as Daily (`120 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_1440.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 120
+hrz1 <- 1
+
+llply(ets.m, function(md) {
+  intra_1440(timeID = timeID, dsmp, 
+             data_len = data_len, hrz1 = hrz1, 
+             .model = md)
+  })
+```
+
+```{r, eval = FALSE}
+#```{r, warning = FALSE, message = FALSE, results='asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_120_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+smp <- ldply(fl, function(x) {
+  readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+  })
+
+smp %>% 
+  kbl(caption = 'Data Sample (ETS MNN 120 forecast 1)', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = '#556DAC') %>% 
+  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
 ```{r, include = FALSE}
 if(exists('bse')) rm(bse)
 if(exists('ctr')) rm(ctr)
@@ -1811,6 +2063,12 @@ Update>>
 
 Source : [How to add multiple files to Git at the same time](https://stackoverflow.com/a/35943688/3806250).
 
+```
+You can commit all files by doing a `git add .` or just specifying the directory that they're in: `git add ./folder/` or to add all files that begin with "test": `git add test*`
+```
+
+Source : [How to add or commit specific files without specifying their full path?](https://stackoverflow.com/a/44015351/3806250)
+
 ```{r, eval = FALSE}
 ## Get all files.
 fls <- paste0(.dtr, 'data/fx/USDJPY/') %>% 
@@ -1914,6 +2172,7 @@ if(!exists('mds_ets_MNN_intraday')) {
 
 mds_ets_MNN_intraday <- rbind(mds_ets_MNN_7200_1440, mds_ets_MNN_intraday) %>% 
   as.data.table
+mds_ets_MNN_intraday <- mds_ets_MNN_intraday[order(index, part, data_min, fc_min)]
 
 saveRDS(mds_ets_MNN_intraday, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday.rds'))
 
@@ -1933,9 +2192,10 @@ if(!exists('mds_ets_MNN_intraday')) {
     paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday.rds')) }
 
 mds_ets_MNN_intraday_cmp <- mds_ets_MNN_intraday %>% 
-    tidyr::unite(model, t_series:part) %>%
-    as.data.table %>% 
-    .[, .(index, model, mk.price, fc.price)] %>% as.data.table
+  #tidyr::unite(model, t_series:part) %>% 
+  tidyr::unite(model, t_series:fc_min) %>% 
+  as.data.table %>% 
+  .[, .(index, model, mk.price, fc.price)] %>% as.data.table
 
 mds_ets_MNN_intraday_cmp <- as.data.table(mds_ets_MNN_intraday_cmp)
 
@@ -2055,7 +2315,7 @@ data.frame(mds_ets_MNN_intraday_grph_fLF)[
 
 ```{r, warning = FALSE, results = 'asis'}
 data.frame(mds_ets_MNN_intraday_grph_fLT)[
-  c(1:5, (nrow(mds_ets_MNN_intraday_grph_fLT)-5):nrow(mds_ets_MNN_intraday_grph_fLT)),] %>% 
+  c(1:6, (nrow(mds_ets_MNN_intraday_grph_fLT)-5):nrow(mds_ets_MNN_intraday_grph_fLT)),] %>% 
   kbl(caption = 'Data Sample', escape = FALSE) %>% 
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -2073,7 +2333,7 @@ data.frame(mds_ets_MNN_intraday_grph_fLT)[
 
 ### `unique(x, fromLast = FALSE)` Dataset
 
-```{r, eval = FALSE}
+```{r, warning = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
 plt <- mds_ets_MNN_intraday_grph_fLF %>% 
   ggplot(aes(x = index, y = price, group = model, color = model)) + 
@@ -2099,7 +2359,7 @@ if(exists('plt')) rm(plt)
 
 ### `unique(x, fromLast = TRUE)` Dataset
 
-```{r, eval = FALSE}
+```{r, warning = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
 plt <- mds_ets_MNN_intraday_grph_fLT %>% 
   ggplot(aes(x = index, y = price, group = model, color = model)) + 
