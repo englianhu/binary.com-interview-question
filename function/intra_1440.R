@@ -6,7 +6,7 @@ intra_1440 <- function(timeID, data = dsmp, data_len,
   tmp <- llply(1:length(timeID), function(i) {
     if(i == 1) {
       
-      tmp2 <-llply(1:intr, function(j) {
+      tmp2 <- llply(1:intr, function(j) {
         
         if(j == 1) {
           train <- dsmp[date < timeID[i]][(.N - (data_len - 1)):.N]
@@ -68,7 +68,7 @@ intra_1440 <- function(timeID, data = dsmp, data_len,
       
     } else  {
       
-      tmp2 <-llply(1:intr, function(j) {
+      tmp2 <- llply(1:intr, function(j) {
         
         if(j == 1) {
           lst_sq <- dsmp[date < timeID[i],][.N]$sq + 1

@@ -61,7 +61,7 @@ suppressWarnings(require('rmgarch'))
 
 fx <<- c('EURUSD=X', 'JPY=X', 'GBPUSD=X', 'CHF=X', 'CAD=X', 'AUDUSD=X')
 cur <<- c('EUR/USD', 'USD/JPY', 'GBP/USD', 'USD/CHF', 'USD/CAD', 'AUD/USD')
-wd <<- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')#, 'Saturday', 'Sunday')
+wd <- c('Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday')#, 'Saturday', 'Sunday')
 
 #'@ if(now('GMT') == today('GMT')) {
 ## https://finance.yahoo.com/quote/AUDUSD=X?p=AUDUSD=X
@@ -331,7 +331,7 @@ ui <- shinyUI(fluidPage(
     div(
       tags$a(href='http://www.binary.com', target='_blank', 
              tags$img(height = '80px', alt='binary', #align='right', 
-                      src='binary-logo-resize.jpg')), 
+                      src='https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/www/binary-logo-resize.jpg')), 
       img(src = 'ENG.jpg', width = '40', align = 'right'), 
       img(src = 'RYO.jpg', width = '20', align = 'right'))),
   
