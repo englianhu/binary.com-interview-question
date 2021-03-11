@@ -31,6 +31,7 @@ intra_7200 <- function(timeID, data = dsmp, data_len,
         }
         
         sets <- train[, .(index, close)] %>% 
+          as_tibble %>% 
           tk_ts(frequency = hrz1) %>% 
           ets(model = .model) %>% 
           forecast(h = hrz1) %>% 
@@ -94,6 +95,7 @@ intra_7200 <- function(timeID, data = dsmp, data_len,
         }
         
         sets <- train[, .(index, close)] %>% 
+          as_tibble %>% 
           tk_ts(frequency = hrz1) %>% 
           ets(model = .model) %>% 
           forecast(h = hrz1) %>% 
