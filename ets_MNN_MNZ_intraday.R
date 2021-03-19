@@ -87,9 +87,10 @@ source('function/intra_1440.R')
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
+timeID %<>% .[1:5]
 #timeID %<>% .[. >= as_date('2016-01-04')]
 data_len <- 1440
-hrz1 <- 1
+hrz1 <- 480
 intr <- data_len/hrz1
 
 llply(ets.m, function(md) {
@@ -164,11 +165,30 @@ lst[str_detect(lst, '2017-11-01')]
 #ts_ets_MNN_180_1.p_295.2017-01-27.rds
 
 
+#########################################################################
+require('filesstrings')
+require('zip')
+
+fls1 <- list.files('C:/Users/User/Desktop/intraday')
+fls2 <- list.files('C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/intraday')
+fls2 <- fls2[-1]
+
+fls1_chk <- fls1[fls2 %in% fls1]
+fls1_chk <- na.omit(fls1_chk)
+attributes(fls1_chk) <- NULL
+fls2_chk <- fls2[fls1 %in% fls2]
+
+pth <- 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/intraday'
+fls <- paste0('C:/Users/User/Desktop/intraday/', fls1_chk)
 
 
+move_files(fls, pth)
 
+## https://stackoverflow.com/questions/37405424/what-is-the-fastest-way-to-delete-files-using-r
+unlink(fls1[!fls1 %in% fls1_chk], recursive = TRUE, force = TRUE)
+system(paste('del', paste0('C:/Users/User/Desktop/intraday/', fls1[!fls1 %in% fls1_chk], collapse = ' ')), wait = FALSE)
 
-
-
+## https://stackoverflow.com/questions/47370686/how-to-zip-multiple-csv-files-in-r
+zip::zipr(zipfile = 'C:/Users/User/Desktop/intraday/ts_ets.zip', files = fls)
 
 
