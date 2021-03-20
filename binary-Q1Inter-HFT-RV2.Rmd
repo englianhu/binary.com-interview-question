@@ -3136,7 +3136,7 @@ mds_ets_MNN_intraday_1min <- ldply(1:length(fls), function(i) {
     dplyr::select(index, t_series, model, sub_model, data_min, 
                   fc_min, part, date, mk.price, fc.price)
   res <- res[!is.na('mk.price'),]
-  cat(nms, '\n')
+  cat(i, '/', length(fls), '=', nms, '\n')
   
   return(res)
   
