@@ -4087,7 +4087,9 @@ sum %>%
 
 *source : `r paste0(dim(sum), collapse = ' x ')`*
 
-From table above, we know that `r unique(sum$model)[1]` and `r unique(sum$model)[2]` is the <span style='color:white; background-color:#DE5D83;'>**β**est model</span>.
+From **4.2.3.2 Comparison between 1 Year & 3.5 Year Dataset**, we can know the **βest model** based on the unique `from_first` dataset.
+
+From table above, we know that `r unique(sum$model)[1]` `from_first` is the <span style='color:white; background-color:#DE5D83;'>**β**est model</span>.
 
 ## Future Studies
 
