@@ -676,21 +676,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-dy, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/'), pattern = '^ts_ets_MNN_1440_1440.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 1440)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 1440)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -725,21 +731,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-12hr, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_720.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 720)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 720)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -774,21 +786,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-8hr, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_480.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 480)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 480)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -823,21 +841,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-6hr, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_360.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 360)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 360)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -872,21 +896,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-4hr, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_240.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 240)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 240)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -921,21 +951,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-3hr, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_180.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 180)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 180)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -970,21 +1006,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-2hr, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_120.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 120)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 120)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1019,21 +1061,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-1hr, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_60.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 60)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 60)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1068,21 +1116,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-30min, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_30.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 30)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 30)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1117,21 +1171,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-20min, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_20.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 20)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 20)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1166,21 +1226,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-15min, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_15.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 15)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 15)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1215,21 +1281,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-10min, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_10.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 10)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 10)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1264,21 +1336,27 @@ llply(ets.m, function(md) {
 
 ```{r dy-8min, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_8.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 8)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 8)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1313,17 +1391,23 @@ llply(ets.m, function(md) {
 
 ```{r dy-6min, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_6.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 6)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = '#556DAC') %>% 
-  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 6)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1359,17 +1443,24 @@ llply(ets.m, function(md) {
 ```{r, eval = FALSE}
 #```{r, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_5.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 5)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = '#556DAC') %>% 
-  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 5)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1405,17 +1496,23 @@ llply(ets.m, function(md) {
 ```{r, eval = FALSE}
 #```{r, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_4.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 4)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = '#556DAC') %>% 
-  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 4)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1451,17 +1548,23 @@ llply(ets.m, function(md) {
 ```{r, eval = FALSE}
 #```{r, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_3.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 3)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = '#556DAC') %>% 
-  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 3)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1497,17 +1600,23 @@ llply(ets.m, function(md) {
 ```{r, eval = FALSE}
 #```{r, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_2.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 2)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = '#556DAC') %>% 
-  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 2)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1545,19 +1654,24 @@ llply(ets.m, function(md) {
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1440_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
 #smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-smp <- ldply(fl, function(x) {
-  readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
-  })
+if(all(is.na(fl))){
+  smp <- NA
 
-smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 1440 forecast 1)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = '#556DAC') %>% 
-  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+} else {
+  smp <- ldply(fl, function(x) {
+    readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+    })
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1440 forecast 1)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1595,21 +1709,27 @@ llply(ets.m, function(md) {
 
 ```{r wk-12hr, warning = FALSE, message = FALSE, results = 'asis'}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_7200_720.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 7200 forecast 720)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 7200 forecast 720)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1645,21 +1765,27 @@ llply(ets.m, function(md) {
 
 ```{r, eval = FALSE}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_7200_360.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 7200 forecast 360)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 7200 forecast 360)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1695,21 +1821,27 @@ llply(ets.m, function(md) {
 
 ```{r, eval = FALSE}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_7200_180.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 7200 forecast 180)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 7200 forecast 180)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1745,21 +1877,27 @@ llply(ets.m, function(md) {
 
 ```{r, eval = FALSE}
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_7200_60.p_[0-9]{0,}.[0-9]{4}')[1]
-smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-data.frame(smp)[
-  c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN 7200 forecast 60)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = '#556DAC') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  #column_spec(3, background = '#556DAC') %>% 
-  column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+  
+  data.frame(smp)[
+    c(1:3, (nrow(smp)-2):nrow(smp)),] %>% 
+    kbl(caption = 'Data Sample (ETS MNN 7200 forecast 60)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = 'CornflowerBlue') %>% 
+    column_spec(2, background = '#556DAC') %>% 
+    #column_spec(3, background = 'LightSlateGrey') %>% 
+    #column_spec(3, background = '#556DAC') %>% 
+    column_spec(3, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(4, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1770,6 +1908,226 @@ if(exists('fl')) rm(fl)
 ```
 
 ## Intraday Seasonal Data
+
+### 16Hr >> 1min
+
+I set the length of data as Daily (`960 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_min.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 960
+hrz1 <- 1
+
+llply(ets.m, function(md) {
+  intra_min(timeID = timeID, dsmp, 
+            data_len = data_len, hrz1 = hrz1, 
+            .model = md)
+  })
+```
+
+```{r 16hr-1min, warning = FALSE, message = FALSE, results = 'asis'}
+#```{r, warning = FALSE, message = FALSE, results = 'asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_960_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- ldply(fl, function(x) {
+    readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+  })
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 960 forecast 1)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### 14Hr >> 1min
+
+I set the length of data as Daily (`840 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_min.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 840
+hrz1 <- 1
+
+llply(ets.m, function(md) {
+  intra_min(timeID = timeID, dsmp, 
+            data_len = data_len, hrz1 = hrz1, 
+            .model = md)
+  })
+```
+
+```{r 14hr-1min, warning = FALSE, message = FALSE, results = 'asis'}
+#```{r, warning = FALSE, message = FALSE, results = 'asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_840_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- ldply(fl, function(x) {
+    readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+    })
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 840 forecast 1)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### 12Hr >> 1min
+
+I set the length of data as Daily (`720 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_min.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 720
+hrz1 <- 1
+
+llply(ets.m, function(md) {
+  intra_min(timeID = timeID, dsmp, 
+            data_len = data_len, hrz1 = hrz1, 
+            .model = md)
+  })
+```
+
+```{r 12hr-1min, warning = FALSE, message = FALSE, results = 'asis'}
+#```{r, warning = FALSE, message = FALSE, results = 'asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_720_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- ldply(fl, function(x) {
+    readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+    })
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 720 forecast 1)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### 10Hr >> 1min
+
+I set the length of data as Daily (`600 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_min.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 600
+hrz1 <- 1
+
+llply(ets.m, function(md) {
+  intra_min(timeID = timeID, dsmp, 
+            data_len = data_len, hrz1 = hrz1, 
+            .model = md)
+  })
+```
+
+```{r 10hr-1min, warning = FALSE, message = FALSE, results = 'asis'}
+#```{r, warning = FALSE, message = FALSE, results = 'asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_600_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- ldply(fl, function(x) {
+    readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+    })
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 600 forecast 1)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
+```
+
+*source : `r paste0(dim(smp), collapse = ' x ')`*
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
 
 ### 8Hr >> 1min
 
@@ -1899,19 +2257,24 @@ llply(ets.m, function(md) {
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_240_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
 #smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-smp <- ldply(fl, function(x) {
-  readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
-  })
+if(all(is.na(fl))){
+  smp <- NA
 
-smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 240 forecast 1)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = '#556DAC') %>% 
-  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+} else {
+  smp <- ldply(fl, function(x) {
+    readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+    })
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 240 forecast 1)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1949,19 +2312,24 @@ llply(ets.m, function(md) {
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_180_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
 #smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-smp <- ldply(fl, function(x) {
-  readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
-  })
+if(all(is.na(fl))){
+  smp <- NA
 
-smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 180 forecast 1)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = '#556DAC') %>% 
-  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+} else {
+  smp <- ldply(fl, function(x) {
+    readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+    })
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 180 forecast 1)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -1999,19 +2367,24 @@ llply(ets.m, function(md) {
 fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_120_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
 #smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
 
-smp <- ldply(fl, function(x) {
-  readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
-  })
+if(all(is.na(fl))){
+  smp <- NA
 
-smp %>% 
-  kbl(caption = 'Data Sample (ETS MNN 120 forecast 1)', escape = FALSE) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = '#556DAC') %>% 
-  column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
-  column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+} else {
+  smp <- ldply(fl, function(x) {
+    readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+    })
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 120 forecast 1)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
 ```
 
 *source : `r paste0(dim(smp), collapse = ' x ')`*
@@ -2343,7 +2716,7 @@ saveRDS(mds_ets_MNN_intraday_grph_fLT,
         paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_grph_fLT.rds'))
 ```
 
-```{r long-fmt, warning = FALSE, message = FALSE, results = 'asis'}
+```{r long-fmt1, warning = FALSE, message = FALSE, results = 'asis'}
 if(!exists('mds_ets_MNN_intraday')) {
   mds_ets_MNN_intraday <- read_rds(
     paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday.rds')) }
@@ -2373,7 +2746,7 @@ mds_ets_MNN_intraday[c(1:3, (nrow(mds_ets_MNN_intraday)-3):nrow(mds_ets_MNN_intr
 
 There has a small mistake in previous paper [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) but doesn't affect since I only want to compare the models and here I use the same `MNN` model and filter `unique(fromLast = FALSE)` and `unique(fromLast = TRUE)`.
 
-```{r chk-fls}
+```{r chk-fls1}
 if(!exists('mds_ets_MNN_intraday_grph_fLF')) {
   mds_ets_MNN_intraday_grph_fLF <- readRDS(
     paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_grph_fLF.rds')) }
@@ -2383,7 +2756,7 @@ if(!exists('mds_ets_MNN_intraday_grph_fLT')) {
     paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_grph_fLT.rds')) }
 ```
 
-```{r long-fLF, warning = FALSE, message = FALSE, results = 'asis'}
+```{r long-fLF1, warning = FALSE, message = FALSE, results = 'asis'}
 data.frame(mds_ets_MNN_intraday_grph_fLF)[
   c(1:5, (nrow(mds_ets_MNN_intraday_grph_fLF)-5):nrow(mds_ets_MNN_intraday_grph_fLF)),] %>% 
   kbl(caption = 'Data Sample', escape = FALSE) %>% 
@@ -2399,7 +2772,7 @@ data.frame(mds_ets_MNN_intraday_grph_fLF)[
 
 *source : `r paste0(dim(mds_ets_MNN_intraday_grph_fLF), collapse = ' x ')`*
 
-```{r long-fLT, warning = FALSE, message = FALSE, results = 'asis'}
+```{r long-fLT1, warning = FALSE, message = FALSE, results = 'asis'}
 data.frame(mds_ets_MNN_intraday_grph_fLT)[
   c(1:6, (nrow(mds_ets_MNN_intraday_grph_fLT)-5):nrow(mds_ets_MNN_intraday_grph_fLT)),] %>% 
   kbl(caption = 'Data Sample', escape = FALSE) %>% 
@@ -2419,7 +2792,7 @@ data.frame(mds_ets_MNN_intraday_grph_fLT)[
 
 #### `unique(x, fromLast = FALSE)` Dataset
 
-```{r plt-fLF, warning = FALSE, message = FALSE, results = 'asis'}
+```{r plt-fLF1, warning = FALSE, message = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
 plt <- mds_ets_MNN_intraday_grph_fLF %>% 
   ggplot(aes(x = index, y = price, group = model, color = model)) + 
@@ -2445,7 +2818,7 @@ if(exists('plt')) rm(plt)
 
 #### `unique(x, fromLast = TRUE)` Dataset
 
-```{r plt-fLT, warning = FALSE, message = FALSE, results = 'asis'}
+```{r plt-fLT1, warning = FALSE, message = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
 plt <- mds_ets_MNN_intraday_grph_fLT %>% 
   ggplot(aes(x = index, y = price, group = model, color = model)) + 
@@ -2505,7 +2878,7 @@ rp_fLF <- mds_ets_MNN_intraday_cmp_fLF[, {
 saveRDS(rp_fLF, paste0(.dtr, 'data/fx/USDJPY/rp_fLF.rds'))
 ```
 
-```{r rp-fLF, warning = FALSE, message = FALSE, results = 'asis'}
+```{r rp-fLF1, warning = FALSE, message = FALSE, results = 'asis'}
 rp_fLF <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp_fLF.rds'))
 
 rp_tbl <- rp_fLF %>% 
@@ -2611,7 +2984,7 @@ rp_fLT <- mds_ets_MNN_intraday_cmp_fLT[, {
 saveRDS(rp_fLT, paste0(.dtr, 'data/fx/USDJPY/rp_fLT.rds'))
 ```
 
-```{r rp-fLT, warning = FALSE, message = FALSE, results = 'asis'}
+```{r rp-fLT1, warning = FALSE, message = FALSE, results = 'asis'}
 rp_fLT <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp_fLT.rds'))
 
 rp_tbl <- rp_fLT %>% 
@@ -2685,7 +3058,7 @@ from above models we know the **βest model**.
 
 #### Summary
 
-```{r sum-rp, warning = FALSE, message = FALSE, results = 'asis'}
+```{r sum-rp1, warning = FALSE, message = FALSE, results = 'asis'}
 rm(list = ls())
 
 ## report for rp_fLF and 
@@ -2782,6 +3155,7 @@ if(!exists('mds_ets_MNN_intraday')) {
     paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday.rds')) }
 
 mds_ets_MNN_intraday_1y <- mds_ets_MNN_intraday[date <= as_date('2016-12-31')]
+saveRDS(mds_ets_MNN_intraday_1y, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1y.rds'))
 
 mds_ets_MNN_intraday_1y_cmp <- mds_ets_MNN_intraday_1y %>% 
   #tidyr::unite(model, t_series:part) %>% 
@@ -2923,7 +3297,7 @@ saveRDS(rp_1y_fLT, paste0(.dtr, 'data/fx/USDJPY/rp_1y_fLT.rds'))
 
 #### 1 Year
 
-```{r sum-rp, warning = FALSE, message = FALSE, results = 'asis'}
+```{r sum-rp2a, warning = FALSE, message = FALSE, results = 'asis'}
 rm(list = ls())
 
 ## report for rp_fLF and 
@@ -3031,7 +3405,7 @@ rp_1y %>%
 
 #### Comparison between 1 Year & 3.5 Year Dataset
 
-```{r sum-rp, warning = FALSE, message = FALSE, results = 'asis'}
+```{r sum-rp2b, warning = FALSE, message = FALSE, results = 'asis'}
 rp_1y_3.5y <- rbind(rp[order(mae, mape, rmse, smape, mse)][1:4], rp_1y[order(mae, mape, rmse, smape, mse)][1:4])
 
 rp_1y_3.5y %>% 
@@ -3148,6 +3522,9 @@ mds_ets_MNN_intraday_1min <- ldply(1:length(fls), function(i) {
 ## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/
 
 saveRDS(mds_ets_MNN_intraday_1min, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min.rds'))
+
+mds_ets_MNN_intraday_1min_1y <- mds_ets_MNN_intraday_1min[date <= as_date('2016-12-31')]
+saveRDS(mds_ets_MNN_intraday_1min_1y, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y.rds'))
 ```
 
 #### Long Format
@@ -3155,84 +3532,84 @@ saveRDS(mds_ets_MNN_intraday_1min, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intr
 ```{r, eval = FALSE}
 rm(list = ls())
 
-if(!exists('mds_ets_MNN_intraday_1min')) {
-  mds_ets_MNN_intraday_1min <- read_rds(
-    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min.rds')) }
+if(!exists('mds_ets_MNN_intraday_1min_1y')) {
+  mds_ets_MNN_intraday_1min_1y <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y.rds')) }
 
-mds_ets_MNN_intraday_1min_cmp <- mds_ets_MNN_intraday_1min %>% 
+mds_ets_MNN_intraday_1min_1y_cmp <- mds_ets_MNN_intraday_1min_1y %>% 
   #tidyr::unite(model, t_series:part) %>% 
   tidyr::unite(model, t_series:fc_min) %>% 
   as.data.table %>% 
   .[, .(index, model, mk.price, fc.price)] %>% as.data.table
 
-mds_ets_MNN_intraday_1min_cmp <- as.data.table(mds_ets_MNN_intraday_1min_cmp)
+mds_ets_MNN_intraday_1min_1y_cmp <- as.data.table(mds_ets_MNN_intraday_1min_1y_cmp)
 
 ## ----------------------------------------
 ## fromLast = FALSE
-mds_ets_MNN_intraday_1min_cmp_fLF <- unique(
-  mds_ets_MNN_intraday_1min_cmp[, .(index, model, mk.price, fc.price)], fromLast = FALSE)
+mds_ets_MNN_intraday_1min_1y_cmp_fLF <- unique(
+  mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, mk.price, fc.price)], fromLast = FALSE)
 
 ## save dataset in data.table format
-saveRDS(mds_ets_MNN_intraday_1min_cmp_fLF, 
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_cmp_fLF.rds'))
+saveRDS(mds_ets_MNN_intraday_1min_1y_cmp_fLF, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_cmp_fLF.rds'))
 
 ## ----------------------------------------
 ## fromLast = TRUE
-mds_ets_MNN_intraday_1min_cmp_fLT <- unique(
-  mds_ets_MNN_intraday_1min_cmp[, .(index, model, mk.price, fc.price)], fromLast = TRUE)
+mds_ets_MNN_intraday_1min_1y_cmp_fLT <- unique(
+  mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, mk.price, fc.price)], fromLast = TRUE)
 
 ## save dataset in data.table format
-saveRDS(mds_ets_MNN_intraday_1min_cmp_fLT, 
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_cmp_fLT.rds'))
+saveRDS(mds_ets_MNN_intraday_1min_1y_cmp_fLT, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_cmp_fLT.rds'))
 
 ## ----------------------------------------
 ## convert to long format for plot chart
 ## fromLast = FALSE
-prc <- unique(mds_ets_MNN_intraday_1min_cmp[, .(index, model, mk.price)], fromLast = FALSE)
+prc <- unique(mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, mk.price)], fromLast = FALSE)
 prc <- prc[, model := 'actual'][]
 setnames(prc, old = 'mk.price', new = 'price')
 prc <- unique(prc, fromLast = FALSE)
 
-mds_ets_MNN_intraday_1min_grph <- unique(
-  mds_ets_MNN_intraday_1min_cmp[, .(index, model, fc.price)], fromLast = FALSE)
-setnames(mds_ets_MNN_intraday_1min_grph, old = 'fc.price', new = 'price')
+mds_ets_MNN_intraday_1min_1y_grph <- unique(
+  mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, fc.price)], fromLast = FALSE)
+setnames(mds_ets_MNN_intraday_1min_1y_grph, old = 'fc.price', new = 'price')
 
-mds_ets_MNN_intraday_1min_grph <- rbind(mds_ets_MNN_intraday_1min_grph, prc)
-mds_ets_MNN_intraday_1min_grph_fLF <- data.table(mds_ets_MNN_intraday_1min_grph)[order(index)]
+mds_ets_MNN_intraday_1min_1y_grph <- rbind(mds_ets_MNN_intraday_1min_1y_grph, prc)
+mds_ets_MNN_intraday_1min_1y_grph_fLF <- data.table(mds_ets_MNN_intraday_1min_1y_grph)[order(index)]
 rm(prc)
 
 ## save dataset in data.table format
-saveRDS(mds_ets_MNN_intraday_1min_grph_fLF, 
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_grph_fLF.rds'))
+saveRDS(mds_ets_MNN_intraday_1min_1y_grph_fLF, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_grph_fLF.rds'))
 
 ## ----------------------------------------
 ## fromLast = TRUE
-prc <- unique(mds_ets_MNN_intraday_1min_cmp[, .(index, model, mk.price)], fromLast = TRUE)
+prc <- unique(mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, mk.price)], fromLast = TRUE)
 prc <- prc[, model := 'actual'][]
 setnames(prc, old = 'mk.price', new = 'price')
 prc <- unique(prc, fromLast = TRUE)
 
-mds_ets_MNN_intraday_1min_grph <- unique(
-  mds_ets_MNN_intraday_1min_cmp[, .(index, model, fc.price)], fromLast = TRUE)
-setnames(mds_ets_MNN_intraday_1min_grph, old = 'fc.price', new = 'price')
+mds_ets_MNN_intraday_1min_1y_grph <- unique(
+  mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, fc.price)], fromLast = TRUE)
+setnames(mds_ets_MNN_intraday_1min_1y_grph, old = 'fc.price', new = 'price')
 
-mds_ets_MNN_intraday_1min_grph <- rbind(mds_ets_MNN_intraday_1min_grph, prc)
-mds_ets_MNN_intraday_1min_grph_fLT <- data.table(mds_ets_MNN_intraday_1min_grph)[order(index)]
+mds_ets_MNN_intraday_1min_1y_grph <- rbind(mds_ets_MNN_intraday_1min_1y_grph, prc)
+mds_ets_MNN_intraday_1min_1y_grph_fLT <- data.table(mds_ets_MNN_intraday_1min_1y_grph)[order(index)]
 rm(prc)
 
 ## save dataset in data.table format
-saveRDS(mds_ets_MNN_intraday_1min_grph_fLT, 
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_grph_fLT.rds'))
+saveRDS(mds_ets_MNN_intraday_1min_1y_grph_fLT, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_grph_fLT.rds'))
 ```
 
-```{r long-fmt, warning = FALSE, message = FALSE, results = 'asis'}
-if(!exists('mds_ets_MNN_intraday_1min')) {
-  mds_ets_MNN_intraday_1min <- read_rds(
-    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min.rds')) }
+```{r long-fmt3, warning = FALSE, message = FALSE, results = 'asis'}
+if(!exists('mds_ets_MNN_intraday_1min_1y')) {
+  mds_ets_MNN_intraday_1min_1y <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y.rds')) }
 
 ## plot sample data
-mds_ets_MNN_intraday_1min[c(1:3, (nrow(mds_ets_MNN_intraday_1min)-3):nrow(mds_ets_MNN_intraday_1min)),] %>% 
-  kbl(caption = 'Data Sample (ETS MNN intraday forecast 1min)', escape = FALSE) %>% 
+mds_ets_MNN_intraday_1min_1y[c(1:3, (nrow(mds_ets_MNN_intraday_1min_1y)-3):nrow(mds_ets_MNN_intraday_1min_1y)),] %>% 
+  kbl(caption = '1 Year Data Sample (ETS MNN intraday forecast 1min)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd
   row_spec(0, background = 'DimGrey', color = 'gold', bold = TRUE) %>% 
@@ -3251,24 +3628,24 @@ mds_ets_MNN_intraday_1min[c(1:3, (nrow(mds_ets_MNN_intraday_1min)-3):nrow(mds_et
   scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
 ```
 
-*source : `r paste0(dim(mds_ets_MNN_intraday_1min), collapse = ' x ')`*
+*source : `r paste0(dim(mds_ets_MNN_intraday_1min_1y), collapse = ' x ')`*
 
 There has a small mistake in previous paper [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) but doesn't affect since I only want to compare the models and here I use the same `MNN` model and filter `unique(fromLast = FALSE)` and `unique(fromLast = TRUE)`.
 
-```{r chk-fls}
-if(!exists('mds_ets_MNN_intraday_1min_grph_fLF')) {
-  mds_ets_MNN_intraday_1min_grph_fLF <- readRDS(
-    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_grph_fLF.rds')) }
+```{r chk-fls2}
+if(!exists('mds_ets_MNN_intraday_1min_1y_grph_fLF')) {
+  mds_ets_MNN_intraday_1min_1y_grph_fLF <- readRDS(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_grph_fLF.rds')) }
 
-if(!exists('mds_ets_MNN_intraday_1min_grph_fLT')) {
-  mds_ets_MNN_intraday_1min_grph_fLT <- readRDS(
-    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_grph_fLT.rds')) }
+if(!exists('mds_ets_MNN_intraday_1min_1y_grph_fLT')) {
+  mds_ets_MNN_intraday_1min_1y_grph_fLT <- readRDS(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_grph_fLT.rds')) }
 ```
 
-```{r long-fLF, warning = FALSE, message = FALSE, results = 'asis'}
-data.frame(mds_ets_MNN_intraday_1min_grph_fLF)[
-  c(1:5, (nrow(mds_ets_MNN_intraday_1min_grph_fLF)-5):nrow(mds_ets_MNN_intraday_1min_grph_fLF)),] %>% 
-  kbl(caption = 'Data Sample', escape = FALSE) %>% 
+```{r long-fLF2, warning = FALSE, message = FALSE, results = 'asis'}
+data.frame(mds_ets_MNN_intraday_1min_1y_grph_fLF)[
+  c(1:5, (nrow(mds_ets_MNN_intraday_1min_1y_grph_fLF)-5):nrow(mds_ets_MNN_intraday_1min_1y_grph_fLF)),] %>% 
+  kbl(caption = '1 Year Data Sample', escape = FALSE) %>% 
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
   column_spec(2, background = 'grey') %>% 
@@ -3279,12 +3656,12 @@ data.frame(mds_ets_MNN_intraday_1min_grph_fLF)[
   scroll_box(width = '100%', fixed_thead = TRUE)
 ```
 
-*source : `r paste0(dim(mds_ets_MNN_intraday_1min_grph_fLF), collapse = ' x ')`*
+*source : `r paste0(dim(mds_ets_MNN_intraday_1min_1y_grph_fLF), collapse = ' x ')`*
 
-```{r long-fLT, warning = FALSE, message = FALSE, results = 'asis'}
-data.frame(mds_ets_MNN_intraday_1min_grph_fLT)[
-  c(1:6, (nrow(mds_ets_MNN_intraday_1min_grph_fLT)-5):nrow(mds_ets_MNN_intraday_1min_grph_fLT)),] %>% 
-  kbl(caption = 'Data Sample', escape = FALSE) %>% 
+```{r long-fLT2, warning = FALSE, message = FALSE, results = 'asis'}
+data.frame(mds_ets_MNN_intraday_1min_1y_grph_fLT)[
+  c(1:6, (nrow(mds_ets_MNN_intraday_1min_1y_grph_fLT)-5):nrow(mds_ets_MNN_intraday_1min_1y_grph_fLT)),] %>% 
+  kbl(caption = '1 Year Data Sample', escape = FALSE) %>% 
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
   column_spec(2, background = 'grey') %>% 
@@ -3295,21 +3672,21 @@ data.frame(mds_ets_MNN_intraday_1min_grph_fLT)[
   scroll_box(width = '100%', fixed_thead = TRUE)
 ```
 
-*source : `r paste0(dim(mds_ets_MNN_intraday_1min_grph_fLT), collapse = ' x ')`*
+*source : `r paste0(dim(mds_ets_MNN_intraday_1min_1y_grph_fLT), collapse = ' x ')`*
 
 ### Line Chart
 
 #### `unique(x, fromLast = FALSE)` Dataset
 
-```{r plt-fLF, warning = FALSE, message = FALSE, results = 'asis'}
+```{r plt-fLF3, warning = FALSE, message = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-plt <- mds_ets_MNN_intraday_1min_grph_fLF %>% 
+plt <- mds_ets_MNN_intraday_1min_1y_grph_fLF %>% 
   ggplot(aes(x = index, y = price, group = model, color = model)) + 
   geom_line() + 
 
   labs(title = '1 min Open Price Forecasting', 
-       subtitle = paste('From', range(unique(mds_ets_MNN_intraday_grph_fLF$index))[1L], 
-                        'to', range(unique(mds_ets_MNN_intraday_grph_fLF$index))[2L]), 
+       subtitle = paste('From', range(unique(mds_ets_MNN_intraday_1min_1y_grph_fLF$index))[1L], 
+                        'to', range(unique(mds_ets_MNN_intraday_1min_1y_grph_fLF$index))[2L]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
   theme_economist() + 
@@ -3327,15 +3704,15 @@ if(exists('plt')) rm(plt)
 
 #### `unique(x, fromLast = TRUE)` Dataset
 
-```{r plt-fLT, warning = FALSE, message = FALSE, results = 'asis'}
+```{r plt-fLT3, warning = FALSE, message = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-plt <- mds_ets_MNN_intraday_1min_grph_fLT %>% 
+plt <- mds_ets_MNN_intraday_1min_1y_grph_fLT %>% 
   ggplot(aes(x = index, y = price, group = model, color = model)) + 
   geom_line() + 
 
   labs(title = '1 min Open Price Forecasting', 
-       subtitle = paste('From', range(unique(mds_ets_MNN_intraday_grph_fLT$index))[1L], 
-                        'to', range(unique(mds_ets_MNN_intraday_grph_fLT$index))[2L]), 
+       subtitle = paste('From', range(unique(mds_ets_MNN_intraday_1min_1y_grph_fLT$index))[1L], 
+                        'to', range(unique(mds_ets_MNN_intraday_1min_1y_grph_fLT$index))[2L]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
   theme_economist() + 
@@ -3360,19 +3737,19 @@ Below table compares the models.
 ```{r, eval = FALSE}
 rm(list = ls())
 
-## report for mds_ets_MNN_intraday_cmp_fLF
-if(!exists('mds_ets_MNN_intraday_1min_cmp_fLF')) {
-    mds_ets_MNN_intraday_1min_cmp_fLF <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_cmp_fLF.rds')) }
+## report for mds_ets_MNN_intraday_1min_1y_cmp_fLF
+if(!exists('mds_ets_MNN_intraday_1min_1y_cmp_fLF')) {
+    mds_ets_MNN_intraday_1min_1y_cmp_fLF <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_cmp_fLF.rds')) }
 
-if(!is.data.table('mds_ets_MNN_intraday_1min_cmp_fLF')) {
-  mds_ets_MNN_intraday_1min_cmp_fLF %<>% as.data.table }
+if(!is.data.table('mds_ets_MNN_intraday_1min_1y_cmp_fLF')) {
+  mds_ets_MNN_intraday_1min_1y_cmp_fLF %<>% as.data.table }
 
-mds_ets_MNN_intraday_1min_cmp_fLF <- unique(
-  mds_ets_MNN_intraday_1min_cmp_fLF, fromLast = FALSE, by = c('index', 'model')) %>% 
+mds_ets_MNN_intraday_1min_1y_cmp_fLF <- unique(
+  mds_ets_MNN_intraday_1min_1y_cmp_fLF, fromLast = FALSE, by = c('index', 'model')) %>% 
   na.omit
 
-rp_1min_fLF <- mds_ets_MNN_intraday_1min_cmp_fLF[, {
+rp_1min_1y_fLF <- mds_ets_MNN_intraday_1min_1y_cmp_fLF[, {
   mk.price = mk.price
   fc.price = fc.price
   .SD[, .(.N, 
@@ -3384,13 +3761,13 @@ rp_1min_fLF <- mds_ets_MNN_intraday_1min_cmp_fLF[, {
       by=.(model)]}][order(model), ]
 
 ## report
-saveRDS(rp_1min_fLF, paste0(.dtr, 'data/fx/USDJPY/rp_1min_fLF.rds'))
+saveRDS(rp_1min_1y_fLF, paste0(.dtr, 'data/fx/USDJPY/rp_1min_1y_fLF.rds'))
 ```
 
-```{r rp-fLF, warning = FALSE, message = FALSE, results = 'asis'}
-rp_1min_fLF <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp_1min_fLF.rds'))
+```{r rp-fLF3, warning = FALSE, message = FALSE, results = 'asis'}
+rp_1min_1y_fLF <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp_1min_1y_fLF.rds'))
 
-rp_1min_tbl <- rp_1min_fLF %>% 
+rp_1min_1y_tbl <- rp_1min_1y_fLF %>% 
   dplyr::mutate(
     mae = ifelse(
       rank(mae) <= 3, 
@@ -3432,7 +3809,7 @@ rp_1min_tbl <- rp_1min_fLF %>%
       cell_spec(
         paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = 'Accurcy Report (Intraday Forecasted 1 min)', escape = FALSE) %>% 
+  kbl(caption = 'Accurcy Report (1 Year Dataset Intraday Forecasted 1 min)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   #column_spec(1, background = 'CornflowerBlue') %>% 
@@ -3448,13 +3825,13 @@ rp_1min_tbl <- rp_1min_fLF %>%
   ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
 
-rp_1min_tbl
+rp_1min_1y_tbl
 ```
 
-*source : `r paste0(dim(rp_1min_tbl), collapse = ' x ')`*
+*source : `r paste0(dim(rp_1min_1y_tbl), collapse = ' x ')`*
 
 ```{r include = FALSE}
-if(exists('rp_1min_tbl')) rm(rp_1min_tbl)
+if(exists('rp_1min_1y_tbl')) rm(rp_1min_tbl)
 ```
 
 from above models we know the **βest model**.
@@ -3466,19 +3843,19 @@ Below table compares the models.
 ```{r, eval = FALSE}
 rm(list = ls())
 
-## report for mds_ets_MNN_intraday_1min_cmp_fLT
-if(!exists('mds_ets_MNN_intraday_1min_cmp_fLT')) {
-    mds_ets_MNN_intraday_1min_cmp_fLT <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_cmp_fLT.rds')) }
+## report for mds_ets_MNN_intraday_1min_1y_cmp_fLT
+if(!exists('mds_ets_MNN_intraday_1min_1y_cmp_fLT')) {
+    mds_ets_MNN_intraday_1min_1y_cmp_fLT <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_cmp_fLT.rds')) }
 
-if(!is.data.table('mds_ets_MNN_intraday_1min_cmp_fLT')) {
-  mds_ets_MNN_intraday_1min_cmp_fLT %<>% as.data.table }
+if(!is.data.table('mds_ets_MNN_intraday_1min_1y_cmp_fLT')) {
+  mds_ets_MNN_intraday_1min_1y_cmp_fLT %<>% as.data.table }
 
-mds_ets_MNN_intraday_1min_cmp_fLT <- unique(
-  mds_ets_MNN_intraday_1min_cmp_fLT, fromLast = TRUE, by = c('index', 'model')) %>% 
+mds_ets_MNN_intraday_1min_1y_cmp_fLT <- unique(
+  mds_ets_MNN_intraday_1min_1y_cmp_fLT, fromLast = TRUE, by = c('index', 'model')) %>% 
   na.omit
 
-rp_1min_fLT <- mds_ets_MNN_intraday_1min_cmp_fLT[, {
+rp_1min_1y_fLT <- mds_ets_MNN_intraday_1min_1y_cmp_fLT[, {
   mk.price = mk.price
   fc.price = fc.price
   .SD[, .(.N, 
@@ -3490,13 +3867,13 @@ rp_1min_fLT <- mds_ets_MNN_intraday_1min_cmp_fLT[, {
       by=.(model)]}][order(model), ]
 
 ## report
-saveRDS(rp_1min_fLT, paste0(.dtr, 'data/fx/USDJPY/rp_1min_fLT.rds'))
+saveRDS(rp_1min_1y_fLT, paste0(.dtr, 'data/fx/USDJPY/rp_1min_1y_fLT.rds'))
 ```
 
-```{r rp-fLT, warning = FALSE, message = FALSE, results = 'asis'}
-rp_1min_fLT <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp_1min_fLT.rds'))
+```{r rp-fLT3, warning = FALSE, message = FALSE, results = 'asis'}
+rp_1min_1y_fLT <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp_1min_1y_fLT.rds'))
 
-rp_1min_tbl <- rp_1min_fLT %>% 
+rp_1min_1y_tbl <- rp_1min_1y_fLT %>% 
   dplyr::mutate(
     mae = ifelse(
       rank(mae) <= 3, 
@@ -3538,7 +3915,7 @@ rp_1min_tbl <- rp_1min_fLT %>%
       cell_spec(
         paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = 'Accurcy Report (Intraday Forecasted 1 mins)', escape = FALSE) %>% 
+  kbl(caption = 'Accurcy Report (1 Year Dataset Intraday Forecasted 1 mins)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   #column_spec(1, background = 'CornflowerBlue') %>% 
@@ -3554,44 +3931,59 @@ rp_1min_tbl <- rp_1min_fLT %>%
   ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
 
-rp_1min_tbl
+rp_1min_1y_tbl
 ```
 
-*source : `r paste0(dim(rp_1min_tbl), collapse = ' x ')`*
+*source : `r paste0(dim(rp_1min_1y_tbl), collapse = ' x ')`*
 
 ```{r include = FALSE}
-if(exists('rp_1min_tbl')) rm(rp_1min_tbl)
+if(exists('rp_1min_1y_tbl')) rm(rp_1min_1y_tbl)
 ```
 
 from above models we know the **βest model**.
 
 #### Summary
 
-```{r sum-rp, warning = FALSE, message = FALSE, results = 'asis'}
+```{r sum-rp3, warning = FALSE, message = FALSE, results = 'asis'}
 rm(list = ls())
 
-## report for rp_1min_fLF and 
-if(!exists('rp_1min_fLF')) {
-    rp_1min_fLF <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/rp_1min_fLF.rds')) %>% 
+## report for rp_1min_1y_fLF and 
+if(!exists('rp_1min_1y_fLF')) {
+    rp_1min_1y_fLF <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/rp_1min_1y_fLF.rds')) %>% 
       as.data.table }
 
-## report for rp_1min_fLT and 
-if(!exists('rp_1min_fLT')) {
-    rp_1min_fLT <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/rp_1min_fLT.rds')) %>% 
+## report for rp_1min_1y_fLT and 
+if(!exists('rp_1min_1y_fLT')) {
+    rp_1min_1y_fLT <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/rp_1min_1y_fLT.rds')) %>% 
       as.data.table }
 
-rp_1min_fLF <- rp_1min_fLF[, arrange := 'from_first'][]
-rp_1min_fLT <- rp_1min_fLT[, arrange := 'from_last'][]
+## report for rp_1y_fLF and 
+if(!exists('rp_1y_fLF')) {
+    rp_1y_fLF <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/rp_1y_fLF.rds')) %>% 
+      as.data.table }
 
-rp_1min <- rbindlist(list(rp_1min_fLF, rp_1min_fLT))
-rp_1min <- rp_1min[, .(model, arrange, N, mae, mape, rmse, smape, mse)]
-rp_1min %<>% unique
+## report for rp_1y_fLT and 
+if(!exists('rp_1y_fLT')) {
+    rp_1y_fLT <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/rp_1y_fLT.rds')) %>% 
+      as.data.table }
 
-#sum <- rp_1min[mae == min(mae) | mape == min(mape) | rmse == min(rmse) | smape == min(smape) | mse == min(mse)]
+rp_1y_fLF <- rp_1y_fLF[, arrange := 'from_first'][]
+rp_1y_fLT <- rp_1y_fLT[, arrange := 'from_last'][]
 
-rp_1min %>% 
+rp_1min_1y_fLF <- rp_1min_1y_fLF[, arrange := 'from_first'][]
+rp_1min_1y_fLT <- rp_1min_1y_fLT[, arrange := 'from_last'][]
+
+rp_1min_1y <- rbindlist(list(rp_1y_fLF, rp_1y_fLT, rp_1min_1y_fLF, rp_1min_1y_fLT))
+rp_1min_1y <- rp_1min_1y[, .(model, arrange, N, mae, mape, rmse, smape, mse)]
+rp_1min_1y %<>% unique
+
+#sum <- rp_1min_1y[mae == min(mae) | mape == min(mape) | rmse == min(rmse) | smape == min(smape) | mse == min(mse)]
+
+rp_1min_1y %>% 
   dplyr::mutate(
     mae = ifelse(
       rank(mae) <= 3, 
@@ -3633,7 +4025,7 @@ rp_1min %>%
       cell_spec(
         paste0(round(mse, 7), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = 'Accurcy Report (Initial Stage Comparison)', escape = FALSE) %>% 
+  kbl(caption = 'Accurcy Report (1 Year Dataset Initial Stage Comparison)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   #column_spec(1, background = 'CornflowerBlue') %>% 
@@ -3650,14 +4042,14 @@ rp_1min %>%
   scroll_box(width = '100%', fixed_thead = TRUE)
 ```
 
-*source : `r paste0(dim(rp_1min), collapse = ' x ')`*
+*source : `r paste0(dim(rp_1min_1y), collapse = ' x ')`*
 
 # Conclusion
 
 ## Final Conclude
 
 ```{r best-model, warning = FALSE, message = FALSE, results = 'asis'}
-sum <- rp[mae == min(mae) | mape == min(mape) | rmse == min(rmse) | smape == min(smape) | mse == min(mse)]
+sum <- rp_1min_1y[mae == min(mae) | mape == min(mape) | rmse == min(rmse) | smape == min(smape) | mse == min(mse)]
 
 sum %>% 
   dplyr::mutate(
