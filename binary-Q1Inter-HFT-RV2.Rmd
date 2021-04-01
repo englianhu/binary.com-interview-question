@@ -3503,6 +3503,56 @@ mds_ets_MNN_intraday_1min_1y <- mds_ets_MNN_intraday_1min[date <= as_date('2016-
 saveRDS(mds_ets_MNN_intraday_1min_1y, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y.rds'))
 ```
 
+```{r, eval = FALSE}
+## Get all intraday files.
+fls <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_960_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_840_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_600_1.p_[0-9]{0,}.[0-9]{4}') %>% 
+  sort
+#'2016-02-14'
+
+fls_pth <- paste0(.dtr, 'data/fx/USDJPY/intraday/', fls)
+
+mds_ets_MNN_intraday2_1min <- ldply(1:length(fls), function(i) {
+  
+  nms <- fls[i] %>% 
+    str_replace_all('.rds', '') %>% 
+    str_split('_|\\.') %>% 
+    .[[1]]
+  
+  nms <- nms[-6]
+  names(nms) <- c('t_series', 'model', 'sub_model', 
+                  'data_min', 'fc_min', 'part', 'date')
+  
+  datset2 <- t(nms) %>% 
+    data.frame %>% 
+    mutate(model =factor(model), sub_model = factor(sub_model), 
+           data_min = as.numeric(data_min), 
+           fc_min = as.numeric(fc_min), 
+           part = as.numeric(part), 
+           date = as_date(date))
+  
+  datset <- read_rds(fls_pth[i])
+  
+  res <- tibble(datset2, datset) %>% 
+    dplyr::select(index, t_series, model, sub_model, data_min, 
+                  fc_min, part, date, mk.price, fc.price)
+  res <- res[!is.na('mk.price'),]
+  cat(i, '/', length(fls), '=', nms, '\n')
+  
+  return(res)
+  
+}) %>% 
+  as_tibble
+
+## https://tysonbarrett.com/jekyll/update/2019/10/06/datatable_memory/
+## http://brooksandrew.github.io/simpleblog/articles/advanced-data-table/
+## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/
+
+saveRDS(mds_ets_MNN_intraday2_1min, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday2_1min.rds'))
+
+mds_ets_MNN_intraday2_1min_1y <- mds_ets_MNN_intraday2_1min[date <= as_date('2016-12-31')]
+saveRDS(mds_ets_MNN_intraday2_1min_1y, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday2_1min_1y.rds'))
+```
+
 #### Long Format
 
 ```{r, eval = FALSE}

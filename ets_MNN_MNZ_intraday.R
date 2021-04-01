@@ -64,10 +64,10 @@ source('function/intra_min.R')
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
-timeID %<>% .[. >= as_date('2016-01-04')]
+timeID %<>% .[. >= as_date('2016-02-26')]
 timeID %<>% .[. <= as_date('2016-12-31')]
 #timeID %<>% .[. >= as_date('2016-12-28')]
-data_len <- 960
+data_len <- 720
 hrz1 <- 1
 intr <- data_len/hrz1
 
@@ -77,10 +77,10 @@ llply(ets.m, function(md) {
             .model = md, vb = FALSE)
   })
 
-#ts_ets_MNN_480_1.p_2.2017-04-25.rds
-#ts_ets_MNN_360_1.p_198.2017-04-03.rds
-#ts_ets_MNN_240_1.p_82.2017-01-27.rds
-#ts_ets_MNN_180_1.p_295.2017-01-27.rds
+#ts_ets_MNN_960_1.p_1281.2016-03-02
+#ts_ets_MNN_840_1.p_1222.2016-03-03
+#ts_ets_MNN_720_1.p_1201.2016-02-29
+#ts_ets_MNN_600_1.p_267.2016-02-29
 
 # --------- eval=FALSE ---------
 source('function/intra_1440.R')
@@ -137,7 +137,7 @@ dtbl
 
 ##read files 2nd methods, follow files on dir which is unable sort.
 #ptn <- paste0('^ts_ets_MNN_', data_len, '_', hrz1, '.p_[0-9]{0,}')
-ptn <- paste0('^ts_ets_MNN_180_[0-9]{0,}.p_[0-9]{0,}')
+ptn <- paste0('^ts_ets_MNN_960_[0-9]{0,}.p_[0-9]{0,}')
 lst <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = ptn)
 #lst <- matrix(lst, ncol = intr) %>% t %>% as.vector
 c(head(lst), tail(lst))
