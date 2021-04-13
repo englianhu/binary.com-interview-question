@@ -1,6 +1,6 @@
 ---
 title: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) - Interday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review**"
-subtitle: "Compare few time series models"
+subtitle: "Compare few time series models with Performance"
 author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/quantitative trader 1.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>® <img src='www/xueba2.jpg' width='24'>"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
@@ -273,6 +273,9 @@ sys
 
 ## Reference
 
+1) [High-Performance Time Series Forecasting in R & Python](https://www.youtube.com/watch?v=elQb4VzRINg)
+
+2) 
 
 ---
 

@@ -3505,7 +3505,7 @@ saveRDS(mds_ets_MNN_intraday_1min_1y, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_i
 
 ```{r, eval = FALSE}
 ## Get all intraday files.
-fls <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_960_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_840_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_600_1.p_[0-9]{0,}.[0-9]{4}') %>% 
+fls <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_960_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_840_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_720_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_600_1.p_[0-9]{0,}.[0-9]{4}') %>% 
   sort
 #'2016-02-14'
 
@@ -3547,7 +3547,12 @@ mds_ets_MNN_intraday2_1min <- ldply(1:length(fls), function(i) {
 ## http://brooksandrew.github.io/simpleblog/articles/advanced-data-table/
 ## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/
 
+mds_ets_MNN_intraday2_1min %<>% arrange(index, data_min)
 saveRDS(mds_ets_MNN_intraday2_1min, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday2_1min.rds'))
+#ts_ets_MNN_960_1.p_277.2016-06-14
+#ts_ets_MNN_840_1.p_1316.2016-06-14
+#ts_ets_MNN_720_1.p_103.2016-06-13
+#ts_ets_MNN_600_1.p_839.2016-05-06
 
 mds_ets_MNN_intraday2_1min_1y <- mds_ets_MNN_intraday2_1min[date <= as_date('2016-12-31')]
 saveRDS(mds_ets_MNN_intraday2_1min_1y, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday2_1min_1y.rds'))
@@ -3558,83 +3563,156 @@ saveRDS(mds_ets_MNN_intraday2_1min_1y, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_
 ```{r, eval = FALSE}
 rm(list = ls())
 
-if(!exists('mds_ets_MNN_intraday_1min_1y')) {
-  mds_ets_MNN_intraday_1min_1y <- read_rds(
-    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y.rds')) }
+if(!exists('mds_ets_MNN_intraday2_1min_1y')) {
+  mds_ets_MNN_intraday2_1min_1y <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday2_1min_1y.rds')) }
 
-mds_ets_MNN_intraday_1min_1y_cmp <- mds_ets_MNN_intraday_1min_1y %>% 
+mds_ets_MNN_intraday2_1min_1y_cmp <- mds_ets_MNN_intraday2_1min_1y %>% 
   #tidyr::unite(model, t_series:part) %>% 
   tidyr::unite(model, t_series:fc_min) %>% 
   as.data.table %>% 
   .[, .(index, model, mk.price, fc.price)] %>% as.data.table
 
-mds_ets_MNN_intraday_1min_1y_cmp <- as.data.table(mds_ets_MNN_intraday_1min_1y_cmp)
+mds_ets_MNN_intraday2_1min_1y_cmp <- as.data.table(mds_ets_MNN_intraday2_1min_1y_cmp)
 
 ## ----------------------------------------
 ## fromLast = FALSE
-mds_ets_MNN_intraday_1min_1y_cmp_fLF <- unique(
-  mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, mk.price, fc.price)], fromLast = FALSE)
+mds_ets_MNN_intraday2_1min_1y_cmp_fLF <- unique(
+  mds_ets_MNN_intraday2_1min_1y_cmp[, .(index, model, mk.price, fc.price)], fromLast = FALSE)
 
 ## save dataset in data.table format
-saveRDS(mds_ets_MNN_intraday_1min_1y_cmp_fLF, 
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_cmp_fLF.rds'))
+saveRDS(mds_ets_MNN_intraday2_1min_1y_cmp_fLF, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday2_1min_1y_cmp_fLF.rds'))
 
 ## ----------------------------------------
 ## fromLast = TRUE
-mds_ets_MNN_intraday_1min_1y_cmp_fLT <- unique(
-  mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, mk.price, fc.price)], fromLast = TRUE)
+mds_ets_MNN_intraday2_1min_1y_cmp_fLT <- unique(
+  mds_ets_MNN_intraday2_1min_1y_cmp[, .(index, model, mk.price, fc.price)], fromLast = TRUE)
 
 ## save dataset in data.table format
-saveRDS(mds_ets_MNN_intraday_1min_1y_cmp_fLT, 
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_cmp_fLT.rds'))
+saveRDS(mds_ets_MNN_intraday2_1min_1y_cmp_fLT, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday2_1min_1y_cmp_fLT.rds'))
 
 ## ----------------------------------------
 ## convert to long format for plot chart
 ## fromLast = FALSE
-prc <- unique(mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, mk.price)], fromLast = FALSE)
+prc <- unique(mds_ets_MNN_intraday2_1min_1y_cmp[, .(index, model, mk.price)], fromLast = FALSE)
 prc <- prc[, model := 'actual'][]
 setnames(prc, old = 'mk.price', new = 'price')
 prc <- unique(prc, fromLast = FALSE)
 
-mds_ets_MNN_intraday_1min_1y_grph <- unique(
-  mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, fc.price)], fromLast = FALSE)
-setnames(mds_ets_MNN_intraday_1min_1y_grph, old = 'fc.price', new = 'price')
+mds_ets_MNN_intraday2_1min_1y_grph <- unique(
+  mds_ets_MNN_intraday2_1min_1y_cmp[, .(index, model, fc.price)], fromLast = FALSE)
+setnames(mds_ets_MNN_intraday2_1min_1y_grph, old = 'fc.price', new = 'price')
 
-mds_ets_MNN_intraday_1min_1y_grph <- rbind(mds_ets_MNN_intraday_1min_1y_grph, prc)
-mds_ets_MNN_intraday_1min_1y_grph_fLF <- data.table(mds_ets_MNN_intraday_1min_1y_grph)[order(index)]
+mds_ets_MNN_intraday2_1min_1y_grph <- rbind(mds_ets_MNN_intraday2_1min_1y_grph, prc)
+mds_ets_MNN_intraday2_1min_1y_grph_fLF <- data.table(mds_ets_MNN_intraday2_1min_1y_grph)[order(index)]
 rm(prc)
 
 ## save dataset in data.table format
-saveRDS(mds_ets_MNN_intraday_1min_1y_grph_fLF, 
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_grph_fLF.rds'))
+saveRDS(mds_ets_MNN_intraday2_1min_1y_grph_fLF, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday2_1min_1y_grph_fLF.rds'))
 
 ## ----------------------------------------
 ## fromLast = TRUE
-prc <- unique(mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, mk.price)], fromLast = TRUE)
+prc <- unique(mds_ets_MNN_intraday2_1min_1y_cmp[, .(index, model, mk.price)], fromLast = TRUE)
 prc <- prc[, model := 'actual'][]
 setnames(prc, old = 'mk.price', new = 'price')
 prc <- unique(prc, fromLast = TRUE)
 
-mds_ets_MNN_intraday_1min_1y_grph <- unique(
-  mds_ets_MNN_intraday_1min_1y_cmp[, .(index, model, fc.price)], fromLast = TRUE)
-setnames(mds_ets_MNN_intraday_1min_1y_grph, old = 'fc.price', new = 'price')
+mds_ets_MNN_intraday2_1min_1y_grph <- unique(
+  mds_ets_MNN_intraday2_1min_1y_cmp[, .(index, model, fc.price)], fromLast = TRUE)
+setnames(mds_ets_MNN_intraday2_1min_1y_grph, old = 'fc.price', new = 'price')
 
-mds_ets_MNN_intraday_1min_1y_grph <- rbind(mds_ets_MNN_intraday_1min_1y_grph, prc)
-mds_ets_MNN_intraday_1min_1y_grph_fLT <- data.table(mds_ets_MNN_intraday_1min_1y_grph)[order(index)]
+mds_ets_MNN_intraday2_1min_1y_grph <- rbind(mds_ets_MNN_intraday2_1min_1y_grph, prc)
+mds_ets_MNN_intraday2_1min_1y_grph_fLT <- data.table(mds_ets_MNN_intraday2_1min_1y_grph)[order(index)]
 rm(prc)
 
 ## save dataset in data.table format
-saveRDS(mds_ets_MNN_intraday_1min_1y_grph_fLT, 
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_grph_fLT.rds'))
+saveRDS(mds_ets_MNN_intraday2_1min_1y_grph_fLT, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday2_1min_1y_grph_fLT.rds'))
+```
+
+```{r, eval = FALSE}
+rm(list = ls())
+
+if(!exists('mds_ets_MNN_intraday3_1min_1y')) {
+  mds_ets_MNN_intraday3_1min_1y <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y.rds')) }
+
+mds_ets_MNN_intraday3_1min_1y_cmp <- mds_ets_MNN_intraday3_1min_1y %>% 
+  #tidyr::unite(model, t_series:part) %>% 
+  tidyr::unite(model, t_series:fc_min) %>% 
+  as.data.table %>% 
+  .[, .(index, model, mk.price, fc.price)] %>% as.data.table
+
+mds_ets_MNN_intraday3_1min_1y_cmp <- as.data.table(mds_ets_MNN_intraday3_1min_1y_cmp)
+
+## ----------------------------------------
+## fromLast = FALSE
+mds_ets_MNN_intraday3_1min_1y_cmp_fLF <- unique(
+  mds_ets_MNN_intraday3_1min_1y_cmp[, .(index, model, mk.price, fc.price)], fromLast = FALSE)
+
+## save dataset in data.table format
+saveRDS(mds_ets_MNN_intraday3_1min_1y_cmp_fLF, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y_cmp_fLF.rds'))
+
+## ----------------------------------------
+## fromLast = TRUE
+mds_ets_MNN_intraday3_1min_1y_cmp_fLT <- unique(
+  mds_ets_MNN_intraday3_1min_1y_cmp[, .(index, model, mk.price, fc.price)], fromLast = TRUE)
+
+## save dataset in data.table format
+saveRDS(mds_ets_MNN_intraday3_1min_1y_cmp_fLT, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y_cmp_fLT.rds'))
+
+## ----------------------------------------
+## convert to long format for plot chart
+## fromLast = FALSE
+prc <- unique(mds_ets_MNN_intraday3_1min_1y_cmp[, .(index, model, mk.price)], fromLast = FALSE)
+prc <- prc[, model := 'actual'][]
+setnames(prc, old = 'mk.price', new = 'price')
+prc <- unique(prc, fromLast = FALSE)
+
+mds_ets_MNN_intraday3_1min_1y_grph <- unique(
+  mds_ets_MNN_intraday3_1min_1y_cmp[, .(index, model, fc.price)], fromLast = FALSE)
+setnames(mds_ets_MNN_intraday3_1min_1y_grph, old = 'fc.price', new = 'price')
+
+mds_ets_MNN_intraday3_1min_1y_grph <- rbind(mds_ets_MNN_intraday3_1min_1y_grph, prc)
+mds_ets_MNN_intraday3_1min_1y_grph_fLF <- data.table(mds_ets_MNN_intraday3_1min_1y_grph)[order(index)]
+rm(prc)
+
+## save dataset in data.table format
+saveRDS(mds_ets_MNN_intraday3_1min_1y_grph_fLF, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y_grph_fLF.rds'))
+
+## ----------------------------------------
+## fromLast = TRUE
+prc <- unique(mds_ets_MNN_intraday3_1min_1y_cmp[, .(index, model, mk.price)], fromLast = TRUE)
+prc <- prc[, model := 'actual'][]
+setnames(prc, old = 'mk.price', new = 'price')
+prc <- unique(prc, fromLast = TRUE)
+
+mds_ets_MNN_intraday3_1min_1y_grph <- unique(
+  mds_ets_MNN_intraday3_1min_1y_cmp[, .(index, model, fc.price)], fromLast = TRUE)
+setnames(mds_ets_MNN_intraday3_1min_1y_grph, old = 'fc.price', new = 'price')
+
+mds_ets_MNN_intraday3_1min_1y_grph <- rbind(mds_ets_MNN_intraday3_1min_1y_grph, prc)
+mds_ets_MNN_intraday3_1min_1y_grph_fLT <- data.table(mds_ets_MNN_intraday3_1min_1y_grph)[order(index)]
+rm(prc)
+
+## save dataset in data.table format
+saveRDS(mds_ets_MNN_intraday3_1min_1y_grph_fLT, 
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y_grph_fLT.rds'))
 ```
 
 ```{r long-fmt3, warning = FALSE, message = FALSE, results = 'asis'}
-if(!exists('mds_ets_MNN_intraday_1min_1y')) {
-  mds_ets_MNN_intraday_1min_1y <- read_rds(
-    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y.rds')) }
+if(!exists('mds_ets_MNN_intraday3_1min_1y')) {
+  mds_ets_MNN_intraday3_1min_1y <- read_rds(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y.rds')) }
 
 ## plot sample data
-mds_ets_MNN_intraday_1min_1y[c(1:3, (nrow(mds_ets_MNN_intraday_1min_1y)-3):nrow(mds_ets_MNN_intraday_1min_1y)),] %>% 
+mds_ets_MNN_intraday3_1min_1y[c(1:3, (nrow(mds_ets_MNN_intraday3_1min_1y)-3):nrow(mds_ets_MNN_intraday3_1min_1y)),] %>% 
   kbl(caption = '1 Year Data Sample (ETS MNN intraday forecast 1min)', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd
@@ -3654,23 +3732,23 @@ mds_ets_MNN_intraday_1min_1y[c(1:3, (nrow(mds_ets_MNN_intraday_1min_1y)-3):nrow(
   scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
 ```
 
-*source : `r paste0(dim(mds_ets_MNN_intraday_1min_1y), collapse = ' x ')`*
+*source : `r paste0(dim(mds_ets_MNN_intraday3_1min_1y), collapse = ' x ')`*
 
 There has a small mistake in previous paper [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) but doesn't affect since I only want to compare the models and here I use the same `MNN` model and filter `unique(fromLast = FALSE)` and `unique(fromLast = TRUE)`.
 
 ```{r chk-fls2}
-if(!exists('mds_ets_MNN_intraday_1min_1y_grph_fLF')) {
-  mds_ets_MNN_intraday_1min_1y_grph_fLF <- readRDS(
-    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_grph_fLF.rds')) }
+if(!exists('mds_ets_MNN_intraday3_1min_1y_grph_fLF')) {
+  mds_ets_MNN_intraday3_1min_1y_grph_fLF <- readRDS(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y_grph_fLF.rds')) }
 
-if(!exists('mds_ets_MNN_intraday_1min_1y_grph_fLT')) {
-  mds_ets_MNN_intraday_1min_1y_grph_fLT <- readRDS(
-    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_grph_fLT.rds')) }
+if(!exists('mds_ets_MNN_intraday3_1min_1y_grph_fLT')) {
+  mds_ets_MNN_intraday3_1min_1y_grph_fLT <- readRDS(
+    paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y_grph_fLT.rds')) }
 ```
 
 ```{r long-fLF2, warning = FALSE, message = FALSE, results = 'asis'}
-data.frame(mds_ets_MNN_intraday_1min_1y_grph_fLF)[
-  c(1:5, (nrow(mds_ets_MNN_intraday_1min_1y_grph_fLF)-5):nrow(mds_ets_MNN_intraday_1min_1y_grph_fLF)),] %>% 
+data.frame(mds_ets_MNN_intraday3_1min_1y_grph_fLF)[
+  c(1:5, (nrow(mds_ets_MNN_intraday3_1min_1y_grph_fLF)-5):nrow(mds_ets_MNN_intraday3_1min_1y_grph_fLF)),] %>% 
   kbl(caption = '1 Year Data Sample', escape = FALSE) %>% 
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -3682,11 +3760,11 @@ data.frame(mds_ets_MNN_intraday_1min_1y_grph_fLF)[
   scroll_box(width = '100%', fixed_thead = TRUE)
 ```
 
-*source : `r paste0(dim(mds_ets_MNN_intraday_1min_1y_grph_fLF), collapse = ' x ')`*
+*source : `r paste0(dim(mds_ets_MNN_intraday3_1min_1y_grph_fLF), collapse = ' x ')`*
 
 ```{r long-fLT2, warning = FALSE, message = FALSE, results = 'asis'}
-data.frame(mds_ets_MNN_intraday_1min_1y_grph_fLT)[
-  c(1:6, (nrow(mds_ets_MNN_intraday_1min_1y_grph_fLT)-5):nrow(mds_ets_MNN_intraday_1min_1y_grph_fLT)),] %>% 
+data.frame(mds_ets_MNN_intraday3_1min_1y_grph_fLT)[
+  c(1:6, (nrow(mds_ets_MNN_intraday3_1min_1y_grph_fLT)-5):nrow(mds_ets_MNN_intraday3_1min_1y_grph_fLT)),] %>% 
   kbl(caption = '1 Year Data Sample', escape = FALSE) %>% 
   row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -3698,7 +3776,7 @@ data.frame(mds_ets_MNN_intraday_1min_1y_grph_fLT)[
   scroll_box(width = '100%', fixed_thead = TRUE)
 ```
 
-*source : `r paste0(dim(mds_ets_MNN_intraday_1min_1y_grph_fLT), collapse = ' x ')`*
+*source : `r paste0(dim(mds_ets_MNN_intraday3_1min_1y_grph_fLT), collapse = ' x ')`*
 
 ### Line Chart
 
@@ -3706,13 +3784,13 @@ data.frame(mds_ets_MNN_intraday_1min_1y_grph_fLT)[
 
 ```{r plt-fLF3, warning = FALSE, message = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-plt <- mds_ets_MNN_intraday_1min_1y_grph_fLF %>% 
+plt <- mds_ets_MNN_intraday3_1min_1y_grph_fLF %>% 
   ggplot(aes(x = index, y = price, group = model, color = model)) + 
   geom_line() + 
 
   labs(title = '1 min Open Price Forecasting', 
-       subtitle = paste('From', range(unique(mds_ets_MNN_intraday_1min_1y_grph_fLF$index))[1L], 
-                        'to', range(unique(mds_ets_MNN_intraday_1min_1y_grph_fLF$index))[2L]), 
+       subtitle = paste('From', range(unique(mds_ets_MNN_intraday3_1min_1y_grph_fLF$index))[1L], 
+                        'to', range(unique(mds_ets_MNN_intraday3_1min_1y_grph_fLF$index))[2L]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
   theme_economist() + 
@@ -3732,13 +3810,13 @@ if(exists('plt')) rm(plt)
 
 ```{r plt-fLT3, warning = FALSE, message = FALSE, results = 'asis'}
 ## https://www.r-graph-gallery.com/line-chart-several-groups-ggplot2.html
-plt <- mds_ets_MNN_intraday_1min_1y_grph_fLT %>% 
+plt <- mds_ets_MNN_intraday3_1min_1y_grph_fLT %>% 
   ggplot(aes(x = index, y = price, group = model, color = model)) + 
   geom_line() + 
 
   labs(title = '1 min Open Price Forecasting', 
-       subtitle = paste('From', range(unique(mds_ets_MNN_intraday_1min_1y_grph_fLT$index))[1L], 
-                        'to', range(unique(mds_ets_MNN_intraday_1min_1y_grph_fLT$index))[2L]), 
+       subtitle = paste('From', range(unique(mds_ets_MNN_intraday3_1min_1y_grph_fLT$index))[1L], 
+                        'to', range(unique(mds_ets_MNN_intraday3_1min_1y_grph_fLT$index))[2L]), 
        caption = "Data source: fxcm") + 
   ylab('Exchange Rates USD/JPY') + 
   theme_economist() + 
@@ -3763,19 +3841,19 @@ Below table compares the models.
 ```{r, eval = FALSE}
 rm(list = ls())
 
-## report for mds_ets_MNN_intraday_1min_1y_cmp_fLF
-if(!exists('mds_ets_MNN_intraday_1min_1y_cmp_fLF')) {
-    mds_ets_MNN_intraday_1min_1y_cmp_fLF <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_cmp_fLF.rds')) }
+## report for mds_ets_MNN_intraday3_1min_1y_cmp_fLF
+if(!exists('mds_ets_MNN_intraday3_1min_1y_cmp_fLF')) {
+    mds_ets_MNN_intraday3_1min_1y_cmp_fLF <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y_cmp_fLF.rds')) }
 
-if(!is.data.table('mds_ets_MNN_intraday_1min_1y_cmp_fLF')) {
-  mds_ets_MNN_intraday_1min_1y_cmp_fLF %<>% as.data.table }
+if(!is.data.table('mds_ets_MNN_intraday3_1min_1y_cmp_fLF')) {
+  mds_ets_MNN_intraday3_1min_1y_cmp_fLF %<>% as.data.table }
 
-mds_ets_MNN_intraday_1min_1y_cmp_fLF <- unique(
-  mds_ets_MNN_intraday_1min_1y_cmp_fLF, fromLast = FALSE, by = c('index', 'model')) %>% 
+mds_ets_MNN_intraday3_1min_1y_cmp_fLF <- unique(
+  mds_ets_MNN_intraday3_1min_1y_cmp_fLF, fromLast = FALSE, by = c('index', 'model')) %>% 
   na.omit
 
-rp_1min_1y_fLF <- mds_ets_MNN_intraday_1min_1y_cmp_fLF[, {
+rp3_1min_1y_fLF <- mds_ets_MNN_intraday3_1min_1y_cmp_fLF[, {
   mk.price = mk.price
   fc.price = fc.price
   .SD[, .(.N, 
@@ -3787,13 +3865,13 @@ rp_1min_1y_fLF <- mds_ets_MNN_intraday_1min_1y_cmp_fLF[, {
       by=.(model)]}][order(model), ]
 
 ## report
-saveRDS(rp_1min_1y_fLF, paste0(.dtr, 'data/fx/USDJPY/rp_1min_1y_fLF.rds'))
+saveRDS(rp3_1min_1y_fLF, paste0(.dtr, 'data/fx/USDJPY/rp3_1min_1y_fLF.rds'))
 ```
 
 ```{r rp-fLF3, warning = FALSE, message = FALSE, results = 'asis'}
-rp_1min_1y_fLF <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp_1min_1y_fLF.rds'))
+rp3_1min_1y_fLF <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp3_1min_1y_fLF.rds'))
 
-rp_1min_1y_tbl <- rp_1min_1y_fLF %>% 
+rp3_1min_1y_tbl <- rp3_1min_1y_fLF %>% 
   dplyr::mutate(
     mae = ifelse(
       rank(mae) <= 3, 
@@ -3854,10 +3932,10 @@ rp_1min_1y_tbl <- rp_1min_1y_fLF %>%
 rp_1min_1y_tbl
 ```
 
-*source : `r paste0(dim(rp_1min_1y_tbl), collapse = ' x ')`*
+*source : `r paste0(dim(rp3_1min_1y_tbl), collapse = ' x ')`*
 
 ```{r include = FALSE}
-if(exists('rp_1min_1y_tbl')) rm(rp_1min_tbl)
+if(exists('rp3_1min_1y_tbl')) rm(rp_1min_tbl)
 ```
 
 from above models we know the **βest model**.
@@ -3870,18 +3948,18 @@ Below table compares the models.
 rm(list = ls())
 
 ## report for mds_ets_MNN_intraday_1min_1y_cmp_fLT
-if(!exists('mds_ets_MNN_intraday_1min_1y_cmp_fLT')) {
-    mds_ets_MNN_intraday_1min_1y_cmp_fLT <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday_1min_1y_cmp_fLT.rds')) }
+if(!exists('mds_ets_MNN_intraday3_1min_1y_cmp_fLT')) {
+    mds_ets_MNN_intraday3_1min_1y_cmp_fLT <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y_cmp_fLT.rds')) }
 
-if(!is.data.table('mds_ets_MNN_intraday_1min_1y_cmp_fLT')) {
-  mds_ets_MNN_intraday_1min_1y_cmp_fLT %<>% as.data.table }
+if(!is.data.table('mds_ets_MNN_intraday3_1min_1y_cmp_fLT')) {
+  mds_ets_MNN_intraday3_1min_1y_cmp_fLT %<>% as.data.table }
 
-mds_ets_MNN_intraday_1min_1y_cmp_fLT <- unique(
-  mds_ets_MNN_intraday_1min_1y_cmp_fLT, fromLast = TRUE, by = c('index', 'model')) %>% 
+mds_ets_MNN_intraday3_1min_1y_cmp_fLT <- unique(
+  mds_ets_MNN_intraday3_1min_1y_cmp_fLT, fromLast = TRUE, by = c('index', 'model')) %>% 
   na.omit
 
-rp_1min_1y_fLT <- mds_ets_MNN_intraday_1min_1y_cmp_fLT[, {
+rp3_1min_1y_fLT <- mds_ets_MNN_intraday3_1min_1y_cmp_fLT[, {
   mk.price = mk.price
   fc.price = fc.price
   .SD[, .(.N, 
@@ -3893,13 +3971,13 @@ rp_1min_1y_fLT <- mds_ets_MNN_intraday_1min_1y_cmp_fLT[, {
       by=.(model)]}][order(model), ]
 
 ## report
-saveRDS(rp_1min_1y_fLT, paste0(.dtr, 'data/fx/USDJPY/rp_1min_1y_fLT.rds'))
+saveRDS(rp3_1min_1y_fLT, paste0(.dtr, 'data/fx/USDJPY/rp3_1min_1y_fLT.rds'))
 ```
 
 ```{r rp-fLT3, warning = FALSE, message = FALSE, results = 'asis'}
-rp_1min_1y_fLT <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp_1min_1y_fLT.rds'))
+rp3_1min_1y_fLT <- readRDS(paste0(.dtr, 'data/fx/USDJPY/rp3_1min_1y_fLT.rds'))
 
-rp_1min_1y_tbl <- rp_1min_1y_fLT %>% 
+rp3_1min_1y_tbl <- rp3_1min_1y_fLT %>% 
   dplyr::mutate(
     mae = ifelse(
       rank(mae) <= 3, 
@@ -3960,10 +4038,10 @@ rp_1min_1y_tbl <- rp_1min_1y_fLT %>%
 rp_1min_1y_tbl
 ```
 
-*source : `r paste0(dim(rp_1min_1y_tbl), collapse = ' x ')`*
+*source : `r paste0(dim(rp3_1min_1y_tbl), collapse = ' x ')`*
 
 ```{r include = FALSE}
-if(exists('rp_1min_1y_tbl')) rm(rp_1min_1y_tbl)
+if(exists('rp3_1min_1y_tbl')) rm(rp_1min_1y_tbl)
 ```
 
 from above models we know the **βest model**.
@@ -3980,22 +4058,23 @@ if(!exists('rp_1min_1y_fLF')) {
       as.data.table }
 
 ## report for rp_1min_1y_fLT and 
-if(!exists('rp_1min_1y_fLT')) {
+if(!exists('rp3_1min_1y_fLT')) {
     rp_1min_1y_fLT <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/rp_1min_1y_fLT.rds')) %>% 
+        paste0(.dtr, 'data/fx/USDJPY/rp3_1min_1y_fLT.rds')) %>% 
       as.data.table }
 
-## report for rp_1y_fLF and 
-if(!exists('rp_1y_fLF')) {
-    rp_1y_fLF <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/rp_1y_fLF.rds')) %>% 
+## report for rp_1min_1y_fLF and 
+if(!exists('rp3_1min_1y_fLF')) {
+    rp_1min_1y_fLF <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/rp3_1min_1y_fLF.rds')) %>% 
       as.data.table }
 
-## report for rp_1y_fLT and 
-if(!exists('rp_1y_fLT')) {
-    rp_1y_fLT <- read_rds(
-        paste0(.dtr, 'data/fx/USDJPY/rp_1y_fLT.rds')) %>% 
+## report for rp_1min_1y_fLT and 
+if(!exists('rp3_1min_1y_fLT')) {
+    rp3_1min_1y_fLT <- read_rds(
+        paste0(.dtr, 'data/fx/USDJPY/rp3_1min_1y_fLT.rds')) %>% 
       as.data.table }
+
 
 rp_1y_fLF <- rp_1y_fLF[, arrange := 'from_first'][]
 rp_1y_fLT <- rp_1y_fLT[, arrange := 'from_last'][]
@@ -4003,7 +4082,13 @@ rp_1y_fLT <- rp_1y_fLT[, arrange := 'from_last'][]
 rp_1min_1y_fLF <- rp_1min_1y_fLF[, arrange := 'from_first'][]
 rp_1min_1y_fLT <- rp_1min_1y_fLT[, arrange := 'from_last'][]
 
-rp_1min_1y <- rbindlist(list(rp_1y_fLF, rp_1y_fLT, rp_1min_1y_fLF, rp_1min_1y_fLT))
+rp3_1y_fLF <- rp3_1y_fLF[, arrange := 'from_first'][]
+rp3_1y_fLT <- rp3_1y_fLT[, arrange := 'from_last'][]
+
+rp3_1min_1y_fLF <- rp3_1min_1y_fLF[, arrange := 'from_first'][]
+rp3_1min_1y_fLT <- rp3_1min_1y_fLT[, arrange := 'from_last'][]
+
+rp_1min_1y <- rbindlist(list(rp_1min_1y_fLF, rp_1min_1y_fLT, rp3_1min_1y_fLF, rp3_1min_1y_fLT))
 rp_1min_1y <- rp_1min_1y[, .(model, arrange, N, mae, mape, rmse, smape, mse)]
 rp_1min_1y %<>% unique
 
