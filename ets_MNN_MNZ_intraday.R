@@ -64,9 +64,9 @@ source('function/intra_min.R')
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
-timeID %<>% .[. >= as_date('2016-02-29')]
+timeID %<>% .[. >= as_date('2016-12-12')]
 #timeID %<>% .[. <= as_date('2016-01-31')]
-#timeID %<>% .[. >= as_date('2016-12-28')]
+timeID %<>% .[. >= as_date('2016-12-31')]
 data_len <- 600
 hrz1 <- 1
 intr <- data_len/hrz1
