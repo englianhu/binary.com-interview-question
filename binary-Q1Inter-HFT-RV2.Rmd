@@ -1895,6 +1895,113 @@ if(exists('fl')) rm(fl)
 
 ## Intraday Seasonal Data
 
+
+### 20Hr >> 1min
+
+I set the length of data as Daily (`1200 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_min.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 1200
+hrz1 <- 1
+
+llply(ets.m, function(md) {
+  intra_min(timeID = timeID, dsmp, 
+            data_len = data_len, hrz1 = hrz1, 
+            .model = md)
+  })
+```
+
+```{r 18hr-1min, warning = FALSE, message = FALSE, results = 'asis'}
+#```{r, warning = FALSE, message = FALSE, results = 'asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1200_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- ldply(fl, function(x) {
+    readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+  })
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1200 forecast 1)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
+```
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
+### 18Hr >> 1min
+
+I set the length of data as Daily (`1080 mins` which is 1 trading days) to forecast `1 min` in advance.
+
+```{r, eval = FALSE}
+# --------- eval=FALSE ---------
+ets.m <- 'MNN'
+source('function/intra_min.R')
+
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+data_len <- 1080
+hrz1 <- 1
+
+llply(ets.m, function(md) {
+  intra_min(timeID = timeID, dsmp, 
+            data_len = data_len, hrz1 = hrz1, 
+            .model = md)
+  })
+```
+
+```{r 18hr-1min, warning = FALSE, message = FALSE, results = 'asis'}
+#```{r, warning = FALSE, message = FALSE, results = 'asis'}
+fl <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1080_1.p_[0-9]{0,}.[0-9]{4}')[1:6]
+#smp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', fl))
+
+if(all(is.na(fl))){
+  smp <- NA
+
+} else {
+  smp <- ldply(fl, function(x) {
+    readRDS(paste0(.dtr, 'data/fx/USDJPY/intraday/', x))
+  })
+  
+  smp %>% 
+    kbl(caption = 'Data Sample (ETS MNN 1080 forecast 1)', escape = FALSE) %>% 
+    row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+    column_spec(1, background = '#556DAC') %>% 
+    column_spec(2, background = 'Gainsboro', color = 'goldenrod') %>% 
+    column_spec(3, background = 'LightGray', color = 'goldenrod') %>% 
+    kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    kable_material(full_width = FALSE) %>% 
+    scroll_box(width = '100%', fixed_thead = TRUE)
+}
+```
+
+```{r include = FALSE}
+if(exists('smp')) rm(smp)
+if(exists('fl')) rm(fl)
+```
+
 ### 16Hr >> 1min
 
 I set the length of data as Daily (`960 mins` which is 1 trading days) to forecast `1 min` in advance.

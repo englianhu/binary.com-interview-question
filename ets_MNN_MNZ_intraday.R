@@ -67,7 +67,7 @@ timeID %<>% .[. >= bse]
 timeID %<>% .[. >= as_date('2016-12-12')]
 #timeID %<>% .[. <= as_date('2016-01-31')]
 timeID %<>% .[. >= as_date('2016-12-31')]
-data_len <- 600
+data_len <- 1080
 hrz1 <- 1
 intr <- data_len/hrz1
 
@@ -76,10 +76,8 @@ llply(ets.m, function(md) {
 		    data_len = data_len, hrz1 = hrz1, 
             .model = md, vb = FALSE)
   })
-#ts_ets_MNN_960_1.p_238.2016-10-19
-#ts_ets_MNN_840_1.p_912.2016-10-18
-#ts_ets_MNN_720_1.p_286.2016-10-14
-#ts_ets_MNN_600_1.p_774.2016-09-08
+#ts_ets_MNN_1080_1.p_504.2016-01-04
+#ts_ets_MNN_1200_1.p_473.2016-01-04
 
 # --------- eval=FALSE ---------
 source('function/intra_1440.R')
