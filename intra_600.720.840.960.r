@@ -1,5 +1,5 @@
 #pth <- 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/intraday'
-pth <- 'C:/Users/User/Desktop/intraday'
+pth <- 'C:/Users/User/Desktop/intraday_refill'
 fls <- list.files(pth, pattern = '^ts_ets_MNN_960_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_840_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_720_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_600_1.p_[0-9]{0,}.[0-9]{4}')
 fls <- sort(fls)
 #ts_ets_MNN_960_1.p_504.2017-01-03
@@ -54,73 +54,152 @@ mds_ets_MNN_intraday2_1min <- ldply(1:length(fls), function(i) {
 saveRDS(mds_ets_MNN_intraday2_1min, paste0(.dtr, 'intra_600_720_840_960.rds'))
 
 
-
-
 ### -------------------------------------------------
 
 require('data.table')
-mds_ets_MNN_intraday2_1min <- readRDS(paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday2_1min.rds')) %>% as.data.table
-mds_ets_MNN_intraday2_1min <- mds_ets_MNN_intraday2_1min[order(index)]
+require('dplyr')
+require('magrittr')
 
-llply(split(mds_ets_MNN_intraday2_1min, mds_ets_MNN_intraday2_1min$data_min), function(x) { as.data.table(x) })
+mds_ets_MNN_intraday3_1min_1y <- readRDS(paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y.rds'))
+mds_ets_MNN_intraday3_1min_1y %<>% as.data.table
+mds_ets_MNN_intraday3_1min_1y <- mds_ets_MNN_intraday3_1min_1y[order(index)]
+mds_ets_MNN_intraday3_1min_1y %>% unique
+
+llply(split(mds_ets_MNN_intraday3_1min_1y, mds_ets_MNN_intraday3_1min_1y$data_min), function(x) { as.data.table(x) })
+
+mds_ets_MNN_intraday3_1min_1y <- ldply(split(mds_ets_MNN_intraday3_1min_1y, mds_ets_MNN_intraday3_1min_1y$data_min), function(x) { 
+   unique(as.data.table(x), by = c('index')) }) %>% as.data.table
+#mds_ets_MNN_intraday3_1min_1y <- mds_ets_MNN_intraday3_1min_1y[date <= as_date('2017-01-01')]
+#saveRDS(mds_ets_MNN_intraday3_1min_1y, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y.rds'))
+
+smmp <- dsmp[374401:748800]
+
+llply(split(mds_ets_MNN_intraday3_1min_1y, mds_ets_MNN_intraday3_1min_1y$data_min), function(x) { 
+   x <- as.data.table(x)
+   y <- smmp$index[!unique(smmp$index) %in% unique(x$index)]
+   #c(head(y), tail(y))
+   length(y)
+   })
+$`180`
+[1] 105
+
+$`240`
+[1] 105
+
+$`360`
+[1] 133
+
+$`480`
+[1] 125
 
 $`600`
-                     index t_series model sub_model data_min fc_min part       date mk.price fc.price
-    1: 2016-01-04 00:02:00       ts   ets       MNN      600      1    1 2016-01-04 120.2200 120.2104
-    2: 2016-01-04 00:03:00       ts   ets       MNN      600      1    2 2016-01-04 120.2200 120.2200
-    3: 2016-01-04 00:04:00       ts   ets       MNN      600      1    3 2016-01-04 120.2185 120.2200
-    4: 2016-01-04 00:05:00       ts   ets       MNN      600      1    4 2016-01-04 120.2195 120.2185
-    5: 2016-01-04 00:06:00       ts   ets       MNN      600      1    5 2016-01-04 120.2250 120.2195
-   ---                                                                                               
-44634: 2016-02-15 23:56:00       ts   ets       MNN      600      1 1436 2016-02-15 114.6015 114.5930
-44635: 2016-02-15 23:57:00       ts   ets       MNN      600      1 1437 2016-02-15 114.5940 114.6015
-44636: 2016-02-15 23:58:00       ts   ets       MNN      600      1 1438 2016-02-15 114.6050 114.5940
-44637: 2016-02-15 23:59:00       ts   ets       MNN      600      1 1439 2016-02-15 114.5950 114.6050
-44638: 2016-02-16 00:00:00       ts   ets       MNN      600      1 1440 2016-02-16 114.5960 114.5950
+[1] 13063
 
 $`720`
-                     index t_series model sub_model data_min fc_min part       date mk.price fc.price
-    1: 2016-01-04 00:02:00       ts   ets       MNN      720      1    1 2016-01-04 120.2200 120.2104
-    2: 2016-01-04 00:03:00       ts   ets       MNN      720      1    2 2016-01-04 120.2200 120.2200
-    3: 2016-01-04 00:04:00       ts   ets       MNN      720      1    3 2016-01-04 120.2185 120.2200
-    4: 2016-01-04 00:05:00       ts   ets       MNN      720      1    4 2016-01-04 120.2195 120.2185
-    5: 2016-01-04 00:06:00       ts   ets       MNN      720      1    5 2016-01-04 120.2250 120.2195
-   ---                                                                                               
-68128: 2016-04-04 21:49:00       ts   ets       MNN      720      1 1309 2016-04-04 111.2390 111.2450
-68129: 2016-04-04 21:50:00       ts   ets       MNN      720      1 1310 2016-04-04 111.2455 111.2390
-68130: 2016-04-04 21:51:00       ts   ets       MNN      720      1 1311 2016-04-04 111.2510 111.2455
-68131: 2016-04-04 21:52:00       ts   ets       MNN      720      1 1312 2016-04-04 111.2435 111.2510
-68132: 2016-04-04 21:53:00       ts   ets       MNN      720      1 1313 2016-04-04 111.2505 111.2435
+[1] 26876
 
 $`840`
-                     index t_series model sub_model data_min fc_min part       date mk.price fc.price
-    1: 2016-01-04 00:02:00       ts   ets       MNN      840      1    1 2016-01-04 120.2200 120.2104
-    2: 2016-01-04 00:03:00       ts   ets       MNN      840      1    2 2016-01-04 120.2200 120.2200
-    3: 2016-01-04 00:04:00       ts   ets       MNN      840      1    3 2016-01-04 120.2185 120.2200
-    4: 2016-01-04 00:05:00       ts   ets       MNN      840      1    4 2016-01-04 120.2195 120.2185
-    5: 2016-01-04 00:06:00       ts   ets       MNN      840      1    5 2016-01-04 120.2250 120.2195
-   ---                                                                                               
-45802: 2016-02-15 19:25:00       ts   ets       MNN      840      1 1164 2016-02-15 114.6500 114.6445
-45803: 2016-02-15 19:26:00       ts   ets       MNN      840      1 1165 2016-02-15 114.6515 114.6500
-45804: 2016-02-15 19:27:00       ts   ets       MNN      840      1 1166 2016-02-15 114.6575 114.6515
-45805: 2016-02-15 19:28:00       ts   ets       MNN      840      1 1167 2016-02-15 114.6675 114.6575
-45806: 2016-02-15 19:29:00       ts   ets       MNN      840      1 1168 2016-02-15 114.6675 114.6675
+[1] 53639
 
 $`960`
-                     index t_series model sub_model data_min fc_min part       date mk.price fc.price
-    1: 2016-01-04 00:02:00       ts   ets       MNN      960      1    1 2016-01-04 120.2200 120.2104
-    2: 2016-01-04 00:03:00       ts   ets       MNN      960      1    2 2016-01-04 120.2200 120.2200
-    3: 2016-01-04 00:04:00       ts   ets       MNN      960      1    3 2016-01-04 120.2185 120.2200
-    4: 2016-01-04 00:05:00       ts   ets       MNN      960      1    4 2016-01-04 120.2195 120.2185
-    5: 2016-01-04 00:06:00       ts   ets       MNN      960      1    5 2016-01-04 120.2250 120.2195
-   ---                                                                                               
-44634: 2016-02-15 23:57:00       ts   ets       MNN      960      1 1436 2016-02-15 114.5940 114.6015
-44635: 2016-02-15 23:58:00       ts   ets       MNN      960      1 1437 2016-02-15 114.6050 114.5940
-44636: 2016-02-15 23:59:00       ts   ets       MNN      960      1 1438 2016-02-15 114.5950 114.6050
-44637: 2016-02-15 23:59:00       ts   ets       MNN      960      1 1439 2016-02-15 114.5950 114.6050
-44638: 2016-02-16 00:01:00       ts   ets       MNN      960      1 1440 2016-02-16 114.6040 114.5960
+[1] 51930
 
-ldply(split(mds_ets_MNN_intraday2_1min_1y, mds_ets_MNN_intraday2_1min_1y$data_min), function(x) { unique(as.data.table(x), by = c('index')) }) %>% as.data.table
+refill <- llply(split(mds_ets_MNN_intraday3_1min_1y, mds_ets_MNN_intraday3_1min_1y$data_min), function(x) { 
+   x <- as.data.table(x)
+   y <- smmp$index[!unique(smmp$index) %in% unique(x$index)]
+   y
+   })
+
+dte <- refill %>% llply(., function(x) unique(as_date(x)))
+#ts_ets_MNN_960_1.p_124.2016-12-28
+#ts_ets_MNN_840_1.p_473.2016-12-20
+#ts_ets_MNN_720_1.p_716.2016-15-05
+#ts_ets_MNN_600_1.p_791.2016-11-29
+
+#########################################################################
+# --------- eval=FALSE ---------
+source('function/intra_min.R')
+
+smmp <- dsmp[374401:748800]
+timeID <- unique(smmp$date)
+bse <- smmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-12-12')]
+#timeID %<>% .[. <= as_date('2016-01-31')]
+timeID <- dte$`600`
+data_len <- 600
+hrz1 <- 1
+intr <- data_len/hrz1
+
+llply(ets.m, function(md) {
+  intra_min(timeID = timeID, smmp, fl_pth = 'C:/Users/User/Desktop/intraday_refill', 
+		    data_len = data_len, hrz1 = hrz1, 
+            .model = md, vb = FALSE)
+  })
+
+#########################################################################
+# --------- eval=FALSE ---------
+source('function/intra_min.R')
+
+smmp <- dsmp[374401:748800]
+timeID <- unique(smmp$date)
+bse <- smmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-12-12')]
+#timeID %<>% .[. <= as_date('2016-01-31')]
+timeID <- dte$`720`
+data_len <- 720
+hrz1 <- 1
+intr <- data_len/hrz1
+
+llply(ets.m, function(md) {
+  intra_min(timeID = timeID, smmp, fl_pth = 'C:/Users/User/Desktop/intraday_refill', 
+		    data_len = data_len, hrz1 = hrz1, 
+            .model = md, vb = FALSE)
+  })
+
+#########################################################################
+# --------- eval=FALSE ---------
+source('function/intra_min.R')
+
+smmp <- dsmp[374401:748800]
+timeID <- unique(smmp$date)
+bse <- smmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-12-12')]
+#timeID %<>% .[. <= as_date('2016-01-31')]
+timeID <- dte$`840`
+data_len <- 840
+hrz1 <- 1
+intr <- data_len/hrz1
+
+llply(ets.m, function(md) {
+  intra_min(timeID = timeID, smmp, fl_pth = 'C:/Users/User/Desktop/intraday_refill', 
+		    data_len = data_len, hrz1 = hrz1, 
+            .model = md, vb = FALSE)
+  })
+
+#########################################################################
+# --------- eval=FALSE ---------
+source('function/intra_min.R')
+
+smmp <- dsmp[374401:748800]
+timeID <- unique(smmp$date)
+bse <- smmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-12-12')]
+#timeID %<>% .[. <= as_date('2016-01-31')]
+timeID <- dte$`960`
+data_len <- 960
+hrz1 <- 1
+intr <- data_len/hrz1
+
+llply(ets.m, function(md) {
+  intra_min(timeID = timeID, smmp, fl_pth = 'C:/Users/User/Desktop/intraday_refill', 
+		    data_len = data_len, hrz1 = hrz1, 
+            .model = md, vb = FALSE)
+  })
+
 
 
 

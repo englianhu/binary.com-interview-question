@@ -3575,6 +3575,8 @@ mds_ets_MNN_intraday3_1min_1y <- rbind(mds_ets_MNN_intraday_1min_1y, mds_ets_MNN
 
 saveRDS(mds_ets_MNN_intraday3_1min_1y, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y.rds'))
 
+mds_ets_MNN_intraday3_1min_1y <- readRDS(paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y.rds'))
+
 mds_ets_MNN_intraday3_1min_1y_cmp <- mds_ets_MNN_intraday3_1min_1y %>% 
   #tidyr::unite(model, t_series:part) %>% 
   tidyr::unite(model, t_series:fc_min) %>% 
