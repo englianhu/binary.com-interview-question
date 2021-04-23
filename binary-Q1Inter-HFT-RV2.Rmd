@@ -3563,7 +3563,7 @@ From the table above, `N` is the sample data size, `3.5 years` dataset is more a
 
 ```{r, eval = FALSE}
 ## Get all intraday files.
-fls <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_480_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_360_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_240_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_180_1.p_[0-9]{0,}.[0-9]{4}') %>% 
+fls <- list.files(paste0(.dtr, 'data/fx/USDJPY/intraday/'), pattern = '^ts_ets_MNN_1080_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_1200_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_480_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_360_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_240_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_180_1.p_[0-9]{0,}.[0-9]{4}') %>% 
   sort
 
 fls_pth <- paste0(.dtr, 'data/fx/USDJPY/intraday/', fls)

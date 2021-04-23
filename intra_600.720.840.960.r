@@ -1,6 +1,6 @@
 #pth <- 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/intraday'
-pth <- 'C:/Users/User/Desktop/intraday_refill'
-fls <- list.files(pth, pattern = '^ts_ets_MNN_960_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_840_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_720_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_600_1.p_[0-9]{0,}.[0-9]{4}')
+pth <- 'C:/Users/User/Desktop/intraday_18_20'
+fls <- list.files(pth, pattern = '^ts_ets_MNN_1080_1.p_[0-9]{0,}.[0-9]{4}|^ts_ets_MNN_1200_1.p_[0-9]{0,}.[0-9]{4}')
 fls <- sort(fls)
 #ts_ets_MNN_960_1.p_504.2017-01-03
 #ts_ets_MNN_840_1.p_473.2017-01-03
@@ -51,7 +51,7 @@ mds_ets_MNN_intraday2_1min <- ldply(1:length(fls), function(i) {
 ## http://brooksandrew.github.io/simpleblog/articles/advanced-data-table/
 ## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/
 
-saveRDS(mds_ets_MNN_intraday2_1min, paste0(.dtr, 'intra_600_720_840_960.rds'))
+saveRDS(mds_ets_MNN_intraday2_1min, paste0(.dtr, 'intra_1080_1200.rds'))
 
 
 ### -------------------------------------------------
@@ -67,7 +67,7 @@ mds_ets_MNN_intraday3_1min_1y %>% unique
 
 llply(split(mds_ets_MNN_intraday3_1min_1y, mds_ets_MNN_intraday3_1min_1y$data_min), function(x) { as.data.table(x) })
 
-mds_ets_MNN_intraday3_1min_1y <- ldply(split(mds_ets_MNN_intraday3_1min_1y, mds_ets_MNN_intraday3_1min_1y$data_min), function(x) { 
+mds_ets_MNN_intraday3_1min_1y2 <- ldply(split(mds_ets_MNN_intraday3_1min_1y, mds_ets_MNN_intraday3_1min_1y$data_min), function(x) { 
    unique(as.data.table(x), by = c('index')) }) %>% as.data.table
 #mds_ets_MNN_intraday3_1min_1y <- mds_ets_MNN_intraday3_1min_1y[date <= as_date('2017-01-01')]
 #saveRDS(mds_ets_MNN_intraday3_1min_1y, paste0(.dtr, 'data/fx/USDJPY/mds_ets_MNN_intraday3_1min_1y.rds'))

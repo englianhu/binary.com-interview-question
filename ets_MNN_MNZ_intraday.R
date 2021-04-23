@@ -64,20 +64,19 @@ source('function/intra_min.R')
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
-timeID %<>% .[. >= as_date('2016-12-12')]
-#timeID %<>% .[. <= as_date('2016-01-31')]
-timeID %<>% .[. >= as_date('2016-12-31')]
+timeID %<>% .[. >= as_date('2016-01-04')]
+timeID %<>% .[. <= as_date('2016-12-31')]
 data_len <- 1080
 hrz1 <- 1
 intr <- data_len/hrz1
 
 llply(ets.m, function(md) {
-  intra_min(timeID = timeID, dsmp, fl_pth = 'C:/Users/User/Desktop/intraday', 
+  intra_min(timeID = timeID, dsmp, fl_pth = 'C:/Users/User/Desktop/intraday_18_20', 
 		    data_len = data_len, hrz1 = hrz1, 
             .model = md, vb = FALSE)
   })
-#ts_ets_MNN_1080_1.p_504.2016-01-04
-#ts_ets_MNN_1200_1.p_473.2016-01-04
+#ts_ets_MNN_1080_1.p_504.2016-12-12
+#ts_ets_MNN_1200_1.p_473.2016-12-12
 
 # --------- eval=FALSE ---------
 source('function/intra_1440.R')
@@ -85,10 +84,10 @@ source('function/intra_1440.R')
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
-timeID %<>% .[1:5]
-#timeID %<>% .[. >= as_date('2016-01-04')]
+#timeID %<>% .[1:5]
+timeID %<>% .[. >= as_date('2016-01-04')]
 data_len <- 1440
-hrz1 <- 480
+hrz1 <- 720
 intr <- data_len/hrz1
 
 llply(ets.m, function(md) {
