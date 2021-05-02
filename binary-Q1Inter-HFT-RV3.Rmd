@@ -116,7 +116,7 @@ suppressPackageStartupMessages(require('BBmisc'))
 # suppressPackageStartupMessages(require('rmsfuns'))
 
 pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
-          'devtools','readr', 'lubridate', 'data.table', 'reprex', 
+          'readr', 'lubridate', 'data.table', 'reprex', 
           'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 
           'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tdplyr', 
           'tidyverse', 'memoise', 'htmltools', 'formattable', 'dtplyr', 
