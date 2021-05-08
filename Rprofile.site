@@ -1,0 +1,88 @@
+##						Emacs please make this -*- R -*-
+## empty Rprofile.site for R on Debian
+##
+## Copyright (C) 2008 - 2018  Dirk Eddelbuettel and GPL'ed
+##
+## see help(Startup) for documentation on ~/.Rprofile and Rprofile.site
+
+# ## Example of .Rprofile
+# options(width=65, digits=5)
+# options(show.signif.stars=FALSE)
+# setHook(packageEvent("grDevices", "onLoad"),
+#         function(...) grDevices::ps.options(horizontal=FALSE))
+# set.seed(1234)
+# .First <- function() cat("\n   Welcome to R!\n\n")
+.First <- function() {
+  
+  if(!require('BBmisc', quietly = TRUE, warn.conflicts = FALSE)) {
+    utils::install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock', quiet = TRUE)
+  }
+  require('BBmisc', quietly = TRUE)
+  
+  if(!require('devtools', quietly = TRUE, warn.conflicts = FALSE)) {
+    utils::install.packages('devtools', dependencies = TRUE, INSTALL_opts = '--no-lock', quiet = TRUE)       
+    devtools::install_github('r-lib/devtools', quiet = TRUE)
+  }
+  
+  if(!require('startup', quietly = TRUE, warn.conflicts = FALSE)) {
+    ## https://github.com/HenrikBengtsson/startup
+    remotes::install_github('HenrikBengtsson/startup', ref = 'develop', quiet = TRUE)
+  }
+  
+  if(!require('Rdym', quietly = TRUE, warn.conflicts = FALSE)) {
+    devtools::install_github('wrathematics/Rdym', quiet = TRUE)
+  }
+  
+  ## https://www.jumpingrivers.com/blog/customising-your-rprofile/
+  if(!require('rprofile', quietly = TRUE, warn.conflicts = FALSE)) {
+    remotes::install_github('csgillespie/rprofile', quiet = TRUE)
+  }
+  
+  if(!require('prompt', quietly = TRUE, warn.conflicts = FALSE)) {
+    # Used for nice prompts
+    remotes::install_github('gaborcsardi/prompt', quiet = TRUE)
+  }
+  
+  if(!require('colorout', quietly = TRUE, warn.conflicts = FALSE)) {
+    # Used for nice colours in the terminal; not for Windows
+    remotes::install_github('jalvesaq/colorout', quiet = TRUE)
+  }
+  
+  if(!require('tidyverse', quietly = TRUE, warn.conflicts = FALSE)) {
+    devtools::install_github('tidyverse/tidyverse', quiet = TRUE)
+  }
+  
+  if(!require('lubridate', quietly = TRUE, warn.conflicts = FALSE)) {
+    devtools::install_github('tidyverse/lubridate', quiet = TRUE)
+  }
+  
+  BBmisc::suppressAll(require('BBmisc', quietly = TRUE, warn.conflicts = FALSE))
+  BBmisc::suppressAll(require('devtools', quietly = TRUE, warn.conflicts = FALSE))
+  BBmisc::suppressAll(require('lubridate', quietly = TRUE, warn.conflicts = FALSE))
+  BBmisc::suppressAll(require('tidyverse', quietly = TRUE, warn.conflicts = FALSE))
+  BBmisc::suppressAll(require('rprofile', quietly = TRUE, warn.conflicts = FALSE))
+  BBmisc::suppressAll(require('prompt', quietly = TRUE, warn.conflicts = FALSE))
+  BBmisc::suppressAll(require('colorout', quietly = TRUE, warn.conflicts = FALSE))
+  BBmisc::suppressAll(require('Rdym', quietly = TRUE, warn.conflicts = FALSE))
+  BBmisc::suppressAll(require('startup', quietly = TRUE, warn.conflicts = FALSE))
+  BBmisc::suppressAll(Rdym::RdymEnable())
+  suppressWarnings(startup::install())
+  suppressWarnings(startup::startup())
+  }
+  
+# .Last <- function()  cat("\n   Goodbye!\n\n")
+
+# ## Example of Rprofile.site
+# local({
+#  # add MASS to the default packages, set a CRAN mirror
+#  old <- getOption("defaultPackages"); r <- getOption("repos")
+#  r["CRAN"] <- "http://my.local.cran"
+#  options(defaultPackages = c(old, "MASS"), repos = r)
+#})
+
+## We set the cloud mirror, which is 'network-close' to everybody, as default
+local({
+    r <- getOption("repos")
+    r["CRAN"] <- "https://cloud.r-project.org"
+    options(repos = r)
+})
