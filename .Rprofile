@@ -22,7 +22,8 @@
 # Filter(file.exists, candidates)
 
 ## https://github.com/rstudio/reticulate/issues/496#issuecomment-601446838
-Sys.setenv(RETICULATE_PYTHON = '/usr/bin/python3')
+#Sys.setenv(RETICULATE_PYTHON = '/usr/bin/python3')
+Sys.setenv(RETICULATE_PYTHON = '~/anaconda3/bin/python')
 
 ## -------------------------------------------------------------------------
 
