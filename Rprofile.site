@@ -19,9 +19,10 @@
 ## Micro – A Modern Terminal Based Text Editor with Syntax Highlighting
 
 ## ============================= PATH ======================================
+#system('sudo chmod +rwx /usr/lib/R')
 
-#pth <- .libPaths(c('/usr/lib/R/library', '/usr/local/lib/R/site-library', '/usr/lib/R/site-library'))
-#.libPaths(pth[1:3])
+#pth <- .libPaths(c('/usr/lib/R/library', '/usr/lib/R/site-library'))
+#.libPaths(pth[1:2])
 
 #dir(paste0(R.home(component = "home"), '/etc'))
 ## https://www.jumpingrivers.com/blog/customising-your-rprofile/
