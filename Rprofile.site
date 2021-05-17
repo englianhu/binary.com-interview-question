@@ -153,6 +153,6 @@ setHook('rstudio.sessionInit', function(newSession) {
 }, action = 'append')
 
 #BBmisc::suppressAll(.First())
-tryCatch(startup::startup(all = TRUE), error=function(ex) 
+tryCatch(suppressWarnings(startup::startup(all = TRUE)), error=function(ex) 
   message('.Rprofile error: ', conditionMessage(ex)))
 
