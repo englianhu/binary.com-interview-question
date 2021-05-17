@@ -53,49 +53,50 @@ local({
 
 if(!require('BBmisc', quietly = TRUE, warn.conflicts = FALSE)) {
   utils::install.packages('BBmisc', dependencies = TRUE, 
-                          INSTALL_opts = '--no-lock', quiet = TRUE)
+                          INSTALL_opts = '--no-lock')
 }
 require('BBmisc', quietly = TRUE)
 
 if(!require('devtools', quietly = TRUE, warn.conflicts = FALSE)) {
   utils::install.packages('devtools', dependencies = TRUE, 
-                          INSTALL_opts = '--no-lock', quiet = TRUE)       
-  devtools::install_github('r-lib/devtools', quiet = TRUE)
+                          INSTALL_opts = '--no-lock')       
+  devtools::install_github('r-lib/devtools')
 }
 
 if(!require('startup', quietly = TRUE, warn.conflicts = FALSE)) {
   ## https://github.com/HenrikBengtsson/startup
-  remotes::install_github('HenrikBengtsson/startup', ref = 'develop', quiet = TRUE)
+  remotes::install_github('HenrikBengtsson/startup', ref = 'develop')
 }
 
 if(!require('Rdym', quietly = TRUE, warn.conflicts = FALSE)) {
-  devtools::install_github('wrathematics/Rdym', quiet = TRUE)
+  devtools::install_github('wrathematics/Rdym')
 }
 
 ## https://www.jumpingrivers.com/blog/customising-your-rprofile/
 if(!require('rprofile', quietly = TRUE, warn.conflicts = FALSE)) {
-  remotes::install_github('csgillespie/rprofile', quiet = TRUE)
+  remotes::install_github('csgillespie/rprofile')
 }
 
 if(!require('prompt', quietly = TRUE, warn.conflicts = FALSE)) {
   # Used for nice prompts
-  remotes::install_github('gaborcsardi/prompt', quiet = TRUE)
+  remotes::install_github('gaborcsardi/prompt')
 }
 
 if(!require('colorout', quietly = TRUE, warn.conflicts = FALSE)) {
   # Used for nice colours in the terminal; not for Windows
-  remotes::install_github('jalvesaq/colorout', quiet = TRUE)
+  remotes::install_github('jalvesaq/colorout')
 }
 
 if(!require('tidyverse', quietly = TRUE, warn.conflicts = FALSE)) {
-  devtools::install_github('tidyverse/tidyverse', quiet = TRUE)
+  devtools::install_github('tidyverse/tidyverse')
 }
 
 if(!require('lubridate', quietly = TRUE, warn.conflicts = FALSE)) {
-  devtools::install_github('tidyverse/lubridate', quiet = TRUE)
+  devtools::install_github('tidyverse/lubridate')
 }
 
 require('BBmisc', quietly = TRUE, warn.conflicts = FALSE)
+require('MASS', quietly = TRUE, warn.conflicts = FALSE)
 require('devtools', quietly = TRUE, warn.conflicts = FALSE)
 require('lubridate', quietly = TRUE, warn.conflicts = FALSE)
 BBmisc::suppressAll(require('tidyverse', quietly = TRUE, warn.conflicts = FALSE))
