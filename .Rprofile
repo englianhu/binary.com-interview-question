@@ -18,7 +18,7 @@ pth <- .libPaths(c('/usr/lib/R/library', '/usr/lib/R/site-library'))
 # candidates <- c( Sys.getenv("R_PROFILE"),
 # file.path(Sys.getenv("R_HOME"), "etc", "Rprofile.site"),
 # Sys.getenv("R_PROFILE_USER"),
-file.path(getwd(), ".Rprofile") )
+#file.path(getwd(), ".Rprofile") )
 # 
 # Filter(file.exists, candidates)
 
@@ -36,6 +36,8 @@ local({
 })
 
 ## ======================== Load Packages ==================================
+
+suppressPackageStartupMessages(require('utils'))
 
 if(!suppressPackageStartupMessages(require('BBmisc'))) {
   install.packages('BBmisc', dependencies = TRUE, 
