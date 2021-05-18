@@ -21,8 +21,8 @@
 ## ============================= PATH ======================================
 #system('sudo chmod +rwx /usr/lib/R')
 
-#pth <- .libPaths(c('/usr/lib/R/library', '/usr/lib/R/site-library'))
-#.libPaths(pth[1:2])
+pth <- .libPaths(c('/usr/lib/R/library', '/usr/lib/R/site-library'))
+.libPaths(pth)
 
 #dir(paste0(R.home(component = "home"), '/etc'))
 ## https://www.jumpingrivers.com/blog/customising-your-rprofile/
@@ -33,7 +33,7 @@
 # candidates <- c( Sys.getenv("R_PROFILE"),
 # file.path(Sys.getenv("R_HOME"), "etc", "Rprofile.site"),
 # Sys.getenv("R_PROFILE_USER"),
-# file.path(getwd(), ".Rprofile") )
+file.path(getwd(), ".Rprofile") )
 # 
 # Filter(file.exists, candidates)
 
@@ -52,60 +52,53 @@ local({
 
 ## ======================== Load Packages ==================================
 
-if(!require('BBmisc', quietly = TRUE, warn.conflicts = FALSE)) {
-  utils::install.packages('BBmisc', dependencies = TRUE, 
-                          INSTALL_opts = '--no-lock')
+if(!suppressPackageStartupMessages(require('BBmisc'))) {
+  install.packages('BBmisc', dependencies = TRUE, 
+                   INSTALL_opts = '--no-lock')
 }
-require('BBmisc', quietly = TRUE)
+suppressPackageStartupMessages(require('BBmisc'))
 
-if(!require('devtools', quietly = TRUE, warn.conflicts = FALSE)) {
-  utils::install.packages('devtools', dependencies = TRUE, 
-                          INSTALL_opts = '--no-lock')       
+if(!suppressAll(require('devtools'))) {
+  install.packages('devtools', dependencies = TRUE, 
+                   INSTALL_opts = '--no-lock')       
   devtools::install_github('r-lib/devtools')
 }
 
-if(!require('startup', quietly = TRUE, warn.conflicts = FALSE)) {
+if(!suppressAll(require('startup'))) {
   ## https://github.com/HenrikBengtsson/startup
   remotes::install_github('HenrikBengtsson/startup', ref = 'develop')
 }
 
-if(!require('Rdym', quietly = TRUE, warn.conflicts = FALSE)) {
+if(!suppressAll(require('Rdym'))) {
   devtools::install_github('wrathematics/Rdym')
 }
 
 ## https://www.jumpingrivers.com/blog/customising-your-rprofile/
-if(!require('rprofile', quietly = TRUE, warn.conflicts = FALSE)) {
+if(!suppressAll(require('rprofile'))) {
   remotes::install_github('csgillespie/rprofile')
 }
 
-if(!require('prompt', quietly = TRUE, warn.conflicts = FALSE)) {
+if(!suppressAll(require('prompt'))) {
   # Used for nice prompts
   remotes::install_github('gaborcsardi/prompt')
 }
 
-if(!require('colorout', quietly = TRUE, warn.conflicts = FALSE)) {
+if(!suppressAll(require('colorout'))) {
   # Used for nice colours in the terminal; not for Windows
   remotes::install_github('jalvesaq/colorout')
 }
 
-if(!require('tidyverse', quietly = TRUE, warn.conflicts = FALSE)) {
+if(!suppressAll(require('tidyverse'))) {
   devtools::install_github('tidyverse/tidyverse')
 }
 
-if(!require('lubridate', quietly = TRUE, warn.conflicts = FALSE)) {
+if(!suppressAll(require('lubridate'))) {
   devtools::install_github('tidyverse/lubridate')
 }
 
-require('BBmisc', quietly = TRUE, warn.conflicts = FALSE)
-require('MASS', quietly = TRUE, warn.conflicts = FALSE)
-require('devtools', quietly = TRUE, warn.conflicts = FALSE)
-require('lubridate', quietly = TRUE, warn.conflicts = FALSE)
-BBmisc::suppressAll(require('tidyverse', quietly = TRUE, warn.conflicts = FALSE))
-require('rprofile', quietly = TRUE, warn.conflicts = FALSE)
-require('prompt', quietly = TRUE, warn.conflicts = FALSE)
-require('colorout', quietly = TRUE, warn.conflicts = FALSE)
-require('Rdym', quietly = TRUE, warn.conflicts = FALSE)
-require('startup', quietly = TRUE, warn.conflicts = FALSE)
+pkgs <- c('MASS', 'devtools', 'lubridate', 'tidyverse', 'rprofile', 'prompt', 
+          'colorout', 'Rdym', 'startup')
+suppressAll(lib(pkgs))
 
 ## -------------------------------------------------------------------------
 
@@ -120,7 +113,7 @@ require('startup', quietly = TRUE, warn.conflicts = FALSE)
 ## ======================== Start Up =====================================
 
 ## https://www.jumpingrivers.com/blog/customising-your-rprofile/
-if (interactive() && requireNamespace('rprofile', quietly = TRUE)) {
+if (interactive() && suppressAll(requireNamespace('rprofile'))) {
   
   # Only useful if you use Makefiles
   rprofile::create_make_functions()
