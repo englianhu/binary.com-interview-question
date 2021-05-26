@@ -40,7 +40,10 @@ pth <- .libPaths(c('/usr/lib/R/library', '/usr/lib/R/site-library'))
 ## https://github.com/rstudio/reticulate/issues/496#issuecomment-601446838
 #Sys.setenv(RETICULATE_PYTHON = '/usr/bin/python3')
 #Sys.setenv(RETICULATE_PYTHON = '~/anaconda3/bin/python')
-Sys.setenv(RETICULATE_PYTHON = '~/anaconda3/bin/python3')
+## https://d.cosx.org/d/422269-r-410/11
+Sys.setenv(RETICULATE_PYTHON = '~/anaconda3/bin/python3', 
+           '_R_USE_PIPEBIND_' = 'true')
+
 ## -------------------------------------------------------------------------
 
 ## We set the cloud mirror, which is 'network-close' to everybody, as default
