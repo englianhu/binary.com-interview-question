@@ -6,8 +6,8 @@
 ## ============================= PATH ======================================
 #system('sudo chmod +rwx /usr/lib/R')
 
-pth <- .libPaths(c('/usr/lib/R/library', '/usr/lib/R/site-library'))
-.libPaths(pth)
+.pth <- .libPaths(c('/usr/lib/R/library', '/usr/lib/R/site-library'))
+.libPaths(.pth)
 
 #dir(paste0(R.home(component = "home"), '/etc'))
 ## https://www.jumpingrivers.com/blog/customising-your-rprofile/
@@ -89,6 +89,7 @@ if(!suppressAll(require('lubridate'))) {
 pkgs <- c('MASS', 'devtools', 'lubridate', 'tidyverse', 'rprofile', 'prompt', 
           'colorout', 'Rdym', 'startup')
 suppressAll(lib(pkgs))
+rm(pkgs)
 
 ## -------------------------------------------------------------------------
 
