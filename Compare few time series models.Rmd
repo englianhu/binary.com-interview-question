@@ -1,7 +1,7 @@
 ---
 title: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) - Interday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review**"
 subtitle: "Compare few time series models with Performance"
-author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/quantitative trader 1.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>® <img src='www/xueba2.jpg' width='24'>"
+author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/quantitative trader 1.jpg' width='13'> <img src='www/RYU.jpg' width='15'> <img src='www/ENG.jpg' width='24'> ® <img src='www/xueba1.jpg' width='14'>"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
   html_document: 
@@ -16,31 +16,181 @@ output:
     css: CSSBackgrounds.css
 ---
 
-# Load Packages
+<br>
+<span style='color:green'>**Theme Song**</span>
+<br>
 
-```{r, warning = FALSE, message = FALSE}
+<audio src="music/Mika - Elle me dit (happy song to be millionaire).mp3" controls></audio>
+<br>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>Elle me dit</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>她对我说</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>She told me</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>彼女は私に言う</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>écris une chanson contente</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>写一首欢快的歌</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>Write a happy song</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>幸せな歌を書く</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>Pas une chanson déprimante</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>而不是悲伤的歌</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>Not a depressing song</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>気のめいるような歌ではない</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>Une chanson que tout le monde aime</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>一首让所有人都喜欢的歌</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>A song that everyone loves</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>みんなが大好きな曲</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>Elle me dit</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>她对我说</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>She told me</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>彼女は私に言う</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:azure'>Tu deviendras milliardaire</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>你将成为亿万富翁</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>You will become a millionaire</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>あなたは億万長者になります</span>
+
+------
+
+<span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>Tu auras de quoi être fier</span>
+
+<span style='color:red'>**C**</span><span style='color:yellow'>**H**</span><span style='color:red'>**N**</span> : <span style='color:white'>你将为此感到骄傲</span>
+
+<span style='color:blue'>**E**</span><span style='color:red'>**N**</span><span style='color:blue'>**G**</span> : <span style='color:white'>You will be proud</span>
+
+<span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>あなたは誇りに思うでしょう</span>
+
+------
+
+# Setting
+
+## SCSS Setup
+
+<style>
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+.table-hover > tbody > tr:hover { 
+  background-color: #8D918D;
+}
+</style>
+
+```{r class.source='bg-success', class.output='bg-primary', message = FALSE, warning = FALSE}
+# install.packages("remotes")
+library('BBmisc', 'rmsfuns')
+#remotes::install_github("rstudio/sass")
+lib('sass')
+```
+
+```{scss class.source='bg-success', class.output='bg-primary'}
+/* https://stackoverflow.com/a/66029010/3806250 */
+h1 { color: #002C54; }
+h2 { color: #2F496E; }
+h3 { color: #375E97; }
+h4 { color: #556DAC; }
+h5 { color: #92AAC7; }
+
+/* ----------------------------------------------------------------- */
+/* https://gist.github.com/himynameisdave/c7a7ed14500d29e58149#file-broken-gradient-animation-less */
+.hover01 {
+  /* color: #FFD64D; */
+  background: linear-gradient(155deg, #EDAE01 0%, #FFEB94 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #EDAE01 20%, #FFEB94 80%);
+    }
+  }
+
+.hover02 {
+  color: #FFD64D;
+  background: linear-gradient(155deg, #002C54 0%, #4CB5F5 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #002C54 20%, #4CB5F5 80%);
+    }
+  }
+
+.hover03 {
+  color: #FFD64D;
+  background: linear-gradient(155deg, #A10115 0%, #FF3C5C 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #A10115 20%, #FF3C5C 80%);
+    }
+  }
+```
+
+```{r global_options, class.source='hover01', class.output='hover02'}
+## https://stackoverflow.com/a/36846793/3806250
+options(width = 999)
+knitr::opts_chunk$set(class.source = 'hover01', class.output = 'hover02', class.error = 'hover03')
+```
+
+<br><br>
+
+## Setup
+
+```{r warning=FALSE, message=FALSE}
 if(!suppressPackageStartupMessages(require('BBmisc'))) {
-  utils::install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
+  install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
 }
 suppressPackageStartupMessages(require('BBmisc'))
 # suppressPackageStartupMessages(require('rmsfuns'))
 
-pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'dygraphs', 
+## load packages
+pkgs <- c('knitr', 'kableExtra', 'tint', 'dygraphs', 
           'devtools','readr', 'lubridate', 'data.table', 'reprex', 
           'feather', 'purrr', 'quantmod', 'tidyquant', 'plotly', 
           'furrr', 'flyingfox', 'tidyr', 'jsonlite', 'MASS', 
-          'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tdplyr', 
-          'tidyverse', 'memoise', 'htmltools', 'formattable', 'rbokeh', 
-          'dash', 'dashCoreComponents', 'dashHtmlComponents', 'dtplyr', 
+          'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr',
+          'tdplyr', 'tidyverse', 'memoise', 'htmltools', 
+          'formattable', 'rbokeh', 'dash', 'dashCoreComponents', 
+          'dashHtmlComponents', 'dtplyr', 'viridis', 'hrbrthemes', 
           ##https://dashr.plotly.com
           'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
           'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
-          'stringr', 'pacman', 'profmem', 'ggthemes', 
-          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 'tsibble', 
-          'fable', 'fabletools', 'tsibbledata', 'tibbletime', 'feasts', 
-          'fpp3', 'prophet', 'fasster', 
-          'fpp3', 'MASS')
+          'stringr', 'pacman', 'profmem', 'ggthemes', 'paletteer', 
+          'htmltools', 'echarts4r', 'tsibble', 'fable', 
+          'fabletools', 'tsibbledata', 'tibbletime', 'feasts', 
+          'fpp3', 'prophet', 'fasster', 'fpp3', 'MASS')
 
 # remotes::install_github("robjhyndman/fpp3-package")
 # https://tidyverts.github.io/tidy-forecasting-principles/tsibble.html
@@ -58,55 +208,189 @@ Sys.setenv(TZ = 'Asia/Tokyo')
 ## options(knitr.table.format = 'html') will set all kableExtra tables to be 'html', otherwise need to set the parameter on every single table.
 options(warn = -1, knitr.table.format = 'html')#, digits.secs = 6)
 
+suppressAll(lib(pkgs))
+# load_pkg(pkgs)
+
+## Set the timezone but not change the datetime
+Sys.setenv(TZ = 'Asia/Tokyo')
+## options(knitr.table.format = 'html') will set all kableExtra tables to be 'html', otherwise need to set the parameter on every single table.
+options(warn = -1, knitr.table.format = 'html')#, digits.secs = 6)
+
 ## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE, 
-                      message = FALSE, cache.lazy = FALSE)
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)#, 
+                      #cache = TRUE, cache.lazy = FALSE)
 
 ## https://www.researchgate.net/post/How_to_solve_abnor_cannot_allocate_vector_of_size_12_Gb_in_R
 #memory.size() ### Checking your memory size
 #memory.limit() ## Checking the set limit
 #memory.size(size=500000)
 #memory.limit(size=56000) ### expanding your memory _ here it goes beyond to your actually memory. This 56000 is proposed for 64Bit.
-
-rm(pkgs, funs)
+rm(pkgs)
 ```
 
-# Read Data
+# Data
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+## Read Data
+
+```{r error=TRUE}
 ## read files if not exists
 if(!exists('dsmp')) {
-  dsmp <- readRDS('C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/dsmp.rds')}
+  
+  if(str_detect(Sys.info()[1], 'Linux')) {
+    
+    ## check if data path set
+    if(!exists('.dtr')) {
+      .dtr <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'}
+    dsmp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))
+    
+    ## save files if not exists
+    if(!file.exists(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))) {
+      saveRDS(dsmp, paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))}
+    
+  }
+  
+  if(str_detect(Sys.info()[1], 'Windows')) {
+    
+    ## check if data path set
+    if(!exists('.dtr')) {
+      .dtr <- 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/'}
+    dsmp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))
+    
+    ## save files if not exists
+    if(!file.exists(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))) {
+      saveRDS(dsmp, paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))}
+    
+  }
+}
+
+# dsmp |> as_tsibble(index = index)
+dsmp <- dsmp |>  
+  as_tibble() |> 
+  arrange(index)
+```
+
+```{r error=TRUE, results='asis'}
+## plot sample data
+rbind(head(dsmp, 3), tail(dsmp, 3)) %>% 
+  kbl(caption = '1 min Close Price Dataset', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'gold', bold = TRUE) |> 
+  column_spec(1, background = 'CornflowerBlue') |> 
+  column_spec(2, background = 'Gray') |> 
+  column_spec(3, background = 'DarkGrey') |> 
+  column_spec(4, background = 'Gray') |> 
+  column_spec(5, background = 'DarkGrey') |> 
+  column_spec(6, background = '#4897D8') |> 
+  column_spec(7, background = '#556DAC') |> 
+  column_spec(8, background = '#92AAC7') |> 
+  column_spec(9, background = '#556DAC') |> 
+  column_spec(10, background = '#375E97') |> 
+  column_spec(11, background = 'CornflowerBlue') |> 
+  column_spec(12, background = 'LightGray', color = 'goldenrod') |> 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) |> 
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+```
+
+*source : `r paste0(dim(dsmp), collapse = ' x ')`*
+
+## Filter Data
+
+```{r error=TRUE, results='asis'}
+## plot sample data
+dp_df <- dsmp[dsmp$index %in% dsmp$index[duplicated(dsmp$index)],]
+rbind(head(dp_df, 3), tail(dp_df, 3)) %>% 
+  kbl(caption = 'NA and Duplicated Dataset', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'gold', bold = TRUE) |> 
+  column_spec(1, background = 'CornflowerBlue') |> 
+  column_spec(2, background = 'Gray') |> 
+  column_spec(3, background = 'DarkGrey') |> 
+  column_spec(4, background = 'Gray') |> 
+  column_spec(5, background = 'DarkGrey') |> 
+  column_spec(6, background = '#4897D8') |> 
+  column_spec(7, background = '#556DAC') |> 
+  column_spec(8, background = '#92AAC7') |> 
+  column_spec(9, background = '#556DAC') |> 
+  column_spec(10, background = '#375E97') |> 
+  column_spec(11, background = 'CornflowerBlue') |> 
+  column_spec(12, background = 'LightGray', color = 'goldenrod') |> 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) |> 
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+```
+
+*source : `r paste0(dim(dp_df), collapse = ' x ')`*
+
+from above table, we know there have same `index` and `NA` value, here we need to rearrange the `durations` an `sq` columns elements.
+
+```{r error=TRUE}
+ddsmp <- na.omit(dsmp) |> 
+  (function(df) df |> 
+     dplyr::mutate(
+       sq = 1:n(), 
+       date = as_date(index), 
+       quarter = quarter(index), 
+       month = month(index), 
+       wkdays = weekdays(index), 
+       wk_1m = rep(1:7200, nrow(df)/7200), 
+       dy_1m = rep(1:1440, nrow(df)/1440), 
+       hr_1m = rep(1:60, nrow(df)/60)) |> 
+     dplyr::select(index, year, quarter, month, 
+                   week, wkdays, wk_1m, dy_1m, hr_1m, 
+                   sq, date, close) |> 
+     as_tsibble(index = index)
+    )()
 
 ## save files if not exists
-if(!file.exists('C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/dsmp.rds')) {
-  saveRDS(dsmp, 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/data/fx/USDJPY/dsmp.rds')}
+if(!file.exists(paste0(.dtr, 'data/fx/USDJPY/ddsmp.rds'))) {
+  saveRDS(ddsmp, paste0(.dtr, 'data/fx/USDJPY/ddsmp.rds'))}
 ```
+
+*source : `r paste0(dim(ddsmp), collapse = ' x ')`*
+
+```{r error=TRUE, results='asis'}
+## plot sample data
+rbind(head(ddsmp, 3), tail(ddsmp, 3)) %>% 
+  kbl(caption = '1 min Close Price Dataset', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'gold', bold = TRUE) |> 
+  column_spec(1, background = 'CornflowerBlue') |> 
+  column_spec(2, background = 'Gray') |> 
+  column_spec(3, background = 'DarkGrey') |> 
+  column_spec(4, background = 'Gray') |> 
+  column_spec(5, background = 'DarkGrey') |> 
+  column_spec(6, background = '#4897D8') |> 
+  column_spec(7, background = '#556DAC') |> 
+  column_spec(8, background = '#92AAC7') |> 
+  column_spec(9, background = '#556DAC') |> 
+  column_spec(10, background = '#375E97') |> 
+  column_spec(11, background = 'CornflowerBlue') |> 
+  column_spec(12, background = 'LightGray', color = 'goldenrod') |> 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) |> 
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+```
+
+*source : `r paste0(dim(ddsmp), collapse = ' x ')`*
 
 # Modeling
 
-## Seasonal
+## 111111
 
-### Wk >> Dy
-
-#### `timetk::tk_ts()`
-
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
-timeID <- unique(dsmp$date)
-bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+```{r, error=TRUE, results='asis'}
+timeID <- unique(ddsmp$date)
+bse <- ddsmp[ddsmp$year == 2016,]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 #timeID %<>% .[. >= as_date('2016-01-04')]
-vrb <- 7200 #last 7200 observations DT[(.N - (vrb - 1)):.N]
-frb <- 1440
+vrb <- 1200 #1200 observations
+frb <- 1
+i   <- 1
 
-i = 1
+train <- ddsmp |> 
+    (function(df) 
+        filter(df, date < timeID[i]) |> 
+        tail(vrb))()
 
-train <- dsmp[date < timeID[i]][(.N - (vrb - 1)):.N]
-ctr <- (train[,(sq)][1]):(train[,(sq)][.N] + frb)
-train_test <- dsmp[sq %in% ctr]
-
-fit <- train %>% 
-  as_tsibble(key = close, index = index) %>% 
+fit <- train |> 
+  as_tsibble(key = close, index = index) |> 
   model(
     ets = ETS(close), 
     #ets_bc = ETS(box_cox(close, 0.3)),
@@ -117,10 +401,10 @@ fit <- train %>%
     snaive = SNAIVE(close)
     )
 
-fc <- fit %>% 
+fc <- fit |> 
   forecast(h = frb)
 
-fc %>% fabletools::accuracy(train_test)
+fc |> fabletools::accuracy(train_test)
 ```
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
@@ -141,11 +425,11 @@ ctr <- (train[,(sq)][1]):(train[.N,(sq)] + frb)
 train %<>% 
   as_tsibble(key = close, index = index)
 
-train_test <- dsmp[sq %in% ctr] %>% 
+train_test <- dsmp[sq %in% ctr] |> 
   as_tsibble(key = close, index = index)
 
 ## modeling
-fit <- train %>% 
+fit <- train |> 
   model(
     ets = ETS(close), 
     #ets_bc = ETS(box_cox(close, 0.3)),
@@ -157,11 +441,11 @@ fit <- train %>%
     )
 
 ## forecast
-fc <- fit %>% 
+fc <- fit |> 
   forecast(h = frb)
 
 ## accuracy
-fc %>% fabletools::accuracy(train_test)
+fc |> fabletools::accuracy(train_test)
 ```
 
 #### `timetk::tk_ts()`
@@ -173,8 +457,8 @@ my_dcmp_spec <- decomposition_model(
   STL(close ~ season(period = 1440), robust = TRUE),
   ETS(season_adjust ~ season('N')))
 
-fit <- smp1 %>% 
-  as_tsibble(index = index) %>% 
+fit <- smp1 |> 
+  as_tsibble(index = index) |> 
   model(
     ets = ETS(close ~ trend('A')), 
     ets_bc = ETS(box_cox(close, 0.3)), #https://stackoverflow.com/questions/26617587/finding-optimal-lambda-for-box-cox-transform-in-r
@@ -190,13 +474,13 @@ fit <- smp1 %>%
 ```
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-fit %>%
-  forecast(h = 1440) %>% 
+fit |>
+  forecast(h = 1440) |> 
   autoplot()
 ```
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
-dsmp %>% as_tsibble(key = c(qrt, mon, wek, wkdays, sq_1m), index = index)
+dsmp |> as_tsibble(key = c(qrt, mon, wek, wkdays, sq_1m), index = index)
 ```
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
@@ -211,14 +495,22 @@ dsmp %>% as_tsibble(key = c(qrt, mon, wek, wkdays, sq_1m), index = index)
 
 ```
 
+# Conclusion
 
+## Summary
 
+## Final Conclude
+
+```{r opt, echo = FALSE}
+## Set options back to original options
+options(warn = 0)
+```
 
 # Appendix
 
-## Documenting File Creation 
+## Blooper
 
-It's useful to record some information about how your file was created.
+## Documenting File Creation 
 
 - File creation date: 2018-08-28
 - File latest updated date: `r today('Asia/Tokyo')`
@@ -230,7 +522,7 @@ It's useful to record some information about how your file was created.
 - GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
 - Additional session information:
 
-```{r, warning = FALSE, results = 'asis'}
+```{r info, warning=FALSE, results='asis'}
 suppressMessages(require('dplyr', quietly = TRUE))
 suppressMessages(require('magrittr', quietly = TRUE))
 suppressMessages(require('formattable', quietly = TRUE))
@@ -238,12 +530,15 @@ suppressMessages(require('knitr', quietly = TRUE))
 suppressMessages(require('kableExtra', quietly = TRUE))
 
 sys1 <- devtools::session_info()$platform %>% 
-  unlist %>% data.frame(Category = names(.), session_info = .)
+    unlist() %>% 
+    (function(df) data.frame(Category = names(df), session_info = df))()
 rownames(sys1) <- NULL
 
-sys2 <- data.frame(Sys.info()) %>% 
-  dplyr::mutate(Category = rownames(.)) %>% .[2:1]
-names(sys2)[2] <- c('Sys.info')
+sys2 <- data.frame(Sys.info()) |> 
+    (function(df) df |> 
+         dplyr::mutate(Category = rownames(df)) |> 
+         dplyr::select(2,1) |> 
+         dplyr::rename('Sys.info' = 'Sys.info..'))()
 rownames(sys2) <- NULL
 
 if (nrow(sys1) == 9 & nrow(sys2) == 8) {
@@ -256,16 +551,15 @@ if (nrow(sys1) == 9 & nrow(sys2) == 8) {
   session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST🗾')))
 }
 
-sys <- cbind(sys1, sys2) %>% 
-  kbl(caption = 'Additional session information:') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  row_spec(0, background = 'DimGrey') %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = 'DarkGrey') %>% 
-  #column_spec(3, background = 'LightSlateGrey') %>% 
-  column_spec(3, background = 'CornflowerBlue') %>% 
-  column_spec(4, background = 'DarkGrey') %>% 
-  row_spec(9, bold = T, color = 'white', background = '#D7261E')
+sys <- cbind(sys1, sys2) |> 
+  kbl(caption = 'Additional session information:') |> 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) |> 
+  row_spec(0, background = 'DimGrey', color = 'yellow') |> 
+  column_spec(1, background = 'CornflowerBlue', color = 'red') |> 
+  column_spec(2, background = 'grey', color = 'black') |> 
+  column_spec(3, background = 'CornflowerBlue', color = 'blue') |> 
+  column_spec(4, background = 'grey', color = 'white') |> 
+  row_spec(9, bold = T, color = 'yellow', background = '#D7261E')
 
 rm(sys1, sys2)
 sys
