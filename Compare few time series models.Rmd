@@ -190,7 +190,8 @@ pkgs <- c('knitr', 'kableExtra', 'tint', 'dygraphs',
           'stringr', 'pacman', 'profmem', 'ggthemes', 'paletteer', 
           'htmltools', 'echarts4r', 'tsibble', 'fable', 
           'fabletools', 'tsibbledata', 'tibbletime', 'feasts', 
-          'fpp3', 'prophet', 'fasster', 'fpp3', 'MASS')
+          'fpp3', 'prophet', 'fasster', 'fpp3', 'MASS', 
+          'fable.prophet')
 
 # remotes::install_github("robjhyndman/fpp3-package")
 # https://tidyverts.github.io/tidy-forecasting-principles/tsibble.html
@@ -389,8 +390,10 @@ train <- ddsmp |>
         filter(df, date < timeID[i]) |> 
         tail(vrb))()
 
+train <- train |> 
+    as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)
+
 fit <- train |> 
-  as_tsibble(key = close, index = index) |> 
   model(
     ets = ETS(close), 
     #ets_bc = ETS(box_cox(close, 0.3)),
@@ -398,13 +401,13 @@ fit <- train |>
     rw = RW(close), 
     rw_df = RW(close ~ drift()), 
     naive = NAIVE(close), 
-    snaive = SNAIVE(close)
-    )
+    snaive = SNAIVE(close))
 
 fc <- fit |> 
-  forecast(h = frb)
+  fabletools::forecast(h = frb)
 
-fc |> fabletools::accuracy(train_test)
+fc |> 
+  fabletools::accuracy(train_test)
 ```
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
@@ -569,7 +572,7 @@ sys
 
 1) [High-Performance Time Series Forecasting in R & Python](https://www.youtube.com/watch?v=elQb4VzRINg)
 
-2) 
+2) [Forecasting: Principles and Practice (3rd ed)](https://otexts.com/fpp3)
 
 ---
 
