@@ -264,9 +264,9 @@ if(!exists('dsmp')) {
   }
 }
 
-# dsmp |> as_tsibble(index = index)
-dsmp <- dsmp |>  
-  as_tibble() |> 
+dsmp <- dsmp |> 
+  ## as_tsibble() when needed since we can set number of keys
+  #as_tsibble(key = c(close, quarter, month, week, wkdays), index = index) |> 
   arrange(index)
 ```
 
@@ -325,21 +325,19 @@ from above table, we know there have same `index` and `NA` value, here we need t
 
 ```{r error=TRUE}
 ddsmp <- na.omit(dsmp) |> 
-  (function(df) df |> 
-     dplyr::mutate(
-       sq = 1:n(), 
-       date = as_date(index), 
-       quarter = quarter(index), 
-       month = month(index), 
-       wkdays = weekdays(index), 
-       wk_1m = rep(1:7200, nrow(df)/7200), 
-       dy_1m = rep(1:1440, nrow(df)/1440), 
-       hr_1m = rep(1:60, nrow(df)/60)) |> 
-     dplyr::select(index, year, quarter, month, 
-                   week, wkdays, wk_1m, dy_1m, hr_1m, 
-                   sq, date, close) |> 
-     as_tsibble(index = index)
-    )()
+    {\(df) df |> 
+         dplyr::mutate(
+             sq = 1:n(), 
+             date = as_date(index), 
+             quarter = quarter(index), 
+             month = month(index), 
+             wkdays = weekdays(index), 
+             wk_1m = rep(1:7200, nrow(df)/7200), 
+             dy_1m = rep(1:1440, nrow(df)/1440), 
+             hr_1m = rep(1:60, nrow(df)/60)) |> 
+         dplyr::select(index, year, quarter, month, 
+                       week, wkdays, wk_1m, dy_1m, hr_1m, 
+                       sq, date, close)}()
 
 ## save files if not exists
 if(!file.exists(paste0(.dtr, 'data/fx/USDJPY/ddsmp.rds'))) {
@@ -366,7 +364,7 @@ rbind(head(ddsmp, 3), tail(ddsmp, 3)) %>%
   column_spec(11, background = 'CornflowerBlue') |> 
   column_spec(12, background = 'LightGray', color = 'goldenrod') |> 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) |> 
-  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  kable_material(full_width = FALSE) |> ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
   scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
 ```
 
@@ -377,6 +375,12 @@ rbind(head(ddsmp, 3), tail(ddsmp, 3)) %>%
 ## 111111
 
 ```{r, error=TRUE, results='asis'}
+## convert to time series tsibble
+ts1_ddsmp <- as_tsibble(ddsmp, index = index)
+
+ts2_ddsmp <- ddsmp |> 
+  as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)
+
 timeID <- unique(ddsmp$date)
 bse <- ddsmp[ddsmp$year == 2016,]$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
@@ -385,32 +389,90 @@ vrb <- 1200 #1200 observations
 frb <- 1
 i   <- 1
 
-train <- ddsmp |> 
-    (function(df) 
-        filter(df, date < timeID[i]) |> 
-        tail(vrb))()
+train1A <- ts1_ddsmp |> 
+    {\(.) filter(., date < timeID[i]) |> 
+            tail(vrb)}()
 
-train <- train |> 
-    as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)
+train1B <- ddsmp |> 
+    {\(.) filter(., date < timeID[i]) |> 
+            tail(vrb) |> 
+            as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)}()
 
-fit <- train |> 
-  model(
-    ets = ETS(close), 
-    #ets_bc = ETS(box_cox(close, 0.3)),
-    arima = ARIMA(close), 
-    rw = RW(close), 
-    rw_df = RW(close ~ drift()), 
-    naive = NAIVE(close), 
-    snaive = SNAIVE(close))
+train1C <- ts2_ddsmp |> 
+    {\(.) filter(., date < timeID[i]) |> 
+            tail(vrb)}()
 
-fc <- fit |> 
-  fabletools::forecast(h = frb)
+train1D <- ts2_ddsmp |> 
+    {\(.) filter(., date < timeID[i]) |> 
+            tail(vrb) |> 
+            as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)}()
 
-fc |> 
-  fabletools::accuracy(train_test)
+fit1A <- train1A |> 
+    model(
+        ets = ETS(close ~ error('M') + trend('N') + season('N')), 
+        ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')),
+        arima = ARIMA(close  ~ error('M') + trend('N') + season('N')), 
+        rw = RW(close ~ error('M') + trend('N') + season('N')), 
+        rw_df = RW(close ~ drift() + error('A') + trend('N') + season('N')), 
+        naive = NAIVE(close ~ error('M') + trend('N') + season('N')), 
+        snaive = SNAIVE(close ~ error('M') + trend('N') + season('N')))
+
+fit1B <- train1B |> 
+    model(
+        ets = ETS(close ~ error('M') + trend('N') + season('N')), 
+        ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')),
+        arima = ARIMA(close  ~ error('M') + trend('N') + season('N')), 
+        rw = RW(close ~ error('M') + trend('N') + season('N')), 
+        rw_df = RW(close ~ drift() + error('A') + trend('N') + season('N')), 
+        naive = NAIVE(close ~ error('M') + trend('N') + season('N')), 
+        snaive = SNAIVE(close ~ error('M') + trend('N') + season('N')))
+
+fit1C <- train1C |> 
+    model(
+        ets = ETS(close ~ error('M') + trend('N') + season('N')), 
+        ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')),
+        arima = ARIMA(close  ~ error('M') + trend('N') + season('N')), 
+        rw = RW(close ~ error('M') + trend('N') + season('N')), 
+        rw_df = RW(close ~ drift() + error('A') + trend('N') + season('N')), 
+        naive = NAIVE(close ~ error('M') + trend('N') + season('N')), 
+        snaive = SNAIVE(close ~ error('M') + trend('N') + season('N')))
+
+fit1D <- train1D |> 
+    model(
+        ets = ETS(close ~ error('M') + trend('N') + season('N')), 
+        ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')),
+        arima = ARIMA(close  ~ error('M') + trend('N') + season('N')), 
+        rw = RW(close ~ error('M') + trend('N') + season('N')), 
+        rw_df = RW(close ~ drift() + error('A') + trend('N') + season('N')), 
+        naive = NAIVE(close ~ error('M') + trend('N') + season('N')), 
+        snaive = SNAIVE(close ~ error('M') + trend('N') + season('N')))
+
+fc1A <- fit1A |> 
+  {\(.) forecast(.$close, h = frb)}()
+
+fc1B <- fit1B |> 
+  {\(.) forecast(.$close, h = frb)}()
+
+fc1C <- fit1C |> 
+  {\(.) forecast(.$close, h = frb)}()
+
+fc1D <- fit1D |> 
+  {\(.) forecast(.$close, h = frb)}()
+
+fc1A |> 
+  accuracy(ts1_ddsmp)
+
+fc1B |> 
+  accuracy(ts1_ddsmp)
+
+fc1C |> 
+  accuracy(ts2_ddsmp)
+
+fc1D |> 
+  accuracy(ts2_ddsmp)
 ```
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, error=TRUE, results='asis'}
 ## filter data by date
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
