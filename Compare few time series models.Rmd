@@ -372,7 +372,7 @@ rbind(head(ddsmp, 3), tail(ddsmp, 3)) %>%
 
 # Modeling
 
-## 111111
+## Seasonal Modelling
 
 ```{r, error=TRUE, results='asis'}
 ## convert to time series tsibble
@@ -388,85 +388,93 @@ timeID %<>% .[. >= bse]
 vrb <- 1200 #1200 observations
 frb <- 1
 i   <- 1
+```
 
+```{r, error=TRUE, results='asis'}
 train1A <- ts1_ddsmp |> 
     {\(.) filter(., date < timeID[i]) |> 
             tail(vrb)}()
-
-train1B <- ddsmp |> 
-    {\(.) filter(., date < timeID[i]) |> 
-            tail(vrb) |> 
-            as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)}()
-
-train1C <- ts2_ddsmp |> 
-    {\(.) filter(., date < timeID[i]) |> 
-            tail(vrb)}()
-
-train1D <- ts2_ddsmp |> 
-    {\(.) filter(., date < timeID[i]) |> 
-            tail(vrb) |> 
-            as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)}()
 
 fit1A <- train1A |> 
     model(
         ets = ETS(close ~ error('M') + trend('N') + season('N')), 
         ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')),
-        arima = ARIMA(close  ~ error('M') + trend('N') + season('N')), 
-        rw = RW(close ~ error('M') + trend('N') + season('N')), 
-        rw_df = RW(close ~ drift() + error('A') + trend('N') + season('N')), 
-        naive = NAIVE(close ~ error('M') + trend('N') + season('N')), 
-        snaive = SNAIVE(close ~ error('M') + trend('N') + season('N')))
+        arima = ARIMA(close), 
+        rw = RW(close), 
+        rw_df = RW(close ~ drift()), 
+        naive = NAIVE(close), 
+        snaive = SNAIVE(close))
+
+fc1A <- fit1A |> 
+  {\(.) forecast(.$close, h = frb)}()
+
+fc1A |> 
+  accuracy(ts1_ddsmp)
+```
+
+```{r, error=TRUE, results='asis'}
+train1B <- ddsmp |> 
+    {\(.) filter(., date < timeID[i]) |> 
+            tail(vrb) |> 
+            as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)}()
 
 fit1B <- train1B |> 
     model(
         ets = ETS(close ~ error('M') + trend('N') + season('N')), 
         ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')),
-        arima = ARIMA(close  ~ error('M') + trend('N') + season('N')), 
-        rw = RW(close ~ error('M') + trend('N') + season('N')), 
-        rw_df = RW(close ~ drift() + error('A') + trend('N') + season('N')), 
-        naive = NAIVE(close ~ error('M') + trend('N') + season('N')), 
-        snaive = SNAIVE(close ~ error('M') + trend('N') + season('N')))
+        arima = ARIMA(close), 
+        rw = RW(close), 
+        rw_df = RW(close ~ drift()), 
+        naive = NAIVE(close), 
+        snaive = SNAIVE(close))
+
+fc1B <- fit1B |> 
+  {\(.) forecast(.$close, h = frb)}()
+
+fc1B |> 
+  accuracy(ts1_ddsmp)
+```
+
+```{r, error=TRUE, results='asis'}
+train1C <- ts2_ddsmp |> 
+    {\(.) filter(., date < timeID[i]) |> 
+            tail(vrb)}()
 
 fit1C <- train1C |> 
     model(
         ets = ETS(close ~ error('M') + trend('N') + season('N')), 
         ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')),
-        arima = ARIMA(close  ~ error('M') + trend('N') + season('N')), 
-        rw = RW(close ~ error('M') + trend('N') + season('N')), 
-        rw_df = RW(close ~ drift() + error('A') + trend('N') + season('N')), 
-        naive = NAIVE(close ~ error('M') + trend('N') + season('N')), 
-        snaive = SNAIVE(close ~ error('M') + trend('N') + season('N')))
+        arima = ARIMA(close), 
+        rw = RW(close), 
+        rw_df = RW(close ~ drift()), 
+        naive = NAIVE(close), 
+        snaive = SNAIVE(close))
+
+fc1C <- fit1C |> 
+  {\(.) forecast(.$close, h = frb)}()
+
+fc1C |> 
+  accuracy(ts2_ddsmp)
+```
+
+```{r, error=TRUE, results='asis'}
+train1D <- ts2_ddsmp |> 
+    {\(.) filter(., date < timeID[i]) |> 
+            tail(vrb) |> 
+            as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)}()
 
 fit1D <- train1D |> 
     model(
         ets = ETS(close ~ error('M') + trend('N') + season('N')), 
         ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')),
-        arima = ARIMA(close  ~ error('M') + trend('N') + season('N')), 
-        rw = RW(close ~ error('M') + trend('N') + season('N')), 
-        rw_df = RW(close ~ drift() + error('A') + trend('N') + season('N')), 
-        naive = NAIVE(close ~ error('M') + trend('N') + season('N')), 
-        snaive = SNAIVE(close ~ error('M') + trend('N') + season('N')))
-
-fc1A <- fit1A |> 
-  {\(.) forecast(.$close, h = frb)}()
-
-fc1B <- fit1B |> 
-  {\(.) forecast(.$close, h = frb)}()
-
-fc1C <- fit1C |> 
-  {\(.) forecast(.$close, h = frb)}()
+        arima = ARIMA(close), 
+        rw = RW(close), 
+        rw_df = RW(close ~ drift()), 
+        naive = NAIVE(close), 
+        snaive = SNAIVE(close))
 
 fc1D <- fit1D |> 
   {\(.) forecast(.$close, h = frb)}()
-
-fc1A |> 
-  accuracy(ts1_ddsmp)
-
-fc1B |> 
-  accuracy(ts1_ddsmp)
-
-fc1C |> 
-  accuracy(ts2_ddsmp)
 
 fc1D |> 
   accuracy(ts2_ddsmp)
@@ -513,11 +521,11 @@ fc <- fit |>
 fc |> fabletools::accuracy(train_test)
 ```
 
-#### `timetk::tk_ts()`
+## `timetk::tk_ts()`
 
 [Chapter 12 Advanced forecasting methods in **Forecasting: Principles and Practice (3rd Edt)**](https://otexts.com/fpp3/advanced.html)
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, error=TRUE, results='asis'}
 my_dcmp_spec <- decomposition_model(
   STL(close ~ season(period = 1440), robust = TRUE),
   ETS(season_adjust ~ season('N')))
@@ -538,25 +546,25 @@ fit <- smp1 |>
     )
 ```
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, error=TRUE, results='asis'}
 fit |>
   forecast(h = 1440) |> 
   autoplot()
 ```
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
-dsmp |> as_tsibble(key = c(qrt, mon, wek, wkdays, sq_1m), index = index)
+```{r, error=TRUE, results='asis'}
+#dsmp |> as_tsibble(key = c(qrt, mon, wek, wkdays, sq_1m), index = index)
 ```
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
-
-```
-
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, error=TRUE, results='asis'}
 
 ```
 
-```{r, warning = FALSE, message = FALSE, results = 'asis'}
+```{r, error=TRUE, results='asis'}
+
+```
+
+```{r, error=TRUE, results='asis'}
 
 ```
 
