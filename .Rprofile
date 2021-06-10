@@ -1,3 +1,18 @@
+##						Emacs please make this -*- R -*-
+## empty Rprofile.site for R on Debian
+##
+## Copyright (C) 2008 - 2018  Dirk Eddelbuettel and GPL'ed
+##
+## see help(Startup) for documentation on ~/.Rprofile and Rprofile.site
+
+# ## Example of .Rprofile
+# options(width=65, digits=5)
+# options(show.signif.stars=FALSE)
+# setHook(packageEvent('grDevices', 'onLoad'),
+#         function(...) grDevices::ps.options(horizontal=FALSE))
+# set.seed(1234)
+# .First <- function() cat("\n   Welcome to R!\n\n")
+
 ## ======================== Micro Editor ===================================
 
 ## https://www.tecmint.com/micro-linuxtext-editor-with-syntax-highlighting/
@@ -9,26 +24,26 @@
 .pth <- .libPaths(c('/usr/lib/R/library', '/usr/lib/R/site-library'))
 .libPaths(.pth)
 
-#dir(paste0(R.home(component = "home"), '/etc'))
+#dir(paste0(R.home(component = 'home'), '/etc'))
 ## https://www.jumpingrivers.com/blog/customising-your-rprofile/
 
 ## -------------------------------------------------------------------------
 
 ## https://stackoverflow.com/a/13736073/3806250
-# candidates <- c( Sys.getenv("R_PROFILE"),
-# file.path(Sys.getenv("R_HOME"), "etc", "Rprofile.site"),
-# Sys.getenv("R_PROFILE_USER"),
-#file.path(getwd(), ".Rprofile") )
+# candidates <- c(Sys.getenv('R_PROFILE'),
+# file.path(Sys.getenv('R_HOME'), 'etc', 'Rprofile.site'),
+# Sys.getenv('R_PROFILE_USER'),
+#file.path(getwd(), '.Rprofile') )
 # 
 # Filter(file.exists, candidates)
 
 ## https://github.com/rstudio/reticulate/issues/496#issuecomment-601446838
 #Sys.setenv(RETICULATE_PYTHON = '/usr/bin/python3')
-#Sys.setenv(RETICULATE_PYTHON = '~/anaconda3/bin/python')
+#Sys.setenv(RETICULATE_PYTHON = '/home/englianhu/anaconda3/bin/python')
 ## https://d.cosx.org/d/422269-r-410/11
-Sys.setenv(RETICULATE_PYTHON = '~/anaconda3/bin/python3', 
+Sys.setenv(RETICULATE_PYTHON = '/home/englianhu/anaconda3/bin/python3', 
            '_R_USE_PIPEBIND_' = 'true')
-
+#Sys.setenv(RETICULATE_PYTHON = '/home/englianhu/anaconda3/envs/py38/bin/python')
 ## -------------------------------------------------------------------------
 
 ## We set the cloud mirror, which is 'network-close' to everybody, as default
@@ -87,9 +102,11 @@ if(!suppressAll(require('lubridate'))) {
 }
 
 pkgs <- c('MASS', 'devtools', 'lubridate', 'tidyverse', 'rprofile', 'prompt', 
-          'colorout', 'Rdym', 'startup')
+          'prettycode', 'colorout', 'Rdym', 'startup', 'conflicted')
 suppressAll(lib(pkgs))
 rm(pkgs)
+
+conflicted::conflict_prefer('print', 'base', quiet=TRUE)
 
 ## -------------------------------------------------------------------------
 
@@ -97,14 +114,17 @@ rm(pkgs)
 #.First()
 .First <- function() {
   Rdym::RdymEnable()
-  BBmisc::suppressAll(startup::install())
-  BBmisc::suppressAll(startup::startup())
+  BBmisc::suppressAll(startup::install(path = '/home/englianhu'))
+  BBmisc::suppressAll(startup::startup(all = TRUE))
 }
 
 ## ======================== Start Up =====================================
 
 ## https://www.jumpingrivers.com/blog/customising-your-rprofile/
 if (interactive() && suppressAll(requireNamespace('rprofile'))) {
+  
+  # A powerline clone, that also shows the system load average and the current working directory.
+  prompt::set_prompt(prompt::new_prompt_powerline())
   
   # Only useful if you use Makefiles
   rprofile::create_make_functions()
@@ -114,6 +134,7 @@ if (interactive() && suppressAll(requireNamespace('rprofile'))) {
   
   # Not RStudio console
   if (rprofile::is_terminal()) {
+    # https://github.com/csgillespie/rprofile/blob/master/R/set-terminal.R
     rprofile::set_terminal()
   } else {
     rprofile::set_rstudio()
@@ -123,7 +144,7 @@ if (interactive() && suppressAll(requireNamespace('rprofile'))) {
   suppressAll(attach(.env))
   # Display wifi and no of R sessions
   # Linux only
-  rprofile::set_startup_info()
+  suppressWarnings(rprofile::set_startup_info())
 }
 
 ## -------------------------------------------------------------------------
@@ -132,10 +153,11 @@ if (interactive() && suppressAll(requireNamespace('rprofile'))) {
 setHook('rstudio.sessionInit', function(newSession) {
   active_rproj = rprofile::get_active_rproj()
   if (!is.null(active_rproj)) {
-    message(glue::glue("{crayon::yellow('R-project:')} {active_rproj}"))
+    base::message(glue::glue("{crayon::yellow('R-project:')} {active_rproj}"))
   }
 }, action = 'append')
 
 #BBmisc::suppressAll(.First())
 tryCatch(suppressWarnings(startup::startup(all = TRUE)), error=function(ex) 
-  message('.Rprofile error: ', conditionMessage(ex)))
+  base::message('.Rprofile error: ', base::conditionMessage(ex)))
+

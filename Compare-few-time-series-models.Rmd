@@ -1,0 +1,619 @@
+---
+title: "[Deriv.com](https://github.com/englianhu/binary.com-interview-question) - Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>"
+subtitle: "Introduce [`tidyverts`](https://github.com/tidyverts) for HFT"
+author: "[®γσ, Lian Hu ξηg](https://englianhu.github.io/) <img src='www/quantitative trader 1.jpg' width='13'> <img src='www/xueba4.jpg' width='11'>®"
+date: "`r lubridate::today('Asia/Tokyo')`"
+output:
+  html_document: 
+    mathjax: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+    number_sections: yes
+    toc: yes
+    toc_depth: 4
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+    code_folding: hide
+    css: CSSBackgrounds.css
+---
+
+<br>
+<span style='color:green'>**Theme Song**</span>
+<br>
+
+<audio controls loop autoplay src="music/F4 - Can't Help Falling In Love With You (chorus).mp3" controls></audio>
+<br>
+
+------
+
+# Setting
+
+## SCSS Setup
+
+<style>
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+.table-hover > tbody > tr:hover { 
+  background-color: #8D918D;
+}
+</style>
+
+```{r class.source='bg-success', class.output='bg-primary', message = FALSE, warning = FALSE}
+# install.packages("remotes")
+library('BBmisc', 'rmsfuns')
+#remotes::install_github("rstudio/sass")
+lib('sass')
+```
+
+```{scss class.source='bg-success', class.output='bg-primary'}
+/* https://stackoverflow.com/a/66029010/3806250 */
+h1 { color: #002C54; }
+h2 { color: #2F496E; }
+h3 { color: #375E97; }
+h4 { color: #556DAC; }
+h5 { color: #92AAC7; }
+
+/* ----------------------------------------------------------------- */
+/* https://gist.github.com/himynameisdave/c7a7ed14500d29e58149#file-broken-gradient-animation-less */
+.hover01 {
+  /* color: #FFD64D; */
+  background: linear-gradient(155deg, #EDAE01 0%, #FFEB94 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #EDAE01 20%, #FFEB94 80%);
+    }
+  }
+
+.hover02 {
+  color: #FFD64D;
+  background: linear-gradient(155deg, #002C54 0%, #4CB5F5 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #002C54 20%, #4CB5F5 80%);
+    }
+  }
+
+.hover03 {
+  color: #FFD64D;
+  background: linear-gradient(155deg, #A10115 0%, #FF3C5C 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #A10115 20%, #FF3C5C 80%);
+    }
+  }
+```
+
+```{r global_options, class.source='hover01', class.output='hover02'}
+## https://stackoverflow.com/a/36846793/3806250
+options(width = 999)
+knitr::opts_chunk$set(class.source = 'hover01', class.output = 'hover02', class.error = 'hover03')
+```
+
+<br><br>
+
+## Setup
+
+```{r warning=FALSE, message=FALSE}
+if(!suppressPackageStartupMessages(require('BBmisc'))) {
+  install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
+}
+suppressPackageStartupMessages(require('BBmisc'))
+# suppressPackageStartupMessages(require('rmsfuns'))
+
+## load packages
+pkgs <- c('knitr', 'kableExtra', 'tint', 'dygraphs', 
+          'devtools','readr', 'lubridate', 'data.table', 'reprex', 
+          'feather', 'purrr', 'quantmod', 'tidyquant', 'plotly', 
+          'furrr', 'flyingfox', 'tidyr', 'jsonlite', 'MASS', 
+          'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr',
+          'tdplyr', 'tidyverse', 'memoise', 'htmltools', 
+          'formattable', 'rbokeh', 'dash', 'dashCoreComponents', 
+          'dashHtmlComponents', 'dtplyr', 'viridis', 'hrbrthemes', 
+          ##https://dashr.plotly.com
+          'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
+          'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
+          'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
+          'stringr', 'pacman', 'profmem', 'ggthemes', 'paletteer', 
+          'htmltools', 'echarts4r', 'tsibble', 'fable', 
+          'fabletools', 'tsibbledata', 'tibbletime', 'feasts', 
+          'fpp3', 'prophet', 'fasster', 'fpp3', 'MASS', 
+          'fable.prophet')
+
+# remotes::install_github("robjhyndman/fpp3-package")
+# https://tidyverts.github.io/tidy-forecasting-principles/tsibble.html
+# https://facebook.github.io/prophet/docs/quick_start.html
+# https://github.com/mpiktas/midasr
+# https://github.com/onnokleen/mfGARCH
+# devtools::install_github("business-science/tibbletime")
+# devtools::install_github("DavisVaughan/furrr")
+
+suppressAll(lib(pkgs))
+# load_pkg(pkgs)
+
+## Set the timezone but not change the datetime
+Sys.setenv(TZ = 'Asia/Tokyo')
+## options(knitr.table.format = 'html') will set all kableExtra tables to be 'html', otherwise need to set the parameter on every single table.
+options(warn = -1, knitr.table.format = 'html')#, digits.secs = 6)
+
+suppressAll(lib(pkgs))
+# load_pkg(pkgs)
+
+## Set the timezone but not change the datetime
+Sys.setenv(TZ = 'Asia/Tokyo')
+## options(knitr.table.format = 'html') will set all kableExtra tables to be 'html', otherwise need to set the parameter on every single table.
+options(warn = -1, knitr.table.format = 'html')#, digits.secs = 6)
+
+## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
+knitr::opts_chunk$set(message = FALSE, warning = FALSE)#, 
+                      #cache = TRUE, cache.lazy = FALSE)
+
+## https://www.researchgate.net/post/How_to_solve_abnor_cannot_allocate_vector_of_size_12_Gb_in_R
+#memory.size() ### Checking your memory size
+#memory.limit() ## Checking the set limit
+#memory.size(size=500000)
+#memory.limit(size=56000) ### expanding your memory _ here it goes beyond to your actually memory. This 56000 is proposed for 64Bit.
+rm(pkgs)
+```
+
+# Data
+
+## Read Data
+
+```{r error=TRUE}
+## read files if not exists
+if(!exists('dsmp')) {
+  
+  if(str_detect(Sys.info()[1], 'Linux')) {
+    
+    ## check if data path set
+    if(!exists('.dtr')) {
+      .dtr <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'}
+    dsmp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))
+    
+    ## save files if not exists
+    if(!file.exists(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))) {
+      saveRDS(dsmp, paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))}
+    
+  }
+  
+  if(str_detect(Sys.info()[1], 'Windows')) {
+    
+    ## check if data path set
+    if(!exists('.dtr')) {
+      .dtr <- 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/'}
+    dsmp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))
+    
+    ## save files if not exists
+    if(!file.exists(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))) {
+      saveRDS(dsmp, paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))}
+    
+  }
+}
+
+dsmp <- dsmp |> 
+  ## as_tsibble() when needed since we can set number of keys
+  #as_tsibble(key = c(close, quarter, month, week, wkdays), index = index) |> 
+  arrange(index)
+```
+
+```{r error=TRUE, results='asis'}
+## plot sample data
+rbind(head(dsmp, 3), tail(dsmp, 3)) %>% 
+  kbl(caption = '1 min Close Price Dataset', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'gold', bold = TRUE) |> 
+  column_spec(1, background = 'CornflowerBlue') |> 
+  column_spec(2, background = 'Gray') |> 
+  column_spec(3, background = 'DarkGrey') |> 
+  column_spec(4, background = 'Gray') |> 
+  column_spec(5, background = 'DarkGrey') |> 
+  column_spec(6, background = '#4897D8') |> 
+  column_spec(7, background = '#556DAC') |> 
+  column_spec(8, background = '#92AAC7') |> 
+  column_spec(9, background = '#556DAC') |> 
+  column_spec(10, background = '#375E97') |> 
+  column_spec(11, background = 'CornflowerBlue') |> 
+  column_spec(12, background = 'LightGray', color = 'goldenrod') |> 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) |> 
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+```
+
+*source : `r paste0(dim(dsmp), collapse = ' x ')`*
+
+## Filter Data
+
+```{r error=TRUE, results='asis'}
+## plot sample data
+dp_df <- dsmp[dsmp$index %in% dsmp$index[duplicated(dsmp$index)],]
+rbind(head(dp_df, 3), tail(dp_df, 3)) %>% 
+  kbl(caption = 'NA and Duplicated Dataset', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'gold', bold = TRUE) |> 
+  column_spec(1, background = 'CornflowerBlue') |> 
+  column_spec(2, background = 'Gray') |> 
+  column_spec(3, background = 'DarkGrey') |> 
+  column_spec(4, background = 'Gray') |> 
+  column_spec(5, background = 'DarkGrey') |> 
+  column_spec(6, background = '#4897D8') |> 
+  column_spec(7, background = '#556DAC') |> 
+  column_spec(8, background = '#92AAC7') |> 
+  column_spec(9, background = '#556DAC') |> 
+  column_spec(10, background = '#375E97') |> 
+  column_spec(11, background = 'CornflowerBlue') |> 
+  column_spec(12, background = 'LightGray', color = 'goldenrod') |> 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) |> 
+  kable_material(full_width = FALSE) %>% ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+```
+
+*source : `r paste0(dim(dp_df), collapse = ' x ')`*
+
+from above table, we know there have same `index` and `NA` value, here we need to rearrange the `durations` an `sq` columns elements.
+
+```{r error=TRUE}
+ddsmp <- na.omit(dsmp) |> 
+    {\(df) df |> 
+         dplyr::mutate(
+             sq = 1:n(), 
+             date = as_date(index), 
+             quarter = quarter(index), 
+             month = month(index), 
+             wkdays = weekdays(index), 
+             wk_1m = rep(1:7200, nrow(df)/7200), 
+             dy_1m = rep(1:1440, nrow(df)/1440), 
+             hr_1m = rep(1:60, nrow(df)/60)) |> 
+         dplyr::select(index, year, quarter, month, 
+                       week, wkdays, wk_1m, dy_1m, hr_1m, 
+                       sq, date, close)}()
+
+## save files if not exists
+if(!file.exists(paste0(.dtr, 'data/fx/USDJPY/ddsmp.rds'))) {
+  saveRDS(ddsmp, paste0(.dtr, 'data/fx/USDJPY/ddsmp.rds'))}
+```
+
+*source : `r paste0(dim(ddsmp), collapse = ' x ')`*
+
+```{r error=TRUE, results='asis'}
+## plot sample data
+rbind(head(ddsmp, 3), tail(ddsmp, 3)) %>% 
+  kbl(caption = '1 min Close Price Dataset', escape = FALSE) %>% 
+  row_spec(0, background = 'DimGrey', color = 'gold', bold = TRUE) |> 
+  column_spec(1, background = 'CornflowerBlue') |> 
+  column_spec(2, background = 'Gray') |> 
+  column_spec(3, background = 'DarkGrey') |> 
+  column_spec(4, background = 'Gray') |> 
+  column_spec(5, background = 'DarkGrey') |> 
+  column_spec(6, background = '#4897D8') |> 
+  column_spec(7, background = '#556DAC') |> 
+  column_spec(8, background = '#92AAC7') |> 
+  column_spec(9, background = '#556DAC') |> 
+  column_spec(10, background = '#375E97') |> 
+  column_spec(11, background = 'CornflowerBlue') |> 
+  column_spec(12, background = 'LightGray', color = 'goldenrod') |> 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) |> 
+  kable_material(full_width = FALSE) |> ##`full_width = FALSE` will auto adjust every single columns width to fit the table full width.
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+```
+
+*source : `r paste0(dim(ddsmp), collapse = ' x ')`*
+
+# Modeling
+
+## Seasonal Modelling
+
+```{r, error=TRUE, results='asis'}
+## convert to time series tsibble
+ts1_ddsmp <- as_tsibble(ddsmp, index = index)
+
+ts2_ddsmp <- ddsmp |> 
+  as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)
+
+timeID <- unique(ddsmp$date)
+bse <- ddsmp[ddsmp$year == 2016,]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+vrb <- 1200 #1200 observations
+frb <- 1
+i   <- 1
+```
+
+### Model 1
+
+```{r, error=TRUE, results='asis'}
+train1A <- ts1_ddsmp |> 
+    filter(as_date(index) <= timeID[i]) |> 
+    tail(vrb)
+
+fit1A <- train1A |> 
+    model(
+        ets = ETS(close ~ error('M') + trend('N') + season('N')), 
+        ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')), 
+        arima = ARIMA(close ~ 0 + pdq(0, 1, 0) + PDQ(0, 1, 0)), 
+        theta = THETA(close), 
+        theta_mul = THETA(close ~ season(method = 'multiplicative')), 
+        rw = RW(close), 
+        rw_df = RW(close ~ drift()), 
+        naive = NAIVE(close), 
+        snaive = SNAIVE(close), 
+        prophet = prophet(close ~ season(period = 4, order = 2,
+                                    type = 'multiplicative')))
+
+fit1A |> 
+     accuracy()
+```
+
+```{r, error=TRUE, results='asis'}
+train_test <- ts1_ddsmp |> 
+    filter(index >= train1A$index[1])
+
+test <- train_test |> 
+    filter(index > train1A$index[length(train1A$index)])
+
+train_test |> 
+  features(hr_1m, feat_acf)
+
+fc1A <- fit1A |> 
+  forecast(h = frb)
+
+fc1A |> 
+  accuracy(train_test)
+```
+
+```{r, error=TRUE, results='asis'}
+fit1A |> 
+    forecast(h = 365) %>%
+    autoplot(train_test[1:1565,], level = NULL) +
+    labs(y = 'USD/JPY',
+         title = "Forecasts price") +
+    guides(colour = guide_legend(title = 'Forecast'))
+```
+
+### Model 2
+
+```{r, error=TRUE, results='asis'}
+train1B <- ddsmp |> 
+    {\(.) filter(., date < timeID[i]) |> 
+            tail(vrb) |> 
+            as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)}()
+
+fit1B <- train1B |> 
+    model(
+        ets = ETS(close ~ error('M') + trend('N') + season('N')), 
+        ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')), 
+        arima = ARIMA(close ~ 0 + pdq(0, 1, 0) + PDQ(0, 1, 0)), 
+        theta = THETA(close), 
+        theta_mul = THETA(close ~ season(method = 'multiplicative')), 
+        rw = RW(close), 
+        rw_df = RW(close ~ drift()), 
+        naive = NAIVE(close), 
+        snaive = SNAIVE(close))
+
+fc1B <- fit1B |> 
+  forecast(h = frb)
+
+fc1B |> 
+  accuracy(ts1_ddsmp)
+```
+
+### Model 3
+
+```{r, error=TRUE, results='asis'}
+train1C <- ts2_ddsmp |> 
+    {\(.) filter(., date < timeID[i]) |> 
+            tail(vrb)}()
+
+fit1C <- train1C |> 
+    model(
+        ets = ETS(close ~ error('M') + trend('N') + season('N')), 
+        ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')),
+        arima = ARIMA(close ~ 0 + pdq(0, 1, 0) + PDQ(0, 1, 0)), 
+        theta = THETA(close), 
+        rw = RW(close), 
+        rw_df = RW(close ~ drift()), 
+        naive = NAIVE(close), 
+        snaive = SNAIVE(close))
+
+fc1C <- fit1C |> 
+  forecast(h = frb)
+
+fc1C |> 
+  accuracy(ts2_ddsmp)
+```
+
+### Model 4
+
+```{r, error=TRUE, results='asis'}
+train1D <- ts2_ddsmp |> 
+    {\(.) filter(., date < timeID[i]) |> 
+            tail(vrb) |> 
+            as_tsibble(key = c(close, quarter, month, week, wkdays), index = index)}()
+
+fit1D <- train1D |> 
+    model(
+        ets = ETS(close ~ error('M') + trend('N') + season('N')), 
+        ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')),
+        arima = ARIMA(close ~ 0 + pdq(0, 1, 0) + PDQ(0, 1, 0)), 
+        theta = THETA(close), 
+        rw = RW(close), 
+        rw_df = RW(close ~ drift()), 
+        naive = NAIVE(close), 
+        snaive = SNAIVE(close))
+
+fc1D <- fit1D |> 
+  forecast(h = frb)
+
+fc1D |> 
+  accuracy(ts2_ddsmp)
+```
+
+```{r, error=TRUE, results='asis'}
+## filter data by date
+timeID <- unique(dsmp$date)
+bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+timeID %<>% .[. >= bse]
+#timeID %<>% .[. >= as_date('2016-01-04')]
+vrb <- 7200 #last 7200 observations DT[(.N - (vrb - 1)):.N]
+frb <- 1440
+
+i = 1
+
+train <- dsmp[date < timeID[i]][(.N - (vrb - 1)):.N]
+ctr <- (train[,(sq)][1]):(train[.N,(sq)] + frb)
+
+## convert to tsibble data
+train %<>% 
+  as_tsibble(key = close, index = index)
+
+train_test <- dsmp[sq %in% ctr] |> 
+  as_tsibble(key = close, index = index)
+
+## modeling
+fit <- train |> 
+  model(
+    ets = ETS(close), 
+    #ets_bc = ETS(box_cox(close, 0.3)),
+    arima = ARIMA(close), 
+    rw = RW(close), 
+    rw_df = RW(close ~ drift()), 
+    naive = NAIVE(close), 
+    snaive = SNAIVE(close)
+    )
+
+## forecast
+fc <- fit |> 
+  forecast(h = frb)
+
+## accuracy
+fc |> 
+  accuracy(train_test)
+```
+
+## `timetk::tk_ts()`
+
+[Chapter 12 Advanced forecasting methods in **Forecasting: Principles and Practice (3rd Edt)**](https://otexts.com/fpp3/advanced.html)
+
+```{r, error=TRUE, results='asis'}
+my_dcmp_spec <- decomposition_model(
+  STL(close ~ season(period = 1440), robust = TRUE),
+  ETS(season_adjust ~ season('N')))
+
+fit <- smp1 |> 
+  as_tsibble(index = index) |> 
+  model(
+    ets = ETS(close ~ trend('A')), 
+    ets_bc = ETS(box_cox(close, 0.3)), #https://stackoverflow.com/questions/26617587/finding-optimal-lambda-for-box-cox-transform-in-r
+    #ets_lg = ETS(my_scaled_logit(mdeaths, 750, 3000) ~ error('A') + trend('N') + season('A')), #http://fable.tidyverts.org/articles/transformations.html
+    arima = ARIMA(close), 
+    rw = RW(close), 
+    rw_df = RW(close ~ drift()), 
+    naive = NAIVE(close), 
+    snaive = SNAIVE(close), 
+    snaive_ = SNAIVE(close ~ lag('year'))#,
+    #dcmp = my_dcmp_spec
+    )
+```
+
+```{r, error=TRUE, results='asis'}
+fit |>
+  forecast(h = 1440) |> 
+  autoplot()
+```
+
+```{r, error=TRUE, results='asis'}
+#dsmp |> as_tsibble(key = c(qrt, mon, wek, wkdays, sq_1m), index = index)
+```
+
+```{r, error=TRUE, results='asis'}
+
+```
+
+```{r, error=TRUE, results='asis'}
+
+```
+
+```{r, error=TRUE, results='asis'}
+
+```
+
+# Conclusion
+
+## Summary
+
+## Final Conclude
+
+```{r opt, echo = FALSE}
+## Set options back to original options
+options(warn = 0)
+```
+
+# Appendix
+
+## Blooper
+
+## Documenting File Creation 
+
+- File creation date: 2018-08-28
+- File latest updated date: `r today('Asia/Tokyo')`
+- `r R.version.string`
+- R version (short form): `r getRversion()`
+- [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
+- File version: 1.0.1
+- Author Profile: [®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/4352/)
+- GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
+- Additional session information:
+
+```{r info, warning=FALSE, results='asis'}
+suppressMessages(require('dplyr', quietly = TRUE))
+suppressMessages(require('magrittr', quietly = TRUE))
+suppressMessages(require('formattable', quietly = TRUE))
+suppressMessages(require('knitr', quietly = TRUE))
+suppressMessages(require('kableExtra', quietly = TRUE))
+
+sys1 <- devtools::session_info()$platform %>% 
+    unlist() %>% 
+    (function(df) data.frame(Category = names(df), session_info = df))()
+rownames(sys1) <- NULL
+
+sys2 <- data.frame(Sys.info()) |> 
+    (function(df) df |> 
+         dplyr::mutate(Category = rownames(df)) |> 
+         dplyr::select(2,1) |> 
+         dplyr::rename('Sys.info' = 'Sys.info..'))()
+rownames(sys2) <- NULL
+
+if (nrow(sys1) == 9 & nrow(sys2) == 8) {
+  sys2 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST🗾')))
+} else {
+  sys1 %<>% rbind(., data.frame(
+  Category = 'Current time', 
+  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST🗾')))
+}
+
+sys <- cbind(sys1, sys2) |> 
+  kbl(caption = 'Additional session information:') |> 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) |> 
+  row_spec(0, background = 'DimGrey', color = 'yellow') |> 
+  column_spec(1, background = 'CornflowerBlue', color = 'red') |> 
+  column_spec(2, background = 'grey', color = 'black') |> 
+  column_spec(3, background = 'CornflowerBlue', color = 'blue') |> 
+  column_spec(4, background = 'grey', color = 'white') |> 
+  row_spec(9, bold = T, color = 'yellow', background = '#D7261E')
+
+rm(sys1, sys2)
+sys
+```
+
+## Reference
+
+1) [High-Performance Time Series Forecasting in R & Python](https://www.youtube.com/watch?v=elQb4VzRINg)
+
+2) [Forecasting: Principles and Practice (3rd ed)](https://otexts.com/fpp3)
+
+---
+
+<span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of <img src='www/scb-logo3rs.jpg' width='24'> [Sςιβrοκεrs Trαdιηg®️](http://www.scibrokes.com)経営企業**</span>
