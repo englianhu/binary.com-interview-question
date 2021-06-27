@@ -101,8 +101,13 @@ if(!suppressAll(require('lubridate'))) {
   devtools::install_github('tidyverse/lubridate')
 }
 
+if(!suppressAll(require('prettycode'))) {
+  devtools::install_github('https://github.com/r-lib/prettycode')
+}
+
+#library(prettycode, exclude = c('!', 'print'))
 pkgs <- c('MASS', 'devtools', 'lubridate', 'tidyverse', 'rprofile', 'prompt', 
-          'prettycode', 'colorout', 'Rdym', 'startup', 'conflicted')
+          'colorout', 'Rdym', 'startup', 'conflicted', 'prettycode')
 suppressAll(lib(pkgs))
 rm(pkgs)
 
@@ -120,12 +125,12 @@ conflicted::conflict_prefer('print', 'base', quiet=TRUE)
 
 ## ======================== Start Up =====================================
 
+# A powerline clone, that also shows the system load average and the current working directory.
+if (interactive()) prompt::set_prompt(prompt::new_prompt_powerline())
+
 ## https://www.jumpingrivers.com/blog/customising-your-rprofile/
 if (interactive() && suppressAll(requireNamespace('rprofile'))) {
-  
-  # A powerline clone, that also shows the system load average and the current working directory.
-  prompt::set_prompt(prompt::new_prompt_powerline())
-  
+    
   # Only useful if you use Makefiles
   rprofile::create_make_functions()
   
