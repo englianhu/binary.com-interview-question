@@ -197,7 +197,7 @@ if(!exists('dsmp')) {
 dsmp <- dsmp |> 
   ## as_tsibble() when needed since we can set number of keys
   #as_tsibble(key = c(close, quarter, month, week, wkdays), index = index) |> 
-  arrange(index)
+  dplyr::arrange(index)
 ```
 
 ```{r error=TRUE, results='asis'}
@@ -259,8 +259,8 @@ ddsmp <- na.omit(dsmp) |>
          dplyr::mutate(
              sq = 1:n(), 
              date = as_date(index), 
-             quarter = quarter(index), 
-             month = month(index), 
+             quarter = lubridate::quarter(index), 
+             month = lubridate::month(index), 
              wkdays = weekdays(index), 
              wk_1m = rep(1:7200, nrow(df)/7200), 
              dy_1m = rep(1:1440, nrow(df)/1440), 
@@ -325,10 +325,11 @@ train1A <- ts1_ddsmp |>
     {\(.) filter(., date < timeID[i]) |> 
             tail(vrb)}()
 
+## https://stackoverflow.com/a/15031603/3806250
 fit1A <- train1A |> 
     model(
-        ets = ETS(close ~ error('M') + trend('N') + season('N')), 
-        ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('N') + season('N')),
+        ets = ETS(close ~ error('M') + trend('Ad') + season('A')), 
+        ets_bc = ETS(box_cox(close, 0.3) ~ error('A') + trend('Ad') + season('A')),
         arima = ARIMA(close), 
         rw = RW(close), 
         rw_df = RW(close ~ drift()), 

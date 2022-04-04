@@ -327,6 +327,7 @@ train1A <- ts1_ddsmp |>
     filter(as_date(index) <= timeID[i]) |> 
     tail(vrb)
 
+## https://stackoverflow.com/a/15031603/3806250
 fit1A <- train1A |> 
     model(
         ets = ETS(close ~ error('M') + trend('N') + season('N')), 
