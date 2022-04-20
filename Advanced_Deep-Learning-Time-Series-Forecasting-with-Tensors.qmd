@@ -1,0 +1,443 @@
+---
+title: "Untitled"
+format: html
+editor: visual
+---
+
+# Hands-On Advanced Deep Learning Time Series Forecasting with Tensors
+
+There are billions of deep learning forecasting tutorials out there (exagerating a bit). So what’s special about this one?
+So far I have seen very few tutorials explaining in detail how to work with 3D tensors. I will explain it with some simple visuals to understand the steps of transformation from 2d matrix to 3d tensor.
+
+I’ve seen many deep learning tutorials showing good optimistic results in the learning process, but what about going beyond the test set, being completely blindsided in the future? (Sometimes this step is missing but can demonstrate big overfitting issues from the data preparation, especially when creating the tensor slices).
+How about extrapolating long-term multisteps into the futur ? 1 year into the futur ?
+We will also experiment a colossal collection of advanced neural networks architectures with our 3d tensors : Bidirectional LSTM, Seq2Seq, Seq2Seq with Attention, Transformers, etc.
+We will experiment time series vector representation embeddings with the awesome Time2Vec
+Not all time series are equal; some are deterministic, other more complex with multiple seasonal structures and cycles and some are completely stochastic. We will try different ones!
+We will implement a Multivariate-Multisteps-Multioutput deep learning forecasting model.
+At the end, I’ll give you access to the jupyter notebooks with all the codes in a way that it is easy for you to re-use it with your own time series.
+Warning*: Like the title suggest, this is a more hands-on article, soo don’t expect to deep dive into all the concepts and theory (but I’m a nice guy soo I will give you some links on the way if your interested in learning more).
+Also, in order not to write a long endless novel, I did not include any time series analysis (TSA) parts which is not a good practice at all ! We should always start with a good TSA to understand our time series before embarking on our forecasting journey.
+Table of contents
+1. Time serie#1 — Monthly easy deterministic
+2. Feature Engineering
+3. Converting 2d matrice to 3d tensor
+4. RdR Score Performance Metric
+5. Bidirectional LSTM (BiLSTM)
+6. Seq2Seq
+7. CNN-BiLSTM
+8. TCN-BiLSTM
+9. MDN-BiLSTM
+10. Attention-BiLSTM
+11. Seq2Seq with Attention
+12. MultiHeadAttention-BiLSTM
+13. Time2Vec-BiLSTM
+14. Time2Vec with Transformer
+15. Average Ensemble Model
+16. Final Benchmark
+17. Time serie#2 — Daily multi-seasonalities
+18. Time serie#3 — Daily stochastic (Amazon Stock)
+19. Multivariate-Multisteps-Multioutput
+20. Link to all the CODE
+21. Conclusion
+1. Time serie#1 — Monthly easy deterministic
+Here is the first time series we will use :
+
+This is a monthly time serie. As you can see just by looking at the time serie, there is a strong deterministic trend with a strong deterministic monthly seasonality. If the trend and the seasonality remains the same over time, it should not be a big deal to find a model that performs very well on this.
+Normally, as this is a very predictable and univariate time series, I would approach this problem using a simple SARIMA, HoltWinters, FbProphet or Thymeboost model, but the goal here is to experiment deep learning models with tensors !
+For this first experiment, we will try to forecast 24 months into the future !
+2. Feature Engineering
+This diagram illustrates the feature engineering pipeline we’ll be experimenting with (the green cells are the steps used for this particular time series but the full pipeline is implemented in the notebook):
+The parameters:
+
+The corresponding pipeline:
+
+As you can see in this schema, by splitting at the start of the feature engineering process, we ensure that we do not add any overfitting signals from the test sequence in our train sequence.
+
+We want our deep learning model to better understand the historical patterns (autoregressive correlations) soo we will add some lagged values as features (X).
+We also need to compute the leaded values that will represent the future timesteps targets our model will train on (Y).
+Lagged and leaded values:
+
+Seasonal Means:
+Since there seems to be strong monthly seasonality in our time series, we will add monthly and quarterly averages as features (X).
+The following function take the periodicity of the time series as input (ex: monthly = 12, daily = 365, etc.) and compute automaticly the proper seasonal averages.
+
+We could have applied differencing to our Y time series and un-differencing after the forecast to treat the trending problem (non-stationarity of mean).
+We could also have applied a log transformation on the Y time series to treat the non-stationarity of variance (seems heteroskedastic) and un-log it after the forecast.
+The code is all here in the jupyter notebook but I did not included thoses processing steps as the results were better without them for this particular time series. You could definitively try this at home if you want!
+Final feature engineering pipeline:
+
+The final preprocessing step is to convert the 2d matrice into 3d Tensor. We have to be very careful here to not add any Y signals in the same X row as it would result in a highly overfitted model, very good test score and very bad / strange results in the forecasting step. A single X tensor slice should contains time series information at time T0, T-1, T-2, etc. and a single y tensor slice should contain information at time T+1, T+2, T+3, etc.
+3. Converting 2d matrice to 3d tensor
+How can we transform a 2d matrice into a 3d tensor ? We already have the rows (time series past observation in time), and the features (lags, means, exogenous, etc.), we now need to add the sequence length dimension.
+There are other ways we can do this 3d transformation. In fact, you can try multiple 3d configurations that can lead you to very different results ! Here, I’ll show you one 3d configuration that gave me good forecasting results with the studied time series.
+We will define a function that will create time slices (sequence length) from our 2d matrice where the length of the sequence match the steps we want to predict into the future :
+
+The following function will require 4 inputs;
+2d matrice
+column name(s) list of the target(s) we want to forecast (can manage multioutput)
+date column name
+number of steps we want to forecast.
+There will also be 4 outputs;
+X_train 3dtensor
+y_train 3d tensor
+X_pred 3d tensor
+List of the final train features (metadata).
+The 2d matrice to 3d tensor function:
+
+Calling the function:
+
+This call is for the test-validation sets. We just have to input the full time series to obtain the full training set and the forecasting set. Easy as this!
+What exactly happen in this small function ? Simply, at each step, a new tensor slice is append to a list and then the list is converted to a tensor. Let’s analyze how those tensor slices are created, step by step with some simple visuals!
+For example, if we want to forecast a 2 inputs, 1 output time series with 2 steps into the future, here what the function do with our 2d matrice input:
+
+input dataframe
+
+output tensors
+The output tensors shapes are X_train (9, 2, 2), y_Train (9, 2, 1) and X_Forecast (1,2,2).
+At each iteration, a new slice was created (orange) :
+
+The last slice:
+
+last tensor slices
+As you can see, X and y are are offset from each other (we want our model to learn to extrapolate into the future).
+Now, what if we want to forecast a 2 inputs, 1 output time series, but this time 3 steps into the future ? Well… not very different;
+
+input dataframe
+
+ouput tensors
+The shapes of our output tensors are now; X_Train (7, 3, 2), y_Train (7, 3, 1) and X_Forecast (1,3,2).
+
+The last slice:
+
+last tensor slices
+Ok… and maybe a tricky one! What if I have 2 features and 2 outputs to forecast 3 steps into the future ? To make this working, we can use the actual transformation function to get our 3d tensors but we will have to change our neural network model architecture a bit:
+
+input dataframe
+
+output tensors
+Observe that now our Y tensor is (7, 3, 2) versus a single output. This require a new neural network architecture to make this work… if you read the article until the end I will give you an example ! 😉
+The shapes of our tensors are now; X_train (7, 3, 2), y_train (7, 3, 2) and X_Forecast (1,3,2).
+
+The last slice:
+
+last tensor slices
+Now we are ready to go to the model part!
+4. RdR Score Performance Metric
+To benchmark the performance of the model forecasts, we will use my custom RdR score which is deeply explained here.
+
+In short, we can interpret the RdR score as the percentage of difference (In error and shape similarity) between your model and a simple random walk model, based on RMSE score and DTW (Dynamic Time Warping) score.
+If the percentage is negative, your model is [X]% worst than randomness.
+If the percentage is positive, your model is [X]% better than randomness.
+In another words, the [X]% will change depending on the RMSE errors and the DTW distance around 0, which is the bound of naïve randomness.
+Why RMSE ? I think that penalizing the average error with large errors reflect more the reality and the stability of the model but we could have replaced the RMSE with SMAPE or any regression metric we want.
+5. Bidirectional LSTM (BiLSTM)
+
+LSTM preserves information from inputs that has already passed through it using the hidden state. Using bidirectional LSTM will run the inputs in two ways, one from past to future and one from future to past. If you want to know more about LSTM, go here
+keras implementation:
+
+Mean RdR Score (On 12 random seeds): 0.554537
+Forecast Result:
+
+6. Seq2Seq
+
+Seq2Seq models are LSTM with encoder-decoder architecture. If you want to know more about Seq2Seq, go here:
+keras implementation:
+
+The TimeDistributed layer is a keras wrapper that allows you to apply a same Dense (fully-connected) operation to every temporal slice, one time step at a time, of an input 3D Tensor. Example, if TimeDistributed receives data of shape (None, 100, 32, 256) then the wrapped layer (e.g. Dense) will be called for every slice of shape (None, 32, 256). Here none corresponds to samples/batch size.
+
+The RepeatVector is used to repeat the input for set number, n of times. Here, it produce N copies of Encoder’s output. For example, if RepeatVector with argument 3 is applied to layer having input shape (batch_size, 16), then the output shape of the layer will be (batch_size, 16, 3). The RepeatVector layer acts as a bridge between the encoder and decoder modules.
+Mean RdR Score (On 12 random seeds): 0.482833
+Forecast Result:
+
+The encoder-decoder did is job! The time series seems denoised.
+7. CNN-BiLSTM
+
+A CNN-BiLSTM is Convolutional layers followed by BiLSTM layers with a Dense layer on the output. The Convolutional layers are used for feature extraction and the BiLSTM layers for learning the extracted features across time steps.
+keras implementation:
+
+Mean RdR Score (On 12 random seeds): 0.585092
+Forecast Result:
+
+8. TCN-BiLSTM
+
+In a TCN model (Temporal Convolutional Network), the convolutions are causal, meaning that there is no information leakage from future to past (Causal here simply means a filter at time step t can only see inputs that are no later than t). The network use dilated convolutions (a.k.a. atrous convolutions), a technique that expands the kernel (input) by inserting holes / spaces / defined gaps between the values. TCN can also be improved by adding residual blocks between each layer to speed up convergence and enable deeper models (At the core of residual blocks, there is a direct connection which skips some layers in between. This connection is called a « skip connection »). For this special neural network architecture we will use this library « pip install keras-tcn ». If you want more information about the TCN models, go here
+keras implementation:
+
+Mean RdR Score (On 12 random seeds): 0.483058
+Forecast Result:
+
+9. MDN-BiLSTM
+
+A MDN-BLSTM is BLSTM layers followed by a Mixture Density Network layer that learns the parameters (mean, variance and probability) of the distributions mixture in the data. For this special neural network architecture we will use this library « pip install keras-mdn-layer ». If you want to learn more about the MDN neural network, you can read an article I wrote here :
+keras implementation:
+
+Mean RdR Score (On 12 random seeds): 0.441485
+Forecast Result:
+
+10. Attention-BiLSTM
+
+Adding attention layer can help our BiLSTM in memorizing large sequences of data by enhancing some parts of the input data while diminishing other parts (focus). The final model should devote more focus to a smaller but more important part of the data. For this special neural network architecture we will use this library « pip install keras-self-attention » but keras also offer an Attention layer (Luong-style attention). If you want to learn more about attention, you can go here and here
+keras implementation:
+
+Mean RdR Score (On 12 random seeds): 0.536199
+Forecast Result:
+
+11. Seq2Seq with Attention
+
+Encoder-decoder architecture where the attention alignement is applied between the decoder LSTM state of the seq2seq model and the prediction (Luong Attention Model). Is you want to learn more about seq2seq with attention go here
+keras implementation:
+
+Mean RdR Score (On 12 random seeds): 0.604704
+Forecast Result:
+
+12. MultiHeadAttention-BiLSTM
+
+MultiHead attention runs the attention mechanism several times in parallel for consistent performance improvements over conventional attention. The independent attention outputs are then concatenated and linearly transformed into the expected dimension. For this special neural network architecture we will use this library « pip install keras-multi-head » but keras also offer a MultiHeadAttention layer as described in the paper “Attention is all you Need” (Vaswani et al., 2017). If you want to learn more about multihead attention mechanism, go here
+keras implementation:
+
+Mean RdR Score (On 12 random seeds): 0.527637
+Forecast Result:
+
+13. Time2Vec BiLSTM
+
+Time series embeddings are a representation of time data in the form of vector embeddings. The official paper is here. According to the paper the Time2Vec representations have 3 main properties:
+1-Capturing both periodic and non-periodic (linear) patterns with the help of periodic activation functions with learnable parameters
+2-Invariant to time rescaling
+3-Being simple enough so it can be combined with many models
+Time2Vec Layer:
+
+keras implementation (model):
+
+Mean RdR Score (On 12 random seeds): 0.642626
+Forecast Result:
+
+Impressive results!
+14. Time2Vec with Transformer
+
+And finaly, the last model! Here, we use the awesome Time2Vec to create time data embeddings and we add a transformer block to it. In the Transformer, the Attention module repeats its computations multiple times in parallel. Deeper explanation available here
+Transformer:
+
+keras implementation (Model):
+
+Mean RdR Score (On 12 random seeds): 0.532287
+Forecast Result:
+
+15. Average Ensemble Model
+If we take all the results of the preceding models and make an average, we’ve got our average ensemble model!
+Mean RdR Score (On 12 random seeds): 0.611903
+Forecast Result:
+
+15. Final Benchmark
+Since neural networks are extremely stochastic by nature, I executed all the models with different seeds 12 times to get the final results.
+Mean RdR Scores (after 12 runs):
+
+Mean RdR Scores from 12 different random seed executions
+We can see that, in this case, all the model are superior than a naïve Random Walk model.
+The Time2Vec-BiLSTM is, by far, the great Winner here! What about the stability ?:
+
+After runing 12 times the same notebook with different random seed, we can see that, given the actual hyperparameters, some model are much more stable than others (yes, 12 samples is few for establishing a representative distribution but still, it’s better than nothing considering the computing time needed to get more samples!).
+Standard Deviations (all metrics):
+
+standard deviation from 12 different random seed executions
+The Attention-BiLSTM and the TCN-BiLSTM seems to be the less stable models (wider distributions).
+The Average Ensemble and the Time2Vec-BiLSTM seems to be both, the more stable models (narrow distribution) and the more performant models (the highest mean RdR Score), using this experiment configuration, of course!
+In forecasting, doing an Average Ensemble model is always a good idea as it can ensure higher performance stability over time than using a single model.
+To improve the stability on other models we could try to tune some hyper-parameters like the batch size, the number of hidden neurons, weights decay (regularization), etc.
+16-Time serie#2 –Daily multi-seasonalities
+Here is the second time series we will use :
+
+This is a daily time serie. Just by looking at the time series no obvious trend can be seen. However, the seasonal structure is much more complex than the previous one as it seems to have multiple seasonal components: Weekly, Monthly, Day of month, Week of year, etc.
+For this second experiment, we will try to forecast 365 days into the future:
+
+Because Time2Vec-BiLSTM was the best model from the last experiment, we will try it on our new time series (code remains the same).
+The new RdR Score is: 0.389154
+We can see that the RdR score is still a lot better than a naïve random walk model but lower than the previous time series score. In fact, this time series is more complex and should be more difficult to predict which is the case here !
+Forecast Result:
+
+If we zoom (Blue = Validation forecast, Orange = Ground truth):
+
+Not bad at all for a first try on a 365 days forecast into the future !
+17-Time serie#3 –Daily stochastic (Amazon Stock)
+Here is the last time series we will use :
+
+This is a daily time series, again. This time, no obvious seasonal structure can be seen. The trend seems to go up, exponentially-alike then stabilize and seems to go down. Very difficult to predict what will happen next just by looking at it ! We will try to forecast 120 days into the future.
+
+If we start with a simple BiLSTM model:
+The new RdR Score is: -0.676
+Forecast Result:
+
+If we zoom:
+Blue: Ground Truth
+Orange: Validation forecast (test)
+Red: Validation Naïve Random Walk
+Green: Forecast
+
+What happened here ? Our model is worst than a simple naïve random walk model !
+Well, stocks are very stochastic in nature, so there are rarely good historical recurring patterns that our model can learn from. By definition, a stochastic signal is unpredictable. In this case, we can try to improve the results by adding some exogenous features (ex: other stocks, tweets, etc.) and hope that there is some temporal cross correlations between the exogenous and endogenous time series that our model will catch during the training process.
+This little diagram can help to understand the different types of time series:
+
+The same experiment seems to be better with the Time2Vec BiLSTM (RdR Score: 0.288) … however great care needs to be taken here due to the unpredictable stochastic nature of the time series itself (A good one-time validation test does not necessarily imply that the model will always going to perform well in the future):
+
+Adding exogenous features:
+
+We add 3 exogenous features and set “exog = True”:
+MSFT_CLOSE (Microsoft stocks)
+covid (Google Trends: covid search term)
+amazon (Google Trends: amazon search term)
+BiLSTM:
+The new RdR Score is: -0.034. Small performance increase, but still worst than Naïve Random Walk:
+
+Time2Vec BiLSTM:
+The new RdR Score is 0.603 vs 0.288 before. Considerable performance increase here.
+
+Again, as the stochastic nature of the time series should trigger us an alert, we should dig deeper into the temporal cross correlations analysis between the added exogenous features and the amazon stocks as both model got an increased performance with it. We could also test with different random seeds and different time sequences to measure the stability of the performance over time.
+18-Multivariate-Multisteps-Multioutput
+To finish, we will use the same time series from the first experiment but we will extract the Trend, Seasonal and Residuals components and we will simultaneously forecast the 3 resulting time series using a Multivariate Multisteps Multioutput neural network model:
+
+
+We now have 3 time series we want to forecast at the same time using the same model:
+EASY — Trend (Output #1)
+
+EASY — Seasonal (Output #2)
+
+EASY — Residuals (Output #3)
+
+*WARNING*: There is something very important we need to take into consideration here. If you look at the 3 time series, the Seasonal seems stationary but the Trend have a mean non-stationary issue and the Residuals have a variance non-stationary issue (heteroskedastic variance).
+If we want our model to perform on both 3 time series at the same time, we can’t just apply the same transformations (ex: differencing or log) on all the time series, we need to apply specific transformation for specific time series depending on the specific needs.
+This is why, if you look at the new parameter of the configuration dictionary, stabilize_mean and stabilize_variance now takes list of columns as input instead of a binary indicator TRUE / FALSE. This means that the transformations will be applied only on the specified times series in the lists.
+According to the parameters:
+Trend time series will receive a differencing treatment
+Residuals time series a log transformation
+Seasonal time series will not receive any treatment
+For the 2d matrice conversion to 3d tensor, we can re-use our precious function as it take a list of y targets colnames as input. The transformation logic is the same!
+The X_Train 3d tensor shape is : (139, 24, 45)
+The y_Train 3d tensor shape is : (139, 24, 3)
+If we continue with our favorite Time2Vec-BiLSTM model, here is 2 possible ways of constructing our neural network architecture to be able to manage multiple outputs:
+1- Using the TimeDistributed layer at the end, like this:
+
+2- Using the Reshape layer at the end, like this:
+
+If we take the TimeDistributed architecture, here is the results:
+RdR Score for Trend: 0.84317
+RdR Score for Seasonal: 0.75001
+RdR Score for Residuals: 0.30810
+Trend Forecast Result:
+
+Seasonal Forecast Result:
+
+Here, there seems to have some problems. We should go back to hyper-parameters and feature engineering tuning steps ! This time series should be very easy to understand by our model as it’s the same repeating pattern over time.
+Residual Forecast Result:
+
+Here, normally, the residual component should be pure random white noise. We may think that the initial decomposition didn’t do its job because there is some structure left in the remaining residues.
+For fun, if we combine the 3 forecasts together (additive) we obtain:
+
+That’s a very interesting experiment !
+19-Link to all the code
+In my public github, here, you have all the code needed to calculate easily my custom RdR Score as well as the custom “differencing” and “Log” preprocessing classes I made for time series.
+I also added 4 jupyter notebooks:
+Advanced DL Forecasting — EASY.ipynb
+Advanced DL Forecasting — MEDIUM.ipynb
+Advanced DL Forecasting — HARD.ipynb
+Advanced DL Forecasting — EASY Mulivariate-Multisteps-Multioutput.ipynb
+These are templates that you can easily adapt with your own time series:
+
+Each notebook has a table of contents where you can quickly access the parts of interest:
+
+Each model is split into 4 parts:
+Model Architecture
+Model Training
+Model Validation
+Model Forecasting
+
+Enjoy!
+20-Conclusions
+In this tutorial, we experimented various deep learning architectures with a set of diverse time series using 3d tensors. Here are some on the conclusions we can retain from this experiments:
+Preparing the 3d tensor from the 2 matrice is a crucial step in the deep learning forecasting journey.
+We have to be very careful not to add any future “y signals” in the “X features” when preparing the tensors. You can start by spliting your time series before doing any preprocessing step.
+There is no “one size fit all” model or feature engineering for time series problems.
+Multivariate Multisteps Multioutput models are powerful but tricky and not always a good idea if the mixed time series to be produced are too heterogeneous (better to treat them individually with different parameters or preprocessing).
+Time2Vec is a great vector embeddings tool to try for improving model performance.
+A more complex model does not always mean a better model.
+Using an average ensemble of multiple heterogenous forecasting models can help with the stability of the results over time.
+To perform well on an autoregressive (univariate) time series forecasting problem, the time series itself must have a minimum of historical deterministic structural patterns. Generally speaking, the model will perform poorly on univariate stochastic time series.
+We can try to improve the results of stochastic time series by adding some exogenous features (temporal cross correlations)
+A good one-time validation test does not necessarily imply that the model will always perform well in the future. We can try different random seeds and different historical time sequences to measure the stability of the performance over time. We can also dig into temporal correlations to find results explanations.
+As we extrapolate over time, the results should always be used with extreme caution. As the model learns from past structure and past correlations, it cannot predict future changes it has never seen before such as data drift, context drift or new disruptive events.
+4
+
+
+
+4
+
+
+
+
+
+More from Dave Cote, M.Sc.
+Following
+
+Data Scientist in an insurance company. More than 8 years in Business Intelligence, Data Science and for delivering actionnable « Data-Driven » solutions.
+
+Feb 9
+
+RdR score metric for evaluating time series forecasting models
+In this text, I will propose you an experimental technic to evaluate the performance of time series forecasting models but before, we will quickly surf on popular time series scoring technics: MAE, RMSE and AIC Mean Forecast Accuracy Warning: The time series model EVALUATION TRAP! RdR Score Benchmark This new…
+
+Time Series Analysis
+13 min read
+
+
+
+RdR score metric for evaluating time series forecasting models
+Feb 9
+
+Demonstrating the power of feature engineering — Part II: How I beat XGBoost with Linear Regression!
+Yes, you read correctly! In this article, I will show you how to beat the notorious XGBoost with a simple Linear Regression model and the help of a creative feature engineering strategy! First, if you are familiar with jupyter notebooks and you prefer to see the code used at each…
+
+Feature Engineering
+18 min read
+
+
+
+Demonstrating the power of feature engineering — Part II: How I beat XGBoost with Linear Regression!
+Feb 9
+
+Visualization trick for multivariate regression problems
+In a univariate regression problem, it is easy to see the model decision function / how your model is generalizing the problem by doing a simple X vs Y plot:
+
+Regression
+6 min read
+
+
+
+Visualization trick for multivariate regression problems
+Feb 9
+
+Demonstrating the power of feature engineering — Part I
+Feature engineering is often under-estimated in a machine-learning project. Many Data Science practitioners will go through this step too rapidly claiming they “know” their data or that the dataset is “already optimal” with all the relevant business features. …
+
+Feature Engineering
+4 min read
+
+
+
+Demonstrating the power of feature engineering — Part I
+Feb 9
+
+Made Easy — Mixture Density Network for multivariate Regression
+In this article, I will first explain briefly what a MDN is and then give you the python code to make your own MDN model with only a few lines of code. Before we start… If you prefer to follow the jupyter notebook: https://github.com/CoteDave/blog/blob/master/Made%20easy/MDN%20regression/Made%20easy%20-%20MDN%20regression.ipynb If you want to play around…
+
+Mdn
+15 min read
+
+
+
+Made Easy — Mixture Density Network for multivariate Regression
+Love podcasts or audiobooks? Learn on the go with our new app.
+
+Try Knowable
+
+---
+
+Source : [Hands-On Advanced Deep Learning Time Series Forecasting with Tensors](https://medium.com/@dave.cote.msc/hands-on-advanced-deep-learning-time-series-forecasting-with-tensors-7facae522f18)
