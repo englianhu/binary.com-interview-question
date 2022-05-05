@@ -1,6 +1,10 @@
 
 ![](www/binary-logo.jpg)
 
+---
+
+[<img src='www/RStudioCloud.png' height='20'>](https://rstudio.cloud) [<img src='www/RStudioCom2.png' height='20'>](https://community.rstudio.com/new-topic?category=shiny&tags=shiny) [![](www/shiny-badge.svg)](https://www.shinyapps.io)
+
 # Job Application - Quantitative Analyst
 
 ## 0) Interview Sample Question
@@ -147,6 +151,8 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 ---
 
 <img src='www/deriv.jpg' width='260'>
+
+[<img src='www/RStudioCloud.png' height='20'>](https://rstudio.cloud) [<img src='www/RStudioCom2.png' height='20'>](https://community.rstudio.com/new-topic?category=shiny&tags=shiny) [![](www/shiny-badge.svg)](https://www.shinyapps.io)
 
 # Quantitative Trading
 
