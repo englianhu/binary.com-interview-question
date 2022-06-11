@@ -23,7 +23,7 @@ output:
 suppressPackageStartupMessages(require('BBmisc'))
 
 ## 读取程序包
-pkg <- c('lubridate', 'plyr', 'dplyr', 'magrittr', 'stringr', 'rugarch', 'forecast', 'quantmod', 'microbenchmark', 'knitr', 'kableExtra', 'formattable', 'quantmod', 'TTR')
+pkg <- c('lubridate', 'plyr', 'dplyr', 'magrittr', 'stringr', 'rugarch', 'forecast', 'quantmod', 'microbenchmark', 'knitr', 'kableExtra', 'formattable', 'quantmod', 'TTR', 'memoise')
 suppressAll(lib(pkg))
 rm(pkg)
 
@@ -47,7 +47,7 @@ names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 
 price_type <- c('Op', 'Hi', 'Lo', 'Cl')
 
 ## 读取雅虎数据。
-mbase <- sapply(names(cr_code), function(x) readRDS(paste0('./data/', x, '.rds')) %>% na.omit)
+mbase <- sapply(names(cr_code), function(x) readRDS(paste0('/home/englianhu/Documents/GitHub/binary.com-interview-question-data/data/', x, '.rds')) %>% na.omit)
 ```
 
 数据简介报告。
@@ -659,6 +659,7 @@ rm(sys1, sys2)
 03. [Introduction to the `rugarch` Package](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Introduction%20to%20the%20rugarch%20Package.pdf)<img src='www/hot.jpg' width='20'>
 04. [GARCH模型中的ARIMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 05. [binary.com Interview Question I - Interday Betting Strategy Models Comparison (Financial Betting)](http://rpubs.com/englianhu/binary-Q1BET)
+06. [R语言中ARMA，ARIMA（BOX-JENKINS），SARIMA和ARIMAX模型用于预测时间序列数据](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e4%b8%adarma%ef%bc%8carima%ef%bc%88box-jenkins%ef%bc%89%ef%bc%8csarima%e5%92%8carimax%e6%a8%a1%e5%9e%8b%e7%94%a8%e4%ba%8e%e9%a2%84%e6%b5%8b%e6%97%b6%e9%97%b4%e5%ba%8f%e5%88%97)
 
 --------------------
 

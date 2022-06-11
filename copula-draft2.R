@@ -45,5 +45,8 @@ fc <- varxforecast(X = Dat, Bcoef = fit@mfit$stdresid, p = 4,
 
 ## R语言多元COPULA GARCH 模型时间序列预测
 ## https://tecdat.cn/r%E8%AF%AD%E8%A8%80%E5%A4%9A%E5%85%83copula-garch-%E6%A8%A1%E5%9E%8B%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E9%A2%84%E6%B5%8B
-
+## 
+## R语言ARMA-GARCH-COPULA模型和金融时间序列案例
+## http://tecdat.cn/r%e8%af%ad%e8%a8%80copulas%e5%92%8c%e9%87%91%e8%9e%8d%e6%97%b6%e9%97%b4%e5%ba%8f%e5%88%97%e6%a1%88%e4%be%8b
+## 
 

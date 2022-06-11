@@ -1,0 +1,44 @@
+---
+title: "投资风险管理"
+author: "雷欧"
+format: html
+---
+
+## 夏普率 (Sharpe Ratio)
+
+...
+
+```{r}
+
+```
+
+## 投资风险价值 (VaR)
+
+```{r}
+
+```
+
+## 参考文献
+
+1) [R语言用GARCH模型波动率建模和预测、回测风险价值 (VAR)分析股市收益率时间序列](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e7%94%a8garch%e6%a8%a1%e5%9e%8b%e6%b3%a2%e5%8a%a8%e7%8e%87%e5%bb%ba%e6%a8%a1%e5%92%8c%e9%a2%84%e6%b5%8b%e3%80%81%e5%9b%9e%e6%b5%8bvar%e5%88%86%e6%9e%90%e8%82%a1%e5%b8%82%e6%94%b6)
+2) [R语言基于ARMA-GARCH-VAR模型拟合和预测实证研究分析案例](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e5%9f%ba%e4%ba%8earma-garch-var%e6%a8%a1%e5%9e%8b%e6%8b%9f%e5%90%88%e5%92%8c%e9%a2%84%e6%b5%8b%e5%ae%9e%e8%af%81%e7%a0%94%e7%a9%b6%e5%88%86%e6%9e%90%e6%a1%88%e4%be%8b)
+3) [R语言VAR向量自回归模型的不同类型的脉冲响应分析](http://tecdat.cn/r%e8%af%ad%e8%a8%80var%e6%a8%a1%e5%9e%8b%e7%9a%84%e4%b8%8d%e5%90%8c%e7%b1%bb%e5%9e%8b%e7%9a%84%e8%84%89%e5%86%b2%e5%93%8d%e5%ba%94%e5%88%86%e6%9e%90)
+4) [R语言GIBBS抽样的贝叶斯简单线性回归仿真分析](http://tecdat.cn/r%e8%af%ad%e8%a8%80gibbs%e6%8a%bd%e6%a0%b7%e7%9a%84%e8%b4%9d%e5%8f%b6%e6%96%af%e7%ae%80%e5%8d%95%e7%ba%bf%e6%80%a7%e5%9b%9e%e5%bd%92%e4%bb%bf%e7%9c%9f%e5%88%86%e6%9e%90)
+5) [R语言随机搜索变量选择SSVS估计贝叶斯向量自回归（BVAR）模型](http://tecdat.cn/%e9%9a%8f%e6%9c%ba%e6%90%9c%e7%b4%a2%e5%8f%98%e9%87%8f%e9%80%89%e6%8b%a9ssvs%e4%bc%b0%e8%ae%a1%e8%b4%9d%e5%8f%b6%e6%96%af%e5%90%91%e9%87%8f%e8%87%aa%e5%9b%9e%e5%bd%92%ef%bc%88bvar%ef%bc%89%e6%a8%a1)
+6) [R语言中的STAN概率编程MCMC采样的贝叶斯模型](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e4%b8%ad%e7%9a%84stan%e6%a6%82%e7%8e%87%e7%bc%96%e7%a8%8bmcmc%e9%87%87%e6%a0%b7%e7%9a%84%e8%b4%9d%e5%8f%b6%e6%96%af%e6%a8%a1%e5%9e%8b)
+7) [R语言估计时变VAR模型时间序列的实证研究分析案例](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e4%bc%b0%e8%ae%a1%e6%97%b6%e5%8f%98var%e6%a8%a1%e5%9e%8b%e6%97%b6%e9%97%b4%e5%ba%8f%e5%88%97%e7%9a%84%e5%ae%9e%e8%af%81%e7%a0%94%e7%a9%b6%e5%88%86%e6%9e%90%e6%a1%88%e4%be%8b)
+8) []()
+9) []()
+10) []()
+11) []()
+12) []()
+13) []()
+14) []()
+15) []()
+16) []()
+17) []()
+18) []()
+19) []()
+20) []()
+21) []()
+
