@@ -92,3 +92,10 @@ for(i in 1:out){
   simulatedreturns[i,,]=simx
   }
 #rm(tmp, simx, simMu, simC, simCor, simS, simulatedreturns)
+
+## R语言多元COPULA GARCH 模型时间序列预测
+## https://tecdat.cn/r%E8%AF%AD%E8%A8%80%E5%A4%9A%E5%85%83copula-garch-%E6%A8%A1%E5%9E%8B%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E9%A2%84%E6%B5%8B
+
+
+
+

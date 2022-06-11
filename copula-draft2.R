@@ -43,3 +43,7 @@ fit <- cgarchfit(cSpec, data = Dat, solver = .solver, cluster = cl,
 fc <- varxforecast(X = Dat, Bcoef = fit@mfit$stdresid, p = 4, 
                    out.sample = msm, n.ahead = .ahead, n.roll = 0, mregfor = NULL)
 
+## R语言多元COPULA GARCH 模型时间序列预测
+## https://tecdat.cn/r%E8%AF%AD%E8%A8%80%E5%A4%9A%E5%85%83copula-garch-%E6%A8%A1%E5%9E%8B%E6%97%B6%E9%97%B4%E5%BA%8F%E5%88%97%E9%A2%84%E6%B5%8B
+
+
