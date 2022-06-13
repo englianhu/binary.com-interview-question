@@ -701,6 +701,12 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 
 ### Grouped Models
 
+> VAR分析中的一个中心问题是找到滞后的阶数，以产生最佳结果。模型比较通常基于信息标准，例如AIC，BIC或HQ。通常，由于是小样本预测，AIC优于其他标准。但是，BIC和HQ在大型样本中效果很好 
+
+Citation: [R语言用向量自回归（VAR）进行经济数据脉冲响应研究分析](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e7%94%a8%e5%90%91%e9%87%8f%e8%87%aa%e5%9b%9e%e5%bd%92%ef%bc%88var%ef%bc%89%e8%bf%9b%e8%a1%8c%e7%bb%8f%e6%b5%8e%e6%95%b0%e6%8d%ae%e8%84%89%e5%86%b2%e5%93%8d%e5%ba%94%e7%a0%94)
+
+
+
 Here I read the saved models.
 
 Due to the models only forecast `1440 mins` (but not `7200 mins`) in advance, here I no need to filter the forecast price.
