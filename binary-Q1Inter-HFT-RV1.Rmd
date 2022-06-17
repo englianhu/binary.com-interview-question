@@ -268,6 +268,7 @@ Review the [<span style='color:goldenrod'>*Deriv.com - Interday High Frequency T
 ### Raw Data
 
 ```{r, warning = FALSE, message = FALSE, results = 'asis'}
+## data_m1 <- read_rds('/home/englianhu/Documents/GitHub/real-time-fxcm/data/USDJPY/data_m1.rds')
 data_m1 <- read_rds('C:/Users/User/Documents/GitHub/real-time-fxcm/data/USDJPY/data_m1.rds') %>% 
   data.table
 data_m1 %<>% .[order(index)]
@@ -445,7 +446,9 @@ There might probably because of Christmas to postpone 1 day, here I forecast `72
 
 ```{r}
 ## check if data path set
+
 if(!exists('.dtr')) {
+  ## .dtr <- '/home/englianhu/GitHub/binary.com-interview-question-data/'
   .dtr <- 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/'}
 
 ## save files if not exists

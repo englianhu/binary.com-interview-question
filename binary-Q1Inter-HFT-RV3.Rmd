@@ -2,7 +2,7 @@
 title: "<img src='www/deriv.jpg' width='240'>"
 subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part III)**</span>](https://github.com/englianhu/binary.com-interview-question)"
 author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/quantitative trader 1.jpg' width='13'> <img src='www/RYU.jpg' width='15'> <img src='www/ENG.jpg' width='24'> ® <img src='www/xueba1.jpg' width='14'>"
-date: "`r lubridate::today('Asia/Tokyo')`"
+date: "`r lubridate::today('Asia/Shanghai')`"
 output:
   html_document: 
     mathjax: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
@@ -16,8 +16,10 @@ output:
     css: CSSBackgrounds.css
 ---
 
+# 主题
+
 <br>
-<span style='color:green'>**Theme Song**</span>
+<span style='color:green'>**主题曲**</span>
 <br>
 
 <audio src="music/Mika - Elle me dit (happy song to be millionaire).mp3" controls></audio>
@@ -93,28 +95,142 @@ output:
 
 <span style='color:white'>**J**</span><span style='color:red'>**P**</span><span style='color:white'>**N**</span> : <span style='color:white'>あなたは誇りに思うでしょう</span>
 
-------
+<br>
+
+# 设定
+
+## SCSS 设置
+
+<style>
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+.table-hover > tbody > tr:hover { 
+  background-color: #8D918D;
+}
+</style>
+
+```{r load-sass, class.source='bg-success', class.output='bg-primary'}
+# install.packages('remotes', dependencies = TRUE, INSTALL_opts = '--no-lock')
+library('BBmisc', 'rmsfuns')
+#remotes::install_github("rstudio/sass")
+lib('sass')
+
+## https://support.rstudio.com/hc/en-us/articles/200532197
+## https://community.rstudio.com/t/r-does-not-display-korean-chinese/30889/3?u=englianhu
+#Sys.setlocale("LC_CTYPE", "en_US.UTF-8")
+#Sys.setlocale("LC_CTYPE", "zh_CN.UTF-8")
+#Sys.setlocale(category = "LC_CTYPE", "Chinese (Simplified)_China.936")
+#Sys.setlocale(locale = "Chinese")
+#Sys.setlocale(locale = "Japanese")
+#Sys.setlocale(locale = "English")
+
+# rmarkdown::render('/home/englianhu/Documents/owner/ryo-cn.Rmd',  encoding = 'UTF-8')
+#Sys.setlocale("LC_CTYPE", "UTF-8")
+#Sys.setlocale(locale = "UTF-8")
+#Sys.setlocale(category = "LC_ALL", locale = "chs")
+#Sys.setlocale(category = "LC_ALL", locale = "UTF-8")
+#Sys.setlocale(category = "LC_ALL", locale = "Chinese")
+#Sys.setlocale(category = "LC_ALL", locale = "zh_CN.UTF-8")
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
+```
+
+```{scss set-scss, class.source='bg-success', class.output='bg-primary'}
+/* https://stackoverflow.com/a/66029010/3806250 */
+h1 { color: #002C54; }
+h2 { color: #2F496E; }
+h3 { color: #375E97; }
+h4 { color: #556DAC; }
+h5 { color: #92AAC7; }
+
+/* ----------------------------------------------------------------- */
+/* https://gist.github.com/himynameisdave/c7a7ed14500d29e58149#file-broken-gradient-animation-less */
+.hover01 {
+  /* color: #FFD64D; */
+  background: linear-gradient(155deg, #EDAE01 0%, #FFEB94 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #EDAE01 20%, #FFEB94 80%);
+    }
+  }
+
+.hover02 {
+  color: #FFD64D;
+  background: linear-gradient(155deg, #002C54 0%, #4CB5F5 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #002C54 20%, #4CB5F5 80%);
+    }
+  }
+
+.hover03 {
+  color: #FFD64D;
+  background: linear-gradient(155deg, #A10115 0%, #FF3C5C 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #A10115 20%, #FF3C5C 80%);
+    }
+  }
+```
+
+```{r gb-opts, class.source='hover01', class.output='hover02'}
+## Set the timezone but not change the datetime
+Sys.setenv(TZ = 'Asia/Shanghai')
+
+## Setting to omit all warnings
+## https://stackoverflow.com/a/36846793/3806250
+## Set width
+## options(knitr.table.format = 'html') will set all kableExtra tables to be 'html', otherwise need to set the parameter on every single table.
+options(warn = -1, width = 999, knitr.table.format = 'html')#, digits.secs = 6)
+
+## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
+## https://yihui.org/knitr/options
+knitr::opts_chunk$set(
+  class.source = 'hover01', class.output = 'hover02', class.error = 'hover03', 
+  message = FALSE, warning = FALSE, error = TRUE, 
+  autodep = TRUE, aniopts = 'loop', 
+  progress = TRUE, verbose = TRUE, 
+  cache = FALSE, cache.lazy = FALSE, result = 'asis')
+```
 
 <br>
 
-# Introduction
+## 设置
 
-Due to below issues from [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT), here I review the research by using same dataset as we can know from below **Part I**.
+```{r libs, eval=FALSE}
+## Setup Options, Loading Required Libraries and Preparing Environment
+## Loading the packages and setting adjustment
+source('函数/libs.R')
+```
 
-- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) (in RPubs.com)
-- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (in RStudioConnect.com)
+读取程序包
 
-In this paper I am using sarima models.
+```{r load-pkgs}
+## Setup Options, Loading Required Libraries and Preparing Environment
+## 3210448065@qq.com
+## leiou123
 
-<span style='color:green'>**Load Packages**</span>
+## 2849108450@qq.com
+## leiou123
+## https://rstudio.cloud/project/1198888
 
-```{r setup, warning = FALSE, message = FALSE}
-if(!suppressPackageStartupMessages(require('BBmisc'))) {
+## Loading the package 'BBmisc'
+if(suppressMessages(!require('BBmisc'))){
   install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
+  suppressMessages(library('BBmisc'))
 }
-suppressPackageStartupMessages(require('BBmisc'))
-# suppressPackageStartupMessages(require('rmsfuns'))
+if (suppressMessages(!require('rmsfuns'))) {
+  install.packages('rmsfuns', dependencies = TRUE, INSTALL_opts = '--no-lock')
+  suppressMessages(library('rmsfuns'))
+}
 
+if(!require('REmap')) devtools::install_github('lchiffon/REmap')
+
+## Loading multiple packages at once
 pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
           'readr', 'lubridate', 'data.table', 'reprex', 
           'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 
@@ -127,22 +243,56 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr',
           'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 'gtools', 
           'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
 
-suppressAll(lib(pkgs))
-# load_pkg(pkgs)
-
-.dtr <- 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/'
+.dtr <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'
 
 ## Set the timezone but not change the datetime
-Sys.setenv(TZ = 'Asia/Tokyo')
-## options(knitr.table.format = 'html') will set all kableExtra tables to be 'html', otherwise need to set the parameter on every single table.
-options(warn = -1, knitr.table.format = 'html')#, digits.secs = 6)
+Sys.setenv(TZ = 'Asia/Shanghai')
 
-## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
-knitr::opts_chunk$set(cache = TRUE, warning = FALSE, 
-                      message = FALSE, cache.lazy = FALSE)
-
+# load_pkg(pkgs)
+suppressAll(lib(pkgs))
+load_pkg(pkgs)
 rm(pkgs)
+
+## Set the googleVis options first to change the behaviour of plot.gvis, so that 
+##  only the chart component of the HTML file is written into the output file.
+op <- options(gvis.plot.tag = 'chart')
+
+## <audio src='music/bigmoney.mp3' autoplay controls loop></audio>
 ```
+
+```{r set-prefer}
+conflict_prefer('filter', 'dplyr')
+conflict_prefer('select', 'dplyr')
+conflict_prefer('mutate', 'dplyr')
+conflict_prefer('rename', 'dplyr')
+conflict_prefer('collapse', 'dplyr')
+conflict_prefer('year', 'lubridate')
+```
+
+<br>
+
+------
+
+<br>
+
+# 简介
+
+> 我们的政策是让一部分人、一部分地区先富起来，以带动和帮助落后的地区，先进地区帮助落后地区是一个义务。
+>
+>    ——邓小平1986年3月28日在会见新西兰总理朗伊时说
+
+引用：[邓小平：让一部分人先富起来](http://cpc.people.com.cn/GB/34136/2569304.html)
+
+> 《万般皆下品，唯有读书高》
+鞭策六四，振兴中共；
+学海无涯，唯勤是岸。
+
+Due to below issues from [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT), here I review the research by using same dataset as we can know from below **Part I**.
+
+- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) (in RPubs.com)
+- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (in RStudioConnect.com)
+
+In this paper I am using sarima models.
 
 <span style='color:green'>**Progress Function**</span>
 
@@ -159,7 +309,7 @@ task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^sarima_'
   
   if (.loops == TRUE) {
     while(1) {
-      cat('Current Tokyo Time :', as.character(now('Asia/Tokyo')), '\n\n')
+      cat('Current Chinese Standard Time Zone:', as.character(now('Asia/Shanghai')), '\n\n')
       
       y = as_date(mbase$index) %>% 
 			unique
@@ -254,14 +404,14 @@ task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^sarima_'
   }
 ```
 
-# Data
+# 数据
 
-## Read Data
+## 读取数据
 
-```{r read-data, warning = FALSE, message = FALSE}
+```{r read-data}
 ## check if data path set
 if(!exists('dtr')) {
-  dtr <- 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/'}
+  dtr <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'}
 
 ## save files if not exists
 if(!file.exists(paste0(dtr, 'data/fx/USDJPY/dsmp.rds')) & exists('dsmp')) {
@@ -272,7 +422,7 @@ if(!exists('dsmp')) {
   dsmp <- readRDS(paste0(dtr, 'data/fx/USDJPY/dsmp.rds'))}
 ```
 
-```{r smp-data, warning = FALSE, message = FALSE, results = 'asis'}
+```{r smp-data, results = 'asis'}
 ## plot sample data
 dsmp[c(1:3, (nrow(dsmp)-3):nrow(dsmp)),] %>% 
   kbl(caption = '1 min Close Price Dataset', escape = FALSE) %>% 
@@ -320,7 +470,7 @@ I set the length of data as weekly (`5 days * 1440 mins = 7200 mins` minutes whi
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
 - [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
 
-```{r sarima, eval = FALSE}
+```{r sarima}
 sarima <- function(timeID, data = dsmp, data_len, hrz1 = 1440, 
                    .model = .model, .d = .d, .D = .D, 
                    seas = seas, .order = .order, .seas = .seas, 
@@ -516,7 +666,7 @@ sarima <- function(timeID, data = dsmp, data_len, hrz1 = 1440,
 source('function/sarima.R')
 ```
 
-```{r, eval = FALSE}
+```{r}
 # --------- eval=FALSE ---------
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -549,7 +699,7 @@ seas = c(TRUE, FALSE)
   dplyr::filter(D <= 1)
 ```
 
-```{r, eval = FALSE}
+```{r}
 # --------- eval=FALSE ---------
 llply(.model, function(md) {
   
@@ -651,7 +801,7 @@ I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes 
 - sub-seasonal `1440 mins`
 - forecast `1440 mins`
 
-```{r, eval = FALSE}
+```{r}
 # --------- eval=FALSE ---------
 timeID <- unique(dsmp$date)
 bse <- dsmp[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -695,6 +845,8 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 - sub-seasonal `1440 mins`
 - forecast `1440 mins`
 
+<br>
+
 # Comparison
 
 ## Read Models
@@ -728,65 +880,26 @@ Next papers will compare `tbats`, `midas`, `sarimax` etc.
 options(warn = 0)
 ```
 
-# Appendix
+<br>
 
-## Blooper
+# 附录
 
-## Documenting File Creation 
+## 幕后花絮
 
-It's useful to record some information about how your file was created.
+## 文书明细
 
-- File creation date: 2021-02-03
-- File latest updated date: `r today('Asia/Tokyo')`
+以下乃此文书的文件信息。
+
+- 文集建立日：2021-02-03
+- 文集最新更新日：`r today('Asia/Shanghai')`
 - `r R.version.string`
-- R version (short form): `r getRversion()`
-- [**rmarkdown** package](https://github.com/rstudio/rmarkdown) version: `r packageVersion('rmarkdown')`
-- File version: 1.0.0
-- Author Profile: [®γσ, Eng Lian Hu](https://github.com/scibrokes/owner)
-- GitHub: [Source Code](https://github.com/englianhu/binary.com-interview-question)
-- Additional session information:
+- [**rmarkdown**](https://github.com/rstudio/rmarkdown) 程序包版本：`r packageVersion('rmarkdown')`
+- 文集版本：0.2.1
+- 文集作者：[®γσ, ξηg Lιαη Ημ](https://rpubs.com/englianhu/ryo-cn)
+- 猫舍：[源代码](https://github.com/englianhu/binary.com-interview-question)
+- 追加附属信息
 
-```{r info, warning = FALSE, results = 'asis'}
-suppressMessages(require('dplyr', quietly = TRUE))
-suppressMessages(require('magrittr', quietly = TRUE))
-suppressMessages(require('formattable', quietly = TRUE))
-suppressMessages(require('knitr', quietly = TRUE))
-suppressMessages(require('kableExtra', quietly = TRUE))
-
-sys1 <- devtools::session_info()$platform %>% 
-  unlist %>% data.frame(Category = names(.), session_info = .)
-rownames(sys1) <- NULL
-
-sys2 <- data.frame(Sys.info()) %>% 
-  dplyr::mutate(Category = rownames(.)) %>% .[2:1]
-names(sys2)[2] <- c('Sys.info')
-rownames(sys2) <- NULL
-
-if (nrow(sys1) == 9 & nrow(sys2) == 8) {
-  sys2 %<>% rbind(., data.frame(
-  Category = 'Current time', 
-  Sys.info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST🗾')))
-} else {
-  sys1 %<>% rbind(., data.frame(
-  Category = 'Current time', 
-  session_info = paste(as.character(lubridate::now('Asia/Tokyo')), 'JST🗾')))
-}
-
-sys <- cbind(sys1, sys2) %>% 
-  kbl(caption = 'Additional session information:') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
-  column_spec(1, background = 'CornflowerBlue', color = 'red') %>% 
-  column_spec(2, background = 'grey', color = 'black') %>% 
-  column_spec(3, background = 'CornflowerBlue', color = 'blue') %>% 
-  column_spec(4, background = 'grey', color = 'white') %>% 
-  row_spec(9, bold = T, color = 'yellow', background = '#D7261E')
-
-rm(sys1, sys2)
-sys
-```
-
-## Reference
+## 参考文献
 
 01. [<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:red'>(Blooper)</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)
 02. [<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) (in RPubs.com)
@@ -797,10 +910,7 @@ sys
 07. [Tableau 100 Color Palettes](https://public.tableau.com/en-us/gallery/100-color-palettes)
 08. [PYTHON中的ARIMA模型、SARIMA模型和SARIMAX模型对时间序列预测](http://tecdat.cn/python%e4%b8%ad%e7%9a%84arima%e6%a8%a1%e5%9e%8b%e3%80%81sarima%e6%a8%a1%e5%9e%8b%e5%92%8csarimax%e6%a8%a1%e5%9e%8b%e5%af%b9%e6%97%b6%e9%97%b4%e5%ba%8f%e5%88%97%e9%a2%84%e6%b5%8b)
 
-<br>
-
 ---
 
-<br>
-
-<span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of <img src='www/scb-logo3rs.jpg' width='18'> [Sςιβrοκεrs Trαdιηg ®️](http://www.scibrokes.com) 経営企業**</span>
+[<img src="www/Scibrokes.png" height="14"/> 世博量化®](http://www.scibrokes.com)<br>
+[**Powered by - Copyright® Intellectual Property Rights of [<img src="www/Scibrokes.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)**]{style="color:RoyalBlue"}

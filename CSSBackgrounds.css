@@ -1,4 +1,4 @@
-body {
+-body {
   background-image: url('www/math-theme-03.jpg'); 
   background-repeat: no-repeat; 
   /*background-size: 100%;*/
@@ -10,4 +10,4 @@ body {
 div {
   background-color: rgba(255, 255, 255, 0.35)   /* 35% opaque white */;
   padding: 0.25em;
-}
+} 
