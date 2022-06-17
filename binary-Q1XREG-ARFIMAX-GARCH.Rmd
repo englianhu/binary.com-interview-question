@@ -80,6 +80,10 @@ $$
 
 [R学习笔记（2）——SARIMA模型](https://blog.csdn.net/qqqqq1993qqqqq/article/details/51818718)和[`sarima`程序包](https://cran.r-project.org/web/packages/sarima/sarima.pdf)或许能基于季节性因素把原本的ARIMA(p,d,q)值，通过SARIMA(p,d,q)值更为精准。
 
+## FIGARCH
+
+## HYGARCH
+
 # 加权因子
 
 ## 外部因子

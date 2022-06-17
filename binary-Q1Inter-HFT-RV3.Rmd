@@ -285,9 +285,10 @@ conflict_prefer('year', 'lubridate')
 
 在此论文中，使用[季节性自回归综合移动平均模型系列]{style="color:RoyalBlue"}。
 
+- 外部因素週期性自回归综合移动平均模型（ARIMAX）
 - 季节性自回归综合移动平均模型（SARIMA）
 - 外部因素週期性季节性自回归综合移动平均模型（SARIMAX）
-- 外部因素週期性自回归综合移动平均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
+- 外部因素週期性自回归分整综合移动平均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 - 多元季节性自回归综合移动平均模型（Multi-Seasonal Time Series `msts()`）
 
 <span style='color:green'>**进程进度函数**</span>
@@ -761,7 +762,9 @@ llply(.model, function(md) {
 
 https://otexts.com/fpp3/seasonal-arima.html
 
-## `arfima()`
+## 自回归综合移动平均模型 `arfima()`
+
+### 外部因素週期性自回归综合移动平均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 
 - [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 - [binary.com 面试试题 I - GARCH模型中的`ARCH in Mean`](https://rpubs.com/englianhu/binary-Q1-archm)
@@ -793,7 +796,7 @@ Here I filter up the data as below :
 - `3 months * 22 days * 1440 mins = 95040 mins` = quarterly
 - `52 weeks * 5 days * 1440 mins = 374400 mins` = yearly
 
-### (Wk ∈ Mn) >> Dy
+### (周 ∈ 分) >> 日
 
 I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
 
@@ -819,7 +822,7 @@ llply(ets.m, function(md) {
   })
 ```
 
-### (Wk ∈ Qt) >> Dy
+### (周 ∈ 季) >> 日
 
 I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
 
@@ -828,7 +831,7 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 - sub-seasonal `1440 mins`
 - forecast `1440 mins`
 
-### (Wk ∈ Yr) >> Dy
+### (周 ∈ 年) >> 日
 
 I set the length of data as yearly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
 
@@ -837,7 +840,7 @@ I set the length of data as yearly (`52 weeks * 5 days * 1440 mins = 374400 mins
 - sub-seasonal `1440 mins`
 - forecast `1440 mins`
 
-### (Mn ∈ Qt) >> Dy
+### (分 ∈ 季) >> 日
 
 I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
 
@@ -848,7 +851,7 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 
 <br>
 
-# Comparison
+# 模型比较
 
 ## Read Models
 
@@ -864,9 +867,9 @@ Here I read the saved models.
 
 Due to the models only forecast `1440 mins` (but not `7200 mins`) in advance, here I no need to filter the forecast price.
 
-# Conclusion
+# 结论
 
-## Summary
+## 摘要
 
 ## Final Conclude
 
@@ -918,7 +921,7 @@ options(warn = 0)
 14. [Python数据分析案例-分别使用时间序列ARIMA、SARIMAX模型与Auto ARIMA预测国内汽车月销量_maiyida123的博客-程序员资料](http://www.4k8k.xyz/article/maiyida123/117967762)
 15. [预测：方法与实践：11.1 复杂季节性](https://otexts.com/fppcn/complexseasonality.html)
 16. [市道轮换下的高频数据参数估计]()
-17. []()
+17. [STAT 510 Applied Time Series Analysis : 13.1 Long Memory Models and Fractional Differences](https://online.stat.psu.edu/stat510/lesson/13/13.1)
 18. []()
 19. []()
 20. []()
