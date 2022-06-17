@@ -287,7 +287,7 @@ conflict_prefer('year', 'lubridate')
 鞭策六四，振兴中共；
 学海无涯，唯勤是岸。
 
-Due to below issues from [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT), here I review the research by using same dataset as we can know from below **Part I**.
+Due to below issues from [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)，, here I review the research by using same dataset as we can know from below **Part I**.
 
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) (in RPubs.com)
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (in RStudioConnect.com)
@@ -309,7 +309,7 @@ task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^sarima_'
   
   if (.loops == TRUE) {
     while(1) {
-      cat('Current Chinese Standard Time Zone:', as.character(now('Asia/Shanghai')), '\n\n')
+      cat('目前中国标准时间：', as.character(now('Asia/Shanghai')), '\n\n')
       
       y = as_date(mbase$index) %>% 
 			unique
@@ -358,7 +358,7 @@ task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^sarima_'
     }
   } else {
     
-    cat('Current Tokyo Time :', as.character(now('Asia/Tokyo')), '\n\n')
+    cat('目前中国标准时间：', as.character(now('Asia/Shanghai')), '\n\n')
       
     
       y = as_date(mbase$index) %>% 
@@ -403,6 +403,8 @@ task_progress <- function(mbase, timeID0 = NULL, scs = 60, .pattern = '^sarima_'
     }
   }
 ```
+
+<br>
 
 # 数据
 
