@@ -25,6 +25,22 @@ output:
 <audio src="music/Mika - Elle me dit (happy song to be millionaire).mp3" controls></audio>
 <br>
 
+> 我们的政策是让一部分人、一部分地区先富起来，以带动和帮助落后的地区，先进地区帮助落后地区是一个义务。
+>
+> ————邓小平1986年3月28日在会见新西兰总理朗伊时说
+
+引用：[邓小平：让一部分人先富起来](http://cpc.people.com.cn/GB/34136/2569304.html)
+
+> 《万般皆下品，唯有读书高》
+鞭策六四，铲除黑帮；
+推广量化，提倡学术。
+百家争鸣，振兴中华；
+学海无涯，唯勤是岸。
+
+世间再无祖父黄实田，家翁Eng Teng，外祖母郑邓
+
+<img src='www/鞭策六四，推广量化；百家争鸣，振兴中华。.png' width='50'> 
+
 ------
 
 <span style='color:blue'>**F**</span><span style='color:white'>**R**</span><span style='color:red'>**A**</span> : <span style='color:white'>Elle me dit</span>
@@ -266,16 +282,6 @@ conflict_prefer('year', 'lubridate')
 
 # 简介
 
-> 我们的政策是让一部分人、一部分地区先富起来，以带动和帮助落后的地区，先进地区帮助落后地区是一个义务。
->
->    ——邓小平1986年3月28日在会见新西兰总理朗伊时说
-
-引用：[邓小平：让一部分人先富起来](http://cpc.people.com.cn/GB/34136/2569304.html)
-
-> 《万般皆下品，唯有读书高》
-鞭策六四，振兴中共；
-学海无涯，唯勤是岸。
-
 [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)科研论文中提及一些技术问题，故此使用**Part I**中的数据加以修饰并回测，再与**Part II**比较，筛选最优统计模型。
 
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) (in RPubs.com)
@@ -409,6 +415,8 @@ conflict_prefer('year', 'lubridate')
 
 ## 读取数据
 
+**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**次论文读取该数据，将网页轻巧化、省略掉修饰数据的一栏。
+
 ```{r 读取数据}
 ## 检验是否已设置路径。
 if(!exists('.路径')) {
@@ -423,7 +431,7 @@ if(!exists('样本')) {
   样本 <- readRDS(paste0(.路径, 'data/fx/USDJPY/dsmp.rds'))}
 ```
 
-```{r smp-data, results = 'asis'}
+```{r 绘制样本数据图表, results = 'asis'}
 ## 绘制样本图表
 样本[c(1:3, (nrow(样本)-3):nrow(样本)),] %>% 
   kbl(caption = '每分钟价位', escape = FALSE) %>% 
