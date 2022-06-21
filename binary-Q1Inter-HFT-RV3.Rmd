@@ -1,7 +1,7 @@
 ---
-title: "<img src='www/deriv.jpg' width='240'>"
+title: "<img src='文艺坊图库/deriv.png' height='240'>"
 subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part III)**</span>](https://github.com/englianhu/binary.com-interview-question)"
-author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/quantitative trader 1.jpg' width='13'> <img src='www/RYU.jpg' width='15'> <img src='www/ENG.jpg' width='24'> ® <img src='www/xueba1.jpg' width='14'>"
+author: "[®γσ, ξηg Lιαη Ημ](https://englianhu.github.io/) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'> ® <img src='文艺坊图库/景知夏小姐.png' height='14'>"
 date: "`r lubridate::today('Asia/Shanghai')`"
 output:
   html_document: 
@@ -19,10 +19,10 @@ output:
 # 主题
 
 <br>
-<span style='color:green'>**主题曲**</span>
+<span style='color:green'>**🐊 主题曲 🐊**</span>
 <br>
 
-<audio src="music/Mika - Elle me dit (happy song to be millionaire).mp3" controls></audio>
+<audio controls loop autoplay src="文艺坊曲库/Mika - Elle me dit (happy song to be millionaire).mp3" controls></audio>
 <br>
 
 > 我们的政策是让一部分人、一部分地区先富起来，以带动和帮助落后的地区，先进地区帮助落后地区是一个义务。
@@ -31,17 +31,17 @@ output:
 
 引用：[邓小平：让一部分人先富起来](http://cpc.people.com.cn/GB/34136/2569304.html)
 
-> 《万般皆下品，唯有读书高》
-习李经济，一带一路；
-九二共识，量化对冲。
-鞭策六四，铲除黑帮；（尤其是东南亚巫师Judi邪教宦官巫裔博彩庄诸国屠杀630万人类）
-推广量化，提倡学术。
-百家争鸣，振兴中华；
+> 《万般皆下品，唯有读书高》<br>
+习李经济，一带一路；<br>
+九二共识，量化对冲。<br>
+鞭策六四，铲除黑帮；（尤其是东南亚巫师Judi邪教宦官巫裔博彩庄诸国屠杀630万人类）<br>
+推广量化，提倡学术。<br>
+百家争鸣，振兴中华；<br>
 学海无涯，唯勤是岸。
 
-世间再无祖父黄实田，家翁Eng Teng，外祖母郑邓
+世间再无祖父黄实田，家翁ξηg Tεηg，外祖母郑邓
 
-<img src='www/鞭策六四，推广量化；百家争鸣，振兴中华。.png' width='50'> 
+<img src='文艺坊图库/鞭策六四，推广量化；百家争鸣，振兴中华。.png' height='200'> 
 
 ------
 
@@ -246,10 +246,19 @@ if (suppressMessages(!require('rmsfuns'))) {
 if(!require('REmap')) devtools::install_github('lchiffon/REmap')
 
 ## 一次性读取所需程序包。
+library('dplyr', warn.conflicts = FALSE)
+library('lubridate', warn.conflicts = FALSE)
+conflict_prefer('filter', 'dplyr')
+conflict_prefer('select', 'dplyr')
+conflict_prefer('mutate', 'dplyr')
+conflict_prefer('rename', 'dplyr')
+conflict_prefer('collapse', 'dplyr')
+conflict_prefer('year', 'lubridate')
+
 pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
-          'readr', 'lubridate', 'data.table', 'reprex', 
+          'readr', 'lubridate', 'data.table', 'reprex', 'stringr', 
           'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 
-          'timetk', 'plyr', 'dplyr', 'stringr', 'magrittr', 'tdplyr', 
+          'timetk', 'plyr', 'dplyr', 'dbplyr', 'magrittr', 'tdplyr', 
           'tidyverse', 'memoise', 'htmltools', 'formattable', 'dtplyr', 
           'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
@@ -268,7 +277,7 @@ rm(pkgs)
 ## 设置googleVis选项，促使plot.gvis只陈列HTML格式的完成品。
 op <- options(gvis.plot.tag = 'chart')
 
-## <audio src='music/bigmoney.mp3' autoplay controls loop></audio>
+## <audio src='文艺坊曲库/bigmoney.mp3' autoplay controls loop></audio>
 ```
 
 ```{r 设置函数优先权}
@@ -460,30 +469,24 @@ if(!exists('样本')) {
 
 *数据 : `r paste0(dim(样本)[1], '行 x ', dim(样本)[2], '列')`*
 
-以上图表显示数据日期，由`r paste(range(样本$date), collapse = ' 至 ')`，而该数据也是在论文[<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1)中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
+以上图表显示数据日期，由`r paste(range(样本$date), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
 
 # 统计建模
 
-在此先过滤数据，从2016年的第一个预测日（`r 样本[year == 2016]$date[1]`开始，也就是读取的样本数据中的第二年数据开始），与论文[<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1)中相符。
+在此先过滤数据，从2016年的第一个预测日（`r dplyr::filter(样本, year == 2016)$date[1]`开始，也就是读取的样本数据中的第二年数据开始），与论文*(Part I)*、*(Part II)*中相符。
 
 ## 季节性自回归综合移动平均模型（SARIMA）`ts()` & `auto.arima()`
 
 ### 季节性数据建模
 
-I set the length of data as weekly (`7200` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
-
-Here I only use `7200` to forecast `1440` as we can know that's the optimal volume of observation data as we know from [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1).
-
-### 周 >> 日
-
-I set the length of data as weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
+[<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275)中，结论1200分钟为最优数据量，故此我将数据量设置为(1200分钟，也就是等于20个交易小时)，去预测1440分钟(60分钟 x 24小时 = 1440分钟，等于一个交易日时间)。
 
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.7 ARIMA modelling in R*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/arima-r.html)
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
 - [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
 
 ```{r sarima}
-sarima <- function(timeID, data = 样本, data_len, hrz1 = 1440, 
+sarimax <- function(timeID, data = 样本, data_len, hrz1 = 1440, 
                    .model = .model, .d = .d, .D = .D, 
                    seas = seas, .order = .order, .seas = .seas, 
                    stationary = stationary, trace = trace, 
@@ -938,5 +941,5 @@ options(warn = 0)
 
 ---
 
-[<img src="www/Scibrokes.png" height="14"/> 世博量化®](http://www.scibrokes.com)<br>
-[**Powered by - Copyright® Intellectual Property Rights of [<img src="www/Scibrokes.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)**]{style="color:RoyalBlue"}
+[<img src="文艺坊图库/Scibrokes.png" height="14"/> 世博量化®](http://www.scibrokes.com)<br>
+[**Powered by - Copyright® Intellectual Property Rights of [<img src="文艺坊图库/Scibrokes.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)**]{style="color:RoyalBlue"}
