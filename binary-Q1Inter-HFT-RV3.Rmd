@@ -8,7 +8,7 @@ output:
     mathjax: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
     number_sections: yes
     toc: yes
-    toc_depth: 4
+    toc_depth: 6
     toc_float:
       collapsed: yes
       smooth_scroll: yes
@@ -260,8 +260,8 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr',
           'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 
           'timetk', 'plyr', 'dplyr', 'dbplyr', 'magrittr', 'tdplyr', 
           'tidyverse', 'memoise', 'htmltools', 'formattable', 'dtplyr', 
-          'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
-          'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 
+          'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 'sarima', 
+          'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 'TSA', 
           'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
           'stringr', 'pacman', 'profmem', 'ggthemes', 'flyingfox', 
           'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 'gtools', 
@@ -475,15 +475,23 @@ if(!exists('样本')) {
 
 在此先过滤数据，从2016年的第一个预测日（`r dplyr::filter(样本, year == 2016)$date[1]`开始，也就是读取的样本数据中的第二年数据开始），与论文*(Part I)*、*(Part II)*中相符。
 
-## 季节性自回归综合移动平均模型（SARIMA）`ts()` & `auto.arima()`
+## 自回归综合移动平均模型系列（ARIMA Series）
 
 ### 季节性数据建模
 
-[<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275)中，结论1200分钟为最优数据量，故此我将数据量设置为(1200分钟，也就是等于20个交易小时)，去预测1440分钟(60分钟 x 24小时 = 1440分钟，等于一个交易日时间)。
+[<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275)中，结论1200分钟为最优数据量，故此我将数据量设置为(1200分钟，也就是等于20个交易小时)，去预测下一分钟交易价格。
 
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.7 ARIMA modelling in R*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/arima-r.html)
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
 - [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
+
+### 自回归综合移动平均模型（ARIMA）`ts()` & `auto.arima()`
+
+[SARIMAX model in R](https://stackoverflow.com/a/17816958/3806250)
+
+### 季节性自回归综合移动平均模型（ARIMAX）`ts()` & `auto.arima()`
+
+### 季节性自回归综合移动平均模型（SARIMA）`ts()` & `auto.arima()`
 
 ```{r sarima}
 sarimax <- function(timeID, data = 样本, data_len, hrz1 = 1440, 
@@ -684,7 +692,7 @@ source('function/sarima.R')
 ```{r}
 # --------- eval=FALSE ---------
 timeID <- unique(样本$date)
-bse <- 样本[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+bse <- dplyr::filter(样本, year == 2016)$date[1] #"2016-01-04" #1st trading date in 2nd year
 timeID %<>% .[. >= bse]
 timeID %<>% .[1:6] ##Take 6 dates as sample
 #timeID %<>% .[. >= as_date('2016-01-04')]
@@ -702,19 +710,19 @@ seas = c(TRUE, FALSE)
 #stepwise = c(TRUE, FALSE)
 
 ## .order = c(0, 0, 0)
-.order = gtools::permutations(6, 3, 0:5, repeats = TRUE) %>% 
+.order = gtools::permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as_tibble %>% 
   dplyr::rename(p = V1, d = V2, q = V3) %>% 
   dplyr::filter(d <= 2)
 
 ## .seas = c(0, 0, 0)
-.seas = gtools::permutations(6, 3, 0:5, repeats = TRUE) %>% 
+.seas = gtools::permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as_tibble %>% 
   dplyr::rename(P = V1, D = V2, Q = V3) %>% 
   dplyr::filter(D <= 1)
 ```
 
-```{r}
+```{r eval=FALSE}
 # --------- eval=FALSE ---------
 llply(.model, function(md) {
   
@@ -723,7 +731,7 @@ llply(.model, function(md) {
       srm1 <- llply(.D, function(D) {
         srm2 <- llply(seas, function(ss) {
           srm3 <- llply(timeID, function(dte) {
-            res <- sarima(
+            res <- sarimax(
               timeID = dte, 样本, 
               data_len = data_len, hrz1 = hrz1, 
               .model = md, .d = d, .D = D, 
@@ -747,7 +755,7 @@ llply(.model, function(md) {
     srm0 <- llply(1:nrow(.order), function(i) {
       srm1 <- llply(1:nrow(.seas), function(j) {
         srm2 <- llply(timeID, function(dte) {
-          res <- sarima(
+          res <- sarimax(
             timeID = dte, 样本, 
             data_len = data_len, hrz1 = hrz1, 
             .model = md, .order = unlist(.order[i,]), 
@@ -935,9 +943,13 @@ options(warn = 0)
 15. [预测：方法与实践：11.1 复杂季节性](https://otexts.com/fppcn/complexseasonality.html)
 16. [市道轮换下的高频数据参数估计]()
 17. [STAT 510 Applied Time Series Analysis : 13.1 Long Memory Models and Fractional Differences](https://online.stat.psu.edu/stat510/lesson/13/13.1)
-18. []()
-19. []()
-20. []()
+18. [A Complete Introduction To Time Series Analysis (with R):: Exogenous models](https://medium.com/analytics-vidhya/a-complete-introduction-to-time-series-analysis-with-r-exogenous-models-4f009b770104)
+19. [Implementation of Time Series Forecasting Methods (SARIMA, SARIMAX and Prophet)](https://medium.com/@shawanugya12/implementation-of-time-series-forecasting-methods-sarima-sarimax-and-prophet-ff8407b25aaa)
+20. [Time Series Forecasting Techniques using R](https://github.com/rajsiddarth/Time_Series_Forecasting)
+21. []()
+22. []()
+23. []()
+24. []()
 
 ---
 
