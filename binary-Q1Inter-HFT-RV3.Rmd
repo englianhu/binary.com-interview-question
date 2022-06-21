@@ -491,7 +491,11 @@ if(!exists('样本')) {
 
 ### 季节性自回归综合移动平均模型（ARIMAX）`ts()` & `auto.arima()`
 
+- [arima xreg argument error caused by column name in data frame](https://stackoverflow.com/a/55229110/3806250)
+
 ### 季节性自回归综合移动平均模型（SARIMA）`ts()` & `auto.arima()`
+
+- [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
 
 ```{r sarima}
 sarimax <- function(timeID, data = 样本, data_len, hrz1 = 1440, 
@@ -779,11 +783,11 @@ llply(.model, function(md) {
 
 [Multiple and long seasonality for a SARIMA model in R](https://stats.stackexchange.com/questions/109835/multiple-and-long-seasonality-for-a-sarima-model-in-r)
 
-## 季节性自回归综合移动平均模型（SARIMA）`fable`
+## 季节性自回归综合移动平均模型（SARIMA）`fable` & `fabletools`
 
 https://otexts.com/fpp3/seasonal-arima.html
 
-## 自回归综合移动平均模型 `arfima()`
+## 自回归综合移动平均模型（ARFIMA / ARFIMAX） `arfima()`
 
 ### 外部因素週期性自回归综合移动平均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 
