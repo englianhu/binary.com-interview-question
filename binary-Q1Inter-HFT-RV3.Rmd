@@ -1,7 +1,7 @@
 ---
 title: "<img src='文艺坊图库/deriv.png' height='240'>"
 subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part III)**</span>](https://github.com/englianhu/binary.com-interview-question)"
-author: "[®γσ, ξηg Lιαη Ημ](https://englianhu.github.io/) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'> ® <img src='文艺坊图库/景知夏小姐.png' height='14'>"
+author: "[®γσ, ξηg Lιαη Ημ](https://englianhu.github.io/) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/景知夏小姐.png' height='14'> <img src='文艺坊图库/Peking University 02.png' height='14'>" 
 date: "`r lubridate::today('Asia/Shanghai')`"
 output:
   html_document: 
@@ -258,13 +258,13 @@ conflict_prefer('year', 'lubridate')
 pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
           'readr', 'lubridate', 'data.table', 'reprex', 'stringr', 
           'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 
-          'timetk', 'plyr', 'dplyr', 'dbplyr', 'magrittr', 'tdplyr', 
+          'timetk', 'plyr', 'dplyr', 'dbplyr', 'magrittr', 'sarima', 
           'tidyverse', 'memoise', 'htmltools', 'formattable', 'dtplyr', 
-          'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 'sarima', 
+          'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
           'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 'TSA', 
-          'microbenchmark', 'dendextend', 'lhmetools', 'ggthemr', 
+          'microbenchmark', 'dendextend', 'lhmetools', 'gtools', 
           'stringr', 'pacman', 'profmem', 'ggthemes', 'flyingfox', 
-          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 'gtools', 
+          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
           'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
 
 # load_pkg(pkgs)
@@ -287,6 +287,7 @@ conflict_prefer('mutate', 'dplyr')
 conflict_prefer('rename', 'dplyr')
 conflict_prefer('collapse', 'dplyr')
 conflict_prefer('year', 'lubridate')
+conflict_prefer('permutations', 'gtools')
 ```
 
 <br>
@@ -325,7 +326,7 @@ conflict_prefer('year', 'lubridate')
     while(1) {
       cat('目前中国标准时间：', as.character(now('Asia/Shanghai')), '\n\n')
       
-      日子 = as_date(导入数据$index) %>% 
+      日子 = as_date(导入数据$年月日时分) %>% 
 			unique
       #过滤并忽略每周闭市价时间 --- 周六凌晨12点，然后每周闭市价时间点为周五11:59PM。
       日子 <- 日子[weekdays(日子) != 'Saturday']
@@ -337,7 +338,7 @@ conflict_prefer('year', 'lubridate')
 	    } else if (is.Date(起点)) { 
 		    起点 = as_date(起点)
 	    } else {
-		    起点 = as_date(导入数据$index) %>% 
+		    起点 = as_date(导入数据$年月日时分) %>% 
 		    unique
 	    }
   	  
@@ -349,20 +350,20 @@ conflict_prefer('year', 'lubridate')
 		  str_replace_all('.201', '_201') %>% 
 		  str_split_fixed('_', '2') %>% 
 		  as_tibble %>% 
-		  dplyr::rename('统计模型' = 'V1', 'Date' = 'V2') %>% 
-		  dplyr::mutate(统计模型 = factor(统计模型), Date = as_date(Date))
+		  rename('统计模型' = 'V1', '日期' = 'V2') %>% 
+		  mutate(统计模型 = factor(统计模型), 日期 = as_date(日期))
 		
-	  布告栏 = join(tibble(Date = 动态日), 布告栏) %>% 
+	  布告栏 = join(tibble(日期 = 动态日), 布告栏) %>% 
 		  as_tibble	  
 	  布告栏 %<>% na.omit
 	  
-      布告栏 %<>% dplyr::mutate(有无 = if_else(is.na(统计模型), 0, 1)) %>% 
+      布告栏 %<>% mutate(有无 = if_else(is.na(统计模型), 0, 1)) %>% 
 		  spread(统计模型, 有无)
       
       z <- ldply(布告栏[,-1], function(zz) {
 		  na.omit(zz) %>% length }) %>% 
-		  dplyr::rename(进度 = V1) %>% 
-		  dplyr::mutate(完成 = length(日子), 进度 = percent(进度/完成))
+		  rename(进度 = V1) %>% 
+		  mutate(完成 = length(日子), 进度 = percent(进度/完成))
       
       print(z)
       
@@ -377,7 +378,7 @@ conflict_prefer('year', 'lubridate')
     
     cat('目前中国标准时间：', as.character(now('Asia/Shanghai')), '\n\n')
       
-      日子 = as_date(导入数据$index) %>% 
+      日子 = as_date(导入数据$年月日时分) %>% 
 			unique
 	  动态日 = 日子
 		
@@ -386,7 +387,7 @@ conflict_prefer('year', 'lubridate')
 	  } else if (is.Date(起点)) { 
 		  起点 = as_date(起点)
 	  } else {
-		  起点 = as_date(导入数据$index) %>% 
+		  起点 = as_date(导入数据$年月日时分) %>% 
 		  unique
 	  }
 	
@@ -397,20 +398,20 @@ conflict_prefer('year', 'lubridate')
 		  str_replace_all('.201', '_201') %>% 
 		  str_split_fixed('_', '2') %>% 
 		  as_tibble %>% 
-		  dplyr::rename('统计模型' = 'V1', 'Date' = 'V2') %>% 
-		  dplyr::mutate(统计模型 = factor(统计模型), Date = as_date(Date))
+		  rename('统计模型' = 'V1', '日期' = 'V2') %>% 
+		  mutate(统计模型 = factor(统计模型), 日期 = as_date(日期))
 		
-	  布告栏 = join(tibble(Date = 动态日), 布告栏) %>% 
+	  布告栏 = join(tibble(日期 = 动态日), 布告栏) %>% 
 		  as_tibble
 	  布告栏 %<>% na.omit
 	  
-      布告栏 %<>% dplyr::mutate(有无 = if_else(is.na(统计模型), 0, 1)) %>% 
+      布告栏 %<>% mutate(有无 = if_else(is.na(统计模型), 0, 1)) %>% 
 		  spread(统计模型, 有无)
         
       z <- ldply(布告栏[,-1], function(zz) {
 		  na.omit(zz) %>% length }) %>% 
-		  dplyr::rename(进度 = V1) %>% 
-		  dplyr::mutate(完成 = length(日子), 进度 = percent(进度/完成))
+		  rename(进度 = V1) %>% 
+		  mutate(完成 = length(日子), 进度 = percent(进度/完成))
                 
     print(z)
     
@@ -440,6 +441,11 @@ if(!file.exists(paste0(.路径, 'data/fx/USDJPY/dsmp.rds')) & exists('样本')) 
 ## 倘若环境尚未有数据，读取文件数据。
 if(!exists('样本')) {
   样本 <- readRDS(paste0(.路径, 'data/fx/USDJPY/dsmp.rds'))}
+
+样本 %<>% 
+  rename(
+    年月日时分 = index,	年份 = year, 季度 = quarter, 月份 = month, 周 = week, 周日 = wkdays, 
+    周分计 = wk_1m, 日分计 = dy_1m, 时分计 = hr_1m, 序列 = sq, 日期 = date, 闭市价 = close)
 ```
 
 ```{r 绘制样本数据图表, results = 'asis'}
@@ -469,11 +475,11 @@ if(!exists('样本')) {
 
 *数据 : `r paste0(dim(样本)[1], '行 x ', dim(样本)[2], '列')`*
 
-以上图表显示数据日期，由`r paste(range(样本$date), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
+以上图表显示数据日期，由`r paste(range(样本$日期), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
 
 # 统计建模
 
-在此先过滤数据，从2016年的第一个预测日（`r dplyr::filter(样本, year == 2016)$date[1]`开始，也就是读取的样本数据中的第二年数据开始），与论文*(Part I)*、*(Part II)*中相符。
+在此先过滤数据，从2016年的第一个预测日（`r filter(样本, 年份 == 2016)$日期[1]`开始，也就是读取的样本数据中的第二年数据开始），与论文*(Part I)*、*(Part II)*中相符。
 
 ## 自回归综合移动平均模型系列（ARIMA Series）
 
@@ -497,211 +503,19 @@ if(!exists('样本')) {
 
 - [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
 
-```{r sarima}
-sarimax <- function(timeID, data = 样本, data_len, hrz1 = 1440, 
-                   .model = .model, .d = .d, .D = .D, 
-                   seas = seas, .order = .order, .seas = .seas, 
-                   stationary = stationary, trace = trace, 
-                   ic = ic, stepwise = stepwise, nmodels = nmodels, 
-                   #approximation = (length(x) > 150 | frequency(x) > 12), 
-                   truncate = truncate, #x = y, method = NULL, 
-                   xreg = xreg, test = test, test.args = test.args, 
-                   seasonal.test = seasonal.test, 
-                   seasonal.test.args = seasonal.test.args, 
-                   allowdrift = allowdrift, allowmean = allowmean, 
-                   lambda = lambda, biasadj = biasadj, parallel = parallel, 
-                   num.cores = num.cores, include.mean = include.mean, 
-                   #xreg = NULL, include.constant, 
-                   include.drift = include.drift, model = model, 
-                   #lambda = model$lambda, x = y, biasadj = FALSE, 
-                   method = method) {
-  
-  tmp <- llply(1:length(timeID), function(i) {
-    
-    if(i == 1) {
-      
-      cat('\n===========================================\n')
-      cat('train[', i, ']\n')
-      print(train <- 样本[date < timeID[i]][(.N - (data_len - 1)):.N])
-      ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-      
-      cat('\n-------------------------------------------\n')
-      cat('train_test[', i, ']\n')
-      print(train_test <- 样本[sq %in% ctr])
-      
-      srm <- train[, .(index, close)] %>% 
-        tk_ts(frequency = hrz1)
-      
-      if(.model == 'auto') {
-        
-        srm <- tryCatch({
-          auto.arima(srm, d = .d, D = .D, seasonal = seas, 
-                     stationary = stationary, trace = trace, 
-                     ic = ic, stepwise = stepwise, nmodels = nmodels, 
-                     #approximation = approximation, 
-                     method = method, truncate = truncate, #x = y, 
-                     xreg = xreg, test = test, lambda = lambda, 
-                     test.args = test.args, allowdrift = allowdrift, 
-                     seasonal.test = seasonal.test, 
-                     seasonal.test.args = seasonal.test.args, 
-                     allowmean = allowmean, biasadj = biasadj, 
-                     parallel = parallel, num.cores = num.cores)
-        }, error = function(err) NULL)
-        
-      } else if (.model == 'Arima') {
-        
-        srm <- tryCatch({
-          Arima(srm, order = .order, seasonal = .seas, 
-                xreg = xreg, include.mean = include.mean, 
-                include.drift = include.drift, 
-                #include.constant = include.constant, 
-                #model = model, lambda = lambda, x = y, 
-                biasadj = biasadj, method = method)
-          }, error = function(err) NULL)
-        
-      } else {
-        
-      }
-      
-      if(!is.null(srm)) {
-        srm %<>% 
-          forecast::forecast(h = hrz1) %>% 
-          tk_tbl %>% 
-          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
-                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
-          dplyr::rename(fc.price = `Point Forecast`) %>% 
-          dplyr::select(index, mk.price, fc.price)
-        
-        cat('\n-------------------------------------------\n')
-        cat('forecast[', i, ']\n')
-        print(srm %>% as.data.table)
-      }
-      
-      if(.model == 'auto') {
-        nms <- paste0(.model, '_d', .d, 'D', .D, 
-                      '_seas', seas, '_', data_len, '_', 
-                      hrz1, '.', as_date(srm$index[1]), '.rds')
-        
-      } else if (.model == 'Arima') {
-        nms <- paste0(.model, '_arma', 
-          paste(.order, collapse = ''), '_seas', 
-          paste(.seas, collapse = ''), '_', data_len, '_', 
-          hrz1, '.', as_date(srm$index[1]), '.rds')
-        
-      } else {
-        
-      }
-      
-      saveRDS(srm, paste0(
-        dtr, 'data/fx/USDJPY/sarima_', nms))
-      cat('\n', i, '=', nms, '\n\n')
-      rm(srm)
-      
-    } else if(i %in% seq(1, length(timeID), by = 6)[-1]) {
-      
-      
-    } else if(i == length(timeID)) {
-      
-      
-    } else  {
-      
-      lst_sq <- 样本[date < timeID[i],][.N]$sq + 1
-      
-      cat('\n===========================================\n')
-      cat('train[', i, ']\n')
-      print(train <- 样本[(lst_sq - data_len + 1):lst_sq])
-      ctr <- train$sq[1]:(range(train$sq)[2] + hrz1)
-      
-      cat('\n-------------------------------------------\n')
-      cat('train_test[', i, ']\n')
-      print(train_test <- 样本[sq %in% ctr])
-      
-      srm <- train[, .(index, close)] %>% 
-        tk_ts(frequency = hrz1)
-      
-      if(.model == 'auto') {
-        
-        srm <- tryCatch({
-          auto.arima(srm, d = .d, D = .D, seasonal = seas, 
-                     stationary = stationary, trace = trace, 
-                     ic = ic, stepwise = stepwise, nmodels = nmodels, 
-                     #approximation = approximation, 
-                     method = method, truncate = truncate, #x = y, 
-                     xreg = xreg, test = test, lambda = lambda, 
-                     test.args = test.args, allowdrift = allowdrift, 
-                     seasonal.test = seasonal.test, 
-                     seasonal.test.args = seasonal.test.args, 
-                     allowmean = allowmean, biasadj = biasadj, 
-                     parallel = parallel, num.cores = num.cores)
-        }, error = function(err) NULL)
-        
-      } else if (.model == 'Arima') {
-        
-        srm <- tryCatch({
-          Arima(srm, order = .order, seasonal = .seas, 
-                xreg = xreg, include.mean = include.mean, 
-                include.drift = include.drift, 
-                #include.constant = include.constant, 
-                #model = model, lambda = lambda, x = y, 
-                biasadj = biasadj, method = method)
-        }, error = function(err) NULL)
-        
-      } else {
-        
-      }
-      
-      if(!is.null(srm)) {
-        srm %<>% 
-          forecast::forecast(h = hrz1) %>% 
-          tk_tbl %>% 
-          dplyr::mutate(index = train_test[(.N - hrz1 + 1):.N,]$index, 
-                        mk.price = train_test[(.N - hrz1 + 1):.N,]$close) %>% 
-          dplyr::rename(fc.price = `Point Forecast`) %>% 
-          dplyr::select(index, mk.price, fc.price)
-        
-        cat('\n-------------------------------------------\n')
-        cat('forecast[', i, ']\n')
-        print(srm %>% as.data.table)
-      }
-      
-      if(.model == 'auto') {
-        nms <- paste0(.model, '_d', .d, 'D', .D, 
-                      '_seas', seas, '_', data_len, '_', 
-                      hrz1, '.', as_date(srm$index[1]), '.rds')
-        
-      } else if (.model == 'Arima') {
-        nms <- paste0(.model, '_arma', 
-                      paste(.order, collapse = ''), '_seas', 
-                      paste(.seas, collapse = ''), '_', data_len, '_', 
-                      hrz1, '.', as_date(srm$index[1]), '.rds')
-        
-      } else {
-        
-      }
-      
-      saveRDS(srm, paste0(
-        dtr, 'data/fx/USDJPY/sarima_', nms))
-      cat('\n', i, '=', nms, '\n\n')
-      rm(srm)
-    }
-  })
-  return(tmp)
-}
-```
-
 ```{r}
 source('function/sarima.R')
 ```
 
 ```{r}
 # --------- eval=FALSE ---------
-timeID <- unique(样本$date)
-bse <- dplyr::filter(样本, year == 2016)$date[1] #"2016-01-04" #1st trading date in 2nd year
-timeID %<>% .[. >= bse]
-timeID %<>% .[1:6] ##Take 6 dates as sample
-#timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 7200 #last 7200  observations 样本[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
+时间索引 <- unique(样本$日期)
+bse <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" #1st trading date in 2nd year
+时间索引 %<>% .[. >= bse]
+时间索引 %<>% .[1:6] ##Take 6 dates as sample
+#时间索引 %<>% .[. >= as_date('2016-01-04')]
+数据量 <- 1200 #last 1200  observations 样本[(.N - (数据量 - 1)):.N]
+预测时间单位 <- 1
 
 .model = c('auto', 'Arima')
 # .model %<>% .[1]
@@ -714,16 +528,16 @@ seas = c(TRUE, FALSE)
 #stepwise = c(TRUE, FALSE)
 
 ## .order = c(0, 0, 0)
-.order = gtools::permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+.order = permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as_tibble %>% 
-  dplyr::rename(p = V1, d = V2, q = V3) %>% 
-  dplyr::filter(d <= 2)
+  rename(p = V1, d = V2, q = V3) %>% 
+  filter(d <= 2)
 
 ## .seas = c(0, 0, 0)
-.seas = gtools::permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+.seas = permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as_tibble %>% 
-  dplyr::rename(P = V1, D = V2, Q = V3) %>% 
-  dplyr::filter(D <= 1)
+  rename(P = V1, D = V2, Q = V3) %>% 
+  filter(D <= 1)
 ```
 
 ```{r eval=FALSE}
@@ -734,10 +548,10 @@ llply(.model, function(md) {
     srm0 <- llply(.d, function(d) {
       srm1 <- llply(.D, function(D) {
         srm2 <- llply(seas, function(ss) {
-          srm3 <- llply(timeID, function(dte) {
+          srm3 <- llply(时间索引, function(dte) {
             res <- sarimax(
-              timeID = dte, 样本, 
-              data_len = data_len, hrz1 = hrz1, 
+              时间索引 = dte, 样本 = 样本, 
+              数据量 = 数据量, 预测时间单位 = 预测时间单位, 
               .model = md, .d = d, .D = D, 
               seas = ss, stationary = FALSE, trace = FALSE, 
               ic = c('aicc', 'aic', 'bic'), 
@@ -758,10 +572,10 @@ llply(.model, function(md) {
   } else if (md == 'Arima') {
     srm0 <- llply(1:nrow(.order), function(i) {
       srm1 <- llply(1:nrow(.seas), function(j) {
-        srm2 <- llply(timeID, function(dte) {
+        srm2 <- llply(时间索引, function(dte) {
           res <- sarimax(
-            timeID = dte, 样本, 
-            data_len = data_len, hrz1 = hrz1, 
+            时间索引 = dte, 样本, 
+            数据量 = 数据量, 预测时间单位 = 预测时间单位, 
             .model = md, .order = unlist(.order[i,]), 
             .seas = unlist(.seas[j,]), xreg = NULL, 
             include.mean = TRUE, include.drift = FALSE, 
@@ -832,17 +646,17 @@ I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes 
 
 ```{r}
 # --------- eval=FALSE ---------
-timeID <- unique(样本$date)
+时间索引 <- unique(样本$date)
 bse <- 样本[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
-timeID %<>% .[. >= bse]
-#timeID %<>% .[. >= as_date('2016-01-04')]
-data_len <- 7200 #last 7200  observations 样本[(.N - (data_len - 1)):.N]
-hrz1 <- 1440
+时间索引 %<>% .[. >= bse]
+#时间索引 %<>% .[. >= as_date('2016-01-04')]
+数据量 <- 7200 #last 7200  observations 样本[(.N - (数据量 - 1)):.N]
+预测时间单位 <- 1440
 hrz2 <- 1440
 
 llply(ets.m, function(md) {
-  mstseas(timeID = timeID, 样本, 
-        data_len = data_len, hrz1 = hrz1, 
+  mstseas(时间索引 = 时间索引, 样本, 
+        数据量 = 数据量, 预测时间单位 = 预测时间单位, 
         hrz2 = hrz2, .model = md)
   })
 ```

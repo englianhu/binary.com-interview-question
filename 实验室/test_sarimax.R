@@ -22,7 +22,7 @@ tsdiag(model)
 summary(forec)
 
 ### =============================================================================
-
+## https://stackoverflow.com/questions/55228092/arima-xreg-argument-error-caused-by-column-name-in-data-frame
 structure(
   list(
     ECDD = c(
@@ -201,4 +201,16 @@ structure(
             0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0)), 
   row.names = c(NA, 100L), class = 'data.frame')
+
+library(forecast)
+## it works
+auto.arima(df2_comb[1:100,names(df2_comb)=='ECDD'], xreg = as.matrix(df2_comb[,names(df2_comb)!='ECDD'][1:100,names(df2_comb[,!names(df2_comb)%in%c('ECDD','order_dts')])]))
+## it fails
+colnames(df2_comb)[3]<- "structure_211"
+colnames(df2_comb)[4]<- "structure_48"
+auto.arima(df2_comb[1:100,names(df2_comb)=='ECDD'], xreg = df2_comb[,names(df2_comb)!='ECDD'][1:100,names(df2_comb[,!names(df2_comb)%in%c('ECDD','order_dts')])])
+
+
+
+
 
