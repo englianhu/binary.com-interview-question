@@ -357,8 +357,8 @@ conflict_prefer('permutations', 'gtools')
 		  as_tibble	  
 	  布告栏 %<>% na.omit
 	  
-      布告栏 %<>% mutate(有无 = if_else(is.na(统计模型), 0, 1)) %>% 
-		  spread(统计模型, 有无)
+      布告栏 %<>% mutate(有否 = if_else(is.na(统计模型), 0, 1)) %>% 
+		  spread(统计模型, 有否)
       
       z <- ldply(布告栏[,-1], function(zz) {
 		  na.omit(zz) %>% length }) %>% 
@@ -405,8 +405,8 @@ conflict_prefer('permutations', 'gtools')
 		  as_tibble
 	  布告栏 %<>% na.omit
 	  
-      布告栏 %<>% mutate(有无 = if_else(is.na(统计模型), 0, 1)) %>% 
-		  spread(统计模型, 有无)
+      布告栏 %<>% mutate(有否 = if_else(is.na(统计模型), 0, 1)) %>% 
+		  spread(统计模型, 有否)
         
       z <- ldply(布告栏[,-1], function(zz) {
 		  na.omit(zz) %>% length }) %>% 
@@ -504,22 +504,22 @@ if(!exists('样本')) {
 - [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
 
 ```{r}
-source('function/sarima.R')
+source('function/季节性自回归.R')
 ```
 
 ```{r}
 # --------- eval=FALSE ---------
 时间索引 <- unique(样本$日期)
-bse <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" #1st trading date in 2nd year
-时间索引 %<>% .[. >= bse]
-时间索引 %<>% .[1:6] ##Take 6 dates as sample
+基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" #第2年第1个交易日
+时间索引 %<>% .[. >= 基准]
+时间索引 %<>% .[1:6] #筛选数据中的前6个日期为样本
 #时间索引 %<>% .[. >= as_date('2016-01-04')]
-数据量 <- 1200 #last 1200  observations 样本[(.N - (数据量 - 1)):.N]
+数据量 <- 1200 #筛选数据中的最后1200观测值：样本[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1
 
-.model = c('auto', 'Arima')
-# .model %<>% .[1]
-# .model %<>% .[2]
+.模型选项 = c('auto', 'Arima')
+# .模型选项 %<>% .[1]
+# .模型选项 %<>% .[2]
 .d = 0:2
 .D = 0:1 
 seas = c(TRUE, FALSE)
@@ -542,7 +542,7 @@ seas = c(TRUE, FALSE)
 
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
-llply(.model, function(md) {
+llply(.模型选项, function(md) {
   
   if(md == 'auto') {
     srm0 <- llply(.d, function(d) {
@@ -552,7 +552,7 @@ llply(.model, function(md) {
             res <- sarimax(
               时间索引 = dte, 样本 = 样本, 
               数据量 = 数据量, 预测时间单位 = 预测时间单位, 
-              .model = md, .d = d, .D = D, 
+              .模型选项 = md, .d = d, .D = D, 
               seas = ss, stationary = FALSE, trace = FALSE, 
               ic = c('aicc', 'aic', 'bic'), 
               stepwise = TRUE, nmodels = 94, 
@@ -576,7 +576,7 @@ llply(.model, function(md) {
           res <- sarimax(
             时间索引 = dte, 样本, 
             数据量 = 数据量, 预测时间单位 = 预测时间单位, 
-            .model = md, .order = unlist(.order[i,]), 
+            .模型选项 = md, .order = unlist(.order[i,]), 
             .seas = unlist(.seas[j,]), xreg = NULL, 
             include.mean = TRUE, include.drift = FALSE, 
             #include.constant = include.constant, 
@@ -647,8 +647,8 @@ I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes 
 ```{r}
 # --------- eval=FALSE ---------
 时间索引 <- unique(样本$date)
-bse <- 样本[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
-时间索引 %<>% .[. >= bse]
+基准 <- 样本[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+时间索引 %<>% .[. >= 基准]
 #时间索引 %<>% .[. >= as_date('2016-01-04')]
 数据量 <- 7200 #last 7200  observations 样本[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1440
@@ -657,7 +657,7 @@ hrz2 <- 1440
 llply(ets.m, function(md) {
   mstseas(时间索引 = 时间索引, 样本, 
         数据量 = 数据量, 预测时间单位 = 预测时间单位, 
-        hrz2 = hrz2, .model = md)
+        hrz2 = hrz2, .模型选项 = md)
   })
 ```
 
@@ -698,7 +698,7 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 
 > VAR分析中的一个中心问题是找到滞后的阶数，以产生最佳结果。模型比较通常基于信息标准，例如AIC，BIC或HQ。通常，由于是小样本预测，AIC优于其他标准。但是，BIC和HQ在大型样本中效果很好 
 
-Citation: [R语言用向量自回归（VAR）进行经济数据脉冲响应研究分析](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e7%94%a8%e5%90%91%e9%87%8f%e8%87%aa%e5%9b%9e%e5%bd%92%ef%bc%88var%ef%bc%89%e8%bf%9b%e8%a1%8c%e7%bb%8f%e6%b5%8e%e6%95%b0%e6%8d%ae%e8%84%89%e5%86%b2%e5%93%8d%e5%ba%94%e7%a0%94)
+引用：[R语言用向量自回归（VAR）进行经济数据脉冲响应研究分析](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e7%94%a8%e5%90%91%e9%87%8f%e8%87%aa%e5%9b%9e%e5%bd%92%ef%bc%88var%ef%bc%89%e8%bf%9b%e8%a1%8c%e7%bb%8f%e6%b5%8e%e6%95%b0%e6%8d%ae%e8%84%89%e5%86%b2%e5%93%8d%e5%ba%94%e7%a0%94)
 
 
 
