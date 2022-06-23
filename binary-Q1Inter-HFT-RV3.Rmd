@@ -301,18 +301,18 @@ conflict_prefer('permutations', 'gtools')
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275) (in RPubs.com)
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://beta.rstudioconnect.com/content/8a7cbdce-6fc5-409b-8072-9ff21dbd32eb) (in RStudioConnect.com)
 
-在此论文中，使用[季节性自回归综合移动平均模型系列]{style="color:RoyalBlue"}。
+在此论文中，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。
 
-- 外部因素週期性自回归综合移动平均模型（ARIMAX）
-- 季节性自回归综合移动平均模型（SARIMA）
-- 外部因素週期性季节性自回归综合移动平均模型（SARIMAX）
-- 外部因素週期性自回归分整综合移动平均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
-- 多元季节性自回归综合移动平均模型（Multi-Seasonal Time Series `msts()`）
+- 外部因素週期性自回归综合滑均模型（ARIMAX）
+- 季节性自回归综合滑均模型（SARIMA）
+- 外部因素週期性季节性自回归综合滑均模型（SARIMAX）
+- 外部因素週期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
+- 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
 <span style='color:green'>**进程进度函数**</span>
 
 ```{r 进程布告栏}
-运算进度表 <- function(导入数据, 起点 = NULL, 秒计 = 60, .匹配元素 = '^sarima_', .周期性 = TRUE) {
+运算进度表 <- function(导入数据, 起点 = NULL, 秒计 = 60, .匹配元素 = '^季节性自回归_', .周期性 = TRUE) {
   ## ------------- 定时查询进度 ----------------------
   ## 每分钟自动查询与更新以上模拟预测汇价进度（储存文件量）。
   require('magrittr')
@@ -481,7 +481,7 @@ if(!exists('样本')) {
 
 在此先过滤数据，从2016年的第一个预测日（`r filter(样本, 年份 == 2016)$日期[1]`开始，也就是读取的样本数据中的第二年数据开始），与论文*(Part I)*、*(Part II)*中相符。
 
-## 自回归综合移动平均模型系列（ARIMA Series）
+## 自回归综合滑均模型系列（ARIMA Series）
 
 ### 季节性数据建模
 
@@ -502,15 +502,15 @@ if(!exists('样本')) {
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
 - [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
 
-### 自回归综合移动平均模型（ARIMA）`ts()` & `auto.arima()`
+### 自回归综合滑均模型（ARIMA）`ts()` & `auto.arima()`
 
 [SARIMAX model in R](https://stackoverflow.com/a/17816958/3806250)
 
-### 季节性自回归综合移动平均模型（ARIMAX）`ts()` & `auto.arima()`
+### 季节性自回归综合滑均模型（ARIMAX）`ts()` & `auto.arima()`
 
 - [arima xreg argument error caused by column name in data frame](https://stackoverflow.com/a/55229110/3806250)
 
-### 季节性自回归综合移动平均模型（SARIMA）`ts()` & `auto.arima()`
+### 季节性自回归综合滑均模型（SARIMA）`ts()` & `auto.arima()`
 
 - [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
 
@@ -528,11 +528,11 @@ source('function/季节性自回归.R')
 数据量 <- 1200 #筛选数据中的最后1200观测值：样本[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1
 
-.模型选项 = c('auto', 'Arima')
+.模型选项 = c('自动', '自回归滑均')
 # .模型选项 %<>% .[1]
 # .模型选项 %<>% .[2]
 .差分阶数 = 0:2
-.D = 0:1 
+.季节性差分阶数 = 0:1 
 seas = c(TRUE, FALSE)
 ## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
 #approximation = c(TRUE, FALSE)
@@ -541,14 +541,14 @@ seas = c(TRUE, FALSE)
 ## .order = c(0, 0, 0)
 .order = permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as_tibble %>% 
-  rename(自回归项数 = V1, 差分阶数 = V2, 移动平均项数 = V3) %>% 
+  rename(自回归阶数 = V1, 差分阶数 = V2, 滑均阶数 = V3) %>% 
   filter(差分阶数 <= 2)
 
 ## .seas = c(0, 0, 0)
 .seas = permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as_tibble %>% 
-  rename(P = V1, D = V2, Q = V3) %>% 
-  filter(D <= 1)
+  rename(季节性自回归阶数 = V1, 季节性差分阶数 = V2, 季节性滑均阶数 = V3) %>% 
+  filter(季节性差分阶数 <= 1)
 ```
 
 ```{r eval=FALSE}
@@ -557,19 +557,19 @@ llply(.模型选项, function(md) {
   
   if(md == 'auto') {
     srm0 <- llply(.差分阶数, function(差分阶数) {
-      srm1 <- llply(.D, function(D) {
+      srm1 <- llply(.季节性差分阶数, function(季节性差分阶数) {
         srm2 <- llply(seas, function(ss) {
           srm3 <- llply(时间索引, function(dte) {
-            res <- sarimax(
+            res <- 季节性自回归(
               时间索引 = dte, 样本 = 样本, 
               数据量 = 数据量, 预测时间单位 = 预测时间单位, 
-              .模型选项 = md, .差分阶数 = 差分阶数, .D = D, 
+              .模型选项 = md, .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
               seas = ss, stationary = FALSE, trace = FALSE, 
               ic = c('aicc', 'aic', 'bic'), 
               stepwise = TRUE, nmodels = 94, 
               #approximation=(length(x)>150|frequency(x)>12), 
               truncate = NULL, method = NULL, #x = y, 
-              xreg = NULL, test = c('kpss', 'adf', 'pp'), 
+              趋势 = NULL, test = c('kpss', 'adf', 'pp'), 
               test.args = list(), 
               seasonal.test = c('seas', 'ocsb', 'hegy', 'ch'), 
               seasonal.test.args = list(), 
@@ -581,14 +581,14 @@ llply(.模型选项, function(md) {
       })
     
   } else if (md == 'Arima') {
-    srm0 <- llply(1:nrow(.order), function(i) {
-      srm1 <- llply(1:nrow(.seas), function(j) {
+    srm0 <- llply(1:nrow(.order), function(迭数1) {
+      srm1 <- llply(1:nrow(.seas), function(迭数2) {
         srm2 <- llply(时间索引, function(dte) {
-          res <- sarimax(
+          res <- 季节性自回归(
             时间索引 = dte, 样本, 
             数据量 = 数据量, 预测时间单位 = 预测时间单位, 
-            .模型选项 = md, .order = unlist(.order[i,]), 
-            .seas = unlist(.seas[j,]), xreg = NULL, 
+            .模型选项 = md, .order = unlist(.order[迭数1,]), 
+            .seas = unlist(.seas[迭数2,]), 趋势 = NULL, 
             include.mean = TRUE, include.drift = FALSE, 
             #include.constant = include.constant, 
             #model = NULL, lambda = lambda, x = y, 
@@ -604,17 +604,17 @@ llply(.模型选项, function(md) {
 })
 ```
 
-## 季节性自回归综合移动平均模型（SARIMA）`msts()` & `auto.arima()`
+## 季节性自回归综合滑均模型（SARIMA）`msts()` & `auto.arima()`
 
 [Multiple and long seasonality for a SARIMA model in R](https://stats.stackexchange.com/questions/109835/multiple-and-long-seasonality-for-a-sarima-model-in-r)
 
-## 季节性自回归综合移动平均模型（SARIMA）`fable` & `fabletools`
+## 季节性自回归综合滑均模型（SARIMA）`fable` & `fabletools`
 
 https://otexts.com/fpp3/seasonal-arima.html
 
-## 自回归综合移动平均模型（ARFIMA / ARFIMAX） `arfima()`
+## 自回归综合滑均模型（ARFIMA / ARFIMAX） `arfima()`
 
-### 外部因素週期性自回归综合移动平均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
+### 外部因素週期性自回归综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 
 - [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 - [binary.com 面试试题 I - GARCH模型中的`ARCH in Mean`](https://rpubs.com/englianhu/binary-Q1-archm)
