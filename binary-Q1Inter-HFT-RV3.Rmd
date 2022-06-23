@@ -360,14 +360,14 @@ conflict_prefer('permutations', 'gtools')
       布告栏 %<>% mutate(有否 = if_else(is.na(统计模型), 0, 1)) %>% 
 		  spread(统计模型, 有否)
       
-      z <- ldply(布告栏[,-1], function(zz) {
-		  na.omit(zz) %>% length }) %>% 
+      布告栏进度表 <- ldply(布告栏[,-1], function(布告栏参数) {
+		  na.omit(布告栏参数) %>% length }) %>% 
 		  rename(进度 = V1) %>% 
 		  mutate(完成 = length(日子), 进度 = percent(进度/完成))
       
-      print(z)
+      print(布告栏进度表)
       
-      进度表 = sum(z$进度)/sum(z$完成)
+      进度表 = sum(布告栏进度表$进度)/sum(布告栏进度表$完成)
       cat('\n================', as.character(percent(进度表)), '================\n\n')
       
       if (进度表 == 1) break #倘若进度达到100%就停止更新。
@@ -408,14 +408,14 @@ conflict_prefer('permutations', 'gtools')
       布告栏 %<>% mutate(有否 = if_else(is.na(统计模型), 0, 1)) %>% 
 		  spread(统计模型, 有否)
         
-      z <- ldply(布告栏[,-1], function(zz) {
-		  na.omit(zz) %>% length }) %>% 
+      布告栏进度表 <- ldply(布告栏[,-1], function(布告栏参数) {
+		  na.omit(布告栏参数) %>% length }) %>% 
 		  rename(进度 = V1) %>% 
 		  mutate(完成 = length(日子), 进度 = percent(进度/完成))
                 
-    print(z)
+    print(布告栏进度表)
     
-    进度表 = sum(z$进度)/sum(z$完成)
+    进度表 = sum(布告栏进度表$进度)/sum(布告栏进度表$完成)
     cat('\n================', as.character(percent(进度表)), '================\n\n')
     }
   }
@@ -485,6 +485,17 @@ if(!exists('样本')) {
 
 ### 季节性数据建模
 
+> ARIMA(p,d,q)模型中
+- p是自回归(AR)的项数，用来获取自变量
+- d是差分(I)的系数，为了使时间序列平稳
+- q是移动平均(MA)的项数，为了使其光滑
+
+引用：[ARIMA模型中的三个参数(p, d, q)都是什么意思?](http://sofasofa.io/forum_main_post.php?postid=1000324)
+
+> 运用SPSS 19.0软件中的相关模块进行数据处理和分析。本研究是以月份为时间单位的研究序列，故选择复合季节模型[5, 6]：ARIMA(p，d，q)(P，D，Q)s，参数p为非季节性自回归阶数，d为一般差分阶数，q为非季节性滑动平均阶数；P为季节性自回归阶数，D为季节差分阶数，Q为季节性移动平均阶数，s为季节模型的时间单位相应周期(本研究s=12)。
+
+引用：[北京市昌平区肺结核发病数ARIMA模型预测](http://www.jbjc.org/JBJC/html/article_8538.htm)
+
 [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275)中，结论1200分钟为最优数据量，故此我将数据量设置为(1200分钟，也就是等于20个交易小时)，去预测下一分钟交易价格。
 
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.7 ARIMA modelling in R*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/arima-r.html)
@@ -520,7 +531,7 @@ source('function/季节性自回归.R')
 .模型选项 = c('auto', 'Arima')
 # .模型选项 %<>% .[1]
 # .模型选项 %<>% .[2]
-.d = 0:2
+.差分阶数 = 0:2
 .D = 0:1 
 seas = c(TRUE, FALSE)
 ## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
@@ -530,8 +541,8 @@ seas = c(TRUE, FALSE)
 ## .order = c(0, 0, 0)
 .order = permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as_tibble %>% 
-  rename(p = V1, d = V2, q = V3) %>% 
-  filter(d <= 2)
+  rename(自回归项数 = V1, 差分阶数 = V2, 移动平均项数 = V3) %>% 
+  filter(差分阶数 <= 2)
 
 ## .seas = c(0, 0, 0)
 .seas = permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
@@ -545,14 +556,14 @@ seas = c(TRUE, FALSE)
 llply(.模型选项, function(md) {
   
   if(md == 'auto') {
-    srm0 <- llply(.d, function(d) {
+    srm0 <- llply(.差分阶数, function(差分阶数) {
       srm1 <- llply(.D, function(D) {
         srm2 <- llply(seas, function(ss) {
           srm3 <- llply(时间索引, function(dte) {
             res <- sarimax(
               时间索引 = dte, 样本 = 样本, 
               数据量 = 数据量, 预测时间单位 = 预测时间单位, 
-              .模型选项 = md, .d = d, .D = D, 
+              .模型选项 = md, .差分阶数 = 差分阶数, .D = D, 
               seas = ss, stationary = FALSE, trace = FALSE, 
               ic = c('aicc', 'aic', 'bic'), 
               stepwise = TRUE, nmodels = 94, 
