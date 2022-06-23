@@ -1,7 +1,7 @@
 ---
 title: "<img src='文艺坊图库/deriv.png' height='240'>"
 subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part III)**</span>](https://github.com/englianhu/binary.com-interview-question)"
-author: "[®γσ, ξηg Lιαη Ημ](https://englianhu.github.io/) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/景知夏小姐.png' height='14'> <img src='文艺坊图库/Peking University 02.png' height='14'>" 
+author: "[®γσ, ξηg Lιαη Ημ](https://englianhu.github.io/) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/021 - 04.jpg' height='14'> <img src='文艺坊图库/Peking University 02.png' height='14'>" 
 date: "`r lubridate::today('Asia/Shanghai')`"
 output:
   html_document: 
@@ -298,10 +298,10 @@ conflict_prefer('permutations', 'gtools')
 
 在此论文中，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。
 
-- 外部因素週期性自回归综合滑均模型（ARIMAX）
+- 外部因素周期性自回归综合滑均模型（ARIMAX）
 - 季节性自回归综合滑均模型（SARIMA）
-- 外部因素週期性季节性自回归综合滑均模型（SARIMAX）
-- 外部因素週期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
+- 外部因素周期性季节性自回归综合滑均模型（SARIMAX）
+- 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 - 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
 <span style='color:green'>**进程进度函数**</span>
@@ -319,7 +319,7 @@ conflict_prefer('permutations', 'gtools')
   
   if (.周期性 == TRUE) {
     while(1) {
-      cat('目前中国标准时间：', as.character(now('Asia/Shanghai')), '\n\n')
+      cat('当前中国标准时间：', as.character(now('Asia/Shanghai')), '\n\n')
       
       日子 = as_date(导入数据$年月日时分) %>% 
 			unique
@@ -371,7 +371,7 @@ conflict_prefer('permutations', 'gtools')
     }
   } else {
     
-    cat('目前中国标准时间：', as.character(now('Asia/Shanghai')), '\n\n')
+    cat('当前中国标准时间：', as.character(now('Asia/Shanghai')), '\n\n')
       
       日子 = as_date(导入数据$年月日时分) %>% 
 			unique
@@ -481,6 +481,7 @@ if(!exists('样本')) {
 ### 季节性数据建模
 
 > ARIMA(p,d,q)模型中
+>
 - p是自回归(AR)的项数，用来获取自变量
 - d是差分(I)的系数，为了使时间序列平稳
 - q是移动平均(MA)的项数，为了使其光滑
@@ -499,19 +500,19 @@ if(!exists('样本')) {
 
 ### 自回归综合滑均模型（ARIMA）`ts()` & `auto.arima()`
 
-[SARIMAX model in R](https://stackoverflow.com/a/17816958/3806250)
+```{r}
+source('函数/季节性自回归.R')
+```
 
-### 季节性自回归综合滑均模型（ARIMAX）`ts()` & `auto.arima()`
+### 外部因素周期性自回归综合滑均模型（ARIMAX）`ts()` & `auto.arima()`
 
 - [arima xreg argument error caused by column name in data frame](https://stackoverflow.com/a/55229110/3806250)
 
 ### 季节性自回归综合滑均模型（SARIMA）`ts()` & `auto.arima()`
 
-- [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
+### 外部因素周期性季节性自回归综合滑均模型（SARIMAX）`ts()` & `auto.arima()`
 
-```{r}
-source('函数/季节性自回归.R')
-```
+- [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
 
 ```{r}
 # --------- eval=FALSE ---------
@@ -555,7 +556,7 @@ llply(.模型选项, function(模型) {
       季回归1 <- llply(.季节性差分阶数, function(季节性差分阶数) {
         季回归2 <- llply(季节性与否, function(季节) {
           季回归3 <- llply(时间索引, function(时序) {
-            res <- 季节性自回归(时间索引 = 时序, 样本 = 样本, 
+            成效 <- 季节性自回归(时间索引 = 时序, 样本 = 样本, 路径 = .路径, 
               数据量 = 数据量, 预测时间单位 = 预测时间单位, .模型选项 = 模型, 
               .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
               季节性与否 = 季节, stationary = FALSE, 记载自回归与否 = FALSE, 
@@ -564,11 +565,10 @@ llply(.模型选项, function(模型) {
               #近似值与否=(length(x)>150|frequency(x)>12), 
               缩写 = NULL, 计策谋略 = NULL, #x = y, 
               趋势 = NULL, 测试 = c('kpss', 'adf', 'pp'), 
-              测试参数 = list(), 
+              测试参数 = list(), 季节性测试参数 = list(), 
               季节性测试 = c('seas', 'ocsb', 'hegy', 'ch'), 
-              季节性测试参数 = list(), 
               允许截距与否 = TRUE, 允许包含均值与否 = TRUE, 博克斯考克斯变换 = NULL, 
-              biasadj = FALSE, parallel = FALSE, num.cores = 2)
+              偏差调整与否 = FALSE, 多管齐下与否 = FALSE, 核心量 = 2)
             })
           })
         })
@@ -578,14 +578,14 @@ llply(.模型选项, function(模型) {
     季回归0 <- llply(1:nrow(.时序规律), function(迭数1) {
       季回归1 <- llply(1:nrow(.季节性规律参数), function(迭数2) {
         季回归2 <- llply(时间索引, function(时序) {
-          res <- 季节性自回归(时间索引 = 时序, 样本, 
+          成效 <- 季节性自回归(时间索引 = 时序, 样本 = 样本, 路径 = .路径, 
             数据量 = 数据量, 预测时间单位 = 预测时间单位, 
             .模型选项 = 模型, .时序规律 = unlist(.时序规律[迭数1,]), 
             .季节性规律参数 = unlist(.季节性规律参数[迭数2,]), 趋势 = NULL, 
             允许包含均值与否 = TRUE, 允许截距与否 = FALSE, 
             #包含常数与否 = 包含常数与否, 
             #统计模型 = NULL, 博克斯考克斯变换 = 博克斯考克斯变换, x = y, 
-            biasadj = FALSE, 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
+            偏差调整与否 = FALSE, 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
         })
       })
     })
@@ -599,7 +599,8 @@ llply(.模型选项, function(模型) {
 
 ## 季节性自回归综合滑均模型（SARIMA）`msts()` & `auto.arima()`
 
-[Multiple and long seasonality for a SARIMA model in R](https://stats.stackexchange.com/questions/109835/multiple-and-long-seasonality-for-a-sarima-model-in-r)
+- [Multiple and long seasonality for a SARIMA model in R](https://stats.stackexchange.com/questions/109835/multiple-and-long-seasonality-for-a-sarima-model-in-r)
+- [SARIMAX model in R](https://stackoverflow.com/a/17816958/3806250)
 
 ## 季节性自回归综合滑均模型（SARIMA）`fable` & `fabletools`
 
@@ -607,7 +608,7 @@ https://otexts.com/fpp3/seasonal-arima.html
 
 ## 自回归综合滑均模型（ARFIMA / ARFIMAX） `arfima()`
 
-### 外部因素週期性自回归综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
+### 外部因素周期性自回归综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 
 - [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 - [binary.com 面试试题 I - GARCH模型中的`ARCH in Mean`](https://rpubs.com/englianhu/binary-Q1-archm)
@@ -648,7 +649,7 @@ I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes 
 - sub-seasonal `1440 mins`
 - forecast `1440 mins`
 
-```{r}
+```{r eval=FALSE}
 # --------- eval=FALSE ---------
 时间索引 <- unique(样本$date)
 基准 <- 样本[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
@@ -745,6 +746,66 @@ options(warn = 0)
 - 文集作者：[®γσ, ξηg Lιαη Ημ](https://rpubs.com/englianhu/ryo-cn)
 - 猫舍：[源代码](https://github.com/englianhu/binary.com-interview-question)
 - 追加附属信息
+
+```{r 信息}
+#suppressMessages(require('formattable', quietly = TRUE))
+#suppressMessages(require('knitr', quietly = TRUE))
+#suppressMessages(require('kableExtra', quietly = TRUE))
+#suppressMessages(require('magittr', quietly = TRUE))
+#suppressMessages(require('devtools', quietly = TRUE))
+
+系统信息1 <- session_info()$platform |> 
+    unlist() |> 
+    {\(.) data.frame(row.names = 1:length(.), 
+                     Category = names(.), session_info = .)}()
+
+系统信息2 <- data.frame(Sys.info()) |> 
+    {\(.) data.frame(Category = row.names(.), Sys.info = .[,1])}()
+
+#remarks, dim(系统信息1), dim(系统信息2)
+if (nrow(系统信息1) == 11 && nrow(系统信息2) == 8) {
+  系统信息2 <- 系统信息2 |> 
+    {\(.) rbind(., data.frame(
+    Category = c('rmarkdown', 'rsconnect', '当前时间'), 
+    Sys.info = c(as.character(getwd()), 
+                 as.character(packageVersion('rsconnect')), 
+                 paste(as.character(lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
+  
+} else if (nrow(系统信息1) == 10 && nrow(系统信息2) == 8) {
+  系统信息1 <- rbind(系统信息1, data.frame(Category = '', session_info = ''))
+  
+  系统信息2 <- 系统信息2 |> 
+    {\(.) rbind(., data.frame(
+    Category = c('rmarkdown', 'rsconnect', '当前时间'), 
+    Sys.info = c(as.character(getwd()), 
+                 as.character(packageVersion('rsconnect')), 
+                 paste(as.character(lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
+}
+
+系统信息 <- cbind(系统信息1, 系统信息2)
+names(系统信息) <- c('分类1', '访谈信息1', '分类2', '访谈信息2')
+系统信息$分类1 <- c('版本', '操作系统', '系统', '界面', '语言', '核对', '©标准库', '时区', '日期', '®文艺坊版本', 'Pandoc瑞士军刀')
+系统信息$分类2 <- c('系统名称', '发布', '版本', '元素节点', '机器', '登录', '用户', '活跃用户', 'rmarkdown (®降价编译)', 'rsconnect (®s联通)', '当前时间')
+rm(系统信息1, 系统信息2)
+
+系统信息 |> 
+  {\(.) 
+    kbl(., caption = '附加访谈信息：')}() |> 
+  {\(.) 
+    kable_styling(., bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))}() |> 
+  {\(.) 
+    row_spec(., 0, background = 'DimGrey', color = 'yellow')}() |> 
+  {\(.) 
+    column_spec(., 1, background = 'CornflowerBlue', color = 'red')}() |> 
+  {\(.) 
+    column_spec(., 2, background = 'grey', color = 'black')}() |> 
+  {\(.) 
+    column_spec(., 3, background = 'CornflowerBlue', color = 'blue')}() |> 
+  {\(.) 
+    column_spec(., 4, background = 'grey', color = 'white')}() |> 
+  {\(.) 
+    row_spec(., 11, bold = TRUE, color = 'yellow', background = '#D7261E')}()
+```
 
 ## 参考文献
 
