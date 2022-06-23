@@ -217,11 +217,6 @@ knitr::opts_chunk$set(
 
 ## 设置
 
-```{r 图书馆, eval=FALSE}
-## 读取程序包、设置编织与环境选项。
-source('function/libs.R')
-```
-
 读取以下所需程序包。
 
 ```{r 读取程序包}
@@ -515,7 +510,7 @@ if(!exists('样本')) {
 - [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
 
 ```{r}
-source('function/季节性自回归.R')
+source('函数/季节性自回归.R')
 ```
 
 ```{r}
@@ -528,24 +523,24 @@ source('function/季节性自回归.R')
 数据量 <- 1200 #筛选数据中的最后1200观测值：样本[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1
 
-.模型选项 = c('自动', '自回归滑均')
+.模型选项 = c('自动化', '自回归滑均')
 # .模型选项 %<>% .[1]
 # .模型选项 %<>% .[2]
 .差分阶数 = 0:2
 .季节性差分阶数 = 0:1 
-seas = c(TRUE, FALSE)
+季节性与否 = c(TRUE, FALSE)
 ## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
-#approximation = c(TRUE, FALSE)
-#stepwise = c(TRUE, FALSE)
+#近似值与否 = c(TRUE, FALSE)
+#逐步精化与否 = c(TRUE, FALSE)
 
-## .order = c(0, 0, 0)
-.order = permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+## .时序规律 = c(0, 0, 0)
+.时序规律 = permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as_tibble %>% 
   rename(自回归阶数 = V1, 差分阶数 = V2, 滑均阶数 = V3) %>% 
   filter(差分阶数 <= 2)
 
-## .seas = c(0, 0, 0)
-.seas = permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+## .季节性规律参数 = c(0, 0, 0)
+.季节性规律参数 = permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as_tibble %>% 
   rename(季节性自回归阶数 = V1, 季节性差分阶数 = V2, 季节性滑均阶数 = V3) %>% 
   filter(季节性差分阶数 <= 1)
@@ -553,46 +548,44 @@ seas = c(TRUE, FALSE)
 
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
-llply(.模型选项, function(md) {
+llply(.模型选项, function(模型) {
   
-  if(md == 'auto') {
-    srm0 <- llply(.差分阶数, function(差分阶数) {
-      srm1 <- llply(.季节性差分阶数, function(季节性差分阶数) {
-        srm2 <- llply(seas, function(ss) {
-          srm3 <- llply(时间索引, function(dte) {
-            res <- 季节性自回归(
-              时间索引 = dte, 样本 = 样本, 
-              数据量 = 数据量, 预测时间单位 = 预测时间单位, 
-              .模型选项 = md, .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
-              seas = ss, stationary = FALSE, trace = FALSE, 
-              ic = c('aicc', 'aic', 'bic'), 
-              stepwise = TRUE, nmodels = 94, 
-              #approximation=(length(x)>150|frequency(x)>12), 
-              truncate = NULL, method = NULL, #x = y, 
-              趋势 = NULL, test = c('kpss', 'adf', 'pp'), 
-              test.args = list(), 
-              seasonal.test = c('seas', 'ocsb', 'hegy', 'ch'), 
-              seasonal.test.args = list(), 
-              allowdrift = TRUE, allowmean = TRUE, lambda = NULL, 
+  if(模型 == '自动化') {
+    季回归0 <- llply(.差分阶数, function(差分阶数) {
+      季回归1 <- llply(.季节性差分阶数, function(季节性差分阶数) {
+        季回归2 <- llply(季节性与否, function(季节) {
+          季回归3 <- llply(时间索引, function(时序) {
+            res <- 季节性自回归(时间索引 = 时序, 样本 = 样本, 
+              数据量 = 数据量, 预测时间单位 = 预测时间单位, .模型选项 = 模型, 
+              .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
+              季节性与否 = 季节, stationary = FALSE, 记载自回归与否 = FALSE, 
+              信息量准则 = c('aicc', 'aic', 'bic'), 
+              逐步精化与否 = TRUE, 逐步精化量 = 94, 
+              #近似值与否=(length(x)>150|frequency(x)>12), 
+              缩写 = NULL, 计策谋略 = NULL, #x = y, 
+              趋势 = NULL, 测试 = c('kpss', 'adf', 'pp'), 
+              测试参数 = list(), 
+              季节性测试 = c('seas', 'ocsb', 'hegy', 'ch'), 
+              季节性测试参数 = list(), 
+              允许截距与否 = TRUE, 允许包含均值与否 = TRUE, 博克斯考克斯变换 = NULL, 
               biasadj = FALSE, parallel = FALSE, num.cores = 2)
             })
           })
         })
       })
     
-  } else if (md == 'Arima') {
-    srm0 <- llply(1:nrow(.order), function(迭数1) {
-      srm1 <- llply(1:nrow(.seas), function(迭数2) {
-        srm2 <- llply(时间索引, function(dte) {
-          res <- 季节性自回归(
-            时间索引 = dte, 样本, 
+  } else if (模型 == 'Arima') {
+    季回归0 <- llply(1:nrow(.时序规律), function(迭数1) {
+      季回归1 <- llply(1:nrow(.季节性规律参数), function(迭数2) {
+        季回归2 <- llply(时间索引, function(时序) {
+          res <- 季节性自回归(时间索引 = 时序, 样本, 
             数据量 = 数据量, 预测时间单位 = 预测时间单位, 
-            .模型选项 = md, .order = unlist(.order[迭数1,]), 
-            .seas = unlist(.seas[迭数2,]), 趋势 = NULL, 
-            include.mean = TRUE, include.drift = FALSE, 
-            #include.constant = include.constant, 
-            #model = NULL, lambda = lambda, x = y, 
-            biasadj = FALSE, method = c('CSS-ML', 'ML', 'CSS'))
+            .模型选项 = 模型, .时序规律 = unlist(.时序规律[迭数1,]), 
+            .季节性规律参数 = unlist(.季节性规律参数[迭数2,]), 趋势 = NULL, 
+            允许包含均值与否 = TRUE, 允许截距与否 = FALSE, 
+            #包含常数与否 = 包含常数与否, 
+            #统计模型 = NULL, 博克斯考克斯变换 = 博克斯考克斯变换, x = y, 
+            biasadj = FALSE, 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
         })
       })
     })
@@ -665,10 +658,10 @@ I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes 
 预测时间单位 <- 1440
 hrz2 <- 1440
 
-llply(ets.m, function(md) {
+llply(ets.m, function(模型) {
   mstseas(时间索引 = 时间索引, 样本, 
         数据量 = 数据量, 预测时间单位 = 预测时间单位, 
-        hrz2 = hrz2, .模型选项 = md)
+        hrz2 = hrz2, .模型选项 = 模型)
   })
 ```
 
