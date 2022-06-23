@@ -19,7 +19,10 @@
                    #博克斯考克斯变换 = 统计模型$lambda, x = y, 偏差调整与否 = FALSE, 
                    计策谋略 = 计策谋略) {
   require('dplyr', quietly = TRUE)
+  require('data.table', quietly = TRUE)
   conflict_prefer('mutate', 'dplyr')
+  
+  if(!'data.table' %in% class(样本)) 样本 %<>% as.data.table
   
   成品 <- llply(1:length(时间索引), function(迭数1) {
     

@@ -167,7 +167,7 @@ h5 { color: #92AAC7; }
 
 /* ----------------------------------------------------------------- */
 /* https://gist.github.com/himynameisdave/c7a7ed14500d29e58149#file-broken-gradient-animation-less */
-.hover01 {
+.萦回01 {
   /* color: #FFD64D; */
   background: linear-gradient(155deg, #EDAE01 0%, #FFEB94 100%);
   transition: all 0.45s;
@@ -176,7 +176,7 @@ h5 { color: #92AAC7; }
     }
   }
 
-.hover02 {
+.萦回02 {
   color: #FFD64D;
   background: linear-gradient(155deg, #002C54 0%, #4CB5F5 100%);
   transition: all 0.45s;
@@ -185,7 +185,7 @@ h5 { color: #92AAC7; }
     }
   }
 
-.hover03 {
+.萦回03 {
   color: #FFD64D;
   background: linear-gradient(155deg, #A10115 0%, #FF3C5C 100%);
   transition: all 0.45s;
@@ -195,7 +195,7 @@ h5 { color: #92AAC7; }
   }
 ```
 
-```{r 编织选项, class.source='hover01', class.output='hover02'}
+```{r 编织选项, class.source='萦回01', class.output='萦回02'}
 ## 更换时间区域，保留日期时间。
 Sys.setenv(TZ = 'Asia/Shanghai')
 
@@ -208,7 +208,7 @@ options(warn = -1, width = 999, knitr.table.format = 'html')#, digits.secs = 6)
 ## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
 ## https://yihui.org/knitr/options
 knitr::opts_chunk$set(
-  class.source = 'hover01', class.output = 'hover02', class.error = 'hover03', 
+  class.source = '萦回01', class.output = '萦回02', class.error = '萦回03', 
   message = FALSE, warning = FALSE, error = TRUE, 
   autodep = TRUE, aniopts = 'loop', 
   progress = TRUE, verbose = TRUE, 
@@ -270,7 +270,7 @@ rm(pkgs)
 .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'
 
 ## 设置googleVis选项，促使plot.gvis只陈列HTML格式的完成品。
-op <- options(gvis.plot.tag = 'chart')
+谷歌绘图设置 <- options(gvis.plot.tag = 'chart')
 
 ## <audio src='文艺坊曲库/bigmoney.mp3' autoplay controls loop></audio>
 ```
@@ -437,10 +437,13 @@ if(!file.exists(paste0(.路径, 'data/fx/USDJPY/dsmp.rds')) & exists('样本')) 
 if(!exists('样本')) {
   样本 <- readRDS(paste0(.路径, 'data/fx/USDJPY/dsmp.rds'))}
 
-样本 %<>% 
-  rename(
-    年月日时分 = index,	年份 = year, 季度 = quarter, 月份 = month, 周 = week, 周日 = wkdays, 
-    周分计 = wk_1m, 日分计 = dy_1m, 时分计 = hr_1m, 序列 = sq, 日期 = date, 闭市价 = close)
+# 样本 %<>% 
+#   rename(
+#     年月日时分 = index,	年份 = year, 季度 = quarter, 月份 = month, 周 = week, 周日 = wkdays, 
+#     周分计 = wk_1m, 日分计 = dy_1m, 时分计 = hr_1m, 序列 = sq, 日期 = date, 闭市价 = close)
+
+names(样本) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', '日分计', '时分计', '序列', '日期', '闭市价')
+样本 %<>% as.data.table
 ```
 
 ```{r 绘制样本数据图表, results = 'asis'}
@@ -723,7 +726,7 @@ From final stage models comparison, we know that ******* is the <span style='col
 
 Next papers will compare `tbats`, `midas`, `sarimax` etc.
 
-```{r opt, echo = FALSE}
+```{r 选项设置, echo = FALSE}
 ## Set options back to original options
 options(warn = 0)
 ```
@@ -836,5 +839,5 @@ rm(系统信息1, 系统信息2)
 
 ---
 
-[<img src="文艺坊图库/Scibrokes.png" height="14"/> 世博量化®](http://www.scibrokes.com)<br>
-[**Powered by - Copyright® Intellectual Property Rights of [<img src="文艺坊图库/Scibrokes.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)**]{style="color:RoyalBlue"}
+[<img src="文艺坊图库/Scibrokes.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
+[**[<img src="文艺坊图库/Scibrokes.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}
