@@ -34,7 +34,7 @@ output:
 > 《万般皆下品，唯有读书高》<br>
 习李经济，一带一路；<br>
 九二共识，量化对冲。<br>
-鞭策六四，铲除黑帮；（尤其是东南亚巫师Judi邪教宦官巫裔博彩庄诸国屠杀630万人类）<br>
+鞭策六四，铲除黑帮；（尤其是咱们东南亚屠杀630万人类的巫师Judi邪教宦官巫裔博彩庄诸国）<br>
 推广量化，提倡学术。<br>
 百家争鸣，振兴中华；<br>
 学海无涯，唯勤是岸。
@@ -314,6 +314,11 @@ conflict_prefer('permutations', 'gtools')
 
 引用：[Tumblr - Bayesian Hidden Markov Models for Time Series](https://www.tumblr.com/blog/view/englianhu/641578918656212992?source=share)
 
+> 辛亥革命，铲除巫裔；<br>
+终止屠杀，拯救全球。
+
+**咱们东南亚屠杀630万人类的巫师Judi邪教宦官巫裔博彩庄诸国**
+
 小时候都在日本动漫文化的环境下长大。小学时期在明智华校上学就已经学会万事具备，都会提前30分钟抵达做好准备才不会仓促。自从2002年学习日语后，由于平时从旺沙马朱宿舍到拉曼学院徒步上学需要时间提前准备，所以都会将时间设为提前20分钟，基于从旺沙马朱宿舍徒步耗时45分钟左右，索性设为提前一个小时，所以愚生将所有电子仪器的标准时间都一律设为日本标准时间，然后青梅竹马的郑添和同学问过我，我回答：“我的时间必须比别人快，我的世界必须比别人快，才能占有先机～”，所以设置提前一个小时日本标准时间，再提前一小时就看到是本土提前两个小时。**自从2019年在菲律宾阿里与中国同胞工作离职后，就开始思考身为🇹🇼🇨🇳中华民族，岂能沦为（大化革新的）倭奴或者倭寇，所以目前的科研语言、时间标准、甚至编码，都一律使用汉字。**由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加一小时时差为中国标准时间，以确保时间规律计算方面，不会出错。
 
 <span style='color:green'>**进程进度函数**</span>
@@ -352,7 +357,7 @@ conflict_prefer('permutations', 'gtools')
 	    日子 = 日子[日子 >= 起点]
       
       布告栏 = list.files(
-        paste0(.路径, 'data/fx/USDJPY/'), pattern = .匹配元素) %>% 
+        paste0(.路径, '文艺数据库/fx/USDJPY/'), pattern = .匹配元素) %>% 
 	      str_replace_all('.rds', '') %>% 
 		  str_replace_all('.201', '_201') %>% 
 		  str_split_fixed('_', '2') %>% 
@@ -400,7 +405,7 @@ conflict_prefer('permutations', 'gtools')
 	
 	  日子 = 日子[日子 >= 起点]
     
-      布告栏 = list.files(paste0(.路径, 'data/fx/USDJPY/'), pattern = .匹配元素) %>% 
+      布告栏 = list.files(paste0(.路径, '文艺数据库/fx/USDJPY/'), pattern = .匹配元素) %>% 
 	      str_replace_all('.rds', '') %>% 
 		  str_replace_all('.201', '_201') %>% 
 		  str_split_fixed('_', '2') %>% 
@@ -436,25 +441,26 @@ conflict_prefer('permutations', 'gtools')
 
 **Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**次论文读取该数据，将网页轻巧化、省略掉修饰数据的一栏。
 
-```{r 读取数据}
+```{r 数据中文化, eval=FALSE}
+# --------- eval=FALSE ---------
 ## 检验是否已设置路径。
 if(!exists('.路径')) {
   .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'}
 
 ## 倘若环境尚未有数据，读取文件数据。
-if(!exists('样本')) {
-  样本 <- readRDS(paste0(.路径, 'data/fx/USDJPY/dsmp.rds'))}
+if(!exists('dsmp')) {
+  dsmp <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/dsmp.rds'))}
 
 # 样本 %<>% 
 #   rename(
 #     年月日时分 = index,	年份 = year, 季度 = quarter, 月份 = month, 周 = week, 周日 = wkdays, 
 #     周分计 = wk_1m, 日分计 = dy_1m, 时分计 = hr_1m, 序列 = sq, 日期 = date, 闭市价 = close)
 
-names(样本) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', '日分计', '时分计', '序列', '日期', '闭市价')
+names(dsmp) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', '日分计', '时分计', '序列', '日期', '闭市价')
 
 ## Using lubridate for dates and times
 ## https://louisahsmith.github.io/R-office-hours/OH-13.html
-样本 %<>% 
+dsmp %<>% 
   mutate(
     年月日时分 = 年月日时分 + hours(1), 
     周日 = case_when(
@@ -468,11 +474,45 @@ names(样本) <- c('年月日时分', '年份', '季度', '月份', '周', '周�
   as.data.table
 
 ## 倘若该路径尚无文件，储存文件。
-if(!file.exists(paste0(.路径, 'data/fx/USDJPY/样本1.rds')) & exists('样本')) {
-  saveRDS(样本, paste0(.路径, 'data/fx/USDJPY/样本1.rds'))}
+if(!file.exists(paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds')) & exists('dsmp')) {
+  saveRDS(dsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))}
+
+## ------------------------------------------------
+## 倘若环境尚未有数据，读取文件数据。
+if(!exists('ddsmp')) {
+  ddsmp <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/ddsmp.rds'))}
+
+names(ddsmp) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', '日分计', '时分计', '序列', '日期', '闭市价')
+
+ddsmp %<>% 
+  mutate(
+    年月日时分 = 年月日时分 + hours(1), 
+    周日 = case_when(
+    周日 == 'Sunday' ~ '周日',
+    周日 == 'Monday' ~ '周一',
+    周日 == 'Tuesday' ~ '周二',
+    周日 == 'Wednesday' ~ '周三',
+    周日 == 'Thursday' ~ '周四',
+    周日 == 'Friday' ~ '周五',
+    周日 == 'Saturday' ~ '周六')) %>% 
+  as.data.table
+
+## 倘若该路径尚无文件，储存文件。
+if(!file.exists(paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds')) & exists('ddsmp')) {
+  saveRDS(ddsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds'))}
 ```
 
+由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加一小时时差为中国标准时间，以确保时间规律计算方面，不会出错；周日数据中文化。
+
 ```{r 绘制样本数据图表, results = 'asis'}
+## 检验是否已设置路径。
+if(!exists('.路径')) {
+  .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'}
+
+## 倘若环境尚未有数据，读取文件数据。
+if(!exists('样本')) {
+  样本 <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))}
+
 ## 绘制样本图表
 样本[c(1:3, (nrow(样本)-3):nrow(样本)),] %>% 
   kbl(caption = '每分钟价位', escape = FALSE) %>% 
@@ -499,7 +539,7 @@ if(!file.exists(paste0(.路径, 'data/fx/USDJPY/样本1.rds')) & exists('样本'
 
 *数据 : `r paste0(dim(样本)[1], '行 x ', dim(样本)[2], '列')`*
 
-以上图表显示数据日期，由`r paste(range(样本$日期), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加一小时时差为中国标准时间，以确保时间规律计算方面，不会出错。
+以上图表显示数据日期，由`r paste(range(样本$日期), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
 
 # 统计建模
 
@@ -544,7 +584,6 @@ source('函数/季节性自回归.R')
 - [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
 
 ```{r}
-# --------- eval=FALSE ---------
 时间索引 <- unique(样本$日期)
 # 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
 基准 <- 样本[年份 == 2016]$日期[1]
