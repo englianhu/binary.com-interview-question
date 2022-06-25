@@ -18,6 +18,7 @@
                    包含截距 = 包含截距, 统计模型 = 统计模型, 
                    #博克斯考克斯变换 = 统计模型$lambda, x = y, 偏差调整与否 = FALSE, 
                    计策谋略 = 计策谋略) {
+  options('digits = 14')
   require('dplyr', quietly = TRUE)
   require('data.table', quietly = TRUE)
   conflict_prefer('mutate', 'dplyr')

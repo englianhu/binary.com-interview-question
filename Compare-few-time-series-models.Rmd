@@ -137,7 +137,8 @@ suppressAll(lib(pkgs))
 ## Set the timezone but not change the datetime
 Sys.setenv(TZ = 'Asia/Tokyo')
 ## options(knitr.table.format = 'html') will set all kableExtra tables to be 'html', otherwise need to set the parameter on every single table.
-options(warn = -1, knitr.table.format = 'html')#, digits.secs = 6)
+options(warn = -1, width = 999, knitr.table.format = 'html', 
+        digits = 14, digits.secs = 6)
 
 suppressAll(lib(pkgs))
 # load_pkg(pkgs)
