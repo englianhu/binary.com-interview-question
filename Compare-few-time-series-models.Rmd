@@ -612,9 +612,9 @@ sys
 
 ## Reference
 
-1) [High-Performance Time Series Forecasting in R & Python](https://www.youtube.com/watch?v=elQb4VzRINg)
-
-2) [Forecasting: Principles and Practice (3rd ed)](https://otexts.com/fpp3)
+01. [High-Performance Time Series Forecasting in R & Python](https://www.youtube.com/watch?v=elQb4VzRINg)
+02. [Forecasting: Principles and Practice (3rd ed)](https://otexts.com/fpp3)
+03. [A Guide to Time Series Forecasting in R You Should Know](https://www.simplilearn.com/tutorials/data-science-tutorial/time-series-forecasting-in-r)
 
 ---
 

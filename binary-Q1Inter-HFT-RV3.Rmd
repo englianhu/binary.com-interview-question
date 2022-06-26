@@ -629,7 +629,9 @@ source('函数/季节性自回归.R')
 ```{r}
 循环周期 = 1200
 
-llply(.模型选项, function(模型) {
+## 由于forecast::Arima()出现多种错误信息，故此忽略使用该函数建模。
+## https://github.com/englianhu/binary.com-interview-question/issues/6
+llply(.模型选项[1], function(模型) {
   
   if(模型 == '自动化') {
     季回归0 <- llply(.差分阶数, function(差分阶数) {
@@ -665,6 +667,7 @@ llply(.模型选项, function(模型) {
             .模型选项 = 模型, .时序规律 = unlist(.时序规律[迭数1,]), 
             .季节性规律参数 = unlist(.季节性规律参数[迭数2,]), 趋势 = NULL, 
             允许包含均值与否 = TRUE, 允许截距与否 = FALSE, 
+            包含均值与否 = TRUE, 包含截距 = TRUE, 
             #包含常数与否 = 包含常数与否, 
             #统计模型 = NULL, 博克斯考克斯变换 = 博克斯考克斯变换, x = y, 
             偏差调整与否 = FALSE, 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
@@ -1212,7 +1215,7 @@ rm(系统信息1, 系统信息2)
 18. [A Complete Introduction To Time Series Analysis (with R):: Exogenous models](https://medium.com/analytics-vidhya/a-complete-introduction-to-time-series-analysis-with-r-exogenous-models-4f009b770104)
 19. [Implementation of Time Series Forecasting Methods (SARIMA, SARIMAX and Prophet)](https://medium.com/@shawanugya12/implementation-of-time-series-forecasting-methods-sarima-sarimax-and-prophet-ff8407b25aaa)
 20. [Time Series Forecasting Techniques using R](https://github.com/rajsiddarth/Time_Series_Forecasting)
-21. []()
+21. [A Guide to Time Series Forecasting in R You Should Know](https://www.simplilearn.com/tutorials/data-science-tutorial/time-series-forecasting-in-r)
 22. []()
 23. []()
 24. []()
