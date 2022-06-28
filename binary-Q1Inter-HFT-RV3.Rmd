@@ -276,7 +276,7 @@ conflict_prefer('rename', 'dplyr', quiet = TRUE)
 conflict_prefer('collapse', 'dplyr', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 
-pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
+程序包 <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
           'readr', 'lubridate', 'data.table', 'reprex', 'stringr', 
           'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 
           'timetk', 'plyr', 'dplyr', 'dbplyr', 'magrittr', 'sarima', 
@@ -288,10 +288,10 @@ pkgs <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr',
           'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
           'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
 
-# load_pkg(pkgs)
-suppressAll(lib(pkgs))
-load_pkg(pkgs)
-rm(pkgs)
+# load_pkg(程序包)
+suppressAll(lib(程序包))
+load_pkg(程序包)
+rm(程序包)
 
 .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'
 
