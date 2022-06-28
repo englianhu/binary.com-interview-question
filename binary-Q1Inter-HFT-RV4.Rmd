@@ -572,6 +572,12 @@ if(!exists('样本')) {
 
 ## 季节性指数平滑模型（Seasonal ETS））`ts()` & `ets()`
 
+#### 20小时一周期（1200分钟循环1次）
+
+## 自回归综合滑均模型系列（ARIMA Series）
+
+### 季节性数据建模
+
 > ARIMA(p,d,q)模型中
 >
 - p是自回归(AR)的项数，用来获取自变量
@@ -591,32 +597,97 @@ if(!exists('样本')) {
 - [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
 
 ```{r}
-source('函数/日内分计.R')
+source('函数/季节性自回归.R')
 
 时间索引 <- unique(样本$日期)
 # 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
 基准 <- 样本[年份 == 2016]$日期[1]
 时间索引 %<>% .[. >= 基准]
-#时间索引 %<>% .[1:6] #筛选数据中的前6个日期为样本
+时间索引 %<>% .[1:6] #筛选数据中的前6个日期为样本
 # 时间索引 %<>% .[. >= as_date('2016-01-04')]
 数据量 <- 1200 #筛选数据中的最后1200观测值：样本[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1
 
-.模型选项 = c('MNN')
+.模型选项 = c('自动化', '自回归滑均')
+# .模型选项 %<>% .[1]
+# .模型选项 %<>% .[2]
+.差分阶数 = 0:2
+.季节性差分阶数 = 0:1 
+季节性与否 = c(TRUE, FALSE)
+## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
+#近似值与否 <- c(TRUE, FALSE)
+#逐步精化与否 <- c(TRUE, FALSE)
+
+## .时序规律 <- c(0, 0, 0)
+.时序规律 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+  as.data.table
+.时序规律 <- setnames(.时序规律, old = c('V1', 'V2', 'V3'), new = c('自回归阶数', '差分阶数', '滑均阶数'))[差分阶数 <= 2]
+
+## .季节性规律参数 <- c(0, 0, 0)
+.季节性规律参数 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+  as.data.table
+.季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2]
 ```
 
-### 20小时一周期（1200分钟循环1次）
+#### 20小时一周期（1200分钟循环1次）
 
 ```{r}
-# --------- eval=FALSE ---------
 循环周期 = 1200
 
-日内分计(
-     时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 循环周期 = 循环周期, 
-     预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
+## 由于forecast::Arima()出现多种错误信息，故此忽略使用该函数建模。
+## https://github.com/englianhu/binary.com-interview-question/issues/6
+llply(.模型选项[1], function(模型) {
+  
+  if(模型 == '自动化') {
+    季回归0 <- llply(.差分阶数, function(差分阶数) {
+      季回归1 <- llply(.季节性差分阶数, function(季节性差分阶数) {
+        季回归2 <- llply(季节性与否, function(季节) {
+          季回归3 <- llply(时间索引, function(时序) {
+            成效 <- 季节性自回归(
+              时间索引 = 时序, 样本 = 样本, 路径 = .路径, 
+              数据量 = 数据量, 循环周期 = 循环周期, 
+              预测时间单位 = 预测时间单位, .模型选项 = 模型, 
+              .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
+              季节性与否 = 季节, 静态与否 = FALSE, 记载自回归与否 = FALSE, 
+              信息量准则 = c('aicc', 'aic', 'bic'), 逐步精化与否 = TRUE, 
+              逐步精化量 = 94, #近似值与否=(length(x)>150|frequency(x)>12), 
+              缩写 = NULL, 计策谋略 = NULL, #x = y, 
+              趋势 = NULL, 测试 = c('kpss', 'adf', 'pp'), 测试参数 = list(), 
+              季节性测试参数 = list(), 
+              季节性测试 = c('seas', 'ocsb', 'hegy', 'ch'), 
+              允许截距与否 = TRUE, 允许包含均值与否 = TRUE, 
+              博克斯考克斯变换 = NULL, 
+              偏差调整与否 = FALSE, 多管齐下与否 = FALSE, 核心量 = 2)
+            })
+          })
+        })
+      })
+    
+  } else if (模型 == 'Arima') {
+    季回归0 <- llply(1:nrow(.时序规律), function(迭数1) {
+      季回归1 <- llply(1:nrow(.季节性规律参数), function(迭数2) {
+        季回归2 <- llply(时间索引, function(时序) {
+          成效 <- 季节性自回归(时间索引 = 时序, 样本 = 样本, 路径 = .路径, 
+            数据量 = 数据量, 预测时间单位 = 预测时间单位, 
+            .模型选项 = 模型, .时序规律 = unlist(.时序规律[迭数1,]), 
+            .季节性规律参数 = unlist(.季节性规律参数[迭数2,]), 趋势 = NULL, 
+            允许包含均值与否 = TRUE, 允许截距与否 = FALSE, 
+            包含均值与否 = TRUE, 包含截距 = TRUE, 
+            #包含常数与否 = 包含常数与否, 
+            #统计模型 = NULL, 博克斯考克斯变换 = 博克斯考克斯变换, x = y, 
+            偏差调整与否 = FALSE, 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
+        })
+      })
+    })
+    
+  } else {
+    
+  }
+  return(srm)
+})
 ```
 
-### 10小时一周期（600分钟循环2次）
+#### 10小时一周期（600分钟循环2次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -624,7 +695,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 6.67小时一周期（400分钟循环3次）
+#### 6.67小时一周期（400分钟循环3次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -632,7 +703,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 5小时一周期（300分钟循环4次）
+#### 5小时一周期（300分钟循环4次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -640,7 +711,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 4小时一周期（240分钟循环5次）
+#### 4小时一周期（240分钟循环5次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -648,7 +719,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 3.33小时一周期（200分钟循环6次）
+#### 3.33小时一周期（200分钟循环6次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -656,7 +727,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 2.5小时一周期（150分钟循环8次）
+#### 2.5小时一周期（150分钟循环8次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -664,7 +735,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 2小时一周期（120分钟循环10次）
+#### 2小时一周期（120分钟循环10次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -672,7 +743,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 1.67小时一周期（100分钟循环12次）
+#### 1.67小时一周期（100分钟循环12次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -680,7 +751,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 1.33小时一周期（80分钟循环15次）
+#### 1.33小时一周期（80分钟循环15次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -688,7 +759,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 1小时一周期（60分钟循环20次）
+#### 1小时一周期（60分钟循环20次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -696,7 +767,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.83小时一周期（50分钟循环24次）
+#### 0.83小时一周期（50分钟循环24次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -704,7 +775,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.67小时一周期（40分钟循环30次）
+#### 0.67小时一周期（40分钟循环30次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -712,7 +783,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 半小时一周期（30分钟循环40次）
+#### 半小时一周期（30分钟循环40次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -720,7 +791,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.40小时一周期（24分钟循环50次）
+#### 0.40小时一周期（24分钟循环50次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -728,7 +799,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.33小时一周期（20分钟循环60次）
+#### 0.33小时一周期（20分钟循环60次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -736,7 +807,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.27小时一周期（16分钟循环75次）
+#### 0.27小时一周期（16分钟循环75次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -744,7 +815,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.25小时一周期（15分钟循环80次）
+#### 0.25小时一周期（15分钟循环80次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -752,7 +823,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.20小时一周期（12分钟循环100次）
+#### 0.20小时一周期（12分钟循环100次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -760,7 +831,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.17小时一周期（10分钟循环120次）
+#### 0.17小时一周期（10分钟循环120次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -768,7 +839,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.13小时一周期（8分钟循环150次）
+#### 0.13小时一周期（8分钟循环150次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -776,7 +847,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.10小时一周期（6分钟循环200次）
+#### 0.10小时一周期（6分钟循环200次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -784,7 +855,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.08小时一周期（5分钟循环240次）
+#### 0.08小时一周期（5分钟循环240次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -792,7 +863,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.07小时一周期（4分钟循环300次）
+#### 0.07小时一周期（4分钟循环300次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -800,7 +871,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.05小时一周期（3分钟循环400次）
+#### 0.05小时一周期（3分钟循环400次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -808,7 +879,7 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.03小时一周期（2分钟循环600次）
+#### 0.03小时一周期（2分钟循环600次）
 
 ```{r}
 培训数据$闭市价 %>% 
@@ -816,13 +887,202 @@ source('函数/日内分计.R')
     tk_ts(frequency = 60)
 ```
 
-### 0.02小时一周期（1分钟循环1200次）
+#### 0.02小时一周期（1分钟循环1200次）
 
 ```{r}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
 ```
+
+### 自回归综合滑均模型（ARIMA）`ts()` & `auto.arima()`
+
+### 外部因素周期性自回归综合滑均模型（ARIMAX）`ts()` & `auto.arima()`
+
+- [arima xreg argument error caused by column name in data frame](https://stackoverflow.com/a/55229110/3806250)
+
+### 季节性自回归综合滑均模型（SARIMA）`ts()` & `auto.arima()`
+
+### 外部因素周期性季节性自回归综合滑均模型（SARIMAX）`ts()` & `auto.arima()`
+
+- [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
+
+```{r}
+时间索引 <- unique(样本$日期)
+# 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
+基准 <- 样本[年份 == 2016]$日期[1]
+时间索引 %<>% .[. >= 基准]
+时间索引 %<>% .[1:6] #筛选数据中的前6个日期为样本
+# 时间索引 %<>% .[. >= as_date('2016-01-04')]
+数据量 <- 1200 #筛选数据中的最后1200观测值：样本[(.N - (数据量 - 1)):.N]
+预测时间单位 <- 1
+
+.模型选项 = c('自动化', '自回归滑均')
+# .模型选项 %<>% .[1]
+# .模型选项 %<>% .[2]
+.差分阶数 = 0:2
+.季节性差分阶数 = 0:1 
+季节性与否 = c(TRUE, FALSE)
+## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
+#近似值与否 <- c(TRUE, FALSE)
+#逐步精化与否 <- c(TRUE, FALSE)
+
+## .时序规律 <- c(0, 0, 0)
+.时序规律 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+  as.data.table
+.时序规律 <- setnames(.时序规律, old = c('V1', 'V2', 'V3'), new = c('自回归阶数', '差分阶数', '滑均阶数'))[差分阶数 <= 2]
+
+## .季节性规律参数 <- c(0, 0, 0)
+.季节性规律参数 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+  as.data.table
+.季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2]
+```
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+llply(.模型选项, function(模型) {
+  
+  if(模型 == '自动化') {
+    季回归0 <- llply(.差分阶数, function(差分阶数) {
+      季回归1 <- llply(.季节性差分阶数, function(季节性差分阶数) {
+        季回归2 <- llply(季节性与否, function(季节) {
+          季回归3 <- llply(时间索引, function(时序) {
+            成效 <- 季节性自回归(时间索引 = 时序, 样本 = 样本, 路径 = .路径, 
+              数据量 = 数据量, 预测时间单位 = 预测时间单位, .模型选项 = 模型, 
+              .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
+              季节性与否 = 季节, 静态与否 = FALSE, 记载自回归与否 = FALSE, 
+              信息量准则 = c('aicc', 'aic', 'bic'), 
+              逐步精化与否 = TRUE, 逐步精化量 = 94, 
+              #近似值与否=(length(x)>150|frequency(x)>12), 
+              缩写 = NULL, 计策谋略 = NULL, #x = y, 
+              趋势 = NULL, 测试 = c('kpss', 'adf', 'pp'), 
+              测试参数 = list(), 季节性测试参数 = list(), 
+              季节性测试 = c('seas', 'ocsb', 'hegy', 'ch'), 
+              允许截距与否 = TRUE, 允许包含均值与否 = TRUE, 博克斯考克斯变换 = NULL, 
+              偏差调整与否 = FALSE, 多管齐下与否 = FALSE, 核心量 = 2)
+            })
+          })
+        })
+      })
+    
+  } else if (模型 == 'Arima') {
+    季回归0 <- llply(1:nrow(.时序规律), function(迭数1) {
+      季回归1 <- llply(1:nrow(.季节性规律参数), function(迭数2) {
+        季回归2 <- llply(时间索引, function(时序) {
+          成效 <- 季节性自回归(时间索引 = 时序, 样本 = 样本, 路径 = .路径, 
+            数据量 = 数据量, 预测时间单位 = 预测时间单位, 
+            .模型选项 = 模型, .时序规律 = unlist(.时序规律[迭数1,]), 
+            .季节性规律参数 = unlist(.季节性规律参数[迭数2,]), 趋势 = NULL, 
+            允许包含均值与否 = TRUE, 允许截距与否 = FALSE, 
+            #包含常数与否 = 包含常数与否, 
+            #统计模型 = NULL, 博克斯考克斯变换 = 博克斯考克斯变换, x = y, 
+            偏差调整与否 = FALSE, 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
+        })
+      })
+    })
+    
+  } else {
+    
+  }
+  return(srm)
+})
+```
+
+## 季节性自回归综合滑均模型（SARIMA）`msts()` & `auto.arima()`
+
+- [Multiple and long seasonality for a SARIMA model in R](https://stats.stackexchange.com/questions/109835/multiple-and-long-seasonality-for-a-sarima-model-in-r)
+- [SARIMAX model in R](https://stackoverflow.com/a/17816958/3806250)
+
+## 季节性自回归综合滑均模型（SARIMA）`fable` & `fabletools`
+
+https://otexts.com/fpp3/seasonal-arima.html
+
+## 自回归综合滑均模型（ARFIMA / ARFIMAX） `arfima()`
+
+### 外部因素周期性自回归综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
+
+- [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+- [binary.com 面试试题 I - GARCH模型中的`ARCH in Mean`](https://rpubs.com/englianhu/binary-Q1-archm)
+
+## `msts()` & `hw()`
+
+> After looking a bit more, I've came across this question where a user wanted to use the hw method to forecast half-hourly electricity demand using the taylor dataset available in the forecast package.
+
+> As Professor Rob Hyndman suggest in the response to the linked question, the double seasonal Holt Winters model method dshw from the forecast package can be used to deal with half-hourly data.
+
+> After removing the yearly seasonality parameter (seasonal.periods = 8760) in the definition of my msts object, I've ran the model and it provided a pretty accurate result.
+
+[How can I apply Seasonal Exponential Smoothing forecasting method to hourly data in R](https://stackoverflow.com/a/62430549/3806250)
+
+## `msts()` & `tbats()`
+
+### Seasonal Data Modeling
+
+I set the length of data as weekly (`7200` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+[*Chapter 7 Multivariate TS Analysis* in **Introduction to Time Series Analysis and Forecasting in R**](https://bookdown.org/singh_pratap_tejendra/intro_time_series_r/multivariate-ts-analysis.html), but I use univariate due to some errors as mentioned in beginning.
+
+I tried to use `weeks(1)`, `months(1)`, `months(3)`, `years(1)` but there is not constant observations, we can refer to [`The seasonal period`](https://otexts.com/fpp3/tsibble-objects.html).
+
+Here I filter up the data as below :
+
+- `5 days * 1440 mins = 7200 mins` = weekly
+- `22 days * 1440 mins = 31680 mins` = monthly
+- `3 months * 22 days * 1440 mins = 95040 mins` = quarterly
+- `52 weeks * 5 days * 1440 mins = 374400 mins` = yearly
+
+### (周 ∈ 分) >> 日
+
+I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `22 days * 1440 mins = 31680 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+```{r eval=FALSE}
+# --------- eval=FALSE ---------
+时间索引 <- unique(样本$date)
+基准 <- 样本[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
+时间索引 %<>% .[. >= 基准]
+#时间索引 %<>% .[. >= as_date('2016-01-04')]
+数据量 <- 7200 #last 7200  observations 样本[(.N - (数据量 - 1)):.N]
+预测时间单位 <- 1440
+hrz2 <- 1440
+
+llply(ets.m, function(模型) {
+  mstseas(时间索引 = 时间索引, 样本, 
+        数据量 = 数据量, 预测时间单位 = 预测时间单位, 
+        hrz2 = hrz2, .模型选项 = 模型)
+  })
+```
+
+### (周 ∈ 季) >> 日
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+### (周 ∈ 年) >> 日
+
+I set the length of data as yearly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `52 weeks * 5 days * 1440 mins = 374400 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+### (分 ∈ 季) >> 日
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
+- seasonal `22 days * 1440 mins = 31680 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
 
 <br>
 
