@@ -54,45 +54,19 @@
     }
     
     文件名 <- paste0('季平滑_', .模型选项, '_数据量', 数据量, '_频率', 频率, '_', 
-                  半成品$年月日时分, 
-    'CST.rds')
+                  半成品$年月日时分, 'CST.rds')
     
-      if(!exists('路径') | is.null(路径)) {
-        
-        if(!exists('.路径')) {
-          .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'
-          
-          if(substring(.路径, nchar(.路径)) == '/') {
-            文件路径 <- paste0(.路径, 文件名)
-          } else {
-            文件路径 <- paste0(.路径, '/', 文件名)
-          }
-          
-        } else {
-          if(substring(路径, nchar(路径)) == '/') {
-            文件路径 <- paste0(路径, 文件名)
-          } else {
-            文件路径 <- paste0(路径, '/', 文件名)
-          }
-        }
-        
-        文件路径 <- paste0(
-          .路径, '文艺数据库/fx/USDJPY/仓库/季平滑_', .模型选项, '_数据量', 数据量, '_频率', 
-          频率, '_', 半成品$年月日时分, 'CST.rds')
-      }
-      
-      saveRDS(半成品, 路径)
-      
-      cat('\n', 迭数1, '=', 
-          paste0(
-            '~/文艺数据库/fx/USDJPY/仓库/季平滑_', .模型选项, '_数据量', 数据量, '_频率', 
-            频率, '_', 半成品$年月日时分, 'CST.rds 已储存!'))
-      
-      cat('\n\n')
-      rm(半成品)
-      gc()
-    })
-    return(半成品)
+    if(is.null(路径)) {
+      .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'
+      文件路径 <- paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 文件名)
+    } else {
+      文件路径 <- paste0(路径, 文件名)
+    }
+    saveRDS(半成品, 文件路径)
+    
+    cat('\n预测数据序列号：', 迭数1, '\n', paste0(文件路径, '\n已储存!\n\n'))
+    rm(半成品)
+    gc()
   })
   return(成品)
 }
