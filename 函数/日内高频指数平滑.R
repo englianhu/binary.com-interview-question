@@ -58,7 +58,11 @@
     
     if(is.null(路径)) {
       .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'
-      文件路径 <- paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 文件名)
+      if(!dir.exists(paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 频率)))
+        dir.create(paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 频率))
+        
+      文件路径 <- paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 频率, '/', 文件名)
+      
     } else {
       文件路径 <- paste0(路径, 文件名)
     }
