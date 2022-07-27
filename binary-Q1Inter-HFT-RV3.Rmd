@@ -276,17 +276,18 @@ conflict_prefer('rename', 'dplyr', quiet = TRUE)
 conflict_prefer('collapse', 'dplyr', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 
-程序包 <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
-          'readr', 'lubridate', 'data.table', 'reprex', 'stringr', 
-          'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 
-          'timetk', 'plyr', 'dplyr', 'dbplyr', 'magrittr', 'sarima', 
-          'tidyverse', 'memoise', 'htmltools', 'formattable', 'dtplyr', 
-          'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
-          'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 'TSA', 
-          'microbenchmark', 'dendextend', 'lhmetools', 'gtools', 
-          'stringi', 'pacman', 'profmem', 'ggthemes', 'flyingfox', 
-          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
-          'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
+程序包 <- c(
+  'devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
+  'readr', 'lubridate', 'data.table', 'reprex', 'stringr', 
+  'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 
+  'timetk', 'plyr', 'dplyr', 'dbplyr', 'magrittr', 'sarima', 
+  'tidyverse', 'memoise', 'htmltools', 'formattable', 'dtplyr', 
+  'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
+  'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 'TSA', 
+  'microbenchmark', 'dendextend', 'lhmetools', 'gtools', 
+  'stringi', 'pacman', 'profmem', 'ggthemes', 'flyingfox', 
+  'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
+  'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
 
 # load_pkg(程序包)
 suppressAll(lib(程序包))
@@ -925,6 +926,8 @@ Due to the models only forecast `1440 mins` (but not `7200 mins`) in advance, he
 ## 摘要
 
 ## Final Conclude
+
+<iframe width="458" height="815" src="https://www.youtube.com/embed/ceNvHXH6K2U" title="δ「抖音」βest Model" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 From final stage models comparison, we know that ******* is the <span style='color:white; background-color:#DE5D83;'>**β**est model</span>.
 
