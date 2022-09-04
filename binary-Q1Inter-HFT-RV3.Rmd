@@ -269,24 +269,27 @@ if(!require('REmap')) devtools::install_github('lchiffon/REmap')
 ## 一次性读取所需程序包。
 library('dplyr', warn.conflicts = FALSE)
 library('lubridate', warn.conflicts = FALSE)
+library('data.table', warn.conflicts = FALSE)
+
 conflict_prefer('filter', 'dplyr', quiet = TRUE)
 conflict_prefer('select', 'dplyr', quiet = TRUE)
 conflict_prefer('mutate', 'dplyr', quiet = TRUE)
 conflict_prefer('rename', 'dplyr', quiet = TRUE)
 conflict_prefer('collapse', 'dplyr', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
+conflict_prefer('first', 'data.table', quiet = TRUE)
+conflict_prefer('last', 'data.table', quiet = TRUE)
 
 程序包 <- c(
   'devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
-  'readr', 'lubridate', 'data.table', 'reprex', 'stringr', 
-  'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 
-  'timetk', 'plyr', 'dplyr', 'dbplyr', 'magrittr', 'sarima', 
-  'tidyverse', 'memoise', 'htmltools', 'formattable', 'dtplyr', 
-  'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
-  'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 'TSA', 
-  'microbenchmark', 'dendextend', 'lhmetools', 'gtools', 
-  'stringi', 'pacman', 'profmem', 'ggthemes', 'flyingfox', 
-  'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
+  'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 
+  'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
+  'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
+  'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 
+  'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 
+  'sparklyr', 'jcolors', 'TSA', 'microbenchmark', 'dendextend', 
+  'lhmetools', 'gtools', 'stringi', 'pacman', 'profmem', 'ggthemes', 
+  'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
   'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
 
 # load_pkg(程序包)
