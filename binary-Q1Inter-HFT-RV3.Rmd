@@ -279,6 +279,7 @@ conflict_prefer('collapse', 'dplyr', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 conflict_prefer('first', 'data.table', quiet = TRUE)
 conflict_prefer('last', 'data.table', quiet = TRUE)
+conflict_prefer('transpose', 'data.table', quiet = TRUE)
 
 程序包 <- c(
   'devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
@@ -297,7 +298,12 @@ suppressAll(lib(程序包))
 load_pkg(程序包)
 rm(程序包)
 
-.路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'
+.路径 <- getwd() |> 
+    {\(.) str_split(., '/')}() |> 
+    {\(.) c('/', .[[1]][2:5])}() |> 
+    {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+    {\(.) paste(., collapse = '/')}() |> 
+    {\(.) substring(., 2)}()
 
 ## 设置googleVis选项，促使plot.gvis只陈列HTML格式的完成品。
 谷歌绘图设置 <- options(gvis.plot.tag = 'chart')
@@ -474,11 +480,18 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 # --------- eval=FALSE ---------
 ## 检验是否已设置路径。
 if(!exists('.路径')) {
-  .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'}
+  .路径 <- getwd() |> 
+    {\(.) str_split(., '/')}() |> 
+    {\(.) c('/', .[[1]][2:5])}() |> 
+    {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+    {\(.) paste(., collapse = '/')}() |> 
+    {\(.) substring(., 2)}()
+  }
 
 ## 倘若环境尚未有数据，读取文件数据。
 if(!exists('dsmp')) {
-  dsmp <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/dsmp.rds'))}
+  dsmp <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/dsmp.rds'))
+  }
 
 # 样本 %<>% 
 #   rename(
@@ -504,12 +517,14 @@ dsmp %<>%
 
 ## 倘若该路径尚无文件，储存文件。
 if(!file.exists(paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds')) & exists('dsmp')) {
-  saveRDS(dsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))}
+  saveRDS(dsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))
+  }
 
 ## ------------------------------------------------
 ## 倘若环境尚未有数据，读取文件数据。
 if(!exists('ddsmp')) {
-  ddsmp <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/ddsmp.rds'))}
+  ddsmp <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/ddsmp.rds'))
+  }
 
 names(ddsmp) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', '日分计', '时分计', '序列', '日期', '闭市价')
 
@@ -528,7 +543,8 @@ ddsmp %<>%
 
 ## 倘若该路径尚无文件，储存文件。
 if(!file.exists(paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds')) & exists('ddsmp')) {
-  saveRDS(ddsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds'))}
+  saveRDS(ddsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds'))
+  }
 ```
 
 由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加一小时时差为中国标准时间，以确保时间规律计算方面，不会出错；周日数据中文化。
@@ -536,34 +552,45 @@ if(!file.exists(paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds')) & exis
 ```{r 绘制样本数据图表, results = 'asis'}
 ## 检验是否已设置路径。
 if(!exists('.路径')) {
-  .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'}
+  .路径 <- getwd() |> 
+    {\(.) str_split(., '/')}() |> 
+    {\(.) c('/', .[[1]][2:5])}() |> 
+    {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+    {\(.) paste(., collapse = '/')}() |> 
+    {\(.) substring(., 2)}()
+  }
 
 ## 倘若环境尚未有数据，读取文件数据。
 if(!exists('样本')) {
-  样本 <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))}
+  样本 <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))
+  }
 
 ## 绘制样本图表
-样本[c(1:3, (nrow(样本)-3):nrow(样本)),] %>% 
-  kbl(caption = '每分钟价位', escape = FALSE) %>% 
+样本[c(1:3, (nrow(样本)-3):nrow(样本)),] |> 
+  {\(.) kbl(., caption = '每分钟价位', escape = FALSE)}() |> 
   ## https://www.w3schools.com/cssref/css_colors.asp
-  ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd
-  row_spec(0, background = 'DimGrey', color = 'gold', bold = TRUE) %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = 'Gray') %>% 
-  column_spec(3, background = 'DarkGrey') %>% 
-  column_spec(4, background = 'Gray') %>% 
-  column_spec(5, background = 'DarkGrey') %>% 
-  column_spec(6, background = '#4897D8') %>% 
-  column_spec(7, background = '#556DAC') %>% 
-  column_spec(8, background = '#92AAC7') %>% 
-  column_spec(9, background = '#556DAC') %>% 
-  column_spec(10, background = '#375E97') %>% 
-  column_spec(11, background = 'CornflowerBlue') %>% 
-  column_spec(12, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd 
+  {\(.) row_spec(., 0, background = 'DimGrey', 
+                 color = 'gold', bold = TRUE)}() |> 
+  {\(.) column_spec(., 1, background = 'CornflowerBlue')}() |> 
+  {\(.) column_spec(., 2, background = 'Gray')}() |> 
+  {\(.) column_spec(., 3, background = 'DarkGrey')}() |> 
+  {\(.) column_spec(., 4, background = 'Gray')}() |> 
+  {\(.) column_spec(., 5, background = 'DarkGrey')}() |> 
+  {\(.) column_spec(., 6, background = '#4897D8')}() |> 
+  {\(.) column_spec(., 7, background = '#556DAC')}() |> 
+  {\(.) column_spec(., 8, background = '#92AAC7')}() |> 
+  {\(.) column_spec(., 9, background = '#556DAC')}() |> 
+  {\(.) column_spec(., 10, background = '#375E97')}() |> 
+  {\(.) column_spec(., 11, background = 'CornflowerBlue')}() |> 
+  {\(.) column_spec(., 12, background = 'LightGray', 
+                    color = 'goldenrod')}() |> 
+  {\(.) kable_styling(., bootstrap_options = 
+                        c('striped', 'hover', 'condensed', 'responsive'))}() |> 
   ##`full_width = FALSE`是将每列设置为伸缩性自动调整宽度。
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+  {\(.) kable_material(., full_width = FALSE)}() |> 
+  {\(.) scroll_box(., width = '100%', fixed_thead = TRUE, 
+                   height = '400px')}()
 ```
 
 *数据 : `r paste0(dim(样本)[1], '行 x ', dim(样本)[2], '列')`*
