@@ -1,5 +1,6 @@
-日内高频指数平滑 <- function(时间索引, 样本 = 样本, 数据量, 路径 = NULL, 
-                      频率 = 1200, 预测时间单位 = 1, .模型选项, 列印 = TRUE) {
+日内高频指数平滑 <- function(时间索引, 样本 = 样本, 数据量, 
+                     路径 = NULL, 频率 = 1200, 预测时间单位 = 1, 
+                     .模型选项, 列印 = TRUE) {
   
   options(digits = 16)
   require('dplyr', quietly = TRUE)
@@ -9,6 +10,7 @@
   conflict_prefer('rename', 'dplyr', quiet = TRUE)
   conflict_prefer('select', 'dplyr', quiet = TRUE)
   conflict_prefer('forecast', 'forecast', quiet = TRUE)
+  conflict_prefer('ets', 'forecast', quiet = TRUE)
   
   if(!'data.table' %in% class(样本)) 样本 %<>% as.data.table
   
@@ -35,40 +37,49 @@
       print(预测样本)
     }
     
-    半成品 <- 培训样本[, .(年月日时分, 闭市价)] %>% 
-      as_tibble %>% 
-      tk_ts(frequency = 频率) %>% 
-      ets(model = .模型选项) %>% 
-      forecast(h = 预测时间单位) %>% 
-      tk_tbl %>% 
-      mutate(
-        年月日时分 = 预测样本[.N]$年月日时分, 市场价 = 预测样本[.N]$闭市价) %>% 
-        rename(预测价 = `Point Forecast`) %>% 
-        select(年月日时分, 市场价, 预测价) %>% 
-      as.data.table
+    半成品 <- 培训样本[, .(年月日时分, 闭市价)] |> 
+      {\(.) as_tibble(.) }() |> 
+      {\(.) tk_ts(., frequency = 频率)}() |> 
+      {\(.) forecast::ets(., model = .模型选项)}() |> 
+      {\(.) forecast::forecast(., h = 预测时间单位)}() |> 
+      {\(.) tk_tbl(.)}() |> 
+      {\(.) mutate(., 
+                   年月日时分 = 预测样本[.N]$年月日时分, 
+                   市场价 = 预测样本[.N]$闭市价)}() |> 
+      {\(.) dplyr::rename(., 预测价 = `Point Forecast`)}() |> 
+      {\(.) dplyr::select(., 年月日时分, 市场价, 预测价)}() |> 
+      {\(.) as.data.table(.)}()
     
     if(列印 == TRUE) {
       cat('\n-------------------------------------------\n')
-      cat('预测样本[', '数据量：', 数据量, '频率：', 频率, '-', '预测数据序列号：', 迭数1, ']\n')
+      cat('预测样本[', '数据量：', 数据量, '频率：', 频率, '-', 
+          '预测数据序列号：', 迭数1, ']\n')
       print(半成品)
     }
     
-    文件名 <- paste0('季平滑_', .模型选项, '_数据量', 数据量, '_频率', 频率, '_', 
-                  半成品$年月日时分, 'CST.rds')
+    文件名 <- paste0('季平滑_', .模型选项, '_数据量', 数据量, 
+                  '_频率', 频率, '_', 半成品$年月日时分, 'CST.rds')
     
     if(is.null(路径)) {
-      .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'
+      .路径 <- getwd() |> 
+        {\(.) str_split(., '/')}() |> 
+        {\(.) c('/', .[[1]][2:5])}() |> 
+        {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+        {\(.) paste(., collapse = '/')}() |> 
+        {\(.) substring(., 2)}()
       if(!dir.exists(paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 频率)))
         dir.create(paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 频率))
         
-      文件路径 <- paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 频率, '/', 文件名)
+      文件路径 <- paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 频率, 
+                     '/', 文件名)
       
     } else {
       文件路径 <- paste0(路径, 文件名)
     }
     saveRDS(半成品, 文件路径)
     
-    cat('\n-------------------------------------------\n预测数据序列号：', 迭数1, '\n', 
+    cat('\n-------------------------------------------\n预测数据序列号：', 
+        迭数1, '\n', 
         paste0(
           文件路径, '\n已储存!\n\n进度由0-1：', 
           length(迭代基准[迭数1 >= 迭代基准]) / length(迭代基准), '\n\n'))

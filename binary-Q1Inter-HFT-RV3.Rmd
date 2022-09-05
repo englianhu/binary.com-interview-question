@@ -440,7 +440,8 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 	
 	  日子 = 日子[日子 >= 起点]
     
-      布告栏 = list.files(paste0(.路径, '文艺数据库/fx/USDJPY/'), pattern = .匹配元素) %>% 
+      布告栏 = list.files(paste0(.路径, '文艺数据库/fx/USDJPY/'), 
+                       pattern = .匹配元素) %>% 
 	      str_replace_all('.rds', '') %>% 
 		  str_replace_all('.201', '_201') %>% 
 		  str_split_fixed('_', '2') %>% 
@@ -495,10 +496,12 @@ if(!exists('dsmp')) {
 
 # 样本 %<>% 
 #   rename(
-#     年月日时分 = index,	年份 = year, 季度 = quarter, 月份 = month, 周 = week, 周日 = wkdays, 
-#     周分计 = wk_1m, 日分计 = dy_1m, 时分计 = hr_1m, 序列 = sq, 日期 = date, 闭市价 = close)
+#     年月日时分 = index,	年份 = year, 季度 = quarter, 月份 = month, 周 = week, 
+#     周日 = wkdays, 周分计 = wk_1m, 日分计 = dy_1m, 时分计 = hr_1m, 序列 = sq, 
+##    日期 = date, 闭市价 = close)
 
-names(dsmp) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', '日分计', '时分计', '序列', '日期', '闭市价')
+names(dsmp) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', 
+                 '日分计', '时分计', '序列', '日期', '闭市价')
 
 ## Using lubridate for dates and times
 ## https://louisahsmith.github.io/R-office-hours/OH-13.html
@@ -516,8 +519,9 @@ dsmp %<>%
   as.data.table
 
 ## 倘若该路径尚无文件，储存文件。
-if(!file.exists(paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds')) & exists('dsmp')) {
-  saveRDS(dsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))
+if(!file.exists(paste0(
+  .路径, '文艺数据库/fx/USDJPY/样本1.rds')) & exists('dsmp')) {
+    saveRDS(dsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))
   }
 
 ## ------------------------------------------------
@@ -526,7 +530,8 @@ if(!exists('ddsmp')) {
   ddsmp <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/ddsmp.rds'))
   }
 
-names(ddsmp) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', '日分计', '时分计', '序列', '日期', '闭市价')
+names(ddsmp) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', 
+                  '日分计', '时分计', '序列', '日期', '闭市价')
 
 ddsmp %<>% 
   mutate(
@@ -542,8 +547,9 @@ ddsmp %<>%
   as.data.table
 
 ## 倘若该路径尚无文件，储存文件。
-if(!file.exists(paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds')) & exists('ddsmp')) {
-  saveRDS(ddsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds'))
+if(!file.exists(paste0(
+  .路径, '文艺数据库/fx/USDJPY/样本2.rds')) & exists('ddsmp')) {
+    saveRDS(ddsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds'))
   }
 ```
 
@@ -1011,7 +1017,8 @@ if (nrow(系统信息1) == 11 && nrow(系统信息2) == 8) {
     Category = c('rmarkdown', 'rsconnect', '当前时间'), 
     Sys.info = c(as.character(getwd()), 
                  as.character(packageVersion('rsconnect')), 
-                 paste(as.character(lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
+                 paste(as.character(
+                   lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
   
 } else if (nrow(系统信息1) == 10 && nrow(系统信息2) == 8) {
   系统信息1 <- rbind(系统信息1, data.frame(Category = '', session_info = ''))
@@ -1021,20 +1028,25 @@ if (nrow(系统信息1) == 11 && nrow(系统信息2) == 8) {
     Category = c('rmarkdown', 'rsconnect', '当前时间'), 
     Sys.info = c(as.character(getwd()), 
                  as.character(packageVersion('rsconnect')), 
-                 paste(as.character(lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
+                 paste(as.character(
+                   lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
 }
 
 系统信息 <- cbind(系统信息1, 系统信息2)
 names(系统信息) <- c('分类1', '访谈信息1', '分类2', '访谈信息2')
-系统信息$分类1 <- c('版本', '操作系统', '系统', '界面', '语言', '核对', '©标准库', '时区', '日期', '®文艺坊版本', 'Pandoc瑞士军刀')
-系统信息$分类2 <- c('系统名称', '发布', '版本', '元素节点', '机器', '登录', '用户', '活跃用户', 'rmarkdown (®降价编译)', 'rsconnect (®s联通)', '当前时间')
+系统信息$分类1 <- c('版本', '操作系统', '系统', '界面', '语言', '核对', 
+              '©标准库', '时区', '日期', '®文艺坊版本', 'Pandoc瑞士军刀')
+系统信息$分类2 <- c('系统名称', '发布', '版本', '元素节点', '机器', '登录', 
+              '用户', '活跃用户', 'rmarkdown (®降价编译)', 
+              'rsconnect (®s联通)', '当前时间')
 rm(系统信息1, 系统信息2)
 
 系统信息 |> 
   {\(.) 
     kbl(., caption = '附加访谈信息：')}() |> 
   {\(.) 
-    kable_styling(., bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))}() |> 
+    kable_styling(
+      ., bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))}() |> 
   {\(.) 
     row_spec(., 0, background = 'DimGrey', color = 'yellow')}() |> 
   {\(.) 
