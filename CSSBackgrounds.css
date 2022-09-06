@@ -1,0 +1,13 @@
+body {
+  background-image: url('figure/math_theme.png'); 
+  background-repeat: no-repeat; 
+  /*background-size: 100%;*/
+  background-size: cover; 
+  background-position: center center;
+  background-attachment: fixed; 
+}
+
+div {
+  background-color: rgba(255, 255, 255, 0.35)   /* 35% opaque white */;
+  padding: 0.25em;
+}
