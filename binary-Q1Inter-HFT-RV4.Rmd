@@ -1,7 +1,7 @@
 ---
 title: "<img src='文艺坊图库/deriv.png' height='240'>"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part III)**</span>](https://github.com/englianhu/binary.com-interview-question)"
-author: "[®γσ, ξηg Lιαη Ημ](https://englianhu.github.io/) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/021 - 04.jpg' height='14'> <img src='文艺坊图库/Peking University 02.png' height='14'>" 
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)"
+author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/021 - 04.jpg' height='14'> <img src='文艺坊图库/Peking University 02.png' height='14'>" 
 date: "`r lubridate::today('Asia/Shanghai')`"
 output:
   html_document: 
@@ -269,31 +269,41 @@ if(!require('REmap')) devtools::install_github('lchiffon/REmap')
 ## 一次性读取所需程序包。
 library('dplyr', warn.conflicts = FALSE)
 library('lubridate', warn.conflicts = FALSE)
+library('data.table', warn.conflicts = FALSE)
+
 conflict_prefer('filter', 'dplyr', quiet = TRUE)
 conflict_prefer('select', 'dplyr', quiet = TRUE)
 conflict_prefer('mutate', 'dplyr', quiet = TRUE)
 conflict_prefer('rename', 'dplyr', quiet = TRUE)
 conflict_prefer('collapse', 'dplyr', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
+conflict_prefer('first', 'data.table', quiet = TRUE)
+conflict_prefer('last', 'data.table', quiet = TRUE)
+conflict_prefer('transpose', 'data.table', quiet = TRUE)
 
-程序包 <- c('devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
-          'readr', 'lubridate', 'data.table', 'reprex', 'stringr', 
-          'feather', 'purrr', 'quantmod', 'tidyquant', 'tibbletime', 
-          'timetk', 'plyr', 'dplyr', 'dbplyr', 'magrittr', 'sarima', 
-          'tidyverse', 'memoise', 'htmltools', 'formattable', 'dtplyr', 
-          'zoo', 'forecast', 'seasonal', 'seasonalview', 'rjson', 
-          'rugarch', 'rmgarch', 'mfGARCH', 'sparklyr', 'jcolors', 'TSA', 
-          'microbenchmark', 'dendextend', 'lhmetools', 'gtools', 
-          'stringi', 'pacman', 'profmem', 'ggthemes', 'flyingfox', 
-          'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
-          'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
+程序包 <- c(
+  'devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
+  'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 
+  'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
+  'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
+  'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 
+  'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 
+  'sparklyr', 'jcolors', 'TSA', 'microbenchmark', 'dendextend', 
+  'lhmetools', 'gtools', 'stringi', 'pacman', 'profmem', 'ggthemes', 
+  'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
+  'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
 
 # load_pkg(程序包)
 suppressAll(lib(程序包))
 load_pkg(程序包)
 rm(程序包)
 
-.路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'
+.路径 <- getwd() |> 
+    {\(.) str_split(., '/')}() |> 
+    {\(.) c('/', .[[1]][2:5])}() |> 
+    {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+    {\(.) paste(., collapse = '/')}() |> 
+    {\(.) substring(., 2)}()
 
 ## 设置googleVis选项，促使plot.gvis只陈列HTML格式的完成品。
 谷歌绘图设置 <- options(gvis.plot.tag = 'chart')
@@ -466,109 +476,56 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 
 **Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**次论文读取该数据，将网页轻巧化、省略掉修饰数据的一栏。
 
-```{r 数据中文化, eval=FALSE}
-# --------- eval=FALSE ---------
-## 检验是否已设置路径。
-if(!exists('.路径')) {
-  .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'}
-
-## 倘若环境尚未有数据，读取文件数据。
-if(!exists('dsmp')) {
-  dsmp <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/dsmp.rds'))}
-
-# 样本 %<>% 
-#   rename(
-#     年月日时分 = index,	年份 = year, 季度 = quarter, 月份 = month, 周 = week, 周日 = wkdays, 
-#     周分计 = wk_1m, 日分计 = dy_1m, 时分计 = hr_1m, 序列 = sq, 日期 = date, 闭市价 = close)
-
-names(dsmp) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', '日分计', '时分计', '序列', '日期', '闭市价')
-
-## Using lubridate for dates and times
-## https://louisahsmith.github.io/R-office-hours/OH-13.html
-dsmp %<>% 
-  mutate(
-    年月日时分 = 年月日时分 + hours(1), 
-    周日 = case_when(
-    周日 == 'Sunday' ~ '周日',
-    周日 == 'Monday' ~ '周一',
-    周日 == 'Tuesday' ~ '周二',
-    周日 == 'Wednesday' ~ '周三',
-    周日 == 'Thursday' ~ '周四',
-    周日 == 'Friday' ~ '周五',
-    周日 == 'Saturday' ~ '周六')) %>% 
-  as.data.table
-
-## 倘若该路径尚无文件，储存文件。
-if(!file.exists(paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds')) & exists('dsmp')) {
-  saveRDS(dsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))}
-
-## ------------------------------------------------
-## 倘若环境尚未有数据，读取文件数据。
-if(!exists('ddsmp')) {
-  ddsmp <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/ddsmp.rds'))}
-
-names(ddsmp) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', '日分计', '时分计', '序列', '日期', '闭市价')
-
-ddsmp %<>% 
-  mutate(
-    年月日时分 = 年月日时分 + hours(1), 
-    周日 = case_when(
-    周日 == 'Sunday' ~ '周日',
-    周日 == 'Monday' ~ '周一',
-    周日 == 'Tuesday' ~ '周二',
-    周日 == 'Wednesday' ~ '周三',
-    周日 == 'Thursday' ~ '周四',
-    周日 == 'Friday' ~ '周五',
-    周日 == 'Saturday' ~ '周六')) %>% 
-  as.data.table
-
-## 倘若该路径尚无文件，储存文件。
-if(!file.exists(paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds')) & exists('ddsmp')) {
-  saveRDS(ddsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds'))}
-```
-
-由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加一小时时差为中国标准时间，以确保时间规律计算方面，不会出错；周日数据中文化。
-
 ```{r 绘制样本数据图表, results = 'asis'}
 ## 检验是否已设置路径。
 if(!exists('.路径')) {
-  .路径 <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'}
+  .路径 <- getwd() |> 
+    {\(.) str_split(., '/')}() |> 
+    {\(.) c('/', .[[1]][2:5])}() |> 
+    {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+    {\(.) paste(., collapse = '/')}() |> 
+    {\(.) substring(., 2)}()
+  }
 
 ## 倘若环境尚未有数据，读取文件数据。
-if(!exists('样本')) {
-  样本 <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))}
+if(!exists('样本1')) {
+  样本1 <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))}
 
 ## 绘制样本图表
-样本[c(1:3, (nrow(样本)-3):nrow(样本)),] %>% 
-  kbl(caption = '每分钟价位', escape = FALSE) %>% 
+样本1[c(1:3, (nrow(样本1)-3):nrow(样本1)),] |> 
+    {\(.) kbl(., caption = '每分钟价位', escape = FALSE)}() |> 
   ## https://www.w3schools.com/cssref/css_colors.asp
   ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd
-  row_spec(0, background = 'DimGrey', color = 'gold', bold = TRUE) %>% 
-  column_spec(1, background = 'CornflowerBlue') %>% 
-  column_spec(2, background = 'Gray') %>% 
-  column_spec(3, background = 'DarkGrey') %>% 
-  column_spec(4, background = 'Gray') %>% 
-  column_spec(5, background = 'DarkGrey') %>% 
-  column_spec(6, background = '#4897D8') %>% 
-  column_spec(7, background = '#556DAC') %>% 
-  column_spec(8, background = '#92AAC7') %>% 
-  column_spec(9, background = '#556DAC') %>% 
-  column_spec(10, background = '#375E97') %>% 
-  column_spec(11, background = 'CornflowerBlue') %>% 
-  column_spec(12, background = 'LightGray', color = 'goldenrod') %>% 
-  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+    {\(.) row_spec(., 
+      0, background = 'DimGrey', color = 'gold', bold = TRUE)}() |> 
+    {\(.) column_spec(., 1, background = 'CornflowerBlue')}() |> 
+    {\(.) column_spec(., 2, background = 'Gray')}() |> 
+    {\(.) column_spec(., 3, background = 'DarkGrey')}() |> 
+    {\(.) column_spec(., 4, background = 'Gray')}() |> 
+    {\(.) column_spec(., 5, background = 'DarkGrey')}() |> 
+    {\(.) column_spec(., 6, background = '#4897D8')}() |> 
+    {\(.) column_spec(., 7, background = '#556DAC')}() |> 
+    {\(.) column_spec(., 8, background = '#92AAC7')}() |> 
+    {\(.) column_spec(., 9, background = '#556DAC')}() |> 
+    {\(.) column_spec(., 10, background = '#375E97')}() |> 
+    {\(.) column_spec(., 11, background = 'CornflowerBlue')}() |> 
+    {\(.) column_spec(., 
+      12, background = 'LightGray', color = 'goldenrod')}() |> 
+    {\(.) kable_styling(., 
+      bootstrap_options = c(
+        'striped', 'hover', 'condensed', 'responsive'))}() |> 
   ##`full_width = FALSE`是将每列设置为伸缩性自动调整宽度。
-  kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE, height = '400px')
+    {\(.) kable_material(., full_width = FALSE)}() |> 
+    {\(.) scroll_box(., width = '100%', fixed_thead = TRUE, height = '400px')}()
 ```
 
-*数据 : `r paste0(dim(样本)[1], '行 x ', dim(样本)[2], '列')`*
+*数据 : `r paste0(dim(样本1)[1], '行 x ', dim(样本1)[2], '列')`*
 
-以上图表显示数据日期，由`r paste(range(样本$日期), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
+以上图表显示数据日期，由`r paste(range(样本1$日期), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
 
 # 统计建模
 
-在此先过滤数据，从2016年的第一个预测日（`r filter(样本, 年份 == 2016)$日期[1]`开始，也就是读取的样本数据中的第二年数据开始），与论文*(Part I)*、*(Part II)*中相符。
+在此先过滤数据，从2016年的第一个预测日（`r filter(样本1, 年份 == 2016)$日期[1]`开始，也就是读取的样本数据中的第二年数据开始），与论文*(Part I)*、*(Part II)*中相符。
 
 ## 季节性指数平滑模型（Seasonal ETS））`ts()` & `ets()`
 
@@ -596,16 +553,16 @@ if(!exists('样本')) {
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
 - [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
 
-```{r}
+```{r, eval=FALSE}
 source('函数/季节性自回归.R')
 
-时间索引 <- unique(样本$日期)
-# 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
-基准 <- 样本[年份 == 2016]$日期[1]
+时间索引 <- unique(样本1$日期)
+# 基准 <- filter(样本1, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
+基准 <- 样本1[年份 == 2016]$日期[1]
 时间索引 %<>% .[. >= 基准]
 时间索引 %<>% .[1:6] #筛选数据中的前6个日期为样本
 # 时间索引 %<>% .[. >= as_date('2016-01-04')]
-数据量 <- 1200 #筛选数据中的最后1200观测值：样本[(.N - (数据量 - 1)):.N]
+数据量 <- 1200 #筛选数据中的最后1200观测值：样本1[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1
 
 .模型选项 = c('自动化', '自回归滑均')
@@ -631,7 +588,7 @@ source('函数/季节性自回归.R')
 
 #### 20小时一周期（1200分钟循环1次）
 
-```{r}
+```{r, eval=FALSE}
 循环周期 = 1200
 
 ## 由于forecast::Arima()出现多种错误信息，故此忽略使用该函数建模。
@@ -644,7 +601,7 @@ llply(.模型选项[1], function(模型) {
         季回归2 <- llply(季节性与否, function(季节) {
           季回归3 <- llply(时间索引, function(时序) {
             成效 <- 季节性自回归(
-              时间索引 = 时序, 样本 = 样本, 路径 = .路径, 
+              时间索引 = 时序, 样本 = 样本1, 路径 = .路径, 
               数据量 = 数据量, 循环周期 = 循环周期, 
               预测时间单位 = 预测时间单位, .模型选项 = 模型, 
               .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
@@ -689,7 +646,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 10小时一周期（600分钟循环2次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -697,7 +654,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 6.67小时一周期（400分钟循环3次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -705,7 +662,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 5小时一周期（300分钟循环4次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -713,7 +670,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 4小时一周期（240分钟循环5次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -721,7 +678,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 3.33小时一周期（200分钟循环6次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -729,7 +686,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 2.5小时一周期（150分钟循环8次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -737,7 +694,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 2小时一周期（120分钟循环10次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -745,7 +702,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 1.67小时一周期（100分钟循环12次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -753,7 +710,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 1.33小时一周期（80分钟循环15次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -761,7 +718,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 1小时一周期（60分钟循环20次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -769,7 +726,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.83小时一周期（50分钟循环24次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -777,7 +734,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.67小时一周期（40分钟循环30次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -785,7 +742,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 半小时一周期（30分钟循环40次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -793,7 +750,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.40小时一周期（24分钟循环50次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -801,7 +758,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.33小时一周期（20分钟循环60次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -809,7 +766,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.27小时一周期（16分钟循环75次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -817,7 +774,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.25小时一周期（15分钟循环80次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -825,7 +782,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.20小时一周期（12分钟循环100次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -833,7 +790,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.17小时一周期（10分钟循环120次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -841,7 +798,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.13小时一周期（8分钟循环150次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -849,7 +806,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.10小时一周期（6分钟循环200次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -857,7 +814,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.08小时一周期（5分钟循环240次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -865,7 +822,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.07小时一周期（4分钟循环300次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -873,7 +830,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.05小时一周期（3分钟循环400次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -881,7 +838,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.03小时一周期（2分钟循环600次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -889,7 +846,7 @@ llply(.模型选项[1], function(模型) {
 
 #### 0.02小时一周期（1分钟循环1200次）
 
-```{r}
+```{r, eval=FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -907,7 +864,7 @@ llply(.模型选项[1], function(模型) {
 
 - [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
 
-```{r}
+```{r, eval=FALSE}
 时间索引 <- unique(样本$日期)
 # 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
 基准 <- 样本[年份 == 2016]$日期[1]
@@ -1138,6 +1095,7 @@ options(warn = 0)
 - 猫舍：[源代码](https://github.com/englianhu/binary.com-interview-question)
 - 追加附属信息
 
+
 ```{r 信息}
 #suppressMessages(require('formattable', quietly = TRUE))
 #suppressMessages(require('knitr', quietly = TRUE))
@@ -1160,7 +1118,8 @@ if (nrow(系统信息1) == 11 && nrow(系统信息2) == 8) {
     Category = c('rmarkdown', 'rsconnect', '当前时间'), 
     Sys.info = c(as.character(getwd()), 
                  as.character(packageVersion('rsconnect')), 
-                 paste(as.character(lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
+                 paste(as.character(
+                   lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
   
 } else if (nrow(系统信息1) == 10 && nrow(系统信息2) == 8) {
   系统信息1 <- rbind(系统信息1, data.frame(Category = '', session_info = ''))
@@ -1170,20 +1129,25 @@ if (nrow(系统信息1) == 11 && nrow(系统信息2) == 8) {
     Category = c('rmarkdown', 'rsconnect', '当前时间'), 
     Sys.info = c(as.character(getwd()), 
                  as.character(packageVersion('rsconnect')), 
-                 paste(as.character(lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
+                 paste(as.character(
+                   lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
 }
 
 系统信息 <- cbind(系统信息1, 系统信息2)
 names(系统信息) <- c('分类1', '访谈信息1', '分类2', '访谈信息2')
-系统信息$分类1 <- c('版本', '操作系统', '系统', '界面', '语言', '核对', '©标准库', '时区', '日期', '®文艺坊版本', 'Pandoc瑞士军刀')
-系统信息$分类2 <- c('系统名称', '发布', '版本', '元素节点', '机器', '登录', '用户', '活跃用户', 'rmarkdown (®降价编译)', 'rsconnect (®s联通)', '当前时间')
+系统信息$分类1 <- c('版本', '操作系统', '系统', '界面', '语言', '核对', 
+              '©标准库', '时区', '日期', '®文艺坊版本', 'Pandoc瑞士军刀')
+系统信息$分类2 <- c('系统名称', '发布', '版本', '元素节点', '机器', '登录', 
+              '用户', '活跃用户', 'rmarkdown (®降价编译)', 
+              'rsconnect (®s联通)', '当前时间')
 rm(系统信息1, 系统信息2)
 
 系统信息 |> 
   {\(.) 
     kbl(., caption = '附加访谈信息：')}() |> 
   {\(.) 
-    kable_styling(., bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))}() |> 
+    kable_styling(
+      ., bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))}() |> 
   {\(.) 
     row_spec(., 0, background = 'DimGrey', color = 'yellow')}() |> 
   {\(.) 
