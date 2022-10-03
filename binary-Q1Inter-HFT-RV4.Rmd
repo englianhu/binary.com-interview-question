@@ -229,8 +229,10 @@ Sys.setenv(TZ = 'Asia/Tapei')
 ## https://stackoverflow.com/a/36846793/3806250
 ## 设置宽度
 ## options(knitr.table.format = 'html')将所有kableExtra图表一致设置为'html'格式，省略设置各别图表。
+## options(repos = 'https://cran.rstudio.com')将仓库设置为安全网。
+## options(repos = 'http://cran.rstudio.com')将仓库设置为普通网。
 options(warn = -1, width = 999, knitr.table.format = 'html', 
-        digits = 16, digits.secs = Inf)
+        digits = 16, digits.secs = Inf, repos = 'https://cran.rstudio.com')
 
 ## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
 ## https://yihui.org/knitr/options
