@@ -1,10 +1,11 @@
+options(digits = 16)
 setwd('/home/englianhu/文档/GitHub/binary.com-interview-question')
 ## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question-data')
 ## 数据库蜀道 <- paste0(getwd(), '/文艺数据库/fx/USDJPY/仓库/')
 数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
 数据库文件夹 <- dir(数据库蜀道, pattern = '0$')
 
-
+######## 秦孝公秦始皇NonMuslim邓小平，商鞅变法六四焚可兰经坑巫师巫婆乩童 ########
 ######## 三军未动，粮草先行 ########
 ######## 一带一路，泛亚高铁 ########
 ## 
@@ -61,19 +62,27 @@ system.time({蜀道 = dir(paste0(数据库蜀道, 数据库文件夹)[1])})
 system.time({蜀道 = dir(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')})
 system.time({列表 = list.files(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')})
 
+
+列表80 <- list.files(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')
+saveRDS(列表80, paste0(数据库蜀道, '列表80.rds'))
+列表80 <- readRDS(paste0(数据库蜀道, '列表80.rds'))
+日内平滑指数数据80 <- ldply(列表80, function(参数) readRDS(paste0(数据库蜀道, 数据库文件夹[1], '/', 参数))) %>% as_tibble()
+saveRDS(日内平滑指数数据80, paste0(数据库蜀道, '日内平滑指数数据80.rds'))
+日内平滑指数数据80 <- readRDS(paste0(数据库蜀道, '日内平滑指数数据80.rds'))
+
+列表100 <- list.files(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')
+saveRDS(列表100, paste0(数据库蜀道, '列表100.rds'))
+列表100 <- readRDS(paste0(数据库蜀道, '列表100.rds'))
+日内平滑指数数据100 <- ldply(列表100, function(参数) readRDS(paste0(数据库蜀道, 数据库文件夹[1], '/', 参数))) %>% as_tibble()
+saveRDS(日内平滑指数数据100, paste0(数据库蜀道, '日内平滑指数数据100.rds'))
+日内平滑指数数据100 <- readRDS(paste0(数据库蜀道, '日内平滑指数数据100.rds'))
+
 列表120 <- list.files(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')
 saveRDS(列表120, paste0(数据库蜀道, '列表120.rds'))
 列表120 <- readRDS(paste0(数据库蜀道, '列表120.rds'))
 日内平滑指数数据120 <- ldply(列表120, function(参数) readRDS(paste0(数据库蜀道, 数据库文件夹[1], '/', 参数))) %>% as_tibble()
 saveRDS(日内平滑指数数据120, paste0(数据库蜀道, '日内平滑指数数据120.rds'))
 日内平滑指数数据120 <- readRDS(paste0(数据库蜀道, '日内平滑指数数据120.rds'))
-
-列表1200 <- list.files(paste0(数据库蜀道, 数据库文件夹)[2], '*.rds')
-saveRDS(列表1200, paste0(数据库蜀道, '列表1200.rds'))
-列表1200 <- readRDS(paste0(数据库蜀道, '列表1200.rds'))
-日内平滑指数数据1200 <- ldply(列表1200, function(参数) readRDS(paste0(数据库蜀道, 数据库文件夹[2], '/', 参数))) %>% as_tibble()
-saveRDS(日内平滑指数数据1200, paste0(数据库蜀道, '日内平滑指数数据1200.rds'))
-日内平滑指数数据1200 <- readRDS(paste0(数据库蜀道, '日内平滑指数数据1200.rds'))
 
 列表150 <- list.files(paste0(数据库蜀道, 数据库文件夹)[3], '*.rds')
 saveRDS(列表150, paste0(数据库蜀道, '列表150.rds'))
@@ -118,6 +127,13 @@ saveRDS(列表600, paste0(数据库蜀道, '列表600.rds'))
 日内平滑指数数据600 <- ldply(列表600, function(参数) readRDS(paste0(数据库蜀道, 数据库文件夹[8], '/', 参数))) %>% as_tibble()
 saveRDS(日内平滑指数数据600, paste0(数据库蜀道, '日内平滑指数数据600.rds'))
 日内平滑指数数据600 <- readRDS(paste0(数据库蜀道, '日内平滑指数数据600.rds'))
+
+列表1200 <- list.files(paste0(数据库蜀道, 数据库文件夹)[2], '*.rds')
+saveRDS(列表1200, paste0(数据库蜀道, '列表1200.rds'))
+列表1200 <- readRDS(paste0(数据库蜀道, '列表1200.rds'))
+日内平滑指数数据1200 <- ldply(列表1200, function(参数) readRDS(paste0(数据库蜀道, 数据库文件夹[2], '/', 参数))) %>% as_tibble()
+saveRDS(日内平滑指数数据1200, paste0(数据库蜀道, '日内平滑指数数据1200.rds'))
+日内平滑指数数据1200 <- readRDS(paste0(数据库蜀道, '日内平滑指数数据1200.rds'))
 
 
 
