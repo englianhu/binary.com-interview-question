@@ -259,12 +259,13 @@ knitr::opts_chunk$set(
 ## 读取'BBmisc'程序包。
 if(suppressMessages(!require('BBmisc'))){
   install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
-  suppressMessages(library('BBmisc'))
 }
+suppressMessages(library('BBmisc'))
+
 if (suppressMessages(!require('rmsfuns'))) {
   install.packages('rmsfuns', dependencies = TRUE, INSTALL_opts = '--no-lock')
-  suppressMessages(library('rmsfuns'))
 }
+suppressMessages(library('rmsfuns'))
 
 if(!require('REmap')) devtools::install_github('lchiffon/REmap')
 
