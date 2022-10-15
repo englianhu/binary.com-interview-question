@@ -191,6 +191,17 @@ if(!exists('样本')) {
 
 .模型选项 = c('MNN')
 
+                      
+conflict_prefer('filter', 'dplyr', quiet = TRUE)
+conflict_prefer('select', 'dplyr', quiet = TRUE)
+conflict_prefer('mutate', 'dplyr', quiet = TRUE)
+conflict_prefer('rename', 'dplyr', quiet = TRUE)
+conflict_prefer('collapse', 'dplyr', quiet = TRUE)
+conflict_prefer('year', 'lubridate', quiet = TRUE)
+conflict_prefer('first', 'data.table', quiet = TRUE)
+conflict_prefer('last', 'data.table', quiet = TRUE)
+conflict_prefer('transpose', 'data.table', quiet = TRUE)
+
 #数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
 #数据库文件夹 <- dir(数据库蜀道, pattern = '0$')
 
@@ -290,18 +301,30 @@ if(!exists('样本')) {
      时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
      预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
 
-##########################################
 ################ 频率 = 100 ##############
+日内平滑指数数据100 <- readRDS(paste0(数据库蜀道, '日内平滑指数数据100.rds')) %>% 
+                     as.data.table()
+基准 <- last(日内平滑指数数据100$年月日时分, 3)[1] %>% as_date()
+时间索引 %<>% .[. >= 基准]
+迭代基准 <- 样本[日期 %chin% 时间索引]$序列
 频率 = 100
 
 日内高频指数平滑(
      时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
      预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
 
-##########################################
 ################ 频率 = 80 ###############
+日内平滑指数数据80 <- readRDS(paste0(数据库蜀道, '日内平滑指数数据80.rds')) %>% 
+                     as.data.table()
+基准 <- last(日内平滑指数数据80$年月日时分, 3)[1] %>% as_date()
+时间索引 %<>% .[. >= 基准]
+迭代基准 <- 样本[日期 %chin% 时间索引]$序列
 频率 = 80
 
 日内高频指数平滑(
      时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
      预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
+##########################################
+
+
+
