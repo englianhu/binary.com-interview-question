@@ -163,8 +163,15 @@ if (.Platform$OS.type != "windows") {
 }
 
 #### =============================================================
+#### =============================================================
+#### =============================================================
+options(digits = 16)
+## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question')
+setwd('/home/englianhu/文档/GitHub/binary.com-interview-question-data')
+## 数据库蜀道 <- paste0(getwd(), '/文艺数据库/fx/USDJPY/仓库/')
+数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
+数据库文件夹 <- dir(数据库蜀道, pattern = '0$')
 
-source('函数/日内高频指数平滑.R')
 ## 检验是否已设置途径。
 if(!exists('.蜀道')) {
   .蜀道 <- getwd() |> 
@@ -179,7 +186,7 @@ if(!exists('.蜀道')) {
 if(!exists('样本')) {
   样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
   }
-
+                     
 时间索引 <- unique(样本$日期)
 # 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
 基准 <- 样本[年份 == 2016]$日期[1]
@@ -192,6 +199,7 @@ if(!exists('样本')) {
 .模型选项 = c('MNN')
 
                       
+conflict_prefer('llply', 'plyr', quiet = TRUE)
 conflict_prefer('filter', 'dplyr', quiet = TRUE)
 conflict_prefer('select', 'dplyr', quiet = TRUE)
 conflict_prefer('mutate', 'dplyr', quiet = TRUE)
@@ -204,6 +212,8 @@ conflict_prefer('transpose', 'data.table', quiet = TRUE)
 
 #数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
 #数据库文件夹 <- dir(数据库蜀道, pattern = '0$')
+# source('函数/日内高频指数平滑.R')
+source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日内高频指数平滑.R')
 
 ################ 频率 = 1200 ##############
 日内平滑指数数据1200 <- readRDS(paste0(数据库蜀道, '日内平滑指数数据1200.rds')) %>% 
@@ -325,6 +335,5 @@ conflict_prefer('transpose', 'data.table', quiet = TRUE)
      时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
      预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
 ##########################################
-
 
 

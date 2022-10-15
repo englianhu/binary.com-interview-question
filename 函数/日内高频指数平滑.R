@@ -3,9 +3,14 @@
                      .模型选项, 列印 = TRUE) {
   
   options(digits = 16)
+  require('plyr', quietly = TRUE)
   require('dplyr', quietly = TRUE)
+  require('tibble', quietly = TRUE)
+  require('timetk', quietly = TRUE)
+  require('tibbletime', quietly = TRUE)
   require('forecast', quietly = TRUE)
   require('data.table', quietly = TRUE)
+  conflict_prefer('llply', 'plyr', quiet = TRUE)
   conflict_prefer('mutate', 'dplyr', quiet = TRUE)
   conflict_prefer('rename', 'dplyr', quiet = TRUE)
   conflict_prefer('select', 'dplyr', quiet = TRUE)
