@@ -1,5 +1,5 @@
 日内高频指数平滑 <- function(时间索引, 样本 = 样本, 数据量, 
-                     路径 = NULL, 频率 = 1200, 预测时间单位 = 1, 
+                     蜀道 = NULL, 频率 = 1200, 预测时间单位 = 1, 
                      .模型选项, 列印 = TRUE) {
   
   options(digits = 16)
@@ -62,29 +62,29 @@
     文件名 <- paste0('季平滑_', .模型选项, '_数据量', 数据量, 
                   '_频率', 频率, '_', 半成品$年月日时分, 'CST.rds')
     
-    if(is.null(路径)) {
-      .路径 <- getwd() |> 
+    if(is.null(蜀道)) {
+      .蜀道 <- getwd() |> 
         {\(.) str_split(., '/')}() |> 
         {\(.) c('/', .[[1]][2:5])}() |> 
         {\(.) c(., 'binary.com-interview-question-data/')}() |> 
         {\(.) paste(., collapse = '/')}() |> 
         {\(.) substring(., 2)}()
       
-      if(!dir.exists(paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 频率)))
-        dir.create(paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 频率))
+      if(!dir.exists(paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/', 频率)))
+        dir.create(paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/', 频率))
         
-      文件路径 <- paste0(.路径, '文艺数据库/fx/USDJPY/仓库/', 频率, 
+      文件蜀道 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/', 频率, 
                      '/', 文件名)
       
     } else {
-      文件路径 <- paste0(路径, 文件名)
+      文件蜀道 <- paste0(蜀道, 文件名)
     }
-    saveRDS(半成品, 文件路径)
+    saveRDS(半成品, 文件蜀道)
     
     cat('\n-------------------------------------------\n预测数据序列号：', 
         迭数1, '\n', 
         paste0(
-          文件路径, '\n已储存!\n\n进度由0-1：', 
+          文件蜀道, '\n已储存!\n\n进度由0-1：', 
           length(迭代基准[迭数1 >= 迭代基准]) / length(迭代基准), '\n\n'))
     rm(半成品)
     gc()

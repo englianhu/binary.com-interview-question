@@ -285,7 +285,7 @@ conflict_prefer('last', 'data.table', quiet = TRUE)
 conflict_prefer('transpose', 'data.table', quiet = TRUE)
 
 程序包 <- c(
-  'devtools', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
+  'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
   'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 
   'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
   'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
@@ -301,7 +301,7 @@ suppressAll(lib(程序包))
 load_pkg(程序包)
 rm(程序包)
 
-.路径 <- getwd() |> 
+.蜀道 <- getwd() |> 
     {\(.) str_split(., '/')}() |> 
     {\(.) c('/', .[[1]][2:5])}() |> 
     {\(.) c(., 'binary.com-interview-question-data/')}() |> 
@@ -395,7 +395,7 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 	    日子 = 日子[日子 >= 起点]
       
       布告栏 = list.files(
-        paste0(.路径, '文艺数据库/fx/USDJPY/'), pattern = .匹配元素) %>% 
+        paste0(.蜀道, '文艺数据库/fx/USDJPY/'), pattern = .匹配元素) %>% 
 	      str_replace_all('.rds', '') %>% 
 		  str_replace_all('.201', '_201') %>% 
 		  str_split_fixed('_', '2') %>% 
@@ -443,7 +443,7 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 	
 	  日子 = 日子[日子 >= 起点]
     
-      布告栏 = list.files(paste0(.路径, '文艺数据库/fx/USDJPY/'), 
+      布告栏 = list.files(paste0(.蜀道, '文艺数据库/fx/USDJPY/'), 
                        pattern = .匹配元素) %>% 
 	      str_replace_all('.rds', '') %>% 
 		  str_replace_all('.201', '_201') %>% 
@@ -482,9 +482,9 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 
 ```{r 数据中文化, eval=FALSE}
 # --------- eval=FALSE ---------
-## 检验是否已设置路径。
-if(!exists('.路径')) {
-  .路径 <- getwd() |> 
+## 检验是否已设置途径。
+if(!exists('.蜀道')) {
+  .蜀道 <- getwd() |> 
     {\(.) str_split(., '/')}() |> 
     {\(.) c('/', .[[1]][2:5])}() |> 
     {\(.) c(., 'binary.com-interview-question-data/')}() |> 
@@ -494,7 +494,7 @@ if(!exists('.路径')) {
 
 ## 倘若环境尚未有数据，读取文件数据。
 if(!exists('dsmp')) {
-  dsmp <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/dsmp.rds'))
+  dsmp <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/dsmp.rds'))
   }
 
 # 样本 %<>% 
@@ -521,16 +521,16 @@ dsmp %<>%
     周日 == 'Saturday' ~ '周六')) %>% 
   as.data.table
 
-## 倘若该路径尚无文件，储存文件。
+## 倘若该途径尚无文件，储存文件。
 if(!file.exists(paste0(
-  .路径, '文艺数据库/fx/USDJPY/样本1.rds')) & exists('dsmp')) {
-    saveRDS(dsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))
+  .蜀道, '文艺数据库/fx/USDJPY/样本1.rds')) & exists('dsmp')) {
+    saveRDS(dsmp, paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
   }
 
 ## ------------------------------------------------
 ## 倘若环境尚未有数据，读取文件数据。
 if(!exists('ddsmp')) {
-  ddsmp <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/ddsmp.rds'))
+  ddsmp <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/ddsmp.rds'))
   }
 
 names(ddsmp) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', 
@@ -549,19 +549,19 @@ ddsmp %<>%
     周日 == 'Saturday' ~ '周六')) %>% 
   as.data.table
 
-## 倘若该路径尚无文件，储存文件。
+## 倘若该途径尚无文件，储存文件。
 if(!file.exists(paste0(
-  .路径, '文艺数据库/fx/USDJPY/样本2.rds')) & exists('ddsmp')) {
-    saveRDS(ddsmp, paste0(.路径, '文艺数据库/fx/USDJPY/样本2.rds'))
+  .蜀道, '文艺数据库/fx/USDJPY/样本2.rds')) & exists('ddsmp')) {
+    saveRDS(ddsmp, paste0(.蜀道, '文艺数据库/fx/USDJPY/样本2.rds'))
   }
 ```
 
 由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加一小时时差为中国标准时间，以确保时间规律计算方面，不会出错；周日数据中文化。
 
 ```{r 绘制样本数据图表, results = 'asis'}
-## 检验是否已设置路径。
-if(!exists('.路径')) {
-  .路径 <- getwd() |> 
+## 检验是否已设置途径。
+if(!exists('.蜀道')) {
+  .蜀道 <- getwd() |> 
     {\(.) str_split(., '/')}() |> 
     {\(.) c('/', .[[1]][2:5])}() |> 
     {\(.) c(., 'binary.com-interview-question-data/')}() |> 
@@ -571,7 +571,7 @@ if(!exists('.路径')) {
 
 ## 倘若环境尚未有数据，读取文件数据。
 if(!exists('样本')) {
-  样本 <- readRDS(paste0(.路径, '文艺数据库/fx/USDJPY/样本1.rds'))
+  样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
   }
 
 ## 绘制样本图表
