@@ -92,22 +92,44 @@ system.time({列表 = list.files(paste0(数据库蜀道, 数据库文件夹)[1],
 ## =======================================================================
 
 整顿数据 <- function(频率) {
-   
-   
+   ## 韩信点兵，多多益善
+   ## 军队编制
+   ## http://adv-r.had.co.nz/Functional-programming.html
+   ## https://shixiangwang.github.io/home/cn/post/2019-11-20-meta-programming/
+   ## -----------------------------------------------------------------------
+   ## 一般上，使用eval(parse(text = 参数))可以执行所有任何R语言代码方程，不过每行代码都使用分号，代码排列就不整齐，类似抒写一篇只有一段而已的作文。
+   ## 商鞅变法：将所有方程、参数、任何代码编写为文字、依照可兰经回教刑事法典断肢法执行、再评估成效。
+   #王翦点兵 <- paste0('list(列表 = 列表', substitute(频率), ', 日内平滑指数数据', substitute(频率), 'A)')
+   # 
+   #return(eval(parse(text = 王翦点兵)))
+   ## -----------------------------------------------------------------------
+   ## 所有频率组类似军队兵种编制
+   ## 将每一分钟的汇价数据整顿、组合为一个数据组
    #列表24 <- list.files(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')
-   列表 <- substitute('列表', 频率)
-   列表24 <- list.files(paste0(数据库蜀道, 24), '*.rds')
-   saveRDS(列表24, paste0(数据库蜀道, '列表24.rds'))
-   列表24 <- readRDS(paste0(数据库蜀道, '列表24.rds'))
-   日内平滑指数数据24A <- ldply(列表24, function(参数) readRDS(paste0(数据库蜀道, 24, '/', 参数))) %>% as.data.table()
-   日内平滑指数数据24B <- readRDS(paste0(数据库蜀道, '日内平滑指数数据24.rds')) %>% as.data.table()
-   日内平滑指数数据24 <- rbind(日内平滑指数数据24A, 日内平滑指数数据24B)[order(年月日时分)] %>% unique
-   saveRDS(日内平滑指数数据24, paste0(数据库蜀道, '日内平滑指数数据24.rds'))
-   日内平滑指数数据24 <- readRDS(paste0(数据库蜀道, '日内平滑指数数据24.rds'))
-   rm(列表24, 日内平滑指数数据24A, 日内平滑指数数据24B)
+   列表 <- list.files(paste0(数据库蜀道, 频率), '*.rds')
+   saveRDS(列表, paste0(数据库蜀道, '列表', 频率, '.rds'))
+   列表 <- readRDS(paste0(数据库蜀道, '列表', 频率, '.rds'))
+   日内平滑指数数据A <- ldply(列表, function(参数) readRDS(paste0(数据库蜀道, 频率, '/', 参数))) %>% as.data.table()
+   
+   ## 检验并整顿数据
+   王翦点兵 <- paste0(数据库蜀道, '日内平滑指数数据', 频率, '.rds')
+   if(!file.exists(王翦点兵)) {
+      日内平滑指数数据 <- 日内平滑指数数据A
+      saveRDS(日内平滑指数数据, paste0(数据库蜀道, '日内平滑指数数据', 频率, '.rds'))
+   
+   } else {
+      日内平滑指数数据B <- readRDS(paste0(数据库蜀道, '日内平滑指数数据', 频率, '.rds')) %>% as.data.table()
+   日内平滑指数数据 <- rbind(日内平滑指数数据A, 日内平滑指数数据B)[order(年月日时分)] %>% unique
+   saveRDS(日内平滑指数数据, paste0(数据库蜀道, '日内平滑指数数据', 频率, '.rds'))
+   }
+   
+   #日内平滑指数数据 <- readRDS(paste0(数据库蜀道, '日内平滑指数数据', 频率, '.rds'))
+   rm(列表, 日内平滑指数数据A, 日内平滑指数数据B)
    #file.remove(paste0(数据库蜀道, '列表24.rds'))
-
+   return(日内平滑指数数据)
 }
+
+整顿数据(24)
 
 #列表30 <- list.files(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')
 列表30 <- list.files(paste0(数据库蜀道, 30), '*.rds')
