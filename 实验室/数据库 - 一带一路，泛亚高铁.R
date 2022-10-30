@@ -165,6 +165,9 @@ if(!exists('样本')) {
 ## https://page.om.qq.com/page/OsOjxqeEX31r-TrGRfH-a48g0
 ## 
 
+## =======================================================================
+## =======================================================================
+## =======================================================================
 #数据库文件120 <- ldply(数据库文件夹[1], function(x) {
 数据库文件120 <- ldply(120, function(x) {
     明修蜀道 = paste0(数据库蜀道, x)
@@ -186,6 +189,35 @@ system.time({蜀道 = dir(paste0(数据库蜀道, 数据库文件夹)[1])})
 system.time({蜀道 = dir(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')})
 system.time({列表 = list.files(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')})
 
+
+
+## https://stackoverflow.com/a/34957199/3806250
+library(plyr)
+library(doParallel)
+cl <- makeCluster(2)
+
+if (.Platform$OS.type == "windows") {
+    registerDoParallel(cl)
+    opts <- list(preschedule=TRUE)
+    clusterSetRNGStream(cl, 123)
+    r <- llply(1:20,
+                .fun = function(x) runif(10),
+                .parallel = TRUE,
+                .paropts = list(.options.snow=opts))
+}
+
+if (.Platform$OS.type != "windows") {
+    registerDoParallel(2)
+    RNGkind("L'Ecuyer-CMRG")
+    set.seed(123)
+    mc.reset.stream()
+    r <- llply(1:20,
+                .fun = function(x) runif(10),
+                .parallel = TRUE)
+}
+
+## =======================================================================
+## =======================================================================
 ## =======================================================================
 source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/整顿数据.R')
 
@@ -221,37 +253,30 @@ source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/整�
 ## 检查数据，阅兵
 readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table()
 
-
 ## =======================================================================
+## =======================================================================
+## =======================================================================
+###### 孙中山蒋介石/毛泽东，大秦赋，黄埔军校，中科红旗Asianux兵工厂 #######
+##
+######## 中科红旗，除巫砸倭 ########
+######## 秦皇嬴政，笑傲江湖 ########
+######## 三军未动，粮草先行 ########
+######## 一带一路，泛亚高铁 ########
+######## 不忘初心，方得始终 ########
+##
+######## 千古一帝，秦皇嬴政 ########
+######## 敌在东盟，统一亚洲 ########
+######## 咸阳出发，西征欧非 ########
+######## 青出于蓝，而胜于蓝 ########
+######## 红出于青，更胜于清 ########
+######## 中科红旗，更胜英蒙 ########
+######## 横跨七洲，秦灭六洲 ########
+######## 史无前例，一统天下 ########
+######## 三军未动，粮草先行 ########
+######## 一带一路，泛亚高铁 ########
+######## 不忘初心，放得始终 ########
+##
 
-## https://stackoverflow.com/a/34957199/3806250
-library(plyr)
-library(doParallel)
-cl <- makeCluster(2)
-
-if (.Platform$OS.type == "windows") {
-    registerDoParallel(cl)
-    opts <- list(preschedule=TRUE)
-    clusterSetRNGStream(cl, 123)
-    r <- llply(1:20,
-                .fun = function(x) runif(10),
-                .parallel = TRUE,
-                .paropts = list(.options.snow=opts))
-}
-
-if (.Platform$OS.type != "windows") {
-    registerDoParallel(2)
-    RNGkind("L'Ecuyer-CMRG")
-    set.seed(123)
-    mc.reset.stream()
-    r <- llply(1:20,
-                .fun = function(x) runif(10),
-                .parallel = TRUE)
-}
-
-#### =============================================================
-#### =============================================================
-#### =============================================================
 ## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question')
 ## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question-data')
 
@@ -281,35 +306,10 @@ conflict_prefer('transpose', 'data.table', quiet = TRUE)
 #数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
 #数据库文件夹 <- dir(数据库蜀道, pattern = '0$')
 # source('函数/日内高频指数平滑.R')
-source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日内高频指数平滑.R')
-
-## =======================================================================
-###### 孙中山蒋介石/毛泽东，大秦赋，黄埔军校，中科红旗Asianux兵工厂 #######
-##
-######## 中科红旗，除巫砸倭 ########
-######## 秦皇嬴政，笑傲江湖 ########
-######## 三军未动，粮草先行 ########
-######## 一带一路，泛亚高铁 ########
-######## 不忘初心，方得始终 ########
-##
-######## 千古一帝，秦皇嬴政 ########
-######## 敌在东盟，统一亚洲 ########
-######## 咸阳出发，西征欧非 ########
-######## 青出于蓝，而胜于蓝 ########
-######## 红出于青，更胜于清 ########
-######## 中科红旗，更胜英蒙 ########
-######## 横跨七洲，秦灭六洲 ########
-######## 史无前例，一统天下 ########
-######## 三军未动，粮草先行 ########
-######## 一带一路，泛亚高铁 ########
-######## 不忘初心，放得始终 ########
-##
-
 #source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日内高频指数平滑.R')
 #日内高频指数平滑(
 #     时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
 #     预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
-
 source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商鞅变法.R')
 
 #频率 = 150
@@ -341,6 +341,9 @@ source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商�
 readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table()
 
 
+## =======================================================================
+## =======================================================================
+## =======================================================================
 
 
 
