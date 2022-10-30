@@ -252,40 +252,9 @@ if (.Platform$OS.type != "windows") {
 #### =============================================================
 #### =============================================================
 #### =============================================================
-Sys.setlocale("LC_ALL", "en_US.UTF-8")
-## 更换时间区域，保留日期时间。
-Sys.setenv(TZ = 'Asia/Tapei')
-
-## 忽略所有警讯
-## https://stackoverflow.com/a/36846793/3806250
-## 设置宽度
-## options(knitr.table.format = 'html')将所有kableExtra图表一致设置为'html'格式，省略设置各别图表。
-## options(repos = 'https://cran.rstudio.com')将仓库设置为安全网。
-## options(repos = 'http://cran.rstudio.com')将仓库设置为普通网。
-options(warn = -1, width = 999, knitr.table.format = 'html', 
-        digits = 16, digits.secs = Inf, repos = 'https://cran.rstudio.com')
-
 ## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question')
-setwd('/home/englianhu/文档/GitHub/binary.com-interview-question-data')
-## 数据库蜀道 <- paste0(getwd(), '/文艺数据库/fx/USDJPY/仓库/')
-数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
-数据库文件夹 <- dir(数据库蜀道, pattern = '0$')
+## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question-data')
 
-## 检验是否已设置途径。
-if(!exists('.蜀道')) {
-  .蜀道 <- getwd() |> 
-    {\(.) str_split(., '/')}() |> 
-    {\(.) c('/', .[[1]][2:5])}() |> 
-    {\(.) c(., 'binary.com-interview-question-data/')}() |> 
-    {\(.) paste(., collapse = '/')}() |> 
-    {\(.) substring(., 2)}()
-  }
-
-## 倘若环境尚未有数据，读取文件数据。
-if(!exists('样本')) {
-  样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
-  }
-                     
 时间索引 <- unique(样本$日期)
 # 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
 基准 <- 样本[年份 == 2016]$日期[1]
@@ -336,6 +305,11 @@ source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日�
 ######## 不忘初心，放得始终 ########
 ##
 
+#source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日内高频指数平滑.R')
+#日内高频指数平滑(
+#     时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
+#     预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
+
 source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商鞅变法.R')
 
 #频率 = 150
@@ -366,10 +340,6 @@ source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商�
 ## 检查数据，阅兵
 readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table()
 
-source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日内高频指数平滑.R')
-日内高频指数平滑(
-     时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
-     预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
 
 
 

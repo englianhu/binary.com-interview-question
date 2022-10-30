@@ -18,6 +18,9 @@
    ## 将每一分钟的汇价数据整顿、组合为一个数据组
    #列表24 <- list.files(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')
    require('data.table', quietly = TRUE)
+   conflict_prefer('first', 'data.table', quiet = TRUE)
+   conflict_prefer('last', 'data.table', quiet = TRUE)
+   conflict_prefer('transpose', 'data.table', quiet = TRUE)
    
    cat('\n...')
    cat('\n《中科红旗 - 大秦赋》')

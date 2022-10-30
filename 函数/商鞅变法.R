@@ -54,6 +54,9 @@
    ## 
    
    require('data.table', quietly = TRUE)
+   conflict_prefer('first', 'data.table', quiet = TRUE)
+   conflict_prefer('last', 'data.table', quiet = TRUE)
+   conflict_prefer('transpose', 'data.table', quiet = TRUE)
    
    cat('\n...')
    cat('\n《中科红旗 - 大秦赋》')
