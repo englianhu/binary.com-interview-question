@@ -187,57 +187,7 @@ system.time({蜀道 = dir(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds
 system.time({列表 = list.files(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')})
 
 ## =======================================================================
-
-整顿数据 <- function(频率) {
-   ## 王翦阅兵，整装待发
-   ## 蒙毅蒙恬，一文一武（攻占外族政府蒙古由咱们NonMulim的Chin大秦子民执政后，联合蒙古人一带一路西征欧洲）
-   ## 奋勇杀敌，砸倭除巫
-   ## 
-   ## 军队编制
-   ## http://adv-r.had.co.nz/Functional-programming.html
-   ## https://shixiangwang.github.io/home/cn/post/2019-11-20-meta-programming/
-   ## -----------------------------------------------------------------------
-   ## 一般上，使用eval(parse(text = 参数))可以执行所有任何R语言代码方程，不过每行代码都使用分号，代码排列就不整齐，类似抒写一篇只有一段而已的作文。
-   ## 商鞅变法：将所有方程、参数、任何代码编写为文字、依照可兰经回教刑事法典断肢法执行、再评估成效。
-   ## 断肢分一杯羹的司马迁乩童白骨精巫师王（荆州人彭城堂虞素威/刘表 ------ 刘瑾貹和张佳坤 --- 溥仪），歼灭Judi回教博彩庄Caspo Inc
-   #王翦阅兵 <- paste0('list(列表 = 列表', substitute(频率), ', 日内指数平滑数据', substitute(频率), 'A)')
-   # 
-   #return(eval(parse(text = 王翦阅兵)))
-   ## -----------------------------------------------------------------------
-   ## 所有频率组类似军队兵种编制
-   ## 将每一分钟的汇价数据整顿、组合为一个数据组
-   #列表24 <- list.files(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')
-   数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
-   
-   cat('\n将每分钟为一单位的数据组为列表！')
-   列表 <- list.files(paste0(数据库蜀道, 频率), '*.rds')
-   cat('\n列表已组成！')
-   saveRDS(列表, paste0(数据库蜀道, '列表', 频率, '.rds'))
-   cat('\n列表已储存！')
-   #列表 <- readRDS(paste0(数据库蜀道, '列表', 频率, '.rds'))
-   日内指数平滑数据A <- ldply(列表, function(参数) readRDS(paste0(数据库蜀道, 频率, '/', 参数))) %>% as.data.table()
-   cat('\n将列表数据编组！')
-   
-   ## 赢家自家人老王王翦王贲检验并整顿数据
-   ## 王翦阅兵，整装待发
-   王翦阅兵 <- paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')
-   if(!file.exists(王翦阅兵)) {
-      日内指数平滑数据 <- 日内指数平滑数据A
-      saveRDS(日内指数平滑数据, paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))
-      cat('\n储存已编组的数据！')
-   
-   } else {
-      日内指数平滑数据B <- readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table()
-      日内指数平滑数据 <- rbind(日内指数平滑数据A, 日内指数平滑数据B)[order(年月日时分)] %>% unique
-      saveRDS(日内指数平滑数据, paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))
-      cat('\n储存已编组的数据！')
-   }
-   
-   #日内指数平滑数据 <- readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))
-   rm(列表, 日内指数平滑数据A, 日内指数平滑数据B)
-   #file.remove(paste0(数据库蜀道, '列表24.rds'))
-   return(日内指数平滑数据)
-}
+source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/整顿数据.R')
 
 整顿数据(1)
 整顿数据(2)
@@ -430,6 +380,8 @@ source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日�
         时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
         预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
 }
+
+source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商鞅变法.R')
 
 #频率 = 150
 商鞅变法(150)

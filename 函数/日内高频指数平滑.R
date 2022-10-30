@@ -93,7 +93,7 @@
           length(迭代基准[迭数1 >= 迭代基准]) / length(迭代基准), '\n\n'))
     rm(半成品)
     gc()
-  })
+  })#, .progress = 'text')
   return(成品)
 }
 
