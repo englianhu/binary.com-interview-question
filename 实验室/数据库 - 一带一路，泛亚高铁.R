@@ -115,6 +115,9 @@ if(!exists('样本')) {
   样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
   }
 
+source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/整顿数据.R')
+source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商鞅变法.R')
+
 ## 支持东亚中国，借鉴大英帝国/蒙古帝国称霸天下，NonMuslim中华民族秦孝公秦始皇，商鞅变法、秦灭六国、日本明治天皇大东亚共荣圈、红旗孙某辛亥革命铲除回教徒911恐怖份子巫师巫婆民族、德意志纳粹灭宗教信徒、曹操取荆州、沙地美国石油纷争911恐怖袭击，焚可兰经坑巫师巫婆乩童
 ## 
 ## 中国南太平洋战略，中国外交官代表王毅已经与东盟达成协议不使用空军轰炸东南亚。
