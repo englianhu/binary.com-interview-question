@@ -58,12 +58,12 @@
    conflict_prefer('last', 'data.table', quiet = TRUE)
    conflict_prefer('transpose', 'data.table', quiet = TRUE)
    
-   cat('\n...')
    cat('\n《中科红旗 - 大秦赋》')
-   cat('\n姜太公/秦孝公/陈祯禄公爵：\n')
-   cat('\n商鞅变法，铲除巫裔；\n')
-   cat('\n千古一帝，执政中央；\n')
-   cat('...\n')
+   cat('\n姜太公/秦孝公/陈祯禄公爵：')
+   cat('\n商鞅变法，铲除巫裔；')
+   cat('\n终止屠杀，拯救全球。')
+   cat('\n推翻回教徒政权，千古一帝；')
+   cat('\n执政中央，秦灭六国。\n')
    
    数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
    
