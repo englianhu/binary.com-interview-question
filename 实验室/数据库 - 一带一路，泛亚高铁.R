@@ -115,6 +115,7 @@ if(!exists('样本')) {
   样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
   }
 
+source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日内高频指数平滑.R')
 source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/整顿数据.R')
 source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商鞅变法.R')
 
@@ -309,10 +310,12 @@ conflict_prefer('transpose', 'data.table', quiet = TRUE)
 #数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
 #数据库文件夹 <- dir(数据库蜀道, pattern = '0$')
 # source('函数/日内高频指数平滑.R')
-#source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日内高频指数平滑.R')
-#日内高频指数平滑(
-#     时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
-#     预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
+source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日内高频指数平滑.R')
+频率 = 8
+日内高频指数平滑(
+     时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
+     预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
+
 source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商鞅变法.R')
 
 #频率 = 150
