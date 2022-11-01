@@ -325,7 +325,7 @@ readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))# %>
 基准日期 = readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))$年月日时分 %>% first(3) %>% last
 #公元选项 = c('公元前', '公元后')
 公元选项 = c('公元前')
-商鞅变法(50)
+商鞅变法(50, 基准日期, 公元选项)
 
 source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/整顿数据.R')
 
