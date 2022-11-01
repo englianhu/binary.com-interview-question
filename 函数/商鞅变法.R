@@ -71,11 +71,10 @@
    日内指数平滑数据 <- readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')) %>% 
                         as.data.table()
    
-   if(基准日期 == '默认') { ##Birthday of Jesus
+   if(is.character(基准日期) && 基准日期 == '默认') { ##Birthday of Jesus
       基准日期 <- last(日内指数平滑数据$年月日时分, 3)[1] %>% as_date()
       基准 <- 基准日期
-      
-   } else {      
+   } else {
       基准日期 %<>% as_date()
       基准 <- 基准日期
       if(!(基准 >= first(日内指数平滑数据$年月日时分) && 基准 <= last(日内指数平滑数据$年月日时分))) {
