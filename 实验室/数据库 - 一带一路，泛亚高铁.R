@@ -86,6 +86,7 @@
 ## 
 ## https://www.youtube.com/watch?v=YvukxU4gzNg
 ## 
+rm(list = ls())
 
 Sys.setlocale("LC_ALL", "en_US.UTF-8")
 ## 更换时间区域，保留日期时间。
@@ -102,6 +103,18 @@ options(warn = -1, width = 999, knitr.table.format = 'html',
 
 setwd('/home/englianhu/文档/GitHub/binary.com-interview-question')
 ## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question-data')
+
+conflict_prefer('llply', 'plyr', quiet = TRUE)
+conflict_prefer('filter', 'dplyr', quiet = TRUE)
+conflict_prefer('select', 'dplyr', quiet = TRUE)
+conflict_prefer('mutate', 'dplyr', quiet = TRUE)
+conflict_prefer('rename', 'dplyr', quiet = TRUE)
+conflict_prefer('collapse', 'dplyr', quiet = TRUE)
+conflict_prefer('year', 'lubridate', quiet = TRUE)
+conflict_prefer('first', 'data.table', quiet = TRUE)
+conflict_prefer('last', 'data.table', quiet = TRUE)
+conflict_prefer('transpose', 'data.table', quiet = TRUE)
+
 ## 数据库蜀道 <- paste0(getwd(), '/文艺数据库/fx/USDJPY/仓库/')
 数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
 数据库文件夹 <- dir(数据库蜀道, pattern = '0$')
@@ -255,29 +268,6 @@ if (.Platform$OS.type != "windows") {
 ## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question')
 ## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question-data')
 
-时间索引 <- unique(样本$日期)
-# 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
-基准 <- 样本[年份 == 2016]$日期[1]
-时间索引 %<>% .[. >= 基准]
-# 时间索引 %<>% .[. >= as_date('2016-01-04')]
-迭代基准 <- 样本[日期 %chin% 时间索引]$序列
-数据量 <- 1200 #筛选数据中的最后1200观测值：样本[(.N - (数据量 - 1)):.N]
-预测时间单位 <- 1
-
-.模型选项 = c('MNN')
-
-
-conflict_prefer('llply', 'plyr', quiet = TRUE)
-conflict_prefer('filter', 'dplyr', quiet = TRUE)
-conflict_prefer('select', 'dplyr', quiet = TRUE)
-conflict_prefer('mutate', 'dplyr', quiet = TRUE)
-conflict_prefer('rename', 'dplyr', quiet = TRUE)
-conflict_prefer('collapse', 'dplyr', quiet = TRUE)
-conflict_prefer('year', 'lubridate', quiet = TRUE)
-conflict_prefer('first', 'data.table', quiet = TRUE)
-conflict_prefer('last', 'data.table', quiet = TRUE)
-conflict_prefer('transpose', 'data.table', quiet = TRUE)
-
 #数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
 #数据库文件夹 <- dir(数据库蜀道, pattern = '0$')
 # source('函数/日内高频指数平滑.R')
@@ -318,51 +308,9 @@ source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商�
 ## 检查数据，阅兵
 readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))# %>% as.data.table()
 
-# -----------------------------------------------------------
-source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商鞅变法.R')
-
-时间索引 <- unique(样本$日期)
-# 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
-基准 <- 样本[年份 == 2016]$日期[1]
-时间索引 %<>% .[. >= 基准]
-# 时间索引 %<>% .[. >= as_date('2016-01-04')]
-迭代基准 <- 样本[日期 %chin% 时间索引]$序列
-数据量 <- 1200 #筛选数据中的最后1200观测值：样本[(.N - (数据量 - 1)):.N]
-预测时间单位 <- 1
-
-.模型选项 = c('MNN')
-
-
-conflict_prefer('llply', 'plyr', quiet = TRUE)
-conflict_prefer('filter', 'dplyr', quiet = TRUE)
-conflict_prefer('select', 'dplyr', quiet = TRUE)
-conflict_prefer('mutate', 'dplyr', quiet = TRUE)
-conflict_prefer('rename', 'dplyr', quiet = TRUE)
-conflict_prefer('collapse', 'dplyr', quiet = TRUE)
-conflict_prefer('year', 'lubridate', quiet = TRUE)
-conflict_prefer('first', 'data.table', quiet = TRUE)
-conflict_prefer('last', 'data.table', quiet = TRUE)
-conflict_prefer('transpose', 'data.table', quiet = TRUE)
-
-#日内指数平滑数据 <- readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))
-#日内指数平滑数据$年月日时分
-#基准日期 = '默认'
-频率 <- 60
-## 筛选数据中的第一个日期，然后“公元选项”选择'公元前'过滤以及筛选该“基准日期”和之前的数据。
-基准日期 <- readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))$年月日时分 %>% first(3) %>% last %>% as_date
-
-#公元选项 = c('公元前', '公元后')
-公元选项 = c('公元前')
-
-if(基准日期 >= 基准) {
-   商鞅变法(频率, 基准日期, 公元选项)
-   #rm(基准日期, 公元选项)
-}
-
 ## -----------------------------------------------------------
 source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/整顿数据.R')
 
-rm(基准日期, 公元选项)
 整顿数据(1)
 整顿数据(2)
 整顿数据(3)
