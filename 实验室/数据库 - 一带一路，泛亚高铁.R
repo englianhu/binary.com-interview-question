@@ -101,8 +101,79 @@ Sys.setenv(TZ = 'Asia/Tapei')
 options(warn = -1, width = 999, knitr.table.format = 'html', 
         digits = 16, digits.secs = Inf, repos = 'https://cran.rstudio.com')
 
+## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
+## https://yihui.org/knitr/options
+knitr::opts_chunk$set(
+  class.source = 'hover01', class.output = 'hover02', class.error = 'hover03', 
+  message = FALSE, warning = FALSE, error = TRUE, 
+  autodep = TRUE, aniopts = 'loop', progress = TRUE, verbose = TRUE, 
+  cache = FALSE, cache.lazy = FALSE, result = 'asis')
+
 setwd('/home/englianhu/文档/GitHub/binary.com-interview-question')
 ## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question-data')
+
+## 读取程序包、设置编织与环境选项。
+## 3210448065@qq.com
+## leiou123
+
+## 2849108450@qq.com
+## leiou123
+## https://rstudio.cloud/project/1198888
+
+## 读取'BBmisc'程序包。
+if(suppressMessages(!require('BBmisc'))){
+  install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
+}
+suppressMessages(library('BBmisc'))
+
+if (suppressMessages(!require('rmsfuns'))) {
+  install.packages('rmsfuns', dependencies = TRUE, INSTALL_opts = '--no-lock')
+}
+suppressMessages(library('rmsfuns'))
+
+if(!require('REmap')) devtools::install_github('lchiffon/REmap')
+
+## 一次性读取所需程序包。
+library('dplyr', warn.conflicts = FALSE)
+library('lubridate', warn.conflicts = FALSE)
+library('data.table', warn.conflicts = FALSE)
+
+conflict_prefer('filter', 'dplyr', quiet = TRUE)
+conflict_prefer('select', 'dplyr', quiet = TRUE)
+conflict_prefer('mutate', 'dplyr', quiet = TRUE)
+conflict_prefer('rename', 'dplyr', quiet = TRUE)
+conflict_prefer('collapse', 'dplyr', quiet = TRUE)
+conflict_prefer('year', 'lubridate', quiet = TRUE)
+conflict_prefer('first', 'data.table', quiet = TRUE)
+conflict_prefer('last', 'data.table', quiet = TRUE)
+conflict_prefer('transpose', 'data.table', quiet = TRUE)
+
+程序包 <- c(
+  'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
+  'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 
+  'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
+  'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
+  'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 
+  'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 
+  'sparklyr', 'jcolors', 'TSA', 'microbenchmark', 'dendextend', 
+  'lhmetools', 'gtools', 'stringi', 'pacman', 'profmem', 'ggthemes', 
+  'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
+  'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
+
+# load_pkg(程序包)
+suppressAll(lib(程序包))
+load_pkg(程序包)
+rm(程序包)
+
+.蜀道 <- getwd() |> 
+    {\(.) str_split(., '/')}() |> 
+    {\(.) c('/', .[[1]][2:5])}() |> 
+    {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+    {\(.) paste(., collapse = '/')}() |> 
+    {\(.) substring(., 2)}()
+
+## 设置googleVis选项，促使plot.gvis只陈列HTML格式的完成品。
+谷歌绘图设置 <- options(gvis.plot.tag = 'chart')
 
 conflict_prefer('llply', 'plyr', quiet = TRUE)
 conflict_prefer('filter', 'dplyr', quiet = TRUE)
