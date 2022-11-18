@@ -44,6 +44,7 @@
   require('forecast', quietly = TRUE)
   require('data.table', quietly = TRUE)
   conflict_prefer('llply', 'plyr', quiet = TRUE)
+  conflict_prefer('ldply', 'plyr', quiet = TRUE)
   conflict_prefer('mutate', 'dplyr', quiet = TRUE)
   conflict_prefer('rename', 'dplyr', quiet = TRUE)
   conflict_prefer('select', 'dplyr', quiet = TRUE)
