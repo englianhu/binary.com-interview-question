@@ -289,7 +289,7 @@ conflict_prefer('transpose', 'data.table', quiet = TRUE)
   'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 
   'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
   'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
-  'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 'magittr', 
+  'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
   'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 
   'sparklyr', 'jcolors', 'TSA', 'microbenchmark', 'dendextend', 
   'lhmetools', 'gtools', 'stringi', 'pacman', 'profmem', 'ggthemes', 
