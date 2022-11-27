@@ -137,6 +137,7 @@ if(!require('REmap')) devtools::install_github('lchiffon/REmap')
 library('dplyr', warn.conflicts = FALSE)
 library('lubridate', warn.conflicts = FALSE)
 library('data.table', warn.conflicts = FALSE)
+library('conflicted', warn.conflicts = FALSE)
 
 conflict_prefer('filter', 'dplyr', quiet = TRUE)
 conflict_prefer('select', 'dplyr', quiet = TRUE)
