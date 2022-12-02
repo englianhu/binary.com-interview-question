@@ -88,7 +88,7 @@
       stop("是否移除文件夹 = '是' 或 '否'!")
    } else {
       if(是否移除文件夹 == '是') {
-          file.remove(paste0(数据库蜀道, 频率))
+          unlink(paste0(数据库蜀道, 频率), recursive = TRUE)
       }
    }
    
