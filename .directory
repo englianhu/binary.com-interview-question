@@ -1,4 +1,6 @@
 [Dolphin]
-SortRole=type
-Timestamp=2022,10,30,22,34,17
+SortOrder=1
+SortRole=size
+Timestamp=2022,12,11,19,33,20
 Version=4
+ViewMode=1
