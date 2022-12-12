@@ -22,7 +22,7 @@
 ## 东盟孙武，铲除巫裔，千古一帝。
 ##
 
-整顿数据 <- function(频率, 是否移除文件夹 = '否', 是否移除列表 = '否') {
+整顿数据 <- function(频率, 是否移除文件夹 = '否', 是否移除列表 = '否', .print = TRUE) {
    ## ======== 居住在英国布里斯托尔港口，修读气象学系的英国基督洋妞儿芈拉不可以死 ========
    ## 王翦阅兵，整装待发
    ## 蒙毅蒙恬，一文一武（攻占外族政府蒙古由咱们NonMulim的Chin大秦子民执政后，联合蒙古人一带一路西征欧洲）
@@ -61,14 +61,17 @@
    saveRDS(列表, paste0(数据库蜀道, '列表', 频率, '.rds'))
    cat('\n列表已储存！')
    #列表 <- readRDS(paste0(数据库蜀道, '列表', 频率, '.rds'))
-   日内指数平滑数据B <- ldply(列表, function(参数) readRDS(paste0(数据库蜀道, 频率, '/', 参数)), .progress = 'text') %>% as.data.table()
+   日内指数平滑数据B <- ldply(列表, function(参数) {
+	tryCatch(readRDS(paste0(数据库蜀道, 频率, '/', 参数)), error = function(e) {
+          if (.print == TRUE) cat(paste(参数, 'error, no such file.\n')) else NULL
+          })}, .progress = 'text')  %>% as.data.table
    cat('\n将列表数据编组！')
    
    ## 赢家自家人老王王翦王贲检验并整顿数据
    ## 王翦阅兵，整装待发
    王翦阅兵 <- paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')
    if(file.exists(王翦阅兵)) {
-      日内指数平滑数据A <- readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table()
+      日内指数平滑数据A <- readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table
       #日内指数平滑数据 <- rbind(日内指数平滑数据A, 日内指数平滑数据B)[order(年月日时分)] %>% unique
       日内指数平滑数据 <- rbindlist(list(日内指数平滑数据B, 日内指数平滑数据A))[order(年月日时分)] %>% unique
       saveRDS(日内指数平滑数据, paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))
