@@ -66,7 +66,7 @@
   cat('\n推翻回教徒政权，千古一帝；')
   cat('\n执政中央，秦灭六国。\n')
    
-  数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
+  数据库蜀道 <- paste0('/home/englianhu/文档/猫城/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
   
   日内指数平滑数据 <- readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')) %>% 
                       as.data.table()
@@ -84,7 +84,7 @@
   预测时间单位 <- 1
   模型选项 = c('MNN')
   
-  source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日内高频指数平滑.R')
+  source('/home/englianhu/文档/猫城/binary.com-interview-question/函数/日内高频指数平滑.R')
   
   cat('\n开弓没有回头路！\n')
   日内高频指数平滑(

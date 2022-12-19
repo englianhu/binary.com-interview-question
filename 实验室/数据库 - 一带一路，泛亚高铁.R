@@ -1,15 +1,15 @@
-## ========================================================================
-## ========================================================================
-## ========================================================================
-## ======== 居住在英国布里斯托尔港口，修读气象学系的英国基督洋妞儿芈拉不可以死 ========
+## =====================================================================================
+## =====================================================================================
+## =====================================================================================
+## ======== 居住在英国布里斯托尔港口，修读气象学系的英国基督洋妞儿芈拉不可以死 =========
 ##
 ## 中科红旗（百家争鸣，文艺复兴）
 ## Oversea Greater Chinese Union 大秦子民公会（秦孝公 / 姜太公 --- 陈祯禄公爵）
 ## 史无前例，一统天下
 ##
-## ========================================================================
-## ========================================================================
-## ========================================================================
+## =====================================================================================
+## =====================================================================================
+## =====================================================================================
 ##
 ## 中科红旗
 ## 全球NonMuslim中华民族，支持中共称霸天下战略。
@@ -49,7 +49,7 @@
 ## 中科红旗：借鉴北洋军阀与北约、杀袁者清，灭清者袁，许某可破北洋北约袁绍。黄埔军校国民党共产党辛亥革命是为了铲除回教徒，咱们东南亚回教徒身为伪满洲国911恐怖份子触犯可兰经回教刑事法典断肢法，组织个由回教徒执政的国民阵线（伪国民党）立国，1700万个马来西亚回教徒只能集体自杀，宣布亡国。
 ## 何谓中国（大秦赋Chin）？中华民国和中华人民共和国。咱们东南亚自从东亚清末民初几乎都是国民华校生，自从西周的周公开始礼乐制度后，大英帝国和大日本帝国都效仿来称霸天下做得有声有色、禁止回教巫术Judi博彩庄、艺人（异人）、导演巫师巫婆道衍师傅装疯卖傻、青山是巫裔回教徒的归属地，回教巫师巫婆是屠杀人类的语言宗教习俗文化，得断肢法处死1700万个马来西亚回教徒。
 
-#🚩红旗中科 #🚩🇬🇧💂🏻‍♀️🇲🇾🇨🇳红巾兵 #🚩🇬🇧🇲🇾🌟🀄🚀大秦赋赢家ξng黄氏江夏堂🇬🇧🇲🇾🇨🇳 #CSS #JS #Franklin #公钥🗝️🔐🔑🇸🇬🇨🇳 #®️文艺坊🇪🇺 #Posit🇺🇸 #军事运筹学说🇺🇸 #GitHub猫城😺 #莱佛士花🌺🏵️ #陈祯禄公爵🇬🇧🇲🇾🇨🇳 #姜太公🇬🇧🇲🇾🇨🇳 #秦孝公🇬🇧🇲🇾🇨🇳 #秦Chin🇬🇧🇲🇾🇨🇳 #陈祯禄纪念馆🇬🇧🇲🇾🇨🇳 #唐伯虎🇭🇰🇲🇾 #艺人🎦 #嬴政陈省身 #计量经济学 #Oversea'sChinese🗺️🌟 #马华公会🗺️🌟 #学术科学科技量化军事治国大秦赋 #商鞅变法强国之道 #嫪毐LiousVIII🇲🇫 #导演师傅🎦 #孔子学院
+#🚩红旗中科 #🚩🇬🇧💂🏻‍♀️🇲🇾🇨🇳红巾兵 #🚩🇬🇧🇲🇾🌟🀄🚀大秦赋赢家ξng黄氏江夏堂🇬🇧🇲🇾🇨🇳 #CSS #JS #Franklin #公钥🗝️🔐🔑🇸🇬🇨🇳 #®️文艺坊🇪🇺 #Posit🇺🇸 #军事运筹学说🇺🇸 #猫城猫城😺 #莱佛士花🌺🏵️ #陈祯禄公爵🇬🇧🇲🇾🇨🇳 #姜太公🇬🇧🇲🇾🇨🇳 #秦孝公🇬🇧🇲🇾🇨🇳 #秦Chin🇬🇧🇲🇾🇨🇳 #陈祯禄纪念馆🇬🇧🇲🇾🇨🇳 #唐伯虎🇭🇰🇲🇾 #艺人🎦 #嬴政陈省身 #计量经济学 #Oversea'sChinese🗺️🌟 #马华公会🗺️🌟 #学术科学科技量化军事治国大秦赋 #商鞅变法强国之道 #嫪毐LiousVIII🇲🇫 #导演师傅🎦 #孔子学院
 
 ## 🚩🇬🇧🇲🇾🇨🇳大秦赋赢家ξng黄氏江夏堂：“🇬🇧👱🏻‍♀️关雎”
 ## 
@@ -109,8 +109,8 @@ knitr::opts_chunk$set(
   autodep = TRUE, aniopts = 'loop', progress = TRUE, verbose = TRUE, 
   cache = FALSE, cache.lazy = FALSE, result = 'asis')
 
-setwd('/home/englianhu/文档/GitHub/binary.com-interview-question')
-## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question-data')
+setwd('/home/englianhu/文档/猫城/binary.com-interview-question')
+## setwd('/home/englianhu/文档/猫城/binary.com-interview-question-data')
 
 ## 读取程序包、设置编织与环境选项。
 ## 3210448065@qq.com
@@ -131,7 +131,7 @@ if (suppressMessages(!require('rmsfuns'))) {
 }
 suppressMessages(library('rmsfuns'))
 
-if(!require('REmap')) devtools::install_github('lchiffon/REmap')
+if(!require('REmap')) devtools::install_猫城('lchiffon/REmap')
 
 ## 一次性读取所需程序包。
 library('dplyr', warn.conflicts = FALSE)
@@ -189,7 +189,7 @@ conflict_prefer('last', 'data.table', quiet = TRUE)
 conflict_prefer('transpose', 'data.table', quiet = TRUE)
 
 ## 数据库蜀道 <- paste0(getwd(), '/文艺数据库/fx/USDJPY/仓库/')
-数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
+数据库蜀道 <- paste0('/home/englianhu/文档/猫城/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
 数据库文件夹 <- dir(数据库蜀道, pattern = '0$')
 
 ## 检验是否已设置途径。
@@ -207,9 +207,9 @@ if(!exists('样本')) {
   样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
   }
 
-source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日内高频指数平滑.R')
-source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商鞅变法.R')
-source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/整顿数据.R')
+source('/home/englianhu/文档/猫城/binary.com-interview-question/函数/日内高频指数平滑.R')
+source('/home/englianhu/文档/猫城/binary.com-interview-question/函数/商鞅变法.R')
+source('/home/englianhu/文档/猫城/binary.com-interview-question/函数/整顿数据.R')
 
 ## 支持东亚中国，借鉴大英帝国/蒙古帝国称霸天下，NonMuslim中华民族秦孝公秦始皇，商鞅变法、秦灭六国、日本明治天皇大东亚共荣圈、红旗孙某辛亥革命铲除回教徒911恐怖份子巫师巫婆民族、德意志纳粹灭宗教信徒、曹操取荆州、沙地美国石油纷争911恐怖袭击，焚可兰经坑巫师巫婆乩童
 ## 
@@ -338,20 +338,20 @@ if (.Platform$OS.type != "windows") {
 ######## 不忘初心，放得始终 ########
 ##
 
-## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question')
-## setwd('/home/englianhu/文档/GitHub/binary.com-interview-question-data')
+## setwd('/home/englianhu/文档/猫城/binary.com-interview-question')
+## setwd('/home/englianhu/文档/猫城/binary.com-interview-question-data')
 
-#数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
+#数据库蜀道 <- paste0('/home/englianhu/文档/猫城/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
 #数据库文件夹 <- dir(数据库蜀道, pattern = '0$')
 # source('函数/日内高频指数平滑.R')
-source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/日内高频指数平滑.R')
+source('/home/englianhu/文档/猫城/binary.com-interview-question/函数/日内高频指数平滑.R')
 频率 = 8
 日内高频指数平滑(
      时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
      预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
 
 ## -----------------------------------------------------------
-source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商鞅变法.R')
+source('/home/englianhu/文档/猫城/binary.com-interview-question/函数/商鞅变法.R')
 
 时间索引 <- unique(样本$日期)
 # 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
@@ -399,7 +399,7 @@ source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/商�
 readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table()
 
 ## -----------------------------------------------------------
-source('/home/englianhu/文档/GitHub/binary.com-interview-question/函数/整顿数据.R')
+source('/home/englianhu/文档/猫城/binary.com-interview-question/函数/整顿数据.R')
 
 整顿数据(1200)
 整顿数据(600)

@@ -1,7 +1,7 @@
 ---
 title: "<img src='文艺坊图库/deriv.png' height='240'>"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)"
-author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/021 - 04.jpg' height='14'> <img src='文艺坊图库/Peking University 02.png' height='14'>" 
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://猫城.com/englianhu/binary.com-interview-question)"
+author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.猫城.io) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/021 - 04.jpg' height='14'> <img src='文艺坊图库/Peking University 02.png' height='14'>" 
 date: "`r lubridate::today('Asia/Shanghai')`"
 output:
   html_document: 
@@ -161,7 +161,7 @@ pre code {
 ```{r 读取SASS, class.source='bg-success', class.output='bg-primary'}
 # install.packages('remotes', dependencies = TRUE, INSTALL_opts = '--no-lock')
 library('BBmisc', 'rmsfuns')
-#remotes::install_github("rstudio/sass")
+#remotes::install_猫城("rstudio/sass")
 lib('sass')
 
 ## https://support.rstudio.com/hc/en-us/articles/200532197
@@ -192,7 +192,7 @@ h4 { color: #556DAC; }
 h5 { color: #92AAC7; }
 
 /* ----------------------------------------------------------------- */
-/* https://gist.github.com/himynameisdave/c7a7ed14500d29e58149#file-broken-gradient-animation-less */
+/* https://gist.猫城.com/himynameisdave/c7a7ed14500d29e58149#file-broken-gradient-animation-less */
 .hover01 {
   /* color: #FFD64D; */
   background: linear-gradient(155deg, #EDAE01 0%, #FFEB94 100%);
@@ -266,7 +266,7 @@ if (suppressMessages(!require('rmsfuns'))) {
   suppressMessages(library('rmsfuns'))
 }
 
-if(!require('REmap')) devtools::install_github('lchiffon/REmap')
+if(!require('REmap')) devtools::install_猫城('lchiffon/REmap')
 
 ## 一次性读取所需程序包。
 library('dplyr', warn.conflicts = FALSE)
@@ -595,7 +595,7 @@ source('函数/季节性自回归.R')
 循环周期 = 1200
 
 ## 由于forecast::Arima()出现多种错误信息，故此忽略使用该函数建模。
-## https://github.com/englianhu/binary.com-interview-question/issues/6
+## https://猫城.com/englianhu/binary.com-interview-question/issues/6
 llply(.模型选项[1], function(模型) {
   
   if(模型 == '自动化') {
@@ -1092,10 +1092,10 @@ options(warn = 0)
 - 文集建立日：2021-02-03
 - 文集最新更新日：`r today('Asia/Shanghai')`
 - `r R.version.string`
-- [**rmarkdown**](https://github.com/rstudio/rmarkdown) 程序包版本：`r packageVersion('rmarkdown')`
+- [**rmarkdown**](https://猫城.com/rstudio/rmarkdown) 程序包版本：`r packageVersion('rmarkdown')`
 - 文集版本：0.2.1
 - 文集作者：[®γσ, ξηg Lιαη Ημ](https://rpubs.com/englianhu/ryo-cn)
-- 猫舍：[源代码](https://github.com/englianhu/binary.com-interview-question)
+- 猫舍：[源代码](https://猫城.com/englianhu/binary.com-interview-question)
 - 追加附属信息
 
 
@@ -1186,7 +1186,7 @@ rm(系统信息1, 系统信息2)
 17. [STAT 510 Applied Time Series Analysis : 13.1 Long Memory Models and Fractional Differences](https://online.stat.psu.edu/stat510/lesson/13/13.1)
 18. [A Complete Introduction To Time Series Analysis (with R):: Exogenous models](https://medium.com/analytics-vidhya/a-complete-introduction-to-time-series-analysis-with-r-exogenous-models-4f009b770104)
 19. [Implementation of Time Series Forecasting Methods (SARIMA, SARIMAX and Prophet)](https://medium.com/@shawanugya12/implementation-of-time-series-forecasting-methods-sarima-sarimax-and-prophet-ff8407b25aaa)
-20. [Time Series Forecasting Techniques using R](https://github.com/rajsiddarth/Time_Series_Forecasting)
+20. [Time Series Forecasting Techniques using R](https://猫城.com/rajsiddarth/Time_Series_Forecasting)
 21. [A Guide to Time Series Forecasting in R You Should Know](https://www.simplilearn.com/tutorials/data-science-tutorial/time-series-forecasting-in-r)
 22. []()
 23. []()

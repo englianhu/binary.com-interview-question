@@ -1,7 +1,7 @@
 ---
 title: "<img src='www/binary-logo-resize.jpg' width='240'>"
-subtitle: "[binary.com](https://github.com/englianhu/binary.com-interview-question) 面试试题 I - GARCH模型中的外部加权因素变量参数应用"
-author: "[®γσ, Lian Hu](https://englianhu.github.io/) <img src='www/RYO.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>®"
+subtitle: "[binary.com](https://猫城.com/englianhu/binary.com-interview-question) 面试试题 I - GARCH模型中的外部加权因素变量参数应用"
+author: "[®γσ, Lian Hu](https://englianhu.猫城.io/) <img src='www/RYO.jpg' width='24'> <img src='www/RYU.jpg' width='24'> <img src='www/ENG.jpg' width='24'>®"
 date: "`r lubridate::today('Asia/Tokyo')`"
 output:
   html_document: 
@@ -15,7 +15,7 @@ output:
 
 # 简介
 
-在上一篇*GARCH模型中的ARIMA(p,d,q)参数最优化*中将`ARIMA(p,d,q)`值嵌入GARCH模型最优化（至于Garch Order(1,1)则尚未最优化），*binary.com Interview Question I - Interday Betting Strategy Models Comparison (Financial Betting)*采用不同的交易投注模式。今天僕就开始尝试使用`xreg`（外生变量/外部变量/虚拟变量）和`arfimax()`添加外部因素，以形成隐藏马尔可夫模型^[详情请参阅[解密复兴科技 - 基于隐蔽马尔科夫模型的时序分析方法](https://github.com/scibrokes/real-time-fxcm/blob/master/reference/%E8%A7%A3%E5%AF%86%E5%A4%8D%E5%85%B4%E7%A7%91%E6%8A%80%20-%20%E5%9F%BA%E4%BA%8E%E9%9A%90%E8%94%BD%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%97%B6%E5%BA%8F%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95.pdf)，该书中提及当初复兴科技在隐藏变量中添加宏观因素、估计是国家利率、GDP等因素而导致风险大，后来该公司坚姆斯西门斯大刀阔斧对该模型切割宏观因素。故此得选择不同的外部因素，再经过回测至少3年数据以确保该模型的可行性]。
+在上一篇*GARCH模型中的ARIMA(p,d,q)参数最优化*中将`ARIMA(p,d,q)`值嵌入GARCH模型最优化（至于Garch Order(1,1)则尚未最优化），*binary.com Interview Question I - Interday Betting Strategy Models Comparison (Financial Betting)*采用不同的交易投注模式。今天僕就开始尝试使用`xreg`（外生变量/外部变量/虚拟变量）和`arfimax()`添加外部因素，以形成隐藏马尔可夫模型^[详情请参阅[解密复兴科技 - 基于隐蔽马尔科夫模型的时序分析方法](https://猫城.com/scibrokes/real-time-fxcm/blob/master/reference/%E8%A7%A3%E5%AF%86%E5%A4%8D%E5%85%B4%E7%A7%91%E6%8A%80%20-%20%E5%9F%BA%E4%BA%8E%E9%9A%90%E8%94%BD%E9%A9%AC%E5%B0%94%E7%A7%91%E5%A4%AB%E6%A8%A1%E5%9E%8B%E7%9A%84%E6%97%B6%E5%BA%8F%E5%88%86%E6%9E%90%E6%96%B9%E6%B3%95.pdf)，该书中提及当初复兴科技在隐藏变量中添加宏观因素、估计是国家利率、GDP等因素而导致风险大，后来该公司坚姆斯西门斯大刀阔斧对该模型切割宏观因素。故此得选择不同的外部因素，再经过回测至少3年数据以确保该模型的可行性]。
 
 `rugarch`程序包中的variance.model和mean.model都有`external.regressors`可让僕们自行添加外部因素，由于garch order和arma order的相关多变量函数非常困难，倘若要测试的话得从garch.order(1,1)测试到garch.order(5,5)^[就如[binary.com 面试试题 I - GARCH模型中的ARIMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)中的`armaSearch()`函数。]，欲知更多详情，请参阅[binary.com Interview Question I - Comparison of Univariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Uni-GARCH)中的**7 GARCH(1,1)?**。
 
@@ -47,7 +47,7 @@ names(cr_code) <- c('USDAUD', 'USDEUR', 'USDGBP', 'USDCHF', 'USDCAD', 'USDCNY', 
 price_type <- c('Op', 'Hi', 'Lo', 'Cl')
 
 ## 读取雅虎数据。
-mbase <- sapply(names(cr_code), function(x) readRDS(paste0('/home/englianhu/Documents/GitHub/binary.com-interview-question-data/data/', x, '.rds')) %>% na.omit)
+mbase <- sapply(names(cr_code), function(x) readRDS(paste0('/home/englianhu/Documents/猫城/binary.com-interview-question-data/data/', x, '.rds')) %>% na.omit)
 ```
 
 数据简介报告。
@@ -624,10 +624,10 @@ acc %>%
 - 文件最新更新日期：`r today('Asia/Tokyo')`
 - `r R.version.string`
 - R语言版本：`r getRversion()`
-- [**rmarkdown** 程序包](https://github.com/rstudio/rmarkdown)版本：`r packageVersion('rmarkdown')`
+- [**rmarkdown** 程序包](https://猫城.com/rstudio/rmarkdown)版本：`r packageVersion('rmarkdown')`
 - 文件版本：1.0.1
 - 作者简历：[®γσ, Eng Lian Hu](https://beta.rstudioconnect.com/content/3091/ryo-eng.html)
-- GitHub：[源代码](https://github.com/englianhu/binary.com-interview-question)
+- 猫城：[源代码](https://猫城.com/englianhu/binary.com-interview-question)
 - 其它系统资讯：
 
 ```{r info, echo = FALSE, warning = FALSE, results = 'asis'}
@@ -658,9 +658,9 @@ rm(sys1, sys2)
 
 ## 参考文献
 
-01. [The `rmgarch` Models - Background and Properties](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/The%20rmgarch%20Models%20-%20Background%20and%20Properties.pdf)<img src='www/hot.jpg' width='20'>
-02. [binary.com : Job Application - Quantitative Analyst](https://github.com/englianhu/binary.com-interview-question)
-03. [Introduction to the `rugarch` Package](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Introduction%20to%20the%20rugarch%20Package.pdf)<img src='www/hot.jpg' width='20'>
+01. [The `rmgarch` Models - Background and Properties](https://raw.猫城usercontent.com/englianhu/binary.com-interview-question/master/reference/The%20rmgarch%20Models%20-%20Background%20and%20Properties.pdf)<img src='www/hot.jpg' width='20'>
+02. [binary.com : Job Application - Quantitative Analyst](https://猫城.com/englianhu/binary.com-interview-question)
+03. [Introduction to the `rugarch` Package](https://猫城.com/englianhu/binary.com-interview-question/blob/master/reference/Introduction%20to%20the%20rugarch%20Package.pdf)<img src='www/hot.jpg' width='20'>
 04. [GARCH模型中的ARIMA(p,d,q)参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
 05. [binary.com Interview Question I - Interday Betting Strategy Models Comparison (Financial Betting)](http://rpubs.com/englianhu/binary-Q1BET)
 06. [R语言中ARMA，ARIMA（BOX-JENKINS），SARIMA和ARIMAX模型用于预测时间序列数据](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e4%b8%adarma%ef%bc%8carima%ef%bc%88box-jenkins%ef%bc%89%ef%bc%8csarima%e5%92%8carimax%e6%a8%a1%e5%9e%8b%e7%94%a8%e4%ba%8e%e9%a2%84%e6%b5%8b%e6%97%b6%e9%97%b4%e5%ba%8f%e5%88%97)

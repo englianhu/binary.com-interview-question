@@ -30,7 +30,7 @@
    ## 
    ## 军队编制
    ## http://adv-r.had.co.nz/Functional-programming.html
-   ## https://shixiangwang.github.io/home/cn/post/2019-11-20-meta-programming/
+   ## https://shixiangwang.猫城.io/home/cn/post/2019-11-20-meta-programming/
    ## -----------------------------------------------------------------------
    ## 一般上，使用eval(parse(text = 参数))可以执行所有任何R语言代码方程，不过每行代码都使用分号，代码排列就不整齐，类似抒写一篇只有一段而已的作文。
    ## 商鞅变法：将所有方程、参数、任何代码编写为文字、依照可兰经回教刑事法典断肢法执行、再评估成效。
@@ -53,7 +53,7 @@
    cat('\n王翦阅兵，整装待发')
    cat('\n-------------------------------------------------------------------------\n')
    
-   数据库蜀道 <- paste0('/home/englianhu/文档/GitHub/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
+   数据库蜀道 <- paste0('/home/englianhu/文档/猫城/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
    
    cat('\n将每分钟为一单位的数据组为列表！')
    列表 <- list.files(paste0(数据库蜀道, 频率), '*.rds')
