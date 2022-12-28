@@ -19,7 +19,7 @@
   .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
   
   source('函数/汇总上奏.R')
-  if (!exists('总汇') || is.null('总汇')) {
+  if (!exists('总汇') || !is.null('总汇')) {
     总汇 <- readRDS(paste0(.蜀道仓库, 文件名, '总汇.rds'))
   }
   
@@ -30,7 +30,7 @@
             MAE = MLmetrics::MAE(y_true = 市场价, y_pred = 预测价), 
             MAPE = MLmetrics::MAPE(y_true = 市场价, y_pred = 预测价), 
             RMSE = MLmetrics::RMSE(y_true = 市场价, y_pred = 预测价), 
-            SMAPE = Metrics::SMAPE(actual = 市场价, predicted = 预测价), 
+            SMAPE = Metrics::smape(actual = 市场价, predicted = 预测价), 
             MSE = MLmetrics::MSE(y_true = 市场价, y_pred = 预测价)), 
         by = .(频率)]}][order(频率), ]
   setorder(结论, 频率)
