@@ -27,22 +27,35 @@ output:
 
 🚩🇬🇧🇲🇾🇨🇳大秦赋赢家ξng黄氏江夏堂：“🇬🇧👱🏻‍♀️关雎”
 
-## 商鞅变法推翻马来Judi回教博彩庄Caspo Inc Cube Ltd回教911恐怖份子政府，建立NonMuslim六四学术中华政府
+## 商鞅变法
 
-🚩🇬🇧秦孝公 | 🇬🇧姜太公 --- 🇬🇧陈祯禄公爵/邱德拔公爵/叶亚来队长/叶观盛队长
-《大秦赋 - 🇬🇧♰👱🏻‍♀️关雎》
-🚩大秦孝公，秦惠文王；
-🚩始于商鞅，终于辛亥。
-🚩巫裔尽弃，瓦釜雷鸣；（推翻马来回教政权）
-🚩铲除巫裔，终止屠杀。
-🚩中科红旗，同舟共济；
-🚩千古一帝，傲视全球。
-🚩一带一路，史无前例；
-🚩横跨七洲，一统天下。
-🚩学海无涯，唯秦是岸；
-🚩不忘初心，方得始终。
+**大秦赋 Chinese Emperor**
 
-出处：[](https://www.instagram.com/p/Cjxd_GMLAes)
+反攻巫裔，推翻马来Judi回教博彩庄Caspo Inc Cube Ltd回教911恐怖份子政府，建立NonMuslim六四学术中华政府
+
+🚩🇬🇧秦孝公 | 🇬🇧姜太公 --- 🇬🇧陈祯禄公爵/邱德拔公爵/叶亚来队长/叶观盛队长<br>
+《大秦赋 - 🇬🇧♰👱🏻‍♀️关雎》<br>
+🚩大秦孝公，秦惠文王；<br>
+🚩始于商鞅，终于辛亥。<br>
+🚩巫裔尽弃，瓦釜雷鸣；（推翻马来回教政权）<br>
+🚩铲除巫裔，终止屠杀。<br>
+🚩中科红旗，同舟共济；<br>
+🚩千古一帝，傲视全球。<br>
+🚩一带一路，史无前例；<br>
+🚩横跨七洲，一统天下。<br>
+🚩学海无涯，唯秦是岸；<br>
+🚩不忘初心，方得始终。<br>
+
+出处：[蔡卓宜 - 厦门美食](https://www.instagram.com/p/Cjxd_GMLAes)
+
+- [史册号](https://www.shicehao.com)
+- [词林](https://www.cilin.org)
+- [族谱网](https://www.zupu.cn)
+- [历史网](https://www.lishi.net)
+- [人物介绍网](https://www.yuelishi.cn)
+- [百家有谱](https://www.baijiayoupu.com)
+- [历史记](https://www.lishiji.cn)
+- [中国人物传记网](https://www.chinarwzj.com)
 
 > [《万般皆下品，唯有读书高》]{style="color:#3C33FF"}<br>
 [习李经济，一带一路；]{style="color:#6883FC"}<br>
@@ -78,7 +91,7 @@ output:
 
 <img src='文艺坊图库/css.jpeg' width = '200'>
 
-家翁ξηg Tεηg
+家翁嬴政ξηg Tεηg（赢家黄氏江夏堂）
 
 <img src='文艺坊图库/鞭策六四，推广量化；百家争鸣，振兴中华。.png' width = '200'>
 
@@ -663,7 +676,7 @@ if (!exists('样本')) {
   ##`full_width = FALSE`是将每列设置为伸缩性自动调整宽度。
   {\(.) kable_material(., full_width = FALSE)}() |> 
   {\(.) scroll_box(., width = '100%', fixed_thead = TRUE, 
-                   height = '480px')}()
+                   height = '490px')}()
 ```
 
 *数据：`r paste0(dim(样本)[1], '行 x ', dim(样本)[2], '列')`*
@@ -1100,7 +1113,7 @@ if (!exists('.蜀道仓库')) {
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE, height = '600px')
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '00px')
 ```
 
 *数据：`r paste0(dim(日内指数平滑数据结论), collapse = ' x ')`*
@@ -1200,7 +1213,7 @@ source('函数/总汇结论.R')
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE, height = '600px')
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
 *数据：`r paste0(dim(日内指数平滑数据2016年结论), collapse = ' x ')`*
@@ -1269,7 +1282,7 @@ source('函数/总汇结论.R')
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE, height = '600px')
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
 *数据：`r paste0(dim(日内指数平滑数据2017年结论), collapse = ' x ')`*
@@ -1338,7 +1351,7 @@ source('函数/总汇结论.R')
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE, height = '600px')
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
 *数据：`r paste0(dim(日内指数平滑数据2018年结论), collapse = ' x ')`*
@@ -1407,7 +1420,7 @@ source('函数/总汇结论.R')
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE, height = '600px')
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
 *数据：`r paste0(dim(日内指数平滑数据2018年上半年结论), collapse = ' x ')`*

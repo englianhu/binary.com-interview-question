@@ -523,7 +523,7 @@ if(!exists('样本1')) {
         'striped', 'hover', 'condensed', 'responsive'))}() |> 
   ##`full_width = FALSE`是将每列设置为伸缩性自动调整宽度。
     {\(.) kable_material(., full_width = FALSE)}() |> 
-    {\(.) scroll_box(., width = '100%', fixed_thead = TRUE, height = '480px')}()
+    {\(.) scroll_box(., width = '100%', fixed_thead = TRUE, height = '490px')}()
 ```
 
 *数据 : `r paste0(dim(样本1)[1], '行 x ', dim(样本1)[2], '列')`*
