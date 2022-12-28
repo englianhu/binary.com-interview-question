@@ -411,7 +411,7 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275) (发布于RPubs.com)
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://beta.rstudioconnect.com/content/8a7cbdce-6fc5-409b-8072-9ff21dbd32eb) (发布于RStudioConnect.com)
 
-在此论文中，季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）
+在此论文中，再回测日内高频**季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）**数据量与循环周期，以较少数据计算最优统计模型。
 
 > #自动化 #科研科学 #尚未试驾 尚未试驾🚗
 
@@ -1436,8 +1436,6 @@ source('函数/总汇结论.R')
 [^1]: [**Forecasting: Principles and Practice (3rd ed)** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)阐明评估预测精准度的计算公式。<br><br>[「CSDN」选择正确的错误度量标准：MAPE与sMAPE的优缺点](https://blog.csdn.net/deephub/article/details/109483129)
 
 <iframe width="458" height="815" src="https://www.youtube.com/embed/ceNvHXH6K2U" title="δ「抖音」βest Model" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-`r vembedr::embed_youtube(ceNvHXH6K2U, width='560')`
 
 ## 前瞻科研
 
