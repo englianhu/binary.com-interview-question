@@ -89,11 +89,11 @@ output:
 山不厌高，海不厌深；<br>
 [嬴政吐哺，天下归心。]{style="color:#6883FC"}
 
-<img src='文艺坊图库/css.jpeg' width = '200'>
+<img src='文艺坊图库/css.jpeg' width = '400'>
 
 家翁嬴政ξηg Tεηg（赢家黄氏江夏堂）
 
-<img src='文艺坊图库/鞭策六四，推广量化；百家争鸣，振兴中华。.png' width = '200'>
+<img src='文艺坊图库/鞭策六四，推广量化；百家争鸣，振兴中华。.png' width = '400'>
 
 世间再无祖父黄实田，外祖母郑邓
 
@@ -367,7 +367,7 @@ conflict_prefer('set', 'data.table', quiet = TRUE)
   'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
   'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
   'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 'feather', 
-  'sparklyr', 'jcolors', 'TSA', 'microbenchmark', 'dendextend', 
+  'sparklyr', 'jcolors', 'TSA', 'microbenchmark', 'dendextend', 'vembedr', 
   'lhmetools', 'gtools', 'stringi', 'pacman', 'profmem', 'ggthemes', 
   'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
   'fable', 'fabletools', 'Rfast', 'Metrics', 'MLmetrics')
@@ -1437,11 +1437,13 @@ source('函数/总汇结论.R')
 
 <iframe width="458" height="815" src="https://www.youtube.com/embed/ceNvHXH6K2U" title="δ「抖音」βest Model" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
+`r vembedr::embed_youtube(ceNvHXH6K2U, width='560')`
+
 ## 前瞻科研
 
 使用一样的汇价数据，不过从2018年上半年数据，可以节省许多时间。下一篇科研[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)[^2]会使用`fable`、`fabletools`、`fable.prophet`、`tbats`、`midas`、`sarimax`、`arfimax`等其它统计模型，然后还有比较长短记忆模型如`tensorflow`、`keras`，隐马尔可夫链、隐含波动率、波浪形模型等其它统计模型。
 
-[^2] : 下篇论文中[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。<br>- 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）<br>- 外部因素周期性自回归综合滑均模型（ARIMAX）<br>- 季节性自回归综合滑均模型（SARIMA）<br>- 外部因素周期性季节性自回归综合滑均模型（SARIMAX）<br>- 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）<br>- 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
+[^2]: 下篇论文中[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。<br> - 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）<br> - 外部因素周期性自回归综合滑均模型（ARIMAX）<br> - 季节性自回归综合滑均模型（SARIMA）<br> - 外部因素周期性季节性自回归综合滑均模型（SARIMAX）<br> - 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）<br> - 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
 <img src='文艺坊图库/careers.png' width='240'>
 
@@ -1561,8 +1563,6 @@ rm(系统信息1, 系统信息2)
 20. [Time Series Forecasting Techniques using R](https://github.com/rajsiddarth/Time_Series_Forecasting)
 21. [A Guide to Time Series Forecasting in R You Should Know](https://www.simplilearn.com/tutorials/data-science-tutorial/time-series-forecasting-in-r)
 22. [Applied Time Series Analysis and Forecasting with R](https://ramikrispin.github.io/atsaf)
-23. []()
-24. []()
 
 ---
 
