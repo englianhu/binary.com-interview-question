@@ -27,7 +27,7 @@ output:
 
 🚩🇬🇧🇲🇾🇨🇳大秦赋赢家ξng黄氏江夏堂：“🇬🇧👱🏻‍♀️关雎”
 
-## 商鞅变法推翻马来JudiCaspo Inc Cube Ltd回教911恐怖份子政府，建立NonMuslim六四学术中华政府
+## 商鞅变法推翻马来Judi回教博彩庄Caspo Inc Cube Ltd回教911恐怖份子政府，建立NonMuslim六四学术中华政府
 
 🚩🇬🇧秦孝公 | 🇬🇧姜太公 --- 🇬🇧陈祯禄公爵/邱德拔公爵/叶亚来队长/叶观盛队长
 《大秦赋 - 🇬🇧♰👱🏻‍♀️关雎》
@@ -317,7 +317,7 @@ knitr::opts_chunk$set(
 ## https://rstudio.cloud/project/1198888
 
 ## 读取'BBmisc'程序包。
-if(suppressMessages(!require('BBmisc'))){
+if (suppressMessages(!require('BBmisc'))) {
   install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
 }
 suppressMessages(library('BBmisc'))
@@ -327,7 +327,7 @@ if (suppressMessages(!require('rmsfuns'))) {
 }
 suppressMessages(library('rmsfuns'))
 
-if(!require('REmap')) devtools::install_github('lchiffon/REmap')
+if (!require('REmap')) devtools::install_github('lchiffon/REmap')
 
 ## 一次性读取所需程序包。
 library('dplyr', warn.conflicts = FALSE)
@@ -344,14 +344,16 @@ conflict_prefer('year', 'lubridate', quiet = TRUE)
 conflict_prefer('first', 'data.table', quiet = TRUE)
 conflict_prefer('last', 'data.table', quiet = TRUE)
 conflict_prefer('transpose', 'data.table', quiet = TRUE)
+conflict_prefer('between', 'data.table', quiet = TRUE)
+conflict_prefer('set', 'data.table', quiet = TRUE)
 
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
-  'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 
+  'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 'tidyfst', 
   'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
   'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
   'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
-  'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 
+  'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 'feather', 
   'sparklyr', 'jcolors', 'TSA', 'microbenchmark', 'dendextend', 
   'lhmetools', 'gtools', 'stringi', 'pacman', 'profmem', 'ggthemes', 
   'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
@@ -429,12 +431,12 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
   require('magrittr')
   require('tibble')
   
-  if(!is.data.frame(class(导入数据))) { 
+  if (!is.data.frame(class(导入数据))) { 
 	导入数据 %<>% data.frame
   }
   
   if (.周期性 == TRUE) {
-    while(1) {
+    while (1) {
       cat('当前中国标准时间：', as.character(now('Asia/Shanghai')), '\n\n')
       
       日子 = as_date(导入数据$年月日时分) %>% 
@@ -444,7 +446,7 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
       
 	    动态日 = 日子
 	    
-	    if(is.null(起点)) { 
+	    if (is.null(起点)) { 
 		    起点 = 日子[1]
 	    } else if (is.Date(起点)) { 
 		    起点 = as_date(起点)
@@ -493,7 +495,7 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 			unique
 	  动态日 = 日子
 		
-	  if(is.null(起点)) { 
+	  if (is.null(起点)) { 
 		  起点 = 日子[1]
 	  } else if (is.Date(起点)) { 
 		  起点 = as_date(起点)
@@ -541,10 +543,10 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 
 **Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**次论文读取该数据，将网页轻巧化、省略掉修饰数据的一栏。
 
-```{r 数据中文化, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 数据中文化, eval = FALSE}
+# --------- eval = FALSE ---------
 ## 检验是否已设置途径。
-if(!exists('.蜀道')) {
+if (!exists('.蜀道')) {
   .蜀道 <- getwd() |> 
     {\(.) str_split(., '/')}() |> 
     {\(.) c('/', .[[1]][2:5])}() |> 
@@ -554,7 +556,7 @@ if(!exists('.蜀道')) {
   }
 
 ## 倘若环境尚未有数据，读取文件数据。
-if(!exists('dsmp')) {
+if (!exists('dsmp')) {
   dsmp <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/dsmp.rds'))
   }
 
@@ -583,14 +585,14 @@ dsmp %<>%
   as.data.table
 
 ## 倘若该途径尚无文件，储存文件。
-if(!file.exists(paste0(
+if (!file.exists(paste0(
   .蜀道, '文艺数据库/fx/USDJPY/样本1.rds')) & exists('dsmp')) {
     saveRDS(dsmp, paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
   }
 
 ## ------------------------------------------------
 ## 倘若环境尚未有数据，读取文件数据。
-if(!exists('ddsmp')) {
+if (!exists('ddsmp')) {
   ddsmp <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/ddsmp.rds'))
   }
 
@@ -611,7 +613,7 @@ ddsmp %<>%
   as.data.table
 
 ## 倘若该途径尚无文件，储存文件。
-if(!file.exists(paste0(
+if (!file.exists(paste0(
   .蜀道, '文艺数据库/fx/USDJPY/样本2.rds')) & exists('ddsmp')) {
     saveRDS(ddsmp, paste0(.蜀道, '文艺数据库/fx/USDJPY/样本2.rds'))
   }
@@ -621,7 +623,7 @@ if(!file.exists(paste0(
 
 ```{r 绘制样本数据图表, results = 'asis'}
 ## 检验是否已设置途径。
-if(!exists('.蜀道')) {
+if (!exists('.蜀道')) {
   .蜀道 <- getwd() |> 
     {\(.) str_split(., '/')}() |> 
     {\(.) c('/', .[[1]][2:5])}() |> 
@@ -631,12 +633,12 @@ if(!exists('.蜀道')) {
   }
 
 ## 倘若环境尚未有数据，读取文件数据。
-if(!exists('样本')) {
+if (!exists('样本')) {
   样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
   }
 
 ## 绘制样本图表
-样本[c(1:3, (nrow(样本)-3):nrow(样本)),] |> 
+样本[c(1:3, (nrow(样本) - 3):nrow(样本)),] |> 
   {\(.) kbl(., caption = '每分钟价位', escape = FALSE)}() |> 
   ## https://www.w3schools.com/cssref/css_colors.asp
   ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd 
@@ -693,6 +695,8 @@ if(!exists('样本')) {
 
 ```{r}
 source('函数/日内高频指数平滑.R')
+source('函数/汇总上奏.R')
+source('函数/总汇结论.R')
 
 时间索引 <- unique(样本$日期)
 # 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
@@ -708,8 +712,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 20小时一周期（1200分钟循环1次）
 
-```{r 1200分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 1200分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 1200
 
 日内高频指数平滑(
@@ -719,8 +723,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 10小时一周期（600分钟循环2次）
 
-```{r 600分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 600分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 600
 
 日内高频指数平滑(
@@ -730,8 +734,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 6.67小时一周期（400分钟循环3次）
 
-```{r 400分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 400分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 400
 
 日内高频指数平滑(
@@ -741,8 +745,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 5小时一周期（300分钟循环4次）
 
-```{r 300分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 300分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 300
 
 日内高频指数平滑(
@@ -752,8 +756,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 4小时一周期（240分钟循环5次）
 
-```{r 240分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 240分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 240
 
 日内高频指数平滑(
@@ -763,8 +767,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 3.33小时一周期（200分钟循环6次）
 
-```{r 200分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 200分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 200
 
 日内高频指数平滑(
@@ -774,8 +778,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 2.5小时一周期（150分钟循环8次）
 
-```{r 150分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 150分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 150
 
 日内高频指数平滑(
@@ -785,8 +789,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 2小时一周期（120分钟循环10次）
 
-```{r 120分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 120分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 120
 
 日内高频指数平滑(
@@ -796,8 +800,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 1.67小时一周期（100分钟循环12次）
 
-```{r 100分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 100分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 100
 
 日内高频指数平滑(
@@ -807,8 +811,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 1.33小时一周期（80分钟循环15次）
 
-```{r 80分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 80分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 80
 
 日内高频指数平滑(
@@ -818,8 +822,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 1小时一周期（60分钟循环20次）
 
-```{r 60分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 60分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 60
 
 日内高频指数平滑(
@@ -829,8 +833,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.83小时一周期（50分钟循环24次）
 
-```{r 50分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 50分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 50
 
 日内高频指数平滑(
@@ -840,8 +844,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.67小时一周期（40分钟循环30次）
 
-```{r 40分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 40分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 40
 
 日内高频指数平滑(
@@ -851,8 +855,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 半小时一周期（30分钟循环40次）
 
-```{r 30分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 30分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 30
 
 日内高频指数平滑(
@@ -862,8 +866,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.40小时一周期（24分钟循环50次）
 
-```{r 24分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 24分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 24
 
 日内高频指数平滑(
@@ -873,8 +877,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.33小时一周期（20分钟循环60次）
 
-```{r 20分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 20分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 20
 
 日内高频指数平滑(
@@ -884,8 +888,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.27小时一周期（16分钟循环75次）
 
-```{r 16分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 16分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 16
 
 日内高频指数平滑(
@@ -895,8 +899,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.25小时一周期（15分钟循环80次）
 
-```{r 15分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 15分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 15
 
 日内高频指数平滑(
@@ -906,8 +910,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.20小时一周期（12分钟循环100次）
 
-```{r 12分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 12分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 12
 
 日内高频指数平滑(
@@ -917,8 +921,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.17小时一周期（10分钟循环120次）
 
-```{r 10分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 10分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 10
 
 日内高频指数平滑(
@@ -928,8 +932,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.13小时一周期（8分钟循环150次）
 
-```{r 8分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 8分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 8
 
 日内高频指数平滑(
@@ -939,8 +943,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.10小时一周期（6分钟循环200次）
 
-```{r 6分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 6分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 6
 
 日内高频指数平滑(
@@ -950,8 +954,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.08小时一周期（5分钟循环240次）
 
-```{r 5分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 5分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 5
 
 日内高频指数平滑(
@@ -961,8 +965,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.07小时一周期（4分钟循环300次）
 
-```{r 4分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 4分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 4
 
 日内高频指数平滑(
@@ -972,8 +976,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.05小时一周期（3分钟循环400次）
 
-```{r 3分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 3分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 3
 
 日内高频指数平滑(
@@ -983,8 +987,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.03小时一周期（2分钟循环600次）
 
-```{r 2分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 2分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 2
 
 日内高频指数平滑(
@@ -994,8 +998,8 @@ source('函数/日内高频指数平滑.R')
 
 ### 0.02小时一周期（1分钟循环1200次）
 
-```{r 1分钟, eval=FALSE}
-# --------- eval=FALSE ---------
+```{r 1分钟, eval = FALSE}
+# --------- eval = FALSE ---------
 频率 = 1
 
 日内高频指数平滑(
@@ -1007,15 +1011,96 @@ source('函数/日内高频指数平滑.R')
 
 # 模型比较
 
-```r
+## 3年半载汇价数据
 
+```{r 比较统计模型, eval = FALSE}
+source('函数/汇总上奏.R')
+source('函数/总汇结论.R')
+
+## 
+## 这儿先储存数据并列印函数回归结论，省略计算过程，方便日后读取数据。
+## 
+#日内指数平滑数据总汇 <- 汇总上奏()
+日内指数平滑数据总汇 <- 汇总上奏(是否储存总汇 = '是')
+
+#日内指数平滑数据结论 <- 总汇结论()
+日内指数平滑数据结论 <- 总汇结论(是否储存结论 = '是')
+
+# 日内指数平滑数据总汇 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据总汇.rds'))
+
+# 日内指数平滑数据结论 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据结论.rds'))
 ```
 
+```{r 结论, results = 'asis'}
+日内指数平滑数据总汇 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据总汇.rds'))
 
+## 这儿将精准度调整至30位数，round(..., 30)
+日内指数平滑数据总汇 %>% 
+  dplyr::mutate(
+    mae = ifelse(
+      rank(mae) <= 3, 
+      cell_spec(
+        paste0(round(mae, 30), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mae, 30), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mape = ifelse(
+      rank(mape) <= 3, 
+      cell_spec(
+        paste0(round(mape, 30), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mape, 30), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    rmse = ifelse(
+      rank(rmse) <= 3, 
+      cell_spec(
+        paste0(round(rmse, 30), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(rmse, 30), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    smape = ifelse(
+      rank(smape) <= 3, 
+      cell_spec(
+        paste0(round(smape, 30), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(smape, 30), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mse = ifelse(
+      rank(mse) <= 3, 
+      cell_spec(
+        paste0(round(mse, 30), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mse, 30), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'grey', italic = TRUE))) %>% 
+  kbl(caption = 'Best Model', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  #column_spec(2, background = '#556DAC') %>% 
+  column_spec(2, background = 'LightSlateGrey') %>% 
+  column_spec(3, background = 'LightGray') %>% 
+  column_spec(4, background = 'Gainsboro') %>% 
+  column_spec(5, background = 'LightGray') %>% 
+  column_spec(6, background = 'Gainsboro') %>% 
+  column_spec(7, background = 'LightGray') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
 
-Here I read the saved models.
+*图表矩阵：`r paste0(dim(日内指数平滑数据总汇), collapse = ' x ')`*
 
-Due to the models only forecast `1440 mins` (but not `7200 mins`) in advance, here I no need to filter the forecast price.
+以上图表显示使用再循环数据量`频率 = 1`（**0.02小时一周期（1分钟循环1200次）**）最为精准。
+
+## 1年汇价数据
+
+为了方便日后节省时间，这儿过滤一年汇价数据。
+
 
 # 结论
 
