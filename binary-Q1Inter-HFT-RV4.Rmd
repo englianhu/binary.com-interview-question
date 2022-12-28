@@ -577,8 +577,12 @@ if (!exists('样本')) {
   样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
   }
 
+汇总2018年 <- 样本 %>% 
+  filter(年月日时分 >= as_datetime('2018-01-02 12:00:00') & 
+           年月日时分 <= as_datetime('2018-07-01 00:00:00'))
+
 ## 绘制样本图表
-样本[c(1:3, (nrow(样本)-3):nrow(样本)),] |> 
+汇总2018年[c(1:3, (nrow(汇总2018年) - 3):nrow(汇总2018年)),] |> 
     {\(.) kbl(., caption = '每分钟价位', escape = FALSE)}() |> 
   ## https://www.w3schools.com/cssref/css_colors.asp
   ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd
@@ -605,13 +609,13 @@ if (!exists('样本')) {
     {\(.) scroll_box(., width = '100%', fixed_thead = TRUE, height = '490px')}()
 ```
 
-*数据 : `r paste0(dim(样本)[1], '行 x ', dim(样本)[2], '列')`*
+*数据 : `r paste0(dim(汇总2018年)[1], '行 x ', dim(汇总2018年)[2], '列')`*
 
-以上图表显示数据日期，由`r paste(range(样本$日期), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
+以上图表显示数据日期，由`r paste(range(汇总2018年$日期), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
 
 # 统计建模
 
-在此先过滤数据，从2016年的第一个预测日（`r filter(样本, 年份 == 2016)$日期[1]`开始，也就是读取的样本数据中的第二年数据开始），与论文*(Part I)*、*(Part II)*中相符。
+在此先过滤数据，从2016年的第一个预测日（`r filter(汇总2018年, 年份 == 2016)$日期[1]`开始，也就是读取的样本数据中的第二年数据开始），与论文*(Part I)*、*(Part II)*中相符。
 
 ## 季节性指数平滑模型（Seasonal ETS））`ts()` & `ets()`
 
