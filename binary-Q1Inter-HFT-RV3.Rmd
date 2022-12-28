@@ -19,7 +19,7 @@ output:
 # 主题
 
 <br>
-<span style='color:green'>**🐊 主题曲 🐊**</span>
+<span style='color:green'>**🚩🦔 主题曲 🚩🦔**</span>
 <br>
 
 <audio controls loop autoplay src="文艺坊曲库/Mika - Elle me dit (happy song to be millionaire).mp3" controls></audio>
@@ -76,11 +76,11 @@ output:
 山不厌高，海不厌深；<br>
 [嬴政吐哺，天下归心。]{style="color:#6883FC"}
 
-<img src='文艺坊图库/css.jpeg' height='100'>
+<img src='文艺坊图库/css.jpeg' width = '200'>
 
 家翁ξηg Tεηg
 
-<img src='文艺坊图库/鞭策六四，推广量化；百家争鸣，振兴中华。.png' height='200'>
+<img src='文艺坊图库/鞭策六四，推广量化；百家争鸣，振兴中华。.png' width = '200'>
 
 世间再无祖父黄实田，外祖母郑邓
 
@@ -398,14 +398,7 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275) (发布于RPubs.com)
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://beta.rstudioconnect.com/content/8a7cbdce-6fc5-409b-8072-9ff21dbd32eb) (发布于RStudioConnect.com)
 
-在此论文中，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。
-
-- 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）
-- 外部因素周期性自回归综合滑均模型（ARIMAX）
-- 季节性自回归综合滑均模型（SARIMA）
-- 外部因素周期性季节性自回归综合滑均模型（SARIMAX）
-- 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
-- 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
+在此论文中，季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）
 
 > #自动化 #科研科学 #尚未试驾 尚未试驾🚗
 
@@ -553,7 +546,11 @@ if (!exists('.蜀道')) {
     {\(.) c(., 'binary.com-interview-question-data/')}() |> 
     {\(.) paste(., collapse = '/')}() |> 
     {\(.) substring(., 2)}()
-  }
+}
+
+if (!exists('.蜀道仓库')) {
+  .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
+}
 
 ## 倘若环境尚未有数据，读取文件数据。
 if (!exists('dsmp')) {
@@ -632,6 +629,10 @@ if (!exists('.蜀道')) {
     {\(.) substring(., 2)}()
   }
 
+if (!exists('.蜀道仓库')) {
+  .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
+}
+
 ## 倘若环境尚未有数据，读取文件数据。
 if (!exists('样本')) {
   样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
@@ -662,10 +663,10 @@ if (!exists('样本')) {
   ##`full_width = FALSE`是将每列设置为伸缩性自动调整宽度。
   {\(.) kable_material(., full_width = FALSE)}() |> 
   {\(.) scroll_box(., width = '100%', fixed_thead = TRUE, 
-                   height = '400px')}()
+                   height = '480px')}()
 ```
 
-*数据 : `r paste0(dim(样本)[1], '行 x ', dim(样本)[2], '列')`*
+*数据：`r paste0(dim(样本)[1], '行 x ', dim(样本)[2], '列')`*
 
 以上图表显示数据日期，由`r paste(range(样本$日期), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
 
@@ -1017,6 +1018,10 @@ source('函数/总汇结论.R')
 source('函数/汇总上奏.R')
 source('函数/总汇结论.R')
 
+if (!exists('.蜀道仓库')) {
+  .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
+}
+
 ## 
 ## 这儿先储存数据并列印函数回归结论，省略计算过程，方便日后读取数据。
 ## 
@@ -1095,16 +1100,18 @@ source('函数/总汇结论.R')
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '600px')
 ```
 
-*图表矩阵：`r paste0(dim(日内指数平滑数据结论), collapse = ' x ')`*
+*数据：`r paste0(dim(日内指数平滑数据结论), collapse = ' x ')`*
 
-以上图表显示使用再循环数据量`频率 = 1`（**0.02小时一周期（1分钟循环1200次）**）最为精准。
+以上图表显示，将再循环数据量参数设置为`频率 = 1`（**0.02小时一周期（1分钟循环1200次）**）的统计模型最为精准。
 
 ## 一年汇价数据
 
 ### 一年总汇数据
+
+为了方便日后节省时间，这儿过滤一年汇价数据。
 
 ```{r 过滤统计模型量}
 source('函数/汇总上奏.R')
@@ -1115,14 +1122,18 @@ source('函数/总汇结论.R')
 日内指数平滑数据总汇 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据总汇.rds'))
 日内指数平滑数据总汇[, 年份 := data.table::year(年月日时分)]
 日内指数平滑数据2016年总汇 <- 日内指数平滑数据总汇[年份 == 2016]
+# saveRDS(日内指数平滑数据2016年总汇, paste0(.蜀道仓库, '日内指数平滑数据2016年总汇.rds'))
 日内指数平滑数据2017年总汇 <- 日内指数平滑数据总汇[年份 == 2017]
+# saveRDS(日内指数平滑数据2017年总汇, paste0(.蜀道仓库, '日内指数平滑数据2017年总汇.rds'))
 日内指数平滑数据2018年总汇 <- 日内指数平滑数据总汇[年份 == 2018]
+# saveRDS(日内指数平滑数据2018年总汇, paste0(.蜀道仓库, '日内指数平滑数据2018年总汇.rds'))
 日内指数平滑数据2018年上半年总汇 <- 日内指数平滑数据2018年总汇[, 月份 := data.table::month(年月日时分)][月份 %chin% 1:6]
+# saveRDS(日内指数平滑数据2018年上半年总汇, paste0(.蜀道仓库, '日内指数平滑数据2018年上半年总汇.rds'))
 
-日内指数平滑数据2016年结论 <- 总汇结论(文件名 = '日内指数平滑数据2016年', 是否储存结论 = '是')
-日内指数平滑数据2017年结论 <- 总汇结论(文件名 = '日内指数平滑数据2017年', 是否储存结论 = '是')
-日内指数平滑数据2018年结论 <- 总汇结论(文件名 = '日内指数平滑数据2018年', 是否储存结论 = '是')
-日内指数平滑数据2018年上半年结论 <- 总汇结论(文件名 = '日内指数平滑数据2018年上半年', 是否储存结论 = '是')
+日内指数平滑数据2016年结论 <- 总汇结论(总汇 = 日内指数平滑数据2016年总汇, 文件名 = '日内指数平滑数据2016年', 是否储存结论 = '是')
+日内指数平滑数据2017年结论 <- 总汇结论(总汇 = 日内指数平滑数据2017年总汇, 文件名 = '日内指数平滑数据2017年', 是否储存结论 = '是')
+日内指数平滑数据2018年结论 <- 总汇结论(总汇 = 日内指数平滑数据2018年总汇, 文件名 = '日内指数平滑数据2018年', 是否储存结论 = '是')
+日内指数平滑数据2018年上半年结论 <- 总汇结论(总汇 = 日内指数平滑数据2018年上半年总汇, 文件名 = '日内指数平滑数据2018年上半年', 是否储存结论 = '是')
 ```
 
 ### 总汇2016年结论
@@ -1189,10 +1200,10 @@ source('函数/总汇结论.R')
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '600px')
 ```
 
-*图表矩阵：`r paste0(dim(日内指数平滑数据2016年结论), collapse = ' x ')`*
+*数据：`r paste0(dim(日内指数平滑数据2016年结论), collapse = ' x ')`*
 
 ### 总汇2017年结论
 
@@ -1258,10 +1269,10 @@ source('函数/总汇结论.R')
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '600px')
 ```
 
-*图表矩阵：`r paste0(dim(日内指数平滑数据2017年结论), collapse = ' x ')`*
+*数据：`r paste0(dim(日内指数平滑数据2017年结论), collapse = ' x ')`*
 
 ### 总汇2018年（至7月7日）结论
 
@@ -1327,14 +1338,14 @@ source('函数/总汇结论.R')
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '600px')
 ```
 
-*图表矩阵：`r paste0(dim(日内指数平滑数据2018年结论), collapse = ' x ')`*
+*数据：`r paste0(dim(日内指数平滑数据2018年结论), collapse = ' x ')`*
 
 ### 总汇2018年上半年结论
 
-```{r 总汇2018年结论, results = 'asis'}
+```{r 总汇2018年上半年结论, results = 'asis'}
 ## 这儿将精准度调整至30位数，round(..., 30)
 日内指数平滑数据2018年上半年结论 %>% 
   dplyr::mutate(
@@ -1396,29 +1407,32 @@ source('函数/总汇结论.R')
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE)
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '600px')
 ```
 
-*图表矩阵：`r paste0(dim(日内指数平滑数据2018年上半年结论), collapse = ' x ')`*
-
-为了方便日后节省时间，这儿过滤一年汇价数据。
-
-
-
+*数据：`r paste0(dim(日内指数平滑数据2018年上半年结论), collapse = ' x ')`*
 
 # 结论
 
 ## 摘要
 
-## Final Conclude
+估计是由于骇客人为篡改数据，导致**总汇2016年结论**和**总汇2017年结论**显示误差完全一样，然而**总汇结论（从2016年至2018年7月7日）**和**总汇2018年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**0.02小时一周期（1分钟循环1200次）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优统计模型**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
+
+这儿使用`forecast`程序包，尚未使用`fable`程序包与`fabletools`程序包，该程序包中的`accuracy()`[^1]函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的统计模型预测值。
+
+[^1]: [**Forecasting: Principles and Practice (3rd ed)** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)阐明评估预测精准度的计算公式。<br><br>[「CSDN」选择正确的错误度量标准：MAPE与sMAPE的优缺点](https://blog.csdn.net/deephub/article/details/109483129)
 
 <iframe width="458" height="815" src="https://www.youtube.com/embed/ceNvHXH6K2U" title="δ「抖音」βest Model" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-From final stage models comparison, we know that ******* is the <span style='color:white; background-color:#DE5D83;'>**β**est model</span>.
+## 前瞻科研
 
-## Future Studies
+使用一样的汇价数据，不过从2018年上半年数据，可以节省许多时间。下一篇科研[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)[^2]会使用`fable`、`fabletools`、`fable.prophet`、`tbats`、`midas`、`sarimax`、`arfimax`等其它统计模型，然后还有比较长短记忆模型如`tensorflow`、`keras`，隐马尔可夫链、隐含波动率、波浪形模型等其它统计模型。
 
-Next papers will compare `tbats`, `midas`, `sarimax` etc.
+[^2] : 下篇论文中[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。<br>- 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）<br>- 外部因素周期性自回归综合滑均模型（ARIMAX）<br>- 季节性自回归综合滑均模型（SARIMA）<br>- 外部因素周期性季节性自回归综合滑均模型（SARIMAX）<br>- 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）<br>- 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
+
+<img src='文艺坊图库/careers.png' width='240'>
+
+[**近期招聘一览表:**<span style='color:#3C5C; background-color:black;'>*全网Quant都在看!</span>](https://wemp.app/posts/31dffe83-68af-4e3f-a1f7-c49baf9a24cb?fbclid=IwAR1x3DOjThsEKG0CHVghFnIPAAcraM8kimXa_G9-xG070CiLDyXWj6_6Izs)
 
 ```{r 选项设置, echo = FALSE}
 ## Set options back to original options
