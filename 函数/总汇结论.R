@@ -6,6 +6,18 @@
   ## 2849108450@qq.com
   ## leiou123
   ## https://rstudio.cloud/project/1198888
+  
+  if (!exists('.蜀道')) {
+    .蜀道 <- getwd() |> 
+      {\(.) str_split(., '/')}() |> 
+      {\(.) c('/', .[[1]][2:5])}() |> 
+      {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+      {\(.) paste(., collapse = '/')}() |> 
+      {\(.) substring(., 2)}()
+  }
+  
+  .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
+  
   source('函数/汇总上奏.R')
   if (!exists('总汇')) {
     总汇 <- readRDS(paste0(.蜀道仓库, 文件名, '总汇.rds'))

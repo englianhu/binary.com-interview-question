@@ -12,7 +12,8 @@
     install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
   }
   suppressMessages(library('BBmisc'))
-  lib('plyr', 'dplyr', 'purrr', 'stringr', 'stringi', 'magrittr')
+  lib('plyr', 'dplyr', 'purrr', 'stringr', 'stringi', 'magrittr', 'data.table', 
+      'tidyfst', 'feather')
   conflict_prefer("llply", "plyr")
   
   if (!exists('.蜀道')) {
@@ -26,7 +27,7 @@
   
   .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
   #文件 <- list.files(.蜀道仓库, pattern = '^日内指数平滑数据')
-  商鞅变法 <- paste0("文件 <- list.files(.蜀道仓库, pattern = '^", 文件名, "')")
+  商鞅变法 <- paste0("文件 <- list.files(.蜀道仓库, pattern = '^", 文件名, "[0-9]')")
   eval(parse(text = 商鞅变法))
   
   .蜀道文件 <- paste0(.蜀道仓库, 文件)
@@ -59,8 +60,37 @@
       ## Comparison data.table::fwrite vs feather::feather
       ## 出处：https://gist.github.com/christophsax/3db87a48596768b232a26dfce87c3299
       ## 
-      saveRDS(总汇, paste0(.蜀道仓库, 文件名, '总汇.rds'))#, compress = FALSE)
-      cat(paste0('\n已储存"', 文件名, '总汇.rds"！\n'))
+      ## saveRDS(总汇, paste0(.蜀道仓库, 文件名, '总汇.rds'), compress = FALSE)
+      
+      tryCatch({
+        proc.time(saveRDS(总汇, paste0(.蜀道仓库, 文件名, '总汇.rds')))
+        cat(paste0('\n已储存："', 文件名, '总汇.rds"！\n'))}, 
+               error = function(e) 
+                 cat(paste0('\n出错："', 文件名, '总汇.rds"！\n')))
+      
+      tryCatch({
+        proc.time(fwrite(总汇, paste0(.蜀道仓库, 文件名, '总汇.csv')))
+        cat(paste0('\n已储存："', 文件名, '总汇.csv"！\n'))}, 
+        error = function(e) 
+          cat(paste0('\n出错："', 文件名, '总汇.csv"！\n')))
+      
+      tryCatch({
+        proc.time(save(总汇, paste0(.蜀道仓库, 文件名, '总汇.RData')))
+        cat(paste0('\n已储存："', 文件名, '总汇.RData"！\n'))}, 
+        error = function(e) 
+          cat(paste0('\n出错："', 文件名, '总汇.RData"！\n')))
+      
+      tryCatch({
+        proc.time(write_feather(总汇, paste0(.蜀道仓库, 文件名, '总汇.feather')))
+        cat(paste0('\n已储存："', 文件名, '总汇.feather"！\n'))}, 
+        error = function(e) 
+          cat(paste0('\n出错："', 文件名, '总汇.feather"！\n')))
+      
+      tryCatch({
+        proc.time(export_fst(总汇, paste0(.蜀道仓库, 文件名, '总汇.fst')))
+        cat(paste0('\n已储存："', 文件名, '总汇.fst"！\n'))}, 
+        error = function(e) 
+          cat(paste0('\n出错："', 文件名, '总汇.fst"！\n')))
     }
   }
   

@@ -1032,10 +1032,10 @@ source('函数/总汇结论.R')
 ```
 
 ```{r 结论, results = 'asis'}
-日内指数平滑数据总汇 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据总汇.rds'))
+日内指数平滑数据结论 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据结论.rds'))
 
 ## 这儿将精准度调整至30位数，round(..., 30)
-日内指数平滑数据总汇 %>% 
+日内指数平滑数据结论 %>% 
   dplyr::mutate(
     mae = ifelse(
       rank(mae) <= 3, 
@@ -1093,13 +1093,89 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE)
 ```
 
-*图表矩阵：`r paste0(dim(日内指数平滑数据总汇), collapse = ' x ')`*
+*图表矩阵：`r paste0(dim(日内指数平滑数据结论), collapse = ' x ')`*
 
 以上图表显示使用再循环数据量`频率 = 1`（**0.02小时一周期（1分钟循环1200次）**）最为精准。
 
 ## 1年汇价数据
 
+```{r 过滤统计模型量}
+source('函数/汇总上奏.R')
+source('函数/总汇结论.R')
+
+日内指数平滑数据总汇 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据总汇.rds'))
+日内指数平滑数据总汇1 <- 日内指数平滑数据总汇
+日内指数平滑数据总汇2 <- 
+日内指数平滑数据总汇3 <- 
+```
+
+```{r 结论, results = 'asis'}
+日内指数平滑数据结论 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据结论.rds'))
+
+## 这儿将精准度调整至30位数，round(..., 30)
+日内指数平滑数据结论 %>% 
+  dplyr::mutate(
+    mae = ifelse(
+      rank(mae) <= 3, 
+      cell_spec(
+        paste0(round(mae, 30), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mae, 30), ' (rank: ', sprintf('%1.f', rank(mae)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mape = ifelse(
+      rank(mape) <= 3, 
+      cell_spec(
+        paste0(round(mape, 30), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mape, 30), ' (rank: ', sprintf('%1.f', rank(mape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    rmse = ifelse(
+      rank(rmse) <= 3, 
+      cell_spec(
+        paste0(round(rmse, 30), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(rmse, 30), ' (rank: ', sprintf('%1.f', rank(rmse)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    smape = ifelse(
+      rank(smape) <= 3, 
+      cell_spec(
+        paste0(round(smape, 30), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(smape, 30), ' (rank: ', sprintf('%1.f', rank(smape)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    mse = ifelse(
+      rank(mse) <= 3, 
+      cell_spec(
+        paste0(round(mse, 30), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(mse, 30), ' (rank: ', sprintf('%1.f', rank(mse)), ')'), 
+        color = 'grey', italic = TRUE))) %>% 
+  kbl(caption = 'Best Model', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  #column_spec(2, background = '#556DAC') %>% 
+  column_spec(2, background = 'LightSlateGrey') %>% 
+  column_spec(3, background = 'LightGray') %>% 
+  column_spec(4, background = 'Gainsboro') %>% 
+  column_spec(5, background = 'LightGray') %>% 
+  column_spec(6, background = 'Gainsboro') %>% 
+  column_spec(7, background = 'LightGray') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE)
+```
+
+*图表矩阵：`r paste0(dim(日内指数平滑数据结论), collapse = ' x ')`*
+
 为了方便日后节省时间，这儿过滤一年汇价数据。
+
+
 
 
 # 结论
