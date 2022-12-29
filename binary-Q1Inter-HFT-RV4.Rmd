@@ -352,19 +352,21 @@ library('conflicted', warn.conflicts = FALSE)
 
 conflict_prefer('nth', 'tidyfst', quiet = TRUE)
 conflict_prefer('cummean', 'tidyfst', quiet = TRUE)
-conflict_prefer('filter', 'dplyr', quiet = TRUE)
-conflict_prefer('select', 'dplyr', quiet = TRUE)
-conflict_prefer('mutate', 'dplyr', quiet = TRUE)
-conflict_prefer('rename', 'dplyr', quiet = TRUE)
-conflict_prefer('count', 'dplyr', quiet = TRUE)
-conflict_prefer('arrange', 'dplyr', quiet = TRUE)
-conflict_prefer('summarise', 'dplyr', quiet = TRUE)
+conflict_prefer('group_by', 'tidyft', quiet = TRUE)
+conflict_prefer('distinct', 'tidyft', quiet = TRUE)
+conflict_prefer('filter', 'tidyft', quiet = TRUE)
+conflict_prefer('select', 'tidyft', quiet = TRUE)
+conflict_prefer('mutate', 'tidyft', quiet = TRUE)
+conflict_prefer('rename', 'tidyft', quiet = TRUE)
+conflict_prefer('count', 'tidyft', quiet = TRUE)
+conflict_prefer('arrange', 'tidyft', quiet = TRUE)
+conflict_prefer('summarise', 'tidyft', quiet = TRUE)
+conflict_prefer('lead', 'tidyft', quiet = TRUE)
+conflict_prefer('lag', 'tidyft', quiet = TRUE)
 conflict_prefer('collapse', 'dplyr', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 conflict_prefer('first', 'data.table', quiet = TRUE)
 conflict_prefer('last', 'data.table', quiet = TRUE)
-conflict_prefer('lead', 'dplyr', quiet = TRUE)
-conflict_prefer('lag', 'dplyr', quiet = TRUE)
 conflict_prefer('transpose', 'data.table', quiet = TRUE)
 conflict_prefer('between', 'data.table', quiet = TRUE)
 conflict_prefer('set', 'data.table', quiet = TRUE)
@@ -559,9 +561,11 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 
 ## 读取数据
 
-**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**次论文读取该数据，将网页轻巧化、省略掉修饰数据的一栏，**（第III部）**总结使用2018年上半年汇价数据即可，节省许多科研时间。
+**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**（第III部）**次论文读取该数据，将网页轻巧化、省略掉修饰数据的一栏，**（第III部）**虽然出现小出错，但整体上还是可以筛选出**最优统计模型**，总结使用2018年上半年汇价数据即可，节省许多科研时间。
 
-基于`1200分钟`为一个最优循环期数据量，此篇文章将样本数据过滤为`2017-12-31 12:00:00 CST（中国标准时间）`至`2018-07-01 00:00:00 CST（中国标准时间）`，这样所预测出来的汇价会从`2018-01-01 00:00:00 CST（中国标准时间）`至`2018-07-01 00:00:00 CST（中国标准时间）`七个月整的汇价数据，再来比较闭市价误差，2018年汇价数据第一周并无闭市价，估计是年假休市，再比较误差时会忽略NA值时间的数据。
+然而**总汇结论（从2016年至2018年7月7日）**和**总汇2018年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**0.02小时一周期（1分钟循环1200次）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优统计模型**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
+
+基于`1200分钟`为一个最优循环期数据量，此篇文章将样本数据过滤为`2017-12-31 16:01:00 CST（中国标准时间）`至`2018-07-01 00:00:00 CST（中国标准时间）`，这样所预测出来的汇价会从`2018-01-01 00:00:00 CST（中国标准时间）`至`2018-07-01 00:00:00 CST（中国标准时间）`七个月整的汇价数据，再来比较闭市价误差，2018年汇价数据第一周并无闭市价，估计是年假休市，再比较误差时会忽略`NA值`时间的数据。
 
 ```{r 绘制样本数据图表, results = 'asis'}
 # --------- eval = FALSE ---------
@@ -579,28 +583,32 @@ if (!exists('.蜀道仓库')) {
   .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
 }
 
+## 
 ## 倘若环境尚未有数据，读取文件数据。
 ## **小插曲**：数据应该使用经过过滤`NA值`和重新赋值`周`、`周分计`、`日分计`、`时分计`、`序列`等参数和数据的**样本2**，而非**样本1**。
-if (!exists('样本')) {
-  样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本2.rds'))
-  }
-
 ## 数据从原本 1324800 减至 1317600
 # 样本[!is.na(闭市价)][]
 ## 1317600分钟 除以 7200分钟（一周） = 183周数
 ## 1317600分钟 除以 1440分钟（一天） = 915天数
 ## 1317600分钟 除以 720分钟（一小时） = 1830时数
-样本[!is.na(闭市价)]
+## 
+if (!exists('样本') || (nrow(样本) != 1317600)) {
+  样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本2.rds'))
+}
+样本 <- 样本[order(序列)]
+# saveRDS(样本[order(序列)], paste0(.蜀道, '文艺数据库/fx/USDJPY/样本2.rds'))
 
 基准 <- 样本[年份 == 2018]$日期[1]
+序列基准1 <- 样本[日期 == 基准][1]$序列
+序列基准2 <- tail(样本[日期 <= as.Date('2018-07-01')], 1)$序列
 
-汇总2018年 <- 样本 %>% 
-  filter_dt(年月日时分 >= as_datetime('2017-12-31 12:00:00 CST') & 
-              年月日时分 <= as_datetime('2018-07-01 00:00:00 CST'))
+样本2018半年 <- 样本[序列 %chin% (序列基准1 - 1200):序列基准2]
+# saveRDS(样本2018半年, paste0(.蜀道, '文艺数据库/fx/USDJPY/样本2018半年.rds'))
+rm(基准, 样本)
 
 ## 绘制样本图表
-汇总2018年[c(1:3, (nrow(汇总2018年) - 3):nrow(汇总2018年)),] |> 
-    {\(.) kbl(., caption = '分计汇价（中国标准时间 2017年12月31日中午12点正 ~ 2018年7月1日午夜12点正）', escape = FALSE)}() |> 
+样本2018半年[c(1:3, (nrow(样本2018半年) - 3):nrow(样本2018半年)),] |> 
+    {\(.) kbl(., caption = '分计汇价（中国标准时间 2017年12月30日下午04点01分 ~ 2018年06月30日午夜12点正）', escape = FALSE)}() |> 
   ## https://www.w3schools.com/cssref/css_colors.asp
   ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd
     {\(.) row_spec(., 
@@ -626,17 +634,28 @@ if (!exists('样本')) {
     {\(.) scroll_box(., width = '100%', fixed_thead = TRUE, height = '490px')}()
 ```
 
-*数据 : `r paste0(dim(汇总2018年)[1], '行 x ', dim(汇总2018年)[2], '列')`*
+*数据 : `r paste0(dim(样本2018半年)[1], '行 x ', dim(样本2018半年)[2], '列')`*
 
-以上图表显示数据日期，由`r paste(range(汇总2018年$日期), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
+以上图表显示数据`年月日时分`，由`r paste(range(样本2018半年$年月日时分), collapse = ' 至 ')`，接下来的科研一律使用同样的半年数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
 
 # 统计建模
 
-在此先过滤数据，从2016年的第一个预测日（`r filter(汇总2018年, 年份 == 2016)$日期[1]`开始，也就是读取的样本数据中的第二年数据开始），与论文*(Part I)*、*(Part II)*中相符。
-
 ## 季节性指数平滑模型（Seasonal ETS））`ts()` & `ets()`
 
-#### 20小时一周期（1200分钟循环1次）
+### 0.02小时一周期（1分钟循环1200次）
+
+```{r 1分钟, eval = FALSE}
+# --------- eval = FALSE ---------
+频率 = 1
+
+日内高频指数平滑(
+     时间索引 = 时间索引, 样本 = 样本, 数据量 = 数据量, 频率 = 频率, 
+     预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
+```
+
+在此使用经过过滤的`样本2018半年`数据，再次运算以上函数，再与其它统计模型比较预测值误差，以证实上篇**（第III部）**的结论是否相符。
+
+## 季节性指数平滑模型（Seasonal ETS））`fable` & `fabletools`
 
 ## 自回归综合滑均模型系列（ARIMA Series）
 
@@ -663,12 +682,7 @@ if (!exists('样本')) {
 ```{r, eval=FALSE}
 source('函数/季节性自回归.R')
 
-时间索引 <- unique(样本$日期)
-# 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
-基准 <- 样本[年份 == 2016]$日期[1]
-时间索引 %<>% .[. >= 基准]
-时间索引 %<>% .[1:6] #筛选数据中的前6个日期为样本
-# 时间索引 %<>% .[. >= as_date('2016-01-04')]
+样本2018半年[序列 == 序列基准1]
 数据量 <- 1200 #筛选数据中的最后1200观测值：样本[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1
 
@@ -693,7 +707,7 @@ source('函数/季节性自回归.R')
 .季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2]
 ```
 
-#### 20小时一周期（1200分钟循环1次）
+#### 0.02小时一周期（1分钟循环1200次）
 
 ```{r, eval=FALSE}
 循环周期 = 1200
@@ -708,7 +722,7 @@ llply(.模型选项[1], function(模型) {
         季回归2 <- llply(季节性与否, function(季节) {
           季回归3 <- llply(时间索引, function(时序) {
             成效 <- 季节性自回归(
-              时间索引 = 时序, 样本 = 样本, 路径 = .路径, 
+              时间索引 = 时序, 样本 = 样本2018半年, 路径 = .路径, 
               数据量 = 数据量, 循环周期 = 循环周期, 
               预测时间单位 = 预测时间单位, .模型选项 = 模型, 
               .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
@@ -751,207 +765,7 @@ llply(.模型选项[1], function(模型) {
 })
 ```
 
-#### 10小时一周期（600分钟循环2次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 6.67小时一周期（400分钟循环3次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 5小时一周期（300分钟循环4次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 4小时一周期（240分钟循环5次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 3.33小时一周期（200分钟循环6次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 2.5小时一周期（150分钟循环8次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 2小时一周期（120分钟循环10次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 1.67小时一周期（100分钟循环12次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 1.33小时一周期（80分钟循环15次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 1小时一周期（60分钟循环20次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.83小时一周期（50分钟循环24次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.67小时一周期（40分钟循环30次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 半小时一周期（30分钟循环40次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.40小时一周期（24分钟循环50次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.33小时一周期（20分钟循环60次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.27小时一周期（16分钟循环75次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.25小时一周期（15分钟循环80次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.20小时一周期（12分钟循环100次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.17小时一周期（10分钟循环120次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.13小时一周期（8分钟循环150次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.10小时一周期（6分钟循环200次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.08小时一周期（5分钟循环240次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.07小时一周期（4分钟循环300次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.05小时一周期（3分钟循环400次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.03小时一周期（2分钟循环600次）
-
-```{r, eval=FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
-
-#### 0.02小时一周期（1分钟循环1200次）
+####  0.02小时一周期（1分钟循环1200次）
 
 ```{r, eval=FALSE}
 培训数据$闭市价 %>% 
@@ -972,12 +786,8 @@ llply(.模型选项[1], function(模型) {
 - [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
 
 ```{r, eval=FALSE}
-时间索引 <- unique(样本$日期)
-# 基准 <- filter(样本, 年份 == 2016)$日期[1] #"2016-01-04" 第2年第1个交易日
-基准 <- 样本[年份 == 2016]$日期[1]
-时间索引 %<>% .[. >= 基准]
-时间索引 %<>% .[1:6] #筛选数据中的前6个日期为样本
-# 时间索引 %<>% .[. >= as_date('2016-01-04')]
+样本2018半年[序列 == 序列基准1]
+
 数据量 <- 1200 #筛选数据中的最后1200观测值：样本[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1
 
@@ -1106,10 +916,8 @@ I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes 
 
 ```{r eval=FALSE}
 # --------- eval=FALSE ---------
-时间索引 <- unique(样本$date)
-基准 <- 样本[year == 2016]$date[1] #"2016-01-04" #1st trading date in 2nd year
-时间索引 %<>% .[. >= 基准]
-#时间索引 %<>% .[. >= as_date('2016-01-04')]
+样本2018半年[序列 == 序列基准1]
+
 数据量 <- 7200 #last 7200  observations 样本[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1440
 hrz2 <- 1440
@@ -1286,25 +1094,23 @@ rm(系统信息1, 系统信息2)
 03. [<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (发布于RStudioConnect.com)
 04. [binary.com 面试试题 I - GARCH模型中的`ARCH in Mean`](https://rpubs.com/englianhu/binary-Q1-archm)
 05. [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
-06. [Forecasting: Principles and Practice](https://otexts.com/fpp3)
-07. [Tableau 100 Color Palettes](https://public.tableau.com/en-us/gallery/100-color-palettes)
-08. [PYTHON中的ARIMA模型、SARIMA模型和SARIMAX模型对时间序列预测](http://tecdat.cn/python%e4%b8%ad%e7%9a%84arima%e6%a8%a1%e5%9e%8b%e3%80%81sarima%e6%a8%a1%e5%9e%8b%e5%92%8csarimax%e6%a8%a1%e5%9e%8b%e5%af%b9%e6%97%b6%e9%97%b4%e5%ba%8f%e5%88%97%e9%a2%84%e6%b5%8b)
-09. [利用SARIMAX进行销量预测](https://blog.csdn.net/fitzgerald0/article/details/100823231)
-10. [时间序列分析模型：ARIMA模型和SARIMAX算法](https://maoli.blog.csdn.net/article/details/113835186)
-11. [利用SARIMAX進行銷量預測](https://www.twblogs.net/a/5d7ee484bd9eee5327ffe605)
-12. [季節性時間序列分析-SARIMAX模型的python實現](https://www.twblogs.net/a/5d66409dbd9eee541c332577)
-13. [SARIMAX:简介](https://runebook.dev/zh-CN/docs/statsmodels/examples/notebooks/generated/statespace_sarimax_stata)
-14. [Python数据分析案例-分别使用时间序列ARIMA、SARIMAX模型与Auto ARIMA预测国内汽车月销量_maiyida123的博客-程序员资料](http://www.4k8k.xyz/article/maiyida123/117967762)
-15. [预测：方法与实践：11.1 复杂季节性](https://otexts.com/fppcn/complexseasonality.html)
-16. [市道轮换下的高频数据参数估计]()
-17. [STAT 510 Applied Time Series Analysis : 13.1 Long Memory Models and Fractional Differences](https://online.stat.psu.edu/stat510/lesson/13/13.1)
-18. [A Complete Introduction To Time Series Analysis (with R):: Exogenous models](https://medium.com/analytics-vidhya/a-complete-introduction-to-time-series-analysis-with-r-exogenous-models-4f009b770104)
-19. [Implementation of Time Series Forecasting Methods (SARIMA, SARIMAX and Prophet)](https://medium.com/@shawanugya12/implementation-of-time-series-forecasting-methods-sarima-sarimax-and-prophet-ff8407b25aaa)
-20. [Time Series Forecasting Techniques using R](https://github.com/rajsiddarth/Time_Series_Forecasting)
-21. [A Guide to Time Series Forecasting in R You Should Know](https://www.simplilearn.com/tutorials/data-science-tutorial/time-series-forecasting-in-r)
-22. []()
-23. []()
-24. []()
+06. [<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第III部）**</span>](https://rpubs.com/englianhu/987834)
+07. [Forecasting: Principles and Practice](https://otexts.com/fpp3)
+08. [Tableau 100 Color Palettes](https://public.tableau.com/en-us/gallery/100-color-palettes)
+09. [PYTHON中的ARIMA模型、SARIMA模型和SARIMAX模型对时间序列预测](http://tecdat.cn/python%e4%b8%ad%e7%9a%84arima%e6%a8%a1%e5%9e%8b%e3%80%81sarima%e6%a8%a1%e5%9e%8b%e5%92%8csarimax%e6%a8%a1%e5%9e%8b%e5%af%b9%e6%97%b6%e9%97%b4%e5%ba%8f%e5%88%97%e9%a2%84%e6%b5%8b)
+10. [利用SARIMAX进行销量预测](https://blog.csdn.net/fitzgerald0/article/details/100823231)
+11. [时间序列分析模型：ARIMA模型和SARIMAX算法](https://maoli.blog.csdn.net/article/details/113835186)
+12. [利用SARIMAX進行銷量預測](https://www.twblogs.net/a/5d7ee484bd9eee5327ffe605)
+13. [季節性時間序列分析-SARIMAX模型的python實現](https://www.twblogs.net/a/5d66409dbd9eee541c332577)
+14. [SARIMAX:简介](https://runebook.dev/zh-CN/docs/statsmodels/examples/notebooks/generated/statespace_sarimax_stata)
+15. [Python数据分析案例-分别使用时间序列ARIMA、SARIMAX模型与Auto ARIMA预测国内汽车月销量_maiyida123的博客-程序员资料](http://www.4k8k.xyz/article/maiyida123/117967762)
+16. [预测：方法与实践：11.1 复杂季节性](https://otexts.com/fppcn/complexseasonality.html)
+17. [市道轮换下的高频数据参数估计]()
+18. [STAT 510 Applied Time Series Analysis : 13.1 Long Memory Models and Fractional Differences](https://online.stat.psu.edu/stat510/lesson/13/13.1)
+19. [A Complete Introduction To Time Series Analysis (with R):: Exogenous models](https://medium.com/analytics-vidhya/a-complete-introduction-to-time-series-analysis-with-r-exogenous-models-4f009b770104)
+20. [Implementation of Time Series Forecasting Methods (SARIMA, SARIMAX and Prophet)](https://medium.com/@shawanugya12/implementation-of-time-series-forecasting-methods-sarima-sarimax-and-prophet-ff8407b25aaa)
+21. [Time Series Forecasting Techniques using R](https://github.com/rajsiddarth/Time_Series_Forecasting)
+22. [A Guide to Time Series Forecasting in R You Should Know](https://www.simplilearn.com/tutorials/data-science-tutorial/time-series-forecasting-in-r)
 
 ---
 
