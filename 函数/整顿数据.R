@@ -41,7 +41,7 @@
    ## -----------------------------------------------------------------------
    ## 所有频率组类似军队兵种编制
    ## 将每一分钟的汇价数据整顿、组合为一个数据组
-   #列表24 <- list.files(paste0(数据库蜀道, 数据库文件夹)[1], '*.rds')
+   #列表24 <- list.files(paste0(.蜀道仓库, 数据库文件夹)[1], '*.rds')
    require('data.table', quietly = TRUE)
    conflict_prefer('first', 'data.table', quiet = TRUE)
    conflict_prefer('last', 'data.table', quiet = TRUE)
@@ -53,37 +53,45 @@
    cat('\n王翦阅兵，整装待发')
    cat('\n-------------------------------------------------------------------------\n')
    
-   数据库蜀道 <- paste0('/home/englianhu/文档/猫城/binary.com-interview-question-data/文艺数据库/fx/USDJPY/仓库/')
+   if (!exists('.蜀道') || is.null(.蜀道)) {
+     .蜀道 <- getwd() |> 
+       {\(.) str_split(., '/')}() |> 
+       {\(.) c('/', .[[1]][2:5])}() |> 
+       {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+       {\(.) paste(., collapse = '/')}() |> 
+       {\(.) substring(., 2)}()
+   }
+   .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
    
    cat('\n将每分钟为一单位的数据组为列表！')
-   列表 <- list.files(paste0(数据库蜀道, 频率), '*.rds')
+   列表 <- list.files(paste0(.蜀道仓库, 频率), '*.rds')
    cat('\n列表已组成！')
-   saveRDS(列表, paste0(数据库蜀道, '列表', 频率, '.rds'))
+   saveRDS(列表, paste0(.蜀道仓库, '列表', 频率, '.rds'))
    cat('\n列表已储存！')
-   #列表 <- readRDS(paste0(数据库蜀道, '列表', 频率, '.rds'))
+   #列表 <- readRDS(paste0(.蜀道仓库, '列表', 频率, '.rds'))
    日内指数平滑数据B <- ldply(列表, function(参数) {
-	tryCatch(readRDS(paste0(数据库蜀道, 频率, '/', 参数)), error = function(e) {
+	tryCatch(readRDS(paste0(.蜀道仓库, 频率, '/', 参数)), error = function(e) {
           if (.print == TRUE) cat(paste(参数, 'error, no such file.\n')) else NULL
           })}, .progress = 'text')  %>% as.data.table
    cat('\n将列表数据编组！')
    
    ## 赢家自家人老王王翦王贲检验并整顿数据
    ## 王翦阅兵，整装待发
-   王翦阅兵 <- paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')
+   王翦阅兵 <- paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds')
    if (file.exists(王翦阅兵)) {
-      日内指数平滑数据A <- readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table
+      日内指数平滑数据A <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table
       #日内指数平滑数据 <- rbind(日内指数平滑数据A, 日内指数平滑数据B)[order(年月日时分)] %>% unique
       日内指数平滑数据 <- rbindlist(list(日内指数平滑数据B, 日内指数平滑数据A))[order(年月日时分)] %>% unique
-      saveRDS(日内指数平滑数据, paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))
+      saveRDS(日内指数平滑数据, paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds'))
       cat('\n储存已编组的数据！\n')
    
    } else {      
       日内指数平滑数据 <- 日内指数平滑数据B
-      saveRDS(日内指数平滑数据, paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))
+      saveRDS(日内指数平滑数据, paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds'))
       cat('\n储存已编组的数据！\n')
    }
    
-   #日内指数平滑数据 <- readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds'))
+   #日内指数平滑数据 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds'))
    rm(列表, 日内指数平滑数据A, 日内指数平滑数据B)
    
    是否移除文件夹 <- 是否移除文件夹
@@ -91,7 +99,7 @@
       stop("是否移除文件夹 = '是' 或 '否'!")
    } else {
       if (是否移除文件夹 == '是') {
-          unlink(paste0(数据库蜀道, 频率), recursive = TRUE)
+          unlink(paste0(.蜀道仓库, 频率), recursive = TRUE)
       }
    }
    
@@ -100,7 +108,7 @@
       stop("是否移除文件夹 = '是' 或 '否'!")
    } else {
       if (是否移除列表 == '是') {
-          file.remove(paste0(数据库蜀道, '列表', 频率, '.rds'))
+          file.remove(paste0(.蜀道仓库, '列表', 频率, '.rds'))
       }
    }
    
@@ -138,4 +146,4 @@
 
 #频率 = 150
 ## 检查数据，阅兵
-#readRDS(paste0(数据库蜀道, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table()
+#readRDS(paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table()

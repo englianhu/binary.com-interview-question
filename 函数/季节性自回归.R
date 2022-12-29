@@ -24,7 +24,7 @@
 
 季节性自回归 <- function(
     ## ======== 居住在英国布里斯托尔港口，修读气象学系的英国基督洋妞儿芈拉不可以死 ========
-    时间索引, 样本, 蜀道, 数据量, 频率 = 1200, 预测时间单位 = 1, 
+    时间索引, 样本, .蜀道 = NULL, 数据量, 频率 = 1200, 预测时间单位 = 1, 
     .模型选项 = .模型选项, .差分阶数 = .差分阶数, 
     .季节性差分阶数 = .季节性差分阶数, 季节性与否 = 季节性与否, 
     .时序规律 = .时序规律, .季节性规律参数 = .季节性规律参数, 
@@ -57,11 +57,21 @@
   conflict_prefer('rename', 'dplyr', quiet = TRUE)
   conflict_prefer('select', 'dplyr', quiet = TRUE)
   
-  if(!'data.table' %in% class(样本)) 样本 %<>% as.data.table
+  if (!'data.table' %in% class(样本)) 样本 %<>% as.data.table
+  
+  if (!exists('.蜀道') || is.null(.蜀道)) {
+    .蜀道 <- getwd() |> 
+      {\(.) str_split(., '/')}() |> 
+      {\(.) c('/', .[[1]][2:5])}() |> 
+      {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+      {\(.) paste(., collapse = '/')}() |> 
+      {\(.) substring(., 2)}()
+  }
+  .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
   
   成品 <- llply(1:length(时间索引), function(迭数1) {
     
-    if(迭数1 == 1) {
+    if (迭数1 == 1) {
       
       cat('\n===========================================\n')
       cat('培训数据[', 迭数1, ']\n')
@@ -80,7 +90,7 @@
         {\(.) tk_ts(., frequency = 频率)}()
       rownames(季回归) <- 培训数据$年月日时分
       
-      if(.模型选项 == '自动化') {
+      if (.模型选项 == '自动化') {
         
         季回归 <- tryCatch({
           auto.arima(
@@ -114,7 +124,7 @@
         
       }
       
-      if(!is.null(季回归)) {
+      if (!is.null(季回归)) {
         
         季回归 %<>% 
           forecast::forecast(h = 预测时间单位)}() |> 
@@ -131,7 +141,7 @@
         print(季回归 %>% as.data.table)
       }
       
-      if(.模型选项 == '自动化') {
+      if (.模型选项 == '自动化') {
         
         模型名称 <- paste0(
           .模型选项, '_差分阶数', .差分阶数, '_季节性差分阶数', 
@@ -151,15 +161,14 @@
         
       }
       
-      saveRDS(季回归, paste0(
-        蜀道, '文艺数据库/fx/USDJPY/仓库/季节性自回归_', 模型名称))
+      saveRDS(季回归, paste0(.蜀道仓库, '季节性自回归_', 模型名称))
       cat('\n', 迭数1, '=', 模型名称, '\n\n')
       rm(季回归)
       
-    } else if(迭数1 %in% seq(1, length(时间索引), by = 6)[-1]) {
+    } else if (迭数1 %in% seq(1, length(时间索引), by = 6)[-1]) {
       
       
-    } else if(迭数1 == length(时间索引)) {
+    } else if (迭数1 == length(时间索引)) {
       
       
     } else  {
@@ -183,7 +192,7 @@
         {\(.) tk_ts(., frequency = 频率)}()
       rownames(季回归) <- 培训数据$年月日时分
       
-      if(.模型选项 == '自动化') {
+      if (.模型选项 == '自动化') {
         
         季回归 <- tryCatch({
           auto.arima(
@@ -219,7 +228,7 @@
         
       }
       
-      if(!is.null(季回归)) {
+      if (!is.null(季回归)) {
         
         季回归 %<>% 
           forecast::forecast(h = 预测时间单位)}() |> 
@@ -236,7 +245,7 @@
         print(季回归 %>% as.data.table)
       }
       
-      if(.模型选项 == '自动化') {
+      if (.模型选项 == '自动化') {
         
         模型名称 <- paste0(
           .模型选项, '_差分阶数', .差分阶数, '季节性差分阶数', 
@@ -253,8 +262,7 @@
         
       }
       
-      saveRDS(季回归, paste0(
-        蜀道, '文艺数据库/fx/USDJPY/仓库/季节性自回归_', 模型名称))
+      saveRDS(季回归, paste0(.蜀道仓库, '季节性自回归_', 模型名称))
       cat('\n', 迭数1, '=', 模型名称, '\n\n')
       rm(季回归)
     }
