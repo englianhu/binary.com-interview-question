@@ -5,7 +5,7 @@
 
 ---
 
-[<img src='www/RStudioCloud.png' height='20'>](https://rstudio.cloud) [<img src='www/RStudioCom2.png' height='20'>](https://community.rstudio.com/new-topic?category=shiny&tags=shiny) [![](www/shiny-badge.svg)](https://www.shinyapps.io)
+[<img src='文艺坊图库/RStudioCloud.png' height='20'>](https://rstudio.cloud) [<img src='文艺坊图库/RStudioCom2.png' height='20'>](https://community.rstudio.com/new-topic?category=shiny&tags=shiny) [![](文艺坊图库/shiny-badge.svg)](https://www.shinyapps.io)
 
 # 二元期权（binary.com）<span style='color:#DE5D83; background-color:black;'>**量化分析员/量化交易员**面试题</span>
 
@@ -74,7 +74,7 @@ Initially, I wrote a shiny app (as showing in below gif file) but it is heavily 
 - Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
 - Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
 
-<img src='www/20170113_104005.gif' width='360'>
+<img src='文艺坊图库/20170113_104005.gif' width='360'>
 
 Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.com/content/3775/) trial version to test the real time trading, and a completed version is [Q1App2](https://beta.rstudioconnect.com/content/3138/).
 
@@ -105,41 +105,41 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 ### 4.1)第一题
 
-01. [**Stock Market Forecasting Using LASSO Linear Regression Model** *by Sanjiban Sekhar Roy, Dishant Mital, Avik Basu, Ajith Abraham (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)<img src='www/hot.jpg' width='20'>
+01. [**Stock Market Forecasting Using LASSO Linear Regression Model** *by Sanjiban Sekhar Roy, Dishant Mital, Avik Basu, Ajith Abraham (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)❤‍🔥
 02. [**Using LASSO from lars (or glmnet) package in R for variable selection** *by Juancentro (2014)*](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
 03. [**Difference between glmnet() and cv.glmnet() in R?** *by Amrita Sawant (2015)*](https://stackoverflow.com/questions/29311323/difference-between-glmnet-and-cv-glmnet-in-r?answertab=votes#tab-top)
-04. [**Testing Kelly Criterion and Optimal f in R** *by Roy Wei (2012)*](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) <img src='www/hot.jpg' width='20'>
-05. [**Portfolio Optimization and Monte Carlo Simulation** *by Magnus Erik Hvass Pedersen (2014)*](https://raw.githubusercontent.com/scibrokes/kelly-criterion/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf) <img src='www/hot.jpg' width='20'>
+04. [**Testing Kelly Criterion and Optimal f in R** *by Roy Wei (2012)*](https://alphaism.wordpress.com/2012/04/13/testing-kelly-criterion-and-optimal-f-in-r) ❤‍🔥
+05. [**Portfolio Optimization and Monte Carlo Simulation** *by Magnus Erik Hvass Pedersen (2014)*](https://raw.githubusercontent.com/scibrokes/kelly-criterion/master/references/Portfolio%20Optimization%20and%20Monte%20Carlo%20Simulation.pdf) ❤‍🔥
 06. [**Glmnet Vignette** *by Trevor Hastie and Junyang Qian (2014)*](https://web.stanford.edu/~hastie/glmnet/glmnet_alpha.html)
 07. [**lasso怎么用算法实现？** *by shuaihuang (2010)*](https://d.cosx.org/d/101533-101533/5)
 08. [**The Sparse Matrix and {glmnet}** *by Manuel Amunategui (2014)*](http://amunategui.github.io/sparse-matrix-glmnet/)
 09. [**Regularization and Variable Selection via the Elastic Net** *by Hui Zou and Trevor Hastie*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Regularization%20and%20Variable%20Selection%20via%20the%20Elastic%20Net.pdf)
-10. [LASSO, Ridge, and Elastic Net](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) <img src='www/hot.jpg' width='20'>
+10. [LASSO, Ridge, and Elastic Net](http://www4.stat.ncsu.edu/~post/josh/LASSO_Ridge_Elastic_Net_-_Examples.html) ❤‍🔥
 11. [**热门数据挖掘模型应用入门（一）: LASSO回归** *by 侯澄钧 (2016)*](https://cosx.org/2016/10/data-mining-1-lasso)
 12. [The Lasso Page](http://statweb.stanford.edu/~tibs/lasso.html)
 13. [**Call_Valuation.R** *by Mariano (2016)*](https://api.rpubs.com/Mariano/call)
-14. [Lecture 6 – Stochastic Processes and Monte Carlo](http://zorro-trader.com/manual/en/Lecture%206.htm) ([<span style='color:blue'>http://zorro-trader.com/manual</span>](http://zorro-trader.com/manual)) <img src='www/hot.jpg' width='20'> <img src='www/hot.jpg' width='20'>
-15. [**The `caret` Package** *by Max Kuhn (2017)*](http://topepo.github.io/caret/index.html) <img src='www/hot.jpg' width='20'>
-16. [Time Series Cross Validation](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
+14. [Lecture 6 – Stochastic Processes and Monte Carlo](http://zorro-trader.com/manual/en/Lecture%206.htm) ([<span style='color:blue'>http://zorro-trader.com/manual</span>](http://zorro-trader.com/manual)) ❤‍🔥 ❤‍🔥
+15. [**The `caret` Package** *by Max Kuhn (2017)*](http://topepo.github.io/caret/index.html) ❤‍🔥
+16. [Time Series Cross Validation](https://rpubs.com/crossxwill/time-series-cv) ❤‍🔥
 17. [Character-Code.com](http://character-code.com/)
-18. [**Size Matters – Kelly Optimization** *by Roy Wei (2012)*](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) <img src='www/hot.jpg' width='20'>
-19. [**Time Series Cross Validation** *by William Chiu (2015)*](https://rpubs.com/crossxwill/time-series-cv) <img src='www/hot.jpg' width='20'>
+18. [**Size Matters – Kelly Optimization** *by Roy Wei (2012)*](https://alphaism.wordpress.com/2012/03/26/size-matters-kelly-optimization/) ❤‍🔥
+19. [**Time Series Cross Validation** *by William Chiu (2015)*](https://rpubs.com/crossxwill/time-series-cv) ❤‍🔥
 20. [**Forecasting Volatility** *by Stephen Figlewski (2004)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/fcad2844d7f10c486f3601af9932f49973548e4b/reference/Focasting%20Volatility.pdf)
-21. [**Successful Algorithmic Trading** *by Michael Halls Moore (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/fcad2844d7f10c486f3601af9932f49973548e4b/reference/Successful%20Algorithmic%20Trading.pdf) <img src='www/hot.jpg' width='20'> <img src='www/hot.jpg' width='20'>
-22. [**Financial Risk Modelling and Portfolio Optimization with R (2nd Edt)** *by Bernhard Praff (2016)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Financial%20Risk%20Modelling%20and%20Portfolio%20Optimization%20with%20R%20(2nd%20Edt).pdf) <img src='www/hot.jpg' width='20'>
-23. [**Analyzing Financial Data and Implementing Financial Models using R** *by Clifford S.Ang (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/eec3bbe99c61b4e2e2f4a2b1c47e7a2fca6106c4/reference/Analyzing%20Financial%20Data%20and%20Implementing%20Financial%20Models%20using%20R.pdf) <img src='www/hot.jpg' width='20'>
+21. [**Successful Algorithmic Trading** *by Michael Halls Moore (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/fcad2844d7f10c486f3601af9932f49973548e4b/reference/Successful%20Algorithmic%20Trading.pdf) ❤‍🔥 ❤‍🔥
+22. [**Financial Risk Modelling and Portfolio Optimization with R (2nd Edt)** *by Bernhard Praff (2016)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Financial%20Risk%20Modelling%20and%20Portfolio%20Optimization%20with%20R%20(2nd%20Edt).pdf) ❤‍🔥
+23. [**Analyzing Financial Data and Implementing Financial Models using R** *by Clifford S.Ang (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/eec3bbe99c61b4e2e2f4a2b1c47e7a2fca6106c4/reference/Analyzing%20Financial%20Data%20and%20Implementing%20Financial%20Models%20using%20R.pdf) ❤‍🔥
 
 ### 4.2) 第二题
 
-01. [Queueing model 534 in Excel](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Queue-534.xls) <img src='www/hot.jpg' width='20'>
-02. [Queueing model macro in Excel](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/QueueMacros.xls) <img src='www/hot.jpg' width='20'>
+01. [Queueing model 534 in Excel](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Queue-534.xls) ❤‍🔥
+02. [Queueing model macro in Excel](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/QueueMacros.xls) ❤‍🔥
 03. [Queueing up in R, (continued)](https://www.r-bloggers.com/queueing-up-in-r-continued)
 04. [Waiting in line, waiting on R](https://www.r-bloggers.com/waiting-in-line-waiting-on-r)
 05. [Simulating a Queue in R](https://www.r-bloggers.com/simulating-a-queue-in-r/)
 06. [What is the queue data structure in R?](https://www.researchgate.net/post/What_is_the_queue_data_structure_in_R#59d5b01b404854fdc9168902)
 07. [Implementing a Queue as a Reference Class](https://www.r-bloggers.com/implementing-a-queue-as-a-reference-class/)
 08. [queue implementation?](http://r.789695.n4.nabble.com/queue-implementation-td2529272.html)
-09. [Queueing Theory Calculator](http://www.supositorio.com/rcalc) <img src='www/hot.jpg' width='20'>
+09. [Queueing Theory Calculator](http://www.supositorio.com/rcalc) ❤‍🔥
 10. [ **The Pith of Performance** *by Neil Gunther (2010)*](http://perfdynamics.blogspot.my/2010/05/simulating-queue-in-r.html?m=1)
 11. [Computationally Efficient Simulation of Queues - The R Package queuecomputer](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Computationally%20Efficient%20Simulation%20of%20Queues%20-%20The%20R%20Package%20queuecomputer.pdf)
 12. [Waiting-Line Models](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Waiting-Line%20Models.pdf)
@@ -152,15 +152,17 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 ---
 
-<img src='www/deriv.jpg' width='260'>
+<img src='文艺坊图库/deriv.jpg' width='260'>
 
-[<img src='www/RStudioCloud.png' height='20'>](https://rstudio.cloud) [<img src='www/RStudioCom2.png' height='20'>](https://community.rstudio.com/new-topic?category=shiny&tags=shiny) [![](www/shiny-badge.svg)](https://www.shinyapps.io)
+[<img src='文艺坊图库/RStudioCloud.png' height='20'>](https://rstudio.cloud) [<img src='文艺坊图库/RStudioCom2.png' height='20'>](https://community.rstudio.com/new-topic?category=shiny&tags=shiny) [![](文艺坊图库/shiny-badge.svg)](https://www.shinyapps.io)
 
 # 量化交易
 
 ### 1.1) <span style='color:RoyalBlue'>简介</span>
 
-There has already 2 years passed by while [Binary.com-is-Rebranding-to-Deriv.com](https://derivdotcom.medium.com/binary-com-is-rebranding-to-deriv-com-and-here-is-everything-you-need-to-know-6f4a8513c84b), Here I summarized some previous research papers in [Binary.com → Deriv.com](https://englianhu.medium.com/binary-com-deriv-com-6058cdbfc3a1) and continue from this high-frequency-trading. Here I am not apply job but for research purpose.
+- 从2018年[Binary.com-is-Rebranding-to-Deriv.com](https://derivdotcom.medium.com/binary-com-is-rebranding-to-deriv-com-and-here-is-everything-you-need-to-know-6f4a8513c84b)科研项目耽搁两年有余，2020年的[Binary.com → Deriv.com](https://englianhu.medium.com/binary-com-deriv-com-6058cdbfc3a1)文章中阐明一些已发布的科研论文，并继续科研对冲基金高频量化交易，不过在此并非面试Deriv.com而是科研用途。
+- [Deriv.com和Binary.com加入金融委员会](https://caifuhao.eastmoney.com/news/20200609155259637111910)
+- 科研项目中所使用的汇价原始数据，皆由FXCM官网下载，储存至[猫城：scibrokes/real-time-fxcm](https://github.com/scibrokes/real-time-fxcm)回测科研统计建模用途。
 
 <span style='color:red'>**I moved the data to <https://github.com/englianhu/binary.com-interview-question-data>.**</span>
 
