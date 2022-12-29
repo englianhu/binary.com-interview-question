@@ -1,5 +1,7 @@
 
-![](www/binary-logo.jpg)
+<img src='文艺坊图库/世博量化.png' height='100'> <img src='文艺坊图库/大秦赋 - 北京大学.png' height='100'>
+
+<img src='文艺坊图库/binary-logo.jpg' width='240'>
 
 ---
 
