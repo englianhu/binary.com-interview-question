@@ -353,6 +353,7 @@ conflict_prefer('select', 'dplyr', quiet = TRUE)
 conflict_prefer('mutate', 'dplyr', quiet = TRUE)
 conflict_prefer('rename', 'dplyr', quiet = TRUE)
 conflict_prefer('collapse', 'dplyr', quiet = TRUE)
+conflict_prefer('nth', 'dplyr', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 conflict_prefer('first', 'data.table', quiet = TRUE)
 conflict_prefer('last', 'data.table', quiet = TRUE)
@@ -363,14 +364,15 @@ conflict_prefer('set', 'data.table', quiet = TRUE)
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
   'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 'tidyfst', 
-  'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
+  'tidyft', 'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
   'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
   'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
   'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 'feather', 
   'sparklyr', 'jcolors', 'TSA', 'microbenchmark', 'dendextend', 'vembedr', 
   'lhmetools', 'gtools', 'stringi', 'pacman', 'profmem', 'ggthemes', 
-  'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
-  'fable', 'fabletools', 'fable.prophet', 'Rfast', 'Metrics', 'MLmetrics')
+  'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 'profvis', 
+  'fable', 'fabletools', 'fable.prophet', 'Rfast', 'Metrics', 'MLmetrics', 
+  'microbenchmark')
 
 # load_pkg(程序包)
 suppressAll(lib(程序包))

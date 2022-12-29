@@ -1113,7 +1113,7 @@ if (!exists('.蜀道仓库')) {
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE, height = '00px')
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
 *数据：`r paste0(dim(日内指数平滑数据结论), collapse = ' x ')`*
