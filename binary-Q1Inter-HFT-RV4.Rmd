@@ -343,28 +343,36 @@ suppressMessages(library('rmsfuns'))
 if (!require('REmap')) devtools::install_github('lchiffon/REmap')
 
 ## 一次性读取所需程序包。
+library('tidyfst', warn.conflicts = FALSE)
+library('tidyft', warn.conflicts = FALSE)
 library('dplyr', warn.conflicts = FALSE)
 library('lubridate', warn.conflicts = FALSE)
 library('data.table', warn.conflicts = FALSE)
 library('conflicted', warn.conflicts = FALSE)
 
+conflict_prefer('nth', 'tidyfst', quiet = TRUE)
+conflict_prefer('cummean', 'tidyfst', quiet = TRUE)
 conflict_prefer('filter', 'dplyr', quiet = TRUE)
 conflict_prefer('select', 'dplyr', quiet = TRUE)
 conflict_prefer('mutate', 'dplyr', quiet = TRUE)
 conflict_prefer('rename', 'dplyr', quiet = TRUE)
+conflict_prefer('count', 'dplyr', quiet = TRUE)
+conflict_prefer('arrange', 'dplyr', quiet = TRUE)
+conflict_prefer('summarise', 'dplyr', quiet = TRUE)
 conflict_prefer('collapse', 'dplyr', quiet = TRUE)
-conflict_prefer('nth', 'dplyr', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 conflict_prefer('first', 'data.table', quiet = TRUE)
 conflict_prefer('last', 'data.table', quiet = TRUE)
+conflict_prefer('lead', 'dplyr', quiet = TRUE)
+conflict_prefer('lag', 'dplyr', quiet = TRUE)
 conflict_prefer('transpose', 'data.table', quiet = TRUE)
 conflict_prefer('between', 'data.table', quiet = TRUE)
 conflict_prefer('set', 'data.table', quiet = TRUE)
 
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
-  'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 'tidyfst', 
-  'tidyft', 'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
+  'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 
+  'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
   'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
   'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
   'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 'feather', 
@@ -393,11 +401,6 @@ rm(程序包)
 ```
 
 ```{r 设置函数优先权}
-conflict_prefer('filter', 'dplyr', quiet = TRUE)
-conflict_prefer('select', 'dplyr', quiet = TRUE)
-conflict_prefer('mutate', 'dplyr', quiet = TRUE)
-conflict_prefer('rename', 'dplyr', quiet = TRUE)
-conflict_prefer('collapse', 'dplyr', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 conflict_prefer('permutations', 'gtools', quiet = TRUE)
 ```
@@ -580,12 +583,13 @@ if (!exists('样本')) {
   }
 
 汇总2018年 <- 样本 %>% 
-  filter(年月日时分 >= as_datetime('2018-01-02 12:00:00') & 
-           年月日时分 <= as_datetime('2018-07-01 00:00:00'))
+  filter_dt(年月日时分 >= as_datetime('2017-12-31 12:00:00') & 
+              年月日时分 <= as_datetime('2018-07-01 00:00:00')) %>% 
+  na.omit
 
 ## 绘制样本图表
 汇总2018年[c(1:3, (nrow(汇总2018年) - 3):nrow(汇总2018年)),] |> 
-    {\(.) kbl(., caption = '每分钟价位', escape = FALSE)}() |> 
+    {\(.) kbl(., caption = '分计汇价（2017年12月31日中午12点正 ~ 2018年7月1日午夜12点正）', escape = FALSE)}() |> 
   ## https://www.w3schools.com/cssref/css_colors.asp
   ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd
     {\(.) row_spec(., 
@@ -1154,6 +1158,12 @@ Due to the models only forecast `1440 mins` (but not `7200 mins`) in advance, he
 # 结论
 
 ## 摘要
+
+> <span style='color:#FFEBCD; background-color:#D2B48C;'>**《礼记·经解》孔子曰：**</span><span style='color:#A9A9A9'>*「君子慎始。差若毫厘，谬以千里。」*</span>[^1]
+
+*引用：[「快懂百科」《礼记·经解》](https://www.baike.com/wikiid/2225522569881832051?view_id=2tt3iw3blkq000)和[第一范文网：差之毫厘，谬以千里的故事](https://www.diyifanwen.com/chengyu/liuziyishangchengyugushi/2010051523105152347092749890.htm)和[「百度百科」春秋时期孔子作品《礼记·经解》](https://baike.baidu.com/item/%E7%A4%BC%E8%AE%B0%C2%B7%E7%BB%8F%E8%A7%A3/2523092)和[「當代中國」差之毫釐 謬以千里](https://www.ourchinastory.com/zh/2962/%E5%B7%AE%E4%B9%8B%E6%AF%AB%E9%87%90%20%E8%AC%AC%E4%BB%A5%E5%8D%83%E9%87%8C)*
+
+[^1]: [HTML Color Codes](https://html-color.codes)
 
 ## Final Conclude
 

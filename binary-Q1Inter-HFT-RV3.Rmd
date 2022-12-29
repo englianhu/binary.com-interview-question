@@ -1429,19 +1429,29 @@ source('函数/总汇结论.R')
 
 ## 摘要
 
+**大秦赋 (Chinese Emperor)**<br>
+春秋战国《*礼记•经解*》<br>
+孔子曰：『君子慎始，差若毫厘，缪以千里。』
+
+> <span style='color:#FFEBCD; background-color:#D2B48C;'>**《礼记·经解》孔子曰：**</span><span style='color:#A9A9A9'>*「君子慎始。差若毫厘，谬以千里。」*</span>[^1]
+
+*引用：[「快懂百科」《礼记•经解》](https://www.baike.com/wikiid/2225522569881832051?view_id=2tt3iw3blkq000)和[第一范文网：差之毫厘，谬以千里的故事](https://www.diyifanwen.com/chengyu/liuziyishangchengyugushi/2010051523105152347092749890.htm)和[「百度百科」春秋时期孔子作品《礼记•经解》](https://baike.baidu.com/item/%E7%A4%BC%E8%AE%B0%C2%B7%E7%BB%8F%E8%A7%A3/2523092)和[「當代中國」差之毫釐 謬以千里](https://www.ourchinastory.com/zh/2962/%E5%B7%AE%E4%B9%8B%E6%AF%AB%E9%87%90%20%E8%AC%AC%E4%BB%A5%E5%8D%83%E9%87%8C)*
+
+[^1]: [HTML Color Codes](https://html-color.codes)
+
 估计是由于骇客人为篡改数据，导致**总汇2016年结论**和**总汇2017年结论**显示误差完全一样，然而**总汇结论（从2016年至2018年7月7日）**和**总汇2018年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**0.02小时一周期（1分钟循环1200次）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优统计模型**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
 
-这儿使用`forecast`程序包，尚未使用`fable`程序包与`fabletools`程序包，该程序包中的`accuracy()`[^1]函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的统计模型预测值。
+这儿使用`forecast`程序包，尚未使用`fable`程序包与`fabletools`程序包，该程序包中的`accuracy()`[^2]函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的统计模型预测值。
 
-[^1]: [**Forecasting: Principles and Practice (3rd ed)** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)阐明评估预测精准度的计算公式。<br><br>[「CSDN」选择正确的错误度量标准：MAPE与sMAPE的优缺点](https://blog.csdn.net/deephub/article/details/109483129)
+[^2]: [**Forecasting: Principles and Practice (3rd ed)** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)阐明评估预测精准度的计算公式。<br><br>[「CSDN」选择正确的错误度量标准：MAPE与sMAPE的优缺点](https://blog.csdn.net/deephub/article/details/109483129)
 
 <iframe width="458" height="815" src="https://www.youtube.com/embed/ceNvHXH6K2U" title="δ「抖音」βest Model" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## 前瞻科研
 
-使用一样的汇价数据，不过从2018年上半年数据，可以节省许多时间。下一篇科研[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)[^2]会使用`fable`、`fabletools`、`fable.prophet`、`tbats`、`midas`、`sarimax`、`arfimax`等其它统计模型，然后还有比较长短记忆模型如`tensorflow`、`keras`，隐马尔可夫链、隐含波动率、波浪形模型等其它统计模型。
+使用一样的汇价数据，不过从2018年上半年数据，可以节省许多时间。下一篇科研[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)[^3]会使用`fable`、`fabletools`、`fable.prophet`、`tbats`、`midas`、`sarimax`、`arfimax`等其它统计模型，然后还有比较长短记忆模型如`tensorflow`、`keras`，隐马尔可夫链、隐含波动率、波浪形模型等其它统计模型。
 
-[^2]: 下篇论文中[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。<br> - 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）<br> - 外部因素周期性自回归综合滑均模型（ARIMAX）<br> - 季节性自回归综合滑均模型（SARIMA）<br> - 外部因素周期性季节性自回归综合滑均模型（SARIMAX）<br> - 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）<br> - 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
+[^3]: 下篇论文中[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。<br> - 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）<br> - 外部因素周期性自回归综合滑均模型（ARIMAX）<br> - 季节性自回归综合滑均模型（SARIMA）<br> - 外部因素周期性季节性自回归综合滑均模型（SARIMAX）<br> - 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）<br> - 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
 <img src='文艺坊图库/careers.png' width='240'>
 
