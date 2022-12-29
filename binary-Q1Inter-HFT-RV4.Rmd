@@ -296,7 +296,7 @@ h5 { color: #92AAC7; }
 
 ```{r 编织选项, class.source='hover01', class.output='hover02'}
 ## 更换时间区域，保留日期时间。
-Sys.setenv(TZ = 'Asia/Tapei')
+Sys.setenv(TZ = 'Asia/Shanghai')
 
 ## 忽略所有警讯
 ## https://stackoverflow.com/a/36846793/3806250
