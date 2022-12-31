@@ -358,6 +358,7 @@ library('data.table', warn.conflicts = FALSE)
 library('conflicted', warn.conflicts = FALSE)
 
 conflict_prefer('nth', 'tidyft', quiet = TRUE)
+conflict_prefer('unnest', 'tidyft', quiet = TRUE)
 conflict_prefer('cummean', 'tidyft', quiet = TRUE)
 conflict_prefer('group_by', 'tidyft', quiet = TRUE)
 conflict_prefer('distinct', 'tidyft', quiet = TRUE)
@@ -415,6 +416,7 @@ rm(程序包)
 ```
 
 ```{r 设置函数优先权}
+conflict_prefer('llply', 'Ipaper', quiet = TRUE)
 conflict_prefer('view', 'tibble', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 conflict_prefer('permutations', 'gtools', quiet = TRUE)
@@ -657,7 +659,7 @@ rm(基准, 样本)
 
 **0.02小时一周期（1分钟循环1200次）**
 
-```{r 1分钟, eval = FALSE}
+```{r forecast程序包, eval = FALSE}
 # --------- eval = FALSE ---------
 source('函数/日内高频指数平滑.R')
 source('函数/汇总上奏.R')
@@ -677,8 +679,8 @@ source('函数/整顿数据.R')
 频率 = 1
 
 日内高频指数平滑(
-     时间索引 = 时间索引, 样本 = 样本2018半年, 数据量 = 数据量, 频率 = 频率, 
-     预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
+  时间索引 = 时间索引, 样本 = 样本2018半年, 数据量 = 数据量, 频率 = 频率, 
+  预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
 
 # 整顿数据(1, 文件名 = '日内指数平滑2018数据', 是否移除文件夹 = '是')
 ```
@@ -689,7 +691,7 @@ source('函数/整顿数据.R')
 
 **0.02小时一周期（1分钟循环1200次）**
 
-```{r 1分钟, eval = FALSE}
+```{r fable程序包, eval = FALSE}
 # --------- eval = FALSE ---------
 
 ```
@@ -719,7 +721,10 @@ source('函数/整顿数据.R')
 ```{r, eval = FALSE}
 source('函数/季节性自回归.R')
 
-样本2018半年[序列 == 序列基准1]
+时间索引 <- unique(样本2018半年$日期)
+基准 <- 样本2018半年[年份 == 2018]$日期[1]
+时间索引 %<>% .[. >= 基准]
+迭代基准 <- 样本2018半年[日期 %chin% 时间索引]$序列
 数据量 <- 1200 #筛选数据中的最后1200观测值：样本2018半年[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1
 
@@ -806,15 +811,11 @@ llply(.模型选项[1], function(模型) {
 })
 ```
 
-####  0.02小时一周期（1分钟循环1200次）
+### 自回归综合滑均模型（ARIMA）
 
-```{r, eval = FALSE}
-培训数据$闭市价 %>% 
-    matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
-    tk_ts(frequency = 60)
-```
+#### `forecast`程序包：`ts()` & `auto.arima()`
 
-### 自回归综合滑均模型（ARIMA）`ts()` & `auto.arima()`
+#### `fable` & `fabletools`程序包
 
 ### 外部因素周期性自回归综合滑均模型（ARIMAX）`ts()` & `auto.arima()`
 
@@ -837,10 +838,10 @@ llply(.模型选项[1], function(模型) {
 # .模型选项 %<>% .[2]
 .差分阶数 = 0:2
 .季节性差分阶数 = 0:1 
-季节性与否 = c(TRUE, FALSE)
+季节性与否 = c('勾', '叉')
 ## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
-#近似值与否 <- c(TRUE, FALSE)
-#逐步精化与否 <- c(TRUE, FALSE)
+#近似值与否 <- c('勾', '叉')
+#逐步精化与否 <- c('勾', '叉')
 
 ## .时序规律 <- c(0, 0, 0)
 .时序规律 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
@@ -850,7 +851,8 @@ llply(.模型选项[1], function(模型) {
 ## .季节性规律参数 <- c(0, 0, 0)
 .季节性规律参数 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as.data.table
-.季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2]
+.季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), 
+                     new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2]
 ```
 
 ```{r eval = FALSE}
@@ -862,19 +864,21 @@ llply(.模型选项, function(模型) {
       季回归1 <- llply(.季节性差分阶数, function(季节性差分阶数) {
         季回归2 <- llply(季节性与否, function(季节) {
           季回归3 <- llply(时间索引, function(时序) {
-            成效 <- 季节性自回归(时间索引 = 时序, 样本 = 样本2018半年, 路径 = .路径, 
+            成效 <- 季节性自回归(
+              时间索引 = 时序, 样本 = 样本2018半年, 路径 = .路径, 
               数据量 = 数据量, 预测时间单位 = 预测时间单位, .模型选项 = 模型, 
               .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
-              季节性与否 = 季节, 静态与否 = FALSE, 记载自回归与否 = FALSE, 
+              季节性与否 = 季节, 静态与否 = '叉', 记载自回归与否 = '叉', 
               信息量准则 = c('aicc', 'aic', 'bic'), 
-              逐步精化与否 = TRUE, 逐步精化量 = 94, 
+              逐步精化与否 = '勾', 逐步精化量 = 94, 
               #近似值与否=(length(x)>150|frequency(x)>12), 
               缩写 = NULL, 计策谋略 = NULL, #x = y, 
               趋势 = NULL, 测试 = c('kpss', 'adf', 'pp'), 
               测试参数 = list(), 季节性测试参数 = list(), 
               季节性测试 = c('seas', 'ocsb', 'hegy', 'ch'), 
-              允许截距与否 = TRUE, 允许包含均值与否 = TRUE, 博克斯考克斯变换 = NULL, 
-              偏差调整与否 = FALSE, 多管齐下与否 = FALSE, 核心量 = 2)
+              允许截距与否 = '勾', 允许包含均值与否 = '勾', 
+              博克斯考克斯变换 = NULL, 
+              偏差调整与否 = FALSE, 多管齐下与否 = '叉', 核心量 = 2)
             })
           })
         })
@@ -884,14 +888,15 @@ llply(.模型选项, function(模型) {
     季回归0 <- llply(1:nrow(.时序规律), function(迭数1) {
       季回归1 <- llply(1:nrow(.季节性规律参数), function(迭数2) {
         季回归2 <- llply(时间索引, function(时序) {
-          成效 <- 季节性自回归(时间索引 = 时序, 样本 = 样本2018半年, 路径 = .路径, 
+          成效 <- 季节性自回归(
+            时间索引 = 时序, 样本 = 样本2018半年, 路径 = .路径, 
             数据量 = 数据量, 预测时间单位 = 预测时间单位, 
             .模型选项 = 模型, .时序规律 = unlist(.时序规律[迭数1,]), 
             .季节性规律参数 = unlist(.季节性规律参数[迭数2,]), 趋势 = NULL, 
-            允许包含均值与否 = TRUE, 允许截距与否 = FALSE, 
+            允许包含均值与否 = '勾', 允许截距与否 = '叉', 
             #包含常数与否 = 包含常数与否, 
             #统计模型 = NULL, 博克斯考克斯变换 = 博克斯考克斯变换, x = y, 
-            偏差调整与否 = FALSE, 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
+            偏差调整与否 = '叉', 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
         })
       })
     })
