@@ -74,7 +74,8 @@ Sys.setenv(TZ = 'Asia/Shanghai')
 ## 忽略所有警讯
 ## https://stackoverflow.com/a/36846793/3806250
 ## 设置宽度
-## options(knitr.table.format = 'html')将所有kableExtra图表一致设置为'html'格式，省略设置各别图表。
+## options(knitr.table.format = 'html')将所有kableExtra图表一致设置为'html'格式，
+##   省略设置各别图表。
 ## options(repos = 'https://cran.rstudio.com')将仓库设置为安全网。
 ## options(repos = 'http://cran.rstudio.com')将仓库设置为普通网。
 options(warn = -1, width = 999, knitr.table.format = 'html', 
@@ -149,6 +150,7 @@ conflict_prefer('separate', 'tidyft', quiet = TRUE)
 conflict_prefer('lead', 'tidyft', quiet = TRUE)
 conflict_prefer('lag', 'tidyft', quiet = TRUE)
 conflict_prefer('left_join', 'tidyft', quiet = TRUE)
+conflict_prefer('right_join', 'tidyft', quiet = TRUE)
 conflict_prefer('select_dt', 'tidyft', quiet = TRUE)
 conflict_prefer('transpose', 'tidyft', quiet = TRUE)
 conflict_prefer('setDT', 'tidyft', quiet = TRUE)
@@ -212,7 +214,8 @@ if (!exists('.蜀道仓库')) {
 
 ## 
 ## 倘若环境尚未有数据，读取文件数据。
-## **小插曲**：数据应该使用经过过滤`NA值`和重新赋值`周`、`周分计`、`日分计`、`时分计`、`序列`等参数和数据的**样本2**，而非**样本1**。
+## **小插曲**：数据应该使用经过过滤`NA值`和重新赋值`周`、`周分计`、`日分计`、
+##   `时分计`、`序列`等参数和数据的**样本2**，而非**样本1**。
 ## 数据从原本 1324800 减至 1317600
 # 样本[!is.na(闭市价)][]
 ## 1317600分钟 除以 7200分钟（一周） = 183周数
@@ -315,7 +318,8 @@ llply(.模型选项, function(模型) {
               季节性测试 = c('seas', 'ocsb', 'hegy', 'ch'), 
               允许截距与否 = '勾', 允许包含均值与否 = '勾', 
               博克斯考克斯变换 = NULL, 
-              偏差调整与否 = '叉', 多管齐下与否 = '叉', 核心量 = 2)
+              偏差调整与否 = '叉', 多管齐下与否 = '叉', 核心量 = 2, 
+              包含均值与否 = '勾')
           })
         })
       })
@@ -347,9 +351,23 @@ llply(.模型选项, function(模型) {
 # 整顿数据(1, 文件名 = '季节性自回归2018数据', 是否移除文件夹 = '是')
 
 ### ================================================================================
+source('函数/季节性自回归.R')
 
-
-
+成效 <- 季节性自回归(
+  时间索引 = 时间索引, 样本 = 样本2018半年, .蜀道 = .蜀道, 
+  文件名 = '季节性自回归', 数据量 = 数据量, 频率 = 频率, 
+  预测时间单位 = 预测时间单位, .模型选项 = 模型, 
+  .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
+  季节性与否 = '勾', 静态与否 = '叉', 记载自回归与否 = '叉', 
+  信息量准则 = c('aicc', 'aic', 'bic'), 逐步精化与否 = '勾', 
+  逐步精化量 = 94, #近似值与否=(length(x)>150|frequency(x)>12), 
+  缩写 = NULL, 计策谋略 = NULL, #x = y, 
+  趋势 = NULL, 测试 = c('kpss', 'adf', 'pp'), 测试参数 = list(), 
+  季节性测试参数 = list(), 
+  季节性测试 = c('seas', 'ocsb', 'hegy', 'ch'), 
+  允许截距与否 = '勾', 允许包含均值与否 = '勾', 
+  博克斯考克斯变换 = NULL, 
+  偏差调整与否 = '叉', 多管齐下与否 = '叉', 核心量 = 2, 包含均值与否 = '勾')
 
 
 

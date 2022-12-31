@@ -22,9 +22,9 @@
 ## 东盟孙武，铲除巫裔，千古一帝。
 ##
 
-季节性自回归 <- function(
+日内高频季节性自回归 <- function(
     ## ======== 居住在英国布里斯托尔港口，修读气象学系的英国基督洋妞儿芈拉不可以死 ========
-    时间索引, 样本, .蜀道 = NULL, 文件名 = '季节性自回归', 数据量, 
+    时间索引, 样本, .蜀道 = NULL, 文件名 = '日内高频季节性自回归', 数据量, 
     频率 = 1, 预测时间单位 = 1, .模型选项 = .模型选项, 
     .差分阶数 = .差分阶数, .季节性差分阶数 = .季节性差分阶数, 
     季节性与否 = 季节性与否, .时序规律 = .时序规律, 
@@ -49,7 +49,7 @@
     #博克斯考克斯变换 = 统计模型$lambda, x = y, 偏差调整与否 = FALSE, 
     计策谋略 = 计策谋略, 列印 = '勾') {
   
-  options(digits = 30)
+  options(digits = 22)
   require('tidyft', quietly = TRUE)
   require('forecast', quietly = TRUE)
   require('Ipaper', quietly = TRUE)
@@ -81,15 +81,15 @@
   if (!多管齐下与否 %in% c('勾', '叉')) stop("多管齐下与否 = '勾' 或 '叉'")
   if (!包含均值与否 %in% c('勾', '叉')) stop("包含均值与否 = '勾' 或 '叉'")
   
-  季节性与否 <- if_else2(季节性与否 == '勾', TRUE, FALSE)
-  静态与否 <- if_else2(静态与否 == '勾', TRUE, FALSE)
-  记载自回归与否 <- if_else2(记载自回归与否 == '勾', TRUE, FALSE)
-  逐步精化与否 <- if_else2(逐步精化与否 == '勾', TRUE, FALSE)
-  允许截距与否 <- if_else2(允许截距与否 == '勾', TRUE, FALSE)
-  允许包含均值与否 <- if_else2(允许包含均值与否 == '勾', TRUE, FALSE)
-  偏差调整与否 <- if_else2(偏差调整与否 == '勾', TRUE, FALSE)
-  多管齐下与否 <- if_else2(多管齐下与否 == '勾', TRUE, FALSE)
-  包含均值与否 <- if_else2(包含均值与否 == '勾', TRUE, FALSE)
+  季节性与否 <- ifelse2(季节性与否 == '勾', TRUE, FALSE)
+  静态与否 <- ifelse2(静态与否 == '勾', TRUE, FALSE)
+  记载自回归与否 <- ifelse2(记载自回归与否 == '勾', TRUE, FALSE)
+  逐步精化与否 <- ifelse2(逐步精化与否 == '勾', TRUE, FALSE)
+  允许截距与否 <- ifelse2(允许截距与否 == '勾', TRUE, FALSE)
+  允许包含均值与否 <- ifelse2(允许包含均值与否 == '勾', TRUE, FALSE)
+  偏差调整与否 <- ifelse2(偏差调整与否 == '勾', TRUE, FALSE)
+  多管齐下与否 <- ifelse2(多管齐下与否 == '勾', TRUE, FALSE)
+  包含均值与否 <- ifelse2(包含均值与否 == '勾', TRUE, FALSE)
   
   ## 假设数据量 = 1200分钟
   ## 频率 = 1200
@@ -161,7 +161,7 @@
       }, 错误信息 = function(错误信息参数) NULL)
       
       模型名称 <- paste0(
-        .模型选项, '_自回归滑动平均', 
+        '自回归滑动平均', 
         paste(.时序规律, collapse = ''), '_季节性', 
         paste(.季节性规律参数, collapse = ''), '_', 数据量, '_', 
         预测时间单位, '_', 培训样本$年月日时分[迭数1], 'CST.rds')

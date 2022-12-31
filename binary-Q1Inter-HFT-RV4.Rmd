@@ -373,6 +373,7 @@ conflict_prefer('separate', 'tidyft', quiet = TRUE)
 conflict_prefer('lead', 'tidyft', quiet = TRUE)
 conflict_prefer('lag', 'tidyft', quiet = TRUE)
 conflict_prefer('left_join', 'tidyft', quiet = TRUE)
+conflict_prefer('right_join', 'tidyft', quiet = TRUE)
 conflict_prefer('select_dt', 'tidyft', quiet = TRUE)
 conflict_prefer('transpose', 'tidyft', quiet = TRUE)
 conflict_prefer('setDT', 'tidyft', quiet = TRUE)
@@ -719,6 +720,10 @@ source('函数/整顿数据.R')
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
 - [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
 
+### 自回归综合滑均模型（ARIMA）
+
+#### `forecast`程序包：`ts()` & `auto.arima()`
+
 ```{r, eval = FALSE}
 source('函数/季节性自回归.R')
 
@@ -767,9 +772,9 @@ llply(.模型选项, function(模型) {
       季回归1 <- llply(.季节性差分阶数, function(季节性差分阶数) {
         季回归2 <- llply(季节性与否, function(季节) {
           季回归3 <- llply(时间索引, function(时序) {
-            成效 <- 季节性自回归(
+            成效 <- 日内高频季节性自回归(
               时间索引 = 时序, 样本 = 样本2018半年, .蜀道 = .蜀道, 
-              文件名 = '季节性自回归', 数据量 = 数据量, 频率 = 频率, 
+              文件名 = '日内高频季节性自回归', 数据量 = 数据量, 频率 = 频率, 
               预测时间单位 = 预测时间单位, .模型选项 = 模型, 
               .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
               季节性与否 = 季节, 静态与否 = '叉', 记载自回归与否 = '叉', 
@@ -781,7 +786,8 @@ llply(.模型选项, function(模型) {
               季节性测试 = c('seas', 'ocsb', 'hegy', 'ch'), 
               允许截距与否 = '勾', 允许包含均值与否 = '勾', 
               博克斯考克斯变换 = NULL, 
-              偏差调整与否 = '叉', 多管齐下与否 = '叉', 核心量 = 2)
+              偏差调整与否 = '叉', 多管齐下与否 = '叉', 核心量 = 2, 
+              包含均值与否 = '勾')
           })
         })
       })
@@ -793,9 +799,9 @@ llply(.模型选项, function(模型) {
     季回归0 <- llply(1:nrow(.时序规律), function(迭数1) {
       季回归1 <- llply(1:nrow(.季节性规律参数), function(迭数2) {
         季回归2 <- llply(时间索引, function(时序) {
-          成效 <- 季节性自回归(
+          成效 <- 日内高频季节性自回归(
             时间索引 = 时序, 样本 = 样本2018半年, .蜀道 = .蜀道, 
-            文件名 = '季节性自回归', 数据量 = 数据量, 频率 = 频率, 
+            文件名 = '日内高频季节性自回归', 数据量 = 数据量, 频率 = 频率, 
             预测时间单位 = 预测时间单位, .模型选项 = 模型, 
             .时序规律 = unlist(.时序规律[迭数1,]), 
             .季节性规律参数 = unlist(.季节性规律参数[迭数2,]), 趋势 = NULL, 
@@ -810,12 +816,8 @@ llply(.模型选项, function(模型) {
   }
   return(模型)
 })
-# 整顿数据(1, 文件名 = '季节性自回归2018数据', 是否移除文件夹 = '是')
+# 整顿数据(1, 文件名 = '日内高频季节性自回归2018数据', 是否移除文件夹 = '是')
 ```
-
-### 自回归综合滑均模型（ARIMA）
-
-#### `forecast`程序包：`ts()` & `auto.arima()`
 
 #### `fable` & `fabletools`程序包
 
