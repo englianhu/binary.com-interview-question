@@ -78,7 +78,7 @@ Sys.setenv(TZ = 'Asia/Shanghai')
 ## options(repos = 'https://cran.rstudio.com')将仓库设置为安全网。
 ## options(repos = 'http://cran.rstudio.com')将仓库设置为普通网。
 options(warn = -1, width = 999, knitr.table.format = 'html', 
-        digits = 16, digits.secs = Inf, repos = 'https://cran.rstudio.com')
+        digits = 30, digits.secs = Inf, repos = 'https://cran.rstudio.com')
 
 ## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
 ## https://yihui.org/knitr/options
@@ -134,6 +134,7 @@ library('data.table', warn.conflicts = FALSE)
 library('conflicted', warn.conflicts = FALSE)
 
 conflict_prefer('nth', 'tidyft', quiet = TRUE)
+conflict_prefer('fill', 'tidyft', quiet = TRUE)
 conflict_prefer('unnest', 'tidyft', quiet = TRUE)
 conflict_prefer('cummean', 'tidyft', quiet = TRUE)
 conflict_prefer('group_by', 'tidyft', quiet = TRUE)
@@ -259,7 +260,10 @@ source('函数/整顿数据.R')
 ### ================================================================================
 source('函数/季节性自回归.R')
 
-样本2018半年[序列 == 序列基准1]
+时间索引 <- unique(样本2018半年$日期)
+基准 <- 样本2018半年[年份 == 2018]$日期[1]
+时间索引 %<>% .[. >= 基准]
+迭代基准 <- 样本2018半年[日期 %chin% 时间索引]$序列
 数据量 <- 1200 #筛选数据中的最后1200观测值：样本2018半年[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1
 
@@ -268,30 +272,78 @@ source('函数/季节性自回归.R')
 # .模型选项 %<>% .[2]
 .差分阶数 = 0:2
 .季节性差分阶数 = 0:1 
-季节性与否 = c('勾', '叉')
+季节性与否 = c('是', '否')
 ## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
-#近似值与否 <- c('勾', '叉')
-#逐步精化与否 <- c('勾', '叉')
+#近似值与否 <- c(TRUE, FALSE)
+#逐步精化与否 <- c(TRUE, FALSE)
 
 ## .时序规律 <- c(0, 0, 0)
 .时序规律 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as.data.table
 .时序规律 <- setnames(.时序规律, old = c('V1', 'V2', 'V3'), 
-                  new = c('自回归阶数', '差分阶数', '滑均阶数'))[差分阶数 <= 2]
+                  new = c('自回归阶数', '差分阶数', 
+                          '滑均阶数'))[差分阶数 <= 2]
 
 ## .季节性规律参数 <- c(0, 0, 0)
 .季节性规律参数 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as.data.table
 .季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), 
-                     new = c('季节性自回归阶数', '季节性差分阶数', 
-                             '季节性滑均阶数'))[季节性差分阶数 <= 2]
+                     new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2]
 
 频率 = 1
 
-季节性自回归(
-  时间索引 = 时间索引, 样本 = 样本2018半年, 数据量 = 数据量, 频率 = 频率, 
-  预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
-
+## 由于forecast::Arima()出现多种错误信息，故此忽略使用该函数建模。
+## https://github.com/englianhu/binary.com-interview-question/issues/6
+llply(.模型选项, function(模型) {
+  
+  if (模型 == '自动化') {
+    季回归0 <- llply(.差分阶数, function(差分阶数) {
+      季回归1 <- llply(.季节性差分阶数, function(季节性差分阶数) {
+        季回归2 <- llply(季节性与否, function(季节) {
+          季回归3 <- llply(时间索引, function(时序) {
+            成效 <- 季节性自回归(
+              时间索引 = 时序, 样本 = 样本2018半年, .蜀道 = .蜀道, 
+              文件名 = '季节性自回归', 数据量 = 数据量, 频率 = 频率, 
+              预测时间单位 = 预测时间单位, .模型选项 = 模型, 
+              .差分阶数 = 差分阶数, .季节性差分阶数 = 季节性差分阶数, 
+              季节性与否 = 季节, 静态与否 = '叉', 记载自回归与否 = '叉', 
+              信息量准则 = c('aicc', 'aic', 'bic'), 逐步精化与否 = '勾', 
+              逐步精化量 = 94, #近似值与否=(length(x)>150|frequency(x)>12), 
+              缩写 = NULL, 计策谋略 = NULL, #x = y, 
+              趋势 = NULL, 测试 = c('kpss', 'adf', 'pp'), 测试参数 = list(), 
+              季节性测试参数 = list(), 
+              季节性测试 = c('seas', 'ocsb', 'hegy', 'ch'), 
+              允许截距与否 = '勾', 允许包含均值与否 = '勾', 
+              博克斯考克斯变换 = NULL, 
+              偏差调整与否 = '叉', 多管齐下与否 = '叉', 核心量 = 2)
+          })
+        })
+      })
+    })
+    
+  }
+  
+  if (模型 == '自回归滑均') {
+    季回归0 <- llply(1:nrow(.时序规律), function(迭数1) {
+      季回归1 <- llply(1:nrow(.季节性规律参数), function(迭数2) {
+        季回归2 <- llply(时间索引, function(时序) {
+          成效 <- 季节性自回归(
+            时间索引 = 时序, 样本 = 样本2018半年, .蜀道 = .蜀道, 
+            文件名 = '季节性自回归', 数据量 = 数据量, 频率 = 频率, 
+            预测时间单位 = 预测时间单位, .模型选项 = 模型, 
+            .时序规律 = unlist(.时序规律[迭数1,]), 
+            .季节性规律参数 = unlist(.季节性规律参数[迭数2,]), 趋势 = NULL, 
+            允许包含均值与否 = '勾', 允许截距与否 = '叉', 
+            包含均值与否 = '勾', 包含截距 = '勾', 
+            #包含常数与否 = 包含常数与否, 
+            #统计模型 = NULL, 博克斯考克斯变换 = 博克斯考克斯变换, x = y, 
+            偏差调整与否 = '叉', 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
+        })
+      })
+    })
+  }
+  return(模型)
+})
 # 整顿数据(1, 文件名 = '季节性自回归2018数据', 是否移除文件夹 = '是')
 
 ### ================================================================================
