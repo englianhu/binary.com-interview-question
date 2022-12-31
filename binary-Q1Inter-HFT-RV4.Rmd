@@ -359,6 +359,7 @@ library('conflicted', warn.conflicts = FALSE)
 
 conflict_prefer('nth', 'tidyft', quiet = TRUE)
 conflict_prefer('fill', 'tidyft', quiet = TRUE)
+conflict_prefer('nest', 'tidyft', quiet = TRUE)
 conflict_prefer('unnest', 'tidyft', quiet = TRUE)
 conflict_prefer('cummean', 'tidyft', quiet = TRUE)
 conflict_prefer('group_by', 'tidyft', quiet = TRUE)
@@ -372,8 +373,13 @@ conflict_prefer('summarise', 'tidyft', quiet = TRUE)
 conflict_prefer('separate', 'tidyft', quiet = TRUE)
 conflict_prefer('lead', 'tidyft', quiet = TRUE)
 conflict_prefer('lag', 'tidyft', quiet = TRUE)
+conflict_prefer('unite', 'tidyft', quiet = TRUE)
 conflict_prefer('left_join', 'tidyft', quiet = TRUE)
 conflict_prefer('right_join', 'tidyft', quiet = TRUE)
+conflict_prefer('inner_join', 'tidyft', quiet = TRUE)
+conflict_prefer('full_join', 'tidyft', quiet = TRUE)
+conflict_prefer('anti_join', 'tidyft', quiet = TRUE)
+conflict_prefer('semi_join', 'tidyft', quiet = TRUE)
 conflict_prefer('select_dt', 'tidyft', quiet = TRUE)
 conflict_prefer('transpose', 'tidyft', quiet = TRUE)
 conflict_prefer('setDT', 'tidyft', quiet = TRUE)
@@ -643,7 +649,10 @@ source('函数/日内高频季节性自回归.R')
 .季节性规律参数 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as.data.table
 .季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), 
-                     new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2]
+                     new = c('季节性自回归阶数', '季节性差分阶数', 
+                             '季节性滑均阶数'))[季节性差分阶数 <= 2]
+# 循环周期 <- 数据量/频率
+# seasonal <- list(order = .季节性规律参数, period = 循环周期)
 ```
 
 **0.02小时一周期（1分钟循环1200次）**
@@ -675,7 +684,7 @@ llply(.模型选项, function(模型) {
               允许截距与否 = '勾', 允许包含均值与否 = '勾', 
               博克斯考克斯变换 = NULL, 
               偏差调整与否 = '叉', 多管齐下与否 = '叉', 核心量 = 2, 
-              包含均值与否 = '勾')
+              包含均值与否 = '勾', 包含截距与否 = '勾')
           })
         })
       })
@@ -693,7 +702,7 @@ llply(.模型选项, function(模型) {
             .时序规律 = unlist(.时序规律[迭数1,]), 
             .季节性规律参数 = unlist(.季节性规律参数[迭数2,]), 趋势 = NULL, 
             允许包含均值与否 = '勾', 允许截距与否 = '叉', 
-            包含均值与否 = '勾', 包含截距 = '勾', 
+            包含均值与否 = '勾', 包含截距与否 = '勾', 
             #包含常数与否 = 包含常数与否, 
             #统计模型 = NULL, 博克斯考克斯变换 = 博克斯考克斯变换, x = y, 
             偏差调整与否 = '叉', 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
