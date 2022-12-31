@@ -97,6 +97,15 @@ knitr::opts_chunk$set(
 ## https://rstudio.cloud/project/1198888
 
 ## 读取'BBmisc'程序包。
+## 读取程序包、设置编织与环境选项。
+## 3210448065@qq.com
+## leiou123
+
+## 2849108450@qq.com
+## leiou123
+## https://rstudio.cloud/project/1198888
+
+## 读取'BBmisc'程序包。
 if (suppressMessages(!require('BBmisc'))) {
   install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
 }
@@ -123,13 +132,15 @@ conflict_prefer('group_by', 'tidyft', quiet = TRUE)
 conflict_prefer('distinct', 'tidyft', quiet = TRUE)
 conflict_prefer('filter', 'tidyft', quiet = TRUE)
 conflict_prefer('select', 'tidyft', quiet = TRUE)
-conflict_prefer('mutate', 'tidyft', quiet = TRUE)
 conflict_prefer('rename', 'tidyft', quiet = TRUE)
 conflict_prefer('count', 'tidyft', quiet = TRUE)
 conflict_prefer('arrange', 'tidyft', quiet = TRUE)
 conflict_prefer('summarise', 'tidyft', quiet = TRUE)
+conflict_prefer('separate', 'tidyft', quiet = TRUE)
 conflict_prefer('lead', 'tidyft', quiet = TRUE)
 conflict_prefer('lag', 'tidyft', quiet = TRUE)
+conflict_prefer('left_join', 'tidyft', quiet = TRUE)
+conflict_prefer('mutate', 'dplyr', quiet = TRUE)
 conflict_prefer('collapse', 'dplyr', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 conflict_prefer('first', 'data.table', quiet = TRUE)
@@ -213,6 +224,7 @@ rm(基准, 样本)
 source('函数/日内高频指数平滑.R')
 source('函数/汇总上奏.R')
 source('函数/总汇结论.R')
+source('函数/整顿数据.R')
 
 时间索引 <- unique(样本2018半年$日期)
 # 基准 <- filter(样本2018半年, 年份 == 2018)$日期[1] #"2016-01-02" 第2年第1个交易日

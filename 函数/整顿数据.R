@@ -22,7 +22,7 @@
 ## 东盟孙武，铲除巫裔，千古一帝。
 ##
 
-整顿数据 <- function(频率, 是否移除文件夹 = '否', 是否移除列表 = '否', .print = TRUE) {
+整顿数据 <- function(频率, 文件名 = '日内指数平滑数据', 是否移除文件夹 = '否', 是否移除列表 = '否', .print = TRUE) {
    ## ======== 居住在英国布里斯托尔港口，修读气象学系的英国基督洋妞儿芈拉不可以死 ========
    ## 王翦阅兵，整装待发
    ## 蒙毅蒙恬，一文一武（攻占外族政府蒙古由咱们NonMulim的Chin大秦子民执政后，联合蒙古人一带一路西征欧洲）
@@ -35,7 +35,7 @@
    ## 一般上，使用eval(parse(text = 参数))可以执行所有任何R语言代码方程，不过每行代码都使用分号，代码排列就不整齐，类似抒写一篇只有一段而已的作文。
    ## 商鞅变法：将所有方程、参数、任何代码编写为文字、依照可兰经回教刑事法典断肢法执行、再评估成效。
    ## 断肢分一杯羹的司马迁乩童白骨精巫师王（荆州人彭城堂虞素威/刘表 ------ 刘瑾貹和张佳坤 --- 溥仪），歼灭Judi回教博彩庄Caspo Inc
-   #王翦阅兵 <- paste0('list(列表 = 列表', substitute(频率), ', 日内指数平滑数据', substitute(频率), 'A)')
+   #王翦阅兵 <- paste0('list(列表 = 列表', substitute(频率), ', 日内汇价数据', substitute(频率), 'A)')
    # 
    #return(eval(parse(text = 王翦阅兵)))
    ## -----------------------------------------------------------------------
@@ -69,30 +69,32 @@
    saveRDS(列表, paste0(.蜀道仓库, '列表', 频率, '.rds'))
    cat('\n列表已储存！')
    #列表 <- readRDS(paste0(.蜀道仓库, '列表', 频率, '.rds'))
-   日内指数平滑数据B <- ldply(列表, function(参数) {
-	tryCatch(readRDS(paste0(.蜀道仓库, 频率, '/', 参数)), error = function(e) {
-          if (.print == TRUE) cat(paste(参数, 'error, no such file.\n')) else NULL
+   数据B <- ldply(列表, function(参数) {
+     tryCatch(readRDS(paste0(.蜀道仓库, 频率, '/', 参数)), error = function(e) {
+          if (.print == TRUE) cat(paste(参数, '错误信息：文件不存在。\n')) else NULL
           })}, .progress = 'text')  %>% as.data.table
    cat('\n将列表数据编组！')
    
    ## 赢家自家人老王王翦王贲检验并整顿数据
    ## 王翦阅兵，整装待发
-   王翦阅兵 <- paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds')
+   王翦阅兵 <- paste0(.蜀道仓库, 文件名, 频率, '.rds')
    if (file.exists(王翦阅兵)) {
-      日内指数平滑数据A <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table
-      #日内指数平滑数据 <- rbind(日内指数平滑数据A, 日内指数平滑数据B)[order(年月日时分)] %>% unique
-      日内指数平滑数据 <- rbindlist(list(日内指数平滑数据B, 日内指数平滑数据A))[order(年月日时分)] %>% unique
-      saveRDS(日内指数平滑数据, paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds'))
+      数据A <- readRDS(paste0(.蜀道仓库, 文件名, 频率, '.rds')) %>% 
+        as.data.table
+      #日内汇价数据 <- rbind(数据A, 数据B)[order(年月日时分)] %>% unique
+      日内汇价数据 <- rbindlist(list(数据B, 数据A))[order(年月日时分)] %>% 
+        unique
+      saveRDS(日内汇价数据, paste0(.蜀道仓库, 文件名, 频率, '.rds'))
       cat('\n储存已编组的数据！\n')
    
    } else {      
-      日内指数平滑数据 <- 日内指数平滑数据B
-      saveRDS(日内指数平滑数据, paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds'))
+      日内汇价数据 <- 数据B
+      saveRDS(日内汇价数据, paste0(.蜀道仓库, 文件名, 频率, '.rds'))
       cat('\n储存已编组的数据！\n')
    }
    
-   #日内指数平滑数据 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds'))
-   rm(列表, 日内指数平滑数据A, 日内指数平滑数据B)
+   #日内汇价数据 <- readRDS(paste0(.蜀道仓库, 文件名, 频率, '.rds'))
+   rm(列表, 数据A, 数据B)
    
    是否移除文件夹 <- 是否移除文件夹
    if (!是否移除文件夹 %in% c('是', '否')) {
@@ -113,7 +115,7 @@
    }
    
    cat(paste0('频率 = ', 频率, '\n'))
-   return(日内指数平滑数据)
+   return(日内汇价数据)
 }
 
 #整顿数据(1)
@@ -146,4 +148,4 @@
 
 #频率 = 150
 ## 检查数据，阅兵
-#readRDS(paste0(.蜀道仓库, '日内指数平滑数据', 频率, '.rds')) %>% as.data.table()
+#readRDS(paste0(.蜀道仓库, 文件名, 频率, '.rds')) %>% as.data.table()

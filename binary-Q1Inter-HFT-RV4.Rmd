@@ -360,6 +360,7 @@ conflict_prefer('rename', 'tidyft', quiet = TRUE)
 conflict_prefer('count', 'tidyft', quiet = TRUE)
 conflict_prefer('arrange', 'tidyft', quiet = TRUE)
 conflict_prefer('summarise', 'tidyft', quiet = TRUE)
+conflict_prefer('separate', 'tidyft', quiet = TRUE)
 conflict_prefer('lead', 'tidyft', quiet = TRUE)
 conflict_prefer('lag', 'tidyft', quiet = TRUE)
 conflict_prefer('left_join', 'tidyft', quiet = TRUE)
@@ -648,12 +649,12 @@ rm(基准, 样本)
 source('函数/日内高频指数平滑.R')
 source('函数/汇总上奏.R')
 source('函数/总汇结论.R')
+source('函数/商鞅变法.R')
+source('函数/整顿数据.R')
 
 时间索引 <- unique(样本2018半年$日期)
-# 基准 <- filter(样本2018半年, 年份 == 2018)$日期[1] #"2016-01-02" 第2年第1个交易日
 基准 <- 样本2018半年[年份 == 2018]$日期[1]
 时间索引 %<>% .[. >= 基准]
-# 时间索引 %<>% .[. >= as_date('2018-01-02')]
 迭代基准 <- 样本2018半年[日期 %chin% 时间索引]$序列
 数据量 <- 1200 #筛选数据中的最后1200观测值：样本2018半年[(.N - (数据量 - 1)):.N]
 预测时间单位 <- 1
@@ -665,6 +666,8 @@ source('函数/总汇结论.R')
 日内高频指数平滑(
      时间索引 = 时间索引, 样本 = 样本2018半年, 数据量 = 数据量, 频率 = 频率, 
      预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
+
+# 整顿数据(1, 文件名 = '日内指数平滑2018数据', 是否移除文件夹 = '是')
 ```
 
 在此使用经过过滤的`样本2018半年`数据，再次运算以上函数，再与其它统计模型比较预测值误差，以证实上篇**（第III部）**的结论是否相符。
