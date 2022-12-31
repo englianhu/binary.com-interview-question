@@ -405,6 +405,7 @@ rm(程序包)
 ```
 
 ```{r 设置函数优先权}
+conflict_prefer('view', 'tibble', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 conflict_prefer('permutations', 'gtools', quiet = TRUE)
 ```
