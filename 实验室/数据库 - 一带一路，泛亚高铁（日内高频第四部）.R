@@ -119,6 +119,13 @@ suppressMessages(library('rmsfuns'))
 if (!require('REmap')) devtools::install_github('lchiffon/REmap')
 
 ## 一次性读取所需程序包。
+## 
+## [R语言高效数据框操作：tidyfst](https://z.itpub.net/article/detail/5EE2CA3CDCD527ADAF5071BF2ADF8874)
+## 
+## [「知乎」tidyft高性能数据操作](https://zhuanlan.zhihu.com/p/128645634)
+## 最下面是tidyft的性能，占用空间最少，花费时间最少。
+##   其实这个包基本拥有tidyfst的所有功能，只是原位更新的概念对于新手是有挑战...
+
 library('tidyfst', warn.conflicts = FALSE)
 library('tidyft', warn.conflicts = FALSE)
 library('dplyr', warn.conflicts = FALSE)
@@ -126,8 +133,9 @@ library('lubridate', warn.conflicts = FALSE)
 library('data.table', warn.conflicts = FALSE)
 library('conflicted', warn.conflicts = FALSE)
 
-conflict_prefer('nth', 'tidyfst', quiet = TRUE)
-conflict_prefer('cummean', 'tidyfst', quiet = TRUE)
+conflict_prefer('nth', 'tidyft', quiet = TRUE)
+conflict_prefer('unnest', 'tidyft', quiet = TRUE)
+conflict_prefer('cummean', 'tidyft', quiet = TRUE)
 conflict_prefer('group_by', 'tidyft', quiet = TRUE)
 conflict_prefer('distinct', 'tidyft', quiet = TRUE)
 conflict_prefer('filter', 'tidyft', quiet = TRUE)
@@ -140,12 +148,15 @@ conflict_prefer('separate', 'tidyft', quiet = TRUE)
 conflict_prefer('lead', 'tidyft', quiet = TRUE)
 conflict_prefer('lag', 'tidyft', quiet = TRUE)
 conflict_prefer('left_join', 'tidyft', quiet = TRUE)
+conflict_prefer('select_dt', 'tidyft', quiet = TRUE)
+conflict_prefer('transpose', 'tidyft', quiet = TRUE)
+conflict_prefer('setDT', 'tidyft', quiet = TRUE)
+conflict_prefer('setnames', 'tidyft', quiet = TRUE)
 conflict_prefer('mutate', 'dplyr', quiet = TRUE)
 conflict_prefer('collapse', 'dplyr', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 conflict_prefer('first', 'data.table', quiet = TRUE)
 conflict_prefer('last', 'data.table', quiet = TRUE)
-conflict_prefer('transpose', 'data.table', quiet = TRUE)
 conflict_prefer('between', 'data.table', quiet = TRUE)
 conflict_prefer('set', 'data.table', quiet = TRUE)
 
@@ -179,9 +190,10 @@ rm(程序包)
 
 ## <audio src='文艺坊曲库/bigmoney.mp3' autoplay controls loop></audio>
 
+conflict_prefer('llply', 'Ipaper', quiet = TRUE)
+conflict_prefer('view', 'tibble', quiet = TRUE)
 conflict_prefer('year', 'lubridate', quiet = TRUE)
 conflict_prefer('permutations', 'gtools', quiet = TRUE)
-
 
 ## 检验是否已设置途径。
 if (!exists('.蜀道')) {
