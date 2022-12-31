@@ -651,9 +651,11 @@ rm(基准, 样本)
 
 # 统计建模
 
-## 季节性指数平滑模型（Seasonal ETS））`ts()` & `ets()`
+## 季节性指数平滑模型（Seasonal ETS）
 
-### 0.02小时一周期（1分钟循环1200次）
+### `forecast`程序包：`ts()` & `ets()`
+
+**0.02小时一周期（1分钟循环1200次）**
 
 ```{r 1分钟, eval = FALSE}
 # --------- eval = FALSE ---------
@@ -683,7 +685,14 @@ source('函数/整顿数据.R')
 
 在此使用经过过滤的`样本2018半年`数据，再次运算以上函数，再与其它统计模型比较预测值误差，以证实上篇**（第III部）**的结论是否相符。
 
-## 季节性指数平滑模型（Seasonal ETS））`fable` & `fabletools`
+### `fable` & `fabletools`程序包
+
+**0.02小时一周期（1分钟循环1200次）**
+
+```{r 1分钟, eval = FALSE}
+# --------- eval = FALSE ---------
+
+```
 
 ## 自回归综合滑均模型系列（ARIMA Series）
 
@@ -707,7 +716,7 @@ source('函数/整顿数据.R')
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
 - [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 source('函数/季节性自回归.R')
 
 样本2018半年[序列 == 序列基准1]
@@ -719,7 +728,7 @@ source('函数/季节性自回归.R')
 # .模型选项 %<>% .[2]
 .差分阶数 = 0:2
 .季节性差分阶数 = 0:1 
-季节性与否 = c(TRUE, FALSE)
+季节性与否 = c('是', '否')
 ## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
 #近似值与否 <- c(TRUE, FALSE)
 #逐步精化与否 <- c(TRUE, FALSE)
@@ -727,17 +736,20 @@ source('函数/季节性自回归.R')
 ## .时序规律 <- c(0, 0, 0)
 .时序规律 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as.data.table
-.时序规律 <- setnames(.时序规律, old = c('V1', 'V2', 'V3'), new = c('自回归阶数', '差分阶数', '滑均阶数'))[差分阶数 <= 2]
+.时序规律 <- setnames(.时序规律, old = c('V1', 'V2', 'V3'), 
+                  new = c('自回归阶数', '差分阶数', 
+                          '滑均阶数'))[差分阶数 <= 2]
 
 ## .季节性规律参数 <- c(0, 0, 0)
 .季节性规律参数 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as.data.table
-.季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2]
+.季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), 
+                     new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2]
 ```
 
-#### 0.02小时一周期（1分钟循环1200次）
+**0.02小时一周期（1分钟循环1200次）**
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 循环周期 = 1200
 
 ## 由于forecast::Arima()出现多种错误信息，故此忽略使用该函数建模。
@@ -773,7 +785,8 @@ llply(.模型选项[1], function(模型) {
     季回归0 <- llply(1:nrow(.时序规律), function(迭数1) {
       季回归1 <- llply(1:nrow(.季节性规律参数), function(迭数2) {
         季回归2 <- llply(时间索引, function(时序) {
-          成效 <- 季节性自回归(时间索引 = 时序, 样本 = 样本2018半年, 路径 = .路径, 
+          成效 <- 季节性自回归(
+            时间索引 = 时序, 样本 = 样本2018半年, 路径 = .路径, 
             数据量 = 数据量, 预测时间单位 = 预测时间单位, 
             .模型选项 = 模型, .时序规律 = unlist(.时序规律[迭数1,]), 
             .季节性规律参数 = unlist(.季节性规律参数[迭数2,]), 趋势 = NULL, 
@@ -795,7 +808,7 @@ llply(.模型选项[1], function(模型) {
 
 ####  0.02小时一周期（1分钟循环1200次）
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 培训数据$闭市价 %>% 
     matrix(dimnames = list(培训数据$年月日时分, '闭市价')) %>% 
     tk_ts(frequency = 60)
@@ -813,7 +826,7 @@ llply(.模型选项[1], function(模型) {
 
 - [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
 
-```{r, eval=FALSE}
+```{r, eval = FALSE}
 样本2018半年[序列 == 序列基准1]
 
 数据量 <- 1200 #筛选数据中的最后1200观测值：样本2018半年[(.N - (数据量 - 1)):.N]
@@ -840,8 +853,8 @@ llply(.模型选项[1], function(模型) {
 .季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2]
 ```
 
-```{r eval=FALSE}
-# --------- eval=FALSE ---------
+```{r eval = FALSE}
+# --------- eval = FALSE ---------
 llply(.模型选项, function(模型) {
   
   if (模型 == '自动化') {
@@ -942,8 +955,8 @@ I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes 
 - sub-seasonal `1440 mins`
 - forecast `1440 mins`
 
-```{r eval=FALSE}
-# --------- eval=FALSE ---------
+```{r eval = FALSE}
+# --------- eval = FALSE ---------
 样本2018半年[序列 == 序列基准1]
 
 数据量 <- 7200 #last 7200  observations 样本2018半年[(.N - (数据量 - 1)):.N]

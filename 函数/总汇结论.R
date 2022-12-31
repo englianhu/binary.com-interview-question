@@ -35,7 +35,9 @@
         by = .(频率)]}][order(频率), ]
   setorder(结论, 频率)
   setnames(结论, old = c('N', 'MAE', 'MAPE', 'RMSE', 'SMAPE', 'MSE'), 
-           new = c('频率（分计）', '均对误差（MAE）', '均对百分比误差（MAPE）', '均方根误差（RMSE）', '对称均对百分比误差（SMAPE）', '均方误差（MSE）'))
+           new = c('频率（分计）', '均对误差（MAE）', '均对百分比误差（MAPE）', 
+                   '均方根误差（RMSE）', '对称均对百分比误差（SMAPE）', 
+                   '均方误差（MSE）'))
   结论[, '平均绝对比例误差（MASE）' := NA]
   
   是否储存结论 <- 是否储存结论
@@ -44,7 +46,7 @@
   } else {
     if (是否储存结论 == '是') {
       saveRDS(结论, paste0(.蜀道仓库, 文件名, '结论.rds'))#, compress = FALSE)
-      cat(paste0('\n已储存"', 文件名, '结论.rds"！\n'))
+      cat(paste0("\n已储存'", 文件名, "'结论.rds'！\n"))
     }
   }
   

@@ -52,8 +52,10 @@
   na.omit(unique(总汇, fromLast = FALSE, by = c('频率', '年月日时分')))
   
   是否储存总汇 <- 是否储存总汇
+  
   if (!是否储存总汇 %in% c('是', '否')) {
     stop("是否储存总汇 = '是' 或 '否'!")
+    
   } else {
     if (是否储存总汇 == '是') {
       
@@ -65,31 +67,31 @@
       tryCatch({
         proc.time(saveRDS(总汇, paste0(.蜀道仓库, 文件名, '总汇.rds')))
         cat(paste0('\n已储存："', 文件名, '总汇.rds"！\n'))}, 
-               error = function(e) 
-                 cat(paste0('\n出错："', 文件名, '总汇.rds"！\n')))
+        错误信息 = function(错误信息参数) 
+          cat(paste0('\n出错："', 文件名, '总汇.rds"！\n')))
       
       tryCatch({
         proc.time(fwrite(总汇, paste0(.蜀道仓库, 文件名, '总汇.csv')))
         cat(paste0('\n已储存："', 文件名, '总汇.csv"！\n'))}, 
-        error = function(e) 
+        错误信息 = function(错误信息参数) 
           cat(paste0('\n出错："', 文件名, '总汇.csv"！\n')))
       
       tryCatch({
         proc.time(save(总汇, paste0(.蜀道仓库, 文件名, '总汇.RData')))
         cat(paste0('\n已储存："', 文件名, '总汇.RData"！\n'))}, 
-        error = function(e) 
+        错误信息 = function(错误信息参数) 
           cat(paste0('\n出错："', 文件名, '总汇.RData"！\n')))
       
       tryCatch({
         proc.time(write_feather(总汇, paste0(.蜀道仓库, 文件名, '总汇.feather')))
         cat(paste0('\n已储存："', 文件名, '总汇.feather"！\n'))}, 
-        error = function(e) 
+        错误信息 = function(错误信息参数) 
           cat(paste0('\n出错："', 文件名, '总汇.feather"！\n')))
       
       tryCatch({
         proc.time(export_fst(总汇, paste0(.蜀道仓库, 文件名, '总汇.fst')))
         cat(paste0('\n已储存："', 文件名, '总汇.fst"！\n'))}, 
-        error = function(e) 
+        错误信息 = function(错误信息参数) 
           cat(paste0('\n出错："', 文件名, '总汇.fst"！\n')))
     }
   }

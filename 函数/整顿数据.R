@@ -35,7 +35,7 @@
    ## 一般上，使用eval(parse(text = 参数))可以执行所有任何R语言代码方程，不过每行代码都使用分号，代码排列就不整齐，类似抒写一篇只有一段而已的作文。
    ## 商鞅变法：将所有方程、参数、任何代码编写为文字、依照可兰经回教刑事法典断肢法执行、再评估成效。
    ## 断肢分一杯羹的司马迁乩童白骨精巫师王（荆州人彭城堂虞素威/刘表 ------ 刘瑾貹和张佳坤 --- 溥仪），歼灭Judi回教博彩庄Caspo Inc
-   #王翦阅兵 <- paste0('list(列表 = 列表', substitute(频率), ', 日内汇价数据', substitute(频率), 'A)')
+   #王翦阅兵 <- paste0('list(列表 = 列表', substitute(频率), ', 总汇', substitute(频率), 'A)')
    # 
    #return(eval(parse(text = 王翦阅兵)))
    ## -----------------------------------------------------------------------
@@ -70,9 +70,12 @@
    cat('\n列表已储存！')
    #列表 <- readRDS(paste0(.蜀道仓库, '列表', 频率, '.rds'))
    数据B <- ldply(列表, function(参数) {
-     tryCatch(readRDS(paste0(.蜀道仓库, 频率, '/', 参数)), error = function(e) {
-          if (.print == TRUE) cat(paste(参数, '错误信息：文件不存在。\n')) else NULL
-          })}, .progress = 'text')  %>% as.data.table
+     tryCatch(readRDS(paste0(.蜀道仓库, 频率, '/', 参数)), 
+              错误信息 = function(错误信息参数) {
+                if (.print == TRUE) 
+                  cat(paste(参数, '错误信息：文件不存在。\n')) 
+                else NULL
+              })}, .progress = 'text')  %>% as.data.table
    cat('\n将列表数据编组！')
    
    ## 赢家自家人老王王翦王贲检验并整顿数据
@@ -81,19 +84,19 @@
    if (file.exists(王翦阅兵)) {
       数据A <- readRDS(paste0(.蜀道仓库, 文件名, 频率, '.rds')) %>% 
         as.data.table
-      #日内汇价数据 <- rbind(数据A, 数据B)[order(年月日时分)] %>% unique
-      日内汇价数据 <- rbindlist(list(数据B, 数据A))[order(年月日时分)] %>% 
+      #总汇 <- rbind(数据A, 数据B)[order(年月日时分)] %>% unique
+      总汇 <- rbindlist(list(数据B, 数据A))[order(年月日时分)] %>% 
         unique
-      saveRDS(日内汇价数据, paste0(.蜀道仓库, 文件名, 频率, '.rds'))
+      saveRDS(总汇, paste0(.蜀道仓库, 文件名, 频率, '.rds'))
       cat('\n储存已编组的数据！\n')
    
    } else {      
-      日内汇价数据 <- 数据B
-      saveRDS(日内汇价数据, paste0(.蜀道仓库, 文件名, 频率, '.rds'))
+      总汇 <- 数据B
+      saveRDS(总汇, paste0(.蜀道仓库, 文件名, 频率, '.rds'))
       cat('\n储存已编组的数据！\n')
    }
    
-   #日内汇价数据 <- readRDS(paste0(.蜀道仓库, 文件名, 频率, '.rds'))
+   #总汇 <- readRDS(paste0(.蜀道仓库, 文件名, 频率, '.rds'))
    rm(列表, 数据A, 数据B)
    
    是否移除文件夹 <- 是否移除文件夹
@@ -115,7 +118,7 @@
    }
    
    cat(paste0('频率 = ', 频率, '\n'))
-   return(日内汇价数据)
+   return(总汇)
 }
 
 #整顿数据(1)
