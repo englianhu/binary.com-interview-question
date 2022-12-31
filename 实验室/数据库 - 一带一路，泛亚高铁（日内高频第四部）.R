@@ -256,10 +256,10 @@ source('函数/季节性自回归.R')
 # .模型选项 %<>% .[2]
 .差分阶数 = 0:2
 .季节性差分阶数 = 0:1 
-季节性与否 = c('是', '否')
+季节性与否 = c('勾', '叉')
 ## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
-#近似值与否 <- c(TRUE, FALSE)
-#逐步精化与否 <- c(TRUE, FALSE)
+#近似值与否 <- c('勾', '叉')
+#逐步精化与否 <- c('勾', '叉')
 
 ## .时序规律 <- c(0, 0, 0)
 .时序规律 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
