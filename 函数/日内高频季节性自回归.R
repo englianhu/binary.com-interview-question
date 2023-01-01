@@ -121,6 +121,9 @@
     # 季回归 <- 培训样本[, .(年月日时分, 闭市价)] %>% 
     #   as.matrix %>% 
     #   tk_ts(frequency = 频率)
+    ## 
+    ## 在ts和xts和matrix格式上使用auto.arima
+    ## https://github.com/englianhu/binary.com-interview-question/issues/8#issue-1515678585
     季回归 <- 培训样本$闭市价 |> 
       {\(.) matrix(., dimnames = list(培训样本$年月日时分, '闭市价'))}() |> 
       {\(.) tk_ts(., frequency = 频率)}()
