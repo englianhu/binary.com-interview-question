@@ -298,7 +298,10 @@ source('函数/日内高频季节性自回归.R')
 .季节性规律参数 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
   as.data.table
 .季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), 
-                     new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2]
+                     new = c('季节性自回归阶数', '季节性差分阶数', '季节性滑均阶数'))[季节性差分阶数 <= 2] %>% 
+  mutate_dt(总和 = rowSums(.)) %>% 
+  filter_dt(总和 > 0) %>% 
+  select_dt(-总和)
 
 频率 = 1
 
@@ -379,7 +382,7 @@ source('函数/日内高频季节性自回归.R')
 包含截距与否 = '叉'
 迭数1 <- 迭代基准[1]
 省略 = NULL
-计策谋略 = NULL
+计策谋略 = c('CSS-ML', 'ML', 'CSS')
 趋势 = NULL
 博克斯考克斯变换 = NULL
 
@@ -533,10 +536,8 @@ source('函数/日内高频季节性自回归.R')
   逐步精化量 = 94, #近似值与否=(length(x)>150|frequency(x)>12), 
   省略 = NULL, 计策谋略 = NULL, #x = y, 
   趋势 = NULL, 测试 = c('kpss', 'adf', 'pp'), 测试参数 = list(), 
-  季节性测试参数 = list(), 
-  季节性测试 = c('seas', 'ocsb', 'hegy', 'ch'), 
-  允许截距与否 = '勾', 允许包含均值与否 = '勾', 
-  博克斯考克斯变换 = NULL, 
+  季节性测试参数 = list(), 季节性测试 = c('seas', 'ocsb', 'hegy', 'ch'), 
+  允许截距与否 = '勾', 允许包含均值与否 = '勾', 博克斯考克斯变换 = NULL, 
   偏差调整与否 = '叉', 多管齐下与否 = '叉', 核心量 = 2, 包含均值与否 = '勾')
 
 
@@ -559,6 +560,15 @@ source('函数/日内高频季节性自回归.R')
     biasadj = 偏差调整与否, method = 计策谋略)
 }, 错误信息 = function(错误信息参数) NULL)
 
+半成品 <- tryCatch({
+  Arima(
+    季回归, order = unlist(.时序规律[1,]), 
+    seasonal = unlist(.季节性规律参数[1,]), 
+    xreg = 趋势, include.mean = 包含均值与否, 
+    include.drift = TRUE, #包含截距与否, #include.constant = 包含常数, 
+    #model = 统计模型, lambda = 博克斯考克斯变换, x = y, 
+    biasadj = 偏差调整与否, method = 'CSS')#计策谋略)
+}, 错误信息 = function(错误信息参数) NULL)
 
 
 

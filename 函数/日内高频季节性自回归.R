@@ -47,7 +47,7 @@
     #趋势 = NULL, 包含常数与否, 
     包含截距与否 = 包含截距与否, 统计模型 = 统计模型, 
     #博克斯考克斯变换 = 统计模型$lambda, x = y, 偏差调整与否 = FALSE, 
-    计策谋略 = 计策谋略, 列印 = '勾') {
+    计策谋略 = c('CSS-ML', 'ML', 'CSS'), 列印 = '勾') {
   
   options(digits = 22)
   require('tidyft', quietly = TRUE)
