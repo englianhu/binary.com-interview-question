@@ -689,10 +689,10 @@ llply(.模型选项, function(模型) {
               博克斯考克斯变换 = NULL, 
               偏差调整与否 = '叉', 多管齐下与否 = '叉', 核心量 = 2, 
               包含均值与否 = '勾', 包含截距与否 = '勾')
-          })
-        })
-      })
-    })
+          }, .progress = 'text')
+        }, .progress = 'text')
+      }, .progress = 'text')
+    }, .progress = 'text')
   }
   
   if (模型 == '自回归滑均') {
@@ -710,12 +710,12 @@ llply(.模型选项, function(模型) {
             #包含常数与否 = 包含常数与否, 
             #统计模型 = NULL, 博克斯考克斯变换 = 博克斯考克斯变换, x = y, 
             偏差调整与否 = '叉', 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
-        })
-      })
-    })
+        }, .progress = 'text')
+      }, .progress = 'text')
+    }, .progress = 'text')
   }
   return(模型)
-})
+}, .progress = 'text')
 # 整顿数据(1, 文件名 = '日内高频季节性自回归2018数据', 是否移除文件夹 = '是')
 ```
 
@@ -886,6 +886,8 @@ options(warn = 0)
 # 附录
 
 ## 幕后花絮
+
+- [猫城：englianhu/binary.com-interview-question `Error: forecast::Arima() #910 #6`](https://github.com/englianhu/binary.com-interview-question/issues/6)
 
 ## 文书明细
 
