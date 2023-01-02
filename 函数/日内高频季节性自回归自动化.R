@@ -6,8 +6,7 @@
     .时序规律 = .时序规律, .季节性规律参数 = .季节性规律参数, 静态与否 = '叉', 
     季节性与否 = '勾', 信息量准则 = c('aicc', 'aic', 'bic'), 
     逐步精化与否 = '勾', 逐步精化量 = 94, 记载自回归与否 = '叉', 
-    近似值 = (length(x) > 150 | frequency(x) > 12), 
-    计策谋略 = '冇', 省略 = '冇', 
+    近似值与否 = '勾', 计策谋略 = '冇', 省略 = '冇', 
     ## 代码中xreg作为 [公式] 。xreg可以指定多组相关序列，
     ##   也就是说动态回归就是多元回归。
     ## Dynamic Harmonic Regression
@@ -131,12 +130,14 @@
     rownames(季回归) <- 培训样本$年月日时分
     cat('建立季节性模型完毕\n')
     
+    近似值与否 <- ifelse2(近似值与否 == '勾', (length(季回归) > 150 | frequency(季回归) > 12), FALSE)
+    
     cat('开始运算季回归\n')
     半成品 <- tryCatch({
       auto.arima(
         季回归, d = .差分阶数, D = .季节性差分阶数, stationary = 静态与否, 
         seasonal = 季节性与否, ic = 信息量准则, stepwise = 逐步精化与否, 
-        nmodels = 逐步精化量, trace = 记载自回归与否, approximation = 近似值, 
+        nmodels = 逐步精化量, trace = 记载自回归与否, approximation = 近似值与否, 
         method = 计策谋略, truncate = 省略, xreg = 趋势, test = 测试, 
         test.args = 测试参数, allowdrift = 允许截距与否, 
         seasonal.test = 季节性测试, seasonal.test.args = 季节性测试参数, 
