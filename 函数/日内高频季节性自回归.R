@@ -124,14 +124,19 @@
     ## 
     ## 在ts和xts和matrix格式上使用auto.arima
     ## https://github.com/englianhu/binary.com-interview-question/issues/8#issue-1515678585
+    cat('开始建立季节性模型\n')
     季回归 <- 培训样本$闭市价 |> 
       {\(.) matrix(., dimnames = list(培训样本$年月日时分, '闭市价'))}() |> 
       {\(.) tk_ts(., frequency = 频率)}()
     rownames(季回归) <- 培训样本$年月日时分
+    cat('建立季节性模型完毕\n')
     
+    cat('开始鉴定.模型选项\n')
     if (!.模型选项 %in% .模型选项表) 
       stop("错误信息：.模型选项 = '自动化' 或 '自回归滑均'")
+    cat('鉴定完毕.模型选项\n')
     
+    cat('开始运算季回归\n')
     if (.模型选项 == '自动化') {
       半成品 <- tryCatch({
         auto.arima(
@@ -146,10 +151,17 @@
           allowmean = 允许包含均值与否, biasadj = 偏差调整与否, 
           parallel = 多管齐下与否, num.cores = 核心量)
       }, 错误信息 = function(错误信息参数) NULL)
+      cat('运算完毕季回归\n')
       
+      cat('开始运算预测汇价\n')
+      半成品 %<>% forecast::forecast(h = 预测时间单位)
+      cat('运算完毕预测汇价\n')
+      
+      cat('开始整顿预测汇价\n')
       半成品 <- 预测样本 |> 
         {\(.) mutate_dt(., 市场价 = 闭市价, 预测价 = coef(半成品))}() |> 
         {\(.) select_dt(., 年月日时分, 市场价, 预测价)}()
+      cat('整顿完毕预测汇价\n')
       
       模型名称 <- paste0(
         .模型选项, '_差分阶数_', .差分阶数, '_季节性差分阶数_', .季节性差分阶数, 

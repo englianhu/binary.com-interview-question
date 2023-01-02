@@ -305,7 +305,7 @@ Sys.setenv(TZ = 'Asia/Shanghai')
 ## options(repos = 'https://cran.rstudio.com')将仓库设置为安全网。
 ## options(repos = 'http://cran.rstudio.com')将仓库设置为普通网。
 options(warn = -1, width = 999, knitr.table.format = 'html', 
-        digits = 30, digits.secs = Inf, repos = 'https://cran.rstudio.com')
+        digits = 22, digits.secs = Inf, repos = 'https://cran.rstudio.com')
 
 ## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
 ## https://yihui.org/knitr/options
@@ -635,8 +635,8 @@ source('函数/日内高频季节性自回归.R')
 .季节性差分阶数 = 0:1 
 季节性与否 = c('勾', '叉')
 ## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
-#近似值与否 <- c(TRUE, FALSE)
-#逐步精化与否 <- c(TRUE, FALSE)
+#近似值与否 <- c('勾', '叉')
+#逐步精化与否 <- c('勾', '叉')
 
 ## .时序规律 <- c(0, 0, 0)
 .时序规律 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
