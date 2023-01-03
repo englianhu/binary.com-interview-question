@@ -148,12 +148,14 @@
     cat('运算完毕季回归\n')
     
     cat('开始运算预测汇价\n')
-    半成品 %<>% forecast::forecast(h = 预测时间单位)
+    预测汇价 <- 半成品 |> 
+      forecast::forecast(h = 预测时间单位)
     cat('运算完毕预测汇价\n')
     
     cat('开始整顿预测汇价\n')
     半成品 <- 预测样本 |> 
-      {\(.) mutate_dt(., 市场价 = 闭市价, 预测价 = coef(半成品))}() |> 
+      {\(.) mutate_dt(., 市场价 = 闭市价, 
+                      预测价 = as_tibble(预测汇价)$`Point Forecast`)}() |> 
       {\(.) select_dt(., 年月日时分, 市场价, 预测价)}()
     cat('整顿完毕预测汇价\n')
     
