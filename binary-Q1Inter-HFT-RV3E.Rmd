@@ -1280,6 +1280,87 @@ if (!exists('.蜀道仓库')) {
 
 *数据：`r paste0(dim(日内指数平滑数据2018年第4周结论), collapse = ' x ')`*
 
+## 平滑周计
+
+### 总汇2018年1月平滑周计结论
+
+```{r 日内指数平滑数据2018年1月平滑周计总汇}
+日内指数平滑数据2018年1月平滑周计总汇 <- 日内指数平滑数据2018年1月平滑周计总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
+
+
+
+日内指数平滑数据2018年1月平滑周计结论 <- tidyft::llply(, 总汇结论(总汇 = 日内指数平滑数据2018年1月平滑周计总汇, 文件名 = '日内指数平滑数据2018年1月平滑周计', 是否储存结论 = '勾'), .progess = 'text')
+```
+
+- [`dplyr::slice` in `data.table` [duplicate]](https://stackoverflow.com/a/50093928/3806250)
+- [Subset rows corresponding to max value by group using data.table](https://stackoverflow.com/a/16574176/3806250)
+- [`data.table`: Slice both dimensions, list of string columns](https://stackoverflow.com/questions/24937134/data-table-slice-both-dimensions-list-of-string-columns)
+
+```{r 日内指数平滑数据2018年1月平滑周计结论, results = 'asis'}
+## 这儿将精准度调整至30位数，round(..., 30)
+日内指数平滑数据2018年1月平滑周计结论 %>% 
+  dplyr::mutate(
+    `均对误差（MAE）` = ifelse(
+      rank(`均对误差（MAE）`) <= 3, 
+      cell_spec(
+        paste0(round(`均对误差（MAE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均对误差（MAE）`)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(`均对误差（MAE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均对误差（MAE）`)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    
+    `均对百分比误差（MAPE）` = ifelse(
+      rank(`均对百分比误差（MAPE）`) <= 3, 
+      cell_spec(
+        paste0(round(`均对百分比误差（MAPE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均对百分比误差（MAPE）`)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(`均对百分比误差（MAPE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均对百分比误差（MAPE）`)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    
+    `均方根误差（RMSE）` = ifelse(
+      rank(`均方根误差（RMSE）`) <= 3, 
+      cell_spec(
+        paste0(round(`均方根误差（RMSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方根误差（RMSE）`)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(`均方根误差（RMSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方根误差（RMSE）`)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    
+    `对称均对百分比误差（SMAPE）` = ifelse(
+      rank(`对称均对百分比误差（SMAPE）`) <= 3, 
+      cell_spec(
+        paste0(round(`对称均对百分比误差（SMAPE）`, 30), ' (rank: ', sprintf('%1.f', rank(`对称均对百分比误差（SMAPE）`)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(`对称均对百分比误差（SMAPE）`, 30), ' (rank: ', sprintf('%1.f', rank(`对称均对百分比误差（SMAPE）`)), ')'), 
+        color = 'grey', italic = TRUE)), 
+    
+    `均方误差（MSE）` = ifelse(
+      rank(`均方误差（MSE）`) <= 3, 
+      cell_spec(
+        paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
+        color = 'darkgoldenrod', bold = TRUE), 
+      cell_spec(
+        paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
+        color = 'grey', italic = TRUE))) %>% 
+  kbl(caption = '最优统计模型（日内指数平滑数据2018年第4周结论）', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  column_spec(1, background = 'CornflowerBlue') %>% 
+  #column_spec(2, background = '#556DAC') %>% 
+  column_spec(2, background = 'LightSlateGrey') %>% 
+  column_spec(3, background = 'LightGray') %>% 
+  column_spec(4, background = 'Gainsboro') %>% 
+  column_spec(5, background = 'LightGray') %>% 
+  column_spec(6, background = 'Gainsboro') %>% 
+  column_spec(7, background = 'LightGray') %>% 
+  column_spec(8, background = 'Gainsboro') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
+```
+
 # 结论
 
 ## 摘要
