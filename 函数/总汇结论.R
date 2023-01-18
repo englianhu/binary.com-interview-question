@@ -1,5 +1,5 @@
 总汇结论 <- function(
-    总汇 = NULL, 文件名 = '日内指数平滑数据', 数据量, 频率 = 1, 
+    总汇 = NULL, 文件名 = '日内指数平滑数据', 数据量 = 1200, 频率 = 1, 
     时间索引, 预测时间单位 = 1, 是否储存结论 = '叉', 列印 = '勾') {
   ## 
   ############################ 海纳百川，有容乃大； ############################
@@ -36,9 +36,9 @@
   require('forecast', quietly = TRUE)
   require('Ipaper', quietly = TRUE)
   conflict_prefer('llply', 'Ipaper', quiet = TRUE)
-  conflict_prefer('mutate_dt', 'tidyft', quiet = TRUE)
-  conflict_prefer('rename_dt', 'tidyft', quiet = TRUE)
-  conflict_prefer('select_dt', 'tidyft', quiet = TRUE)
+  conflict_prefer('mutate', 'tidyft', quiet = TRUE)
+  conflict_prefer('rename', 'tidyft', quiet = TRUE)
+  conflict_prefer('select', 'tidyft', quiet = TRUE)
   
   if (!exists('.蜀道') || is.null(.蜀道)) {
     .蜀道 <- getwd() |> 
