@@ -90,6 +90,7 @@ output:
 - [知识贝壳](https://www.zsbeike.com)
 - [趣历史](http://www.qulishi.com/renwu/qinshihuang)
 - [古诗文网](https://www.gushiwen.cn)
+- [5000言](https://5000yan.com)
 
 > [《万般皆下品，唯有读书高》]{style="color:#3C33FF"}<br>
 [习李经济，一带一路；]{style="color:#6883FC"}<br>
@@ -99,29 +100,12 @@ output:
 [百家争鸣，振兴中华；]{style="color:#6883FC"}<br>
 [学海无涯，唯勤是岸。]{style="color:#6883FC"}
 
-> 辛亥革命大秦赋日不落重八、德意志崇祯、古希腊ξηg神话、周公解梦、嬴政把春秋大梦实现为春秋大业、秦孝公招商（商鞅变法）、秦惠文王：全球有16亿不吃猪肉的回教徒宦官（可兰经回教刑事法典断肢法）宗祖国是沙地阿拉伯麦加，需要靠中国政府一带一路战略（商鞅变法联合辛亥革命）还俗。
+- [陕西历史文化名城](http://lishiwenhua.snnu.edu.cn/index.htm)
+- [CCER 特供数据系统平台](http://www.ccerdata.cn)
+- [一带一路数据库](https://www.ydylcn.com/skwx_ydyl/sublibrary?SiteID=1&ID=8721)
+- [中国一带一路网](https://www.yidaiyilu.gov.cn)
 
-> 《量化短歌行》<br>
-[**高频量化**，人生几何？]{style="color:#6883FC"}；<br>
-譬如朝露，去日苦多。<br>
-慨当以慷，忧思难忘；<br>
-[何以解忧，唯有**陆佑**]{style="color:#6883FC"}。<br>
-青青子衿，悠悠我心；<br>
-但为君故，沉吟至今。<br>
-呦呦鹿鸣，食野之苹；<br>
-[我有**鸿门**，鼓瑟吹笙。]{style="color:#6883FC"}<br>
-[明明如**日**，何时可掇?]{style="color:#6883FC"}<br>
-忧从巫来，不可断绝。（何以解忧，唯有除巫。）<br>
-越陌度阡，枉用相存；<br>
-契阔谈宴，心念旧恩。<br>
-月明星稀，乌鹊南飞；<br>
-绕树三匝，何枝可依？<br>
-[**春秋战国，卐家争鸣（🇩🇪德意志崇祯）**；]{style="color:#6883FC"}<br>
-[**北京鸟巢，卐鸟归巢（🇩🇪德意志崇祯）**。]{style="color:#6883FC"}<br>
-[**辛亥革命，根除巫裔**；]{style="color:#6883FC"}<br>
-[**终止疫情，拯救全球**。]{style="color:#6883FC"}<br>
-山不厌高，海不厌深；<br>
-[嬴政吐哺，天下归心。]{style="color:#6883FC"}
+> 辛亥革命大秦赋日不落重八、德意志崇祯、古希腊ξηg神话、周公解梦、嬴政把春秋大梦实现为春秋大业、秦孝公招商（商鞅变法）、秦惠文王：全球有16亿不吃猪肉的回教徒宦官（可兰经回教刑事法典断肢法）宗祖国是沙地阿拉伯麦加，需要靠中国政府一带一路战略（商鞅变法联合辛亥革命）还俗。
 
 <img src='文艺坊图库/css.jpeg' width = '400'>
 
@@ -1444,7 +1428,6 @@ options(warn = 0)
 - 文集作者：[®γσ, ξηg Lιαη Ημ](https://rpubs.com/englianhu/ryo-cn)
 - 猫城：[源代码](https://github.com/englianhu/binary.com-interview-question)
 - 追加附属信息
-
 
 ```{r 信息}
 #suppressMessages(require('formattable', quietly = TRUE))
