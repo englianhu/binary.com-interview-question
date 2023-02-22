@@ -91,6 +91,7 @@ output:
 - [趣历史](http://www.qulishi.com/renwu/qinshihuang)
 - [古诗文网](https://www.gushiwen.cn)
 - [5000言](https://5000yan.com)
+- [汉典](https://www.zdic.net)
 
 > [《万般皆下品，唯有读书高》]{style="color:#3C33FF"}<br>
 [习李经济，一带一路；]{style="color:#6883FC"}<br>
