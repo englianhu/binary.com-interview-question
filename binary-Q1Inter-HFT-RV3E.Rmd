@@ -85,6 +85,7 @@ output:
 - [历史记](https://www.lishiji.cn)
 - [β博雅旅游分享网](http://www.bytravel.cn)
 - [博雅人物网](http://ren.bytravel.cn)
+- [洞鑑歷史](https://www.99tango.com/library)
 - [中国人物传记网](https://www.chinarwzj.com)
 - [「百家诸子」中国哲学书电子化计划](https://ctext.org/zhs)
 - [當代中國](https://www.ourchinastory.com)
