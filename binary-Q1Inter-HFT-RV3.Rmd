@@ -52,6 +52,7 @@ output:
 - [词林](https://www.cilin.org)
 - [族谱网](https://www.zupu.cn)
 - [历史网](https://www.lishi.net)
+- [中国历史研究院网](http://hrc.cass.cn)
 - [人物介绍网](https://www.yuelishi.cn)
 - [百家有谱](https://www.baijiayoupu.com)
 - [历史记](https://www.lishiji.cn)
