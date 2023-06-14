@@ -80,10 +80,10 @@ output:
 - [词林](https://www.cilin.org)
 - [族谱网](https://www.zupu.cn)
 - [历史网](https://www.lishi.net)
+- [中国历史研究院网](http://hrc.cass.cn)
 - [人物介绍网](https://www.yuelishi.cn)
 - [百家有谱](https://www.baijiayoupu.com)
 - [历史记](https://www.lishiji.cn)
-- [中国历史研究院网](http://hrc.cass.cn)
 - [β博雅旅游分享网](http://www.bytravel.cn)
 - [博雅人物网](http://ren.bytravel.cn)
 - [洞鑑歷史](https://www.99tango.com/library)
@@ -103,6 +103,7 @@ output:
 - [arXiv](https://arxiv.org)
 - [5000言](https://gwgz.5000yan.com)
 - [古诗词网](https://www.gushici.net)
+- [千篇国学](https://www.qianp.com)
 
 > [《万般皆下品，唯有读书高》]{style="color:#3C33FF"}<br>
 [习李经济，一带一路；]{style="color:#6883FC"}<br>
