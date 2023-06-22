@@ -170,8 +170,8 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 ### 1.1) <span style='color:RoyalBlue'>简介</span>
 
-- 从2018年[Binary.com-is-Rebranding-to-Deriv.com](https://derivdotcom.medium.com/binary-com-is-rebranding-to-deriv-com-and-here-is-everything-you-need-to-know-6f4a8513c84b)科研项目耽搁两年有余，2020年的[Binary.com → Deriv.com](https://englianhu.medium.com/binary-com-deriv-com-6058cdbfc3a1)文章中阐明一些已发布的科研论文，并继续科研对冲基金高频量化交易，不过在此并非面试Deriv.com而是科研用途。
-- [Deriv.com和Binary.com加入金融委员会](https://caifuhao.eastmoney.com/news/20200609155259637111910)
+- 从2018年[Binary.com-is-Rebranding-to-Deriv.com](https://derivdotcom.medium.com/binary-com-is-rebranding-to-deriv-com-and-here-is-everything-you-need-to-know-6f4a8513c84b)科研项目耽搁两年有余，2020年的[二元期权（Binary.com） → 金融衍生/金融起源（Deriv.com）](https://englianhu.medium.com/binary-com-deriv-com-6058cdbfc3a1)文章中阐明一些已发布的科研论文，并继续科研对冲基金高频量化交易，不过在此并非面试Deriv.com而是科研用途。
+- [金融衍生/金融起源（Deriv.com）和二元期权（Binary.com）加入金融委员会](https://caifuhao.eastmoney.com/news/20200609155259637111910)
 - 科研项目中所使用的汇价原始数据，皆由FXCM官网下载，储存至[猫城：scibrokes/real-time-fxcm](https://github.com/scibrokes/real-time-fxcm)回测科研统计建模用途。
 
 <span style='color:red'>**I moved the data to <https://github.com/englianhu/binary.com-interview-question-data>.**</span>
