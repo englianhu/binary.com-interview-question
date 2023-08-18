@@ -8,6 +8,13 @@ find . -name *.xxx | xargs -I mv {} {}.xx
 find . -name *.xxx | sed  -e "p;s/文本文件*/金山文件*/" | xargs -n2 mv
 find path -type f -exec rename 's/太阳谷/咸阳谷_/g'  {} \;
 find . -name 太阳谷.png | sed  -e "p;s/太/咸/" | xargs -n2 mv
+find . -name *九么么*.png | sed  -e "p;s/太/咸/" | xargs -n2 mv
+
+## https://forums.debiancn.org/t/topic/1001/3
+for eachfile in *png; do mv $eachfile c${eachfile/./_}; done
+ls -1 *png | awk '{print("mv "$1" "$1)}' | sed 's/\./_/3' | bash
+
+
 
 #将文件移到御猫项目中的目录（蜀道）再委托推送。
 find /home/englianhu/下载/阳历二零二二年/ -size -50M | xargs -l mv {} /home/englianhu/文档/猫城/img/谷歌相册/阳历二零二二年/ | git add -All && git commit -m '《🚩春秋战国之鬼谷传奇》
