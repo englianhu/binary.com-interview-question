@@ -1,5 +1,13 @@
-#搜索并且批量命名
-find . -depth -name "*九么么*.png" -exec sh -c 'f="{}"; mv -- "$f" "${f%.php}.png"' \\;
+#搜索并且批量命名，例如当试图将所有文件从.jpg扩展名改为.pdf扩展名时，你将使用以下命令:
+find . -depth -name "*九么么*.png" -exec sh -c 'f="{}"; mv -- "$f" "${f%.jpg}.png"' \\;
+find . -depth -name "*.xxx" -exec sh -c 'f="{}"; mv -- "$f" "${f%.xxx}.png"' \\;
+find ./ -name "*.xxx" |  sed 's:\([^/]*\.xxx\):\1 \1:g' | xargs -n 2 mv
+find ./ -name "*" -exec sh -c 'mv "$1" "${1%.*}.txt"' _ {} \;
+find path -type f -name "*.xxx" -exec mv {} /home/englianhu/下载/ ;
+find . -name *.xxx | xargs -I mv {} {}.xx
+find . -name *.xxx | sed  -e "p;s/文本文件*/金山文件*/" | xargs -n2 mv
+find path -type f -exec rename 's/太阳谷/咸阳谷_/g'  {} \;
+find . -name 太阳谷.png | sed  -e "p;s/太/咸/" | xargs -n2 mv
 
 #将文件移到御猫项目中的目录（蜀道）再委托推送。
 find /home/englianhu/下载/阳历二零二二年/ -size -50M | xargs -l mv {} /home/englianhu/文档/猫城/img/谷歌相册/阳历二零二二年/ | git add -All && git commit -m '《🚩春秋战国之鬼谷传奇》
