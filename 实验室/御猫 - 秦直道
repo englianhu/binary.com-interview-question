@@ -17,12 +17,16 @@ ls -1 *png | awk '{print("mv "$1" "$1)}' | sed 's/\./_/3' | bash
 陈列文件 <- paste0("find . -name *洋妞*.jpg | awk '{print("rename\(\""$0", "$0"\"\)")}'")
 system(陈列文件)
 
+R
 library(magrittr)
 library(stringr)
-文件一 <- list.files(pattern = '.jpeg|.jpg', recursive = TRUE)
-文件二 <- 文件一 %>% str_replace_all(., '.jpeg|.jpg', '.png')
-file.rename(文件一, 文件二)
-library(magrittr)
+setwd('/home/englianhu//文档/猫城')
+蜀道 <- paste0(getwd(), '/', dir())
+lapply(蜀道, function(列表) {
+    文件一 = list.files(列表, pattern = '.jpeg|.jpg|.JPEG|.JPG|.PNG', recursive = TRUE)
+    文件二 = str_replace_all(文件一, '.jpeg|.jpg|.JPEG|.JPG|.PNG', '.png')
+    file.rename(paste0(列表, '/', 文件一), paste0(列表, '/', 文件二))
+  })
 
 
 #将文件移到御猫项目中的目录（蜀道）再委托推送。
