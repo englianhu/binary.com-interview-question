@@ -17,6 +17,14 @@ ls -1 *png | awk '{print("mv "$1" "$1)}' | sed 's/\./_/3' | bash
 陈列文件 <- paste0("find . -name *洋妞*.jpg | awk '{print("rename\(\""$0", "$0"\"\)")}'")
 system(陈列文件)
 
+library(magrittr)
+library(stringr)
+文件一 <- list.files(pattern = '.jpeg|.jpg', recursive = TRUE)
+文件二 <- 文件一 %>% str_replace_all(., '.jpeg|.jpg', '.png')
+file.rename(文件一, 文件二)
+library(magrittr)
+
+
 #将文件移到御猫项目中的目录（蜀道）再委托推送。
 find /home/englianhu/下载/阳历二零二二年/ -size -50M | xargs -l mv {} /home/englianhu/文档/猫城/img/谷歌相册/阳历二零二二年/ | git add -All && git commit -m '《🚩春秋战国之鬼谷传奇》
 
