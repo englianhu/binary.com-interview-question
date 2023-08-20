@@ -9,6 +9,8 @@ find $(pwd) -name *.xxx | sed  -e "p;s/文本文件*/金山文件*/" | xargs -n2
 find path -type f -exec rename 's/太阳谷/咸阳谷_/g'  {} \;
 find $(pwd) -name 太阳谷.png | sed  -e "p;s/太/咸/" | xargs -n2 mv
 find $(pwd) -name *九么么*.png | sed  -e "p;s/太/咸/" | xargs -n2 mv
+find $(pwd) -name 文本∙文件*.xxx | awk '{print("mv -f \""$0"\" \""$0"\"")}' | sed 's/\(.*\)件/\1稿/' | bash
+
 
 ## https://forums.debiancn.org/t/topic/1001/3
 for eachfile in *png; do mv $eachfile c${eachfile/./_}; done
