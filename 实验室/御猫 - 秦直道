@@ -1,14 +1,14 @@
 #搜索并且批量命名，例如当试图将所有文件从.jpg扩展名改为.pdf扩展名时，你将使用以下命令:
-find . -depth -name "*九么么*.png" -exec sh -c 'f="{}"; mv -- "$f" "${f%.jpg}.png"' \\;
-find . -depth -name "*.xxx" -exec sh -c 'f="{}"; mv -- "$f" "${f%.xxx}.png"' \\;
-find ./ -name "*.xxx" |  sed 's:\([^/]*\.xxx\):\1 \1:g' | xargs -n 2 mv
-find ./ -name "*" -exec sh -c 'mv "$1" "${1%.*}.txt"' _ {} \;
+find $(pwd) -depth -name "*九么么*.png" -exec sh -c 'f="{}"; mv -- "$f" "${f%.jpg}.png"' \\;
+find $(pwd) -depth -name "*.xxx" -exec sh -c 'f="{}"; mv -- "$f" "${f%.xxx}.png"' \\;
+find $(pwd) -name "*.xxx" |  sed 's:\([^/]*\.xxx\):\1 \1:g' | xargs -n 2 mv
+find $(pwd) -name "*" -exec sh -c 'mv "$1" "${1%.*}.txt"' _ {} \;
 find path -type f -name "*.xxx" -exec mv {} /home/englianhu/下载/ ;
-find . -name *.xxx | xargs -I mv {} {}.xx
-find . -name *.xxx | sed  -e "p;s/文本文件*/金山文件*/" | xargs -n2 mv
+find $(pwd) -name *.xxx | xargs -I mv {} {}.xx
+find $(pwd) -name *.xxx | sed  -e "p;s/文本文件*/金山文件*/" | xargs -n2 mv
 find path -type f -exec rename 's/太阳谷/咸阳谷_/g'  {} \;
-find . -name 太阳谷.png | sed  -e "p;s/太/咸/" | xargs -n2 mv
-find . -name *九么么*.png | sed  -e "p;s/太/咸/" | xargs -n2 mv
+find $(pwd) -name 太阳谷.png | sed  -e "p;s/太/咸/" | xargs -n2 mv
+find $(pwd) -name *九么么*.png | sed  -e "p;s/太/咸/" | xargs -n2 mv
 
 ## https://forums.debiancn.org/t/topic/1001/3
 for eachfile in *png; do mv $eachfile c${eachfile/./_}; done
@@ -30,25 +30,6 @@ lapply(蜀道, function(列表) {
 
 
 #将文件移到御猫项目中的目录（蜀道）再委托推送。
-find /home/englianhu/下载/阳历二零二二年/ -size -50M | xargs -l mv {} /home/englianhu/文档/猫城/img/谷歌相册/阳历二零二二年/ | git add -All && git commit -m '《🚩春秋战国之鬼谷传奇》
-
-《🚩🇨🇳🔆🏹🌟👊🚀🦔大秦赋 - 黄埔军校赢家黄氏江夏堂 - 中科红旗，量化对冲》
-
-🚩🇨🇳🏹🦔量化对冲，中科红旗；一带一路，一统天下（兵马未动，粮草先行；人民币货币经济学，司马错入蜀）
-
-🚩🇨🇳🏹🦔诸子百家：儒学、墨学、法学、道学、兵法、阴阳学、佛学、哲学、运筹学、思想录、干支算盘、大秦赋
-
-🚩🇨🇳🏹🦔《大秦赋 - 🇨🇳诸子百家关雎》
-🚩🇨🇳🏹🦔巫师治国，禍殃全球；
-🚩🇨🇳🏹🦔巫裔尽弃，瓦釜雷鸣。
-🚩🇨🇳🏹🦔商鞅变法，铲除巫裔；
-🚩🇨🇳🏹🦔车裂刘瑾，中华执政。
-🚩🇨🇳🏹🦔一带一路，横跨七洲；
-🚩🇨🇳🏹🦔史无前例，一统天下。
-🚩🇨🇳🏹🦔高频量化，对冲基金；
-🚩🇨🇳🏹🦔只争朝夕，不负韶华。
-🚩🇨🇳🏹🦔学海无涯，唯勤是岸；
-🚩🇨🇳🏹🦔不忘初心，方得始终。' && git push
-
+find $(pwd) -name 米拉*.xxx | awk '{print("mv -f \""$0"\" \"/home/englianhu/文档/猫城/img/文艺坊图库/英国洋妞儿米腊（气象学）/\"")}' | sed 's/\(.*\)件/\1稿/'
 
 
