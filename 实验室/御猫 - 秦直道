@@ -1,23 +1,45 @@
-#搜索并且批量命名，例如当试图将所有文件从.jpg扩展名改为.pdf扩展名时，你将使用以下命令:
-find $(pwd) -depth -name "*九么么*.png" -exec sh -c 'f="{}"; mv -- "$f" "${f%.jpg}.png"' \\;
-find $(pwd) -depth -name "*.xxx" -exec sh -c 'f="{}"; mv -- "$f" "${f%.xxx}.png"' \\;
-find $(pwd) -name "*.xxx" |  sed 's:\([^/]*\.xxx\):\1 \1:g' | xargs -n 2 mv
-find $(pwd) -name "*" -exec sh -c 'mv "$1" "${1%.*}.txt"' _ {} \;
-find path -type f -name "*.xxx" -exec mv {} /home/englianhu/下载/ ;
-find $(pwd) -name *.xxx | xargs -I mv {} {}.xx
-find $(pwd) -name *.xxx | sed  -e "p;s/文本文件*/金山文件*/" | xargs -n2 mv
-find path -type f -exec rename 's/太阳谷/咸阳谷_/g'  {} \;
-find $(pwd) -name 太阳谷.png | sed  -e "p;s/太/咸/" | xargs -n2 mv
-find $(pwd) -name *九么么*.png | sed  -e "p;s/太/咸/" | xargs -n2 mv
-find $(pwd) -name *九么么*.png | awk '{print("mv -f \""$0"\" \""$0"\"")}' | sed 's/\(.*\)件/\1九一一/' | bash
+#搜索并且批量命名，例如当试图将所有文件从.jpg或jpeg（无论大小写）扩展名改为.pdf扩展名时，你将使用以下命令:
+find $(pwd) -type f -iname *.jpg -o -type f -iname *.jpeg | awk '{print("mv -f \""$0"\" \""$0"\"")}' | sed 's/\(.*\).jpg|.jpeg/\1.png/' | bash
+
+#将文件移到御猫项目中的目录（蜀道）再委托推送。
+find $(pwd) -name 米拉*.xxx | awk '{print("mv -f \""$0"\" \"/home/englianhu/文档/猫城/img/文艺坊图库/英国洋妞儿米腊（气象学）/\"")}' | sed 's/\(.*\)件/\1稿/'
+
+## 正则表达式批量添加文件并委托推送至猫城代码托管平台。
+$ pwd
+$ cd /home/englianhu/文档/猫城/img
+$ find /home/englianhu/文档/猫城/img -name *.csv | awk '{print("\""$0"\"")}' | tr '\n' ' ' | awk '{print("git remote add '世博量化研究所' git@github.com:englianhu/img.git && git init && git add "$0 "&& git commit -m \"通过终端添加委托文件并推送至猫城平台\" && git push")}' | bash
+
+## 正则表达式、釜底抽薪、一劳永逸，重命名操作系统上主文件夹旗下（包括子嗣文件夹）所有文件并迁移至集中营。
+$ find $(pwd) -name 米拉*.png | awk '{print("mv -f \""$0"\" \"/home/englianhu/文档/猫城/img/文艺坊图库/英国洋妞儿米腊（气象学）\"")}' | bash
+
+## 先抵达/home/englianhu/文档/猫城/img项目路径，再将所有旗下包括子嗣文件夹所有jpg或jpeg格式（无论大小写）图象一律修改为png格式图象；正则表达式批量添加文件，并在委托栏详细注释且推送至猫城代码托管平台。
+$ cd /home/englianhu/文档/猫城/img
+$ find $(pwd) -type f -iname ‘*.jpg’ -o -type f -iname ‘*.jpeg’| awk '{print("mv -f \""$0"\" \""$0"\"")}' | sed 's/\(.*\).jpg\"/\1.png\"/' | bash
+$ find $(pwd) -iname *.png| awk '{print("\""$0"\"")}' | tr '\n' ' ' | awk '{print("git remote add '世博量化研究所' git@github.com:englianhu/img.git && git init && git add "$0 "&& git commit -am "《🚩春秋战国之鬼谷传奇》
+
+《🚩🇨🇳🔆🏹🌟👊🚀🦔大秦赋 - 黄埔军校赢家黄氏江夏堂 - 中科红旗，量化对冲》
+
+🚩🇨🇳🏹🦔量化对冲，中科红旗；一带一路，一统天下（兵马未动，粮草先行；人民币货币经济学，司马错入蜀）
+
+🚩🇨🇳🏹🦔诸子百家：儒学、墨学、法学、道学、兵法、阴阳学、佛学、哲学、运筹学、思想录、干支算盘、大秦赋
+
+🚩🇨🇳🏹🦔《大秦赋 - 🇨🇳诸子百家关雎》
+🚩🇨🇳🏹🦔巫师治国，禍殃全球；
+🚩🇨🇳🏹🦔巫裔尽弃，瓦釜雷鸣。
+🚩🇨🇳🏹🦔商鞅变法，铲除巫裔；
+🚩🇨🇳🏹🦔车裂刘瑾，中华执政。
+🚩🇨🇳🏹🦔一带一路，横跨七洲；
+🚩🇨🇳🏹🦔史无前例，一统天下。
+🚩🇨🇳🏹🦔高频量化，对冲基金；
+🚩🇨🇳🏹🦔只争朝夕，不负韶华。
+🚩🇨🇳🏹🦔学海无涯，唯勤是岸；
+🚩🇨🇳🏹🦔不忘初心，方得始终。" && git push")}' | bash
+
 
 
 ## https://forums.debiancn.org/t/topic/1001/3
 for eachfile in *png; do mv $eachfile c${eachfile/./_}; done
 ls -1 *png | awk '{print("mv "$1" "$1)}' | sed 's/\./_/3' | bash
-
-陈列文件 <- paste0("find . -name *洋妞*.jpg | awk '{print("rename\(\""$0", "$0"\"\)")}'")
-system(陈列文件)
 
 R
 library(magrittr)
@@ -29,9 +51,4 @@ lapply(蜀道, function(列表) {
     文件二 = str_replace_all(文件一, '.jpeg|.jpg|.JPEG|.JPG|.PNG', '.png')
     file.rename(paste0(列表, '/', 文件一), paste0(列表, '/', 文件二))
   })
-
-
-#将文件移到御猫项目中的目录（蜀道）再委托推送。
-find $(pwd) -name 米拉*.xxx | awk '{print("mv -f \""$0"\" \"/home/englianhu/文档/猫城/img/文艺坊图库/英国洋妞儿米腊（气象学）/\"")}' | sed 's/\(.*\)件/\1稿/'
-
 
