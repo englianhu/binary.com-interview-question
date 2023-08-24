@@ -1,3 +1,12 @@
+#如无法上网，尝试修改/etc/resolv.conf中的域名服务器
+sudo sh -c "echo '#赢家黄氏江夏堂，点缀全球。\nnameserver 114.114.114.114' > /etc/resolv.conf"
+
+#欲忽略输入密码，尝试修改%sudo用户组的权限设置
+sudo sed -i 's/^%sudo *\(.*\)* *ALL$/%sudo   ALL=(ALL:ALL) NOPASSWD:ALL/g' /etc/sudoers
+sudo sed -i 's/^%sudo *\(.*\)* *ALL$/%sudo   ALL=(ALL:ALL) NOPASSWD:ALL/g' /etc/sudoers.d/10-installer 
+
+sudo apt update && sudo apt upgrade -y
+
 #搜索并且批量命名，例如当试图将所有文件从.jpg或jpeg（无论大小写）扩展名改为.pdf扩展名时，你将使用以下命令:
 find $(pwd) -type f -iname *.jpg -o -type f -iname *.jpeg | awk '{print("mv -f \""$0"\" \""$0"\"")}' | sed 's/\(.*\).jpg|.jpeg/\1.png/' | bash
 
