@@ -1,7 +1,7 @@
 ---
 title: "<img src='文艺坊图库/deriv.png' height='240'>"
 subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第III部）**</span>](https://github.com/englianhu/binary.com-interview-question)"
-author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/021 - 04.jpg' height='14'> <img src='文艺坊图库/Peking University 02.png' height='14'>" 
+author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='文艺坊图库/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/大秦赋 - 北京大学.png' height='14'>" 
 date: "`r lubridate::today('Asia/Shanghai')`"
 output:
   html_document: 
@@ -25,16 +25,16 @@ output:
 <audio controls loop autoplay src="文艺坊曲库/Mika - Elle me dit (happy song to be millionaire).mp3" controls></audio>
 <br>
 
-🚩🇬🇧🇲🇾🇨🇳大秦赋赢家ξng黄氏江夏堂：“🇬🇧👱🏻‍♀️关雎”
+🚩🇬🇧🇲🇾🇨🇳大秦赋赢家ξng黄氏江夏堂
 
 ## 商鞅变法
 
 **大秦赋 Chinese Emperor**
 
-反攻巫裔，推翻马来Judi回教博彩庄Caspo Inc Cube Ltd回教911恐怖份子政府，建立NonMuslim六四学术中华政府
+反攻巫裔回教徒，推翻马来Judi回教博彩庄Caspo Inc Cube Ltd回教九一一恐怖份子政府，建立六四学术中华政府
 
 🚩🇬🇧秦孝公 | 🇬🇧姜太公 --- 🇬🇧陈祯禄公爵/邱德拔公爵/叶亚来队长/叶观盛队长<br>
-《大秦赋 - 🇬🇧♰👱🏻‍♀️关雎》<br>
+《大秦赋》<br>
 🚩大秦孝公，秦惠文王；<br>
 🚩始于商鞅，终于辛亥。<br>
 🚩巫裔尽弃，瓦釜雷鸣；（推翻马来回教政权）<br>
@@ -109,7 +109,7 @@ output:
 山不厌高，海不厌深；<br>
 [嬴政吐哺，天下归心。]{style="color:#6883FC"}
 
-<img src='文艺坊图库/css.jpeg' width = '400'>
+<img src='文艺坊图库/css.png' width = '400'>
 
 家翁嬴政ξηg Tεηg（赢家黄氏江夏堂）
 
@@ -383,14 +383,14 @@ conflict_prefer('set', 'data.table', quiet = TRUE)
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
   'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 'tidyfst', 
-  'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
+  'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', #'Rfast', 
   'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
   'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
   'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 'feather', 
-  'sparklyr', 'jcolors', 'TSA', 'microbenchmark', 'dendextend', 'vembedr', 
+  'sparklyr', 'jcolors', 'microbenchmark', 'dendextend', 'vembedr', #'TSA', 
   'lhmetools', 'gtools', 'stringi', 'pacman', 'profmem', 'ggthemes', 
   'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
-  'fable', 'fabletools', 'fable.prophet', 'Rfast', 'Metrics', 'MLmetrics')
+  'fable', 'fabletools', 'fable.prophet', 'Metrics', 'MLmetrics')
 
 # load_pkg(程序包)
 suppressAll(lib(程序包))
@@ -1149,7 +1149,7 @@ source('函数/总汇结论.R')
 
 ## A data.table and dplyr tour
 ## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/#addupdatedelete-columns
-日内指数平滑数据总汇 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据总汇.rds'))
+日内指数平滑数据总汇 <- fread(paste0(.蜀道仓库, '日内指数平滑数据总汇.csv'))
 日内指数平滑数据总汇[, 年份 := data.table::year(年月日时分)]
 日内指数平滑数据2016年总汇 <- 日内指数平滑数据总汇[年份 == 2016]
 # saveRDS(日内指数平滑数据2016年总汇, paste0(.蜀道仓库, '日内指数平滑数据2016年总汇.rds'))
@@ -1160,10 +1160,17 @@ source('函数/总汇结论.R')
 日内指数平滑数据2018年上半年总汇 <- 日内指数平滑数据2018年总汇[, 月份 := data.table::month(年月日时分)][月份 %chin% 1:6]
 # saveRDS(日内指数平滑数据2018年上半年总汇, paste0(.蜀道仓库, '日内指数平滑数据2018年上半年总汇.rds'))
 
-日内指数平滑数据2016年结论 <- 总汇结论(总汇 = 日内指数平滑数据2016年总汇, 文件名 = '日内指数平滑数据2016年', 是否储存结论 = '是')
-日内指数平滑数据2017年结论 <- 总汇结论(总汇 = 日内指数平滑数据2017年总汇, 文件名 = '日内指数平滑数据2017年', 是否储存结论 = '是')
-日内指数平滑数据2018年结论 <- 总汇结论(总汇 = 日内指数平滑数据2018年总汇, 文件名 = '日内指数平滑数据2018年', 是否储存结论 = '是')
-日内指数平滑数据2018年上半年结论 <- 总汇结论(总汇 = 日内指数平滑数据2018年上半年总汇, 文件名 = '日内指数平滑数据2018年上半年', 是否储存结论 = '是')
+# 日内指数平滑数据2016年结论 <- 总汇结论(总汇 = 日内指数平滑数据2016年总汇, 文件名 = '日内指数平滑数据2016年', 是否储存结论 = '是')
+日内指数平滑数据2016年结论 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据2016年结论.rds'))
+
+# 日内指数平滑数据2017年结论 <- 总汇结论(总汇 = 日内指数平滑数据2017年总汇, 文件名 = '日内指数平滑数据2017年', 是否储存结论 = '是')
+日内指数平滑数据2017年结论 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据2017年结论.rds'))
+
+# 日内指数平滑数据2018年结论 <- 总汇结论(总汇 = 日内指数平滑数据2018年总汇, 文件名 = '日内指数平滑数据2018年', 是否储存结论 = '是')
+日内指数平滑数据2018年结论 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据2018年结论.rds'))
+
+# 日内指数平滑数据2018年上半年结论 <- 总汇结论(总汇 = 日内指数平滑数据2018年上半年总汇, 文件名 = '日内指数平滑数据2018年上半年', 是否储存结论 = '是')
+日内指数平滑数据2018年上半年结论 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据2018年上半年结论.rds'))
 ```
 
 ### 总汇2016年结论
@@ -1450,7 +1457,7 @@ source('函数/总汇结论.R')
 春秋战国《*礼记•经解*》<br>
 孔子曰：『君子慎始，差若毫厘，缪以千里。』
 
-> <span style='color:#FFEBCD; background-color:#D2B48C;'>**《礼记·经解》孔子曰：**</span><span style='color:#A9A9A9; background-color:#696969;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^1]
+> <span style='color:#9B0202; background-color:#252525;'>**《礼记·经解》孔子曰：**</span><span style='color:#FF0000; background-color:#000000;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^1]
 
 *引用：[「快懂百科」《礼记•经解》](https://www.baike.com/wikiid/2225522569881832051?view_id=2tt3iw3blkq000)和[第一范文网：差之毫厘，谬以千里的故事](https://www.diyifanwen.com/chengyu/liuziyishangchengyugushi/2010051523105152347092749890.htm)和[「百度百科」春秋时期孔子作品《礼记•经解》](https://baike.baidu.com/item/%E7%A4%BC%E8%AE%B0%C2%B7%E7%BB%8F%E8%A7%A3/2523092)和[「當代中國」差之毫釐 謬以千里](https://www.ourchinastory.com/zh/2962/%E5%B7%AE%E4%B9%8B%E6%AF%AB%E9%87%90%20%E8%AC%AC%E4%BB%A5%E5%8D%83%E9%87%8C)*
 
@@ -1482,8 +1489,6 @@ source('函数/总汇结论.R')
 > 核武器温馨提示：回教徒可兰经法家国学论，可兰经回教规定全球所有回教徒世袭制不许学可兰经以外的习俗文化宗教语言断肢法和不许叛乱和叛教
 
 *引用：[斩首、石刑、截肢…阿富汗“伊斯兰教法”或将重现酷刑](https://www.163.com/dy/article/HM881SKU0511RVG1.html)*
-
-<iframe width="458" height="815" src="https://v.douyin.com/iJNWLAQv" title="δ「抖音」千言万语描述旅行风景的文案，都不及自己按一次快门的瞬间 #行胜于言论" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 ## 前瞻科研
 
