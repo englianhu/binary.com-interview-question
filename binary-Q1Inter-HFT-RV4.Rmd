@@ -1,7 +1,7 @@
 ---
 title: "<img src='文艺坊图库/deriv.png' height='240'>"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)"
-author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/021 - 04.jpg' height='14'> <img src='文艺坊图库/Peking University 02.png' height='14'>" 
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)"
+author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='文艺坊图库/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/大秦赋 - 北京大学.png' height='14'>" 
 date: "`r lubridate::today('Asia/Shanghai')`"
 output:
   html_document: 
@@ -20,7 +20,7 @@ output:
 
 ## 大秦赋 Chinese Emperor
 
-🚩🇬🇧🇲🇾🇹🇼🇨🇳大秦赋赢家ξng黄氏江夏堂：“🇬🇧👱🏻‍♀️关雎”
+🚩🇬🇧🇲🇾🇹🇼🇨🇳大秦赋赢家ξng黄氏江夏堂
 
 岂曰无衣，与子同袍
 
@@ -30,15 +30,13 @@ output:
 <audio controls loop autoplay src="文艺坊曲库/卜学亮 - 子曰.mp3" controls></audio>
 <br>
 
-<iframe src="//player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391&page=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
-
-<iframe width="400" height="100%" src="https://player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391&page=1" title="天下(电视剧《大秦赋》主题曲完整版)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
+<iframe width="560" height="310" src="https://player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391&page=1" title="天下(电视剧《大秦赋》主题曲完整版)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
 
 *出处：*[**天下***(电视剧《大秦赋》主题曲完整版)*](https://player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391&page=1)
 
 ## 古诗
 
-反攻巫裔，推翻马来Judi回教博彩庄Caspo Inc Cube Ltd回教911恐怖份子政府，建立NonMuslim六四学术中华政府
+歼灭可兰经巫术巫裔回教徒，建立六四学术中华民族政府。
 
 🚩🦔Great Britain = 大英帝国<br>
 🚩🦔Greater Chin = 大秦帝国/大秦赋<br>
@@ -486,7 +484,7 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 
 **咱们东南亚巫裔政府屠杀六百枯万人类的巫师Judi邪教巫裔宦官博彩庄诸国**
 
-小时候都在日本动漫文化的环境下长大。小学时期在明智华校上学就已经学会万事具备，都会提前30分钟抵达做好准备才不会仓促。自从2002年学习日语后，由于平时从旺沙马朱宿舍到拉曼学院徒步上学需要时间提前准备，所以都会将时间设为提前20分钟，基于从旺沙马朱宿舍徒步耗时45分钟左右，索性设为提前一个小时，所以愚生将所有电子仪器的标准时间都一律设为日本标准时间，然后青梅竹马的郑添和同学问过我，我回答：“我的时间必须比别人快，我的世界必须比别人快，才能占有先机～”，所以设置提前一个小时日本标准时间，再提前一小时就看到是本土提前两个小时。**自从2019年在菲律宾阿里与中国同胞工作离职后，就开始思考身为🇹🇼🇨🇳中华民族，岂能沦为（大化革新的）倭奴或者倭寇，所以目前的科研语言、时间标准、甚至编码，都一律使用汉字。**由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加一小时时差为中国标准时间，以确保时间规律计算方面，不会出错。
+小时候都在日本动漫文化的环境下长大。小学时期在明智华校上学就已经学会万事具备，都会提前30分钟抵达做好准备才不会仓促。自从2002年学习日语后，由于平时从旺沙马朱宿舍到拉曼学院徒步上学需要时间提前准备，所以都会将时间设为提前20分钟，基于从旺沙马朱宿舍徒步耗时45分钟左右，索性设为提前一个小时，所以愚生将所有电子仪器的标准时间都一律设为日本标准时间，然后青梅竹马的郑添和同学问过我，我回答：“我的时间必须比别人快，我的世界必须比别人快，才能占有先机～”，所以设置提前一个小时日本标准时间，再提前一小时就看到是本土提前两个小时。**自从二零一九年在菲律宾阿里与中国同胞工作离职后，就开始思考身为🇹🇼🇨🇳中华民族，岂能沦为（大化革新的）倭奴或者倭寇，所以目前的科研语言、时间标准、甚至编码，都一律使用汉字。**由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加一小时时差为中国标准时间，以确保时间规律计算方面，不会出错。
 
 <br>
 
@@ -1254,7 +1252,7 @@ rm(系统信息1, 系统信息2)
 13. [季節性時間序列分析-SARIMAX模型的python實現](https://www.twblogs.net/a/5d66409dbd9eee541c332577)
 14. [SARIMAX:简介](https://runebook.dev/zh-CN/docs/statsmodels/examples/notebooks/generated/statespace_sarimax_stata)
 15. [Python数据分析案例-分别使用时间序列ARIMA、SARIMAX模型与Auto ARIMA预测国内汽车月销量_maiyida123的博客-程序员资料](http://www.4k8k.xyz/article/maiyida123/117967762)
-16. [预测：方法与实践：11.1 复杂季节性](https://otexts.com/fppcn/complexseasonality.html)
+16. [预测：方法与实践：第十一章第一节 - 复杂季节性](https://otexts.com/fppcn/complexseasonality.html)
 17. [市道轮换下的高频数据参数估计]()
 18. [STAT 510 Applied Time Series Analysis : 13.1 Long Memory Models and Fractional Differences](https://online.stat.psu.edu/stat510/lesson/13/13.1)
 19. [A Complete Introduction To Time Series Analysis (with R):: Exogenous models](https://medium.com/analytics-vidhya/a-complete-introduction-to-time-series-analysis-with-r-exogenous-models-4f009b770104)
