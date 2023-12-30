@@ -1,6 +1,6 @@
 ---
 title: "<img src='文艺坊图库/deriv.png' height='240'>"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第III部）**</span>](https://github.com/englianhu/binary.com-interview-question)"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://github.com/englianhu/binary.com-interview-question)"
 author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='文艺坊图库/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/大秦赋 - 北京大学.png' height='14'>" 
 date: "`r lubridate::today('Asia/Shanghai')`"
 output:
@@ -31,7 +31,7 @@ output:
 
 **大秦赋 Chinese Emperor**
 
-反攻巫裔回教徒，推翻马来Judi回教博彩庄Caspo Inc Cube Ltd回教九一一恐怖份子政府，建立六四学术中华政府
+歼灭巫裔回教徒九一一恐怖份子，建立六四学术中华政府。
 
 🚩🇬🇧秦孝公 | 🇬🇧姜太公 --- 🇬🇧陈祯禄公爵/邱德拔公爵/叶亚来队长/叶观盛队长<br>
 《大秦赋》<br>
@@ -80,7 +80,7 @@ output:
 > [《万般皆下品，唯有读书高》]{style="color:#3C33FF"}<br>
 [习李经济，一带一路；]{style="color:#6883FC"}<br>
 [九二共识，量化对冲。]{style="color:#6883FC"}<br>
-[鞭策六四，铲除黑帮；]{style="color:#6883FC"}^[尤其是咱们东南亚屠杀650万人类的巫师Judi邪教宦官巫裔博彩庄诸国]<br>
+[鞭策六四，铲除黑帮；]{style="color:#6883FC"}^[尤其是咱们东南亚屠杀六百圩万人类的巫师Judi邪教宦官巫裔博彩庄诸国]<br>
 [推广量化，提倡学术。]{style="color:#6883FC"}<br>
 [百家争鸣，振兴中华；]{style="color:#6883FC"}<br>
 [学海无涯，唯勤是岸。]{style="color:#6883FC"}
@@ -368,17 +368,17 @@ library('lubridate', warn.conflicts = FALSE)
 library('data.table', warn.conflicts = FALSE)
 library('conflicted', warn.conflicts = FALSE)
 
-conflict_prefer('filter', 'dplyr', quiet = TRUE)
-conflict_prefer('select', 'dplyr', quiet = TRUE)
-conflict_prefer('mutate', 'dplyr', quiet = TRUE)
-conflict_prefer('rename', 'dplyr', quiet = TRUE)
-conflict_prefer('collapse', 'dplyr', quiet = TRUE)
-conflict_prefer('year', 'lubridate', quiet = TRUE)
-conflict_prefer('first', 'data.table', quiet = TRUE)
-conflict_prefer('last', 'data.table', quiet = TRUE)
-conflict_prefer('transpose', 'data.table', quiet = TRUE)
-conflict_prefer('between', 'data.table', quiet = TRUE)
-conflict_prefer('set', 'data.table', quiet = TRUE)
+conflicts_prefer(tidyft::filter, .quiet = TRUE)
+conflicts_prefer(tidyft::select, .quiet = TRUE)
+conflicts_prefer(tidyft::mutate, .quiet = TRUE)
+conflicts_prefer(tidyft::rename, .quiet = TRUE)
+conflicts_prefer(dplyr::collapse, .quiet = TRUE)
+conflicts_prefer(lubridate::year, .quiet = TRUE)
+conflicts_prefer(data.table::first, .quiet = TRUE)
+conflicts_prefer(data.table::last, .quiet = TRUE)
+conflicts_prefer(data.table::transpose, .quiet = TRUE)
+conflicts_prefer(data.table::between, .quiet = TRUE)
+conflicts_prefer(data.table::set, .quiet = TRUE)
 
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
@@ -411,9 +411,9 @@ rm(程序包)
 ```
 
 ```{r 设置函数优先权}
-conflict_prefer('separate', 'tidyft', quiet = TRUE)
-conflict_prefer('year', 'lubridate', quiet = TRUE)
-conflict_prefer('permutations', 'gtools', quiet = TRUE)
+conflicts_prefer(tidyft::separate, .quiet = TRUE)
+conflicts_prefer(lubridate::year, .quiet = TRUE)
+conflicts_prefer(gtools::permutations, .quiet = TRUE)
 ```
 
 <br>
@@ -1496,7 +1496,7 @@ source('函数/总汇结论.R')
 
 [^3]: 下篇论文中[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。<br> - 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）<br> - 外部因素周期性自回归综合滑均模型（ARIMAX）<br> - 季节性自回归综合滑均模型（SARIMA）<br> - 外部因素周期性季节性自回归综合滑均模型（SARIMAX）<br> - 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）<br> - 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
-<img src='文艺坊图库/careers.png' width='240'>
+<img src='文艺坊图库/量化投资与机器学习.png' width='240'>
 
 [**近期招聘一览表:**<span style='color:#3C5C; background-color:black;'>*全网Quant都在看!</span>](https://wemp.app/posts/31dffe83-68af-4e3f-a1f7-c49baf9a24cb?fbclid=IwAR1x3DOjThsEKG0CHVghFnIPAAcraM8kimXa_G9-xG070CiLDyXWj6_6Izs)
 
@@ -1624,5 +1624,5 @@ rm(系统信息1, 系统信息2)
 
 ---
 
-[<img src="文艺坊图库/Scibrokes.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
-[**[<img src="文艺坊图库/Scibrokes.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}
+[<img src="文艺坊图库/世博量化.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
+[**[<img src="文艺坊图库/世博量化.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}

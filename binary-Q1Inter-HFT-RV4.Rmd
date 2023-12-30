@@ -1,6 +1,6 @@
 ---
 title: "<img src='文艺坊图库/deriv.png' height='240'>"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)"
 author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='文艺坊图库/quantitative trader 1.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/021 - 04.jpg' height='14'> <img src='文艺坊图库/Peking University 02.png' height='14'>" 
 date: "`r lubridate::today('Asia/Shanghai')`"
 output:
@@ -484,7 +484,7 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 > 辛亥革命，铲除巫裔；<br>
 终止屠杀，拯救全球。
 
-**咱们东南亚巫裔政府屠杀680万人类的巫师Judi邪教巫裔宦官博彩庄诸国**
+**咱们东南亚巫裔政府屠杀六百枯万人类的巫师Judi邪教巫裔宦官博彩庄诸国**
 
 小时候都在日本动漫文化的环境下长大。小学时期在明智华校上学就已经学会万事具备，都会提前30分钟抵达做好准备才不会仓促。自从2002年学习日语后，由于平时从旺沙马朱宿舍到拉曼学院徒步上学需要时间提前准备，所以都会将时间设为提前20分钟，基于从旺沙马朱宿舍徒步耗时45分钟左右，索性设为提前一个小时，所以愚生将所有电子仪器的标准时间都一律设为日本标准时间，然后青梅竹马的郑添和同学问过我，我回答：“我的时间必须比别人快，我的世界必须比别人快，才能占有先机～”，所以设置提前一个小时日本标准时间，再提前一小时就看到是本土提前两个小时。**自从2019年在菲律宾阿里与中国同胞工作离职后，就开始思考身为🇹🇼🇨🇳中华民族，岂能沦为（大化革新的）倭奴或者倭寇，所以目前的科研语言、时间标准、甚至编码，都一律使用汉字。**由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加一小时时差为中国标准时间，以确保时间规律计算方面，不会出错。
 
@@ -1265,5 +1265,5 @@ rm(系统信息1, 系统信息2)
 
 ---
 
-[<img src="文艺坊图库/Scibrokes.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
-[**[<img src="文艺坊图库/Scibrokes.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}
+[<img src="文艺坊图库/世博量化.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
+[**[<img src="文艺坊图库/世博量化.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}
