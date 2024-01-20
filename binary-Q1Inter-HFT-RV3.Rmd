@@ -1146,7 +1146,7 @@ if (!exists('.蜀道仓库')) {
         color = 'grey', italic = TRUE))) %>% 
   kbl(caption = '最优统计模型（三年七个月数据）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
   #column_spec(2, background = '#556DAC') %>% 
   column_spec(2, background = 'LightSlateGrey') %>% 
@@ -1253,7 +1253,7 @@ source('函数/总汇结论.R')
         color = 'grey', italic = TRUE))) %>% 
   kbl(caption = '最优统计模型（二零一六年总汇）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
   #column_spec(2, background = '#556DAC') %>% 
   column_spec(2, background = 'LightSlateGrey') %>% 
@@ -1322,7 +1322,7 @@ source('函数/总汇结论.R')
         color = 'grey', italic = TRUE))) %>% 
   kbl(caption = '最优统计模型（二零一七年总汇）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
   #column_spec(2, background = '#556DAC') %>% 
   column_spec(2, background = 'LightSlateGrey') %>% 
@@ -1391,7 +1391,7 @@ source('函数/总汇结论.R')
         color = 'grey', italic = TRUE))) %>% 
   kbl(caption = '最优统计模型（二零一八年至七月七日总汇）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
   #column_spec(2, background = '#556DAC') %>% 
   column_spec(2, background = 'LightSlateGrey') %>% 
@@ -1460,7 +1460,7 @@ source('函数/总汇结论.R')
         color = 'grey', italic = TRUE))) %>% 
   kbl(caption = '最优统计模型（二零一八年至上半年总汇）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
-  row_spec(0, background = 'DimGrey', color = 'yellow') %>% 
+  row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
   #column_spec(2, background = '#556DAC') %>% 
   column_spec(2, background = 'LightSlateGrey') %>% 
@@ -1614,11 +1614,11 @@ rm(系统信息1, 系统信息2)
     kable_styling(
       ., bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))}() |> 
   {\(.) 
-    row_spec(., 0, background = 'DimGrey', color = 'yellow')}() |> 
+    row_spec(., 0, background = 'DimGrey', color = '#7B1113')}() |> 
   {\(.) 
     column_spec(., 1, background = 'CornflowerBlue', color = 'red')}() |> 
   {\(.) 
-    column_spec(., 2, background = 'grey', color = 'black')}() |> 
+    column_spec(., 2, background = 'grey', color = '#8B0000')}() |> 
   {\(.) 
     column_spec(., 3, background = 'CornflowerBlue', color = 'blue')}() |> 
   {\(.) 
