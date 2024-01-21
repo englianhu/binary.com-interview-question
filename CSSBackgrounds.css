@@ -1,6 +1,9 @@
 body {
-  /*礼逆袭中科红旗操作系统*/
-  background-image: url('https://raw.githubusercontent.com/englianhu/binary.com-interview-question/%E4%B8%96%E5%8D%9A%E9%87%8F%E5%8C%96%E7%A0%94%E7%A9%B6%E9%99%A2/%E6%96%87%E8%89%BA%E5%9D%8A%E5%9B%BE%E5%BA%93/math_theme.png'); 
+  /*
+  礼逆袭中科红旗操作系统
+  'https://raw.githubusercontent.com/englianhu/binary.com-interview-question/%E4%B8%96%E5%8D%9A%E9%87%8F%E5%8C%96%E7%A0%94%E7%A9%B6%E9%99%A2/%E6%96%87%E8%89%BA%E5%9D%8A%E5%9B%BE%E5%BA%93/math_theme.png'
+  */
+  background-image: url('文艺坊图库/math_theme.png'); 
   background-repeat: no-repeat; 
   /*background-size: 100%;*/
   background-size: cover; 
