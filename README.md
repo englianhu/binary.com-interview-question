@@ -1,7 +1,7 @@
 
 <img src='文艺坊图库/世博量化.png' height='100'> <img src='文艺坊图库/大秦赋 - 北京大学.png' height='100'>
 
-<img src='文艺坊图库/binary-logo.jpg' width='240'>
+<img src='文艺坊图库/binary-logo.png' width='240'>
 
 ---
 
@@ -162,7 +162,7 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 ---
 
-<img src='文艺坊图库/deriv.jpg' width='260'>
+<img src='文艺坊图库/deriv.png' width='260'>
 
 [<img src='文艺坊图库/RStudioCloud.png' height='20'>](https://rstudio.cloud) [<img src='文艺坊图库/RStudioCom2.png' height='20'>](https://community.rstudio.com/new-topic?category=shiny&tags=shiny) [![](文艺坊图库/shiny-badge.svg)](https://www.shinyapps.io)
 
