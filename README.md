@@ -5,7 +5,7 @@
 
 ---
 
-[<img src='文艺坊图库/红旗礼逆袭.gif' height='20'>](https://www.chinaredflag.cn) [<img src='文艺坊图库/赢家黄氏江夏堂.png' height='20'>](https://englianhu.wordpress.com) [<img src='文艺坊图库/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='20'>](https://gitee.com/englianhu) [<img src='文艺坊图库/大秦赋 - 北京大学.png' height='20'>](https://www.pku.edu.cn)
+[<img src='文艺坊图库/红旗礼逆袭.gif' height='20' width='47'>](https://www.chinaredflag.cn) [<img src='文艺坊图库/赢家黄氏江夏堂.png' height='20'>](https://englianhu.wordpress.com) [<img src='文艺坊图库/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='20'>](https://gitee.com/englianhu) [<img src='文艺坊图库/大秦赋 - 北京大学.png' height='20'>](https://www.pku.edu.cn)
 
 # 二元期权（binary.com）<span style='color:#DE5D83; background-color:black;'>**量化分析员/量化交易员**面试题</span>
 
@@ -164,7 +164,7 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 <img src='文艺坊图库/deriv.png' width='260'>
 
-[<img src='文艺坊图库/红旗礼逆袭.gif' height='20'>](https://www.chinaredflag.cn) [<img src='文艺坊图库/赢家黄氏江夏堂.png' height='20'>](https://englianhu.wordpress.com) [<img src='文艺坊图库/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='20'>](https://gitee.com/englianhu) [<img src='文艺坊图库/大秦赋 - 北京大学.png' height='20'>](https://www.pku.edu.cn)
+[<img src='文艺坊图库/红旗礼逆袭.gif' height='20' width='47'>](https://www.chinaredflag.cn) [<img src='文艺坊图库/赢家黄氏江夏堂.png' height='20'>](https://englianhu.wordpress.com) [<img src='文艺坊图库/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='20'>](https://gitee.com/englianhu) [<img src='文艺坊图库/大秦赋 - 北京大学.png' height='20'>](https://www.pku.edu.cn)
 
 # 量化交易
 
