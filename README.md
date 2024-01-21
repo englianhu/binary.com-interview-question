@@ -182,7 +182,9 @@ Below are some seasonal time series models:
 - [Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (in RStudioConnect.com)
 - [Deriv.com - Interday & Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://rpubs.com/englianhu/742275) (in RPubs.com)
 - [Deriv.com - Interday & Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://beta.rstudioconnect.com/content/16442/binary-Q1Inter-HFT-RV2.html) (in RStudioConnect.com)
-- [Deriv.com - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第III部）**</span>](https://rpubs.com/englianhu/987834)
+- 金融衍生 - 筛选日内高频量化交易统计模型 （第III部）
+  - [金融衍生 - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://rpubs.com/englianhu/1134206)
+  - [金融衍生 - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第III部）**</span>](https://rpubs.com/englianhu/1139987)
 
 ### 1.2) <span style='color:red'>幕后花絮</span>
 
