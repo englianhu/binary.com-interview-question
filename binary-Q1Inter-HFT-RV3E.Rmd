@@ -1522,7 +1522,7 @@ options(warn = 0)
 
 以下乃此文书的文件信息。
 
-- 文集建立日：农历二零二二年十二月廿三（阳历二零二三年一月十四日 / 民国一百一十一年十二月廿三）[^4]
+- 文集建立日：农历二零二二年十二月廿三 壬寅年（虎年）癸丑月壬申日（阳历二零二三年一月十四日 / 民国一百一十一年十二月廿三）[^4]
 - 文集最新更新日：`r today('Asia/Shanghai')`
 - `r R.version.string`
 - [**rmarkdown**](https://github.com/rstudio/rmarkdown) 程序包版本：`r packageVersion('rmarkdown')`
