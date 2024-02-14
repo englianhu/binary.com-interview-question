@@ -345,12 +345,14 @@ if (!require('REmap')) devtools::install_github('lchiffon/REmap')
 ##   其实这个包基本拥有tidyfst的所有功能，只是原位更新的概念对于新手是有挑战...
 
 library('tidyfst', warn.conflicts = FALSE)
+library('Ipaper', warn.conflicts = FALSE)
 library('tidyft', warn.conflicts = FALSE)
 library('dplyr', warn.conflicts = FALSE)
 library('lubridate', warn.conflicts = FALSE)
 library('data.table', warn.conflicts = FALSE)
 library('conflicted', warn.conflicts = FALSE)
 
+conflicts_prefer(Ipaper::is_empty, .quiet = TRUE)
 conflicts_prefer(tidyft::nth, .quiet = TRUE)
 conflicts_prefer(tidyft::fill, .quiet = TRUE)
 conflicts_prefer(tidyft::nest, .quiet = TRUE)
