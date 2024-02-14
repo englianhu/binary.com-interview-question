@@ -111,11 +111,11 @@ output:
 
 <img src='文艺坊图库/css.png' width = '400'>
 
-家翁嬴政ξηg Tεηg（赢家黄氏江夏堂）
+省吃俭用的工匠建筑工人（嬴政兼鲁班兼蒙毅）家翁嬴政ξηg Tεηg（赢家黄氏江夏堂）
 
 <img src='文艺坊图库/鞭策六四，推广量化；百家争鸣，振兴中华。.png' width = '400'>
 
-世间再无祖父黄实田，外祖母郑邓
+世间再无富不过三代的败家子祖父黄实田（曾祖黄福全在清末光绪年间和两个哥哥仨飘洋过海从满洲到星洲自力更生努力奋斗开垦一百亩农地，然后和土木工程的杨清廉俩在清末鸦片战争时期是瓜雪两大不相伯仲的首富）祖母颜为，省吃俭用的外祖父书法家李福（李斯篆书）外祖母郑邓（家道中落的富家千金）。
 
 ------
 
@@ -364,10 +364,12 @@ if (!require('REmap')) devtools::install_github('lchiffon/REmap')
 
 ## 一次性读取所需程序包。
 library('dplyr', warn.conflicts = FALSE)
+library('Ipaper', warn.conflicts = FALSE)
 library('lubridate', warn.conflicts = FALSE)
 library('data.table', warn.conflicts = FALSE)
 library('conflicted', warn.conflicts = FALSE)
 
+conflicts_prefer(Ipaper::is_empty, .quiet = TRUE)
 conflicts_prefer(tidyft::filter, .quiet = TRUE)
 conflicts_prefer(tidyft::select, .quiet = TRUE)
 conflicts_prefer(tidyft::mutate, .quiet = TRUE)
