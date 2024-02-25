@@ -7,7 +7,7 @@
 
 [<img src='诸子百家考工记/红旗礼逆袭.gif' height='20' width='47'>](https://www.chinaredflag.cn) [<img src='诸子百家考工记/赢家黄氏江夏堂.png' height='20'>](https://englianhu.wordpress.com) [<img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='20'>](https://gitee.com/englianhu) [<img src='诸子百家考工记/大秦赋 - 北京大学.png' height='20'>](https://www.pku.edu.cn)
 
-# 二元期权（binary.com）<span style='color:#DE5D83; background-color:black;'>**量化分析员/量化交易员**面试题</span>
+# 次元期权（binary.com）<span style='color:#DE5D83; background-color:black;'>**量化分析员/量化交易员**面试题</span>
 
 **大秦赋 (Chinese Emperor)**<br>
 春秋战国《*礼记•经解*》<br>
@@ -190,7 +190,9 @@ Below are some seasonal time series models:
 
 [Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:red'>Blooper</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT) built seasonal models.
 
+<br><br>
+
 ---
 
-[<img src="诸子百家考工记/Scibrokes.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
-[<img src="诸子百家考工记/Scibrokes.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。
+[<img src='诸子百家考工记/世博量化.png' height='14'/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
+<span style='color:RoyalBlue'>**[<img src='诸子百家考工记/世博量化.png' height='14'/> 世博量化®](http://www.scibrokes.com)企业知识产权®及版权®所有，盗版必究。**</span>
