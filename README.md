@@ -1,11 +1,11 @@
 
-<img src='文艺坊图库/世博量化.png' height='100'> <img src='文艺坊图库/大秦赋 - 北京大学.png' height='100'>
+<img src='诸子百家考工记/世博量化.png' height='100'> <img src='诸子百家考工记/大秦赋 - 北京大学.png' height='100'>
 
-<img src='文艺坊图库/binary-logo.png' width='240'>
+<img src='诸子百家考工记/binary-logo.png' width='240'>
 
 ---
 
-[<img src='文艺坊图库/红旗礼逆袭.gif' height='20' width='47'>](https://www.chinaredflag.cn) [<img src='文艺坊图库/赢家黄氏江夏堂.png' height='20'>](https://englianhu.wordpress.com) [<img src='文艺坊图库/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='20'>](https://gitee.com/englianhu) [<img src='文艺坊图库/大秦赋 - 北京大学.png' height='20'>](https://www.pku.edu.cn)
+[<img src='诸子百家考工记/红旗礼逆袭.gif' height='20' width='47'>](https://www.chinaredflag.cn) [<img src='诸子百家考工记/赢家黄氏江夏堂.png' height='20'>](https://englianhu.wordpress.com) [<img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='20'>](https://gitee.com/englianhu) [<img src='诸子百家考工记/大秦赋 - 北京大学.png' height='20'>](https://www.pku.edu.cn)
 
 # 二元期权（binary.com）<span style='color:#DE5D83; background-color:black;'>**量化分析员/量化交易员**面试题</span>
 
@@ -84,7 +84,7 @@ Initially, I wrote a shiny app (as showing in below gif file) but it is heavily 
 - Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
 - Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
 
-<img src='文艺坊图库/20170113_104005.gif' width='360'>
+<img src='诸子百家考工记/20170113_104005.gif' width='360'>
 
 Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.com/content/3775/) trial version to test the real time trading, and a completed version is [Q1App2](https://beta.rstudioconnect.com/content/3138/).
 
@@ -162,9 +162,9 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 ---
 
-<img src='文艺坊图库/deriv.png' width='260'>
+<img src='诸子百家考工记/deriv.png' width='260'>
 
-[<img src='文艺坊图库/红旗礼逆袭.gif' height='20' width='47'>](https://www.chinaredflag.cn) [<img src='文艺坊图库/赢家黄氏江夏堂.png' height='20'>](https://englianhu.wordpress.com) [<img src='文艺坊图库/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='20'>](https://gitee.com/englianhu) [<img src='文艺坊图库/大秦赋 - 北京大学.png' height='20'>](https://www.pku.edu.cn)
+[<img src='诸子百家考工记/红旗礼逆袭.gif' height='20' width='47'>](https://www.chinaredflag.cn) [<img src='诸子百家考工记/赢家黄氏江夏堂.png' height='20'>](https://englianhu.wordpress.com) [<img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='20'>](https://gitee.com/englianhu) [<img src='诸子百家考工记/大秦赋 - 北京大学.png' height='20'>](https://www.pku.edu.cn)
 
 # 量化交易
 
@@ -192,5 +192,5 @@ Below are some seasonal time series models:
 
 ---
 
-[<img src="文艺坊图库/Scibrokes.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
-[<img src="文艺坊图库/Scibrokes.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。
+[<img src="诸子百家考工记/Scibrokes.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
+[<img src="诸子百家考工记/Scibrokes.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。
