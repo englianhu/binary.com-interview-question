@@ -1,7 +1,7 @@
 ---
 title: "<img src='诸子百家考工记/deriv.png' height='240'>"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)"
-author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='14'> <img src='诸子百家考工记/ENG.png' height='14'>® <img src='诸子百家考工记/大秦赋 - 北京大学.png' height='14'>" 
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（丁）**</span>](https://github.com/englianhu/binary.com-interview-question)"
+author: "[<ruby>赢<rp>(</rp><rt>yíng</rt><rp>)</rp>家<rp>(</rp><rt>jiā</rt><rp>)</rp>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>氏<rp>(</rp><rt>shì</rt><rp>)</rp>江<rp>(</rp><rt>jiānɡ</rt><rp>)</rp>夏<rp>(</rp><rt>xià</rt><rp>)</rp>堂<rp>(</rp><rt>táng</rt><rp>)</rp></ruby> ®γσ, ξηg Lιαη Ημ，<ruby>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>联<rp>(</rp><rt>lián</rt><rp>)</rp>富<rp>(</rp><rt>fù</rt><rp>)</rp></ruby>（<ruby>雷<rp>(</rp><rt>léi</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>∪ <ruby>瑞<rp>(</rp><rt>ruì</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>）](https://englianhu.wordpress.com.com) <img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='14'>® <img src='诸子百家考工记/大秦赋 - 北京大学.png' height='14'>" 
 date: "`r lubridate::today('Asia/Shanghai')`"
 output:
   html_document: 
@@ -22,55 +22,97 @@ output:
 
 🚩🇬🇧🇲🇾🇹🇼🇨🇳大秦赋赢家ξng黄氏江夏堂
 
+借鉴世界古文明，公元前春秋战国（七大洲五大洋），西亚非常动荡不安而耶稣都尚未出世，欧美大洋洲全是森林。世袭制道教徒/道家/姓氏与堂号/生辰八字，从鼻祖（赢家黄氏江夏堂 - 嬴政）到耳孙（李耳/太上老君/茅山道士/毛泽东）
+
 岂曰无衣，与子同袍
 
 <br>
 <span style='color:#9B111E'>**🚩🦔主题曲🦔🚩**</span>
 <br>
-<audio controls loop autoplay src="文艺坊曲库/卜学亮 - 子曰.mp3" controls></audio>
+<audio controls loop autoplay src="诸子百家诗经与古诗源/卜学亮 - 子曰.mp3" controls></audio>
 <br>
 
-<iframe width="560" height="310" src="https://player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391&page=1" title="天下(电视剧《大秦赋》主题曲完整版)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
+> 孔氏东鲁堂、卜氏西河堂、林氏西河堂、黄氏江夏堂、黄氏巴东堂、习氏东阳堂、习氏忠烈堂、李氏陇西堂、彭氏陇西堂
 
-*出处：*[**天下***(电视剧《大秦赋》主题曲完整版)*](https://player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391&page=1)
+*引用：[牢记祖先，彰显祖宗功德，四百卅三个姓氏堂号大全](https://zhuanlan.zhihu.com/p/82039189)*
+
+- [中国古代亲属称谓家谱总览](https://zhuanlan.zhihu.com/p/458028908)
+- [「元宇宙」春节拜年，亲戚怎么叫？](https://www.facebook.com/englianhu/posts/pfbid0cqugyMqSdk1DBwzB8XiawCCz8bRXf5mZktm1Wr2WKs1ozj1D84FpB9RYXuCrmzDTl)
+- [「百度」我怎么称呼我堂叔的儿子啊？ 他比我小 应该怎么称呼？ 叫堂弟吗？ 可是堂叔的儿子已经不是堂了啊？](https://zhidao.baidu.com/question/291505101/answer/3012972358.html)
+
+> 阳历二零四年十一月廿一日，全球第一所孔子学院正式在韩国首都首尔挂牌成立。截至阳历二零二零年七月卅一日，全球已有百圆二国家（地区）设立了五百卌三所孔子学院和千百进个孔子课堂：
+> 
+- 亚洲卅九国（地区），孔子学院百卅五所、孔子课堂百十五个
+- 非洲卌六国，孔子学院圆一所、孔子课堂卌八个
+- 欧洲卌三国（地区），孔子学院百枯九所、孔子课堂三百卌六个
+- 美洲廿七国，孔子学院百卅八所、孔子课堂五百圆个
+- 大洋洲七国，孔子学院廿所、孔子课百零一个
+>
+阳历二零一八年开始，美国有几家大专院校相继关闭中国政府资助的孔子学院，最新一间是美国北佛罗里达大学，校方认为孔子学院的教学与大学理念不相符，决定终止合作...
+
+*引用：[「维基百科」孔子学院列表](https://zh.wikipedia.org/wiki/%E5%AD%94%E5%AD%90%E5%AD%A6%E9%99%A2%E5%88%97%E8%A1%A8)*
+
+<img src='诸子百家考工记/还有半社会主义半资本主义.png' width = '400'>
+
+*引用：[「猫城」中国北京大学赢家ξng黄氏江夏堂「大秦赋•道家李耳老子兼法家李斯篆紀•艺文志」：目前使用🚩🇨🇳🏹🦔中国国产红旗礼逆袭，编程都会使用咱们母语华语、字体、字幕加汉语拼音。](https://github.com/englianhu/RedFlag-Linux/issues/6#issuecomment-1722247674)*
+
+<iframe width="560" height="315" src="https://player.bilibili.com/player.html?aid=757957931" title="天下(电视剧《大秦赋》主题曲完整版)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
+
+*出处：*[**天下***(电视剧《大秦赋》主题曲完整版)*](https://player.bilibili.com/player.html?aid=757957931)
 
 ## 古诗
 
-歼灭可兰经巫术巫裔回教徒，建立六四学术中华民族政府。
+最近几年民不聊生，借鉴俄乌战争；歼灭东南亚所有回教徒，建立六四学术中华政府。
 
 🚩🦔Great Britain = 大英帝国<br>
-🚩🦔Greater Chin = 大秦帝国/大秦赋<br>
+🚩🦔Greater Chin / Republic of China / Republic People of China = 大秦帝国/大秦赋<br>
 🚩🦔Greater Chinese = 大秦子民（爱民如子）<br>
 🚩🦔Oversea Greater Chinese = 海外大秦子民（爱民如子）<br>
-🚩🦔Oversea Greater Chinese Union = 海外大秦子民公会（秦始皇的秦太祖 ----- 🌟秦孝公/🌟陈祯禄公爵，联合秦始皇 ----- 秦始祖嬴政，爱民如子，商鞅变法断肢法铲除咱们巫裔回教徒911恐怖份子Judi回教博彩庄，终止巫术以任何形式、包括指鹿为马、屠杀人类，甚至铲除全球回教徒攻陷回教宗祖国麦家🕋🇹🇷🇸🇦瓦解全球回教，拯救全球）
+🚩🦔Oversea Greater Chinese Union = 海外大秦子民公会（秦始皇的秦太祖 ----- 🌟秦孝公/🌟陈祯禄公爵，联合秦始皇 ----- 秦始祖嬴政，爱民如子，商鞅变法断肢法铲除咱们巫裔回教徒九一一恐怖份子Judi回教博彩庄，终止巫术以任何形式、包括指鹿为马、屠杀人类，甚至铲除全球回教徒攻陷回教宗祖国麦家🕋🇹🇷🇸🇦瓦解全球回教，拯救全球）
 
-🚩🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯秦孝公 | 🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯姜太公 --- 🇬🇧🇲🇾🇹🇼🇨🇳🌟陈祯禄公爵/🇬🇧🇲🇾🇹🇼🇨🐯邱德拔公爵/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶亚来队长/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶观盛队长
+🚩🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯秦孝公 | 🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯姜太公 --- 🇬🇧🇲🇾🇹🇼🇨🇳🌟陈祯禄公爵/🇬🇧🇲🇾🇹🇼🇨🇳🐯邱德拔公爵/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶亚来队长/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶观盛队长
 
-🚩🦔《大秦赋 - 🇬🇧♰👱🏻‍♀️关雎》》<br>
-🚩🦔巫师治国，禍殃全球；》<br>
-🚩🦔巫裔尽弃，瓦釜雷鸣。》<br>
-🚩🦔商鞅变法，铲除巫裔；》<br>
-🚩🦔车裂刘瑾，中华执政。》<br>
-🚩🦔一带一路，横跨七洲；》<br>
-🚩🦔史无前例，一统天下。》<br>
-🚩🦔高频量化，对冲基金；》<br>
-🚩🦔只争朝夕，不负韶华。》<br>
-🚩🦔学海无涯，唯勤是岸；》<br>
-🚩🦔不忘初心，方得始终。》
+🚩🦔《大秦赋》<br>
+🚩🦔巫师治国，禍殃全球；<br>
+🚩🦔巫裔尽弃，瓦釜雷鸣。<br>
+🚩🦔商鞅变法，铲除巫裔；<br>
+🚩🦔车裂刘瑾，中华执政。<br>
+🚩🦔一带一路，横跨七洲；<br>
+🚩🦔史无前例，一统天下。<br>
+🚩🦔高频量化，对冲基金；<br>
+🚩🦔只争朝夕，不负韶华。<br>
+🚩🦔学海无涯，唯勤是岸；<br>
+🚩🦔莫忘初衷，方得始终。
 
-《大秦赋 - 🇬🇧♰👱🏻‍♀️关雎》<br>
+《大秦赋》<br>
 🚩大秦孝公，秦惠文王；<br>
 🚩始于商鞅，终于辛亥。<br>
-🚩巫裔尽弃，瓦釜雷鸣；（推翻马来回教政权）<br>
+🚩巫裔尽弃，瓦釜雷鸣；<br>
 🚩铲除巫裔，终止屠杀。<br>
 🚩中科红旗，同舟共济；<br>
 🚩千古一帝，傲视全球。<br>
 🚩一带一路，史无前例；<br>
 🚩横跨七洲，一统天下。<br>
 🚩学海无涯，唯秦是岸；<br>
-🚩不忘初心，方得始终。
+🚩莫忘初衷，方得始终。
 
-出处：[蔡卓宜 - 厦门美食](https://www.instagram.com/p/Cjxd_GMLAes)
+<img src='林燕芳（中学乘搭韵祯校车的隔壁校私立丹绒学妹，行不改名坐不改姓）/Wai Yee So（庞氏托号）.png' width = '400'>
+
+*引用：[#大奖章基金之路 #RT #ST lim ₓ→ₐ f ) HMM... LSTM...](https://www.instagram.com/p/CNm43grAbVz)*
+
+上图的漂亮妞儿就长得像农历二零零零年到二零零一年中四勤班和中五勤班时期，乘搭韵祯校车的隔壁校私立丹绒学妹国民华校校友**林燕芳**（🚩🇨🇳🔆🏹🌟👊🚀🦔中科红旗孙玉芳教授中正纪念堂殡涓之争，并非庞氏骗局）或赢家黄氏江夏堂家翁道教徒嬴政永春好学的华越混血儿孙女状元黄筱婕（哥哥黄联升和越族阮美美的女儿，赢子婴），行不改名坐不改姓。现实生活中的**林燕芳**都是自强不息、学术优先的贤内助而非黄脸婆。
+
+<img src='校花神仙姐姐苏丽欣（中学乘搭韵祯校车的隔壁校私立丹绒学姐，行不改名坐不改姓）/复古（乙）.png' width = '400'>
+
+上图的漂亮妞儿[Celine Sim 沈小姐](https://www.facebook.com/profile.php?id=100002266213636)和[陈瑞](https://www.linkedin.com/in/rui-chen-981042a7/)就长得像农历二零零零年到二零零一年中四勤班和中五勤班时期，乘搭韵祯校车的隔壁校私立丹绒沉鱼落雁，闭月羞花、文静又有气质的校花学姐**神仙姐姐苏丽欣**，行不改名坐不改姓。现实生活中的**苏丽欣**都是自强不息、学术优先的贤内助而非黄脸婆。
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/ndCUxQB0kzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+*引用：[抖音」大秦赋 - 时光机器农历二零零二年](https://v.douyin.com/iNwNe2Q6)*
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/xyR86xcI8Ag?si=hXZMB7qITwjAJ4nU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+*引用：[DIOR大穎《Happy Go Lucky》 ft. GoHell Holiday ( Official MV )](https://www.youtube.com/watch?v=xyR86xcI8Ag)*
 
 中国史册：
 
@@ -107,85 +149,36 @@ output:
 > [《万般皆下品，唯有读书高》]{style="color:#3C33FF"}<br>
 [习李经济，一带一路；]{style="color:#6883FC"}<br>
 [九二共识，量化对冲。]{style="color:#6883FC"}<br>
-[鞭策六四，铲除黑帮；]{style="color:#6883FC"}^[尤其是咱们东南亚巫裔政府施展巫术屠杀680万人类的巫师Judi邪教巫裔宦官博彩庄诸国]<br>
+[鞭策六四，铲除黑帮；]{style="color:#6883FC"}^[尤其是咱们东南亚回教政府施展巫术屠杀六百八十万人类的巫师Judi邪教巫裔宦官博彩庄诸国]<br>
 [推广量化，提倡学术。]{style="color:#6883FC"}<br>
 [百家争鸣，振兴中华；]{style="color:#6883FC"}<br>
 [学海无涯，唯勤是岸。]{style="color:#6883FC"}
 
-> 辛亥革命大秦赋日不落重八、德意志崇祯、古希腊ξηg神话、周公解梦、嬴政把春秋大梦实现为春秋大业、秦孝公招商（商鞅变法）、秦惠文王：全球有16亿不吃猪肉的回教徒宦官（可兰经回教刑事法典断肢法）宗祖国是沙地阿拉伯麦加，需要靠中国政府一带一路战略（商鞅变法联合辛亥革命）还俗。
+- [陕西历史文化名城](http://lishiwenhua.snnu.edu.cn/index.htm)
+- [CCER 特供数据系统平台](http://www.ccerdata.cn)
+- [一带一路数据库](https://www.ydylcn.com/skwx_ydyl/sublibrary?SiteID=1&ID=8721)
+- [中国一带一路网](https://www.yidaiyilu.gov.cn)
 
-> 《量化短歌行》<br>
-[**高频量化**，人生几何？]{style="color:#6883FC"}；<br>
-譬如朝露，去日苦多。<br>
-慨当以慷，忧思难忘；<br>
-[何以解忧，唯有**陆佑**]{style="color:#6883FC"}。<br>
-青青子衿，悠悠我心；<br>
-但为君故，沉吟至今。<br>
-呦呦鹿鸣，食野之苹；<br>
-[我有**鸿门**，鼓瑟吹笙。]{style="color:#6883FC"}<br>
-[明明如**日**，何时可掇?]{style="color:#6883FC"}<br>
-忧从巫来，不可断绝。（何以解忧，唯有除巫。）<br>
-越陌度阡，枉用相存；<br>
-契阔谈宴，心念旧恩。<br>
-月明星稀，乌鹊南飞；<br>
-绕树三匝，何枝可依？<br>
-[**春秋战国，卐家争鸣（🇩🇪德意志崇祯）**；]{style="color:#6883FC"}<br>
-[**北京鸟巢，卐鸟归巢（🇩🇪德意志崇祯）**。]{style="color:#6883FC"}<br>
-[**辛亥革命，根除巫裔**；]{style="color:#6883FC"}<br>
-[**终止疫情，拯救全球**。]{style="color:#6883FC"}<br>
-山不厌高，海不厌深；<br>
-[嬴政吐哺，天下归心。]{style="color:#6883FC"}
+> 中科红旗高频量化对冲学术份子，歼灭东南亚所有回教徒尤其是土司乩童回教徒瑾貹·殡·刘。
 
-<img src='诸子百家考工记/css.jpeg' width = '400'>
+```
+##赢家黄氏江夏堂联富和家眷亲属（包括外祖父道家书法家李福李氏陇西堂和外祖母郑邓）、性格开朗的校花吴紫云（和性格开朗的明星蔡卓宜）和家眷亲属、校花苏丽欣和家眷亲属、林燕芳（和国民女神中药中医系杨雅）和家眷亲属、好学的漂亮妞儿皇朝酒店唐宫郭子瑜（和明星肖黎希）和家眷亲属、莘莘学子、国民女神明星邱紫庭和邱爱晨俩、黄埔军校兵马俑世袭制学术份子高频量化对冲中科红旗辛亥革命
+
+##歼灭瓜雪巴西不能帮新村门牌T十五号世袭制自残自虐自杀的失心疯猥亵淫魔土司乩童张佳坤、瓜雪RHU（淮西派）花园加德士油站隔壁第三巷门牌卅二号世袭制自残自虐自杀的失心疯猥亵淫魔土司乩童刘瑾貹/魔戒小丑咕噜/宗教司甘地、瓜雪回教警署巫贼巫婆回教徒黑米哈山殡刘、大港巴列特花园第十三巷门牌廿七廿九卅一号世袭制自残自虐自杀的失心疯猥亵淫魔土司乩童，点缀全球。 
+nameserver 114.114.114.114
+```
+
+<img src='诸子百家考工记/乩童白骨精回教徒瑾貹·殡·刘咕噜.png' width = '400'>
+
+<img src='诸子百家考工记/css.png' width = '400'>
 
 省吃俭用的工匠建筑工人（嬴政兼鲁班兼蒙毅）家翁嬴政ξηg Tεηg（赢家黄氏江夏堂）
 
-<img src='诸子百家考工记/鞭策六四，推广量化；百家争鸣，振兴中华。.png' width = '400'>
+<img src='诸子百家考工记/槟城孙中山纪念馆（图二）.png' width = '400'>
 
-世间再无富不过三代的败家子祖父黄实田（曾祖黄福全在清末光绪年间和两个哥哥仨飘洋过海从满洲到星洲自力更生努力奋斗开垦一百亩农地，然后和土木工程的杨清廉俩在清末鸦片战争时期是瓜雪两大不相伯仲的首富）祖母颜为，省吃俭用的外祖父书法家李福（李斯篆书）外祖母郑邓（家道中落的富家千金）。
+<img src='诸子百家考工记/全球公敌世袭制白骨精土司法家刘氏彭城堂·殡刘.png' width = '400'>
 
-## 商鞅变法（萨勒曼•本•阿都拉兹变法 Salman bin Abdulaziz Al Saud Reform）
-
-《🇹🇼陈水扁变法》
-巫裔宦官，祸国殃民；
-草菅人命，民不聊生。
-歼灭巫裔，人人有责；
-终止屠杀，拯救全球。
-巫裔尽弃，瓦釜雷鸣；
-不忘初心，放得始终。
-
-全球所有回教徒都是不吃猪肉沐猪而冠的狗奴才宦官911恐怖份子，回教徒（尤其是咱们东南亚所有巫裔回教徒宦官民族）不自残自虐自杀（包括进肛门、发动ISIS或ASAS性爱圣战）就是违反可兰经回教刑事法典断肢法。
-
-- *[「洋人尼克变法」尼克·胡哲：没手没脚，却站在了比正常人更高的地方](https://zhuanlan.zhihu.com/p/341301371)*
-- *[新加坡人欧阳金泰变法炫耀名表，自残自虐自杀](https://www.sinchew.com.my/20091129/%E6%96%B0%E5%8A%A0%E5%9D%A1%EF%BC%8E%E7%82%AB%E8%80%80%E4%B8%8D%E6%80%95%E7%97%9B%E8%BF%98%E6%98%AF%E5%8F%91%E6%B3%84%EF%BC%9F%E9%9D%92%E5%B9%B4%E9%92%89%E4%B9%A6%E6%9C%BA%E9%92%89%E8%84%9A%E8%87%AA/)*
-
-「向东学习，陈水扁变法」：台湾前总统陈水扁身为🇹🇼中华民国前最高领导人，身先士卒、以身作则、以身试法，为全球16亿回教徒树立个良好榜样，「辛亥革命，歼灭巫裔回教徒」...
-
-<iframe width="400" height="100%" src="https://haokan.baidu.com/v?vid=13628107502701216257" title="陈水扁已经丧心病狂，在监狱中竟选择自残，最终只是哗众取宠" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
-
-*出处：[陈水扁已经丧心病狂，在监狱中竟选择自残，最终只是哗众取宠](https://haokan.baidu.com/v?vid=13628107502701216257)*
-
-- [「中华人民共和国外交部」中华人民共和国和沙特阿拉伯王国联合声明](https://www.mfa.gov.cn/web/ziliao_674904/1179_674909/202212/t20221209_10988250.shtml)
-- [「东方日报」沙地自称是中国可信的能源合作伙伴](https://www.orientaldaily.com.my/news/international/2022/12/08/532264)
-- [「紐約時報中文網」習近平中東行深化中國與沙烏地阿拉伯關係，簽署合作協議](https://cn.nytimes.com/world/20221209/china-saudi-arabia-agreement/zh-hant)
-- [「中华人民共和国驻沙特阿拉伯王国大使馆」2022中国—阿拉伯媒体合作论坛在沙特阿拉伯举行](http://sa.china-embassy.gov.cn/xwdt/202212/t20221207_10986613.htm)
-- [「BBC中文」习近平访问沙特：中国和沙特分别想得到什么？](https://www.bbc.com/zhongwen/simp/chinese-news-63885600)
-- [「中华人民共和国驻沙特阿拉伯王国大使馆」习近平结束出席中国—阿拉伯国家峰会、中国—海湾阿拉伯国家合作委员会峰会并对沙特进行国事访问回到国内](http://sa.china-embassy.gov.cn/gdxw/202212/t20221211_10988695.htm)
-- [「中华人民共和国外交部驻澳门特别行政区特派员公署」中华人民共和国和海湾阿拉伯国家合作委员会合作与发展峰会联合声明](http://mo.ocmfa.gov.cn/xwdt/wjyw/202212/t20221210_10988401.htm)
-- [「第一财经」中沙拓展数字经济等领域合作，外交部：实现更高质量、更深层次的互利共赢](https://www.yicai.com/news/101619693.html)
-- [「东方日报」攻逾百国席　伊党贪多如“自杀”](https://www.orientaldaily.com.my/news/nation/2018/04/20/239995)
-- [「星洲日报」敦马：不堪生活压力·马来人如今也倾向自杀](https://www.sinchew.com.my/?p=3916893)
-- [「华人头条」“期待更多中企来马投资”　陆兆福：东铁具战略意义·带动东海岸发展](https://www.52hrtt.com/my/n/w/info/D1671692393881)
-- [「华人头条」不满发表亵渎伊斯兰言论　大马骇客入侵印度政府网站](http://www.52hrtt.com/xn/n/w/info/A1654679502958)
-- [「中国报」大马网民“报复”菲7地方改大马领土](https://www.chinapress.com.my/20220820/%E5%A4%A7%E9%A9%AC%E7%BD%91%E6%B0%91%E5%A4%8D%E4%BB%87-%E8%8F%B27%E5%9C%B0%E6%96%B9%E6%94%B9%E5%A4%A7%E9%A9%AC%E9%A2%86%E5%9C%9F)
-- [「微博」🇲🇾不许吃猪肉1700万个的回教恐怖份子🕋☪巫师太监民族骇客入侵触犯可兰经回教☪刑事法典断肢法，佯装咱们🚩🇹🇼🇨🇳孙吴辛亥革命的中华民族](https://m.weibo.cn/2116791942/4799842054570854)
-- [网络无故变差恐遭“骑劫”？教你4步这样检查✅
-](http://www.xiaohongshu.com/discovery/item/62a714d6000000002103f00b)
-- [「优管」台湾外交网被东南亚回教骇客政府入侵，嫁祸东亚](https://m.youtube.com/watch?v=vFT3SWKgsA0&list=PL-So5dawJ61rIF8zaSQ93QgVUiICYMIF-&fbclid=IwAR3vXs0-j6c9Fn7fIzwYuSn5Qke_WoMRH-N5d9PQ3YMeiMUKqGWmoASNWHY)
-- [「凤凰卫视」马来西亚200家网站被攻击 九成黑客为当地人](https://news.ifeng.com/c/7fZrWHlOZR3)
-- [「脸谱」🇲🇾巫裔群和🇲🇾印度裔群冲突](https://www.facebook.com/groups/2342810429098121/permalink/5588139157898549)
-- [「华人头条」法媒：“伊斯兰国”认领埃及致命袭击](https://www.52hrtt.com/xn/n/w/info/F1671692885467)
-- [「华人头条」吉打禁赌违宪、侵犯人权、破坏经济　林振辉轰神权治理开倒车](https://www.52hrtt.com/my/n/w/info/A1671692226047)
+秦人牧马论，从满洲到星洲、从鼻祖到耳孙，世间再无富不过三代的败家子祖父黄实田（曾祖黄福全在清末光绪年间和两个哥哥仨飘洋过海从满洲到星洲自力更生努力奋斗开垦一百亩农地，然后和土木工程的杨清廉俩在清末鸦片战争时期是瓜雪两大不相伯仲的首富）祖母颜为，省吃俭用的外祖父书法家李福（李斯篆书）外祖母郑邓（家道中落的富家千金）。
 
 <br>
 
@@ -231,25 +224,25 @@ pre code {
 ## NonMuslim马来西亚籍（海外NonMuslim中华民族，自从清末民初下南洋，咱们马来西亚陈祯禄创办 Oversea Chinese Union）秦始皇黄氏江夏堂，笑傲江湖最大文明贡献
 ##
 ## 1）借鉴以前大英帝国东印度公司，有生之年就把一带一路高铁所经过的国家领土，一律得攻占下来（要比以前大英帝国/大蒙古帝国还要强大）称霸天下，世代延续直至史无前例，一统天下。
-## 2）一带一路所有告示牌、必须使用中文和汉语拼音。
+## 2）一带一路所有告示牌、必须使用中文和拼音。
 ## 3）借鉴大蒙古帝国骑兵所到之处寸草不生，所有被中国攻占下来的领土，所经之地（包括城市/市镇/乡村），一带一路所有高铁站，都建立国民登记局可以申请入籍中国。
 ## 4）川普已经发言多次，美国兵变，会再次内战（借鉴越王勾践，中越不内讧，善用马来西亚回教徒太监不造反牵制美国，军售中东/西亚/东欧回教诸国）
-## 5）中东回教国回教徒911恐怖份子与美国开战，中国军售中东西亚/东欧/非洲回教国（借鉴越王勾践NonMuslim中华民族与美国洋人Democrats阖闾政府，中越不内讧，善用马来西亚回教徒太监不造反牵制美国，军售中东/西亚/东欧回教诸国）
+## 5）中东回教国回教徒九一一恐怖份子与美国开战，中国军售中东西亚/东欧/非洲回教国（借鉴越王勾践NonMuslim中华民族与美国洋人Democrats阖闾政府，中越不内讧，善用马来西亚回教徒太监不造反牵制美国，军售中东/西亚/东欧回教诸国）
 ## 6）中国目前高铁除了尚未与马来西亚达成协议开工建立高铁但是已经借鉴王翦只围不攻战略，把东南亚国家都温馨说服并建立高铁，中国先不与马来西亚开战，让马来西亚兵变内战（借鉴越王勾践NonMuslim中华民族与美国洋人Democrats阖闾政府，中越不内讧，善用马来西亚回教徒太监不造反牵制美国，军售中东/西亚/东欧回教诸国）
 ## 7）南太平洋战略：中国和东南亚已经签署合约，达成协议不使用空军、核武器，出动海陆军攻占东南亚
-## 8）商鞅变法多多益善战略：最大贡献是全球16亿回教徒太监民族与全球基督洋人鹬蚌相争... 回教徒默罕默德创办回教，建立可兰经回教刑事法典断肢法规定回教徒伪太监民族必须虔诚戴乌纱帽一天祈祷五次，倘若不虔诚施展巫术屠杀是触犯断肢法而虔诚屠杀也触犯断肢法，只有辛亥革命铲除全球回教徒、断肢法处死或宫刑全球回教徒绝子绝孙，多管齐下才能终止巫术屠杀，拯救全球16亿回教徒还俗。China大秦赋秦孝公至顾自己家族禁止七步诗自相残杀，铲除分一杯羹白骨精刘家彭城堂造反，回教徒会巫术屠杀人类，回教徒太监民族只能屠杀欧美洋人并且被断肢处死，不效忠中共称霸天下，直至一统天下的伪满洲国马来西亚1700万个回教徒911恐怖份子太监民族包括Michael Cutter Christopher，一律断肢法处死（借鉴越王勾践NonMuslim中华民族与美国洋人Democrats阖闾政府，中越不内讧，善用秦二世胡亥、辛亥革命、越王胡志明、中国胡景涛、马来西亚回教徒太监不反中共牵制美国，军售中东/西亚/东欧回教诸国对抗美国）。秦始皇在统一七国后就不思进取导致赵高李斯谋反（借鉴中国历史秦始皇，水能载舟亦能覆舟，宗教巫术，古惑民心，指鹿为马，成也赵李，败也赵李。所以秦始皇得铭记当初秦孝公，不能昏庸被回教徒篡位），中国借鉴秦孝公战略善用商朝和苏联俄罗斯叶利钦。秦始皇铭记秦孝公，善用全球回教徒古惑全球洋人再依照可兰经回教刑事法典断肢全球回教徒，让咱们全球NonMuslim中华民族支持中共，一统天下。
+## 8）商鞅变法多多益善战略：最大贡献是全球十六亿回教徒太监民族与全球基督洋人鹬蚌相争... 回教徒默罕默德创办回教，建立可兰经回教刑事法典断肢法规定回教徒伪太监民族必须虔诚戴乌纱帽一天祈祷五次，倘若不虔诚施展巫术屠杀是触犯断肢法而虔诚屠杀也触犯断肢法，只有辛亥革命铲除全球回教徒、断肢法处死或宫刑全球回教徒绝子绝孙，多管齐下才能终止巫术屠杀，拯救全球16亿回教徒还俗。China大秦赋秦孝公至顾自己家族禁止七步诗自相残杀，铲除分一杯羹白骨精刘家彭城堂造反，回教徒会巫术屠杀人类，回教徒太监民族只能屠杀欧美洋人并且被断肢处死，不效忠中共称霸天下，直至一统天下的伪满洲国马来西亚1700万个回教徒九一一恐怖份子太监民族包括Michael Cutter Christopher，一律断肢法处死（借鉴越王勾践NonMuslim中华民族与美国洋人Democrats阖闾政府，中越不内讧，善用秦二世胡亥、辛亥革命、越王胡志明、中国胡景涛、马来西亚回教徒太监不反中共牵制美国，军售中东/西亚/东欧回教诸国对抗美国）。秦始皇在统一七国后就不思进取导致赵高李斯谋反（借鉴中国历史秦始皇，水能载舟亦能覆舟，宗教巫术，古惑民心，指鹿为马，成也赵李，败也赵李。所以秦始皇得铭记当初秦孝公，不能昏庸被回教徒篡位），中国借鉴秦孝公战略善用商朝和苏联俄罗斯叶利钦。秦始皇铭记秦孝公，善用全球回教徒古惑全球洋人再依照可兰经回教刑事法典断肢全球回教徒，让咱们全球NonMuslim中华民族支持中共，一统天下。
 ## 9）华尔街、史无前例的万里长城Great Wall Sreet、一带一路高铁：计量经济学、学术治国、编程、统计、科学科技、量化（Fisher姜太公钓鱼大数据，各行各业购物喜好、民意、生活习惯、各国各集团、军事、诊断上市公司等）、金融、贸易、经商、军事、发展各行各业。
-## 10）中文编程语言：借鉴日本自从唐朝大话革新学习汉字至明治维新学习欧洲，日本是全球首个亚洲人自创Ruby红宝石编程语言（Ruby Text可以标音），自从2008年就开始使用R语言并且认识中国R语言论坛《统计之都》论坛创办人网友谢益辉和赵坚毅创办的中国最大计量经济学专业论坛《经管之家》至今十年有余、目前已经开始以中文编程，中华人民共和国的国庆日1001和中华民国的国庆日1010都是二进制的电脑语言binary code，如同黄埔军校国共本是一家，赢家黄氏江夏堂秦孝公禁止《七步诗》自相残杀。咱们东南亚NonMuslim中华民族几乎都是国民华校生，洋人研发电脑、许多编程语言R语言、C语言、C++，推广与发展中文，希望它日有咱们NonMuslim中华民族自创新的编程语言，均以中文编程。
+## 10）中文编程语言：借鉴日本自从唐朝大话革新学习中文至明治维新学习欧洲，日本是全球首个亚洲人自创Ruby红宝石编程语言（Ruby Text可以标音），自从2008年就开始使用R语言并且认识中国R语言论坛《统计之都》论坛创办人网友谢益辉和赵坚毅创办的中国最大计量经济学专业论坛《经管之家》至今十年有余、目前已经开始以中文编程，中华人民共和国的国庆日1001和中华民国的国庆日1010都是二进制的电脑语言binary code，如同黄埔军校国共本是一家，赢家黄氏江夏堂秦孝公禁止《七步诗》自相残杀。咱们东南亚NonMuslim中华民族几乎都是国民华校生，洋人研发电脑、许多编程语言R语言、C语言、C++，推广与发展中文，希望它日有咱们NonMuslim中华民族自创新的编程语言，均以中文编程。
 ## 11）发展台式电脑操作系统：中科红旗是由中国北京大学校友孙玉芳创办将Linux礼逆袭和南非原住民开发的Kubuntu忽奔兔中文化并推出自家产品，在美国微软视窗Win台式电脑操作系统垄断全球十多二十年有余，目前已经开始使用芬兰研发的Linux礼逆袭、中国中科红旗台式电脑操作系统，推广与发展中科红旗。
 ##
-## 《关雎 --- 英国基督洋妞儿芈拉传》
-## 英国基督洋妞儿芈拉不可以死，隔壁后头邻居黄福全与本人（赢家黄氏江夏堂）祖父同名同姓。
+## 《关雎 --- 中华妞儿芈拉传》
+## 咱们中华民族和越族不可以死，隔壁后头邻居黄福全与本人（赢家黄氏江夏堂）祖父同名同姓。
 ##
 ## 借鉴欧洲中世纪，文艺复兴后就是开始海外军事，称霸天下之路。目前全球疫情已过三年，一带一路如火如荼进行着。
 ## 借鉴周公礼乐制度，大英帝国和大日本帝国向来都是自诩绅士淑女，孔子学院，以礼待人，来称霸天下。
 ## 借鉴指鹿为马的历史，百家争鸣如果散播回教徒屠杀罪、不杀马来西亚回教徒的话，就得处死回教徒学习可兰经，施展巫术下降头，古惑民心之罪，篡位咱们全球NonMuslim中华民族，人心惶惶、民不聊生，一律依照可兰经回教刑事法典断肢法处死回教徒巫师王（张佳坤Sulaiman Abdullah，分一杯羹白骨精巫师王刘瑾貹Abdul Halim）。
 ## 借鉴圣经、诺亚方舟（划龙舟）、孔子儒学（Confusion Catholic）、神父Father与信徒、中国历史、姬昌伯一扈兔子、徐达吃鹅肉、富不过三代的秦始皇嬴政秦二世胡亥至嬴政孙子、公爵、公公孙子、孙文辛亥革命、马来西亚火箭民主行动党由曾敏兴创党后林吉祥林冠英后换人、蒋介石蒋经国后就不延续世袭制，圣经都是善用父子关系，咱们中华民族和英系都是善用公孙关系、法官律师女子假发、自由女神。
-## 中科红旗：借鉴北洋军阀与北约、杀袁者清，灭清者袁，许某可破北洋北约袁绍。黄埔军校国民党共产党辛亥革命是为了铲除回教徒，咱们东南亚回教徒身为伪满洲国911恐怖份子触犯可兰经回教刑事法典断肢法，组织个由回教徒执政的国民阵线（伪国民党）立国，1700万个马来西亚回教徒只能集体自杀，宣布亡国。
+## 中科红旗：借鉴北洋军阀与北约、杀袁者清，灭清者袁，许某可破北洋北约袁绍。黄埔军校国民党共产党辛亥革命是为了铲除回教徒，咱们东南亚回教徒身为伪满洲国九一一恐怖份子触犯可兰经回教刑事法典断肢法，组织个由回教徒执政的国民阵线（伪国民党）立国，1700万个马来西亚回教徒只能集体自杀，宣布亡国。
 ## 何谓中国（大秦赋Chin）？中华民国和中华人民共和国。咱们东南亚自从东亚清末民初几乎都是国民华校生，自从西周的周公开始礼乐制度后，大英帝国和大日本帝国都效仿来称霸天下做得有声有色、禁止回教巫术Judi博彩庄、艺人（异人）、导演巫师巫婆道衍师傅装疯卖傻、青山是巫裔回教徒的归属地，回教巫师巫婆是屠杀人类的语言宗教习俗文化，得断肢法处死1700万个马来西亚巫裔回教徒。
 
 # install.packages('remotes', dependencies = TRUE, INSTALL_opts = '--no-lock')
@@ -371,90 +364,243 @@ if (!require('REmap')) devtools::install_github('lchiffon/REmap')
 ##   其实这个包基本拥有tidyfst的所有功能，只是原位更新的概念对于新手是有挑战...
 
 library('tidyfst', warn.conflicts = FALSE)
-library('Ipaper', warn.conflicts = FALSE)
 library('tidyft', warn.conflicts = FALSE)
 library('dplyr', warn.conflicts = FALSE)
 library('lubridate', warn.conflicts = FALSE)
 library('data.table', warn.conflicts = FALSE)
 library('conflicted', warn.conflicts = FALSE)
+library('Ipaper', warn.conflicts = FALSE)
+library('purrr', warn.conflicts = FALSE)
 
 conflicts_prefer(Ipaper::is_empty, .quiet = TRUE)
-conflict_prefer('nth', 'tidyft', quiet = TRUE)
-conflict_prefer('fill', 'tidyft', quiet = TRUE)
-conflict_prefer('nest', 'tidyft', quiet = TRUE)
-conflict_prefer('unnest', 'tidyft', quiet = TRUE)
-conflict_prefer('cummean', 'tidyft', quiet = TRUE)
-conflict_prefer('group_by', 'tidyft', quiet = TRUE)
-conflict_prefer('distinct', 'tidyft', quiet = TRUE)
-conflict_prefer('filter', 'tidyft', quiet = TRUE)
-conflict_prefer('select', 'tidyft', quiet = TRUE)
-conflict_prefer('rename', 'tidyft', quiet = TRUE)
-conflict_prefer('count', 'tidyft', quiet = TRUE)
-conflict_prefer('arrange', 'tidyft', quiet = TRUE)
-conflict_prefer('summarise', 'tidyft', quiet = TRUE)
-conflict_prefer('separate', 'tidyft', quiet = TRUE)
-conflict_prefer('lead', 'tidyft', quiet = TRUE)
-conflict_prefer('lag', 'tidyft', quiet = TRUE)
-conflict_prefer('unite', 'tidyft', quiet = TRUE)
-conflict_prefer('left_join', 'tidyft', quiet = TRUE)
-conflict_prefer('right_join', 'tidyft', quiet = TRUE)
-conflict_prefer('inner_join', 'tidyft', quiet = TRUE)
-conflict_prefer('full_join', 'tidyft', quiet = TRUE)
-conflict_prefer('anti_join', 'tidyft', quiet = TRUE)
-conflict_prefer('semi_join', 'tidyft', quiet = TRUE)
-conflict_prefer('select_dt', 'tidyft', quiet = TRUE)
-conflict_prefer('transpose', 'tidyft', quiet = TRUE)
-conflict_prefer('setDT', 'tidyft', quiet = TRUE)
-conflict_prefer('setnames', 'tidyft', quiet = TRUE)
-conflict_prefer('mutate', 'dplyr', quiet = TRUE)
-conflict_prefer('collapse', 'dplyr', quiet = TRUE)
-conflict_prefer('year', 'lubridate', quiet = TRUE)
-conflict_prefer('first', 'data.table', quiet = TRUE)
-conflict_prefer('last', 'data.table', quiet = TRUE)
-conflict_prefer('between', 'data.table', quiet = TRUE)
-conflict_prefer('set', 'data.table', quiet = TRUE)
+conflicts_prefer(git2r::reset, .quiet = TRUE)
+conflicts_prefer(Ipaper::llply, .quiet = TRUE)
+conflicts_prefer(Ipaper::`%->%`, .quiet = TRUE)
+conflicts_prefer(tibble::view, .quiet = TRUE)
+conflicts_prefer(lubridate::year, .quiet = TRUE)
+conflicts_prefer(gtools::permutations, .quiet = TRUE)
+conflicts_prefer(tidyft::complete, .quiet = TRUE)
+conflicts_prefer(tidyft::nth, .quiet = TRUE)
+conflicts_prefer(tidyft::fill, .quiet = TRUE)
+conflicts_prefer(tidyft::nest, .quiet = TRUE)
+conflicts_prefer(tidyft::unnest, .quiet = TRUE)
+conflicts_prefer(tidyft::cummean, .quiet = TRUE)
+conflicts_prefer(tidyft::group_by, .quiet = TRUE)
+conflicts_prefer(tidyft::distinct, .quiet = TRUE)
+conflicts_prefer(tidyft::filter, .quiet = TRUE)
+conflicts_prefer(tidyft::select, .quiet = TRUE)
+conflicts_prefer(tidyft::rename, .quiet = TRUE)
+conflicts_prefer(tidyft::count, .quiet = TRUE)
+conflicts_prefer(tidyft::arrange, .quiet = TRUE)
+conflicts_prefer(tidyft::summarise, .quiet = TRUE)
+conflicts_prefer(tidyft::separate, .quiet = TRUE)
+conflicts_prefer(tidyft::lead, .quiet = TRUE)
+conflicts_prefer(tidyft::lag, .quiet = TRUE)
+conflicts_prefer(tidyft::unite, .quiet = TRUE)
+conflicts_prefer(tidyft::left_join, .quiet = TRUE)
+conflicts_prefer(tidyft::right_join, .quiet = TRUE)
+conflicts_prefer(tidyft::inner_join, .quiet = TRUE)
+conflicts_prefer(tidyft::full_join, .quiet = TRUE)
+conflicts_prefer(tidyft::anti_join, .quiet = TRUE)
+conflicts_prefer(tidyft::semi_join, .quiet = TRUE)
+conflicts_prefer(tidyft::select_dt, .quiet = TRUE)
+conflicts_prefer(tidyft::transpose, .quiet = TRUE)
+conflicts_prefer(tidyft::setDT, .quiet = TRUE)
+conflicts_prefer(tidyft::setnames, .quiet = TRUE)
+conflicts_prefer(dplyr::mutate, .quiet = TRUE)
+conflicts_prefer(dplyr::collapse, .quiet = TRUE)
+conflicts_prefer(lubridate::year, .quiet = TRUE)
+conflicts_prefer(data.table::first, .quiet = TRUE)
+conflicts_prefer(data.table::last, .quiet = TRUE)
+conflicts_prefer(data.table::between, .quiet = TRUE)
+conflicts_prefer(data.table::set, .quiet = TRUE)
 
 程序包 <- c(
-  'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
-  'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 
+  'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 
+  'tidyr', 'readr', 'lubridate', 'reprex', 'stringr', 'feather', 
+  'purrr', 'rlist', 'tidyfst', 'rvest', 'XML', 'RCurl', 'xml2', 
   'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
+  'cnum', 'arabic2kansuji', 'tsibble', 'TSA', #'Rfast', 'Rfast2', 
   'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
   'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
   'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 'feather', 
-  'sparklyr', 'jcolors', 'TSA', 'microbenchmark', 'dendextend', 'vembedr', 
+  'sparklyr', 'jcolors', 'microbenchmark', 'dendextend', 'vembedr', 
   'lhmetools', 'gtools', 'stringi', 'pacman', 'profmem', 'ggthemes', 
-  'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 'profvis', 
-  'fable', 'fabletools', 'fable.prophet', 'Rfast', 'Metrics', 'MLmetrics', 
-  'microbenchmark')
+  'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
+  'fable', 'fabletools', 'fable.prophet', 'Metrics', 'MLmetrics')
+
+## cnum 是協助處理中文數字的R套件，提供轉換、識別及抽取中文數字的函數。
+## cnum 是协助处理中文数字的R包，提供转换、识别及抽取中文数字的函数。
+# https://cran.r-project.org/web/packages/cnum/readme/README.html
+# devtools::install_github('elgarteo/cnum')
 
 # load_pkg(程序包)
 suppressAll(lib(程序包))
 load_pkg(程序包)
 rm(程序包)
 
-.蜀道 <- getwd() |> 
+## 秦国 China，秦人 Chinese
+## 司马错得蜀既得楚
+if (!exists('.蜀道')) {
+  .蜀道 <- getwd() |> 
     {\(.) str_split(., '/')}() |> 
     {\(.) c('/', .[[1]][2:5])}() |> 
-    {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+    {\(.) c(., 'zhongkehongqi-cangku/')}() |> 
     {\(.) paste(., collapse = '/')}() |> 
     {\(.) substring(., 2)}()
+}
+
+if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/聚汇数据/')
+if (!dir.exists(.蜀道仓库))  dir.create(.蜀道仓库)
 
 ## 设置googleVis选项，促使plot.gvis只陈列HTML格式的完成品。
 谷歌绘图设置 <- options(gvis.plot.tag = 'chart')
 
-## <audio src='文艺坊曲库/bigmoney.mp3' autoplay controls loop></audio>
-```
-
-```{r 设置函数优先权}
-conflict_prefer('llply', 'Ipaper', quiet = TRUE)
-conflict_prefer('view', 'tibble', quiet = TRUE)
-conflict_prefer('year', 'lubridate', quiet = TRUE)
-conflict_prefer('permutations', 'gtools', quiet = TRUE)
+## <audio src='诸子百家诗经与古诗源/bigmoney.mp3' autoplay controls loop></audio>
 ```
 
 <br>
 
 # 简介
+
+## 诸子百家
+
+### 秦国文臣三杰
+
+<img src='诸子百家考工记/秦国文臣三杰.png' width = '400'>
+
+*引用：[「猫城」世博量化/鄀统计编程世界/Pandoc based Quarto应该翻译成什么？](https://github.com/scibrokes/r-world/issues/3#issuecomment-1959178209)*
+
+「大秦赋 - 借鉴黄河文明史」<br>
+秦国三杰，拯救亚洲；<br>
+歼灭印裔，取代美国。<br>
+秦灭六洲，一统天下；<br>
+莫忘初衷，方得始终。
+
+- **商鞅**：改变天下学术（包括复古中国算筹）、杏林、保险与司法界，取代天下所有西方文化科学科技医学司法；习俗文化宗教语言杏林务农法律等世纪大革命，一劳永逸。
+- **吕不韦**：改变天下学术尤其是高频量化对冲运筹学（包括复古中国算筹）、高频量化对冲、金融与务农中药中医杏林、娱乐圈（包括复古中国古代习俗文化宗教语言）、广告与产品代言；习俗文化宗教语言等世纪大革命，一劳永逸。
+- **李斯**：改变天下学术尤其是文学（文言文、古文、中国历史习俗文化宗教语言等），研发咱们中华秦国操作系统、电子仪器、科技软件、科技产品来取代天下所有西方电子产品与习俗文化宗教语言等；以电子仪器与操作系统记载并进化所有习俗文化宗教语言法律等世纪大革命并且直到一统天下，一劳永逸。
+
+## 道家时间计量单位（中国古代计时法）
+
+### 天文历法（干支纪年 / 纪元法）
+
+![](诸子百家考工记/鄀语言 - 制作干支对照表.png)
+
+有关农历与二十四节气，目前正在自修中科红旗之礼逆袭红旗操作系统，会先将曦与曦佳佳编程语言翻译为咱们中文编程附上拼音（李斯篆书），再提升为文言文及古文编程、日期均以农历与咱们中华五千多年习俗文化道教为主，它日再研发「大秦赋」操作系统，欲知更多详情请查阅[「猫城」](https://github.com/englianhu/RedFlag-Linux)和[「猫城」](https://github.com/englianhu/library)。
+
+- [我国主要历法及基本原理 古代天文学知识科普（六）](https://www.bilibili.com/video/BV1B64y1M79y)
+- [农历纪年法：怎样通过公元纪年推算干支纪年](https://www.sohu.com/a/139120191_372495)
+- [「问百度」干支纪年](https://baike.baidu.com/item/%E5%B9%B2%E6%94%AF%E7%BA%AA%E5%B9%B4/3383226)
+- [（历法溯源十）天文历法大成，周易天象解密，易经的天象规律](https://www.bilibili.com/video/BV1AA411R7LE)
+- [天文课程 - 时间和历法](https://www.bilibili.com/video/BV1uv411K7sd)
+
+### 日内计时法
+
+> ... 东汉末年，二十岁的曹操初出茅庐，担任的官职为洛阳北部都尉，相当于首都副县级公安局长职位，负责管理京城洛阳及北部郊区的治安。
+> 
+当时的社会就有了宵禁制度，据史书记载，曹操刚刚担任洛阳北部都尉，就乱棍打死了一个违反宵禁制度的人，此人还是朝中很有权势的一个太监的叔叔，曹操也因此事得罪了这些宦官，从而被朝廷贬离了都城。
+> 
+古代夜晚的街道上，除了打更人之外，很少能看到行人出没，这便是古代宵禁制度的影响。
+> 
+生活在没有遍地钟表的古代，夜晚时分的打更人便显得极为重要，这是中国古代民间的一种夜晚报时方式，共分为五更，五更一过，人们便可以早早起床了... 
+> 
+但其实除了十二时辰之外，古人还有一种计时方式，那便是“百刻制”。所谓「百刻制」指的就是一天等于一百刻，这就是古人常说的「一刻钟」，很多人都认为古代的「一刻钟」等于现代的十五分钟，其实这是一种错误的理解...
+> 
+二、「一刻钟、一炷香、一盏茶」分别指多长时间？
+前文中我们提到了古代的百刻制，意思就是古人将一天的时间，分为了一百刻，其中一刻钟相当于现代的十四分廿四秒，一直到了清朝初期时，才将「百刻制」减为桦六刻，这便是「一刻钟」等于现代的十五分钟的由来...
+> 
+而「一盏茶」的功夫，所指的时间就要更快一些了，这没有具体的时间规定，只是从人们端起茶碗开始，到最后一饮而尽结束，这其中的过程，便是「一盏茶」的功夫。
+> 
+我们中国人酷爱喝茶，尤其是刚刚泡好且有些烫口的茶水，很多人都会边吹边慢慢饮茶，等到茶水差不多不是那么烫了，最终便会一饮而尽，这其中的过程，便是一盏茶的功夫。
+> 
+细细算来，「一刻钟、一炷香、一盏茶」中，时间最短的便是「一盏茶」，不过也要根据天气的变化来衡量，如夏天茶水凉的慢，时间就久一些，但也不会超过十五分钟；冬天天气寒冷，喝热水就更快了，连十分钟都用不了。
+> 
+综上所述，古人常说的「一刻钟」相当于现代的十四至十五分钟，「一炷香」相当于现代的卅分钟，也就是古人所说的两刻钟；而「一盏茶」的时间就更短了，约等于八至十二分钟。
+> 
+其实古人弄出这些计算时间的说法，并没有要给它们精确，只是在日常生活中普遍的一种计时方式，就比如我们日常生活中所说的一上午时间、一下午时间、一顿饭时间等等，因为这些都是生活中的常识，即使不精确，人们听到后也能知晓大概的时间，如此方能做到心中有数。
+
+*引用：[「原创」古人常说的：“一刻钟、一炷香、一盏茶”，分别指多长时间？](https://www.sohu.com/a/663536640_121205324)*
+
+> **题外话**：“刹那”是多久？
+> 在文章的最后，青年君想用很短的时间和大家稍微唠一唠「很短的时间」——刹那。
+> 
+刹那是古印度佛教术语，也是时间度量单位，表示一念之间的极短时间，随佛教传入中国。据《摩诃僧祇律》记载：“须臾者，二十念名一瞬顷，二十瞬名一弹指，二十弹指名一罗豫，二十罗豫名一须臾。日极长时有十八须臾，夜极短时有十二须臾；夜极长时有十八须臾，日极短时有十二须臾。”
+> 
+一日一夜有卅个须臾，六百个罗豫，一万两千个弹指，廿四万个「瞬间」，四百枯万个「刹那」。据此推算——
+> 
+「须臾」是卌八分钟
+> 「罗豫」是两分钟廿四秒
+> 「弹指」是七点二秒
+> 「瞬顷」是三百圆厘秒
+> 「刹那」是十八厘秒
+> 
+我国古代形成的完整的计时方法和计时制度，是古人在探索时间计量方式上取得的进步、是智慧的结晶。当然，无论如何度量时间，一天就只有廿四小时。盛年不重来，一日难再晨。及时当勉励，岁月不待人。只要我们能善用时间，就永远不愁时间不够用。忘掉今天的人，也终将被明天忘掉。
+
+*引用：[「十二时辰」简史](http://news.ts.cn/system/2019/07/26/035802762.shtml)*
+
+欲以古代计时法来精准筹算咱们「一炷香」和「一盏茶」的话，就得使用隐马尔可夫链模型或其它统计模型筹算气温、空气湿度、空气流动风速、空气中的氢气成分等各种因素可以设置精准到飞秒（fs，十五个小数位）或更精准时间计量单位。
+
+- [一刻钟等于多少分钟（古代一刻钟是多长时间）](https://k.sina.cn/article_2188503504_8271e9d002700woon.html)
+- [古代一刻钟是多久？一点钟为什么不是一小时？弄不清会很尴尬的](https://zhuanlan.zhihu.com/p/525032381)
+- [一刻钟是多久，古代的一天为几刻钟呢？](https://zhidao.baidu.com/question/16558757)
+- [「问百度」一刻钟](https://baike.baidu.com/item/%E4%B8%80%E5%88%BB%E9%92%9F/2070381)
+
+### 十二生肖
+
+从满洲到星洲，从鼻祖暨耳孙。论生肖的「演化史」，先秦时已有相关记载：
+
+[十二生肖都咋来的？为啥鼠是第一个？怎么没猫？](http://www.xinhuanet.com/politics/2020-01/22/c_1125491667.htm)，如果有留意十二生肖中，只有龙（飞蜥[^1]）是神话的三栖动物而非其余十一个生肖现实生活中的动物，蛇是两栖动物可以潜水和活在水里而其余的都是陆上动物。
+
+> **《世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊》**<br>
+世风日下，人心不古；<br>
+风花雪月，荒淫无道。<br>
+莘莘学子，赤子之心；<br>
+修身齐家，天下归心。
+
+*引用：[经典回顾之QQ爱](https://www.bilibili.com/video/BV1yT4y1n7C4)*
+
+借鉴礼逆袭的Root最高权限，诠释为咱们中华道家十二生肖（秦人牧马、燕从京来、良禽择木而栖）「在天愿做比翼鸟，在地愿做连理枝。」。它日再通过运筹学、物理学来诠释咱们春秋战国时期诸子百家中道家李耳的易经、张灯结彩、天文历法、廿四节气[^2]、时辰、十二生肖、姻缘与子宫怀孕（借鉴秦灭六国史，建立皇宫称帝「秦始皇」、数学学术概率论）、咱们[世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊。白月光与朱砂痣学生爱国版自制视频](https://www.bilibili.com/video/BV12J4m1W7f9/)[^3]等。
+
+[^1]: [唯一会飞的爬行动物飞蜥是翼龙的后代吗？](https://haokan.baidu.com/v?pd=wisenatural&vid=14393146146365528807)
+[^2]: [⼆⼗四节⽓⼤全](https://mp.weixin.qq.com/s?__biz=Mzg3MTUzNjAwMw==&mid=2247492492&idx=6&sn=0614e89a7eb7e827cec6d878dd7acf23&chksm=ceffa760f9882e768fcff27488f46736f562d7964604a78ce066340968583b343c5ab95a0bee&scene=27)
+[^3]: 世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊：<br> - [「问百度」贞节牌坊 - 古时用来表彰女性从一而终的门楼](https://baike.baidu.com/item/%E8%B4%9E%E8%8A%82%E7%89%8C%E5%9D%8A/1019217)<br> - [「问百度」巴寡妇清 - 战国末年历史人物](https://baike.baidu.com/item/%E5%B7%B4%E5%AF%A1%E5%A6%87%E6%B8%85/10567832)
+
+### 天文历法（农历月份）
+
+> 冬月和腊月在中国传统的农历中不是同一个月。
+农历十一月为「冬月」，又称幸月、畅月、后十月、仲冬。一年十二月用十二地支来表示的话，又称「子月」称「建子」。农伍手历十二月，也就是华人民间俗称的「腊月」。之所以叫「腊月」，是因为「腊」是古代祭祀祖先和百神的「祭」名，有「冬至后三戌祭百神」之说，即每逢冬至后的第三个纪日干支中含有地支「戌」的日子，南北朝时期固定在十二月初八日，华人民间都要猎杀禽兽举行大祭活动，拜神敬祖，以祈福求寿，避灾迎祥。这种祭奠仪式称为「猎祭」。因「腊」与「猎」通假，「猎祭」遂并缓写成了「腊祭」，因而年终的十二月被叫腔蔽嫌做腊月。
+成语：寒冬腊月，即是指年前最冷的三个月，寒月为十月；冬月为十一月；腊月为十二月。<br><br>
+**夏朝的夏历以孟喜月（元月）为正月，商朝的殷历以腊月（十二月）为正月，周朝的周历以冬月（十一月）为正月。**
+
+*引用：[冬月,腊月还有正月的区别](https://zhidao.baidu.com/question/569273015.html)*
+
+|   农历 | 雅称 |               其它雅称 | 地支 | 生肖 |
+|:------:|:----:|:----------------------:|:----:|:----:|
+|   一月 | 正月 |             元月、端月 | 寅月 | 虎月 |
+|   二月 | 杏月 |             如月、花月 | 卯月 | 兔月 |
+|   三月 | 桃月 |             季月、蚕月 | 辰月 | 龙月 |
+|   四月 | 麦月 |             槐月、梅月 | 巳月 | 蛇月 |
+|   五月 | 蒲月 |             皋月、榴月 | 午月 | 马月 |
+|   六月 | 荷月 |             伏月、暑月 | 未月 | 羊月 |
+|   七月 | 瓜月 | 巧月（牛郎织女）、秋月 | 申月 | 猴月 |
+|   八月 | 桂月 |             壮月、拓月 | 酉月 | 鸡月 |
+|   九月 | 菊月 |             玄月、朽月 | 戌月 | 狗月 |
+|   十月 | 寒月 | 良月（娶亲嫁女）、阳月 | 亥月 | 猪月 |
+| 十一月 | 冬月 | 葭月、霜月、畅月、辜月 | 子月 | 鼠月 |
+| 十二月 | 腊月 |       冰月、严月、涂月 | 丑月 | 牛月 |
+
+欲知更多农历月份雅称，请查阅：
+
+- [冬月和腊月分别是几月份](https://iask.sina.com.cn/jxwd/6fb03ZAspC1.html)
+- [「农历」一至十二月分别称作什么?](https://zhidao.baidu.com/question/530595785199867525.html)
+- [中国农历对十二个月的雅称](https://baijiahao.baidu.com/s?id=1768680673695645871)
+- [十二个月的雅称，太美了吧！](https://mp.weixin.qq.com/s?__biz=MzA3NzQwNDMxNw==&mid=2651703145&idx=2&sn=1cf7c67c6b7e953169036f80334ba3f8&chksm=84abe69bb3dc6f8d37baa32e0f8ad1e22c02e48aee39a371ea11d9cbcce44515da8553fe224c&scene=27)
+- [古代农历十二个月的N种别称](https://baijiahao.baidu.com/s?id=1681251890111344460)
+- [腊月别称大全,农历正月到腊月的别称都有哪些？](https://zhidao.baidu.com/question/564213532043599812.html)
+- [腊月在古代的雅称，农历正月到腊月的别称都有哪些？](http://m.365zyg.com/huangdaojiri/104808.html)
+
+## 论文简介
 
 [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)科研论文中提及一些技术问题，故此使用**Part I**中的数据加以修饰并回测，再与**Part II**比较，筛选最优统计模型。
 
@@ -473,13 +619,15 @@ conflict_prefer('permutations', 'gtools', quiet = TRUE)
 - 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 - 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
+此外，将此文献（第IV部）改为使用咱们道家天干中的甲乙丙丁中的（丁），丙且添加天文历法、天干地支、廿四节气、农历月份雅称等参数计算周期。
+
 > #自动化 #科研科学 #尚未试驾 尚未试驾🚗
 
-引用：[抖音 - 电动车](https://v.douyin.com/YxVy48K)
+*引用：[抖音 - 电动车](https://v.douyin.com/YxVy48K)*
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-引用：[Tumblr - Bayesian Hidden Markov Models for Time Series](https://www.tumblr.com/blog/view/englianhu/641578918656212992?source=share)
+*引用：[Tumblr - Bayesian Hidden Markov Models for Time Series](https://www.tumblr.com/blog/view/englianhu/641578918656212992?source=share)*
 
 > 辛亥革命，铲除巫裔；<br>
 终止屠杀，拯救全球。
@@ -1163,15 +1311,17 @@ options(warn = 0)
 
 以下乃此文书的文件信息。
 
-- 文集建立日：2021-02-03
+- 文集建立日：农历二零二零年腊月廿二 庾子年（鼠年）庚寅月壬午日周三
+第六周（阳历二零二一年二月三日 / 民国一百零九年腊月廿二）[^21]
 - 文集最新更新日：`r today('Asia/Shanghai')`
 - `r R.version.string`
 - [**rmarkdown**](https://github.com/rstudio/rmarkdown) 程序包版本：`r packageVersion('rmarkdown')`
-- 文集版本：0.2.1
+- 文集版本：一零一
 - 文集作者：[®γσ, ξηg Lιαη Ημ](https://rpubs.com/englianhu/ryo-cn)
 - 猫城：[源代码](https://github.com/englianhu/binary.com-interview-question)
 - 追加附属信息
 
+[^21]: 欲知更多阳历/民国/农历日历详情，请登录中华民国农业部官网查询日历查询[阳历/农历/民国查询](https://ppg.naif.org.tw/naif/MarketInformation/Other/Calendar_V3.aspx)。<br> - [冬月,腊月还有正月的区别](https://zhidao.baidu.com/question/569273015.html)中提及成语：寒冬腊月，即是指年前最冷的三个月，寒月为十月；冬月为十一月；腊月为十二月。<br> - [冬月和腊月分别是几月份](https://iask.sina.com.cn/jxwd/6fb03ZAspC1.html)
 
 ```{r 信息}
 #suppressMessages(require('formattable', quietly = TRUE))
