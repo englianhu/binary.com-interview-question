@@ -665,6 +665,7 @@ rm(sys1, sys2)
 05. [binary.com Interview Question I - Interday Betting Strategy Models Comparison (Financial Betting)](http://rpubs.com/englianhu/binary-Q1BET)
 06. [R语言中ARMA，ARIMA（BOX-JENKINS），SARIMA和ARIMAX模型用于预测时间序列数据](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e4%b8%adarma%ef%bc%8carima%ef%bc%88box-jenkins%ef%bc%89%ef%bc%8csarima%e5%92%8carimax%e6%a8%a1%e5%9e%8b%e7%94%a8%e4%ba%8e%e9%a2%84%e6%b5%8b%e6%97%b6%e9%97%b4%e5%ba%8f%e5%88%97)
 
---------------------
+---
 
-**Powered by - Copyright® Intellectual Property Rights of <img src='www/oda-army2.jpg' width='24'> [Scibrokes®](http://www.scibrokes.com)個人の経営企業**
+[<img src="诸子百家考工记/世博量化.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
+[**[<img src="诸子百家考工记/世博量化.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}

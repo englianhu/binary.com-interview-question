@@ -98,11 +98,17 @@ knitr::opts_chunk$set(class.source = 'hover01', class.output = 'hover02', class.
 ## Setup
 
 ```{r warning=FALSE, message=FALSE}
-if(!suppressPackageStartupMessages(require('BBmisc'))) {
+if (!suppressPackageStartupMessages(require('BBmisc'))) {
   install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
 }
 suppressPackageStartupMessages(require('BBmisc'))
 # suppressPackageStartupMessages(require('rmsfuns'))
+
+conflicted::conflicts_prefer(tidyft::slice, .quiet = TRUE)
+conflicted::conflicts_prefer(Ipaper::llply, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::first, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::last, .quiet = TRUE)
+conflicted::conflicts_prefer(dplyr::rename, .quiet = TRUE)
 
 ## load packages
 pkgs <- c('knitr', 'kableExtra', 'tint', 'dygraphs', 
@@ -166,30 +172,30 @@ rm(pkgs)
 
 ```{r error=TRUE}
 ## read files if not exists
-if(!exists('dsmp')) {
+if (!exists('dsmp')) {
   
-  if(str_detect(Sys.info()[1], 'Linux')) {
+  if (str_detect(Sys.info()[1], 'Linux')) {
     
     ## check if data path set
-    if(!exists('.dtr')) {
+    if (!exists('.dtr')) {
       .dtr <- '/home/englianhu/Documents/GitHub/binary.com-interview-question-data/'}
     dsmp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))
     
     ## save files if not exists
-    if(!file.exists(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))) {
+    if (!file.exists(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))) {
       saveRDS(dsmp, paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))}
     
   }
   
-  if(str_detect(Sys.info()[1], 'Windows')) {
+  if (str_detect(Sys.info()[1], 'Windows')) {
     
     ## check if data path set
-    if(!exists('.dtr')) {
+    if (!exists('.dtr')) {
       .dtr <- 'C:/Users/User/Documents/GitHub/binary.com-interview-question-data/'}
     dsmp <- readRDS(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))
     
     ## save files if not exists
-    if(!file.exists(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))) {
+    if (!file.exists(paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))) {
       saveRDS(dsmp, paste0(.dtr, 'data/fx/USDJPY/dsmp.rds'))}
     
   }
@@ -271,7 +277,7 @@ ddsmp <- na.omit(dsmp) |>
                        sq, date, close)}()
 
 ## save files if not exists
-if(!file.exists(paste0(.dtr, 'data/fx/USDJPY/ddsmp.rds'))) {
+if (!file.exists(paste0(.dtr, 'data/fx/USDJPY/ddsmp.rds'))) {
   saveRDS(ddsmp, paste0(.dtr, 'data/fx/USDJPY/ddsmp.rds'))}
 ```
 
@@ -578,4 +584,5 @@ sys
 
 ---
 
-<span style='color:RoyalBlue'>**Powered by - Copyright® Intellectual Property Rights of <img src='www/scb-logo3rs.jpg' width='24'> [Sςιβrοκεrs Trαdιηg®️](http://www.scibrokes.com)経営企業**</span>
+[<img src="诸子百家考工记/世博量化.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
+[**[<img src="诸子百家考工记/世博量化.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}
