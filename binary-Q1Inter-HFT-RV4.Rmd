@@ -39,6 +39,7 @@ output:
 - [中国古代亲属称谓家谱总览](https://zhuanlan.zhihu.com/p/458028908)
 - [「元宇宙」春节拜年，亲戚怎么叫？](https://www.facebook.com/englianhu/posts/pfbid0cqugyMqSdk1DBwzB8XiawCCz8bRXf5mZktm1Wr2WKs1ozj1D84FpB9RYXuCrmzDTl)
 - [「百度」我怎么称呼我堂叔的儿子啊？ 他比我小 应该怎么称呼？ 叫堂弟吗？ 可是堂叔的儿子已经不是堂了啊？](https://zhidao.baidu.com/question/291505101/answer/3012972358.html)
+- [「范本模板」古代称谓大全](https://wenku.baidu.com/view/8a3d6c3ca3c7aa00b52acfc789eb172dec639967.html?_wkts_=1709365939475&bdQuery=%E6%A8%A1%E6%9D%BF%E5%8F%A4%E7%A7%B0)
 
 > 阳历二零四年十一月廿一日，全球第一所孔子学院正式在韩国首都首尔挂牌成立。截至阳历二零二零年七月卅一日，全球已有百圆二国家（地区）设立了五百卌三所孔子学院和千百进个孔子课堂：
 > 
@@ -483,9 +484,28 @@ if (!dir.exists(.蜀道仓库))  dir.create(.蜀道仓库)
 - **吕不韦**：改变天下学术尤其是高频量化对冲运筹学（包括复古中国算筹）、高频量化对冲、金融与务农中药中医杏林、娱乐圈（包括复古中国古代习俗文化宗教语言）、广告与产品代言；习俗文化宗教语言等世纪大革命，一劳永逸。
 - **李斯**：改变天下学术尤其是文学（文言文、古文、中国历史习俗文化宗教语言等），研发咱们中华秦国操作系统、电子仪器、科技软件、科技产品来取代天下所有西方电子产品与习俗文化宗教语言等；以电子仪器与操作系统记载并进化所有习俗文化宗教语言法律等世纪大革命并且直到一统天下，一劳永逸。
 
-## 道家时间计量单位（中国古代计时法）
+### 鬼谷传奇
 
-### 天文历法（干支纪年 / 纪元法）
+> #自动化 #科研科学 #尚未试驾 尚未试驾🚗
+
+*引用：[抖音 - 电动车](https://v.douyin.com/YxVy48K)*
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+*引用：[「汤普勒」时间序例之贝式隐马尔可夫链（附学术参考书）](https://www.tumblr.com/blog/view/englianhu/641578918656212992?source=share)*
+
+小时候都在日本动漫文化的环境下长大。小学时期在明智国民华文小学上学就已经学会万事具备，都会提前卅分钟抵达做好准备才不会仓促。自从阳历二零零二年学习日语后，由于平时从旺沙马朱宿舍到拉曼学院徒步上学需要时间提前准备，所以都会将时间设为提前廿分钟，基于从旺沙马朱宿舍徒步耗时三刻钟左右，索性设为提前一个小时，所以愚生将所有电子仪器的标准时间都一律设为日本标准时间，然后青梅竹马的郑添和同学问过我，我回答：“我的时间必须比别人快，我的世界必须比别人快，才能占有先机～”，所以设置提前半个时辰日本标准时间，再提前半个时辰就看到是本土提前一个时辰，[平时闲暇时间都会泡拉曼学院图书馆](https://github.com/scibrokes/r-world/issues/2#issuecomment-1264570739)。**自从阳历二零一九年在菲律宾阿里与中国同胞工作离职后，就开始思考身为🇹🇼🇨🇳中华民族，岂能沦为（大化革新的）倭奴或者倭寇，所以目前的科研语言、时间标准、甚至编码，都一律使用中文。**由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加半个时辰时差为中国标准时间，以确保时间规律计算方面，不会出错。
+
+- [「文派」修读COURSERA : MACHINE LEARNING FOR ALGORITHMIC TRADING中…](https://englianhu.wordpress.com/2021/09/15/%e4%bf%ae%e8%af%bbcoursera-machine-learning-for-algorithmic-trading%e4%b8%ad)
+- [「文派」迟了一年，更新履历表 B4TELEBIZ (18-DEC-2021)](https://englianhu.wordpress.com/2021/12/20/%e8%bf%9f%e4%ba%86%e4%b8%80%e5%b9%b4%ef%bc%8c%e6%9b%b4%e6%96%b0%e5%b1%a5%e5%8e%86%e8%a1%a8-b4telebiz)
+- [「文派」《赢家黄氏江夏堂》 – 始祖赢政ΞΗG TΕΗG·黄永春家谱](https://englianhu.wordpress.com/2022/02/22/%e3%80%8a%e9%9b%aa%e9%9a%86%e6%b1%9f%e5%a4%8f%e5%a0%82%e3%80%8b-%e5%ae%b6%e8%b0%b1)
+- [「原创」程序员的精神食粮代码仓库：GITHUB REPOSITORY 应该翻译成什么？](https://englianhu.wordpress.com/2022/12/29/%e3%80%90%e5%8e%9f%e5%88%9b%e3%80%91%e7%a8%8b%e5%ba%8f%e5%91%98%e7%9a%84%e7%b2%be%e7%a5%9e%e9%a3%9f%e7%b2%ae%e4%bb%a3%e7%a0%81%e4%bb%93%e5%ba%93%ef%bc%9agithub-repository-%e5%ba%94%e8%af%a5%e7%bf%bb)
+- [「文派」**阳历二零二三年十二月三日**今日是紫云生日](https://englianhu.wordpress.com/2024/02/04/%e3%80%8c%e9%98%b3%e5%8e%86%e4%ba%8c%e9%9b%b6%e4%ba%8c%e4%b8%89%e5%b9%b4%e5%8d%81%e4%ba%8c%e6%9c%88%e4%b8%89%e6%97%a5%e3%80%8d%e4%bb%8a%e6%97%a5%e6%98%af%e7%b4%ab%e4%ba%91%e7%94%9f%e6%97%a5)
+- [「文派」🚩🇨🇳🔆🏹🌟👊🚀🦔中科红旗](https://englianhu.wordpress.com/statistics/linux-%f0%9f%90%a7-kubuntu-%e2%9a%99)
+
+### 道家时间计量单位（中国古代计时法）
+
+#### 天文历法（干支纪年 / 纪元法）
 
 ![](诸子百家考工记/鄀语言 - 制作干支对照表.png)
 
@@ -496,10 +516,6 @@ if (!dir.exists(.蜀道仓库))  dir.create(.蜀道仓库)
 - [「问百度」干支纪年](https://baike.baidu.com/item/%E5%B9%B2%E6%94%AF%E7%BA%AA%E5%B9%B4/3383226)
 - [（历法溯源十）天文历法大成，周易天象解密，易经的天象规律](https://www.bilibili.com/video/BV1AA411R7LE)
 - [天文课程 - 时间和历法](https://www.bilibili.com/video/BV1uv411K7sd)
-
-### 日内计时法
-
-#### 十二时辰对照
 
 **十二时辰对照**
 
@@ -633,7 +649,7 @@ if (!dir.exists(.蜀道仓库))  dir.create(.蜀道仓库)
 - [一刻钟是多久，古代的一天为几刻钟呢？](https://zhidao.baidu.com/question/16558757)
 - [「问百度」一刻钟](https://baike.baidu.com/item/%E4%B8%80%E5%88%BB%E9%92%9F/2070381)
 
-### 十二生肖
+#### 十二生肖
 
 从满洲到星洲，从鼻祖暨耳孙。论生肖的「演化史」，先秦时已有相关记载：
 
@@ -653,7 +669,7 @@ if (!dir.exists(.蜀道仓库))  dir.create(.蜀道仓库)
 [^2]: [⼆⼗四节⽓⼤全](https://mp.weixin.qq.com/s?__biz=Mzg3MTUzNjAwMw==&mid=2247492492&idx=6&sn=0614e89a7eb7e827cec6d878dd7acf23&chksm=ceffa760f9882e768fcff27488f46736f562d7964604a78ce066340968583b343c5ab95a0bee&scene=27)
 [^3]: 世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊：<br> - [「问百度」贞节牌坊 - 古时用来表彰女性从一而终的门楼](https://baike.baidu.com/item/%E8%B4%9E%E8%8A%82%E7%89%8C%E5%9D%8A/1019217)<br> - [「问百度」巴寡妇清 - 战国末年历史人物](https://baike.baidu.com/item/%E5%B7%B4%E5%AF%A1%E5%A6%87%E6%B8%85/10567832)
 
-### 天文历法（农历月份）
+#### 天文历法（农历月份）
 
 > 冬月和腊月在中国传统的农历中不是同一个月。
 农历十一月为「冬月」，又称幸月、畅月、后十月、仲冬。一年十二月用十二地支来表示的话，又称「子月」称「建子」。农伍手历十二月，也就是华人民间俗称的「腊月」。之所以叫「腊月」，是因为「腊」是古代祭祀祖先和百神的「祭」名，有「冬至后三戌祭百神」之说，即每逢冬至后的第三个纪日干支中含有地支「戌」的日子，南北朝时期固定在十二月初八日，华人民间都要猎杀禽兽举行大祭活动，拜神敬祖，以祈福求寿，避灾迎祥。这种祭奠仪式称为「猎祭」。因「腊」与「猎」通假，「猎祭」遂并缓写成了「腊祭」，因而年终的十二月被叫腔蔽嫌做腊月。
@@ -715,26 +731,11 @@ if (!dir.exists(.蜀道仓库))  dir.create(.蜀道仓库)
 
 此外，将此文献（第IV部）改为使用咱们道家天干中的甲乙丙丁中的（丁），丙且添加天文历法、天干地支、廿四节气、农历月份雅称等参数计算周期。
 
-> #自动化 #科研科学 #尚未试驾 尚未试驾🚗
-
-*引用：[抖音 - 电动车](https://v.douyin.com/YxVy48K)*
-
-<iframe width="560" height="315" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-*引用：[Tumblr - Bayesian Hidden Markov Models for Time Series](https://www.tumblr.com/blog/view/englianhu/641578918656212992?source=share)*
-
-> 辛亥革命，铲除巫裔；<br>
-终止屠杀，拯救全球。
-
-**咱们东南亚巫裔政府屠杀六百枯万人类的巫师Judi邪教巫裔宦官博彩庄诸国**
-
-小时候都在日本动漫文化的环境下长大。小学时期在明智华校上学就已经学会万事具备，都会提前30分钟抵达做好准备才不会仓促。自从2002年学习日语后，由于平时从旺沙马朱宿舍到拉曼学院徒步上学需要时间提前准备，所以都会将时间设为提前20分钟，基于从旺沙马朱宿舍徒步耗时45分钟左右，索性设为提前一个小时，所以愚生将所有电子仪器的标准时间都一律设为日本标准时间，然后青梅竹马的郑添和同学问过我，我回答：“我的时间必须比别人快，我的世界必须比别人快，才能占有先机～”，所以设置提前一个小时日本标准时间，再提前一小时就看到是本土提前两个小时。**自从二零一九年在菲律宾阿里与中国同胞工作离职后，就开始思考身为🇹🇼🇨🇳中华民族，岂能沦为（大化革新的）倭奴或者倭寇，所以目前的科研语言、时间标准、甚至编码，都一律使用汉字。**由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加一小时时差为中国标准时间，以确保时间规律计算方面，不会出错。
-
 <br>
 
-# 数据
+# 册 / 策
 
-## 读取数据
+## 开函阅牍/简
 
 **Part I**中使用的原始数据已加以修饰并储存，**Part II**与**（第III部）**次论文读取该数据，将网页轻巧化、省略掉修饰数据的一栏，**（第III部）**虽然出现小出错，但整体上还是可以筛选出**最优统计模型**，总结使用阳历二零一八年上半年汇价数据即可，节省许多科研时间。
 
