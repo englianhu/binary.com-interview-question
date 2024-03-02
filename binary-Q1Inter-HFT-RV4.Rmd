@@ -497,6 +497,26 @@ if (!dir.exists(.蜀道仓库))  dir.create(.蜀道仓库)
 
 ### 日内计时法
 
+| 时辰 | 雅称 |         其它雅称 |             十二时辰对照 |
+|:----:|:----:|:----------------:|:------------------------:|
+| 子时 | 夜半 |             子夜 | 夜晚十一点至午夜  一点钟 |
+| 丑时 | 鸡鸣 |             荒鸡 | 午夜  一点至凌晨  三点钟 |
+| 寅时 | 平旦 | 黎明、早晨、日旦 | 凌晨  三点至黎明  五点钟 |
+| 卯时 | 日出 | 日始、破晓、旭日 | 黎明  五点至早晨  七点钟 |
+| 辰时 | 食时 |       早食、朝食 | 早晨  七点至上午  九点钟 |
+| 巳时 | 隅中 |             日隅 | 上午  九点至上午十一点钟 |
+| 午时 | 日中 |       日正、中午 | 上午十一点至中午  一点钟 |
+| 未时 | 日跌 |             日央 | 中午  一点至下午  三点钟 |
+| 申时 | 晡时 |       日铺、夕食 | 下午  三点至下午  五点钟 |
+| 酉时 | 日入 | 日落、日沉、傍晚 | 下午  五点至傍晚  七点钟 |
+| 戌时 | 黄昏 | 日夕、日暮、日晚 | 傍晚  七点至黄昏  九点钟 |
+| 亥时 | 人定 |             定昏 | 黄昏  九点至夜晚十一点钟 |
+
+*引用：[下午四点是什么时辰？](https://m.ceming.com/sm/139948.html)*
+
+- [下午四点是什么时辰？](https://m.ceming.com/sm/139948.html)
+- 
+
 > ... 东汉末年，二十岁的曹操初出茅庐，担任的官职为洛阳北部都尉，相当于首都副县级公安局长职位，负责管理京城洛阳及北部郊区的治安。
 > 
 当时的社会就有了宵禁制度，据史书记载，曹操刚刚担任洛阳北部都尉，就乱棍打死了一个违反宵禁制度的人，此人还是朝中很有权势的一个太监的叔叔，曹操也因此事得罪了这些宦官，从而被朝廷贬离了都城。
@@ -694,22 +714,22 @@ rm(基准, 样本)
 
 ## 绘制样本图表
 样本2018半年[c(1:3, (nrow(样本2018半年) - 3):nrow(样本2018半年)),] |> 
-    {\(.) kbl(., caption = '分计汇价（中国标准时间 2017年12月30日下午04点01分 ~ 2018年06月30日午夜12点正）', escape = FALSE)}() |> 
+    {\(.) kbl(., caption = '分计汇价（中国标准时间 农历二零一七年冬月十三下午四点零一分 ~ 二零一八年六月卅日午夜十二点正）', escape = FALSE)}() |> 
   ## https://www.w3schools.com/cssref/css_colors.asp
   ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd
     {\(.) row_spec(., 
       0, background = 'DimGrey', color = 'gold', bold = TRUE)}() |> 
-    {\(.) column_spec(., 1, background = 'CornflowerBlue')}() |> 
-    {\(.) column_spec(., 2, background = 'Gray')}() |> 
+    {\(.) column_spec(., 1, background = '#991B00')}() |> 
+    {\(.) column_spec(., 2, background = '#D52600')}() |> 
     {\(.) column_spec(., 3, background = 'DarkGrey')}() |> 
     {\(.) column_spec(., 4, background = 'Gray')}() |> 
     {\(.) column_spec(., 5, background = 'DarkGrey')}() |> 
-    {\(.) column_spec(., 6, background = '#4897D8')}() |> 
-    {\(.) column_spec(., 7, background = '#556DAC')}() |> 
-    {\(.) column_spec(., 8, background = '#92AAC7')}() |> 
-    {\(.) column_spec(., 9, background = '#556DAC')}() |> 
-    {\(.) column_spec(., 10, background = '#375E97')}() |> 
-    {\(.) column_spec(., 11, background = 'CornflowerBlue')}() |> 
+    {\(.) column_spec(., 6, background = '#D52600')}() |> 
+    {\(.) column_spec(., 7, background = 'DarkGrey')}() |> 
+    {\(.) column_spec(., 8, background = 'Gray')}() |> 
+    {\(.) column_spec(., 9, background = 'DarkGrey')}() |> 
+    {\(.) column_spec(., 10, background = 'Gray')}() |> 
+    {\(.) column_spec(., 11, background = '#991B00')}() |> 
     {\(.) column_spec(., 
       12, background = 'LightGray', color = 'goldenrod')}() |> 
     {\(.) kable_styling(., 
@@ -720,7 +740,7 @@ rm(基准, 样本)
     {\(.) scroll_box(., width = '100%', fixed_thead = TRUE, height = '490px')}()
 ```
 
-*数据 : `r paste0(dim(样本2018半年)[1], '行 x ', dim(样本2018半年)[2], '列')`*
+*数据 : `r paste0(num2c(dim(样本2018半年)[1], lang = 'sc'), '行 乘 ', num2c(dim(样本2018半年)[2], lang = 'sc'), '列')`*
 
 以上图表显示数据`年月日时分`，由`r paste(range(样本2018半年$年月日时分), collapse = ' 至 ')`，接下来的科研一律使用同样的半年数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
 
