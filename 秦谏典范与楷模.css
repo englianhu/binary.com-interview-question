@@ -1,0 +1,16 @@
+body {
+  /*礼逆袭中科红旗操作系统
+  background-image: url('/home/englianhu/文档/猫城/RedFlag-Linux/诸子百家考工记/数术家.png'); 
+  */
+  background-image: url('/home/englianhu/math.png'); 
+  background-repeat: no-repeat; 
+  /*background-size: 100%;*/
+  background-size: cover; 
+  background-position: center center;
+  background-attachment: fixed; 
+}
+
+div {
+  background-color: rgba(255, 255, 255, 0.35)   /* 35% opaque white */;
+  padding: 0.25em;
+}
