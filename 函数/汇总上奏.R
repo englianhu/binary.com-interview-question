@@ -25,7 +25,7 @@
       {\(.) substring(., 2)}()
   }
   
-  .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
+  .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/')
   #文件 <- list.files(.蜀道仓库, pattern = '^日内指数平滑数据')
   商鞅变法 <- paste0("文件 <- list.files(.蜀道仓库, pattern = '^", 文件名, "[0-9]')")
   eval(parse(text = 商鞅变法))

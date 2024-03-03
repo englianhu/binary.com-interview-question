@@ -109,10 +109,10 @@
         {\(.) paste(., collapse = '/')}() |> 
         {\(.) substring(., 2)}()
       
-      if (!dir.exists(paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/', 频率)))
-        dir.create(paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/', 频率))
+      if (!dir.exists(paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/', 频率)))
+        dir.create(paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/', 频率))
         
-      文件蜀道 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/', 频率, 
+      文件蜀道 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/', 频率, 
                      '/', 文件名)
       
     } else {

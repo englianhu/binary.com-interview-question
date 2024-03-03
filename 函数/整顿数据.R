@@ -61,7 +61,7 @@
        {\(.) paste(., collapse = '/')}() |> 
        {\(.) substring(., 2)}()
    }
-   .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
+   .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/')
    
    cat('\n将每分钟为一单位的数据组为列表！')
    列表 <- list.files(paste0(.蜀道仓库, 频率), '*.rds')

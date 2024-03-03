@@ -44,7 +44,7 @@
       {\(.) paste(., collapse = '/')}() |> 
       {\(.) substring(., 2)}()
   }
-  .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
+  .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/')
   
   #if (!is.numeric(.差分阶数) && length(.差分阶数) != 1) 
   #  stop(".差分阶数 = 0 或 1 或 2")
