@@ -48,8 +48,10 @@
   
   source('函数/汇总上奏.R')
   
+  if (!is.data.table(总汇)) 总汇 %<>% as.data.table
   if (!exists('总汇') || is.null(总汇)) {
-    总汇 <- readRDS(paste0(.蜀道仓库, 文件名, '总汇.rds'))
+    总汇 <- readRDS(paste0(.蜀道仓库, 文件名, '总汇.rds')) %>% 
+      data.table
   }
   
   循环周期 <- 数据量/频率

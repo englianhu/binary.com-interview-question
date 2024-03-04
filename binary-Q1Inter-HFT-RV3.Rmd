@@ -1,7 +1,7 @@
 ---
-title: "<img src='文艺坊图库/deriv.png' height='240'>"
+title: "<img src='诸子百家考工记/deriv.png' height='240'>"
 subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://github.com/englianhu/binary.com-interview-question)"
-author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='文艺坊图库/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='14'> <img src='文艺坊图库/ENG.png' height='14'>® <img src='文艺坊图库/大秦赋 - 北京大学.png' height='14'>" 
+author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='14'> <img src='诸子百家考工记/ENG.png' height='14'>® <img src='诸子百家考工记/大秦赋 - 北京大学.png' height='14'>" 
 date: "`r lubridate::today('Asia/Shanghai')`"
 output:
   html_document: 
@@ -13,7 +13,7 @@ output:
       collapsed: yes
       smooth_scroll: yes
     code_folding: hide
-    css: CSSBackgrounds.css
+    css: 秦谏典范与楷模.css
 ---
 
 # 主题
@@ -22,7 +22,7 @@ output:
 <span style='color:green'>**🚩🦔 主题曲 🚩🦔**</span>
 <br>
 
-<audio controls loop autoplay src="文艺坊曲库/Mika - Elle me dit (happy song to be millionaire).mp3" controls></audio>
+<audio controls loop autoplay src="诸子百家诗经与古诗源/Mika - Elle me dit (happy song to be millionaire).mp3" controls></audio>
 <br>
 
 🚩🇬🇧🇲🇾🇨🇳大秦赋赢家ξng黄氏江夏堂
@@ -109,11 +109,11 @@ output:
 山不厌高，海不厌深；<br>
 [嬴政吐哺，天下归心。]{style="color:#6883FC"}
 
-<img src='文艺坊图库/css.png' width = '400'>
+<img src='诸子百家考工记/css.png' width = '400'>
 
 省吃俭用的工匠建筑工人（嬴政兼鲁班兼蒙毅）家翁嬴政ξηg Tεηg（赢家黄氏江夏堂）
 
-<img src='文艺坊图库/鞭策六四，推广量化；百家争鸣，振兴中华。.png' width = '400'>
+<img src='诸子百家考工记/鞭策六四，推广量化；百家争鸣，振兴中华。.png' width = '400'>
 
 世间再无富不过三代的败家子祖父黄实田（曾祖黄福全在清末光绪年间和两个哥哥仨飘洋过海从满洲到星洲自力更生努力奋斗开垦一百亩农地，然后和土木工程的杨清廉俩在清末鸦片战争时期是瓜雪两大不相伯仲的首富）祖母颜为，省吃俭用的外祖父书法家李福（李斯篆书）外祖母郑邓（家道中落的富家千金）。
 
@@ -409,7 +409,7 @@ rm(程序包)
 ## 设置googleVis选项，促使plot.gvis只陈列HTML格式的完成品。
 谷歌绘图设置 <- options(gvis.plot.tag = 'chart')
 
-## <audio src='文艺坊曲库/bigmoney.mp3' autoplay controls loop></audio>
+## <audio src='诸子百家诗经与古诗源/bigmoney.mp3' autoplay controls loop></audio>
 ```
 
 ```{r 设置函数优先权}
@@ -482,7 +482,7 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 	    日子 = 日子[日子 >= 起点]
       
       布告栏 = list.files(
-        paste0(.蜀道, '文艺数据库/fx/USDJPY/'), pattern = .匹配元素) %>% 
+        paste0(.蜀道, '诸子百家学府/fx/USDJPY/'), pattern = .匹配元素) %>% 
 	      str_replace_all('.rds', '') %>% 
 		  str_replace_all('.201', '_201') %>% 
 		  str_split_fixed('_', '2') %>% 
@@ -530,7 +530,7 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 	
 	  日子 = 日子[日子 >= 起点]
     
-      布告栏 = list.files(paste0(.蜀道, '文艺数据库/fx/USDJPY/'), 
+      布告栏 = list.files(paste0(.蜀道, '诸子百家学府/fx/USDJPY/'), 
                        pattern = .匹配元素) %>% 
 	      str_replace_all('.rds', '') %>% 
 		  str_replace_all('.201', '_201') %>% 
@@ -580,12 +580,12 @@ if (!exists('.蜀道')) {
 }
 
 if (!exists('.蜀道仓库')) {
-  .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
+  .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/')
 }
 
 ## 倘若环境尚未有数据，读取文件数据。
 if (!exists('dsmp')) {
-  dsmp <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/dsmp.rds'))
+  dsmp <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/dsmp.rds'))
   }
 
 # 样本 %<>% 
@@ -614,14 +614,14 @@ dsmp %<>%
 
 ## 倘若该途径尚无文件，储存文件。
 if (!file.exists(paste0(
-  .蜀道, '文艺数据库/fx/USDJPY/样本1.rds')) & exists('dsmp')) {
-    saveRDS(dsmp, paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
+  .蜀道, '诸子百家学府/fx/USDJPY/样本1.rds')) & exists('dsmp')) {
+    saveRDS(dsmp, paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本1.rds'))
   }
 
 ## ------------------------------------------------
 ## 倘若环境尚未有数据，读取文件数据。
 if (!exists('ddsmp')) {
-  ddsmp <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/ddsmp.rds'))
+  ddsmp <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/ddsmp.rds'))
   }
 
 names(ddsmp) <- c('年月日时分', '年份', '季度', '月份', '周', '周日', '周分计', 
@@ -642,8 +642,8 @@ ddsmp %<>%
 
 ## 倘若该途径尚无文件，储存文件。
 if (!file.exists(paste0(
-  .蜀道, '文艺数据库/fx/USDJPY/样本2.rds')) & exists('ddsmp')) {
-    saveRDS(ddsmp, paste0(.蜀道, '文艺数据库/fx/USDJPY/样本2.rds'))
+  .蜀道, '诸子百家学府/fx/USDJPY/样本2.rds')) & exists('ddsmp')) {
+    saveRDS(ddsmp, paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本2.rds'))
   }
 ```
 
@@ -661,13 +661,13 @@ if (!exists('.蜀道')) {
   }
 
 if (!exists('.蜀道仓库')) {
-  .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
+  .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/')
 }
 
 ## 倘若环境尚未有数据，读取文件数据。
 ## **小插曲**：数据应该使用经过过滤`NA值`和重新赋值`周`、`周分计`、`日分计`、`时分计`、`序列`等参数和数据的**样本2**，而非**样本1**。
 if (!exists('样本')) {
-  样本 <- readRDS(paste0(.蜀道, '文艺数据库/fx/USDJPY/样本1.rds'))
+  样本 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本1.rds'))
   }
 
 ## 绘制样本图表
@@ -698,7 +698,7 @@ if (!exists('样本')) {
                    height = '490px')}()
 ```
 
-*数据：`r paste0(dim(样本)[1], '行 x ', dim(样本)[2], '列')`*
+*数据：`r 样本 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本1.rds'); paste0(dim(样本)[1], '行 x ', dim(样本)[2], '列')`*
 
 以上图表显示数据日期，由`r paste(range(样本$日期), collapse = ' 至 ')`，而该数据也是在论文*(Part I)*、*(Part II)*中使用，并且相符。使用同样的数据，是为了在回测多元统计模型，才能获知并筛选最优统计模型。
 
@@ -730,7 +730,7 @@ if (!exists('样本')) {
 
 #### 天文历法（干支纪年 / 纪元法）
 
-![](文艺坊图库/鄀语言 - 制作干支对照表.png)
+![](诸子百家考工记/鄀语言 - 制作干支对照表.png)
 
 有关农历与二十四节气，目前正在自修中科红旗之礼逆袭红旗操作系统，会先将曦与曦佳佳编程语言翻译为咱们中文编程附上拼音（李斯篆书），再提升为文言文及古文编程、日期均以农历与咱们中华五千多年习俗文化道教为主，它日再研发「大秦赋」操作系统，欲知更多详情请查阅[「猫城」](https://github.com/englianhu/RedFlag-Linux)和[「猫城」](https://github.com/englianhu/library)。
 
@@ -1097,9 +1097,7 @@ source('函数/总汇结论.R')
 source('函数/汇总上奏.R')
 source('函数/总汇结论.R')
 
-if (!exists('.蜀道仓库')) {
-  .蜀道仓库 <- paste0(.蜀道, '文艺数据库/fx/USDJPY/仓库/')
-}
+if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/')
 
 ## 
 ## 这儿先储存数据并列印函数回归结论，省略计算过程，方便日后读取数据。
@@ -1198,7 +1196,7 @@ source('函数/总汇结论.R')
 
 ## A data.table and dplyr tour
 ## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/#addupdatedelete-columns
-日内指数平滑数据总汇 <- fread(paste0(.蜀道仓库, '日内指数平滑数据总汇.csv'))
+日内指数平滑数据总汇 <- data.table::fread(paste0(.蜀道仓库, '日内指数平滑数据总汇.csv'))
 日内指数平滑数据总汇[, 年份 := data.table::year(年月日时分)]
 日内指数平滑数据二零一六年总汇 <- 日内指数平滑数据总汇[年份 == 2016]
 # saveRDS(日内指数平滑数据二零一六年总汇, paste0(.蜀道仓库, '日内指数平滑数据二零一六年总汇.rds'))
@@ -1506,7 +1504,7 @@ source('函数/总汇结论.R')
 春秋战国《*礼记•经解*》<br>
 孔子曰：『君子慎始，差若毫厘，缪以千里。』
 
-> <span style='color:#9B0202; background-color:#252525;'>**《礼记·经解》孔子曰：**</span><span style='color:#FF0000; background-color:#000000;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^1]
+> <span style='color:#FFEBCD; background-color:#991B00;'>**《礼记•经解》孔子曰：**</span><span style='color:#DimGrey; background-color:#D52600;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^1]
 
 *引用：[「快懂百科」《礼记•经解》](https://www.baike.com/wikiid/2225522569881832051?view_id=2tt3iw3blkq000)和[第一范文网：差之毫厘，谬以千里的故事](https://www.diyifanwen.com/chengyu/liuziyishangchengyugushi/2010051523105152347092749890.htm)和[「百度百科」春秋时期孔子作品《礼记•经解》](https://baike.baidu.com/item/%E7%A4%BC%E8%AE%B0%C2%B7%E7%BB%8F%E8%A7%A3/2523092)和[「當代中國」差之毫釐 謬以千里](https://www.ourchinastory.com/zh/2962/%E5%B7%AE%E4%B9%8B%E6%AF%AB%E9%87%90%20%E8%AC%AC%E4%BB%A5%E5%8D%83%E9%87%8C)*
 
@@ -1514,7 +1512,7 @@ source('函数/总汇结论.R')
 
 **小插曲**：数据应该使用经过过滤`NA值`和重新赋值`周`、`周分计`、`日分计`、`时分计`、`序列`等参数和数据的**样本2**，而非**样本1**。
 
-![](文艺坊图库/秒计.png)
+![](诸子百家考工记/秒计.png)
 
 由于敌国大象共和国黑客入侵，人为篡改数据导致**总汇二零一六年结论**和**总汇二零一七年结论**显示误差完全一样，*四个小数位*的汇价的预测误差，有可能筹算出*十五个小数位*（倘若以秒计，飞秒（fs））误差值一模一样吗？上几周骇客频频入侵电子仪器`频率=12`的数据，骇客人为篡改为多一个观测值汇价。
 
@@ -1526,9 +1524,9 @@ source('函数/总汇结论.R')
 
 **反击大象共和国**
 
-![](文艺坊图库/回教徒，可兰经；断肢法，最合法。歼灭所有印尼巫鹰和美国洋番爱国狂热份子.png)
-![](文艺坊图库/歼灭美国和巫贼巫婆回教徒.png)
-![](文艺坊图库/大秦赋 Chinese Emperor.png)
+![](诸子百家考工记/回教徒，可兰经；断肢法，最合法。歼灭所有印尼巫鹰和美国洋番爱国狂热份子.png)
+![](诸子百家考工记/歼灭美国和巫贼巫婆回教徒.png)
+![](诸子百家考工记/大秦赋 Chinese Emperor.png)
 
 > #回教徒爱国就严格遵守回教徒可兰经法家国学论集体自杀而不爱国就集体退位让贤而已 #美国耶稣洋番集体被钉在十字架被晒死
 > 回教徒可兰经法家国学论，东南亚巫贼巫婆回教徒尤其是瓜雪巴西不能帮万佛寺土司张佳坤爱国虔诚狂热份子和大象共和国举国公民MH三七零和MH十七自杀式飞往东亚
@@ -1545,7 +1543,7 @@ source('函数/总汇结论.R')
 
 [^3]: 下篇论文中[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。<br> - 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）<br> - 外部因素周期性自回归综合滑均模型（ARIMAX）<br> - 季节性自回归综合滑均模型（SARIMA）<br> - 外部因素周期性季节性自回归综合滑均模型（SARIMAX）<br> - 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）<br> - 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
-<img src='文艺坊图库/量化投资与机器学习.png' width='240'>
+<img src='诸子百家考工记/量化投资与机器学习.png' width='240'>
 
 [**近期招聘一览表:**<span style='color:#3C5C; background-color:black;'>*全网Quant都在看!</span>](https://wemp.app/posts/31dffe83-68af-4e3f-a1f7-c49baf9a24cb?fbclid=IwAR1x3DOjThsEKG0CHVghFnIPAAcraM8kimXa_G9-xG070CiLDyXWj6_6Izs)
 
@@ -1704,5 +1702,5 @@ rm(系统信息1, 系统信息2)
 
 ---
 
-[<img src="文艺坊图库/世博量化.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
-[**[<img src="文艺坊图库/世博量化.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}
+[<img src="诸子百家考工记/世博量化.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
+[**[<img src="诸子百家考工记/世博量化.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}

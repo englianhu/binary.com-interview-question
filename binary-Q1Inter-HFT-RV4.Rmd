@@ -1422,24 +1422,24 @@ options(warn = 0)
 
 [^21]: 欲知更多阳历/民国/农历日历详情，请登录中华民国农业部官网查询日历查询[阳历/农历/民国查询](https://ppg.naif.org.tw/naif/MarketInformation/Other/Calendar_V3.aspx)。<br> - [冬月,腊月还有正月的区别](https://zhidao.baidu.com/question/569273015.html)中提及成语：寒冬腊月，即是指年前最冷的三个月，寒月为十月；冬月为十一月；腊月为十二月。<br> - [冬月和腊月分别是几月份](https://iask.sina.com.cn/jxwd/6fb03ZAspC1.html)
 
-```{r 信息}
-#suppressMessages(require('formattable', quietly = TRUE))
-#suppressMessages(require('knitr', quietly = TRUE))
-#suppressMessages(require('kableExtra', quietly = TRUE))
-#suppressMessages(require('magittr', quietly = TRUE))
-#suppressMessages(require('devtools', quietly = TRUE))
+```{r 信息, results = 'asis'}
+suppressMessages(require('formattable', quietly = TRUE))
+suppressMessages(require('knitr', quietly = TRUE))
+suppressMessages(require('kableExtra', quietly = TRUE))
+suppressMessages(require('magittr', quietly = TRUE))
+suppressMessages(require('devtools', quietly = TRUE))
 
-系统信息1 <- session_info()$platform |> 
+系统信息甲 <- session_info()$platform |> 
     unlist() |> 
     {\(.) data.frame(row.names = 1:length(.), 
                      Category = names(.), session_info = .)}()
 
-系统信息2 <- data.frame(Sys.info()) |> 
+系统信息乙 <- data.frame(Sys.info()) |> 
     {\(.) data.frame(Category = row.names(.), Sys.info = .[,1])}()
 
-#remarks, dim(系统信息1), dim(系统信息2)
-if (nrow(系统信息1) == 11 && nrow(系统信息2) == 8) {
-  系统信息2 <- 系统信息2 |> 
+#remarks, dim(系统信息甲), dim(系统信息乙)
+if (nrow(系统信息甲) == 11 && nrow(系统信息乙) == 8) {
+  系统信息乙 <- 系统信息乙 |> 
     {\(.) rbind(., data.frame(
     Category = c('rmarkdown', 'rsconnect', '当前时间'), 
     Sys.info = c(as.character(getwd()), 
@@ -1447,10 +1447,10 @@ if (nrow(系统信息1) == 11 && nrow(系统信息2) == 8) {
                  paste(as.character(
                    lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
   
-} else if (nrow(系统信息1) == 10 && nrow(系统信息2) == 8) {
-  系统信息1 <- rbind(系统信息1, data.frame(Category = '', session_info = ''))
+} else if (nrow(系统信息甲) == 10 && nrow(系统信息乙) == 8) {
+  系统信息甲 <- rbind(系统信息甲, data.frame(Category = '', session_info = ''))
   
-  系统信息2 <- 系统信息2 |> 
+  系统信息乙 <- 系统信息乙 |> 
     {\(.) rbind(., data.frame(
     Category = c('rmarkdown', 'rsconnect', '当前时间'), 
     Sys.info = c(as.character(getwd()), 
@@ -1459,14 +1459,14 @@ if (nrow(系统信息1) == 11 && nrow(系统信息2) == 8) {
                    lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
 }
 
-系统信息 <- cbind(系统信息1, 系统信息2)
-names(系统信息) <- c('分类1', '访谈信息1', '分类2', '访谈信息2')
-系统信息$分类1 <- c('版本', '操作系统', '系统', '界面', '语言', '核对', 
+系统信息 <- cbind(系统信息甲, 系统信息乙)
+names(系统信息) <- c('分类甲', '访谈信息甲', '分类乙', '访谈信息乙')
+系统信息$分类甲 <- c('版本', '操作系统', '系统', '界面', '语言', '核对', 
               '©标准库', '时区', '日期', '®文艺坊版本', 'Pandoc瑞士军刀')
-系统信息$分类2 <- c('系统名称', '发布', '版本', '元素节点', '机器', '登录', 
+系统信息$分类乙 <- c('系统名称', '发布', '版本', '元素节点', '机器', '登录', 
               '用户', '活跃用户', 'rmarkdown (®降价编译)', 
               'rsconnect (®s联通)', '当前时间')
-rm(系统信息1, 系统信息2)
+rm(系统信息甲, 系统信息乙)
 
 系统信息 |> 
   {\(.) 
@@ -1475,11 +1475,11 @@ rm(系统信息1, 系统信息2)
     kable_styling(
       ., bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))}() |> 
   {\(.) 
-    row_spec(., 0, background = 'DimGrey', color = 'yellow')}() |> 
+    row_spec(., 0, background = 'DimGrey', color = '#7b1113')}() |> 
   {\(.) 
     column_spec(., 1, background = 'CornflowerBlue', color = 'red')}() |> 
   {\(.) 
-    column_spec(., 2, background = 'grey', color = 'black')}() |> 
+    column_spec(., 2, background = 'grey', color = '#8B0000')}() |> 
   {\(.) 
     column_spec(., 3, background = 'CornflowerBlue', color = 'blue')}() |> 
   {\(.) 
