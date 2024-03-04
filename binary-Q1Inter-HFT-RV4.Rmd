@@ -448,13 +448,12 @@ if (!exists('.蜀道')) {
   .蜀道 <- getwd() |> 
     {\(.) str_split(., '/')}() |> 
     {\(.) c('/', .[[1]][2:5])}() |> 
-    {\(.) c(., 'zhongkehongqi-cangku/')}() |> 
+    {\(.) c(., 'binary.com-interview-question-data/')}() |> 
     {\(.) paste(., collapse = '/')}() |> 
     {\(.) substring(., 2)}()
 }
 
-if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/聚汇数据/')
-if (!dir.exists(.蜀道仓库))  dir.create(.蜀道仓库)
+if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/')
 
 ## 设置googleVis选项，促使plot.gvis只陈列HTML格式的完成品。
 谷歌绘图设置 <- options(gvis.plot.tag = 'chart')
