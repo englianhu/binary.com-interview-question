@@ -1356,7 +1356,7 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 
 **大秦赋 (Chinese Emperor)**<br>
 春秋战国《*礼记•经解*》<br>
-孔子曰：『君子慎始，差若毫厘，缪以千里。』
+孔子曰：「君子慎始，差若毫厘，缪以千里。」
 
 > <span style='color:#FFEBCD; background-color:#991B00;'>**《礼记•经解》孔子曰：**</span><span style='color:#DimGrey; background-color:#D52600;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^1]
 

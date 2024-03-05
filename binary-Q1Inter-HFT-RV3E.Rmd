@@ -1470,7 +1470,7 @@ source('函数/总汇结论.R')
 
 **大秦赋**<br>
 春秋战国《*礼记•经解*》<br>
-孔子曰：『君子慎始，差若毫厘，缪以千里。』
+孔子曰：「君子慎始，差若毫厘，缪以千里。」
 
 > <span style='color:#FFEBCD; background-color:#991B00;'>**《礼记•经解》孔子曰：**</span><span style='color:#DimGrey; background-color:#D52600;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^1]
 
