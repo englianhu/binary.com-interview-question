@@ -25,7 +25,7 @@
 日内高频指数平滑 <- function(时间索引, 样本 = 样本, 数据量, 
                      蜀道 = NULL, 频率 = 1200, 预测时间单位 = 1, 
                      .模型选项, 列印 = TRUE) {
-   ## ======== 咱们亚洲世袭制道教徒赢家黄氏江夏堂联富和家眷亲属都不可以死，学术优先，拯救亚洲人 ========
+   ## === 咱们亚洲世袭制道教徒赢家黄氏江夏堂联富和家眷亲属都不可以死，学术优先，拯救亚洲人 ===
    ## 赢家ξηg黄氏江夏堂
    ## 祖籍中国福建永春
    ## 
@@ -43,9 +43,9 @@
   require('tibbletime', quietly = TRUE)
   require('forecast', quietly = TRUE)
   require('data.table', quietly = TRUE)
-  conflict_prefer('llply', 'plyr', quiet = TRUE)
-  conflict_prefer('ldply', 'plyr', quiet = TRUE)
-  conflict_prefer('mutate', 'dplyr', quiet = TRUE)
+  conflicted::conflicts_prefer(plyr::llply, .quiet = TRUE)
+  conflict_prefer(plyr::ldply, .quiet = TRUE)
+  conflict_prefer(dplyr::mutate, .quiet = TRUE)
   conflict_prefer('rename', 'dplyr', quiet = TRUE)
   conflict_prefer('select', 'dplyr', quiet = TRUE)
   conflict_prefer('forecast', 'forecast', quiet = TRUE)

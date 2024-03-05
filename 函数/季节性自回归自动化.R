@@ -5,7 +5,7 @@
   
   # 赋诗 ----
   cat('\n=== 孙中山蒋介石/毛泽东，大秦赋，黄埔军校，中科红旗Asianux兵工厂 ===') 
-  cat('\n=== 咱们马来西亚NonMuslim中华民族不可以死，都得歼灭所有回教徒 ===') 
+  cat('\n=== 咱们马来西亚世袭制道家中华民族不可以死，都得歼灭所有回教徒和峇峇娘惹 ===') 
   cat('\n======== 中科红旗，除巫砸倭 ========')
   cat('\n======== 秦皇嬴政，笑傲江湖 ========')
   cat('\n======== 三军未动，粮草先行 ========')
@@ -29,10 +29,10 @@
   require('tidyft', quietly = TRUE)
   require('forecast', quietly = TRUE)
   require('Ipaper', quietly = TRUE)
-  conflict_prefer('llply', 'Ipaper', quiet = TRUE)
-  conflict_prefer('mutate_dt', 'tidyft', quiet = TRUE)
-  conflict_prefer('rename_dt', 'tidyft', quiet = TRUE)
-  conflict_prefer('select_dt', 'tidyft', quiet = TRUE)
+  conflicted::conflict_prefer('llply', 'Ipaper', quiet = TRUE)
+  conflicted::conflict_prefer('mutate_dt', 'tidyft', quiet = TRUE)
+  conflicted::conflict_prefer('rename_dt', 'tidyft', quiet = TRUE)
+  conflicted::conflict_prefer('select_dt', 'tidyft', quiet = TRUE)
   
   if (!'data.table' %in% class(样本)) 样本 %<>% as.data.table
   
