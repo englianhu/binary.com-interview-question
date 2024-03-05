@@ -22,7 +22,7 @@
 ## 东盟孙武，铲除巫裔，千古一帝。
 ##
 
-日内高频寓言系列程序包 <- function(时间索引, 样本 = 样本, 数据量, 
+日内高频寓言程序包 <- function(时间索引, 样本 = 样本, 数据量, 
                      .蜀道 = NULL, 频率 = 1200, 预测时间单位 = 1, 
                      .模型选项, 列印 = TRUE) {
    ## === 咱们亚洲世袭制道教徒赢家黄氏江夏堂联富和家眷亲属都不可以死，学术优先，拯救亚洲人 ===
@@ -36,16 +36,7 @@
    ## 开弓没有回头路
   
   options(digits = 16)
-  require('plyr', quietly = TRUE)
-  require('dplyr', quietly = TRUE)
-  require('tibble', quietly = TRUE)
-  require('timetk', quietly = TRUE)
-  require('tibbletime', quietly = TRUE)
-  require('forecast', quietly = TRUE)
-  require('fable', quietly = TRUE)
-  require('fabletools', quietly = TRUE)
-  require('fable.ata', quietly = TRUE)
-  require('fable.phopet', quietly = TRUE)
+  程序包 <- c('plyr', 'dplyr', 'tibble', 'timetk', 'tibbletime', 'forecast', 'fable', 'fabletools', 'fable.ata', 'fable.prophet')
   # conflicted::conflicts_prefer(plyr::llply, .quiet = TRUE)
   # conflicted::conflicts_prefer(plyr::ldply, .quiet = TRUE)
   # conflicted::conflicts_prefer(dplyr::mutate, .quiet = TRUE)
@@ -53,6 +44,8 @@
   # conflicted::conflicts_prefer(dplyr::select, .quiet = TRUE)
   # conflicted::conflicts_prefer(forecast::forecast, .quiet = TRUE)
   # conflicted::conflicts_prefer(forecast::ets, .quiet = TRUE)
+  lib(程序包)
+  rm(程序包)
   
   if (!'data.table' %in% class(样本)) 样本 %<>% as.data.table
   
@@ -63,9 +56,9 @@
   循环周期 <- 数据量/频率
   迭代基准 <- 样本[日期 %chin% 时间索引]$序列
   
-  成品 <- llply(迭代基准, function(迭数1) {
+  成品 <- llply(迭代基准, function(迭数甲) {
     
-    迭数列表 <- (迭数1 - 数据量):(迭数1 - 1)
+    迭数列表 <- (迭数甲 - 数据量):(迭数甲 - 1)
     培训样本 <- 样本[序列 %chin% 迭数列表]
     
     if (列印 == TRUE) {
@@ -76,7 +69,7 @@
       
       cat('\n--- 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。---\n')
       cat('预测样本[', '数据量：', 数据量, '频率：', 频率, '-', 
-          '预测样本序列号：', 迭数1, ']\n')
+          '预测样本序列号：', 迭数甲, ']\n')
       预测样本 <- 样本[序列 == 培训样本[.N]$序列 + 预测时间单位]
       print(预测样本)
     }
@@ -97,7 +90,7 @@
     if (列印 == TRUE) {
       cat('\n--- 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。---\n')
       cat('预测样本[', '数据量：', 数据量, '频率：', 频率, '-', 
-          '预测数据序列号：', 迭数1, ']\n')
+          '预测数据序列号：', 迭数甲, ']\n')
       print(半成品)
     }
     
@@ -115,19 +108,14 @@
       if (!dir.exists(paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/', 频率)))
         dir.create(paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/', 频率))
         
-      文件蜀道 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/', 频率, 
-                     '/', 文件名)
+      文件蜀道 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/', 频率, '/', 文件名)
       
     } else {
       文件蜀道 <- paste0(.蜀道, 文件名)
     }
     saveRDS(半成品, 文件蜀道)
     
-    cat('\n--- 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。---\n预测数据序列号：', 
-        迭数1, '\n', 
-        paste0(
-          文件蜀道, '\n已储存!\n\n进度由0-1：', 
-          length(迭代基准[迭数1 >= 迭代基准]) / length(迭代基准), '\n\n'))
+    cat('\n--- 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。---\n预测数据序列号：', 迭数甲, '\n', paste0(文件蜀道, '\n已储存!\n\n进度由0-1：', length(迭代基准[迭数甲 >= 迭代基准]) / length(迭代基准), '\n\n'))
     rm(半成品)
     gc()
   })#, .progress = 'text')
