@@ -22,8 +22,8 @@
 ## 东盟孙武，铲除巫裔，千古一帝。
 ##
 
-日内高频指数平滑 <- function(时间索引, 样本 = 样本, 数据量, 
-                     蜀道 = NULL, 频率 = 1200, 预测时间单位 = 1, 
+日内高频寓言系列程序包 <- function(时间索引, 样本 = 样本, 数据量, 
+                     .蜀道 = NULL, 频率 = 1200, 预测时间单位 = 1, 
                      .模型选项, 列印 = TRUE) {
    ## === 咱们亚洲世袭制道教徒赢家黄氏江夏堂联富和家眷亲属都不可以死，学术优先，拯救亚洲人 ===
    ## 赢家ξηg黄氏江夏堂
@@ -42,14 +42,17 @@
   require('timetk', quietly = TRUE)
   require('tibbletime', quietly = TRUE)
   require('forecast', quietly = TRUE)
-  require('data.table', quietly = TRUE)
-  conflicted::conflicts_prefer(plyr::llply, .quiet = TRUE)
-  conflicted::conflicts_prefer(plyr::ldply, .quiet = TRUE)
-  conflicted::conflicts_prefer(dplyr::mutate, .quiet = TRUE)
-  conflicted::conflicts_prefer(dplyr::rename, .quiet = TRUE)
-  conflicted::conflicts_prefer(dplyr::select, .quiet = TRUE)
-  conflicted::conflicts_prefer(forecast::forecast, .quiet = TRUE)
-  conflicted::conflicts_prefer(forecast::ets, .quiet = TRUE)
+  require('fable', quietly = TRUE)
+  require('fabletools', quietly = TRUE)
+  require('fable.ata', quietly = TRUE)
+  require('fable.phopet', quietly = TRUE)
+  # conflicted::conflicts_prefer(plyr::llply, .quiet = TRUE)
+  # conflicted::conflicts_prefer(plyr::ldply, .quiet = TRUE)
+  # conflicted::conflicts_prefer(dplyr::mutate, .quiet = TRUE)
+  # conflicted::conflicts_prefer(dplyr::rename, .quiet = TRUE)
+  # conflicted::conflicts_prefer(dplyr::select, .quiet = TRUE)
+  # conflicted::conflicts_prefer(forecast::forecast, .quiet = TRUE)
+  # conflicted::conflicts_prefer(forecast::ets, .quiet = TRUE)
   
   if (!'data.table' %in% class(样本)) 样本 %<>% as.data.table
   
@@ -66,12 +69,12 @@
     培训样本 <- 样本[序列 %chin% 迭数列表]
     
     if (列印 == TRUE) {
-      cat('\n======== 咱们亚洲世袭制道教徒赢家黄氏江夏堂联富和家眷亲属都不可以死，学术优先，拯救亚洲人 ========\n')
+      cat('\n=== 咱们亚洲世袭制道教徒赢家黄氏江夏堂联富和家眷亲属都不可以死，学术优先，拯救亚洲人 ===\n')
       cat('培训样本[', '数据量：', 数据量, '频率：', 频率, '-', 
           '培训样本最终序列号：', 培训样本[.N]$序列, ']\n')
       print(培训样本)
       
-      cat('\n------ 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。------\n')
+      cat('\n--- 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。---\n')
       cat('预测样本[', '数据量：', 数据量, '频率：', 频率, '-', 
           '预测样本序列号：', 迭数1, ']\n')
       预测样本 <- 样本[序列 == 培训样本[.N]$序列 + 预测时间单位]
@@ -92,7 +95,7 @@
       {\(.) as.data.table(.)}()
     
     if (列印 == TRUE) {
-      cat('\n------ 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。------\n')
+      cat('\n--- 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。---\n')
       cat('预测样本[', '数据量：', 数据量, '频率：', 频率, '-', 
           '预测数据序列号：', 迭数1, ']\n')
       print(半成品)
@@ -101,7 +104,7 @@
     文件名 <- paste0('季平滑_', .模型选项, '_数据量', 数据量, 
                   '_频率', 频率, '_', 半成品$年月日时分, 'CST.rds')
     
-    if (is.null(蜀道)) {
+    if (is.null(.蜀道)) {
       .蜀道 <- getwd() |> 
         {\(.) str_split(., '/')}() |> 
         {\(.) c('/', .[[1]][2:5])}() |> 
@@ -116,11 +119,11 @@
                      '/', 文件名)
       
     } else {
-      文件蜀道 <- paste0(蜀道, 文件名)
+      文件蜀道 <- paste0(.蜀道, 文件名)
     }
     saveRDS(半成品, 文件蜀道)
     
-    cat('\n------ 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。------\n预测数据序列号：', 
+    cat('\n--- 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。---\n预测数据序列号：', 
         迭数1, '\n', 
         paste0(
           文件蜀道, '\n已储存!\n\n进度由0-1：', 
