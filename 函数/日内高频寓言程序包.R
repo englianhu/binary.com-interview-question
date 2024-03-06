@@ -75,7 +75,7 @@
     }
     
     半成品 <- 培训样本[, .(年月日时分, 闭市价)] |> 
-      {\(.) as_tibble(.) }() |> 
+      {\(.) as_tsibble(., index = 年月日时分) }() |> 
       {\(.) tk_ts(., frequency = 频率)}() |> 
       {\(.) forecast::ets(., model = .模型选项)}() |> 
       {\(.) forecast::forecast(., h = 预测时间单位)}() |> 

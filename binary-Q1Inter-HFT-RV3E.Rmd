@@ -32,7 +32,7 @@ output:
 
 <iframe width="400" height="225" src="https://player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391&page=1" title="天下(电视剧《大秦赋》主题曲完整版)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
 
-*出处：*[**天下***(电视剧《大秦赋》主题曲完整版)*](https://player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391&page=1)
+*出处：*[**天下***(电视剧《大秦赋》主题曲完整版)*](https://player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391)
 
 ## 古诗
 
@@ -49,7 +49,7 @@ output:
 🚩🦔《大秦赋》<br>
 🚩🦔巫师治国，禍殃全球；<br>
 🚩🦔印裔尽弃，瓦釜雷鸣。<br>
-🚩🦔商鞅变法，铲除印裔；<br>
+🚩🦔商鞅变法，铲除印裔[^1]；<br>
 🚩🦔车裂刘瑾，中华执政。<br>
 🚩🦔一带一路，横跨七洲；<br>
 🚩🦔史无前例，一统天下。<br>
@@ -61,7 +61,7 @@ output:
 《大秦赋》<br>
 🚩大秦孝公，秦惠文王；<br>
 🚩始于商鞅，终于辛亥。<br>
-🚩印裔尽弃，瓦釜雷鸣；（推翻马来回教政权）<br>
+🚩印裔尽弃，瓦釜雷鸣；<br>
 🚩铲除印裔，终止屠杀。<br>
 🚩中科红旗，同舟共济；<br>
 🚩千古一帝，傲视全球。<br>
@@ -69,6 +69,8 @@ output:
 🚩横跨七洲，一统天下。<br>
 🚩学海无涯，唯秦是岸；<br>
 🚩莫忘初衷，方得始终。
+
+[^1]: 东楚六郡（马来西亚、新加坡、印尼、辛巴布几内亚）祖籍印尼包括土著和回教徒、祖籍印度的兴都教徒和回教徒包括土著 ---- 非法回教徒和非法兴都教徒。
 
 出处：[蔡卓宜 - 厦门美食](https://www.instagram.com/p/Cjxd_GMLAes)
 
@@ -105,9 +107,9 @@ output:
 - [国学百科](https://www.guoxuebaike.cn)
 
 > [《万般皆下品，唯有读书高》]{style="color:#3C33FF"}<br>
-[习李经济，一带一路；]{style="color:#6883FC"}<br>
+[计量经济，一带一路；]{style="color:#6883FC"}<br>
 [九二共识，量化对冲。]{style="color:#6883FC"}<br>
-[鞭策六四，铲除黑帮；]{style="color:#6883FC"}^[尤其是咱们东南亚印裔政府施展巫术屠杀六百枯万人类的巫师Judi邪教印裔宦官博彩庄诸国]<br>
+[鞭策六四，铲除黑帮^[尤其是那些印裔施展巫术屠杀六百枯万人类的巫师Judi邪教印裔回教宦官博彩庄诸邦]；]{style="color:#6883FC"}<br>
 [推广量化，提倡学术。]{style="color:#6883FC"}<br>
 [百家争鸣，振兴中华；]{style="color:#6883FC"}<br>
 [学海无涯，唯勤是岸。]{style="color:#6883FC"}
@@ -391,17 +393,18 @@ conflicts_prefer(data.table::between, .quiet = TRUE)
 conflicts_prefer(data.table::set, .quiet = TRUE)
 
 程序包 <- c(
-  'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
-  'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', #'Rfast', 
-  'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'plyr', 'dplyr', 
-  'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
-  'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
-  'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 'feather', 
-  'sparklyr', 'jcolors', 'microbenchmark', 'dendextend', 'vembedr', #'TSA', 
-  'lhmetools', 'gtools', 'stringi', 'pacman', 'profmem', 'ggthemes', 
-  'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 'profvis', 
-  'fable', 'fabletools', 'fable.prophet', 'Metrics', 'MLmetrics', 
-  'microbenchmark')
+  'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 
+  'tidyr', 'readr', 'lubridate', 'reprex', 'stringr', 'feather', 
+  'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'timetk', 
+  'plyr', 'dplyr', 'dbplyr', 'magrittr', #'Rfast', 'Rfast2', 
+  'sarima', 'tidyverse', 'memoise', 'htmltools', 'formattable', 
+  'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
+  'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 
+  'feather', 'sparklyr', 'jcolors', 'microbenchmark', 'dendextend', 
+  'vembedr', 'lhmetools', 'gtools', 'stringi', 'pacman', #'TSA', 
+  'profmem', 'ggthemes', 'flyingfox', 'htmltools', 'echarts4r', 
+  'viridis', 'hrbrthemes', 'profvis', 'fable', 'fabletools', 
+  'fable.prophet', 'Metrics', 'MLmetrics', 'microbenchmark')
 
 # load_pkg(程序包)
 suppressAll(lib(程序包))
@@ -441,7 +444,7 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (发布于RStudioConnect.com)
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275) (发布于RPubs.com)
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://beta.rstudioconnect.com/content/8a7cbdce-6fc5-409b-8072-9ff21dbd32eb) (发布于RStudioConnect.com)
-- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *筛选日内高频量化交易统计模型 校阅<span style='color:RoyalBlue'>*（第三部）*</span>](https://rpubs.com/englianhu/987834)
+- [_<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - 筛选日内高频量化交易统计模型 - 校阅<span style='color:RoyalBlue'>（第三部）</span>_](https://rpubs.com/englianhu/987834)
 
 在此论文中，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。
 
@@ -1472,11 +1475,11 @@ source('函数/总汇结论.R')
 春秋战国《*礼记•经解*》<br>
 孔子曰：「君子慎始，差若毫厘，缪以千里。」
 
-> <span style='color:#FFEBCD; background-color:#991B00;'>**《礼记•经解》孔子曰：**</span><span style='color:#DimGrey; background-color:#D52600;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^1]
+> <span style='color:#FFEBCD; background-color:#991B00;'>**《礼记•经解》孔子曰：**</span><span style='color:#DimGrey; background-color:#D52600;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^2]
 
 *引用：[「快懂百科」《礼记•经解》](https://www.baike.com/wikiid/2225522569881832051?view_id=2tt3iw3blkq000)和[第一范文网：差之毫厘，谬以千里的故事](https://www.diyifanwen.com/chengyu/liuziyishangchengyugushi/2010051523105152347092749890.htm)和[「百度百科」春秋时期孔子作品《礼记•经解》](https://baike.baidu.com/item/%E7%A4%BC%E8%AE%B0%C2%B7%E7%BB%8F%E8%A7%A3/2523092)和[「當代中國」差之毫釐 謬以千里](https://www.ourchinastory.com/zh/2962/%E5%B7%AE%E4%B9%8B%E6%AF%AB%E9%87%90%20%E8%AC%AC%E4%BB%A5%E5%8D%83%E9%87%8C)*
 
-[^1]: [HTML Color Codes](https://html-color.codes)
+[^2]: [HTML Color Codes](https://html-color.codes)
 
 ![](诸子百家考工记/秒计.png)
 
