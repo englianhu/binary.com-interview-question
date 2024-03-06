@@ -58,7 +58,7 @@ output:
 
 *引用：[「猫城」中国北京大学赢家ξng黄氏江夏堂「大秦赋•道家李耳老子兼法家李斯篆紀•艺文志」：目前使用🚩🇨🇳🏹🦔中国国产红旗礼逆袭，编程都会使用咱们母语华语、字体、字幕加汉语拼音。](https://github.com/englianhu/RedFlag-Linux/issues/6#issuecomment-1722247674)*
 
-<iframe width="560" height="315" src="https://player.bilibili.com/player.html?aid=757957931" title="天下(电视剧《大秦赋》主题曲完整版)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
+<iframe width="400" height="225" src="https://player.bilibili.com/player.html?aid=757957931" title="天下(电视剧《大秦赋》主题曲完整版)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
 
 *出处：*[**天下***(电视剧《大秦赋》主题曲完整版)*](https://player.bilibili.com/player.html?aid=757957931)
 
@@ -108,11 +108,11 @@ output:
 
 上图的漂亮妞儿[Celine Sim 沈小姐](https://www.facebook.com/profile.php?id=100002266213636)和[陈瑞](https://www.linkedin.com/in/rui-chen-981042a7/)就长得像农历二零零零年到二零零一年中四勤班和中五勤班时期，乘搭韵祯校车的隔壁校私立丹绒沉鱼落雁，闭月羞花、文静又有气质的校花学姐**神仙姐姐苏丽欣**，行不改名坐不改姓。现实生活中的**苏丽欣**都是自强不息、学术优先的贤内助而非黄脸婆。
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/ndCUxQB0kzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/ndCUxQB0kzg" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 *引用：[抖音」大秦赋 - 时光机器农历二零零二年](https://v.douyin.com/iNwNe2Q6)*
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/xyR86xcI8Ag?si=hXZMB7qITwjAJ4nU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/xyR86xcI8Ag?si=hXZMB7qITwjAJ4nU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 *引用：[DIOR大穎《Happy Go Lucky》 ft. GoHell Holiday ( Official MV )](https://www.youtube.com/watch?v=xyR86xcI8Ag)*
 
@@ -180,7 +180,7 @@ nameserver 114.114.114.114
 
 <img src='诸子百家考工记/全球公敌世袭制白骨精土司法家刘氏彭城堂·殡刘.png' width = '400'>
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/8TO58UU6iBM?si=gv_w3cosYEnQLFT3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/8TO58UU6iBM?si=gv_w3cosYEnQLFT3" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 十二生肖（秦人牧马和燕从京来论），从满洲到星洲、从鼻祖到耳孙，世间再无富不过三代的败家子祖父黄实田（曾祖黄福全在清末光绪年间和两个哥哥仨飘洋过海从满洲到星洲自力更生努力奋斗开垦一百亩农地，然后和土木工程的杨清廉俩在清末鸦片战争时期是瓜雪两大不相伯仲的首富）祖母颜为，省吃俭用的外祖父书法家李福（李斯篆书）外祖母郑邓（家道中落的富家千金）。
 
@@ -490,7 +490,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 *引用：[抖音 - 电动车](https://v.douyin.com/YxVy48K)*
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 *引用：[「汤普勒」时间序例之贝式隐马尔可夫链（附学术参考书）](https://www.tumblr.com/blog/view/englianhu/641578918656212992?source=share)*
 
@@ -507,7 +507,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 #### 天文历法（干支纪年 / 纪元法）
 
-![](诸子百家考工记/鄀语言 - 制作干支对照表.png)
+<img src='诸子百家考工记/鄀语言 - 制作干支对照表.png' width = '400'>
 
 有关农历与二十四节气，目前正在自修中科红旗之礼逆袭红旗操作系统，会先将曦与曦佳佳编程语言翻译为咱们中文编程附上拼音（李斯篆书），再提升为文言文及古文编程、日期均以农历与咱们中华五千多年习俗文化道教为主，它日再研发「大秦赋」操作系统，欲知更多详情请查阅[「猫城」](https://github.com/englianhu/RedFlag-Linux)和[「猫城」](https://github.com/englianhu/library)。
 

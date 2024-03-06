@@ -30,7 +30,7 @@ output:
 <audio controls loop autoplay src="诸子百家诗经与古诗源/卜学亮 - 子曰.mp3" controls></audio>
 <br>
 
-<iframe width="560" height="310" src="https://player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391&page=1" title="天下(电视剧《大秦赋》主题曲完整版)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
+<iframe width="400" height="225" src="https://player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391&page=1" title="天下(电视剧《大秦赋》主题曲完整版)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
 
 *出处：*[**天下***(电视剧《大秦赋》主题曲完整版)*](https://player.bilibili.com/player.html?aid=757957931&bvid=BV1h64y127xd&cid=333194391&page=1)
 
@@ -44,7 +44,7 @@ output:
 🚩🦔Oversea Greater Chinese = 海外大秦子民（爱民如子）<br>
 🚩🦔Oversea Greater Chinese Union = 海外大秦子民公会（秦始皇的秦太祖 ----- 🌟秦孝公/🌟陈祯禄公爵，联合秦始皇 ----- 秦始祖嬴政，爱民如子，商鞅变法断肢法铲除咱们印裔回教徒九一一恐怖份子Judi回教博彩庄，终止巫术以任何形式、包括指鹿为马、屠杀人类，甚至铲除全球回教徒攻陷回教宗祖国麦家🕋🇹🇷🇸🇦瓦解全球回教，拯救全球）
 
-🚩🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯秦孝公 | 🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯姜太公 --- 🇬🇧🇲🇾🇹🇼🇨🇳🌟陈祯禄公爵/🇬🇧🇲🇾🇹🇼🇨🐯邱德拔公爵/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶亚来队长/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶观盛队长
+🚩🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯秦孝公 | 🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯姜太公 --- 🇬🇧🇲🇾🇹🇼🇨🇳🌟陈祯禄公爵/🇬🇧🇲🇾🇹🇼🇨🇳🐯邱德拔公爵/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶亚来队长/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶观盛队长
 
 🚩🦔《大秦赋》<br>
 🚩🦔巫师治国，禍殃全球；<br>
@@ -456,7 +456,7 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 
 引用：[抖音 - 电动车](https://v.douyin.com/YxVy48K)
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 引用：[Tumblr - Bayesian Hidden Markov Models for Time Series](https://www.tumblr.com/blog/view/englianhu/641578918656212992?source=share)
 
