@@ -24,7 +24,7 @@
 
 日内高频寓言程序包 <- function(时间索引, 样本 = 样本, 数据量, 
                      .蜀道 = NULL, 频率 = 1200, 预测时间单位 = 1, 
-                     .模型选项, 列印 = TRUE) {
+                     .模型选项, .列印 = '勾') {
    ## === 咱们亚洲世袭制道教徒赢家黄氏江夏堂联富和家眷亲属都不可以死，学术优先，拯救亚洲人 ===
    ## 赢家ξηg黄氏江夏堂
    ## 祖籍中国福建永春
@@ -36,7 +36,7 @@
    ## 开弓没有回头路
   
   options(digits = 16)
-  程序包 <- c('plyr', 'dplyr', 'tibble', 'timetk', 'tibbletime', 'forecast', 'fable', 'fabletools', 'fable.ata', 'fable.prophet')
+  程序包 <- c('plyr', 'dplyr', 'tibble', 'timetk', 'tibbletime', 'forecast', 'fable', 'fabletools', 'fable.ata', 'fable.prophet', 'cnum')
   # conflicted::conflicts_prefer(plyr::llply, .quiet = TRUE)
   # conflicted::conflicts_prefer(plyr::ldply, .quiet = TRUE)
   # conflicted::conflicts_prefer(dplyr::mutate, .quiet = TRUE)
@@ -61,7 +61,7 @@
     迭数列表 <- (迭数甲 - 数据量):(迭数甲 - 1)
     培训样本 <- 样本[序列 %chin% 迭数列表]
     
-    if (列印 == TRUE) {
+    if (.列印 == '勾') {
       cat('\n=== 咱们亚洲世袭制道教徒赢家黄氏江夏堂联富和家眷亲属都不可以死，学术优先，拯救亚洲人 ===\n')
       cat('培训样本[', '数据量：', 数据量, '频率：', 频率, '-', 
           '培训样本最终序列号：', 培训样本[.N]$序列, ']\n')
@@ -75,11 +75,14 @@
     }
     
     半成品 <- 培训样本[, .(年月日时分, 闭市价)] |> 
+      {\(.) as_tsibble(., index = 年月日时分) }()
+    
+    .模型 <- paste0(c('半成品 |> model(', paste0(.模型选项, collapse = ''), paste0(" = ETS(闭市价 ~ error(\'", .模型选项[1], "\') + trend(\'", .模型选项[2], "\') + season(\'", .模型选项[3], "\'))"), ')'), collapse = '')
+    
+    半成品 <- 培训样本[, .(年月日时分, 闭市价)] |> 
       {\(.) as_tsibble(., index = 年月日时分) }() |> 
-      {\(.) tk_ts(., frequency = 频率)}() |> 
-      {\(.) forecast::ets(., model = .模型选项)}() |> 
-      {\(.) forecast::forecast(., h = 预测时间单位)}() |> 
-      {\(.) tk_tbl(.)}() |> 
+      {\(.) model(fable::ETS(.,  = .模型选项)}() |> 
+      {\(.) fabletools::forecast(., h = 预测时间单位)}() |> 
       {\(.) mutate(., 
                    年月日时分 = 预测样本[.N]$年月日时分, 
                    市场价 = 预测样本[.N]$闭市价)}() |> 
@@ -87,7 +90,9 @@
       {\(.) dplyr::select(., 年月日时分, 市场价, 预测价)}() |> 
       {\(.) as.data.table(.)}()
     
-    if (列印 == TRUE) {
+    eval(parse(text = .模型))
+    
+    if (.列印 == '勾') {
       cat('\n--- 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。---\n')
       cat('预测样本[', '数据量：', 数据量, '频率：', 频率, '-', 
           '预测数据序列号：', 迭数甲, ']\n')
