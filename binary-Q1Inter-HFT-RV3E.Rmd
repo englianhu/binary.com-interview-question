@@ -457,11 +457,14 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 
 > #自动化 #科研科学 #尚未试驾 尚未试驾🚗
 
-引用：[抖音 - 电动车](https://v.douyin.com/YxVy48K)
+<iframe width="400" height="225" src="https://v.douyin.com/YxVy48K" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+*引用：[抖音 - 电动车](https://v.douyin.com/YxVy48K)*
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-引用：[Tumblr - Bayesian Hidden Markov Models for Time Series](https://www.tumblr.com/blog/view/englianhu/641578918656212992?source=share)
+- [#🥬🥬一笑很倾城三高👩🏻‍🎓：颜值高、学问高、品德高](  https://v.douyin.com/iFFjugkD)
+- [「汤普勒」时间序例之贝式隐马尔可夫链（附学术参考书）](https://www.tumblr.com/blog/view/englianhu/641578918656212992?source=share)
 
 > 辛亥革命，铲除印裔；<br>
 终止屠杀，拯救全球。
@@ -491,17 +494,13 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 
 <img src='诸子百家考工记/鄀语言 - 制作干支对照表.png' width = '400'>
 
-有关农历与二十四节气，目前正在自修中科红旗之礼逆袭红旗操作系统，会先将曦与曦佳佳编程语言翻译为咱们中文编程附上拼音（李斯篆书），再提升为文言文及古文编程、日期均以农历与咱们中华五千多年习俗文化道教为主，它日再研发「大秦赋」操作系统，欲知更多详情请查阅[「猫城」雷欧/中科红旗](https://github.com/englianhu/RedFlag-Linux)和[「猫城」雷欧/图书馆](https://github.com/englianhu/library)。
+有关农历与二十四节气，目前正在自修中科红旗之礼逆袭红旗操作系统，会先将曦与曦佳佳编程语言翻译为咱们中文编程附上拼音（李斯篆书），再提升为文言文及古文编程、日期均以农历与咱们中华五千多年习俗文化道教为主，它日再研发「大秦赋」操作系统，欲知更多详情请查阅[「猫城」雷欧/中科红旗](https://github.com/englianhu/RedFlag-Linux)和[「猫城」雷欧/图书馆](https://github.com/englianhu/library)。[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)叙述一些有关天文历法、天干地支纪年、纪月、纪日、纪时、时辰、十二生肖和生辰八字。
 
 - [我国主要历法及基本原理 古代天文学知识科普（六）](https://www.bilibili.com/video/BV1B64y1M79y)
 - [农历纪年法：怎样通过公元纪年推算干支纪年](https://www.sohu.com/a/139120191_372495)
 - [「问百度」干支纪年](https://baike.baidu.com/item/%E5%B9%B2%E6%94%AF%E7%BA%AA%E5%B9%B4/3383226)
 - [（历法溯源十）天文历法大成，周易天象解密，易经的天象规律](https://www.bilibili.com/video/BV1AA411R7LE)
 - [天文课程 - 时间和历法](https://www.bilibili.com/video/BV1uv411K7sd)
-
-> 
-
-*引用：[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)*
 
 ### 日内计时法
 
@@ -600,20 +599,11 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 以上首千多个汇价（观测值）都是一样的汇价。
 
-# 模型比较
+## 整顿数据
 
-## 精准度
+### 月计
 
-> VAR分析中的一个中心问题是找到滞后的阶数，以产生最佳结果。模型比较通常基于信息标准，例如AIC，BIC或HQ。通常，由于是小样本预测，AIC优于其他标准。但是，BIC和HQ在大型样本中效果很好 
-
-引用：[R语言用向量自回归（VAR）进行经济数据脉冲响应研究分析](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e7%94%a8%e5%90%91%e9%87%8f%e8%87%aa%e5%9b%9e%e5%bd%92%ef%bc%88var%ef%bc%89%e8%bf%9b%e8%a1%8c%e7%bb%8f%e6%b5%8e%e6%95%b0%e6%8d%ae%e8%84%89%e5%86%b2%e5%93%8d%e5%ba%94%e7%a0%94)
-
-- [「经管之家」 [统计软件与数据分析] 如何理解R中给出的ARIMA模型的拟合结果？](https://bbs.pinggu.org/forum.php?mod=redirect&goto=findpost&ptid=3236918&pid=84745157&fromuid=5794471)
-- [**Forecasting: Principle & Practice** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)
-
-## 月计
-
-### 总汇二零一八年一月结论
+#### 总汇二零一八年一月结论
 
 ```{r 日内指数平滑数据二零一八年一月总汇}
 source('函数/总汇结论.R')
@@ -695,7 +685,7 @@ source('函数/总汇结论.R')
 
 *数据：`r paste0(dim(日内指数平滑数据二零一八年一月结论), collapse = ' x ')`*
 
-### 总汇二零一八年二月结论
+#### 总汇二零一八年二月结论
 
 ```{r 日内指数平滑数据二零一八年二月总汇}
 日内指数平滑数据二零一八年二月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 2]
@@ -773,7 +763,7 @@ source('函数/总汇结论.R')
 
 *数据：`r paste0(dim(日内指数平滑数据二零一八年二月结论), collapse = ' x ')`*
 
-### 总汇二零一八年三月结论
+#### 总汇二零一八年三月结论
 
 ```{r 日内指数平滑数据二零一八年三月总汇}
 日内指数平滑数据二零一八年三月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 3]
@@ -851,7 +841,7 @@ source('函数/总汇结论.R')
 
 *数据：`r paste0(dim(日内指数平滑数据二零一八年三月结论), collapse = ' x ')`*
 
-### 总汇二零一八年四月结论
+#### 总汇二零一八年四月结论
 
 ```{r 日内指数平滑数据二零一八年四月总汇}
 日内指数平滑数据二零一八年四月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 4]
@@ -929,7 +919,7 @@ source('函数/总汇结论.R')
 
 *数据：`r paste0(dim(日内指数平滑数据二零一八年四月结论), collapse = ' x ')`*
 
-### 总汇二零一八年五月结论
+#### 总汇二零一八年五月结论
 
 ```{r 日内指数平滑数据二零一八年五月总汇}
 日内指数平滑数据二零一八年五月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 5]
@@ -1007,7 +997,7 @@ source('函数/总汇结论.R')
 
 *数据：`r paste0(dim(日内指数平滑数据二零一八年五月结论), collapse = ' x ')`*
 
-### 总汇二零一八年六月结论
+#### 总汇二零一八年六月结论
 
 ```{r 日内指数平滑数据二零一八年六月总汇}
 日内指数平滑数据二零一八年六月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 6]
@@ -1087,9 +1077,9 @@ source('函数/总汇结论.R')
 
 <br>
 
-## 周计
+### 周计
 
-### 总汇二零一八年第一周结论
+#### 总汇二零一八年第一周结论
 
 ```{r 日内指数平滑数据二零一八年第一周总汇}
 日内指数平滑数据二零一八年第一周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
@@ -1167,7 +1157,7 @@ source('函数/总汇结论.R')
 
 *数据：`r paste0(dim(日内指数平滑数据二零一八年第一周结论), collapse = ' x ')`*
 
-### 总汇二零一八年第二周结论
+#### 总汇二零一八年第二周结论
 
 ```{r 日内指数平滑数据二零一八年第二周总汇}
 日内指数平滑数据二零一八年第二周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
@@ -1245,7 +1235,7 @@ source('函数/总汇结论.R')
 
 *数据：`r paste0(dim(日内指数平滑数据二零一八年第二周结论), collapse = ' x ')`*
 
-### 总汇二零一八年第三周结论
+#### 总汇二零一八年第三周结论
 
 ```{r 日内指数平滑数据二零一八年第三周总汇}
 日内指数平滑数据二零一八年第三周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
@@ -1323,7 +1313,7 @@ source('函数/总汇结论.R')
 
 *数据：`r paste0(dim(日内指数平滑数据二零一八年第三周结论), collapse = ' x ')`*
 
-### 总汇二零一八年第四周结论
+#### 总汇二零一八年第四周结论
 
 ```{r 日内指数平滑数据二零一八年第四周总汇}
 日内指数平滑数据二零一八年第四周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
@@ -1401,9 +1391,9 @@ source('函数/总汇结论.R')
 
 *数据：`r paste0(dim(日内指数平滑数据二零一八年第四周结论), collapse = ' x ')`*
 
-## 平滑周计
+### 平滑周计
 
-### 总汇二零一八年一月平滑周计结论
+#### 总汇二零一八年一月平滑周计结论
 
 ```{r 日内指数平滑数据二零一八年一月平滑周计总汇, error = TRUE}
 source('函数/总汇结论.R')
@@ -1486,6 +1476,19 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
+### 总结数据
+
+![](诸子百家考工记/秒计.png)
+
+估计是由于骇客人为篡改数据，导致**总汇二零一六年结论**和**总汇二零一七年结论**显示误差完全一样，*四个小数位*的汇价的预测误差，有可能计算出*十五个小数位*（倘若以秒计，飞秒（fs））误差值一模一样吗？上几周骇客频频入侵电子仪器`频率=12`的数据，骇客人为篡改为多一个观测值汇价。
+
+然而**总汇结论（从二零一六年至二零一八年七月七日）**和**总汇二零一八年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**百分之一个时辰一周期（一分钟循环千皕次）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优统计模型**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
+
+# 统计建模
+
+
+# 模型比较
+
 # 结论
 
 ## 摘要
@@ -1500,13 +1503,16 @@ source('函数/总汇结论.R')
 
 [^2]: [HTML Color Codes](https://html-color.codes)
 
-![](诸子百家考工记/秒计.png)
+## 精准度
 
-估计是由于骇客人为篡改数据，导致**总汇二零一六年结论**和**总汇二零一七年结论**显示误差完全一样，*四个小数位*的汇价的预测误差，有可能计算出*十五个小数位*（倘若以秒计，飞秒（fs））误差值一模一样吗？上几周骇客频频入侵电子仪器`频率=12`的数据，骇客人为篡改为多一个观测值汇价。
+> VAR分析中的一个中心问题是找到滞后的阶数，以产生最佳结果。模型比较通常基于信息标准，例如AIC，BIC或HQ。通常，由于是小样本预测，AIC优于其他标准。但是，BIC和HQ在大型样本中效果很好 
 
-然而**总汇结论（从二零一六年至二零一八年七月七日）**和**总汇二零一八年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**百分之一个时辰一周期（一分钟循环千皕次）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优统计模型**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
+引用：[R语言用向量自回归（VAR）进行经济数据脉冲响应研究分析](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e7%94%a8%e5%90%91%e9%87%8f%e8%87%aa%e5%9b%9e%e5%bd%92%ef%bc%88var%ef%bc%89%e8%bf%9b%e8%a1%8c%e7%bb%8f%e6%b5%8e%e6%95%b0%e6%8d%ae%e8%84%89%e5%86%b2%e5%93%8d%e5%ba%94%e7%a0%94)
 
-这儿使用`forecast`程序包，尚未使用`fable`程序包与`fabletools`程序包，该程序包中的`accuracy()`[^2]函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的统计模型预测值。
+- [「经管之家」 [统计软件与数据分析] 如何理解R中给出的ARIMA模型的拟合结果？](https://bbs.pinggu.org/forum.php?mod=redirect&goto=findpost&ptid=3236918&pid=84745157&fromuid=5794471)
+- [**Forecasting: Principle & Practice** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)
+
+这儿使用`forecast`程序包，尚未使用`fable`程序包与`fabletools`程序包，该程序包中的`accuracy()`[^2]函数和`report()`函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的统计模型预测值。
 
 [^2]: [**Forecasting: Principles and Practice (3rd ed)** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)阐明评估预测精准度的计算公式。<br><br>[「CSDN」选择正确的错误度量标准：MAPE与sMAPE的优缺点](https://blog.csdn.net/deephub/article/details/109483129)
 
