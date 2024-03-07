@@ -916,7 +916,7 @@ source('函数/整顿数据.R')
 
 引用：[北京市昌平区肺结核发病数ARIMA模型预测](http://www.jbjc.org/JBJC/html/article_8538.htm)
 
-[<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275)中，结论千皕分钟为最优数据量，故此我将数据量设置为(千皕分钟，也就是等于20个交易小时)，去预测下一分钟交易价格。然而如何灵活设置周期量与周期数、运用循环周期呢？在此尝试回测方能得以证实。
+[<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275)中，结论千皕分钟为最优数据量，故此我将数据量设置为(千皕分钟，也就是等于廿个交易小时)，去预测下一分钟交易价格。然而如何灵活设置周期量与周期数、运用循环周期呢？在此尝试回测方能得以证实。
 
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.7 ARIMA modelling in R*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/arima-r.html)
 - [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
