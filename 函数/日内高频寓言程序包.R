@@ -36,7 +36,8 @@
    ## 开弓没有回头路
   
   options(digits = 16)
-  程序包 <- c('plyr', 'dplyr', 'tibble', 'timetk', 'tibbletime', 'forecast', 'fable', 'fabletools', 'fable.ata', 'fable.prophet', 'cnum')
+  程序包 <- c('plyr', 'dplyr', 'tibble', 'timetk', 'tibbletime', 'forecast', 
+           'fable', 'fabletools', 'fable.ata', 'fable.prophet', 'cnum')
   # conflicted::conflicts_prefer(plyr::llply, .quiet = TRUE)
   # conflicted::conflicts_prefer(plyr::ldply, .quiet = TRUE)
   # conflicted::conflicts_prefer(dplyr::mutate, .quiet = TRUE)
@@ -77,20 +78,17 @@
     半成品 <- 培训样本[, .(年月日时分, 闭市价)] |> 
       {\(.) as_tsibble(., index = 年月日时分) }()
     
-    .模型 <- paste0(c('半成品 |> model(', paste0(.模型选项, collapse = ''), paste0(" = ETS(闭市价 ~ error(\'", .模型选项[1], "\') + trend(\'", .模型选项[2], "\') + season(\'", .模型选项[3], "\'))"), ')'), collapse = '')
+    .模型 <- paste0(c('半成品 |> model(', paste0(
+      .模型选项, collapse = ''), 
+      paste0(" = ETS(闭市价 ~ error(\'", .模型选项[1], "\') + trend(\'", 
+             .模型选项[2], "\') + season(\'", .模型选项[3], "\'))"), ')'), 
+      collapse = '')
     
-    半成品 <- 培训样本[, .(年月日时分, 闭市价)] |> 
-      {\(.) as_tsibble(., index = 年月日时分) }() |> 
-      {\(.) model(fable::ETS(.,  = .模型选项)}() |> 
-      {\(.) fabletools::forecast(., h = 预测时间单位)}() |> 
-      {\(.) mutate(., 
-                   年月日时分 = 预测样本[.N]$年月日时分, 
-                   市场价 = 预测样本[.N]$闭市价)}() |> 
-      {\(.) dplyr::rename(., 预测价 = `Point Forecast`)}() |> 
-      {\(.) dplyr::select(., 年月日时分, 市场价, 预测价)}() |> 
-      {\(.) as.data.table(.)}()
-    
-    eval(parse(text = .模型))
+    半成品 <- eval(parse(text = .模型)) |> 
+      fabletools::forecast(h = 预测时间单位) |> 
+      dplyr::rename(模型 = .model, 市场价 = 闭市价, 预测价 = .mean) |> 
+      mutate(模型 = factor(模型)) |> 
+      as.data.table()
     
     if (.列印 == '勾') {
       cat('\n--- 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。---\n')

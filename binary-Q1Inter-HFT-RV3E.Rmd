@@ -474,7 +474,22 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 
 ### 天文历法（干支纪年 / 纪元法）
 
-![](诸子百家考工记/鄀语言 - 制作干支对照表.png)
+```{r 天文历法-天干}
+(天干 <- c('甲', '乙', '丙', '丁', '戊', '己', '庾', '辛', '壬', '癸'))
+```
+
+```{r 天文历法-地支}
+(地支 <- c('子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'))
+```
+
+```{r 天文历法-干支}
+干支 <- paste0(rep(天干, 6), rep(地支, 5))
+干支 |> 
+  matrix(nrow = 12, dimnames = list(
+    地支, paste0(天干[1:5], 天干[6:10])))
+```
+
+<img src='诸子百家考工记/鄀语言 - 制作干支对照表.png' width = '400'>
 
 有关农历与二十四节气，目前正在自修中科红旗之礼逆袭红旗操作系统，会先将曦与曦佳佳编程语言翻译为咱们中文编程附上拼音（李斯篆书），再提升为文言文及古文编程、日期均以农历与咱们中华五千多年习俗文化道教为主，它日再研发「大秦赋」操作系统，欲知更多详情请查阅[「猫城」雷欧/中科红旗](https://github.com/englianhu/RedFlag-Linux)和[「猫城」雷欧/图书馆](https://github.com/englianhu/library)。
 
@@ -483,6 +498,10 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 - [「问百度」干支纪年](https://baike.baidu.com/item/%E5%B9%B2%E6%94%AF%E7%BA%AA%E5%B9%B4/3383226)
 - [（历法溯源十）天文历法大成，周易天象解密，易经的天象规律](https://www.bilibili.com/video/BV1AA411R7LE)
 - [天文课程 - 时间和历法](https://www.bilibili.com/video/BV1uv411K7sd)
+
+> 
+
+*引用：[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)*
 
 ### 日内计时法
 
