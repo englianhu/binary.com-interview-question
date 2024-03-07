@@ -127,12 +127,12 @@
     
     if (周期建模 == 'msts') {
       cat('开始建立季节性模型\n')
-      季回归 <- 培训样本$闭市价 |> 
-        {\(.) matrix(., dimnames = list(培训样本$年月日时分, '闭市价'))}() |> 
-        # msts(data, seasonal.periods, ts.frequency = floor(max(seasonal.periods)), ...)
-        # x <- msts(taylor, seasonal.periods=c(2*24,2*24*7,2*24*365), start=2000+22/52)
-        # y <- msts(USAccDeaths, seasonal.periods=12, start=1949)
-        {\(.) msts(., ts.frequency = 频率)}()
+      # msts(data, seasonal.periods, ts.frequency = floor(max(seasonal.periods)), ...)
+      # x <- msts(taylor, seasonal.periods=c(2*24,2*24*7,2*24*365), start=2000+22/52)
+      # y <- msts(USAccDeaths, seasonal.periods=12, start=1949)
+      季回归 <- 培训样本[, .(年月日时分, 闭市价)] |> 
+        as.xts() |> 
+        msts(., ts.frequency = 频率)
       rownames(季回归) <- 培训样本$年月日时分
       cat('建立季节性模型完毕\n')
     }
