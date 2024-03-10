@@ -68,40 +68,57 @@
    cat('\n列表已组成！')
    saveRDS(列表, paste0(.蜀道仓库, '列表', 频率, '.rds'))
    cat('\n列表已储存！')
-   #列表 <- readRDS(paste0(.蜀道仓库, '列表', 频率, '.rds'))
-   数据乙 <- ldply(列表, function(参数, .列表 = .列表) {
-     tryCatch(
-       readRDS(paste0(.蜀道仓库, 频率, '/', 参数)), 
-       错误信息 = function(错误信息参数, 参数 = 参数, .列表 = .列表) 错误信息参数, {
-         if (.列表 == '勾') 
-           cat(paste(参数, '错误信息：文件不存在。\n'))
-         else NULL
-         })}, .progress = 'text') %>% 
-     as.data.table
+   # 列表 <- readRDS(paste0(.蜀道仓库, '列表', 频率, '.rds'))
+   # 数据乙 <- ldply(列表, function(参数, .列表 = .列表) {
+   #   tryCatch(
+   #     readRDS(paste0(.蜀道仓库, 频率, '/', 参数)), 
+   #     错误信息 = function(错误信息参数, 参数 = 参数, .列表 = .列表) 错误信息参数, {
+   #       if (.列表 == '勾') 
+   #         cat(paste(参数, '错误信息：文件不存在。\n'))
+   #       else NULL
+   #       })}, .progress = 'text') %>% 
+   #   as.data.table
    # 数据乙 <- plyr::llply(列表, function(参数) 
-   #   readRDS(paste0(.蜀道仓库, 频率, '/', 参数)), .progress = 'text')
+   #  readRDS(paste0(.蜀道仓库, 频率, '/', 参数)), .progress = 'text')
+   # cat('\n将列表数据编组！')
+   
+   # ---------------------------------------------
+   数据乙 <- list()
+   for (迭代 in 1:length(列表)) {
+     数据乙[[迭代]] <- readRDS(paste0(.蜀道仓库, 频率, '/', 列表[1]))
+   }
+   数据乙 %<>% bind_rows()
    cat('\n将列表数据编组！')
+   
+   # ---------------------------------------------
    
    ## 赢家自家人老王王翦王贲检验并整顿数据
    ## 王翦阅兵，整装待发
-   王翦阅兵 <- paste0(.蜀道仓库, 文件名, 频率, '.rds')
+   # 王翦阅兵 <- paste0(.蜀道仓库, 文件名, 频率, '.rds')
+   王翦阅兵 <- paste0(.蜀道仓库, 文件名, '_差分阶数', .差分阶数, 
+                  '_季节性差分阶数', .季节性差分阶数, '_', 周期建模, '_数据量', 
+                  数据量, '_频率', 频率, '.rds')
    if (file.exists(王翦阅兵)) {
-      数据甲 <- readRDS(paste0(.蜀道仓库, 文件名, 频率, '.rds')) %>% 
-        as.data.table
-      #总汇 <- rbind(数据甲, 数据乙)[order(年月日时分)] %>% unique
-      总汇 <- rbindlist(list(数据乙, 数据甲))[order(年月日时分)] %>% 
-        unique
-      saveRDS(总汇, paste0(.蜀道仓库, 文件名, 频率, '.rds'))
-      cat('\n储存已编组的数据！\n')
+     # 数据甲 <- readRDS(paste0(.蜀道仓库, 文件名, 频率, '.rds')) %>% 
+     #   as.data.table
+     数据甲 <- readRDS(王翦阅兵) %>% 
+       as.data.table
+     #总汇 <- rbind(数据甲, 数据乙)[order(年月日时分)] %>% unique
+     总汇 <- rbindlist(list(数据乙, 数据甲))[order(年月日时分)] %>% 
+       unique
+     # saveRDS(总汇, paste0(.蜀道仓库, 文件名, 频率, '.rds'))
+     saveRDS(总汇, file = 王翦阅兵)
+     cat('\n储存已编组的数据！\n')
    
-   } else {      
-      总汇 <- 数据乙
-      saveRDS(总汇, paste0(.蜀道仓库, 文件名, 频率, '.rds'))
-      cat('\n储存已编组的数据！\n')
+   } else {
+     总汇 <- 数据乙
+     # saveRDS(总汇, paste0(.蜀道仓库, 文件名, 频率, '.rds'))
+     saveRDS(总汇, file = 王翦阅兵)
+     cat('\n储存已编组的数据！\n')
    }
    
    #总汇 <- readRDS(paste0(.蜀道仓库, 文件名, 频率, '.rds'))
-   rm(列表, 数据A, 数据乙)
+   rm(列表, 数据甲, 数据乙)
    
    是否移除文件夹 <- 是否移除文件夹
    if (!是否移除文件夹 %in% c('是', '否', '勾', '叉')) {
