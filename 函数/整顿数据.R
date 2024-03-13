@@ -31,21 +31,21 @@
    ## 军队编制
    ## http://adv-r.had.co.nz/Functional-programming.html
    ## https://shixiangwang.猫城.io/home/cn/post/2019-11-20-meta-programming/
-   ## -----------------------------------------------------------------------
+   ## ----------------------------------------------------------------
    ## 一般上，使用eval(parse(text = 参数))可以执行所有任何R语言代码方程，不过每行代码都使用分号，代码排列就不整齐，类似抒写一篇只有一段而已的作文。
    ## 商鞅变法：将所有方程、参数、任何代码编写为文字、依照可兰经回教刑事法典断肢法执行、再评估成效。
    ## 断肢分一杯羹的司马迁乩童白骨精巫师王（荆州人彭城堂虞素威/刘表 ------ 刘瑾貹和张佳坤 --- 溥仪），歼灭Judi回教博彩庄Caspo Inc
    #王翦阅兵 <- paste0('list(列表 = 列表', substitute(频率), ', 总汇', substitute(频率), 'A)')
    # 
    #return(eval(parse(text = 王翦阅兵)))
-   ## -----------------------------------------------------------------------
+   ## ----------------------------------------------------------------
    ## 所有频率组类似军队兵种编制
    ## 将每一分钟的汇价数据整顿、组合为一个数据组
    #列表24 <- list.files(paste0(.蜀道仓库, 数据库文件夹)[1], '*.rds')
    require('data.table', quietly = TRUE)
-   conflict_prefer('first', 'data.table', quiet = TRUE)
-   conflict_prefer('last', 'data.table', quiet = TRUE)
-   conflict_prefer('transpose', 'data.table', quiet = TRUE)
+   conflicts_prefer(data.table::first, .quiet = TRUE)
+   conflicts_prefer(data.table::last, .quiet = TRUE)
+   conflicts_prefer(data.table::transpose, .quiet = TRUE)
    
    cat('\n=== 咱们亚洲世袭制道教徒赢家黄氏江夏堂联富和家眷亲属都不可以死，学术优先，拯救亚洲人 ===')
    cat('\n------ 秦孝公🌟陈祯禄，商鞅变法，铲除巫裔，推翻马来回教宦官巫师政权，千古一帝。------')
@@ -85,7 +85,7 @@
    # ---------------------------------------------
    数据乙 <- list()
    for (迭代 in 1:length(列表)) {
-     数据乙[[迭代]] <- readRDS(paste0(.蜀道仓库, 频率, '/', 列表[1]))
+     数据乙[[迭代]] <- readRDS(paste0(.蜀道仓库, 频率, '/', 列表[迭代]))
    }
    数据乙 %<>% bind_rows()
    cat('\n将列表数据编组！')
