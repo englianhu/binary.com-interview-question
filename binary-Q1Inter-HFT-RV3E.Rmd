@@ -253,7 +253,8 @@ lib('sass')
 #Sys.setlocale(category = "LC_ALL", locale = "UTF-8")
 #Sys.setlocale(category = "LC_ALL", locale = "Chinese")
 #Sys.setlocale(category = "LC_ALL", locale = "zh_CN.UTF-8")
-Sys.setlocale("LC_ALL", "en_US.UTF-8")
+
+# Sys.setlocale("LC_ALL", "en_US.UTF-8")
 ```
 
 ```{scss SCSS设置, class.source='bg-success', class.output='bg-primary'}
