@@ -1667,32 +1667,32 @@ source('函数/整顿数据.R')
 
 ## 外部因素周期性自回归综合滑均模型（ARIMAX）
 
-```{r }
+```{r , eval = FALSE}
 # --------- eval = FALSE ---------
 
 ```
 
 ## 季节性自回归综合滑均模型（SARIMA）
 
-```{r }
+```{r , eval = FALSE}
 
 ```
 
 ## 外部因素周期性季节性自回归综合滑均模型（SARIMAX）
 
-```{r }
+```{r , eval = FALSE}
 
 ```
 
 ## 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 
-```{r }
+```{r , eval = FALSE}
 
 ```
 
 ## 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
-```{r }
+```{r , eval = FALSE}
 
 ```
 
