@@ -488,12 +488,6 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 ### 鬼谷传奇
 
-> #自动化 #科研科学 #尚未试驾 尚未试驾🚗
-
-<iframe width="400" height="225" src="https://v.douyin.com/YxVy48K" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-
-*引用：[抖音 - 电动车](https://v.douyin.com/YxVy48K)*
-
 <iframe width="400" height="225" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 - [#🥬🥬一笑很倾城三高👩🏻‍🎓：颜值高、学问高、品德高](  https://v.douyin.com/iFFjugkD)
