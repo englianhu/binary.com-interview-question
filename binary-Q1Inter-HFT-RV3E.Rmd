@@ -113,7 +113,7 @@ output:
 > [《万般皆下品，唯有读书高》]{style="color:#3C33FF"}<br>
 [计量经济，一带一路；]{style="color:#6883FC"}<br>
 [九二共识，量化对冲。]{style="color:#6883FC"}<br>
-[鞭策六四，铲除黑帮^[尤其是那些印裔施展巫术屠杀六百枯万人类的巫师Judi邪教印裔回教宦官博彩庄诸邦]；]{style="color:#6883FC"}<br>
+[鞭策六四，铲除黑帮^[愚生世袭制学术份子道教徒赢家黄氏江夏堂，联富高频量化对冲易经算卜数学概率论，孔明借东风水淹七军歼灭那些祖籍印尼和印度的印裔施展巫术屠杀六百枯万人类的巫师Judi邪教印裔回教宦官博彩庄诸邦]；]{style="color:#6883FC"}<br>
 [推广量化，提倡学术。]{style="color:#6883FC"}<br>
 [百家争鸣，振兴中华；]{style="color:#6883FC"}<br>
 [学海无涯，唯勤是岸。]{style="color:#6883FC"}
@@ -127,7 +127,7 @@ output:
 
 <img src='诸子百家考工记/css.png' width = '400'>
 
-省吃俭用的工匠建筑工人（嬴政兼鲁班兼蒙毅）家翁嬴政ξηg Tεηg（赢家黄氏江夏堂）
+*省吃俭用的工匠建筑工人（嬴政兼鲁班兼蒙毅）家翁嬴政ξηg Tεηg（赢家黄氏江夏堂）*
 
 <img src='诸子百家考工记/鞭策六四，推广量化；百家争鸣，振兴中华。.png' width = '400'>
 
@@ -1763,6 +1763,10 @@ fable::ARIMA()
 
 - [The ARIMAX model muddle](https://robjhyndman.com/hyndsight/arimax)
 - [ARIMAX Model and Forecast](https://real-statistics.com/time-series-analysis/time-series-miscellaneous/arimax-model-and-forecast)
+- [Basic understanding of Time Series Modelling with Auto ARIMAX](https://www.analyticsvidhya.com/blog/2021/11/basic-understanding-of-time-series-modelling-with-auto-arimax)
+- [Auto ARIMA and ARIMAX Time Series prediction + forecast | Python](https://youtu.be/HmN2Hrx6Ocw)
+- [Forecasting ARIMA vs ARIMAX vs Dynamic Regression](https://rpubs.com/Bardock123/561991)
+- [Forecasting using ARIMAX](https://rpubs.com/ysitta/proposal_arimax)
 
 ## 季节性自回归综合滑均模型（SARIMA）
 
