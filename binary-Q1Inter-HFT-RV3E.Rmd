@@ -1669,7 +1669,7 @@ source('函数/整顿数据.R')
 # 季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1 <- readRDS("/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/仓库/季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1.rds")
 ```
 
-### 初步模型比较
+#### 季节性数据建模小结
 
 ```{r 初步模型比较}
 # 蜀道
@@ -1743,16 +1743,31 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 data.frame(自回归综合滑均模型系列)
 ```
 
+一般上可以顺序根据`MASE`，然后`MAE`，接着`MSE`来评估筹算出来的算卜（预测值）的精准度。以上自回归模型分别比较了`ts`、`xts`、`zoo`、`msts`季节性数据建模后，得到一样的结果，故此就不区分使用那种统计模型来建立季节性数据。
+
 ## 外部因素周期性自回归综合滑均模型（ARIMAX）
 
 ```{r , eval = FALSE}
 # --------- eval = FALSE ---------
+forecast::Arima()
+
+TSA::arima()
+
+TSA::arimax()
+
+stats::arima0()
+
+fable::ARIMA()
 
 ```
 
 ## 季节性自回归综合滑均模型（SARIMA）
 
 ```{r , eval = FALSE}
+
+sarima::sarima()
+
+
 
 ```
 
