@@ -1761,6 +1761,9 @@ fable::ARIMA()
 
 ```
 
+- [The ARIMAX model muddle](https://robjhyndman.com/hyndsight/arimax)
+- [ARIMAX Model and Forecast](https://real-statistics.com/time-series-analysis/time-series-miscellaneous/arimax-model-and-forecast)
+
 ## 季节性自回归综合滑均模型（SARIMA）
 
 ```{r , eval = FALSE}
