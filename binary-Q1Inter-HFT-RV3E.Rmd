@@ -402,18 +402,16 @@ conflicts_prefer(data.table::set, .quiet = TRUE)
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 
   'tidyr', 'readr', 'lubridate', 'reprex', 'stringr', 'feather', 
-  'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'timetk', 
-  'plyr', 'dplyr', 'dbplyr', 'magrittr', 'arabic2kansuji', 
+  'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'TSA', 
+  'plyr', 'dplyr', 'dbplyr', 'magrittr', 'cnum', 'arabic2kansuji', 
   'sarima', 'tidyverse', 'memoise', 'htmltools', 'formattable', 
-  'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 'cnum', 
+  'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
   'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 
   'feather', 'sparklyr', 'jcolors', 'microbenchmark', 'dendextend', 
-  'vembedr', 'lhmetools', 'gtools', 'stringi', 'pacman', 'TSA', 
+  'vembedr', 'lhmetools', 'gtools', 'stringi', 'pacman', 
   'profmem', 'ggthemes', 'flyingfox', 'htmltools', 'echarts4r', 
   'viridis', 'hrbrthemes', 'profvis', 'fable', 'fabletools', 
-  'fable.prophet', 'Metrics', 'MLmetrics', 'microbenchmark', 
-  #'Rfast', 'Rfast2'
-  )
+  'fable.prophet', 'Metrics', 'MLmetrics')#, 'Rfast', 'Rfast2')
 
 ## cnum 是協助處理中文數字的R套件，提供轉換、識別及抽取中文數字的函數。
 ## cnum 是协助处理中文数字的R包，提供转换、识别及抽取中文数字的函数。
