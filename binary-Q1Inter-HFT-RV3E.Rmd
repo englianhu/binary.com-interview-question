@@ -403,15 +403,22 @@ conflicts_prefer(data.table::set, .quiet = TRUE)
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 
   'tidyr', 'readr', 'lubridate', 'reprex', 'stringr', 'feather', 
   'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'timetk', 
-  'plyr', 'dplyr', 'dbplyr', 'magrittr', #'Rfast', 'Rfast2', 
+  'plyr', 'dplyr', 'dbplyr', 'magrittr', 'arabic2kansuji', 
   'sarima', 'tidyverse', 'memoise', 'htmltools', 'formattable', 
-  'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
+  'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 'cnum', 
   'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 
   'feather', 'sparklyr', 'jcolors', 'microbenchmark', 'dendextend', 
-  'vembedr', 'lhmetools', 'gtools', 'stringi', 'pacman', #'TSA', 
+  'vembedr', 'lhmetools', 'gtools', 'stringi', 'pacman', 'TSA', 
   'profmem', 'ggthemes', 'flyingfox', 'htmltools', 'echarts4r', 
   'viridis', 'hrbrthemes', 'profvis', 'fable', 'fabletools', 
-  'fable.prophet', 'Metrics', 'MLmetrics', 'microbenchmark')
+  'fable.prophet', 'Metrics', 'MLmetrics', 'microbenchmark', 
+  #'Rfast', 'Rfast2'
+  )
+
+## cnum 是協助處理中文數字的R套件，提供轉換、識別及抽取中文數字的函數。
+## cnum 是协助处理中文数字的R包，提供转换、识别及抽取中文数字的函数。
+# https://cran.r-project.org/web/packages/cnum/readme/README.html
+# devtools::install_github('elgarteo/cnum')
 
 # load_pkg(程序包)
 suppressAll(lib(程序包))
@@ -684,7 +691,7 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
-*数据：`r paste0(dim(日内指数平滑数据二零一八年一月结论), collapse = ' x ')`*
+*数据 : `r paste0(num2c(dim(日内指数平滑数据二零一八年一月结论)[1], lang = 'sc'), '行 乘 ', num2c(dim(日内指数平滑数据二零一八年一月结论)[2], lang = 'sc'), '列')`*
 
 #### 总汇二零一八年二月结论
 
@@ -762,7 +769,7 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
-*数据：`r paste0(dim(日内指数平滑数据二零一八年二月结论), collapse = ' x ')`*
+*数据 : `r paste0(num2c(dim(日内指数平滑数据二零一八年二月结论)[1], lang = 'sc'), '行 乘 ', num2c(dim(日内指数平滑数据二零一八年二月结论)[2], lang = 'sc'), '列')`*
 
 #### 总汇二零一八年三月结论
 
@@ -840,7 +847,7 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
-*数据：`r paste0(dim(日内指数平滑数据二零一八年三月结论), collapse = ' x ')`*
+*数据 : `r paste0(num2c(dim(日内指数平滑数据二零一八年三月结论)[1], lang = 'sc'), '行 乘 ', num2c(dim(日内指数平滑数据二零一八年三月结论)[2], lang = 'sc'), '列')`*
 
 #### 总汇二零一八年四月结论
 
@@ -918,7 +925,7 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
-*数据：`r paste0(dim(日内指数平滑数据二零一八年四月结论), collapse = ' x ')`*
+*数据 : `r paste0(num2c(dim(日内指数平滑数据二零一八年四月结论)[1], lang = 'sc'), '行 乘 ', num2c(dim(日内指数平滑数据二零一八年四月结论)[2], lang = 'sc'), '列')`*
 
 #### 总汇二零一八年五月结论
 
@@ -996,7 +1003,7 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
-*数据：`r paste0(dim(日内指数平滑数据二零一八年五月结论), collapse = ' x ')`*
+*数据 : `r paste0(num2c(dim(日内指数平滑数据二零一八年五月结论)[1], lang = 'sc'), '行 乘 ', num2c(dim(日内指数平滑数据二零一八年五月结论)[2], lang = 'sc'), '列')`*
 
 #### 总汇二零一八年六月结论
 
@@ -1074,7 +1081,7 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
-*数据：`r paste0(dim(日内指数平滑数据二零一八年六月结论), collapse = ' x ')`*
+*数据 : `r paste0(num2c(dim(日内指数平滑数据二零一八年六月结论)[1], lang = 'sc'), '行 乘 ', num2c(dim(日内指数平滑数据二零一八年六月结论)[2], lang = 'sc'), '列')`*
 
 <br>
 
@@ -1156,7 +1163,7 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
-*数据：`r paste0(dim(日内指数平滑数据二零一八年第一周结论), collapse = ' x ')`*
+*数据 : `r paste0(num2c(dim(日内指数平滑数据二零一八年第一周结论)[1], lang = 'sc'), '行 乘 ', num2c(dim(日内指数平滑数据二零一八年第一周结论)[2], lang = 'sc'), '列')`*
 
 #### 总汇二零一八年第二周结论
 
@@ -1234,7 +1241,7 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
-*数据：`r paste0(dim(日内指数平滑数据二零一八年第二周结论), collapse = ' x ')`*
+*数据 : `r paste0(num2c(dim(日内指数平滑数据二零一八年第二周结论)[1], lang = 'sc'), '行 乘 ', num2c(dim(日内指数平滑数据二零一八年第二周结论)[2], lang = 'sc'), '列')`*
 
 #### 总汇二零一八年第三周结论
 
@@ -1312,7 +1319,7 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
-*数据：`r paste0(dim(日内指数平滑数据二零一八年第三周结论), collapse = ' x ')`*
+*数据 : `r paste0(num2c(dim(日内指数平滑数据二零一八年第三周结论)[1], lang = 'sc'), '行 乘 ', num2c(dim(日内指数平滑数据二零一八年第三周结论)[2], lang = 'sc'), '列')`*
 
 #### 总汇二零一八年第四周结论
 
@@ -1390,7 +1397,7 @@ source('函数/总汇结论.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
-*数据：`r paste0(dim(日内指数平滑数据二零一八年第四周结论), collapse = ' x ')`*
+*数据 : `r paste0(num2c(dim(日内指数平滑数据二零一八年第四周结论)[1], lang = 'sc'), '行 乘 ', num2c(dim(日内指数平滑数据二零一八年第四周结论)[2], lang = 'sc'), '列')`*
 
 ### 平滑周计
 
@@ -1760,6 +1767,8 @@ stats::arima0()
 fable::ARIMA()
 
 ```
+
+
 
 - [The ARIMAX model muddle](https://robjhyndman.com/hyndsight/arimax)
 - [ARIMAX Model and Forecast](https://real-statistics.com/time-series-analysis/time-series-miscellaneous/arimax-model-and-forecast)
