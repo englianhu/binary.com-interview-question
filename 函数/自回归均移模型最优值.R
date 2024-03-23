@@ -12,16 +12,16 @@
   fit <- auto.arima(样本, D = 季节差分的次数, seasonal = 季节性, 
                     max.order = 规律极限值)
   if (自回归均移模型值 == FALSE) {
-    res <- arimaorder(fit)
+    成果 <- arimaorder(fit)
   } else {
     #https://stats.stackexchange.com/questions/178577/how-to-read-p-d-and-q-of-auto-arima
-    res <- fit$arma
+    成果 <- fit$arma
     #https://stackoverflow.com/questions/23617662/extract-arima-specificaiton
-    names(res) <- c('p', 'q', 'P', 'Q', 's', 'd', 'D')
-    res %<>% .[c(1, 6, 2, 3, 7, 4, 5)]
+    names(成果) <- c('p', 'q', 'P', 'Q', 's', 'd', 'D')
+    成果 %<>% .[c(1, 6, 2, 3, 7, 4, 5)]
     #(p,d,q) and (P,D,Q) and seasonal period
-  } #  example: `s` seasonal period = 12 for 12 months
-  return(res)
+  } #范例：`s` seasonal period = 12 表示十二个月
+  return(成果)
   #https://onlinecourses.science.psu.edu/stat510/node/67/
   
   # https://stackoverflow.com/questions/23617662/extract-arima-specificaiton
@@ -43,5 +43,4 @@
   #  else result <- paste(result, "                  ")
   #  return(result)
   #}
-  
 }
