@@ -112,7 +112,7 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 ## 参考资源
 
-### 4.1)第一题
+### 第四题第一章）第一题
 
 01. [**Stock Market Forecasting Using LASSO Linear Regression Model** *by Sanjiban Sekhar Roy, Dishant Mital, Avik Basu, Ajith Abraham (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Stock%20Market%20Forecasting%20Using%20LASSO%20Linear%20Regression%20Model.pdf)❤‍🔥
 02. [**Using LASSO from lars (or glmnet) package in R for variable selection** *by Juancentro (2014)*](http://stats.stackexchange.com/questions/58531/using-lasso-from-lars-or-glmnet-package-in-r-for-variable-selection?answertab=votes#tab-top)
@@ -138,7 +138,7 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 22. [**Financial Risk Modelling and Portfolio Optimization with R (2nd Edt)** *by Bernhard Praff (2016)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Financial%20Risk%20Modelling%20and%20Portfolio%20Optimization%20with%20R%20(2nd%20Edt).pdf) ❤‍🔥
 23. [**Analyzing Financial Data and Implementing Financial Models using R** *by Clifford S.Ang (2015)*](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/eec3bbe99c61b4e2e2f4a2b1c47e7a2fca6106c4/reference/Analyzing%20Financial%20Data%20and%20Implementing%20Financial%20Models%20using%20R.pdf) ❤‍🔥
 
-### 4.2) 第二题
+### 第四题第二章）第二题
 
 01. [Queueing model 534 in Excel](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/Queue-534.xls) ❤‍🔥
 02. [Queueing model macro in Excel](https://github.com/englianhu/binary.com-interview-question/blob/master/reference/QueueMacros.xls) ❤‍🔥
@@ -154,7 +154,7 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 12. [Waiting-Line Models](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Waiting-Line%20Models.pdf)
 13. [Queues with Breakdowns and Customer Discouragement](https://raw.githubusercontent.com/englianhu/binary.com-interview-question/master/reference/Queues%20with%20Breakdowns%20and%20Customer%20Discouragement.pdf)
 
-### 4.3) 第三题
+### 第四题第三章）第三题
 
 01. [Data APIs/feeds available as packages in R](http://stats.stackexchange.com/questions/12670/data-apis-feeds-available-as-packages-in-r)
 02. [Application of Kelly Criterion model in Sportsbook Investment](https://github.com/scibrokes/kelly-criterion)
@@ -171,14 +171,14 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 - 从农历二零一八年[Binary.com is Rebranding to Deriv.com](https://derivdotcom.medium.com/binary-com-is-rebranding-to-deriv-com-and-here-is-everything-you-need-to-know-6f4a8513c84b)科研项目耽搁两年有余，二零二零年的[二元期权/次元期权（Binary.com） → 金融衍生/金融起源（Deriv.com）](https://englianhu.medium.com/binary-com-deriv-com-6058cdbfc3a1)文章中阐明一些已发布的科研论文，并继续科研对冲基金高频量化交易，不过在此并非面试Deriv.com而是科研用途。
 - [金融衍生/金融起源（Deriv.com）和次元期权（Binary.com）加入金融委员会](https://caifuhao.eastmoney.com/news/20200609155259637111910)
-- 科研项目中所使用的汇价原始数据，皆由FXCM官网下载，储存至[猫城：世博量化/real-time-fxcm](https://github.com/scibrokes/real-time-fxcm)回测科研统计建模用途。
+- 科研项目中所使用的汇价原始数据，皆由FXCM官网下载，储存至[猫城：世博量化/FXCM 量化对冲实时数据](https://github.com/scibrokes/real-time-fxcm)回测科研统计建模用途。
 
 <span style='color:red'>**已将次元期权科研项目相关数据，一律迁移至[「数据仓库」次元期权（binary.com）量化分析员/量化交易员面试题](https://github.com/englianhu/binary.com-interview-question-data)，并继续科研高频量化对冲计数/机数建模。**</span>
 
 季节性时间序列与高频量化对冲计数/机数模型如下：
 
-- [Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1)（或[RStudioConnect.com备用网址](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html)）
-- [Deriv.com - Interday & Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://rpubs.com/englianhu/742275)（[或[RStudioConnect.com备用网址](https://beta.rstudioconnect.com/content/16442/binary-Q1Inter-HFT-RV2.html)）
+- [Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1)（或[备用网址](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html)）
+- [Deriv.com - Interday & Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://rpubs.com/englianhu/742275)（或[备用网址](https://beta.rstudioconnect.com/content/16442/binary-Q1Inter-HFT-RV2.html)）
 - 金融衍生 - 筛选日内高频量化交易统计模型（第III部）
   - [金融衍生 - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://rpubs.com/englianhu/HFT-RV3)
   - [金融衍生 - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**第三部（衍生版）**</span>](https://englianhu.github.io/民国一百一十三年（甲辰年）/桃月/binary-Q1Inter-HFT-RV3E.html)
