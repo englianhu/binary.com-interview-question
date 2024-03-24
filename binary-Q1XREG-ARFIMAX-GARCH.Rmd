@@ -209,9 +209,9 @@ Alexios
 
 [ROC和AUC介绍以及如何计算AUC](http://alexkong.net/2013/06/introduction-to-auc-and-roc/)介绍ROC（Receiver Operating Characteristic）曲线和AUC（Area Under Curve）常被用来评价一个二值分类器（binary classifier）的优劣。该篇博文简单介绍ROC和AUC的特点，以及更为深入地，讨论如何作出ROC曲线图以及计算AUC。
 
-[《金融时间序列预测》：第12章：R量化投资初步](http://blog.sciencenet.cn/blog-577790-830021.html)就quantmod包的回测方法介绍基于技术指标的量化投资方法。
+[《金融时间序列预测》：第十二章：鄀量化投资初步](http://blog.sciencenet.cn/blog-577790-830021.html)就`quantmod`包的回测方法介绍基于技术指标的量化投资方法。
 
-[第一次使用R語言做回測：六分鐘，就上手!](http://www.bituzi.com/2014/12/Rbacktest6mins.html)
+[第一次使用鄀語言做回測：六分鐘，就上手!](http://www.bituzi.com/2014/12/Rbacktest6mins.html)
 
 [[原]量化投资教程：用R语言打造量化分析Web平台](https://segmentfault.com/a/1190000004543727)介绍了许多交易实用的函数。
 

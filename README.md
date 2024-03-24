@@ -186,7 +186,7 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 ### 二）<span style='color:red'>幕后花絮</span>
 
-[Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:red'>Blooper</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)着手于季节性计数/机数建模，而文献中提及的一些计数/机数模型mcsGARCH、midasr、midas-garch、Levy process会在日后继续科研。
+[Deriv.com - Interday High Frequency Trading Models Comparison (<span style='color:red'>Blooper</span>)](https://rpubs.com/englianhu/binary-Q1Inter-HFT)着手于季节性计数/机数建模，而文献中提及的一些计数/机数模型mcsGARCH、midasr、midas-garch、Levy process会在日后继续科研。
 
 <br><br>
 
