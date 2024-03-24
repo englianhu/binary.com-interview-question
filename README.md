@@ -21,9 +21,7 @@
 
 ## 面试题
 
-<s>The sample question for Interview a job in Binary.com. Here I try to write a web application which is automatically gather data, calculate, forecast, place orders, settlement and also P&L report from tip-to-toe. Here I also conducting few research tasks to test the efficiency of some statistical models, and also refer to a [Master Degree level quantitave assignment](https://github.com/englianhu/Quant-Strategies-HFT) as my studies. Hope that I can be shortlisted to be a member of Binary.com.</s>
-
-应征**次元期权（法人马企）**面试入门测验。借鉴西蒙·柯林斯的https://matchodds.org（或詹姆斯·西蒙斯的高频量化对冲基金---文艺复兴科技）愚生尝试编写个自动采撷数据、科研回测、筹算、算卜预测、自动下单、结算、显示盈亏、风险管理报告、评估再改良高频量化对冲投资战略的一条龙服务的智能网页应用。愚生于此尝试着手于科研多元化计数/机数建模，再评估有效性与可行性，并参阅[硕士程度量化作业（英）](https://github.com/englianhu/Quant-Strategies-HFT)。盼受禄于**次元期权（法人马企）**。
+应征**次元期权**（法人马企）面试入门测验。借鉴西蒙·柯林斯的 https://matchodds.org （或詹姆斯·西蒙斯的高频量化对冲基金---文艺复兴科技）愚生尝试编写个自动采撷数据、科研回测、筹算、算卜预测、自动下单、结算、显示盈亏、风险管理报告、评估再改良高频量化对冲投资战略的一条龙服务的智能网页应用。愚生于此尝试着手于科研多元化计数/机数建模，再评估有效性与可行性，并参阅[硕士程度量化作业（英）](https://github.com/englianhu/Quant-Strategies-HFT)。盼受禄于**次元期权**。
 
 ## 第一题
 
@@ -82,7 +80,7 @@
 ### 第一题第二章）<span style='color:red'>幕后花絮</span>
 
 Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) (Kindly refer to [binary.com Interview Question I - Lasso, Elastic-Net and Ridge Regression](http://rpubs.com/englianhu/binary-Q1L-EN-R) for more information) which contain the questions and answers of 3 questions. For the staking model, I simply forecast the highest and lowest price, and then : 
-  
+
 - Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
 - Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
 
