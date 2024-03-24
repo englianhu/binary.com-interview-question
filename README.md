@@ -49,31 +49,30 @@
 - 美中兑换（USDCNY）
 - 美日兑换（USDJPY）
 
-一）[次元期权面试题一 - 延伸版（英）](http://rpubs.com/englianhu/binary-Q1E) or ([备用网址](http://rpubs.com/englianhu/316133))尝试使用多元计数/机数模型来评估与比较多元货币每日兑换率。
+文献如下：
 
-二）[广义自回归条件异方差模型中的`ARIMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)筹算出规律`p,d,q`最优值，并将之应用于广义自回归条件异方差模型提升计数/机数模型的算卜/预测精准度。[次元期权面试试题一 - 广义自回归条件异方差模型中的`ARCH in Mean`](http://rpubs.com/englianhu/binary-Q1-archm)比较ARCHM和非ARCHM的原模型。
+- 一）[次元期权面试题一 - 延伸版（英）](http://rpubs.com/englianhu/binary-Q1E) or ([备用网址](http://rpubs.com/englianhu/316133))尝试使用多元计数/机数模型来评估与比较多元货币每日兑换率。
+- 二）[广义自回归条件异方差模型中的`ARIMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)筹算出规律`p,d,q`最优值，并将之应用于广义自回归条件异方差模型提升计数/机数模型的算卜/预测精准度。[次元期权面试试题一 - 广义自回归条件异方差模型中的`ARCH in Mean`](http://rpubs.com/englianhu/binary-Q1-archm)比较ARCHM和非ARCHM的原模型。
+- 三）[次元期权面试题一 - 单变量广义自回归条件异方差模型（英）](http://rpubs.com/englianhu/binary-Q1Uni-GARCH)比较了十四个广义自回归条件异方差模型系列（有缺失值，不够工整数据）和过滤后的九个计数/机数模型如下（从阳历二零一三年一月一日至二零一七年八月卅一日，工整数据）的算卜/预测值的精准度。
 
-三）[次元期权面试题一 - 单变量广义自回归条件异方差模型（英）](http://rpubs.com/englianhu/binary-Q1Uni-GARCH)比较了十四个广义自回归条件异方差模型系列（有缺失值，不够工整数据）和过滤后的九个计数/机数模型如下（从阳历二零一三年一月一日至二零一七年八月卅一日，工整数据）的算卜/预测值的精准度。
+  - sGARCH
+  - fGARCH.GARCH
+  - fGARCH.TGARCH
+  - fGARCH.NGARCH
+  - fGARCH.NAGARCH
+  - fGARCH.GJRGARCH
+  - gjrGARCH
+  - iGARCH
+  - csGARCH
 
-- sGARCH
-- fGARCH.GARCH
-- fGARCH.TGARCH
-- fGARCH.NGARCH
-- fGARCH.NAGARCH
-- fGARCH.GJRGARCH
-- gjrGARCH
-- iGARCH
-- csGARCH
+- [Q1App](https://beta.rstudioconnect.com/content/3073)是个通过应用程序编程接口采撷某网站实时汇价的闪霓应用，而[Q1App2](https://beta.rstudioconnect.com/content/3138)是个金融投注的闪霓应用。
+- [次元期权面试题一 - 多变量广义自回归条件异方差模型（英）](http://rpubs.com/englianhu/binary-Q1Multi-GARCH)介绍、评估并比较多变量广义自回归条件异方差模型系列如下：
 
-[Q1App](https://beta.rstudioconnect.com/content/3073)是个通过应用程序编程接口采撷某网站实时汇价的闪霓应用，而[Q1App2](https://beta.rstudioconnect.com/content/3138)是个金融投注的闪霓应用。
-
-[次元期权面试题一 - 多变量广义自回归条件异方差模型（英）](http://rpubs.com/englianhu/binary-Q1Multi-GARCH)介绍、评估并比较多变量广义自回归条件异方差模型系列如下：
-
-- symmetric DCC
-- asymmetric DCC
-- Flexible DCC
-- <s>GO-GARCH</s>
-- <s>Copula-GARCH</s>
+  - symmetric DCC
+  - asymmetric DCC
+  - Flexible DCC
+  - <s>GO-GARCH</s>
+  - <s>Copula-GARCH</s>
 
 为了着手于高频量化对冲数据计数/机数建模，尝试审查并整顿数据，文献[次元期权面试试题一 - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value)和文献[次元期权面试试题一 - 多变量数据缺失值管理（乙）](http://rpubs.com/englianhu/handle-multivariate-missing-value)但单变量建模出现一些错误（一些是人为的美国洋番黑客洲际入侵犯罪），文献中使用多种弥补数据缺失值的计数/机数筹算方法如`interpolatan`、`kalman`、`locf`和`ma`。. The [次元期权面试题一 - 日间高频交易计数/机数建模比较（英）](http://rpubs.com/englianhu/binary-Q1Inter-HFT)比较了ts、msts、SARIMA、mcsGARCH、<s>midasr、midas-garch、Levy process</s> 计数/机数模型。
 
