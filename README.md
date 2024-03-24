@@ -21,7 +21,11 @@
 
 ## 0) 面试题
 
-The sample question for Interview a job in Binary.com. Here I try to write a web application which is automatically gather data, calculate, forecast, place orders, settlement and also P&L report from tip-to-toe. Here I also conducting few research tasks to test the efficiency of some statistical models, and also refer to a [Master Degree level quantitave assignment](https://github.com/englianhu/Quant-Strategies-HFT) as my studies. Hope that I can be shortlisted to be a member of Binary.com.
+<s>The sample question for Interview a job in Binary.com. Here I try to write a web application which is automatically gather data, calculate, forecast, place orders, settlement and also P&L report from tip-to-toe. Here I also conducting few research tasks to test the efficiency of some statistical models, and also refer to a [Master Degree level quantitave assignment](https://github.com/englianhu/Quant-Strategies-HFT) as my studies. Hope that I can be shortlisted to be a member of Binary.com.</s>
+
+
+
+应征**次元期权（法人马企）**面试入门测验。借鉴西蒙·柯林斯的https://matchodds.org（或詹姆斯·西蒙斯的高频量化对冲基金---文艺复兴科技）愚生尝试编写个自动采撷数据、科研回测、筹算、算卜预测、自动下单、结算、显示盈亏、风险管理报告、评估再改良高频量化对冲投资战略的一条龙服务的智能网页应用。愚生于此尝试着手于科研多元化计数/机数建模，再评估有效性与可行性，[硕士生量化功课（英）](https://github.com/englianhu/Quant-Strategies-HFT)。
 
 ## 1) 第一题
 
@@ -184,7 +188,7 @@ Below are some seasonal time series models:
 - [Deriv.com - Interday & Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://beta.rstudioconnect.com/content/16442/binary-Q1Inter-HFT-RV2.html) (in RStudioConnect.com)
 - 金融衍生 - 筛选日内高频量化交易统计模型（第III部）
   - [金融衍生 - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://rpubs.com/englianhu/HFT-RV3)
-  - [金融衍生 - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**校阅（第三部）**</span>](https://englianhu.github.io/民国一百一十三年（甲辰年）/桃月/binary-Q1Inter-HFT-RV3E.html)
+  - [金融衍生 - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**第三部（衍生版）**</span>](https://englianhu.github.io/民国一百一十三年（甲辰年）/桃月/binary-Q1Inter-HFT-RV3E.html)
 - 金融衍生 - 筛选日内高频量化交易统计模型（丁）
 
 ### 1.2) <span style='color:red'>幕后花絮</span>
