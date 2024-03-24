@@ -21,7 +21,7 @@
 
 ## 面试题
 
-应征**次元期权**（法人马企）面试入门测验。借鉴西蒙·柯林斯的 https://matchodds.org （或詹姆斯·西蒙斯的高频量化对冲基金---文艺复兴科技）愚生尝试编写个自动采撷数据、科研回测、筹算、算卜预测、自动下单、结算、显示盈亏、风险管理报告、评估再改良高频量化对冲投资战略的一条龙服务的智能网页应用。愚生于此尝试着手于科研多元化计数/机数建模，再评估有效性与可行性，并参阅[硕士程度量化作业（英）](https://github.com/englianhu/Quant-Strategies-HFT)。盼受禄于**次元期权**。
+应征次元期权（法人马企）面试入门测验。借鉴西蒙·柯林斯的 https://matchodds.org （或詹姆斯·西蒙斯的高频量化对冲基金---文艺复兴科技）愚生尝试编写个自动采撷数据、科研回测、筹算、算卜预测、自动下单、结算、显示盈亏、风险管理报告、评估再改良高频量化对冲投资战略的一条龙服务的智能网页应用。愚生于此尝试着手于科研多元化计数/机数建模，再评估有效性与可行性，并参阅[硕士程度量化作业（英）](https://github.com/englianhu/Quant-Strategies-HFT)。盼受禄于**次元期权**。
 
 ## 第一题
 
@@ -53,7 +53,7 @@
 
 二）[广义自回归条件异方差模型中的`ARIMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)筹算出规律`p,d,q`最优值，并将之应用于广义自回归条件异方差模型提升计数/机数模型的算卜/预测精准度。[次元期权面试试题一 - 广义自回归条件异方差模型中的`ARCH in Mean`](http://rpubs.com/englianhu/binary-Q1-archm)比较ARCHM和非ARCHM的原模型。
 
-三）You can also refer to [次元期权面试题一 - 单变量广义自回归条件异方差模型（英）](http://rpubs.com/englianhu/binary-Q1Uni-GARCH)比较了十四个广义自回归条件异方差模型系列（有缺失值，不够工整数据）和过滤后的九个计数/机数模型如下（从阳历二零一三年一月一日至二零一七年八月卅一日，工整数据）的算卜/预测值的精准度。
+三）[次元期权面试题一 - 单变量广义自回归条件异方差模型（英）](http://rpubs.com/englianhu/binary-Q1Uni-GARCH)比较了十四个广义自回归条件异方差模型系列（有缺失值，不够工整数据）和过滤后的九个计数/机数模型如下（从阳历二零一三年一月一日至二零一七年八月卅一日，工整数据）的算卜/预测值的精准度。
 
 - sGARCH
 - fGARCH.GARCH
@@ -101,9 +101,13 @@ Due to the paper [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <sp
 
 ### 第二题第一章）解答
 
-For question 2, I simply write an app, kindly use [Q2App](https://beta.rstudioconnect.com/content/3089/). The bivariate or trivariate poisson model might useful for analyse the probability of fund-in and fund-out by investors in order to manage whole investment pool. Unfortunately there has no such dataset avaiable for fund pool management modelling.
+For question 2, I simply write an app, kindly use [Q2App](https://beta.rstudioconnect.com/content/3089). The bivariate or trivariate poisson model might useful for analyse the probability of fund-in and fund-out by investors in order to manage whole investment pool. Unfortunately there has no such dataset avaiable for fund pool management modelling.
+
+第二题，[Q2App](https://beta.rstudioconnect.com/content/3089)。
 
 ### 第二题第二章）闪霓应用
+
+
 
 - **Q2** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q2')` - An application which applied queuing theory.
 
