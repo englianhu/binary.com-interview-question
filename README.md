@@ -65,8 +65,8 @@
   - iGARCH
   - csGARCH
 
-- [Q1App](https://beta.rstudioconnect.com/content/3073)是个通过应用程序编程接口采撷某网站实时汇价的闪霓应用，而[Q1App2](https://beta.rstudioconnect.com/content/3138)是个金融投注的闪霓应用。
-- [次元期权面试题一 - 多变量广义自回归条件异方差模型（英）](http://rpubs.com/englianhu/binary-Q1Multi-GARCH)介绍、评估并比较多变量广义自回归条件异方差模型系列如下：
+- 四）[Q1App](https://beta.rstudioconnect.com/content/3073)是个通过应用程序编程接口采撷某网站实时汇价的闪霓应用，而[Q1App2](https://beta.rstudioconnect.com/content/3138)是个金融投注的闪霓应用。
+- 五）[次元期权面试题一 - 多变量广义自回归条件异方差模型（英）](http://rpubs.com/englianhu/binary-Q1Multi-GARCH)介绍、评估并比较多变量广义自回归条件异方差模型系列如下：
 
   - symmetric DCC
   - asymmetric DCC
