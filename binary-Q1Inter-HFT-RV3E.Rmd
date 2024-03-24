@@ -1706,7 +1706,7 @@ data.frame(自回归综合滑均模型系列)
 
 ### 杏林简介
 
-<iframe width="400" height="225" src="https://www.youtube.com/embed/6GglRaX7Ato?si=Hb4m1mDJvPn_FRSt" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/6GglRaX7Ato" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 *从北京（三国时期称为「北平」，统计之都、经管之家）到成都（三国时期蜀国国都称为「蜀都」，而礼逆袭操作系统最高权限是sudo su建立蜀都；在天愿做比翼鸟，在地愿做连理枝。）*
 
@@ -1728,7 +1728,7 @@ data.frame(自回归综合滑均模型系列)
 
 ### 杏林与操作系统
 
-目前市场充斥着许多外来语甚至不翻译洋文术语，操作系统终端一般上称之为“Shell”，故此翻阅一些相关文献如下：
+目前市场充斥着许多外来语甚至不翻译直接使用洋文术语。洋文Computer是代表计算器而中译为白话文「计算机」或古文「算筹」，至于咱们平时所说的「电脑」应该英译为「Electronic Brain」，平时所说的个人电脑Personal Computer缩写PC与女生生殖器官Pussy近音。操作系统终端一般上称之为“Shell”，故此翻阅一些相关文献如下：
 
 - [<ruby>蛤<rp>(</rp><rt>gé</rt><rp>)</rp>蜊<rp>(</rp><rt>lí</rt><rp>)</rp></ruby>、<ruby>蚬<rp>(</rp><rt>xiǎn</rt><rp>)</rp>子<rp>(</rp><rt>zi</rt><rp>)</rp></ruby>、<ruby>蛏<rp>(</rp><rt>chēng</rt><rp>)</rp>子<rp>(</rp><rt>zi</rt><rp>)</rp></ruby>、<ruby>蚶<rp>(</rp><rt>hān</rt><rp>)</rp>子<rp>(</rp><rt>zi</rt><rp>)</rp></ruby>、贝壳... 你真的分得清楚吗？](https://zhuanlan.zhihu.com/p/84891450)
 - [蛤、蚌、蚶、蚬... 菜市场里的贝壳你都认识吗？](https://www.thepaper.cn/newsDetail_forward_16501245)
