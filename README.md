@@ -19,45 +19,43 @@
 
 [^1]: [HTML Color Codes](https://html-color.codes)
 
-## 0) 面试题
+## 面试题
 
 <s>The sample question for Interview a job in Binary.com. Here I try to write a web application which is automatically gather data, calculate, forecast, place orders, settlement and also P&L report from tip-to-toe. Here I also conducting few research tasks to test the efficiency of some statistical models, and also refer to a [Master Degree level quantitave assignment](https://github.com/englianhu/Quant-Strategies-HFT) as my studies. Hope that I can be shortlisted to be a member of Binary.com.</s>
 
+应征**次元期权（法人马企）**面试入门测验。借鉴西蒙·柯林斯的https://matchodds.org（或詹姆斯·西蒙斯的高频量化对冲基金---文艺复兴科技）愚生尝试编写个自动采撷数据、科研回测、筹算、算卜预测、自动下单、结算、显示盈亏、风险管理报告、评估再改良高频量化对冲投资战略的一条龙服务的智能网页应用。愚生于此尝试着手于科研多元化计数/机数建模，再评估有效性与可行性，并参阅[硕士程度量化作业（英）](https://github.com/englianhu/Quant-Strategies-HFT)。盼受禄于**次元期权（法人马企）**。
 
+## 第一题
 
-应征**次元期权（法人马企）**面试入门测验。借鉴西蒙·柯林斯的https://matchodds.org（或詹姆斯·西蒙斯的高频量化对冲基金---文艺复兴科技）愚生尝试编写个自动采撷数据、科研回测、筹算、算卜预测、自动下单、结算、显示盈亏、风险管理报告、评估再改良高频量化对冲投资战略的一条龙服务的智能网页应用。愚生于此尝试着手于科研多元化计数/机数建模，再评估有效性与可行性，[硕士生量化功课（英）](https://github.com/englianhu/Quant-Strategies-HFT)。
+### 第一题第一章）解答
 
-## 1) 第一题
+愚生使用从阳历二零一四年一月一日至二零一七年一月廿日的每日**美日兑换**阴阳烛加交易量数据，再通过以下一些计数/机数建模来算卜预测最高价与最低价：
 
-### 1.1) 解答
+- 自回归移动平均模型
+- 指数平滑模型
+- 单变量广义自回归条件异方差模型
+- 加权指数移动平均模型
+- <s>蒙迪卡洛马尔科夫链</s>
+- <s>贝叶斯时间序列</s>
+- <s>[混频抽样回归](https://zhuanlan.zhihu.com/p/343307253) / [MIDAS：混频数据回归](https://www.lianxh.cn/news/8ab193e6f04cc.html)</s>
 
-I use daily OHLCV USDJPY data (from 2014-01-01 to 2017-01-20) and application of some models to forecast the highest and lowest price :
+请查阅[次元期权面试题一（英）](http://rpubs.com/englianhu/binary-Q1) ([旧链接](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html)或[备用网址](http://rpubs.com/englianhu/binary-forex-trading-Q1)或[备用网址二（添加均方误差，比较计数/机数模型的精准度）](http://rpubs.com/englianhu/binary-Q1-Added))。
 
-- Auto Arima models
-- Exponential Time Series
-- Univariate Garch models
-- Exponential Weighted Moving Average
-- <s>Monte Carlo Markov Chain</s>
-- <s>Bayesian Time Series</s>
-- <s>Midas</s>
+以下文献所使用的阴阳烛加交易量数据有七种货币兑换，从阳历二零一三年一月一日至二零一七年八月卅一日：
 
-Kindly refer to [Binary.com Interview Q1](http://rpubs.com/englianhu/binary-Q1) ([Old link](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html) or [Alternate link](http://rpubs.com/englianhu/binary-forex-trading-Q1) or [Alternate link 2 (Added MSE comparison)](http://rpubs.com/englianhu/binary-Q1-Added)) for more information.
+- 澳美兑换（AUDUSD）
+- 欧美兑换（EURUSD）
+- 英美兑换（GBPUSD）
+- 美加兑换（USDCAD）
+- 美瑞兑换（USDCHF）
+- 美中兑换（USDCNY）
+- 美日兑换（USDJPY）
 
-Well, dataset for below papers daily OHLCV of 7 currencies from 2013-01-01 to 2017-08-31:
+一）[次元期权面试题一 - 延伸版（英）](http://rpubs.com/englianhu/binary-Q1E) or ([备用网址](http://rpubs.com/englianhu/316133))尝试使用多元计数/机数模型来评估与比较多元货币每日兑换率。
 
-- AUDUSD
-- EURUSD
-- GBPUSD
-- USDCAD
-- USDCHF
-- USDCNY
-- USDJPY
+二）[广义自回归条件异方差模型中的`ARIMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH)筹算出规律`p,d,q`最优值，并将之应用于广义自回归条件异方差模型提升计数/机数模型的算卜/预测精准度。[次元期权面试试题一 - 广义自回归条件异方差模型中的`ARCH in Mean`](http://rpubs.com/englianhu/binary-Q1-archm)比较ARCHM和非ARCHM的原模型。
 
-1) Here I wrote another extention page for Q1 which is analyse the multiple currencies and also models <s>from minutes to</s> daily. You are feel free to browse over [Binary.com Interview Q1 (Extention)](http://rpubs.com/englianhu/binary-Q1E) or ([Alternate link](http://rpubs.com/englianhu/316133)).
-
-2) Here I also find the optimal arma order for GARCH models as you can refer to [GARCH模型中的`ARIMA(p,d,q)`参数最优化](http://rpubs.com/englianhu/binary-Q1FiGJRGARCH). [binary.com 面试试题 I - GARCH模型中的`ARCH in Mean`](http://rpubs.com/englianhu/binary-Q1-archm) compares the ARCHM with previous Non-ARCHM models.
-
-3) You can also refer to [binary.com Interview Question I - Comparison of Univariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Uni-GARCH) which compares the prediction accuracy of 14 GARCH models (not completed) and 9 models (mostly completed from 2013-01-01 to 2017-08-30).
+三）You can also refer to [次元期权面试题一 - 单变量广义自回归条件异方差模型（英）](http://rpubs.com/englianhu/binary-Q1Uni-GARCH)比较了十四个广义自回归条件异方差模型系列（有缺失值，不够工整数据）和过滤后的九个计数/机数模型如下（从阳历二零一三年一月一日至二零一七年八月卅一日，工整数据）的算卜/预测值的精准度。
 
 - sGARCH
 - fGARCH.GARCH
@@ -69,9 +67,9 @@ Well, dataset for below papers daily OHLCV of 7 currencies from 2013-01-01 to 20
 - iGARCH
 - csGARCH
 
-Besides, I wrote a shinyApp which display the real-time price through API. Kindly refer to [Q1App](https://beta.rstudioconnect.com/content/3073/) where [Q1App2](https://beta.rstudioconnect.com/content/3138/) is another app for financial value betting.
+[Q1App](https://beta.rstudioconnect.com/content/3073)是个通过应用程序编程接口采撷某网站实时汇价的闪霓应用，而[Q1App2](https://beta.rstudioconnect.com/content/3138)是个金融投注的闪霓应用。
 
-[binary.com Interview Question I - Multivariate GARCH Models](http://rpubs.com/englianhu/binary-Q1Multi-GARCH) introduce few multi-variate GARCH models.
+[次元期权面试题一 - 多变量广义自回归条件异方差模型（英）](http://rpubs.com/englianhu/binary-Q1Multi-GARCH)介绍、评估并比较多变量广义自回归条件异方差模型系列如下：
 
 - symmetric DCC
 - asymmetric DCC
@@ -79,9 +77,9 @@ Besides, I wrote a shinyApp which display the real-time price through API. Kindl
 - <s>GO-GARCH</s>
 - <s>Copula-GARCH</s>
 
-In order to started the high-frequency-trading statistical modelling, I inspect the dataset via [binary.com面试试题 I - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value) and also [binary.com 面试试题 I - 多变量数据缺失值管理 II](http://rpubs.com/englianhu/handle-multivariate-missing-value) but the univariate modelling caused some statistical error. The papers compares multi-methods like `interpolatan`, `kalman`, `locf` and `ma`. The [binary.com Interview Question I - Interday High Frequency Trading Models Comparison](http://rpubs.com/englianhu/binary-Q1Inter-HFT) compares ts, msts, SARIMA, mcsGARCH, <s>midasr, midas-garch, Levy process</s> models.
+为了着手于高频量化对冲数据计数/机数建模，尝试审查并整顿数据，文献[次元期权面试试题一 - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value)和文献[次元期权面试试题一 - 多变量数据缺失值管理（乙）](http://rpubs.com/englianhu/handle-multivariate-missing-value)但单变量建模出现一些错误（一些是人为的美国洋番黑客洲际入侵犯罪），文献中使用多种弥补数据缺失值的计数/机数筹算方法如`interpolatan`、`kalman`、`locf`和`ma`。. The [次元期权面试题一 - 日间高频交易计数/机数建模比较（英）](http://rpubs.com/englianhu/binary-Q1Inter-HFT)比较了ts、msts、SARIMA、mcsGARCH、<s>midasr、midas-garch、Levy process</s> 计数/机数模型。
 
-### 1.2) <span style='color:red'>幕后花絮</span>
+### 第一题第二章）<span style='color:red'>幕后花絮</span>
 
 Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) (Kindly refer to [binary.com Interview Question I - Lasso, Elastic-Net and Ridge Regression](http://rpubs.com/englianhu/binary-Q1L-EN-R) for more information) which contain the questions and answers of 3 questions. For the staking model, I simply forecast the highest and lowest price, and then : 
   
@@ -92,30 +90,30 @@ Initially, I wrote a shiny app (as showing in below gif file) but it is heavily 
 
 Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.com/content/3775/) trial version to test the real time trading, and a completed version is [Q1App2](https://beta.rstudioconnect.com/content/3138/).
 
-Due to the paper [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](http://rpubs.com/englianhu/binary-Q1TD) simulated the data and then only noticed I not yet updated the new function, then I wrote **GARCH模型中的`ARIMA(p,d,q)`参数最优化** to compare the accuracy. However my later paper simulated dataset doesn't save the $fit$ in order to retrieve the $\sigma^2$ and VaR values for stop-loss pips when I got the idea. Here I put it as blooper and start **binary-Q1 Multivariate GARCH Models** and later on will write another **FOREX Day Trade Simulation** which will simulate all tick-data but not only HiLo data.
+Due to the paper [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](http://rpubs.com/englianhu/binary-Q1TD) simulated the data and then only noticed I not yet updated the new function, then I wrote **广义自回归条件异方差模型中的`ARIMA(p,d,q)`参数最优化** to compare the accuracy. However my later paper simulated dataset doesn't save the $fit$ in order to retrieve the $\sigma^2$ and VaR values for stop-loss pips when I got the idea. Here I put it as blooper and start **binary-Q1 Multivariate GARCH Models** and later on will write another **FOREX Day Trade Simulation** which will simulate all tick-data but not only HiLo data.
 
-### 1.3) 闪霓应用
+### 第一题第三章）闪霓应用
 
 - **shinyApp** : `shiny::runGitHub('englianhu/binary.com-interview-question')` - Application which compare the accuracy of multiple `lasso`, `ridge` and `elastic net` models (blooper).
 - **Q1App** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q1')` - the application gather, calculate and forecast price. Once the user select currency and the forecast day, the system will auto calculate and plot the graph.
 - **testRealTimeTransc** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'testRealTimeTransc')` - real time trading system which auto gather, calculate the forecast price, and also place orders, as well as settlement and plot P&L everyday.
 - **Q1App2** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q1App2')` - The application contain the Banker and Punter section which applied aboved statistical modelling.
 
-## 2) 第二题
+## 第二题
 
-### 2.1) 解答
+### 第二题第一章）解答
 
 For question 2, I simply write an app, kindly use [Q2App](https://beta.rstudioconnect.com/content/3089/). The bivariate or trivariate poisson model might useful for analyse the probability of fund-in and fund-out by investors in order to manage whole investment pool. Unfortunately there has no such dataset avaiable for fund pool management modelling.
 
-### 2.2) 闪霓应用
+### 第二题第二章）闪霓应用
 
 - **Q2** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q2')` - An application which applied queuing theory.
 
-## 3) 第三题
+## 第三题
 
 For question 3, due to the question doesn't states we only bet on the matches which overcame a certain edge, therefore I just simply list the scenario. Kindly refer to [Betting strategy](http://rpubs.com/englianhu/317677) for more informtion.
 
-## 4) 参考资源
+## 参考资源
 
 ### 4.1)第一题
 
