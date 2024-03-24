@@ -39,7 +39,7 @@
 
 请查阅[次元期权面试题一（英）](http://rpubs.com/englianhu/binary-Q1) ([旧链接](https://englianhu.github.io/2017/09/binary-forex-trading-Q1.html)或[备用网址](http://rpubs.com/englianhu/binary-forex-trading-Q1)或[备用网址二（添加均方误差，比较计数/机数模型的精准度）](http://rpubs.com/englianhu/binary-Q1-Added))。
 
-以下文献所使用的阴阳烛加交易量数据有七种货币兑换，从阳历二零一三年一月一日至二零一七年八月卅一日：
+此栏开始以下相关科研文献所使用的阴阳烛加交易量数据有七种货币兑换，从阳历二零一三年一月一日至二零一七年八月卅一日：
 
 - 澳美兑换（AUDUSD）
 - 欧美兑换（EURUSD）
@@ -85,7 +85,7 @@ Initially, I wrote a shiny app (as showing in below gif file) but it is heavily 
 
 <img src='诸子百家考工记/20170113_104005.gif' width='360'>
 
-Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.com/content/3775/) trial version to test the real time trading, and a completed version is [Q1App2](https://beta.rstudioconnect.com/content/3138/).
+Secondly, I wrote another app [testRealTimeTransc](https://beta.rstudioconnect.com/content/3775) trial version to test the real time trading, and a completed version is [Q1App2](https://beta.rstudioconnect.com/content/3138).
 
 Due to the paper [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <span style='color:red'>(Blooper)</span>](http://rpubs.com/englianhu/binary-Q1TD) simulated the data and then only noticed I not yet updated the new function, then I wrote **广义自回归条件异方差模型中的`ARIMA(p,d,q)`参数最优化** to compare the accuracy. However my later paper simulated dataset doesn't save the $fit$ in order to retrieve the $\sigma^2$ and VaR values for stop-loss pips when I got the idea. Here I put it as blooper and start **binary-Q1 Multivariate GARCH Models** and later on will write another **FOREX Day Trade Simulation** which will simulate all tick-data but not only HiLo data.
 
@@ -100,15 +100,11 @@ Due to the paper [Binary.com Interview Q1 - Tick-Data-HiLo For Daily Trading <sp
 
 ### 第二题第一章）解答
 
-For question 2, I simply write an app, kindly use [Q2App](https://beta.rstudioconnect.com/content/3089). The bivariate or trivariate poisson model might useful for analyse the probability of fund-in and fund-out by investors in order to manage whole investment pool. Unfortunately there has no such dataset avaiable for fund pool management modelling.
-
-第二题，[Q2App](https://beta.rstudioconnect.com/content/3089)。
+第二题，尝试编写个闪霓应用[Q2App](https://beta.rstudioconnect.com/content/3089)，双变量或三变量泊松计数/机数模型可以运用在分析投资者在资本投入与题款/脱售基金上的概率，方便管理投资基金的整体投资基金资本与资金流动性。奈何并无任何投资基金的投资者资金流动数据可供科研用途。
 
 ### 第二题第二章）闪霓应用
 
-
-
-- **Q2** : `shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q2')` - An application which applied queuing theory.
+**Q2**：运行代码`shiny::runGitHub('englianhu/binary.com-interview-question', subdir = 'Q2')`来通过闪霓应用实践[排队论（运筹学理论）](https://baike.baidu.com/item/排队论/938889)。
 
 ## 第三题
 
@@ -171,28 +167,26 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 
 # 量化交易
 
-### 1.1) <span style='color:RoyalBlue'>简介</span>
+### 一）<span style='color:RoyalBlue'>简介</span>
 
-- 从2018年[Binary.com-is-Rebranding-to-Deriv.com](https://derivdotcom.medium.com/binary-com-is-rebranding-to-deriv-com-and-here-is-everything-you-need-to-know-6f4a8513c84b)科研项目耽搁两年有余，2020年的[二元期权（Binary.com） → 金融衍生/金融起源（Deriv.com）](https://englianhu.medium.com/binary-com-deriv-com-6058cdbfc3a1)文章中阐明一些已发布的科研论文，并继续科研对冲基金高频量化交易，不过在此并非面试Deriv.com而是科研用途。
-- [金融衍生/金融起源（Deriv.com）和二元期权（Binary.com）加入金融委员会](https://caifuhao.eastmoney.com/news/20200609155259637111910)
-- 科研项目中所使用的汇价原始数据，皆由FXCM官网下载，储存至[猫城：scibrokes/real-time-fxcm](https://github.com/scibrokes/real-time-fxcm)回测科研统计建模用途。
+- 从农历二零一八年[Binary.com is Rebranding to Deriv.com](https://derivdotcom.medium.com/binary-com-is-rebranding-to-deriv-com-and-here-is-everything-you-need-to-know-6f4a8513c84b)科研项目耽搁两年有余，二零二零年的[二元期权/次元期权（Binary.com） → 金融衍生/金融起源（Deriv.com）](https://englianhu.medium.com/binary-com-deriv-com-6058cdbfc3a1)文章中阐明一些已发布的科研论文，并继续科研对冲基金高频量化交易，不过在此并非面试Deriv.com而是科研用途。
+- [金融衍生/金融起源（Deriv.com）和次元期权（Binary.com）加入金融委员会](https://caifuhao.eastmoney.com/news/20200609155259637111910)
+- 科研项目中所使用的汇价原始数据，皆由FXCM官网下载，储存至[猫城：世博量化/real-time-fxcm](https://github.com/scibrokes/real-time-fxcm)回测科研统计建模用途。
 
-<span style='color:red'>**I moved the data to <https://github.com/englianhu/binary.com-interview-question-data>.**</span>
+<span style='color:red'>**已将次元期权科研项目相关数据，一律迁移至[「数据仓库」次元期权（binary.com）量化分析员/量化交易员面试题](https://github.com/englianhu/binary.com-interview-question-data)，并继续科研高频量化对冲计数/机数建模。**</span>
 
-Below are some seasonal time series models: 
+季节性时间序列与高频量化对冲计数/机数模型如下：
 
-- [Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) (in RPubs.com)
-- [Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (in RStudioConnect.com)
-- [Deriv.com - Interday & Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://rpubs.com/englianhu/742275) (in RPubs.com)
-- [Deriv.com - Interday & Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://beta.rstudioconnect.com/content/16442/binary-Q1Inter-HFT-RV2.html) (in RStudioConnect.com)
+- [Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:RoyalBlue'>Review (Part I)</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1)（或[RStudioConnect.com备用网址](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html)）
+- [Deriv.com - Interday & Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://rpubs.com/englianhu/742275)（[或[RStudioConnect.com备用网址](https://beta.rstudioconnect.com/content/16442/binary-Q1Inter-HFT-RV2.html)）
 - 金融衍生 - 筛选日内高频量化交易统计模型（第III部）
   - [金融衍生 - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://rpubs.com/englianhu/HFT-RV3)
   - [金融衍生 - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**第三部（衍生版）**</span>](https://englianhu.github.io/民国一百一十三年（甲辰年）/桃月/binary-Q1Inter-HFT-RV3E.html)
 - 金融衍生 - 筛选日内高频量化交易统计模型（丁）
 
-### 1.2) <span style='color:red'>幕后花絮</span>
+### 二）<span style='color:red'>幕后花絮</span>
 
-[Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:red'>Blooper</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT) built seasonal models.
+[Deriv.com - Interday High Frequency Trading Models Comparison <span style='color:red'>Blooper</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)着手于季节性计数/机数建模，而文献中提及的一些计数/机数模型mcsGARCH、midasr、midas-garch、Levy process会在日后继续科研。
 
 <br><br>
 
