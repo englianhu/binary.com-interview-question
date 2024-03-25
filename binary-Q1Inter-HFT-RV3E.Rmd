@@ -1984,9 +1984,10 @@ data.frame(自回归综合滑均模型系列)
 |   一时辰 |       两小时 |
 |   一须<ruby>臾<rp>(</rp><rt>yú</rt><rp>)</rp></ruby> | 卌八分钟 |
 |   一刹那 |     十八毫秒 |
-|   一瞬间 |    
-|   一岁
-|   
+|   一瞬间 |     卅六厘秒 |
+|     一岁 |         一年 |
+|     一旬 | 十年（年龄） |
+|     一旬 | 十天（时间） |
 
 *出处：[古人对时间的别名雅称](https://www.facebook.com/englianhu/posts/pfbid0MaSzrvL9qhacJ1xz6nBs2dcEqVGEX8PVb1QW3oD6Bc23Xwi1Lcz7CiqYfdLeLRTzl)*
 
@@ -2010,6 +2011,12 @@ data.frame(自回归综合滑均模型系列)
 - [古代一刻钟是多久？一点钟为什么不是一小时？弄不清会很尴尬的](https://zhuanlan.zhihu.com/p/525032381)
 - [一刻钟是多久，古代的一天为几刻钟呢？](https://zhidao.baidu.com/question/16558757)
 - [「问百度」一刻钟](https://baike.baidu.com/item/一刻钟/2070381)
+
+> 时间单位，是七种基本单位之一，长度、时间、质量、物质的量、光照度、电流 和（热力学）温度 是七种基本单位...
+> 
+> ![](诸子百家考工记/时间单位，是七种基本单位之一.png)
+
+*出处：[时间单位，是七种基本单位之一](https://baike.baidu.com/item/%E6%97%B6%E9%97%B4%E5%8D%95%E4%BD%8D/3078999)*
 
 #### 十二生肖
 
