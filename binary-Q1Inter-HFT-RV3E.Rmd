@@ -1732,8 +1732,11 @@ data.frame(自回归综合滑均模型系列)
 
 - [<ruby>蛤<rp>(</rp><rt>gé</rt><rp>)</rp>蜊<rp>(</rp><rt>lí</rt><rp>)</rp></ruby>、<ruby>蚬<rp>(</rp><rt>xiǎn</rt><rp>)</rp>子<rp>(</rp><rt>zi</rt><rp>)</rp></ruby>、<ruby>蛏<rp>(</rp><rt>chēng</rt><rp>)</rp>子<rp>(</rp><rt>zi</rt><rp>)</rp></ruby>、<ruby>蚶<rp>(</rp><rt>hān</rt><rp>)</rp>子<rp>(</rp><rt>zi</rt><rp>)</rp></ruby>、贝壳... 你真的分得清楚吗？](https://zhuanlan.zhihu.com/p/84891450)
 - [蛤、蚌、蚶、蚬... 菜市场里的贝壳你都认识吗？](https://www.thepaper.cn/newsDetail_forward_16501245)
+- [蛤蜊的自述：我和蚶、贝、蚌、蚬区别可不小！](https://wapbaike.baidu.com/tashuo/browse/content?id=f0f8db414d428cfe25d3d5aa)
+- [蛤、蚶、蛏、蚝、蚬有什么区别？这是一群美味海怪与人类的故事](https://zhuanlan.zhihu.com/p/415833430)
+- [#露营# 海鲜各种贝类，文蛤、牡蛎、竹蛏、毛蚶... 你都了解了吗？](https://www.2bulu.com/community/gotohuatinfo.htm?id=6445798)
 
-与杏林中药材相关的贝类，叫「牡蛎」。
+综合以上所述，与杏林中药材相关的贝类叫「牡蛎」。
 
 ### 道家时间计量单位（中国古代计时法）
 
@@ -2067,18 +2070,19 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 总汇 <- join(日内指数平滑数据二零一八年上半年总汇, 廿四节气) |> 
   mutate(廿四节气 = factor(str_replace_na(廿四节气)), 时分秒 = as_hms(年月日时分), 
          时辰 = factor(str_replace_na(case_when(
-           时分秒 > as_hms('23:00:00') & 时分秒 <= as_hms('01:00:00') ~ '子时', 
-           时分秒 > as_hms('01:00:00') & 时分秒 <= as_hms('03:00:00') ~ '丑时', 
-           时分秒 > as_hms('03:00:00') & 时分秒 <= as_hms('05:00:00') ~ '寅时', 
-           时分秒 > as_hms('05:00:00') & 时分秒 <= as_hms('07:00:00') ~ '卯时', 
-           时分秒 > as_hms('07:00:00') & 时分秒 <= as_hms('09:00:00') ~ '辰时', 
-           时分秒 > as_hms('09:00:00') & 时分秒 <= as_hms('11:00:00') ~ '巳时', 
-           时分秒 > as_hms('11:00:00') & 时分秒 <= as_hms('13:00:00') ~ '午时', 
-           时分秒 > as_hms('13:00:00') & 时分秒 <= as_hms('15:00:00') ~ '未时', 
-           时分秒 > as_hms('15:00:00') & 时分秒 <= as_hms('17:00:00') ~ '申时', 
-           时分秒 > as_hms('17:00:00') & 时分秒 <= as_hms('19:00:00') ~ '酉时', 
-           时分秒 > as_hms('19:00:00') & 时分秒 <= as_hms('21:00:00') ~ '戌时', 
-           时分秒 > as_hms('21:00:00') & 时分秒 <= as_hms('23:00:00') ~ '亥时'))))
+           时分秒 >  as_hms('23:00:00') & 时分秒 <= as_hms('23:59:59') ~ '子时', 
+           时分秒 >= as_hms('00:00:00') & 时分秒 <= as_hms('01:00:00') ~ '子时', 
+           时分秒 >  as_hms('01:00:00') & 时分秒 <= as_hms('03:00:00') ~ '丑时', 
+           时分秒 >  as_hms('03:00:00') & 时分秒 <= as_hms('05:00:00') ~ '寅时', 
+           时分秒 >  as_hms('05:00:00') & 时分秒 <= as_hms('07:00:00') ~ '卯时', 
+           时分秒 >  as_hms('07:00:00') & 时分秒 <= as_hms('09:00:00') ~ '辰时', 
+           时分秒 >  as_hms('09:00:00') & 时分秒 <= as_hms('11:00:00') ~ '巳时', 
+           时分秒 >  as_hms('11:00:00') & 时分秒 <= as_hms('13:00:00') ~ '午时', 
+           时分秒 >  as_hms('13:00:00') & 时分秒 <= as_hms('15:00:00') ~ '未时', 
+           时分秒 >  as_hms('15:00:00') & 时分秒 <= as_hms('17:00:00') ~ '申时', 
+           时分秒 >  as_hms('17:00:00') & 时分秒 <= as_hms('19:00:00') ~ '酉时', 
+           时分秒 >  as_hms('19:00:00') & 时分秒 <= as_hms('21:00:00') ~ '戌时', 
+           时分秒 >  as_hms('21:00:00') & 时分秒 <= as_hms('23:00:00') ~ '亥时'))))
   ## |> dplyr::filter(廿四节气 != 'NA')
 
 总汇 <- cbind(总汇[, -c('市场价', '预测价')], 干支, 
@@ -2180,9 +2184,9 @@ sarima::sarima()
 
 > VAR分析中的一个中心问题是找到滞后的阶数，以产生最佳结果。模型比较通常基于信息标准，例如AIC，BIC或HQ。通常，由于是小样本预测，AIC优于其他标准。但是，BIC和HQ在大型样本中效果很好 
 
-引用：[R语言用向量自回归（VAR）进行经济数据脉冲响应研究分析](http://tecdat.cn/r%e8%af%ad%e8%a8%80%e7%94%a8%e5%90%91%e9%87%8f%e8%87%aa%e5%9b%9e%e5%bd%92%ef%bc%88var%ef%bc%89%e8%bf%9b%e8%a1%8c%e7%bb%8f%e6%b5%8e%e6%95%b0%e6%8d%ae%e8%84%89%e5%86%b2%e5%93%8d%e5%ba%94%e7%a0%94)
+引用：[R语言用向量自回归（VAR）进行经济数据脉冲响应研究分析](http://tecdat.cn/r语言用向量自回归（var）进行经济数据脉冲响应研)
 
-- [「经管之家」 [计数软件与数据分析] 如何理解R中给出的ARIMA模型的拟合结果？](https://bbs.pinggu.org/forum.php?mod=redirect&goto=findpost&ptid=3236918&pid=84745157&fromuid=5794471)
+- [「经管之家」 [计数软件与数据分析] 如何理解R中给出的ARIMA模型的拟合结果？](https://bbs.pinggu.org/forum.php?mod=viewthread&tid=3236918)
 - [**Forecasting: Principle & Practice** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)
 - [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3cn)
 
