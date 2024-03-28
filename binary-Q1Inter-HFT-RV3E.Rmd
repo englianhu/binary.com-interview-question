@@ -2277,6 +2277,7 @@ fable::ARIMA()
 - [ARIMA模型，ARIMAX模型预测冰淇淋消费时间序列数据|附代码数据](https://juejin.cn/post/7187752874112188477)
 - [多元时间序列滚动预测：ARIMA、回归、ARIMAX模型分析|附代码数据](https://www.bilibili.com/read/cv23326560)
 - [Forecasting ARIMA with xreg](https://stackoverflow.com/questions/35620667/forecasting-arima-with-xreg)
+- [forecast with object, xreg, and arima xreg model fails #682](https://github.com/robjhyndman/forecast/issues/682)
 
 ## 季节性自回归综合滑均模型（SARIMA）
 
