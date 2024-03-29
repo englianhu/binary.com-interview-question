@@ -1456,13 +1456,17 @@ options(warn = 0)
 
 ## 幕后花絮
 
-- [「猫城」englianhu/binary.com-interview-question#3大秦赋：商鞅变法、辛亥革命、一带一路、习李经济学、孙子兵法](https://github.com/englianhu/library/issues/3)
+- [「猫城」englianhu/binary.com-interview-question#3大秦赋：商鞅变法、辛亥革命、一带一路、计量经济学、孙子兵法](https://github.com/englianhu/library/issues/3)
 - [「猫城」scibrokes/r-world#1`REmap`百度绘图，点缀全球](https://github.com/scibrokes/r-world/issues/1)
 - [「猫城」englianhu/binary.com-interview-question#6`Error: forecast::Arima() #910`](https://github.com/englianhu/binary.com-interview-question/issues/6)
 - [「猫城」englianhu/binary.com-interview-question#8在`ts`和`xts`和`matrix`格式上使用`auto.arima`](https://github.com/englianhu/binary.com-interview-question/issues/8)
 - [「猫城」scibrokes/setup-centOS7-DO#2🚩🇨🇳🏹中科红旗 RedFlag Linux (🍥Debian)](https://github.com/scibrokes/setup-centOS7-DO/issues/2)
-- [「猫城」]()
-- [「猫城」]()
+- [「猫城」雷欧@中科红旗](https://github.com/englianhu/RedFlag-Linux)
+- [「猫城」雷欧@图书馆](https://github.com/englianhu/library)
+
+<iframe width="400" height="225" src="https://www.youtube.com/embed/6VMjJ2v9Nv8?si=2-Pt0UDsHKI07qds" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+<iframe width="400" height="225" src="https://www.youtube.com/embed/qpH19SxHXJQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## 文书明细
 
