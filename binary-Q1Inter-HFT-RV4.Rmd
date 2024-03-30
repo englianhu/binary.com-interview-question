@@ -439,6 +439,7 @@ conflicts_prefer(data.table::`:=`, .quiet = TRUE)
 conflicts_prefer(hms::hms, .quiet = TRUE)
 conflicts_prefer(fabletools::accuracy, .quiet = TRUE)
 conflicts_prefer(base::load, .quiet = TRUE)
+conflicts_prefer(base::merge, .quiet = TRUE)
 
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 'hms', 
