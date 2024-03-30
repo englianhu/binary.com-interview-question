@@ -425,6 +425,7 @@ conflicts_prefer(data.table::set, .quiet = TRUE)
 conflicts_prefer(data.table::`:=`, .quiet = TRUE)
 conflicts_prefer(hms::hms, .quiet = TRUE)
 conflicts_prefer(fabletools::accuracy, .quiet = TRUE)
+conflicts_prefer(base::load, .quiet = TRUE)
 
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 
@@ -2314,7 +2315,7 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 ## 外部因素周期性自回归综合滑均模型（ARIMAX）
 
-```{r , eval = FALSE}
+```{r 外因, error = TRUE}
 source('函数/自回归均移模型最优值.R')
 
 # --------- eval = FALSE ---------
@@ -2337,7 +2338,8 @@ source('函数/自回归均移模型最优值.R')
   外因周期自回归丁 = as_tibble(accuracy(外因周期自回归丁)), 
   外因周期自回归戊 = as_tibble(accuracy(外因周期自回归戊)), 
   外因周期自回归己 = as_tibble(accuracy(外因周期自回归己)),
-  外因周期自回归庾 = as_tibble(accuracy(外因周期自回归庾))), .id = '计数模型')
+  外因周期自回归庾 = as_tibble(accuracy(外因周期自回归庾))), .id = '计数模型') |> 
+    mutate(计数模型 = factor(计数模型))
 外因周期自回归系列
 
 ## auto.arima "no suitable ARIMA model found" for measuring dependency between debt and GDP https://stats.stackexchange.com/a/316080/68357
