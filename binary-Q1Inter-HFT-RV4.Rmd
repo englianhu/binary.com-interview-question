@@ -754,10 +754,8 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)科研论文中提及一些技术问题，故此使用**Part I**中的数据加以修饰并回测，再与**Part II**比较，筛选最优计数模型。
 
-- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1) (发布于RPubs.com)
-- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html) (发布于RStudioConnect.com)
-- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275) (发布于RPubs.com)
-- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://beta.rstudioconnect.com/content/8a7cbdce-6fc5-409b-8072-9ff21dbd32eb) (发布于RStudioConnect.com)
+- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1)（或[备用网址](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html)）
+- [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275)（或[备用网址](https://beta.rstudioconnect.com/content/16442/binary-Q1Inter-HFT-RV2.html)）
 - [_<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - 筛选日内高频量化交易计数模型 - <span style='color:RoyalBlue'>（第三部）</span>_](https://rpubs.com/englianhu/HFT-RV3)
 
 在此论文中，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。
