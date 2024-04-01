@@ -22,7 +22,7 @@ output:
 
 🚩🇬🇧🇲🇾🇹🇼🇨🇳大秦赋赢家ξng黄氏江夏堂
 
-岂曰无衣，与子同袍
+岂曰无衣，与子同袍。
 
 <br>
 <span style='color:#9B111E'>**🚩🦔主题曲🦔🚩**</span>
@@ -33,6 +33,8 @@ output:
 <iframe src="//player.bilibili.com/player.html?aid=755428773&bvid=BV15r4y1c7Kv&cid=262342800&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
 *出处：[九分钟速看《大秦帝国》系列四部剧情](https://www.bilibili.com/video/BV15r4y1c7Kv)*
+
+咱们世袭制道家超过八国联军十八路诸侯，歼灭东南亚所有回教徒尤其是公仆！
 
 ## 古诗
 
@@ -2512,7 +2514,7 @@ source('函数/自回归均移模型最优值.R')
 
 奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
-  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')))
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
 奏章
 
 
@@ -2529,7 +2531,25 @@ source('函数/自回归均移模型最优值.R')
 # 季节差分的次数 = NULL
 奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
-  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')))
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE))
+奏章
+
+# 季节差分的次数 = 0
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 季节差分的次数 = 0, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE))
+奏章
+
+# 季节差分的次数 = 1
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 季节差分的次数 = 1, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE))
+奏章
+
+# 季节差分的次数 = 2
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 季节差分的次数 = 2, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE))
 奏章
 
 ## TSA::arima()
