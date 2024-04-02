@@ -2522,12 +2522,12 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
-奏章
+data.frame(奏章)
 ```
 
-经过筹算后比较**芳名榜（MASE）**如上所示，计数/机数模型**外因周期自回归戊**`的"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。基于洋本数据观测值只有半年时间而且频率筛选为一的情况之下，`r ; nrow(总汇)`个观测值中的**廿四节气**参数有许多缺失值。
+经过筹算后比较**芳名榜（MASE）**如上所示，计数/机数模型**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。基于洋本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); nrow(样本二零一八半年)`个观测值中的**廿四节气**参数有许多缺失值。
 
-如果需要筹算更精准的算卜预测值，需要读取**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**论文中三年七个月的数据，一共`r `样本 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本乙.rds'); nrow(样本)`观测值。为了节省筹算时间，就只以半年数据为标准先筛选计数/机数模型。改日应用更高端计数/机数模型再筹算。
+如果需要筹算更精准的算卜预测值，需要读取**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**论文中三年七个月的数据，一共`r 样本 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本乙.rds'); nrow(样本)`观测值。为了节省筹算时间，就只以半年数据为标准先筛选计数/机数模型。改日应用更高端精准计数/机数模型再筹算参数**廿四节气**对于风调雨顺、务农、五谷丰收、气象学（包括采撷人为的军事埋伏孔明借东风、草船借箭等天灾人祸数据）、天文学、天文历法与算卜。借鉴[専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)中的**迪逊与罗宾逊（一九九七年）**使用存活模型、[生存分析（Survival Analysis）、Cox风险比例回归模型（Cox proportional hazards model）及C-Index](https://blog.csdn.net/zfcjhdq/article/details/83502854)、[遞歸神經網路（RNN）和長短期記憶模型（LSTM）的運作原理](https://brohrer.mcknote.com/zh-Hant/how_machine_learning_works/how_rnns_lstm_work.html)、[循环神经网络 – Recurrent Neural Network | RNN](https://easyai.tech/ai-definition/rnn)。
 
 ```{r 三年七个月数据, error = TRUE, eval = FALSE}
 ## 检验是否已设置途径。
@@ -2555,7 +2555,11 @@ if (!exists('.蜀道仓库')) {
 if (!exists('样本') || (nrow(样本) != 1317600)) {
   样本 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本乙.rds'))
 }
-样本 <- 样本[order(序列)][频率 == 1]
+
+样本 <- 样本[order(序列)]
+
+## 频率一数据
+## .[频率 == 1]
 
 日内指数平滑数据二零一八年上半年总汇 <- full_join(样本二零一八半年, 日内指数平滑数据二零一八年上半年总汇) %>% 
     na.omit %>% 
@@ -2679,7 +2683,7 @@ source('函数/自回归均移模型最优值.R')
 
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
 
-奏章
+data.frame(奏章)
 ```
 
 `季节差分的次数 = 0`
@@ -2745,7 +2749,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
-奏章
+data.frame(奏章)
 ```
 
 ### `TSA::arima()`
@@ -2869,7 +2873,7 @@ sarima::sarima()
 
 ## 前瞻科研
 
-使用一样的汇价数据，不过从二零一八年上半年数据，可以节省许多时间。下一篇科研[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（丁）**</span>](https://github.com/englianhu/binary.com-interview-question)[^7]（第IV部改为使用道家天干中甲乙丙丁的「丁」）会使用`fable`、`fabletools`、`fable.prophet`、`tbats`、`midas`、`sarimax`、`arfimax`等其它计数模型，然后还有比较长短记忆模型如`tensorflow`、`keras`，隐马尔可夫链、隐含波动率、波浪形模型等其它计数模型。
+使用一样的汇价数据，不过从二零一八年上半年数据，可以节省许多时间。下一篇科研[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（丁：春秋战国道家）**</span>](https://github.com/englianhu/binary.com-interview-question)[^7]（第IV部改为使用道家天干中甲乙丙丁的「丁」）会使用`fable`、`fabletools`、`fable.prophet`、`tbats`、`midas`、`sarimax`、`arfimax`等其它计数模型，然后还有比较长短记忆模型如`tensorflow`、`keras`，隐马尔可夫链、隐含波动率、波浪形模型等其它计数模型。
 
 [^7]: 下篇论文中[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**校阅（第IV部）**</span>](https://github.com/englianhu/binary.com-interview-question)，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。<br> - 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）<br> - 外部因素周期性自回归综合滑均模型（ARIMAX）<br> - 季节性自回归综合滑均模型（SARIMA）<br> - 外部因素周期性季节性自回归综合滑均模型（SARIMAX）<br> - 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）<br> - 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
