@@ -610,7 +610,7 @@ if (!exists('.蜀道')) {
 }
 if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/')
 
-样本二零一八半年 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本2018半年.rds'))
+样本二零一八半年 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本二零一八半年.rds'))
 
 ## A data.table and dplyr tour
 ## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/#addupdatedelete-columns
@@ -2502,7 +2502,7 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)经过测试`method = c('CSS-ML', 'ML', 'CSS')`仨，筹算出的赤池信息量准则比`ML`来得小或较大负数（赤池信息量准则最优值）而`CSS`出现错误信息，故此将`CSS-ML`筹算法的最优计数/机数模型设置为默认值。
 
-```{r 外因甲, error = TRUE}
+```{r 静态外因甲, error = TRUE}
 ## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数模型只允许使用数字筹算，在此就使用时分计筹算。
 
 ## forecast::Arima()
@@ -2525,9 +2525,9 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 奏章
 ```
 
-经过筹算后比较**芳名榜（MASE）**如上所示，计数/机数模型**外因周期自回归戊**`的"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。基于洋本数据观测值只有半年时间而且频率筛选为一的情况之下，`r nrow(总汇)`个观测值中的**廿四节气**参数有许多缺失值。
+经过筹算后比较**芳名榜（MASE）**如上所示，计数/机数模型**外因周期自回归戊**`的"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。基于洋本数据观测值只有半年时间而且频率筛选为一的情况之下，`r ; nrow(总汇)`个观测值中的**廿四节气**参数有许多缺失值。
 
-如果需要筹算更精准的算卜预测值，需要读取**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**论文中三年七个月的数据。为了节省筹算时间，就只以半年数据为标准先筛选计数/机数模型。改日应用更高端计数/机数模型再筹算。
+如果需要筹算更精准的算卜预测值，需要读取**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**论文中三年七个月的数据，一共`r `样本 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本乙.rds'); nrow(样本)`观测值。为了节省筹算时间，就只以半年数据为标准先筛选计数/机数模型。改日应用更高端计数/机数模型再筹算。
 
 ```{r 三年七个月数据, error = TRUE, eval = FALSE}
 ## 检验是否已设置途径。
@@ -2658,7 +2658,7 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 
 `季节差分的次数 = NULL`
 
-```{r 外因乙, error = TRUE}
+```{r 静态外因乙, error = TRUE}
 ## 自回归均移模型最优
 ## auto.arima "no suitable ARIMA model found" for measuring dependency between debt and GDP https://stats.stackexchange.com/a/316080/68357
 
@@ -2684,7 +2684,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 
 `季节差分的次数 = 0`
 
-```{r 外因丙, error = TRUE}
+```{r 静态外因丙, error = TRUE}
 # 季节差分的次数 = 0
 奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 季节差分的次数 = 0, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
@@ -2697,7 +2697,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 
 `季节差分的次数 = 1`
 
-```{r 外因丁, error = TRUE}
+```{r 静态外因丁, error = TRUE}
 # 季节差分的次数 = 1
 奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 季节差分的次数 = 1, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
@@ -2710,7 +2710,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 
 `季节差分的次数 = 2`
 
-```{r 外因戊, error = TRUE}
+```{r 静态外因戊, error = TRUE}
 # 季节差分的次数 = 2
 奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 季节差分的次数 = 2, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
@@ -2725,7 +2725,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 经过[#加权指数]筹算后，得知自回归均移模型最优值的`p,d,q`分别为`0, 1, 4`。
 
-```{r 外因甲, error = TRUE}
+```{r 动态外因甲, error = TRUE}
 ## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数模型只允许使用数字筹算，在此就使用时分计筹算。
 
 ## forecast::Arima()
@@ -2785,7 +2785,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ## 季节性自回归综合滑均模型（SARIMA）
 
-```{r , eval = FALSE}
+```{r SARIMA甲, eval = FALSE}
 
 sarima::sarima()
 
