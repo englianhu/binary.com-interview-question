@@ -2904,15 +2904,75 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 综合以上筹算结果，**外因周期自回归戊**的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。
 
+### `stats::arima()`
+
+#### 静态模型
+
+```{r stats::arima静态, error = TRUE}
+## TSA::arima()
+
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  as_tibble() %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
+```
+
+#### 动态模型
+
+```{r stats::arima动态, error = TRUE}
+## TSA::arima()
+
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  as_tibble() %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
+```
 
 ### `TSA::arima()`
 
-```{r TSA甲, error = TRUE}
+#### 静态模型
+
+```{r TSA::arima静态, error = TRUE}
 ## TSA::arima()
 
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  as_tibble() %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
+```
+
+#### 动态模型
+
+```{r TSA::arima动态, error = TRUE}
+## TSA::arima()
+
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  as_tibble() %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
 ```
 
 ### `TSA::arimax()`
+
+#### 静态模型
+
+#### 动态模型
 
 ```{r TSA乙, error = TRUE}
 ## TSA::arimax()
@@ -2921,6 +2981,10 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ### `stats::arima0()`
 
+#### 静态模型
+
+#### 动态模型
+
 ```{r stats甲, error = TRUE}
 ## stats::arima0()
 
@@ -2928,12 +2992,20 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ### `fable::ARIMA()`
 
+#### 静态模型
+
+#### 动态模型
+
 ```{r fable甲, error = TRUE}
 ## fable::ARIMA()
 
 ```
 
 ### `auto.arima()`
+
+#### 静态模型
+
+#### 动态模型
 
 ```{r forecast甲, error = TRUE}
 ## auto.arima()
@@ -3116,7 +3188,7 @@ options(warn = 0)
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/qpH19SxHXJQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-- [外部因素周期性自回归综合滑均模型（ARIMAX）](外部因素周期性自回归综合滑均模型（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，显示最优
+- [外部因素周期性自回归综合滑均模型（ARIMAX）](外部因素周期性自回归综合滑均模型（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
 
 ## 文书明细
 
