@@ -243,7 +243,7 @@ nameserver 114.114.114.114
 
 个人文派记事本中随笔，文章中有叙述一些历史，包括从拉曼学院电脑科学流派A数学系和日语班辍学后，就开始启程商业人生，自强不息、力争上游。
 
-借鉴赢家黄氏江夏堂联富本人在二零零二年时期追求日语班女同学艳迎（突然辍学转校到澳洲墨尔本大学进修时尚服装设计）失恋后，愚生在拉曼学院图书馆翻阅中国史书时中所提及的「卫鞅仕秦」[^2]时爱不释手、孜孜不倦、阅读到晚上图书馆大约九点钟左右打烊才离席回家，引用卫鞅在中国河南省云梦山鬼谷子旗下修炼帝王之术（文中提及卫鞅游说魏国联合六国联盟伐秦不果，就干脆投奔秦国灭六国联军，公元前的三顾茅驴对秦孝公——赢渠梁游说，推荐比公元后的《出师表》来得厉害的《商君书》阐明“帝道”、“王道”和“霸道”如何协助秦国稳扎稳打、百战百胜、直到一统天下，史称「商鞅变法」。结果秦国如实从秦孝公赢渠梁开始实践「商鞅变法」大约皕余年至秦王嬴政一统天下，史称「秦始皇」。）如何驾驭权贵直到一统天下，`eval(parse(text = 参数))`可以诠释为`评估绩效(奉常监督旗下的世袭制法家回教徒依照可兰经回教刑事法典断肢法对回教徒执法(司法院立法 = 参数))`先将函数文字化，再通过文本分析来执行任务，几乎可以运行筹算任何R语言统计编程代码。
+借鉴赢家黄氏江夏堂联富本人在二零零二年时期追求日语班女同学艳迎（突然辍学转校到澳洲墨尔本大学进修时尚服装设计）失恋后，愚生在拉曼学院图书馆翻阅中国史书时中所提及的「卫鞅仕秦」[^2]时爱不释手、孜孜不倦、阅读到晚上图书馆大约九点钟左右打烊才离席回家，引用卫鞅在中国河南省云梦山鬼谷子旗下修炼帝王之术（文中提及卫鞅游说魏国联合六国联盟伐秦不果，就干脆投奔秦国灭六国联军，公元前的三顾茅驴对秦孝公——赢渠梁游说，推荐比公元后的《出师表》来得厉害的《商君书》阐明“帝道”、“王道”和“霸道”如何协助秦国稳扎稳打、百战百胜、直到一统天下，史称「商鞅变法」。结果秦国如实从秦孝公赢渠梁开始实践「商鞅变法」大约皕余年至秦王嬴政一统天下，史称「秦始皇」。）如何驾驭权贵直到一统天下，`eval(parse(text = 参数))`可以诠释为**评估绩效（奉常旗下的各种族各宗教各自监督执法（司法院立法 = 多元法律））**先将函数文字化，再通过文本分析来执行任务，几乎可以运行筹算任何R语言统计编程代码，那些回教徒只需要遵守可兰经回教刑事法典习俗文化宗教语言断肢法、而兴都教徒则遵守《吠陀经》大宝森节和屠妖节习俗文化宗教语言法律即可。
 
 [^2]: 公元前（基督教和耶稣尚未出生在世上，春秋战国只有山东孔子的儒学）的卫国卫鞅仕秦、卫国吕不韦仕秦、楚国李斯仕秦，西方医学界都是使用🇨🇭（首府苏黎世）十字架符号或🇲🇻湾月符号。<br>公元后汉史《明修栈道》和《出师表》<br>公元后明史《烧饼歌》和《靖难之变》<br><br>*出处：[「猫城」Pandoc based Quarto应该翻译成什么？ #三](https://github.com/scibrokes/r-world/issues/3#issue-1618233383)*<br><br><br><br>*出处：[「猫城」GitHub Repository 应该翻译成什么？#二](https://github.com/scibrokes/r-world/issues/2#issuecomment-1264570739)*
 
@@ -579,7 +579,7 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 
 小时候都在日本动漫文化的环境下长大。小学时期在明智国民华文小学上学就已经学会万事具备，都会提前卅分钟抵达做好准备才不会仓促。自从阳历二零零二年学习日语后，由于平时从旺沙马朱宿舍到拉曼学院徒步上学需要时间提前准备，所以都会将时间设为提前廿分钟，基于从旺沙马朱宿舍徒步耗时三刻钟左右，索性设为提前一个小时，所以愚生将所有电子仪器的标准时间都一律设为日本标准时间，然后青梅竹马的郑添和同学问过我，我回答：“我的时间必须比别人快，我的世界必须比别人快，才能占有先机～”，所以设置提前半个时辰日本标准时间，再提前半个时辰就看到是本土提前一个时辰，[平时闲暇时间都会泡拉曼学院图书馆](https://github.com/scibrokes/r-world/issues/2#issuecomment-1264570739)。**自从阳历二零一九年在菲律宾阿里与中国同胞工作离职后，就开始思考身为🇹🇼🇨🇳中华民族，岂能沦为（大化革新的）倭奴或者倭寇，所以目前的科研语言、时间标准、甚至编码，都一律使用中文。**由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加半个时辰时差为中国标准时间，以确保时间规律计算方面，不会出错。
 
-有关农历、干支、二十四节气、十二时辰等道家，请查阅[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)或此文章中[6.1.2.2 十二时辰对照](#6122)。
+有关农历、干支、二十四节气、十二时辰等道家，请查阅[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)或此文章中[十二时辰](#十二时辰)。
 
 <br>
 
@@ -1526,7 +1526,7 @@ source('函数/总汇结论.R')
 
 #### 自回归简介
 
-> `ARIMA(p,d,q)`模型中
+> `ARIMA(p, d, q)`模型中
 >
 - `p`是自回归(AR)的项数，用来获取自变量
 - `d`是差分(I)的系数，为了使时间序列平稳
@@ -1534,7 +1534,7 @@ source('函数/总汇结论.R')
 
 *引用：[ARIMA模型中的三个参数(`p`,`d`,`q`)都是什么意思?](http://sofasofa.io/forum_main_post.php?postid=1000324)*
 
-> 运用SPSS 19.0软件中的相关模块进行数据处理和分析。本研究是以月份为时间单位的研究序列，故选择复合季节模型[5, 6]：`ARIMA(p，d，q)(P，D，Q)`s，参数`p`为非季节性自回归阶数，`d`为一般差分阶数，`q`为非季节性滑动平均阶数；`P`为季节性自回归阶数，`D`为季节差分阶数，`Q`为季节性移动平均阶数，s为季节模型的时间单位相应周期(本研究s=12)。
+> 运用SPSS第十九版软件中的相关模块进行数据处理和分析。本研究是以月份为时间单位的研究序列，故选择复合季节模型[5, 6]：`ARIMA(p，d，q)(P，D，Q)`s，参数`p`为非季节性自回归阶数，`d`为一般差分阶数，`q`为非季节性滑动平均阶数；`P`为季节性自回归阶数，`D`为季节差分阶数，`Q`为季节性移动平均阶数，s为季节模型的时间单位相应周期（本研究`s = 12`）。
 
 *引用：[北京市昌平区肺结核发病数ARIMA模型预测](http://www.jbjc.org/JBJC/html/article_8538.htm)*
 
@@ -1839,7 +1839,7 @@ data.frame(自回归综合滑均模型系列)
 > 
 > “鸡汤<ruby>汆<rp>(</rp><rt>cuān</rt><rp>)</rp></ruby>海蚌”是与“佛跳墙”齐名的闽菜；在福建等地方吃饭，如果叫西施舌这道菜，通常上的是西施马珂蛤，古代叫车螯。
 > 
-> Tips：西施舌Hiatula diphos和西施马珂蛤Mactra antiquata并不同科，台湾叫西施舌的中国叫西施马珂蛤，中国叫西施舌的台湾叫西施马珂蛤，港澳叫贵妃蚌。
+> 温馨提示：西施舌Hiatula diphos和西施马珂蛤Mactra antiquata并不同科，台湾叫西施舌的中国叫西施马珂蛤，中国叫西施舌的台湾叫西施马珂蛤，港澳叫贵妃蚌。
 
 *出处：[关于各种贝类的名字、区别、产地、吃法（上）](http://m.yc6318.cn/dwq/aritcle7866.html)*
 
@@ -2477,7 +2477,7 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 *引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
 
-一般上，存活分析模型、循环神经网络模型，[**迪逊与罗宾逊（一九九七年）**](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/reference/DixonRobinson1997.pdf)^[[「猫城」Odds Modelling and Testing Inefficiency of Sports Bookmakers](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)项目中主页有陈列马克·迪逊一系列<ruby>蹴<rp>(</rp><rt>cù</rt><rp>)</rp>鞠<rp>(</rp><rt>jū</rt><rp>)</rp></ruby>]通过进球率和加权指数来筹算滚球赛事中的球员斗志与士气（也可以运用在军事训练与战场上、或者学者在学习吸收能力上，而一般上隐马尔可夫链计数/机数模型使用夏普率评估风险与空间状态触碰点也可以运用在学术教育评估学生、教师、校长、校工、各科系、学校整体素质上）、天灾人祸。借鉴[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)中使用`forecast::arimaorder()`筹算自回归模型并将规律`p`值、`d`值、`q`值最优化，来提高计数模型的精准度。在此将咱们世袭制道家的习俗文化、算卜、天文历法、气象学、天文学中的**廿四节气**来诠释`D`（季节差分的次数）。欲知更多详情，请查阅以下[# 廿四节气]章节。
+一般上，存活分析模型、循环神经网络模型，[**迪逊与罗宾逊（一九九七年）**](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/reference/DixonRobinson1997.pdf)^[[「猫城」Odds Modelling and Testing Inefficiency of Sports Bookmakers](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)项目中主页有陈列马克·迪逊一系列<ruby>蹴<rp>(</rp><rt>cù</rt><rp>)</rp>鞠<rp>(</rp><rt>jū</rt><rp>)</rp></ruby>]通过进球率和加权指数来筹算滚球赛事中的球员斗志与士气（也可以运用在军事训练与战场上、或者学者在学习吸收能力上，而一般上隐马尔可夫链计数/机数模型使用夏普率评估风险与空间状态触碰点也可以运用在学术教育评估学生、教师、校长、校工、各科系、学校整体素质上）、天灾人祸。借鉴[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)中使用`forecast::arimaorder()`筹算自回归模型并将规律`p`值、`d`值、`q`值最优化，来提高计数模型的精准度。在此将咱们世袭制道家的习俗文化、算卜、天文历法、气象学、天文学中的**廿四节气**来诠释`D`（季节差分的次数）。欲知更多详情，请查阅以下[廿四节气](廿四节气)章节。
 
 欲知更多有关外部因素周期性自回归综合滑均模型（ARIMAX），请查阅以下文章：
 
@@ -2818,11 +2818,12 @@ source('函数/自回归均移模型最优值.R')
 # 季节差分的次数 = NULL
 奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
+  as_tibble() %>% 
   mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE))
 
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
 
-as.data.table(奏章)
+奏章
 ```
 
 `季节差分的次数 = 0`
@@ -2866,7 +2867,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 #### 动态模型
 
-经过[# 加权指数]筹算后，得知自回归均移模型最优值的`p,d,q`分别为`0, 1, 4`。
+经过[# 加权指数]筹算后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
 
 ```{r 动态外因甲, error = TRUE}
 ## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数模型只允许使用数字筹算，在此就使用时分计筹算。
@@ -2884,14 +2885,15 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
+  as_tibble() %>% 
   mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
 
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
-as.data.table(奏章)
+奏章
 ```
 
-综合以上`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`。
+综合以上筹算结果，外因周期自回归戊的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。
 
 
 ### `TSA::arima()`
@@ -3073,6 +3075,8 @@ options(warn = 0)
 <iframe width="400" height="225" src="https://www.youtube.com/embed/6VMjJ2v9Nv8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/qpH19SxHXJQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+- [外部因素周期性自回归综合滑均模型（ARIMAX）](外部因素周期性自回归综合滑均模型（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)
 
 ## 文书明细
 
