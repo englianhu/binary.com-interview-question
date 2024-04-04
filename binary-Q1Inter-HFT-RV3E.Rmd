@@ -2533,9 +2533,9 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 奏章
 ```
 
-经过筹算后筛选最优计数/机数模型如以上图表**芳名榜（MASE）**所示，计数/机数模型**外因周期自回归戊**的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。基于洋本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); nrow(样本二零一八半年)`个观测值中的**廿四节气**参数有许多缺失值。
+经过筹算后筛选最优计数/机数模型如以上图表**芳名榜（MASE）**所示，计数/机数模型**外因周期自回归戊**的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。基于洋本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); c2num(nrow(样本二零一八半年))`个观测值中的**廿四节气**参数有许多缺失值。
 
-如果需要筹算更精准的算卜预测值，需要读取**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**论文中三年七个月的数据，一共`r 样本 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本乙.rds'); nrow(样本)`观测值。为了节省筹算时间，就只以半年数据为标准先筛选计数/机数模型。改日应用更高端精准计数/机数模型再筹算参数**廿四节气**对于风调雨顺、务农、五谷丰收、气象学（包括采撷人为的军事埋伏孔明借东风、草船借箭等天灾人祸数据）、天文学、天文历法与算卜。借鉴[専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)中的**迪逊与罗宾逊（一九九七年）**使用存活模型、[生存分析（Survival Analysis）、Cox风险比例回归模型（Cox proportional hazards model）及C-Index](https://blog.csdn.net/zfcjhdq/article/details/83502854)、[遞歸神經網路（RNN）和長短期記憶模型（LSTM）的運作原理](https://brohrer.mcknote.com/zh-Hant/how_machine_learning_works/how_rnns_lstm_work.html)、[循环神经网络 – Recurrent Neural Network | RNN](https://easyai.tech/ai-definition/rnn)。
+如果需要筹算更精准的算卜预测值，需要读取**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**论文中三年七个月的数据，一共`r 样本 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本乙.rds'); c2num(nrow(样本))`观测值。为了节省筹算时间，就只以半年数据为标准先筛选计数/机数模型。改日应用更高端精准计数/机数模型再筹算参数**廿四节气**对于风调雨顺、务农、五谷丰收、气象学（包括采撷人为的军事埋伏孔明借东风、草船借箭等天灾人祸数据）、天文学、天文历法与算卜。借鉴[専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)中的**迪逊与罗宾逊（一九九七年）**使用存活模型、[生存分析（Survival Analysis）、Cox风险比例回归模型（Cox proportional hazards model）及C-Index](https://blog.csdn.net/zfcjhdq/article/details/83502854)、[遞歸神經網路（RNN）和長短期記憶模型（LSTM）的運作原理](https://brohrer.mcknote.com/zh-Hant/how_machine_learning_works/how_rnns_lstm_work.html)、[循环神经网络 – Recurrent Neural Network | RNN](https://easyai.tech/ai-definition/rnn)。
 
 ```{r 三年七个月数据, error = TRUE, eval = FALSE}
 ## 检验是否已设置途径。
@@ -2827,7 +2827,6 @@ source('函数/自回归均移模型最优值.R')
 # 季节差分的次数 = NULL
 奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
-  as_tibble() %>% 
   mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE))
 
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 预测价)]), 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
@@ -2869,7 +2868,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
   bind_rows(, .id = '计数模型') %>% 
   mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE))
 
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 奏章
 ```
@@ -2892,17 +2891,47 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     unique()
 列表 <- 列表[order(sapply(列表, length))]
 
-奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
-  as_tibble() %>% 
   mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
 
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 奏章
 ```
 
 综合以上筹算结果，**外因周期自回归戊**的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。
+
+### `forecast::auto.arima()`
+
+#### 静态模型
+
+```{r forecast::auto.arima静态, error = TRUE}
+## forecast::auto.arima()
+
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
+```
+
+#### 动态模型
+
+```{r stats::arima动态, error = TRUE}
+## TSA::arima()
+
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  as_tibble() %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
+```
 
 ### `stats::arima()`
 
@@ -2913,7 +2942,6 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
-  as_tibble() %>% 
   mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
 
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
@@ -2923,15 +2951,15 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 #### 动态模型
 
-```{r stats::arima动态, error = TRUE}
-## TSA::arima()
+```{r forecast::auto.arima动态, error = TRUE}
+## forecast::auto.arima()
 
-奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
   as_tibble() %>% 
   mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
 
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 奏章
 ```
@@ -2943,12 +2971,11 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ```{r TSA::arima静态, error = TRUE}
 ## TSA::arima()
 
-奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
-  as_tibble() %>% 
   mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
 
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 奏章
 ```
@@ -2958,9 +2985,8 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ```{r TSA::arima动态, error = TRUE}
 ## TSA::arima()
 
-奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
   bind_rows(, .id = '计数模型') %>% 
-  as_tibble() %>% 
   mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
 
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
@@ -2972,44 +2998,90 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 #### 静态模型
 
-#### 动态模型
-
-```{r TSA乙, error = TRUE}
+```{r TSA::arimax静态, error = TRUE}
 ## TSA::arimax()
 
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
+```
+
+#### 动态模型
+
+```{r TSA::arimax动态, error = TRUE}
+## TSA::arimax()
+
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
 ```
 
 ### `stats::arima0()`
 
 #### 静态模型
 
-#### 动态模型
-
-```{r stats甲, error = TRUE}
+```{r stats::arima0静态, error = TRUE}
 ## stats::arima0()
 
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
+```
+
+#### 动态模型
+
+```{r stats::arima0动态, error = TRUE}
+## stats::arima0()
+
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
 ```
 
 ### `fable::ARIMA()`
 
 #### 静态模型
 
-#### 动态模型
-
-```{r fable甲, error = TRUE}
+```{r fable::ARIMA静态, error = TRUE}
 ## fable::ARIMA()
 
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
 ```
-
-### `auto.arima()`
-
-#### 静态模型
 
 #### 动态模型
 
-```{r forecast甲, error = TRUE}
-## auto.arima()
+```{r fable::ARIMA动态, error = TRUE}
+## stats::arima0()
 
+奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+  bind_rows(, .id = '计数模型') %>% 
+  mutate(计数模型 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), `芳名榜（MASE）` = rank(MASE, ties.method = 'min'))
+
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+奏章
 ```
 
 ## 季节性自回归综合滑均模型（SARIMA）
