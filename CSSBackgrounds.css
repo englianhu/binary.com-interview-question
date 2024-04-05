@@ -1,11 +1,11 @@
 body {
   /*
   礼逆袭中科红旗操作系统
-  'https://raw.githubusercontent.com/englianhu/binary.com-interview-question/世博量化研究院/诸子百家考工记/math_theme.png'
+  background-image: url('https://raw.githubusercontent.com/englianhu/binary.com-interview-question/世博量化研究院/诸子百家考工记/math_theme.png'); 
   
   '诸子百家考工记/math_theme.png'
   */
-  background-image: url('https://raw.githubusercontent.com/englianhu/binary.com-interview-question/世博量化研究院/诸子百家考工记/math_theme.png'); 
+  background-image: url('/home/englianhu/math.png'); 
   background-repeat: no-repeat; 
   /*background-size: 100%;*/
   background-size: cover; 
