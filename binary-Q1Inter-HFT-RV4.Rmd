@@ -519,6 +519,12 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 有关农历、干支、二十四节气、十二时辰等道家，请查阅[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)或此文章中[十二时辰](#十二时辰)。
 
+> ![「时光机器二零零二」🚩中科红旗创办人孙玉芳教授曰：”中国不能没有自己的操作系统！“，科研高频量化对冲「大秦赋」操作系统和「自然数算筹」](林艳迎（课外家庭日语班女同学）/时光机器二零零二年日语班女同学林艳迎（华联独中校友潮汕人） - 大奖章基金之路.mp4){width=400 height=225}
+> 
+> <img src='林艳迎（课外家庭日语班女同学）/开朗少女日语班林艳迎女同学.gif' width = '400'>
+
+*引用：[#大奖章基金之路 #RT #ST lim ₓ→ₐ f ) HMM... LSTM...](https://www.instagram.com/p/CNm43grAbVz)*世袭制歼灭入侵电子仪器的洋番回教徒阖家和所有冒充霹雳州华联独中生日语班女同学的回教徒和兴都教徒！
+
 以下文派随笔记事本记载个人历史与近况，请查阅个人随笔记事本[「文派」赢家黄氏江夏堂，联富](https://englianhu.wordpress.com)或[「博客园」®γσ ξηg（雷欧）](https://www.cnblogs.com/englianhu)。咱们中文个人随笔记事本，外来语俗称部落（Blog）。
 
 - [「文派」修读COURSERA : MACHINE LEARNING FOR ALGORITHMIC TRADING中…](https://englianhu.wordpress.com/2021/09/15/修读coursera-machine-learning-for-algorithmic-trading中)
