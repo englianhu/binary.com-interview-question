@@ -1,8 +1,9 @@
 ---
 title: "<img src='诸子百家考工记/deriv.png' height='240'>"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部乙（海外版：秦人牧马，从儒家到道家）**</span>](https://github.com/englianhu/binary.com-interview-question)"
-author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='14'>® <img src='诸子百家考工记/大秦赋 - 北京大学.png' height='14'>" 
-date: "`r lubridate::today('Asia/Shanghai')`"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部乙（海外版：世袭制道教徒十二生肖秦人牧马，从儒家到道家）**</span>](https://github.com/englianhu/binary.com-interview-question)"
+author: "笔者：[®γσ, ξηg Lιαη Ημ 赢家黄氏江夏堂，联富（雷欧）](https://englianhu.wordpress.com) <img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='14'>® <img src='诸子百家考工记/大秦赋 - 北京大学.png' height='14'>" 
+date: "日期：民国一百一十三年杏月廿六<br>节日：[农历二零二四年（属龙 甲辰年 戊辰月
+戊戌日）杏月廿六（清明节）](https://mobile.51wnl-cq.com/huangli_tab_h5/?posId=BDSS&STIME=2024-04-04)<br>诸子百家：**纵横家鬼谷传奇** - 清明节是倩女幽魂日语班女同学杏林林氏西河堂，艳迎的生日"
 output:
   html_document: 
     mathjax: "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
@@ -13,7 +14,7 @@ output:
       collapsed: true
       smooth_scroll: true
     code_folding: hide
-    css: CSSBackgrounds.css
+    css: 秦谏典范与楷模.css
     fig_caption: true
 ---
 
@@ -304,9 +305,9 @@ nameserver 114.114.114.114
 - [以军：已歼灭至少一万三千个恐怖分子 将继续推进进攻](https://www.8world.com/world/netanyahu-says-at-least-13000-terrorists-among-palestinians-killed-2397841)。以色列国庆日是五月十四日，而咱们马来西亚种族冲突事件是五月十三日。
 - [「维基」中国——以色列关系](https://zh.wikipedia.org/zh-my/中国—以色列关系)，以色列於阳历一九四八年五月十四日独立建国，而咱们祖国中国（中华民主共和国和中华人民共和国）分别成立于阳历一九一一年十月十日和阳历一九四九年十月一日。
 
-![](诸子百家考工记/敌在万佛寺.png)
+![*公元前的回教徒只需要遵守朗诵可兰经集体自杀种族灭绝；公元后人造卫星借东风，高效率歼灭所有敌人回教徒*](诸子百家考工记/敌在万佛寺.png)
 
-![「空城计」MY大汉山世袭制法家可兰经回教刑事法典习俗文化宗教语言断肢法巫贼巫婆非法回教徒巫术份子和赤印度人酋长宗教司甘地/土司乩童刘瑾貹和世袭制法家可兰经回教刑事法典习俗文化宗教语言断肢法巫贼巫婆非法回教徒巫术份子 -自杀式恐怖袭击- 红军🚩](诸子百家百戏/土司乌贼赤印度人武装部队反攻城堡.mp4){width=400 height=225}
+![*「空城计」MY大汉山世袭制法家可兰经回教刑事法典习俗文化宗教语言断肢法巫贼巫婆非法回教徒巫术份子和赤印度人酋长宗教司甘地/土司乩童刘瑾貹和世袭制法家可兰经回教刑事法典习俗文化宗教语言断肢法巫贼巫婆非法回教徒巫术份子 -自杀式恐怖袭击- 红军🚩*](诸子百家百戏/土司乌贼赤印度人武装部队反攻城堡.mp4){width=400 height=225}
 
 <br>
 
@@ -1785,9 +1786,9 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
     MSE = MLmetrics::MSE(y_true = 市场价, y_pred = 预测价), 
     年月日时分 = NULL, 市场价 = NULL, 预测价 = NULL)])) |> 
   bind_rows() |> 
+  data.frame()) |> 
   dplyr::mutate(自回归模型 = factor(自回归模型), 
-                '芳名榜（MAE）' = base::rank(MAE, ties.method = 'min')) |> 
-  data.frame())
+                '芳名榜（MAE）' = base::rank(MAE, ties.method = 'min'))
 
 ## saveRDS(自回归综合滑均模型系列, file = paste0(.蜀道仓库, '自回归综合滑均模型系列_ts_xts_zoo_msts.rds'))
 rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_xts_数据量1200_频率1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_zoo1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1)
@@ -2226,9 +2227,11 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 > ![](/home/englianhu/文档/猫城/binary.com-interview-question/诸子百家百戏/峇东新村.mp4){width=400 height=225}
 > 
 > - [「文派」**阳历二零二三年十二月三日**今日是紫云生日](https://englianhu.wordpress.com/2024/02/04/「阳历二零二三年十二月三日」今日是紫云生日)
-> - 咱们峇东新村巫文叫Kampung Tiram Buruk，民智国民华校小学五年级时期的中文老师兼班主任颜玉婷老师和陈温温老师说过改名为Kampung Tiram Setia，小学时期喜欢中文老师兼班主任颜玉婷老师觉得老师很伟大，下篇中的[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（丁：春秋战国道家）**</span>](https://github.com/englianhu/binary.com-interview-question)矩阵「行与列」中、有会聊起一九九五年在民智国民华校小学时期五年级、民众会堂陈奕迅的歌曲「背包」、和吴双喜老师（老师间的爱情）、吴荣兴中文学会老师兼学校主任的历史，灌输我在中国历史春秋战国、成语典故、中文和数学和喜欢中文数学科学的重大影响一生受用，包括李登辉总统时期台湾岛被中国解放军围绕。
+> - 咱们峇东新村巫文叫Kampung Tiram Buruk（中译：邪恶或滥交的生蚝之乡/娼妓之乡/青楼之乡、越王选秀出淤泥而不染西施与郑旦生蚝之乡），民智国民华校小学五年级时期的中文老师兼班主任颜玉婷老师和陈温温老师说过改名为Kampung Tiram Setia（中译：[臣服](https://www.bilibili.com/video/BV19E411y7n8)于生蚝之乡/忠诚的生蚝之乡、贤妻之乡、糟糠之妻之乡、母仪天下之乡），小学时期喜欢中文老师兼班主任颜玉婷老师觉得老师很伟大，下篇中的[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（丁：春秋战国道家）**</span>](https://github.com/englianhu/binary.com-interview-question)矩阵「行与列」中、有会聊起一九九五年在民智国民华校小学时期五年级、民众会堂陈奕迅的歌曲「背包」、和吴双喜老师（老师间的爱情）、吴荣兴中文学会老师兼学校主任的历史，灌输我在中国历史春秋战国、成语典故、中文和数学和喜欢中文数学科学的重大影响一生受用，包括李登辉总统时期台湾岛被中国解放军围绕。
 
 *出处：[《故郷ふるさと》🎶J-League ⚽🎌🎎🎏#ふるさと #故郷](https://www.tiktok.com/@englianhu/video/6876997614085082370)*
+
+![](诸子百家考工记/民智国民华校姐妹花.png)
 
 > **《世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊》**<br>
 世风日下，人心不古；<br>
@@ -2495,7 +2498,7 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 ![](诸子百家考工记/预测 - 方法与实践（第三版）.png)
 
-> 当没有特殊指定时，ARIMA() 函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`,`q`,`P` and `Q`)的选择都通过最小化`AICc`来决定。
+> 当没有特殊指定时，ARIMA() 函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`和`q`，`P`和`Q`)的选择都通过最小化`AICc`来决定。
 
 *引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
 
@@ -2545,7 +2548,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 经过筹算后筛选最优计数/机数模型如以上图表**芳名榜（MASE）**所示，计数/机数模型**外因周期自回归戊**的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。基于洋本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); num2c(nrow(样本二零一八半年))`个观测值中的**廿四节气**参数有许多缺失值。
@@ -2851,7 +2854,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 `季节差分的次数 = 0`
@@ -2867,7 +2870,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 `季节差分的次数 = 1`
@@ -2883,7 +2886,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 `季节差分的次数 = 2`
@@ -2899,7 +2902,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 #### 动态模型
@@ -2930,7 +2933,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 综合以上筹算结果，**外因周期自回归戊**的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。
@@ -2950,7 +2953,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 #### 动态模型
@@ -2960,13 +2963,13 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 ## forecast::auto.arima() 动态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 预测价)]), p = 0, d = 1, q = 4, xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数模型') %>% 
     data.frame() %>% 
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 ### `stats::arima()`
@@ -2984,7 +2987,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 #### 动态模型
@@ -3000,7 +3003,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 ### `TSA::arima()`
@@ -3018,7 +3021,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 #### 动态模型
@@ -3034,7 +3037,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 ### `TSA::arimax()`
@@ -3052,7 +3055,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 #### 动态模型
@@ -3068,7 +3071,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 ### `stats::arima0()`
@@ -3086,7 +3089,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 #### 动态模型
@@ -3103,7 +3106,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 ### `fable::ARIMA()`
@@ -3121,7 +3124,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 #### 动态模型
@@ -3136,7 +3139,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = rank(MASE, ties.method = 'min')))
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 ## 季节性自回归综合滑均模型（SARIMA）
@@ -3412,7 +3415,7 @@ rm(系统信息甲, 系统信息乙)
 06. [<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**校阅（第III部）**</span>](https://rpubs.com/englianhu/987834)
 07. [Forecasting: Principles and Practice](https://otexts.com/fpp3)
 08. [Tableau 100 Color Palettes](https://public.tableau.com/en-us/gallery/100-color-palettes)
-09. [PYTHON中的ARIMA模型、SARIMA模型和SARIMAX模型对时间序列预测](http://tecdat.cn/python%e4%b8%ad%e7%9a%84arima%e6%a8%a1%e5%9e%8b%e3%80%81sarima%e6%a8%a1%e5%9e%8b%e5%92%8csarimax%e6%a8%a1%e5%9e%8b%e5%af%b9%e6%97%b6%e9%97%b4%e5%ba%8f%e5%88%97%e9%a2%84%e6%b5%8b)
+09. [PYTHON中的ARIMA模型、SARIMA模型和SARIMAX模型对时间序列预测](http://tecdat.cn/python中的arima模型、sarima模型和sarimax模型对时间序列预测)
 10. [利用SARIMAX进行销量预测](https://blog.csdn.net/fitzgerald0/article/details/100823231)
 11. [时间序列分析模型：ARIMA模型和SARIMAX算法](https://maoli.blog.csdn.net/article/details/113835186)
 12. [利用SARIMAX進行銷量預測](https://www.twblogs.net/a/5d7ee484bd9eee5327ffe605)
@@ -3420,7 +3423,7 @@ rm(系统信息甲, 系统信息乙)
 14. [SARIMAX:简介](https://runebook.dev/zh-CN/docs/statsmodels/examples/notebooks/generated/statespace_sarimax_stata)
 15. [Python数据分析案例-分别使用时间序列ARIMA、SARIMAX模型与Auto ARIMA预测国内汽车月销量_maiyida123的博客-程序员资料](http://www.4k8k.xyz/article/maiyida123/117967762)
 16. [预测：方法与实践：第十一章第一节复杂季节性](https://otexts.com/fppcn/complexseasonality.html)
-17. [市道轮换下的高频数据参数估计](https://github.com/englianhu/binary.com-interview-question/blob/%E4%B8%96%E5%8D%9A%E9%87%8F%E5%8C%96%E7%A0%94%E7%A9%B6%E9%99%A2/%E5%9B%BE%E4%B9%A6%E9%A6%86/%E5%8F%82%E6%95%B0%E5%B8%82%E5%9C%BA%E5%BE%AE%E8%A7%82%E7%BB%93%E6%9E%84%E5%99%AA%E5%A3%B0%E4%B8%8B%E9%AB%98%E9%A2%91%E6%95%B0%E6%8D%AE%E7%9A%84%E4%BC%B0%E8%AE%A1%EF%BC%88%E8%8B%B1%EF%BC%89.pdf)
+17. [市道轮换下的高频数据参数估计](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/参数市场微观结构噪声下高频数据的估计（英）.pdf)
 18. [STAT 510 Applied Time Series Analysis : 13.1 Long Memory Models and Fractional Differences](https://online.stat.psu.edu/stat510/lesson/13/13.1)
 19. [A Complete Introduction To Time Series Analysis (with R):: Exogenous models](https://medium.com/analytics-vidhya/a-complete-introduction-to-time-series-analysis-with-r-exogenous-models-4f009b770104)
 20. [Implementation of Time Series Forecasting Methods (SARIMA, SARIMAX and Prophet)](https://medium.com/@shawanugya12/implementation-of-time-series-forecasting-methods-sarima-sarimax-and-prophet-ff8407b25aaa)
