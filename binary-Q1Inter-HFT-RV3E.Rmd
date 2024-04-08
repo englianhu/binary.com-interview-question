@@ -3259,6 +3259,15 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
+#### 模型比较
+
+> ...
+> 
+> **选择自己的模型**
+> 如果你想自己选择模型，你可以使用R中的Arima()函数。R中的arima()函数也可以用来拟合ARIMA模型，但是它不适用于常数`c`存在的情况(除非`d=0`)，并且它和`forecast`包中的一些函数不兼容。最后，它的估计模型也不能被用于新数据集（新数据在检测预测准确率时非常有用）。因此我们强烈建议使用`Arima()`而不是`arima()`...
+
+*引用：[第八章第七节 在R鄀中建立ARIMA模型](https://otexts.com/fppcn/arima-r.html)*
+
 ### 季节性自回归综合滑均模型（SARIMA）
 
 ```{r SARIMA静态, eval = FALSE}
