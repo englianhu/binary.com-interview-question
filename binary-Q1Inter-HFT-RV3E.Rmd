@@ -192,6 +192,22 @@ nameserver 114.114.114.114
 
 [^1]: [「文派」迟了一年，更新履历表 B4Telebiz (18-DEC-2021)](https://englianhu.wordpress.com/2021/12/20/金融与体彩交易自动化学习之路-经验分享)和[「文派」**阳历二零二三年十二月三日**今日是紫云生日](https://englianhu.wordpress.com/2024/02/04/「阳历二零二三年十二月三日」今日是紫云生日)的文派记事本随笔记事本，二零零二年在拉曼学院修读电脑科学流派A数学系，课外家庭日语班林艳迎女同学时常遇到灵异事件危险根本就没想到要任何恋爱，就赶紧辍学到墨尔本大学修学后再转校到伦敦大学修读服装设计；而在拉曼学院阅读的一本史书中提及「卫鞅游说，商鞅变法；秦灭六国，一统天下」就让我回想起小学吴荣兴中文老师所执教的中国历史和成语典故，改变了我的一生；而二零零八年到西施康工作自修量化对冲与R鄀计数编程（当时全球最高端的开源计数软件R，除了R官网和一些学术网栈溢出并不多，而中文就只有「统计之都」和人大经济论坛或已改名为「经管之家」俩是咱们计量经济学和科学科技数学学术界先锋开拓者，谢益辉是人大——人民大学校友和主要作品是🧶`knitr`，而谢德才Stephen/Steve是我二零零二年在拉曼学院的好哥儿们，之后二零零三年/二零零四年在老板兼股东每天在峇东新村和适耕庄「高峰电脑」网吧骑机车/电单车每天来往打工月薪六百元马币，当时就感触父母老了我还是一事无成无法给父母安逸的生活，把我每个月挣的六百元月薪统统给父母（黄永春和李仁俩）花不留些零钱给自个儿花，因为自诩身居隆中事业未成而已需要继续力争上游，预见日后飞黄腾达，而二零一九年外号叫汤圆的同事说：“我的钱全部都是属于雷欧的！”，自从二零一七年柬埔寨帮中企工作就开始受到管制、之后二零二零年从克拉克中企辞职回国后也继续处处受到管制和人为的入侵电脑迫害和许多人的人为的选择性性爱嫁祸诋毁陷害促使戾气）。<br><br>人生经历，至今遇到三次人生启发的三个转戾点：<br> - 二零零二年当时迷茫对于未来完全没有一个明确的方向，喜欢和科研基本面觉得洋人的技术面分析太复杂太高深却无奈入学无门，而咱们华人的技术面分析是个诈骗集团的幌子，的对冲基金的我，一心想要靠学术和对冲基金一统天下驾驶车子踩完门油和迎面而来的对冲，如果迎面而来的没有自知之明不闪避一块儿死；<br> - 而二零零七年在新宝被高层股东们纷纷看好前途似锦，当时夸夸其谈压力大就辞职不干继续自修学习量化对冲；辞职回国后二零零八年加入西施康闲暇时间自修每天通过搜索引擎翻阅廿页搜索结果的论文与文章再阅读与比较，跌跌撞撞、持续摸索、无师自通，终于认识到R鄀编程计数学，当时每天犹如歌曲[「成都」](https://youtu.be/5uysBWFXex8)一样终于入门高深计数学奈何高深难学资质不高，如同翻白眼的潮汕乩童查安或金毛狮王百思不解如何参透屠龙刀的绝世武功秘籍；<br>    - [量化交易自習ことは続く～～](https://englianhu.wordpress.com/2018/08/07/量化交易自習ことは続く～～)<br>    - [量化分析与投资基金](https://englianhu.wordpress.com/2018/08/23/量化分析与投资基金)<br>    - [金融与体彩交易自动化学习之路 — 经验分享](https://englianhu.wordpress.com/2017/11/09/金融与体彩交易自动化学习之路-经验分享)<br> - 世袭制歼灭入侵电子仪器的洋番回教徒阖家和所有冒充华联独中生日语班女同学的外族、回教徒和兴都教徒！[目前在菲律宾当彩票推广人员](https://englianhu.wordpress.com/2020/03/27/目前在菲律宾当彩票推广人员)二零一九年前后科研高频量化对冲遇到瓶颈，就是代码和学术作品频频受到洋番的人为篡改和攻击导致学术论文都频频失误代码和呈现的效果不一致，在借鉴孙玉芳教授在二零零二年创办中科红旗的名言：“中国不能没有自己的操作系统。”，逼于无奈之下只能独自科研并研发咱们世袭制道家的操作系统。至今二零二四年仍每天在烦恼何时才能学成那些高频量化对冲的上层武功和内力，如何像比尔·盖茨的视窗的主打产品办公软件一样（微软视窗办公软件是由一位教授所编写而非比尔·盖茨编写的，而斯蒂芬·乔布斯的苹果电子仪器是由斯蒂芬·斯沃兹尼研发出来的）最基本的「求贤令」都得先从统筹法着手；目前只关心学术作品和科技产品并无任何喜欢的人，莫忘初衷，砥砺前行。
 
+### 春秋战国
+
+**春秋战国，七大洲五大洋**
+
+诸子百家、文艺复兴和美国硅谷传奇分为两条路线：
+
+- 偶像派：情色优先，靖康之耻或娼妓、娱乐圈、借运、任何攻击性或回教广告。
+- 实力派：学术优先，数学科学科技和习俗文化宗教语言复古等，万般皆下品唯有读书高。
+
+> 借鉴革命家秦孝公赢渠梁、朱重八、拿破仑、瓦盛顿、袁世凯、孙中山、毛泽东... 歼灭东南亚马来西亚雪州瓜雪巴西不能帮新村门牌T十五号土司乩童巫师王张佳坤（蕲年宫之变/安史之乱）和所有回教徒和峇峇娘惹党羽、包括施展可兰经巫术下降头宗教司和回教徒。
+
+- [古文新读——《资治通鉴》第四章（三）](https://zhuanlan.zhihu.com/p/488165417)
+- 
+
+![*引用：[「元宇宙」🇬🇧 #曾經是世界上面積最大的帝國，美國世襲制法家瓦盛頓率先反英系餘百年，直到世界兩次戰爭後天下諸侯方才紛紛鬧獨立。](https://www.facebook.com/photo/?fbid=789618346532265&set=a.618147220346046)*](诸子百家考工记/曾經是世界上面積最大的帝國，美國世襲制法家瓦盛頓率先反英系餘百年，直到世界兩次戰爭後天下諸侯方才紛紛鬧獨立。.png){width=400}
+
 ### 鬼谷传奇
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="Lamborghini V12 Vision GT" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -223,6 +239,9 @@ nameserver 114.114.114.114
 歼灭印裔，取代美国。<br>
 秦灭六洲，一统天下；<br>
 莫忘初衷，方得始终。
+
+**帝王之术之道**
+自从拉曼学院辍学后，二零零三年就开始金融行业和博彩业，从基本面到技术面。二零零八年开始自修计数/机数编程时，偶然发现并学习R鄀计数/机数编程，继续自修量化对冲，二零一六年开始使用并自修礼逆袭服务器^[详情请查阅：<br>- [🚩🇨🇳🔆🏹🌟👊🚀🦔中科红旗](https://englianhu.wordpress.com/statistics/linux-🐧-kubuntu-⚙)<br>- [通过数码海洋（Digital Ocean）建立服务器](https://github.com/scibrokes/setup-centOS7-DO)]。二零一七年到二零二二年，科研金融计数/机数建模频频受到美国硅谷科技业入侵篡改资料，二零二一年开始使用一系列礼逆袭桌面操作系统并持续自修，目前继续自修金融高频量化对冲并正在自修并改良中科红旗操作系统，再研发咱们赢家黄氏江夏堂的「道家大秦赋」/「大秦赋」操作系统和「自然数算筹」/「算筹」电子仪器。釜底抽薪，一劳永逸。
 
 - **商鞅**：改变天下学术（包括复古中国算筹）、杏林、保险与司法界，取代天下所有西方文化科学科技医学司法；习俗文化宗教语言杏林务农法律等世纪大革命，一劳永逸。
 - **吕不韦**：改变天下学术尤其是高频量化对冲运筹学（包括复古中国算筹）、高频量化对冲、金融与务农中药中医杏林、娱乐圈（包括复古中国古代习俗文化宗教语言）、广告与产品代言；习俗文化宗教语言等世纪大革命，一劳永逸。
@@ -1598,19 +1617,21 @@ source('函数/总汇结论.R')
 
 然而**总汇结论（从二零一六年至二零一八年七月七日）**和**总汇二零一八年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**百分之一个时辰一周期（一分钟循环千皕次）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优计数模型**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
 
-# 计数建模
+# 《吕氏春秋》
 
-## 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）
+## 计数建模
+
+### 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）
 
 ```{r }
 
 ```
 
-## 自回归综合滑均模型系列（ARIMA Series）
+### 自回归综合滑均模型系列（ARIMA Series）
 
-### 季节性数据建模`ts()`、`xts()`、`zoo()`、`msts()`
+#### 季节性数据建模`ts()`、`xts()`、`zoo()`、`msts()`
 
-#### 自回归简介
+##### 自回归简介
 
 > `ARIMA(p, d, q)`模型中
 >
@@ -1626,8 +1647,8 @@ source('函数/总汇结论.R')
 
 [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275)中，结论千皕分钟为最优数据量，故此我将数据量设置为(千皕分钟，也就是等于廿个交易小时)，去预测下一分钟交易价格。然而如何灵活设置周期量与周期数、运用循环周期呢？在此尝试回测方能得以证实。
 
-- [<span style='color:white; background-color:LightSlateGrey;'>*8.7 ARIMA modelling in R*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/arima-r.html)
-- [<span style='color:white; background-color:LightSlateGrey;'>*8.9 Seasonal ARIMA models*</span> in **Forecasting: Principles and Practice (2nd Edition)**](https://otexts.com/fpp2/seasonal-arima.html)
+- [<span style='color:white; background-color:LightSlateGrey;'>*第九章 - ARIMA模型*</span> in **预测：方法与实践（第三版）**](https://otexts.com/fpp3cn/arima-cn.html)
+- [<span style='color:white; background-color:LightSlateGrey;'>*第九章第九节 - 季节性ARIMA模型*</span> in **预测：方法与实践（第三版）**](https://otexts.com/fpp2/seasonal-arima.html)
 - [Seasonality in `auto.arima()` from `forecast` package](https://stackoverflow.com/a/37400899/3806250)
 - [「CSDN」学习笔记-数据挖掘（时间序列）-时间序列ARIMA建模](https://blog.csdn.net/weixin_42033491/article/details/108160167)
 
@@ -1636,7 +1657,7 @@ source('函数/总汇结论.R')
 - [「猫城」englianhu/binary.com-interview-question#6`Error: forecast::Arima() #910`](https://github.com/englianhu/binary.com-interview-question/issues/6)
 - [「猫城」englianhu/binary.com-interview-question#8在`ts`和`xts`和`matrix`格式上使用`auto.arima`](https://github.com/englianhu/binary.com-interview-question/issues/8)
 
-#### `ts`
+##### `ts`
 
 **百分之一时辰一周期（一分钟循环千皕次）**
 
@@ -1669,7 +1690,7 @@ source('函数/整顿数据.R')
 # 季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1 <- readRDS("/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/仓库/季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1.rds")
 ```
 
-#### `xts`
+##### `xts`
 
 ```{r Arima-xts, eval = FALSE}
 # —— eval = FALSE ——
@@ -1715,7 +1736,7 @@ source('函数/整顿数据.R')
 # 时间索引 <- 时间索引乙
 ```
 
-#### `zoo`
+##### `zoo`
 
 ```{r Arima-zoo, eval = FALSE}
 # —— eval = FALSE ——
@@ -1746,7 +1767,7 @@ source('函数/整顿数据.R')
 # 季节性自回归自动化_差分阶数0_季节性差分阶数0_zoo1 <- readRDS("/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/仓库/季节性自回归自动化_差分阶数0_季节性差分阶数0_zoo1.rds")
 ```
 
-#### `msts`
+##### `msts`
 
 ```{r Arima-msts, eval = FALSE}
 # —— eval = FALSE ——
@@ -1782,7 +1803,7 @@ source('函数/整顿数据.R')
 # 季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1 <- readRDS("/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/仓库/季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1.rds")
 ```
 
-#### 季节性数据建模小结
+##### 季节性数据建模小结
 
 ```{r 初步模型比较}
 # 蜀道
@@ -1864,11 +1885,11 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 
 一般上可以顺序根据`MASE`，然后`MAE`，接着`MSE`来评估筹算出来的算卜（预测值）的精准度。以上自回归模型分别比较了`ts`、`xts`、`zoo`、`msts`季节性数据建模后，得到一样的结果，故此就不区分使用那种计数模型来建立季节性数据。
 
-# 《吕氏春秋》道家计数建模
+## 道家计数建模
 
-## 杏林林氏西河堂
+### 杏林林氏西河堂
 
-### 杏林简介
+#### 杏林简介
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/5uysBWFXex8" title="《成都》趙雷（成都街景）分別總是在九月♫" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -1900,7 +1921,7 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 **「世袭制法家回教徒蕲年宫之变、安史之乱，集体朗诵可兰经——楚歌」**<br>
 借鉴[斩首、石刑、截肢... 阿富汗“伊斯兰教法”或将重现酷刑](https://www.163.com/dy/article/HM881SKU0511RVG1.html)，内部处分阿里巴巴、淘宝、腾讯、百度等所有背叛世袭制道家姓氏堂号子嗣贞节牌坊的商家、头戴白色女假发的世袭制法家司法界包括男同志美国国父瓦盛顿把洋番基督耶稣一律钉在十字架、大宝森节和屠妖节习俗文化种族灭绝印度裔兴都教徒、瓜雪RHU（淮西派）花园加德士油站隔壁第三巷门牌卅二号边抽鼻涕边求命边膜拜边失心疯边自残自虐自杀的土司乩童刘瑾貹、瓜雪巴西不能帮门牌T十五号吱吱吾语的失心疯猥亵淫魔土司乩童张佳坤、那些世袭制法家可兰经回教徒自杀式冒充咱们世袭制道家中华民族是触犯可兰经回教刑事法典断肢法，[可兰经断肢法，回教徒不是不可以赌博吗？](https://youtube.com/shorts/hTsFgQ3mfBc)、马航所有世袭制法家回教徒公仆、瓜雪回教警署、瓜雪回教市政局、瓜雪回教土地局、四季仔的印尼外劳回教徒房客、阿塔的孟加拉外劳回教徒房客、峇峇娘惹的可兰经的习俗文化宗教语言断肢法！世袭制法家回教徒的可兰经习俗文化宗教语言断肢法，学习或参与使用任何外文学术数学算卜概率论博弈论、习俗文化宗教语言、吃猪肉喝酒抽烟、色情尤其是传宗接代（公元前没有人工受孕的科学技术下立下的世袭制法家回教徒的千年可兰经习俗文化宗教语言断肢法）、女回教徒就连抛头露面出外更何况是工作、女回教徒裸露鼻子嘴巴耳朵手臂脚、勾引、迷魂、巫术降头、持有任何武器、冒充他族或其它宗教教徒、叛乱、判教等甚至活命，都是触犯法家立下的千年可兰经回教刑事法典断肢法。
 
-### 杏林与操作系统
+#### 杏林与操作系统
 
 目前市场充斥着许多外来语甚至不翻译直接使用洋文术语。洋文Computer是代表计算器而中译为白话文「计算机」或古文「算筹」^[「算筹」电子仪器与「大秦赋」操作系统：<br> - [「猫城」中国北京大学赢家ξng黄氏江夏堂「大秦赋•道家李耳老子兼法家李斯篆紀•艺文志」：目前使用🚩🇨🇳🏹🦔中国国产红旗礼逆袭，编程都会使用咱们母语华语、字体、字幕加汉语拼音。 #6](https://github.com/englianhu/RedFlag-Linux/issues/6)<br> - [自然对数「干支算筹」与农历天文历法](https://github.com/englianhu/RedFlag-Linux/issues/12#issuecomment-1676066137)]，至于咱们平时所说的「电脑」应该英译为「Electronic Brain」，平时所说的个人电脑Personal Computer缩写PC与女生生殖器官Pussy近音。操作系统终端一般上称之为“Shell”，故此翻阅一些相关文献如下：
 
@@ -2003,11 +2024,11 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 - [李锦记百卅历史了](https://www.ixigua.com/6977491627480711692)
 - [「猫城」🚩🔆🏹🌟👊🚀🦔大秦赋：ξng赢家黄氏江夏堂 - 黄埔军校，辛亥革命；中科红旗，量化对冲。一带一路，史无前例；横跨七洲，一统天下。（咱们东南亚那些回教政府和敌国西方基督耶稣政府是世仇） #三](https://github.com/englianhu/library/issues/3#issuecomment-1308370079)
 
-#### 子宫与皇宫
+##### 子宫与皇宫
 
 - 中华古代婚礼，花冠与苗族（万物皆有灵，取代回教徒）
 
-#### 道家习俗文化
+##### 中华复古之道
 
 - 服饰
     - MY大汉山，东汉末年：[馬來西亞漢服運動 Hanfu Malaysia](https://www.facebook.com/hanfumalaysia)，借鉴咱们中华史赢家黄氏江夏堂是秦汉时期最正统正义的家族。
@@ -2028,10 +2049,16 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 - 节庆
     - 
     - 
+- 娱乐圈
+    - 
+    - 
+- 学术圈
+    - 
+    - 
 
-### 道家时间计量单位（中国古代计时法）
+#### 道家时间计量单位（中国古代计时法）
 
-#### 天文历法（干支纪年 / 纪元法）
+##### 天文历法（干支纪年 / 纪元法）
 
 **十天干**
 
@@ -2106,7 +2133,7 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 - [（历法溯源十）天文历法大成，周易天象解密，易经的天象规律](https://www.bilibili.com/video/BV1AA411R7LE)
 - [天文课程 - 时间和历法](https://www.bilibili.com/video/BV1uv411K7sd)
 
-#### 十二时辰
+##### 十二时辰
 
 | 时辰 | 雅称 |         其它雅称 |                 十二时辰对照 | 生肖 | 打更 |
 |:----:|:----:|:----------------:|:----------------------------:|:----:|:----:|
@@ -2306,7 +2333,7 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 
 *出处：[时间单位，是七种基本单位之一](https://baike.baidu.com/item/时间单位/3078999)*
 
-#### 十二生肖
+##### 十二生肖
 
 从满洲到星洲，从鼻祖暨耳孙。论生肖的「演化史」，先秦时已有相关记载：
 
@@ -2335,7 +2362,7 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 [^4]: [⼆⼗四节⽓⼤全](https://mp.weixin.qq.com/s?__biz=Mzg3MTUzNjAwMw==&mid=2247492492&idx=6&sn=0614e89a7eb7e827cec6d878dd7acf23)
 [^5]: 世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊：<br> - [「问百度」贞节牌坊 - 古时用来表彰女性从一而终的门楼](https://baike.baidu.com/item/贞节牌坊/1019217)<br> - [「问百度」巴寡妇清 - 战国末年历史人物](https://baike.baidu.com/item/巴寡妇清/10567832)
 
-#### 天文历法（农历月份）
+##### 天文历法（农历月份）
 
 > 冬月和腊月在中国传统的农历中不是同一个月。
 农历十一月为「冬月」，又称幸月、畅月、后十月、仲冬。一年十二月用十二地支来表示的话，又称「子月」称「建子」。农伍手历十二月，也就是华人民间俗称的「腊月」。之所以叫「腊月」，是因为「腊」是古代祭祀祖先和百神的「祭」名，有「冬至后三戌祭百神」之说，即每逢冬至后的第三个纪日干支中含有地支「戌」的日子，南北朝时期固定在十二月初八日，华人民间都要猎杀禽兽举行大祭活动，拜神敬祖，以祈福求寿，避灾迎祥。这种祭奠仪式称为「猎祭」。因「腊」与「猎」通假，「猎祭」遂并缓写成了「腊祭」，因而年终的十二月被叫腔蔽嫌做腊月。
@@ -2375,7 +2402,7 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 - [腊月别称大全,农历正月到腊月的别称都有哪些？](https://zhidao.baidu.com/question/564213532043599812.html)
 - [腊月在古代的雅称，农历正月到腊月的别称都有哪些？](http://m.365zyg.com/huangdaojiri/104808.html)
 
-#### 天文历法（廿四节气表）
+##### 天文历法（廿四节气表）
 
 > 二十四节气是反映一年中自然现象和农事活动季节特征的二十四个节候。 即立春、雨水、惊蛰、春分、清明、谷雨、立夏、小满、芒种、夏至、小暑、大暑、立秋、处暑、白露、秋分、寒露、霜降、立冬、小雪、大雪、冬至、小寒、大寒。
 > 
@@ -2453,9 +2480,7 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 
 *出处：[「问百度」二十四节气表](https://baike.baidu.com/item/二十四节气表/218278)*
 
-> ![](诸子百家考工记/二零二四年节气.png)
-
-*出处：[便民查询网 - 二零二四年节气](https://jieqi.bmcx.com)。*
+> ![*出处：[便民查询网 - 二零二四年节气](https://jieqi.bmcx.com)。*](诸子百家考工记/二零二四年节气.png){width=400}
 
 [萬年曆黃曆](https://www.facebook.com/reel/355047014135337)是个咱们道家查询日歷、农歷、黄歷吉日运势的手机应用，有关更多务农、天文历法、廿四节气等信息，请查阅以下文章：
 
@@ -2578,13 +2603,13 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 # rm(天干, 地支, 干支, 廿四节气)
 ```
 
-## 外部因素周期性自回归综合滑均模型（ARIMAX）
+### 外部因素周期性自回归综合滑均模型（ARIMAX）
 
-### `forecast::Arima()`
+#### `forecast::Arima()`
 
-#### 静态模型
+##### 静态模型
 
-![](诸子百家考工记/预测 - 方法与实践（第三版）.png)
+![](诸子百家考工记/预测 - 方法与实践（第三版）.png){width=400}
 
 > 当没有特殊指定时，ARIMA() 函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`和`q`，`P`和`Q`)的选择都通过最小化`AICc`来决定。
 
@@ -2774,9 +2799,9 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 # rm(天干, 地支, 干支, 廿四节气)
 ```
 
-#### 季节周期
+##### 季节周期
 
-##### 自回归模型史
+###### 自回归模型史
 
 > ... ARIMA模型，全称为自回归积分滑动平均模型（Autoregressive Integrated Moving Average Model），是由博克思（Box）和詹金斯（Jenkins）于廿世纪进年代初提出的一种时间序列预测方法。ARIMA模型是指在将非平稳时间序列转化为平稳时间序列过程中，将因变量仅对它的滞后值以及随机误差项的现值和滞后值进行回归所建立的模型。
 > 
@@ -2854,7 +2879,7 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 > 
 > 以下是差分的例子，除了经过一次差分外，继续第二次的差分：
 > 
-> ![](诸子百家考工记/ARIMA模型的差分例子.png)
+> ![](诸子百家考工记/ARIMA模型的差分例子.png){width=400}
 > 
 > ... 在ARIMA模型中，`p, q, d`三个参数是相当重要的，`p`和`q`分别控制ARIMA模型中自回归和移动平均的部分，而`d`则控制输入ARIMA模型的数据被执行的差分的阶数。
 > 
@@ -2882,13 +2907,13 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 
 *引用：[北京市昌平区肺结核发病数ARIMA模型预测](http://www.jbjc.org/JBJC/html/article_8538.htm)*
 
-##### 廿四节气
+###### 廿四节气
 
-![](诸子百家考工记/廿四节气表.png)
+![](诸子百家考工记/廿四节气表.png){width=400}
 
 *廿四节气表*
 
-> ![](诸子百家考工记/廿四节气（图文）.png)
+> ![](诸子百家考工记/廿四节气（图文）.png){width=400}
 > 
 > **二十四节气**，是古代中国劳动人民，在长期的生产实践中，根据太阳在黄道上的位置变化，而总结归纳出的一种用以指导农事活动的补充历法。二十四节气的每一个，都有着生动而富有美感的名称，也都有着各自丰富独特的含义。今天就让我们一起来看，最全的二十四节气含义介绍。
 > 
@@ -2906,7 +2931,7 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 
 *引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
 
-> ![](诸子百家考工记/ARIMA模型的差分例子.png)
+> ![](诸子百家考工记/ARIMA模型的差分例子.png){width=400}
 
 *引用：[「知乎」ARIMA模型说明](https://zhuanlan.zhihu.com/p/673234501)*
 
@@ -2993,7 +3018,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-#### 动态模型
+##### 动态模型
 
 经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
 
@@ -3026,9 +3051,9 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 综合以上筹算结果，**外因周期自回归戊**的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 预测价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。
 
-### `forecast::auto.arima()`
+#### `forecast::auto.arima()`
 
-#### 静态模型
+##### 静态模型
 
 ```{r forecast::auto.arima静态, error = TRUE}
 ## forecast::auto.arima() 静态模型
@@ -3044,7 +3069,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-#### 动态模型
+##### 动态模型
 
 ```{r forecast::auto.arima动态, error = TRUE}
 ## forecast::auto.arima() 动态模型
@@ -3061,9 +3086,9 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-### `stats::arima()`
+#### `stats::arima()`
 
-#### 静态模型
+##### 静态模型
 
 ```{r stats::arima静态, error = TRUE}
 ## stats::arima() 静态模型
@@ -3081,7 +3106,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 - [Sarimax model issue with `xreg`](https://stackoverflow.com/a/76269638/3806250)
 
-#### 动态模型
+##### 动态模型
 
 ```{r stats::arima动态, error = TRUE}
 ## stats::arima() 动态模型
@@ -3098,9 +3123,9 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-### `TSA::arima()`
+#### `TSA::arima()`
 
-#### 静态模型
+##### 静态模型
 
 ```{r TSA::arima静态, error = TRUE}
 ## TSA::arima() 静态模型
@@ -3116,7 +3141,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-#### 动态模型
+##### 动态模型
 
 ```{r TSA::arima动态, error = TRUE}
 ## TSA::arima() 动态模型
@@ -3132,9 +3157,9 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-### `TSA::arimax()`
+#### `TSA::arimax()`
 
-#### 静态模型
+##### 静态模型
 
 ```{r TSA::arimax静态, error = TRUE}
 ## TSA::arimax() 静态模型
@@ -3150,7 +3175,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-#### 动态模型
+##### 动态模型
 
 ```{r TSA::arimax动态, error = TRUE}
 ## TSA::arimax() 动态模型
@@ -3166,9 +3191,9 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-### `stats::arima0()`
+#### `stats::arima0()`
 
-#### 静态模型
+##### 静态模型
 
 ```{r stats::arima0静态, error = TRUE}
 ## stats::arima0() 静态模型
@@ -3184,7 +3209,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-#### 动态模型
+##### 动态模型
 
 ```{r stats::arima0动态, error = TRUE}
 ## stats::arima0() 动态模型
@@ -3201,9 +3226,9 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-### `fable::ARIMA()`
+#### `fable::ARIMA()`
 
-#### 静态模型
+##### 静态模型
 
 ```{r fable::ARIMA静态, error = TRUE}
 ## fable::ARIMA() 静态模型
@@ -3219,7 +3244,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-#### 动态模型
+##### 动态模型
 
 ```{r fable::ARIMA动态, error = TRUE}
 ## stats::arima0() 动态模型
@@ -3234,7 +3259,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-## 季节性自回归综合滑均模型（SARIMA）
+### 季节性自回归综合滑均模型（SARIMA）
 
 ```{r SARIMA静态, eval = FALSE}
 
@@ -3246,7 +3271,7 @@ sarima::sarima()
 
 - [ARIMA - Advanced Time Series Methods: Auto Regression Integrated Moving Average](https://medium.com/analytics-vidhya/arima-fc1f962c22d4)
 
-## 外部因素周期性季节性自回归综合滑均模型（SARIMAX）
+### 外部因素周期性季节性自回归综合滑均模型（SARIMAX）
 
 ```{r , eval = FALSE}
 
@@ -3254,13 +3279,13 @@ sarima::sarima()
 
 - [pmdarima.arima.ARIMA](https://alkaline-ml.com/pmdarima/modules/generated/pmdarima.arima.ARIMA.html)
 
-## 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
+### 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 
 ```{r , eval = FALSE}
 
 ```
 
-## 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
+### 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
 ```{r , eval = FALSE}
 
@@ -3298,19 +3323,19 @@ sarima::sarima()
 
 **赤印度人酋长宗教司甘地/土司乩童世袭制法家刘氏彭城堂乌骨精瑾貹**
 
-![*可兰经回教刑事法典断肢法歼灭敌人瓜雪回教市政局的人蛹巫婆回教徒奴辱依杀、入侵非清真产品的黑客、MY大汉山赤印度人酋长宗教司甘地 / MY大汉山世袭制头戴白色女假发、男肛之耻的土司乩童世袭制法家刘氏彭城堂乌骨精瑾貹瓦盛顿/时光机器二零零二不林肯和白骨精拜登！*](诸子百家考工记/失心疯猥亵淫魔土司白骨精赤帝殡·刘蛤蟆功.png)
+![*可兰经回教刑事法典断肢法歼灭敌人瓜雪回教市政局的人蛹巫婆回教徒奴辱依杀、入侵非清真产品的黑客、MY大汉山赤印度人酋长宗教司甘地 / MY大汉山世袭制头戴白色女假发、男肛之耻的土司乩童世袭制法家刘氏彭城堂乌骨精瑾貹瓦盛顿/时光机器二零零二不林肯和白骨精拜登！*](诸子百家考工记/失心疯猥亵淫魔土司白骨精赤帝殡·刘蛤蟆功.png){width=400}
 
-![*可兰经回教刑事法典断肢法歼灭敌人瓜雪回教市政局的人蛹巫婆回教徒奴辱依杀、入侵非清真产品的黑客、赤印度人酋长宗教司甘地/土司乩童世袭制法家刘氏彭城堂乌骨精瑾貹！*](诸子百家考工记/全球公敌世袭制白骨精土司法家刘氏彭城堂·殡刘.png)
+![*可兰经回教刑事法典断肢法歼灭敌人瓜雪回教市政局的人蛹巫婆回教徒奴辱依杀、入侵非清真产品的黑客、赤印度人酋长宗教司甘地/土司乩童世袭制法家刘氏彭城堂乌骨精瑾貹！*](诸子百家考工记/全球公敌世袭制白骨精土司法家刘氏彭城堂·殡刘.png){width=400}
 
-![](诸子百家考工记/大秦赋 - 现代版秦穆公与秦惠文王.png)
+![](诸子百家考工记/大秦赋 - 现代版秦穆公与秦惠文王.png){width=400}
 
-![](诸子百家考工记/回教徒，可兰经；断肢法，最合法。歼灭所有印尼巫鹰和美国洋番爱国狂热份子.png)
+![](诸子百家考工记/回教徒，可兰经；断肢法，最合法。歼灭所有印尼巫鹰和美国洋番爱国狂热份子.png){width=400}
 
 *瓜雪RHU（淮西派）花园加德士油站隔壁第三巷门牌卅二号土司乩童巫裔回教徒瑾貹·殡敌·刘和瓜雪回教市政局柜台巫婆回教徒素威·殡敌·刘和奴辱依杀·殡敌·刘*
 
-![](诸子百家考工记/攻占东盟.png)
+![](诸子百家考工记/攻占东盟.png){width=400}
 
-![](诸子百家考工记/秦国China一统天下论 - 赢家黄氏江夏堂，拯救亚洲人.png)
+![](诸子百家考工记/秦国China一统天下论 - 赢家黄氏江夏堂，拯救亚洲人.png){width=400}
 
 > #回教徒爱国就严格遵守回教徒可兰经法家国学论集体自杀而不爱国就集体退位让贤而已 #美国耶稣洋番集体被钉在十字架被晒死
 > 回教徒可兰经法家国学论，东南亚巫贼巫婆回教徒尤其是瓜雪巴西不能帮万佛寺土司张佳坤爱国虔诚狂热份子和大象共和国举国公民马航三七零和马航十七自杀式飞往东亚
@@ -3543,4 +3568,4 @@ rm(系统信息甲, 系统信息乙)
 ---
 
 [![](诸子百家考工记/世博量化.png){height=14} Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
-[**![](诸子百家考工记/世博量化.png){height=14} 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}
+[![](诸子百家考工记/世博量化.png){height=14} 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}
