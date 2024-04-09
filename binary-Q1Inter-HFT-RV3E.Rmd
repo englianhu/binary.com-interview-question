@@ -3037,22 +3037,25 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 *引用：[In the `auto.arima()` function in R, how do I find the `p,d,q` values for that `arima`](https://stackoverflow.com/questions/62339334/in-the-auto-arima-function-in-r-how-do-i-find-the-p-d-q-values-for-that-arima)*
 
 ```{r error = TRUE}
+summary(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(时辰乙)])))
 
+arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(时辰乙)])))
+
+## ic = 'aic'
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+    bind_rows(.id = '计数模型') %>% 
+    data.frame() %>% 
+    mutate(计数模型 = factor(
+      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
+        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
-
-
 
 **设置最优赤池信息量准则为`ic = 'AICc'`**
 
 > 当没有特殊指定时，ARIMA() 函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`和`q`，`P`和`Q`)的选择都通过最小化`AICc`来决定。
 
 *引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
-
-```{r error = TRUE}
-
-```
-
-**设置最优赤池信息量准则为`ic = 'AICc'`**
 
 > ... 函数`ARIMA()`也可用于为错误选择最佳`ARIMA`模型。
 > 这是通过不指定`pdq()`特殊来完成的。通过将KPSS检验应用于使用普通最小二乘法估计的回归模型的残差来确定是否需要差分。如果需要差分，则对所有变量进行差分，并使用最大似然估计重新估计模型。最终的模型将用原始变量表示，即使它是用差分变量估计的。
@@ -3062,10 +3065,19 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 *引用：[「预测」方法与实践（第三版）第十章第二节 - 用`fable`实现ARIMA误差回归](https://otexts.com/fpp3cn/regarima-cn.html)*
 
 ```{r error = TRUE}
+summary(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙)])))
 
+arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙)])))
+
+## ic = 'aicc'
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+    bind_rows(.id = '计数模型') %>% 
+    data.frame() %>% 
+    mutate(计数模型 = factor(
+      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
+        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
-
-**设置最优赤池信息量准则为`ic = 'AICc'`**
 
 > ... 有些时候，预测变量对待预测变量的影响不是简单而迅速的。例如，投放广告之后一段时间才会影响销售接受，而当月的销售收入会取决于过去几个月的广告支出。类似的，当工厂的安全政策的变化会立即减少工厂事故的发生，但随着时间的推移，工人会降低对新出安全政策的重视程度。
 > 
@@ -3137,36 +3149,6 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ## forecast::auto.arima() 动态模型
 ## 如果eval()出错，可以使用dget()歼灭敌人巫贼巫婆非法回教徒公仆、任何不会中文或不是咱们世袭制道教徒华人或越族的人。
 (奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), p = 0, d = 1, q = 4, xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-**赤池信息准则**
-
-```{r , error = TRUE}
-summary(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(时辰乙, 时分计)])))
-
-summary(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙, 时分计)])))
-
-arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(时辰乙, 时分计)])))
-
-arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙, 时分计)])))
-
-## ic = 'aic'
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-
-## ic = 'aicc'
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数模型') %>% 
     data.frame() %>% 
     mutate(计数模型 = factor(
