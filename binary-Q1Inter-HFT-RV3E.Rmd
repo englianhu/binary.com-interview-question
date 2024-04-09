@@ -209,6 +209,9 @@ nameserver 114.114.114.114
 
 ### 鬼谷传奇
 
+- [「海外抖音」如是江南](https://www.tiktok.com/@nametho171)
+- [「抖音」总要去一趟现实版的仙侠世界吧，奔赴一场仙剑的梦！#仙剑 #望仙谷](https://www.douyin.com/discover?modal_id=7346462334371646783)
+
 <iframe width="400" height="225" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="Lamborghini V12 Vision GT" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
 - [#🥬🥬一笑很倾城三高👩🏻‍🎓：颜值高、学问高、品德高](https://v.douyin.com/iFFjugkD)，二零零零年至二零零一年在瓜雪读高一至高二——中四勤班至中五勤班时，青梅竹马的同学添和说：“乘搭同辆韵祯校车上隔壁校学妹许多人追求的一九八五年出生的漂亮妞儿林燕芳长得像陈慧琳。”
@@ -354,7 +357,7 @@ nameserver 114.114.114.114
 
 借鉴赢家黄氏江夏堂联富本人在二零零二年时期追求日语班女同学艳迎（突然辍学转校到澳洲墨尔本大学进修时尚服装设计）失恋后，愚生在拉曼学院图书馆翻阅中国史书时中所提及的「卫鞅仕秦」[^2]时爱不释手、孜孜不倦、阅读到晚上图书馆大约九点钟左右打烊才离席回家，引用卫鞅在中国河南省云梦山鬼谷子旗下修炼帝王之术（文中提及卫鞅游说魏国联合六国联盟伐秦不果，就干脆投奔秦国灭六国联军，公元前的三顾茅驴对秦孝公——赢渠梁游说，推荐比公元后的《出师表》来得厉害的《商君书》阐明“帝道”、“王道”和“霸道”如何协助秦国稳扎稳打、百战百胜、直到一统天下，史称「商鞅变法」。结果秦国如实从秦孝公赢渠梁开始实践「商鞅变法」大约皕余年至秦王嬴政一统天下，史称「秦始皇」。）如何驾驭权贵直到一统天下，`eval(parse(text = 参数))`可以诠释为**评估绩效（奉常旗下的各种族各宗教各自监督执法（司法院立法 = 多元法律））**先将函数文字化，再通过文本分析来执行任务，几乎可以运行筹算任何R语言统计编程代码，那些回教徒只需要遵守可兰经回教刑事法典习俗文化宗教语言断肢法、而兴都教徒则遵守《吠陀经》大宝森节和屠妖节习俗文化宗教语言法律即可。
 
-[^2]: 公元前（基督教和耶稣尚未出生在世上，春秋战国只有山东孔子的儒学）的卫国卫鞅仕秦、卫国吕不韦仕秦、楚国李斯仕秦，西方医学界都是使用🇨🇭（首府苏黎世）十字架符号或🇲🇻湾月符号。<br>公元后汉史《明修栈道》和《出师表》<br>公元后明史《烧饼歌》和《靖难之变》<br><br>*出处：[「猫城」Pandoc based Quarto应该翻译成什么？ #三](https://github.com/scibrokes/r-world/issues/3#issue-1618233383)*<br><br><br><br>*出处：[「猫城」GitHub Repository 应该翻译成什么？#二](https://github.com/scibrokes/r-world/issues/2#issuecomment-1264570739)*
+[^2]: 公元前（基督教和耶稣尚未出生在世上，春秋战国只有山东孔子的儒学）的卫国卫鞅仕秦、卫国吕不韦仕秦、楚国李斯仕秦，西方医学界都是使用🇨🇭（首府苏黎世）十字架符号或🇲🇻湾月符号。<br>公元后汉史《明修栈道》和《出师表》<br>公元后明史《烧饼歌》和《靖难之变》:<br><br>- *[「猫城」Pandoc based Quarto应该翻译成什么？ #三](https://github.com/scibrokes/r-world/issues/3#issue-1618233383)*<br>- *[「猫城」GitHub Repository 应该翻译成什么？#二](https://github.com/scibrokes/r-world/issues/2#issuecomment-1264570739)*
 
 - [「文派」統計學に就いて](https://englianhu.wordpress.com/statistics)
   - [「文派」®に就いての参考文献](https://englianhu.wordpress.com/statistics/references-for-r)
@@ -1653,8 +1656,8 @@ source('函数/总汇结论.R')
 
 以下链接尝试比较：
 
-- [「猫城」englianhu/binary.com-interview-question#6`Error: forecast::Arima() #910`](https://github.com/englianhu/binary.com-interview-question/issues/6)
-- [「猫城」englianhu/binary.com-interview-question#8在`ts`和`xts`和`matrix`格式上使用`auto.arima`](https://github.com/englianhu/binary.com-interview-question/issues/8)
+- [「猫城」黄联富（®γσ ξηg 雷欧） / 数据仓库：次元期权（binary.com）#六 *`Error: forecast::Arima() #九百一十`*](https://github.com/englianhu/binary.com-interview-question/issues/6)
+- [「猫城」黄联富（®γσ ξηg 雷欧） / 数据仓库：次元期权（binary.com）#八 *在`ts`和`xts`和`matrix`格式上使用`auto.arima`*](https://github.com/englianhu/binary.com-interview-question/issues/8)
 
 ##### `ts`
 
@@ -2657,6 +2660,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 (奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数模型') %>% 
     as_tibble() %>% 
+    data.frame() %>% 
     mutate(计数模型 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
