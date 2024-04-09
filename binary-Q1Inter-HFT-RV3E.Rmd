@@ -2492,7 +2492,7 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 - [二十四节气 - 中国历法中廿四个特定节令、人类非物质文化遗产代表作](https://baike.baidu.com/item/二十四节气/191597)
 - [维基百科 - 节气](https://zh.wikipedia.org/zh-my/节气)
 
-```{r 天文历法-计数建模}
+```{r 天文历法-计数建模, warning = FALSE, error = TRUE}
 if(!exists('天干')) 天干 <- c('甲', '乙', '丙', '丁', '戊', '己', '庾', '辛', '壬', '癸')
 if(!exists('地支')) 地支 <- c('子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥')
 if(!exists('干支')) {
@@ -2641,7 +2641,7 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)经过测试`method = c('CSS-ML', 'ML', 'CSS')`仨，筹算出的赤池信息量准则比`ML`来得小或较大负数（赤池信息量准则最优值）而`CSS`出现错误信息，故此将`CSS-ML`筹算法的最优计数/机数模型设置为默认值。
 
-```{r 静态外因甲, error=TRUE}
+```{r 静态外因甲, warning = FALSE, error = TRUE}
 ## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数模型只允许使用数字筹算，在此就使用时分计筹算。
 
 ## forecast::Arima()
@@ -2675,7 +2675,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 - [遞歸神經網路（RNN）和長短期記憶模型（LSTM）的運作原理](https://brohrer.mcknote.com/zh-Hant/how_machine_learning_works/how_rnns_lstm_work.html)
 - [循环神经网络 – Recurrent Neural Network | RNN](https://easyai.tech/ai-definition/rnn)。
 
-```{r 三年七个月数据, error = TRUE, eval = FALSE}
+```{r 三年七个月数据, warning = FALSE, error = TRUE, eval = FALSE}
 ## 检验是否已设置途径。
 if (!exists('.蜀道')) {
   .蜀道 <- getwd() |> 
@@ -2946,7 +2946,7 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 
 `季节差分的次数 = NULL`
 
-```{r 静态外因乙, error = TRUE}
+```{r 静态外因乙, warning = FALSE, error = TRUE}
 ## 自回归均移模型最优
 ## auto.arima "no suitable ARIMA model found" for measuring dependency between debt and GDP https://stats.stackexchange.com/a/316080/68357
 
@@ -2975,7 +2975,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 
 `季节差分的次数 = 0`
 
-```{r 静态外因丙, error = TRUE}
+```{r 静态外因丙, warning = FALSE, error = TRUE}
 # 季节差分的次数 = 0
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 0, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
 
@@ -2991,7 +2991,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 
 `季节差分的次数 = 1`
 
-```{r 静态外因丁, error = TRUE}
+```{r 静态外因丁, warning = FALSE, error = TRUE}
 # 季节差分的次数 = 1
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 1, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
 
@@ -3007,7 +3007,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 
 `季节差分的次数 = 2`
 
-```{r 静态外因戊, error = TRUE}
+```{r 静态外因戊, warning = FALSE, error = TRUE}
 # 季节差分的次数 = 2
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
@@ -3036,7 +3036,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 *引用：[In the `auto.arima()` function in R, how do I find the `p,d,q` values for that `arima`](https://stackoverflow.com/questions/62339334/in-the-auto-arima-function-in-r-how-do-i-find-the-p-d-q-values-for-that-arima)*
 
-```{r error = TRUE}
+```{r 赤池信息准则AIC, warning = FALSE, error = TRUE}
 summary(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(时辰乙)])))
 
 arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(时辰乙)])))
@@ -3064,7 +3064,7 @@ arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]),
 
 *引用：[「预测」方法与实践（第三版）第十章第二节 - 用`fable`实现ARIMA误差回归](https://otexts.com/fpp3cn/regarima-cn.html)*
 
-```{r error = TRUE}
+```{r 赤池信息准则AICc, warning = FALSE, error = TRUE}
 summary(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙)])))
 
 arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙)])))
@@ -3093,7 +3093,7 @@ arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]),
 
 经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
 
-```{r 动态外因甲, error = TRUE}
+```{r 动态外因甲, warning = FALSE, error = TRUE}
 ## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数模型只允许使用数字筹算，在此就使用时分计筹算。
 
 ## forecast::Arima() p, d, q 廿四节气
@@ -3126,7 +3126,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 静态模型
 
-```{r forecast::auto.arima静态, error = TRUE}
+```{r forecast::auto.arima静态, warning = FALSE, error = TRUE}
 ## forecast::auto.arima() 静态模型
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
@@ -3142,7 +3142,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 动态模型
 
-```{r forecast::auto.arima动态, error = TRUE}
+```{r forecast::auto.arima动态, warning = FALSE, error = TRUE}
 ## forecast::auto.arima() 动态模型
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), p = 0, d = 1, q = 4, xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
@@ -3155,13 +3155,26 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
+
+## forecast::auto.arima() 动态模型
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+## forecast::auto.arima() 动态模型
+## 如果eval()出错，可以使用dget()歼灭敌人巫贼巫婆非法回教徒公仆、任何不会中文或不是咱们世袭制道教徒华人或越族的人。
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+    bind_rows(.id = '计数模型') %>% 
+    data.frame() %>% 
+    mutate(计数模型 = factor(
+      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
+        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
+        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
 #### `stats::arima()`
 
 ##### 静态模型
 
-```{r stats::arima静态, error = TRUE}
+```{r stats::arima静态, warning = FALSE, error = TRUE}
 ## stats::arima() 静态模型
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))"), .print = TRUE)
 
@@ -3220,7 +3233,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 > ```
 > arimaModel = Arima(log(myTS), order=c(1,0,1), seasonal=list(order=c(0,0,1)), xreg=myModelParameters, method="ML")
 
-> ```
+> ...
 > $$\begin{array}{|c|c|}
 \hline Parameter & Estimate & Std. Error & T\ Value & P(>|t|) \\\hline
 ar1    &    -5.8991e-01   &       NA  &    NA  &      NA \\\hline   
@@ -3234,11 +3247,11 @@ Q2      &  -4.2457e-01 & 2.9678e-02 & -14.306 & < 2.2e-16 *** \\\hline
 Q3      &  -3.1433e-01 & 2.1135e-02 & -14.872 & < 2.2e-16 *** \\\hline
 \end{array}$$
 > 
-> What could I do with this? Why does this happen? I had switched the method between of the function with CSS, CSS-ML, but it's always the same...
+> What could I do with this? Why does this happen? I had switched the method between of the function with `CSS`, `CSS-ML`, but it's always the same...
 > 
 > ...
 > 
-> The inverse of the Hessian matrix evaluated at the returned solution contains negative values (the square root of negative values led to the NA values). This typically means that the optimization algorithm failed to converge or that the solution is not reliable. See what arimaModel$code returns: a zero value means that the algorithm converged, otherwise see the documentation ?optim to find out the meaning of the code.
+> The inverse of the Hessian matrix evaluated at the returned solution contains negative values (the square root of negative values led to the `NA` values). This typically means that the optimization algorithm failed to converge or that the solution is not reliable. See what arimaModel$code returns: a zero value means that the algorithm converged, otherwise see the documentation ?optim to find out the meaning of the code.
 > 
 > Failure to reach a reliable solution often imply, in turn, that the model is not appropriate for the data; the data do not contain enough information to get reliable estimates for the chosen parameters. Inspecting the Hessian could give you some clue on which variables were troublesome (I think they aren't necessarily the variables with NA standard errors). Unfortunately there isn't an easy way to retrieve the Hessian employed by arima.
 > 
@@ -3246,15 +3259,14 @@ Q3      &  -3.1433e-01 & 2.1135e-02 & -14.872 & < 2.2e-16 *** \\\hline
 > 
 > You can also try other optimization algorithms, although they most likely will arrive to the same result. The function arimain the stats package allows you to choose the optimization algorithm:
 > ```
-> stats::arima(log(myTS),order=c(1,0,1), seasonal=list(order=c(0,0,1)), 
-  xreg=myModelParameters, method="ML", optim.method="Nelder-Mead")
+> stats::arima(log(myTS), order=c(1,0,1), seasonal=list(order=c(0,0,1)), xreg=myModelParameters, method="ML", optim.method="Nelder-Mead")
 > ```
 
 *引用：[Standard errors `NaN` by `Arima` function in R](https://stats.stackexchange.com/a/210274/68357)*
 
 ##### 动态模型
 
-```{r stats::arima动态, error = TRUE}
+```{r stats::arima动态, warning = FALSE, error = TRUE}
 ## stats::arima() 动态模型
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))"), .print = TRUE)
 
@@ -3273,7 +3285,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 静态模型
 
-```{r TSA::arima静态, error = TRUE}
+```{r TSA::arima静态, warning = FALSE, error = TRUE}
 ## TSA::arima() 静态模型
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
@@ -3289,7 +3301,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 动态模型
 
-```{r TSA::arima动态, error = TRUE}
+```{r TSA::arima动态, warning = FALSE, error = TRUE}
 ## TSA::arima() 动态模型
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
@@ -3307,7 +3319,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 静态模型
 
-```{r TSA::arimax静态, error = TRUE}
+```{r TSA::arimax静态, warning = FALSE, error = TRUE}
 ## TSA::arimax() 静态模型
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
@@ -3323,7 +3335,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 动态模型
 
-```{r TSA::arimax动态, error = TRUE}
+```{r TSA::arimax动态, warning = FALSE, error = TRUE}
 ## TSA::arimax() 动态模型
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
@@ -3341,7 +3353,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 静态模型
 
-```{r stats::arima0静态, error = TRUE}
+```{r stats::arima0静态, warning = FALSE, error = TRUE}
 ## stats::arima0() 静态模型
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
@@ -3357,7 +3369,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 动态模型
 
-```{r stats::arima0动态, error = TRUE}
+```{r stats::arima0动态, warning = FALSE, error = TRUE}
 ## stats::arima0() 动态模型
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), 
   .print = TRUE)
@@ -3376,12 +3388,12 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 静态模型
 
-```{r fable::ARIMA静态, error = TRUE}
+```{r fable::ARIMA静态, warning = FALSE, error = TRUE}
 ## fable::ARIMA() 静态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 ## fable::ARIMA() 静态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数模型') %>% 
     data.frame() %>% 
     mutate(计数模型 = factor(
@@ -3392,7 +3404,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 动态模型
 
-```{r fable::ARIMA动态, error = TRUE}
+```{r fable::ARIMA动态, warning = FALSE, error = TRUE}
 ## stats::arima0() 动态模型
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
@@ -3416,7 +3428,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ### 季节性自回归综合滑均模型（SARIMA）
 
-```{r SARIMA静态, eval = FALSE}
+```{r SARIMA静态, warning = FALSE, error = TRUE, eval = FALSE}
 
 sarima::sarima()
 
@@ -3428,7 +3440,7 @@ sarima::sarima()
 
 ### 外部因素周期性季节性自回归综合滑均模型（SARIMAX）
 
-```{r , eval = FALSE}
+```{r , warning = FALSE, error = TRUE, eval = FALSE}
 
 ```
 
@@ -3436,13 +3448,13 @@ sarima::sarima()
 
 ### 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 
-```{r , eval = FALSE}
+```{r , warning = FALSE, error = TRUE, eval = FALSE}
 
 ```
 
 ### 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
-```{r , eval = FALSE}
+```{r , warning = FALSE, error = TRUE, eval = FALSE}
 
 ```
 
@@ -3458,7 +3470,7 @@ sarima::sarima()
 
 > <span style='color:#FFEBCD; background-color:#991B00;'>**《礼记•经解》孔子曰：**</span><span style='color:#DimGrey; background-color:#D52600;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^6]
 
-*引用：[「快懂百科」《礼记•经解》](https://www.baike.com/wikiid/2225522569881832051)和[第一范文网：差之毫厘，谬以千里的故事](https://www.diyifanwen.com/chengyu/liuziyishangchengyugushi/2010051523105152347092749890.htm)和[「百度百科」春秋时期孔子作品《礼记•经解》](https://baike.baidu.com/item/礼记·经解/2523092)和[「當代中國」差之毫釐 謬以千里](https://www.ourchinastory.com/zh/2962/差之毫釐%20謬以千里)*
+*引用：[「快懂百科」《礼记•经解》](https://www.baike.com/wikiid/2225522569881832051)和[第一范文网：差之毫厘，谬以千里的故事](https://www.diyifanwen.com/chengyu/liuziyishangchengyugushi/2010051523105152347092749890.htm)和[「百度百科」春秋时期孔子作品《礼记•经解》](https://baike.baidu.com/item/礼记·经解/2523092)和[「當代中國」差之毫釐，謬以千里](https://www.ourchinastory.com/zh/2962/差之毫釐%20謬以千里)*
 
 [^6]: [HTML Color Codes](https://html-color.codes)
 
