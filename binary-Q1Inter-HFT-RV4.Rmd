@@ -1,7 +1,7 @@
 ---
 title: "<img src='诸子百家考工记/deriv.png' height='240'>"
 subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（「丁」🌟儒家秦孝公清君侧之商鞅变法**）**</span>](https://github.com/englianhu/binary.com-interview-question)"
-author: "道家笔者：[<ruby>赢<rp>(</rp><rt>yíng</rt><rp>)</rp>家<rp>(</rp><rt>jiā</rt><rp>)</rp>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>氏<rp>(</rp><rt>shì</rt><rp>)</rp>江<rp>(</rp><rt>jiānɡ</rt><rp>)</rp>夏<rp>(</rp><rt>xià</rt><rp>)</rp>堂<rp>(</rp><rt>táng</rt><rp>)</rp></ruby> ®γσ, ξηg Lιαη Ημ，<ruby>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>联<rp>(</rp><rt>lián</rt><rp>)</rp>富<rp>(</rp><rt>fù</rt><rp>)</rp></ruby>（<ruby>雷<rp>(</rp><rt>léi</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>∪ <ruby>瑞<rp>(</rp><rt>ruì</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>）](https://englianhu.wordpress.com.com) <img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='14'>® <img src='诸子百家考工记/大秦赋 - 北京大学.png' height='14'>" 
+author: "道家笔者：[<ruby>赢<rp>(</rp><rt>yíng</rt><rp>)</rp>家<rp>(</rp><rt>jiā</rt><rp>)</rp>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>氏<rp>(</rp><rt>shì</rt><rp>)</rp>江<rp>(</rp><rt>jiānɡ</rt><rp>)</rp>夏<rp>(</rp><rt>xià</rt><rp>)</rp>堂<rp>(</rp><rt>táng</rt><rp>)</rp></ruby> ®γσ, ξηg Lιαη Ημ，<ruby>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>联<rp>(</rp><rt>lián</rt><rp>)</rp>富<rp>(</rp><rt>fù</rt><rp>)</rp></ruby>（<ruby>雷<rp>(</rp><rt>léi</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>∪ <ruby>瑞<rp>(</rp><rt>ruì</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>）](https://englianhu.wordpress.com.com) ![](诸子百家考工记/大秦赋 - 北京大学.png){height=14}![](诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png){height=14}®"
 date: "民国日期：民国一百一十三年杏月廿六<br>道家节日：[农历二零二四年（属龙 甲辰年 戊辰月
 戊戌日）杏月廿六（七夕节）](https://mobile.51wnl-cq.com/huangli_tab_h5/?posId=BDSS&STIME=2024-04-04)<br>诸子百家：**纵横家鬼谷传奇** - "
 output:
@@ -64,7 +64,11 @@ output:
 
 *出处：*[**天下***(电视剧《大秦赋》主题曲完整版)*](https://player.bilibili.com/player.html?aid=757957931)
 
-咱们世袭制道家超过八国联军十八路诸侯，歼灭东南亚所有回教徒尤其是公仆！
+![*「海外华人公会 - 儒家秦孝公🌟」世袭制道教徒十二生肖，姓氏堂号子嗣贞节牌坊——从满洲到星洲。借鉴周朝分封制与周礼（日本与英国向来都是礼仪之邦），🇬🇧大英帝国殖民时期受封公爵的中国儒家秦孝公陈祯禄清君侧之商鞅变法，歼灭所有🇬🇧英属共运会诸番、巫裔非法回教徒的可兰经巫术屠杀罪电诈集团；如果🇯🇵日本天皇和🇬🇧英国王储昏庸就取而代之。*](诸子百家考工记/中国人后裔陈祯禄公爵，不忘初心方得始终.png){width=400 height=225}
+
+「世袭制道家黄河文明、黄埔军校、黄种人，拯救亚洲人」🌟儒家秦孝公清君侧，延续🇬🇧英属留下的世俗国治国之道，各种族需要各种族遵守回各自祖籍的习俗文化宗教语言法律，多元习俗文化宗教语言，才不会种族互相厮杀，导致🇬🇧英属共运会所有殖民诸藩渔翁得利，重返亚洲。
+
+![*艺人/明星🌟周星驰成名前《我是中国人🎶》：抗战八年，儒家之道... 无论身在何方，誓做中国魂！*](诸子百家百戏）/周星驰枯八年演唱《我是中国人》.mp4){width=400 height=225}
 
 ## 古诗
 
@@ -1550,7 +1554,7 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 #### 中华复古之道
 
 - 服饰
-    - MY大汉山，东汉末年：[馬來西亞漢服運動 Hanfu Malaysia](https://www.facebook.com/hanfumalaysia)，借鉴咱们中华史赢家黄氏江夏堂是秦汉时期最正统正义的家族。
+    - MY大汉山，东汉末年：[馬來西亞漢服運動 Hanfu Malaysia](https://www.facebook.com/hanfumalaysia)，借鉴咱们中华史赢家黄氏江夏堂是秦蜀时期最正统正义的家族。
     - 东马猫城，古晋（司马错得蜀既得楚/大都督司马懿）：[古晋华服社 Kuching Huafu Society](https://www.facebook.com/profile.php?id=100057257298724)，借鉴咱们中华史，「秦晋之好」都是靠拢咱们祖籍中国复古，推翻回教徒宦官民族的政权。
 - 建筑
     - [中国传统建筑九大体系。](https://www.facebook.com/watch/?v=736574607893234)
@@ -1949,7 +1953,7 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 
 *出处：[「道中华」为何二十四节气被誉为“中国的第五大发明”？](https://www.neac.gov.cn/seac/c103391/202210/1159359.shtml)*
 
-![*「秦汉复古之道」秦人牧马，北京大学，工商银行，吕氏春秋。🌟马华公会全国工农组一九七七年三月廿日常年大会*](诸子百家考工记/马华公会全国工农组常年大会.png){width=400}
+![*「秦蜀复古之道」秦人牧马，北京大学，工商银行，吕氏春秋。🌟马华公会全国工农组一九七七年三月廿日常年大会*](诸子百家考工记/马华公会全国工农组常年大会.png){width=400}
 
 > 二十四节气是中国农历中特有的一种划分法，是不折不扣的“中华遗产”。
 > 
