@@ -65,7 +65,7 @@ output:
 
 「世袭制道家黄河文明、黄埔军校、黄种人，拯救亚洲人」🌟儒家秦孝公清君侧，延续🇬🇧英属留下的世俗国治国之道，各种族需要各种族遵守回各自祖籍的习俗文化宗教语言法律，多元习俗文化宗教语言，才不会种族互相厮杀，导致🇬🇧英属共运会所有殖民诸藩渔翁得利，重返亚洲。
 
-![](诸子百家百戏）/「快手」我是中国人.mp4){width=400 height=225}
+<iframe width="400" height="225" src="https://www.youtube.com/embed/DI-ydEN2PjY" title="「快手」我是中国人🎶" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 *出处：[艺人/明星🌟周星驰成名前《我是中国人🎶》：经管之家赵坚毅之杏林经济学！](https://v.kuaishou.com/uQucjS)*
 
@@ -429,7 +429,7 @@ nameserver 114.114.114.114
 
 上图画中话叙述秦国史（扶苏提拔商鞅革命或持续黄种人胡亥的辛亥革命，建立万里长城抵御北方凶悍的游牧民族匈奴掠夺天然资源和搞垮经济——高科技高频量化对冲）和美国（大象共和国如果本土化和爱国就沦为赤印度人的巫术国度，外来的英国习俗文化宗教语言终究是英国人的资产）独立战争史，值得咱们中华民族省思。「世袭制道家黄河文明、黄埔军校、黄种人，拯救亚洲人」，东亚各种族需要各种族遵守回各自祖籍的习俗文化宗教语言法律，多元习俗文化宗教语言，才不会种族互相厮杀，导致洋番渔翁得利，重返亚洲。至于东南亚的巫贼巫婆回教徒累赘民族一律杀无赦！
 
-![*「空城计」MY大汉山世袭制法家可兰经回教刑事法典习俗文化宗教语言断肢法巫贼巫婆非法回教徒巫术份子和赤印度人酋长宗教司甘地/土司乩童刘瑾貹和世袭制法家可兰经回教刑事法典习俗文化宗教语言断肢法巫贼巫婆非法回教徒巫术份子 -自杀式恐怖袭击- 红军🚩*](诸子百家百戏/土司乌贼赤印度人武装部队反攻城堡.mp4){width=400 height=225}
+<iframe width="400" height="225" src="https://www.youtube.com/embed/ONtyQcRsaUw?si=ngLUxn3vJGUEowk9" title="「空城计」MY大汉山世袭制法家可兰经回教刑事法典习俗文化宗教语言断肢法巫贼巫婆非法回教徒巫术份子和赤印度人酋长宗教司甘地/土司乩童刘瑾貹和世袭制法家可兰经回教刑事法典习俗文化宗教语言断肢法巫贼巫婆非法回教徒巫术份子 -自杀式恐怖袭击- 红军🚩" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ## 克拉克太阳谷（二零一九年：阿里之旅）
 
@@ -2170,9 +2170,9 @@ options(warn = 0)
 - [「猫城」雷欧@中科红旗](https://github.com/englianhu/RedFlag-Linux)
 - [「猫城」雷欧@图书馆](https://github.com/englianhu/library)
 
-<iframe width="400" height="225" src="https://www.youtube.com/embed/6VMjJ2v9Nv8" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/6VMjJ2v9Nv8" title="倭寇录屏 - 民国一百一十三年正月廿五（农历甲辰年丁卯月戊辰日酉时末廿五分卌五秒 属龙 周二" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-<iframe width="400" height="225" src="https://www.youtube.com/embed/qpH19SxHXJQ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/qpH19SxHXJQ" title="倭寇录屏 - 民国一百一十三年二月初五（甲辰年丁卯月丁丑日寅时中卅二分十一秒 属龙 周四）" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 - [外部因素周期性自回归综合滑均模型（ARIMAX）](外部因素周期性自回归综合滑均模型（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
 - [平滑周计](#平滑周计)美国洲际犯罪案！
