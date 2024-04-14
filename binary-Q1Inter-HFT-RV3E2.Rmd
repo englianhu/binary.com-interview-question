@@ -886,8 +886,13 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 - [业者引入高价位黑鸡枞，促进大马磨菇业多元发展](https://www.agroworld.my/cn/article-details/349-article-13)
 - [种植鸡枞全过程？（鸡纵菇种植方法）](https://www.tippingpointmediastudios.com/delicacy/78303.html)
 - [白蚁系列鸡枞菌的纯人工栽培方法](https://patents.google.com/patent/CN103004454A/zh)
+- [一种黑鸡枞菌的智能化工厂栽培技术](https://patents.google.com/patent/CN104705070A/zh)
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/Ff202w8-j7s" title="有3000年歷史的「守宮砂」，真能辨別女子貞操？有沒有科學依據？[酒窩趣科普] #趣味歷史#歷史科普#古代歷史" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+> ![](诸子百家百戏/「抖音」计量经济学霸ξ诗 - hypothesis test.mp4){width=400}
+
+*出处：[「抖音」计量经济学霸ξ诗 - hypothesis test](https://youtube.com/shorts/nbMbxkFN2a8)*
 
 **#秦灭六洲，一统天下；**<br>
 **#莫忘初衷，方得始终。**
@@ -956,6 +961,10 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 综合以上所述，与咱们世袭制道家杏林中药材相关的贝类叫「牡蛎」（也称「生蚝」）。
 
+> ![](诸子百家百戏/「抖音」加油不放弃.mp4){width=400}
+
+*出处：[「抖音」加油不放弃](https://youtube.com/shorts/qMmlwttfad8)*
+
 > …
 > 
 > #大秦赋 #秦孝公 #姜太公 #陈祯禄公爵 #邱德拔公爵 #巫裔尽弃瓦釜雷鸣 #期权可居 #商鞅变法铲除巫裔 #中科红旗🚩 #北京大学 #咱们马来西亚赢家ξng黄氏江夏堂和杏林林氏西河堂和商家苏氏阜阳堂和道家肖氏远芳堂和道家阮氏郡望堂<s> 🇬🇧NonMuslim👱🏻‍♀️英国基督洋妞儿芈拉</s>都不可以死 #咱们中华民族和越族不可以死 #文言文编程 #Nguyễn阮氏 #道家李耳 #耳东陈耳元阮 
@@ -1008,24 +1017,29 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 ##### 中华复古之道
 
-- 服饰
+- 服饰与发型
     - MY大汉山，东汉末年：[馬來西亞漢服運動 Hanfu Malaysia](https://www.facebook.com/hanfumalaysia)，借鉴咱们中华史赢家黄氏江夏堂是秦蜀时期最正统正义的家族。
     - 东马猫城，古晋（司马错得蜀既得楚/大都督司马懿）：[古晋华服社 Kuching Huafu Society](https://www.facebook.com/profile.php?id=100057257298724)，借鉴咱们中华史，「秦晋之好」都是靠拢咱们祖籍中国复古，推翻回教徒宦官民族的政权。
-- 建筑
+- 建筑与旅游
     - [中国传统建筑九大体系。](https://www.facebook.com/watch/?v=736574607893234)
     - [亭, 台(臺), 楼, 阁…有啥区别 ?](https://www.facebook.com/permalink.php?story_fbid=pfbid02uPn8UQhgBNk5uTYMgKHWm6yZ2eZLHKCm4UHYovxXgPXJVF68tSNd2o7tzkG6udS6l&id=100075253765334)
     - [建材的抗震性（僅供參考）](https://www.facebook.com/watch/?v=1013257566457970)
-- 篆书
+- 篆书与文学
+    - [「猫城」专业的汉字拼音转换工具](https://github.com/englianhu/pinyin-pro)提供中文转拼音、拼音音调、拼音声母、拼音韵母、多音字拼音、姓氏拼音、拼音匹配。
+    - [「猫城」小篆查询](https://github.com/englianhu/xiaozhuan)提供实时将汉字转换成方正小篆字体。
+    - [「猫城」黄联富（®γσ ξηg 雷欧）/中科红旗/礼逆袭应用仓库/红旗输入法](https://github.com/englianhu/RedFlag-Linux/tree/世博量化研究院/礼逆袭应用仓库/红旗输入法)
+- 歌曲与舞蹈
+    - [「猫城」黄联富（®γσ ξηg 雷欧）/礼逆袭应用仓库/红旗音乐](https://github.com/englianhu/RedFlag-Linux/tree/世博量化研究院/礼逆袭应用仓库/红旗音乐)
+    - 易网音乐
+    - 红旗音乐
+- 诗歌与对联
+    - [「猫城」黄联富（®γσ ξηg 雷欧）/统计](https://github.com/englianhu/TongJi)提供统计学调研报告-古风歌手歌词数据分析。使用python爬虫技术获取数据，分析并生成词云。
+    - 
+- 习俗文化与节庆
     - 
     - 
-- 歌曲
-    - 
-    - 
-- 诗歌
-    - 
-    - 
-- 节庆
-    - 
+- 国卒
+    - [你知道中国十五大国粹都有哪些吗？甚至有些连名字你都叫不上来](https://www.bilibili.com/video/BV1ft4y1779g)
     - 
 - 娱乐圈
     - 
@@ -2574,9 +2588,11 @@ options(warn = 0)
 
 ## 幕后花絮
 
-### 内忧
+### 春秋战国——秦国∙内忧
 
 #### 操作系统与软件
+
+咱们被大日本帝国和大英帝国殖民时期受封公爵的陈祯禄（在亚洲和欧洲古代君主制国家，公爵比伯爵和侯爵的官职大，比公爵官职高的只有皇室，也就是日本天皇和英国国王），咱们🌟海外华人公会从日本和英国独立后都是根据中华民国的国民学术路线，秦孝公清君侧之商鞅变法，歼灭所有不遵守各自宗教语言习俗文化的非法民族，尤其是巫贼巫婆非法回教徒！
 
 > ![](诸子百家考工记/目前市场尚未研发推出咱们秦人制的科研、编程软件、高端数理统计软件，加油吧！.png){width=400}
 
@@ -2609,6 +2625,9 @@ options(warn = 0)
 #### 电子仪器与硬件
 
 - 借鉴目前的电脑计算机[🎦「pre🆕高颜值🖥️」俺は、お前を買ってるんだぜ!🇭🇰](https://youtube.com/shorts/DFvpqKb2XH0)派热系统，它日研发咱们赢家黄氏江夏堂「大秦赋」操作系统和「算筹」电子仪器。
+- [上篇：国产六大中央处理单位技术全对比（附下载）](https://www.modb.pro/db/107396)
+- [下篇：国产六大中央处理单位的春秋战国（附下载）](https://www.eet-china.com/mp/a75720.html)
+- [「图享」国产六大中央处理单位的春秋战国](https://www.instagram.com/p/CYRDpsdJO2R)
 - [「计算机网络发展史」你在网上勇闯天涯时用的网络，是如何发展至今的呢？](https://youtu.be/CjAl6jODHq8)
 
 #### 演员的自我修养
@@ -2624,9 +2643,9 @@ options(warn = 0)
 - [「猫城」雷欧@图书馆](https://github.com/englianhu/library)
 - [「油管」雷欧 ®γσ ξηg视频总览](https://www.youtube.com/@englianhu/videos)
 - [「油管」雷欧 ®γσ ξηg短视频总览](https://www.youtube.com/@englianhu/shorts)
-- [「」](https://vimeo.com/englianhu)
+- [「微视」赢家黄氏江夏堂，联富（雷欧）](https://vimeo.com/englianhu)
 
-### 外患
+### 春秋战国——秦国∙外患
 
 - [外部因素周期性自回归综合滑均模型（ARIMAX）](外部因素周期性自回归综合滑均模型（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
 - [平滑周计](#平滑周计)美国洲际犯罪案！
@@ -2646,7 +2665,7 @@ options(warn = 0)
 > 世风日下，人心不古；<br>
 > 莘莘学子，赤子之心。
 
-*引用：[forecast::Arima(xreg = XXXX)咱们道家易经、天文历法、廿四节气、十二时辰、算卜与气象学，孔明借东风与草船借箭出现错误信息#九](https://github.com/englianhu/binary.com-interview-question/issues/9#issuecomment-2041903143)*
+*引用：[`forecast::Arima(xreg = XXXX)`咱们道家易经、天文历法、廿四节气、十二时辰、算卜与气象学，孔明借东风与草船借箭出现错误信息#九](https://github.com/englianhu/binary.com-interview-question/issues/9#issuecomment-2041903143)*
 
 ## 文书明细
 
