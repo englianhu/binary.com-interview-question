@@ -1,6 +1,6 @@
 ---
 title: "![](诸子百家考工记/deriv.png){height=240}"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（「丁」🌟儒家秦孝公清君侧之商鞅变法）**</span>](https://github.com/englianhu/binary.com-interview-question)"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（「丁」赢家黄氏江夏堂：🌟儒家秦孝公清君侧之商鞅变法）**</span>](https://github.com/englianhu/binary.com-interview-question)"
 author: "道家笔者：[<ruby>赢<rp>(</rp><rt>yíng</rt><rp>)</rp>家<rp>(</rp><rt>jiā</rt><rp>)</rp>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>氏<rp>(</rp><rt>shì</rt><rp>)</rp>江<rp>(</rp><rt>jiānɡ</rt><rp>)</rp>夏<rp>(</rp><rt>xià</rt><rp>)</rp>堂<rp>(</rp><rt>táng</rt><rp>)</rp></ruby> ®γσ, ξηg Lιαη Ημ，<ruby>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>联<rp>(</rp><rt>lián</rt><rp>)</rp>富<rp>(</rp><rt>fù</rt><rp>)</rp></ruby>（<ruby>雷<rp>(</rp><rt>léi</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>∪ <ruby>瑞<rp>(</rp><rt>ruì</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>）](https://englianhu.wordpress.com.com) ![](诸子百家考工记/大秦赋 - 北京大学.png){height=14}![](诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png){height=14}®"
 date: "民国日期：民国一百一十三年巧月初七<br>道家节日：[农历二零二四年（属龙 甲辰年 壬申月
 丙午日）巧月初七（七夕节）](https://mobile.51wnl-cq.com/huangli_tab_h5/?posId=BDSS&STIME=2024-08-10)<br>诸子百家：**纵横家鬼谷传奇** - 七夕节是日语班杏林林氏西河堂艳迎的生日"
@@ -525,7 +525,9 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 ![*🚩🇨🇳🔆🏹🌟👊🚀🦔孙玉芳教授在二零零二年创办中科红旗曰：”国产操作系统廿年 - 进退攻防，战斗不止。“*](林燕芳（中学乘搭韵祯校车的隔壁校私立丹绒学妹，行不改名坐不改姓，或自个儿侄女黄筱婕）/国产操作系统廿年 - 进退攻防，战斗不止.png){width=400}
 
-> ![[*「时光机器二零零二」🚩孙玉芳教授在二零零二年创办中科红旗曰：”中国不能没有自己的操作系统！“，科研高频量化对冲「大秦赋」操作系统和「自然数算筹」*](https://www.instagram.com/p/CNm43grAbVz)](林艳迎（课外家庭日语班女同学）/时光机器二零零二年日语班女同学林艳迎（华联独中校友潮汕人） - 大奖章基金之路.mp4){width=400 height=225}
+> <iframe width="400" height="225" src="https://www.youtube.com/embed/mC-OkNNDdxI" title="「抖音」俺の日本語クラスマット林艶迎🇯🇵🇮🇹" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+> 
+> [*「时光机器二零零二」🚩孙玉芳教授在二零零二年创办中科红旗曰：”中国不能没有自己的操作系统！“，科研高频量化对冲「大秦赋」操作系统和「自然数算筹」*](https://www.instagram.com/p/CNm43grAbVz)
 > 
 > <img src='林艳迎（课外家庭日语班女同学）/开朗少女日语班林艳迎女同学.gif' width = '400'>
 
@@ -1280,6 +1282,7 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 - [种植鸡枞全过程？（鸡纵菇种植方法）](https://www.tippingpointmediastudios.com/delicacy/78303.html)
 - [白蚁系列鸡枞菌的纯人工栽培方法](https://patents.google.com/patent/CN103004454A/zh)
 - [一种黑鸡枞菌的智能化工厂栽培技术](https://patents.google.com/patent/CN104705070A/zh)
+- [鸡枞菌的人工驯化种植方法](https://patents.google.com/patent/CN102599007A/zh)
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/Ff202w8-j7s" title="有3000年歷史的「守宮砂」，真能辨別女子貞操？有沒有科學依據？[酒窩趣科普] #趣味歷史#歷史科普#古代歷史" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -1723,7 +1726,9 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 
 [十二生肖都咋来的？为啥鼠是第一个？怎么没猫？](http://www.xinhuanet.com/politics/2020-01/22/c_1125491667.htm)，如果有留意十二生肖中，只有龙（飞蜥[^2]）是神话的三栖动物而非其余十一个生肖现实生活中的动物，蛇是两栖动物可以潜水和活在水里而其余的都是陆上动物。
 
-> ![](/home/englianhu/文档/猫城/binary.com-interview-question/诸子百家百戏/峇东新村.mp4){width=400 height=225}
+> <iframe width="400" height="225" src="https://www.youtube.com/embed/tNTuFtDnJDk" title="δ「Tiktok」故郷 ふるさと" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+> 
+> *世袭制道教徒十二生肖赢家黄氏江夏堂联富本人的曾祖父黄福全，清末光绪年间鸦片战争，从满洲到星洲——峇东新村。*
 > 
 > - [「文派」**阳历二零二三年十二月三日**今日是紫云生日](https://englianhu.wordpress.com/2024/02/04/「阳历二零二三年十二月三日」今日是紫云生日)
 > - 咱们峇东新村巫文叫Kampung Tiram Buruk，民智国民华校小学五年级时期的中文老师兼班主任颜玉婷老师和陈温温老师说过改名为Kampung Tiram Setia，小学时期喜欢中文老师兼班主任颜玉婷老师觉得老师很伟大，下篇中的[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（丁：春秋战国道家）**</span>](https://github.com/englianhu/binary.com-interview-question)矩阵「行与列」中、有会聊起一九九五年在民智国民华校小学时期五年级、民众会堂陈奕迅的歌曲「背包」、和吴双喜老师（老师间的爱情）、吴荣兴中文学会老师兼学校主任的历史，灌输我在中国历史春秋战国、成语典故、中文和数学和喜欢中文数学科学的重大影响一生受用，包括李登辉总统时期台湾岛被中国解放军围绕。

@@ -1,6 +1,6 @@
 ---
 title: "![](诸子百家考工记/deriv.png){height=240}"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部乙∙中（🌟儒家秦孝公清君侧之商鞅变法**）*世袭制道教徒十二生肖秦人牧马，从满洲到星洲*</span>](https://github.com/englianhu/binary.com-interview-question)"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部乙∙中（赢家黄氏江夏堂：🌟儒家秦孝公清君侧之商鞅变法**）*世袭制道教徒十二生肖秦人牧马，从满洲到星洲*</span>](https://github.com/englianhu/binary.com-interview-question)"
 author: "道家笔者：[<ruby>赢<rp>(</rp><rt>yíng</rt><rp>)</rp>家<rp>(</rp><rt>jiā</rt><rp>)</rp>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>氏<rp>(</rp><rt>shì</rt><rp>)</rp>江<rp>(</rp><rt>jiānɡ</rt><rp>)</rp>夏<rp>(</rp><rt>xià</rt><rp>)</rp>堂<rp>(</rp><rt>táng</rt><rp>)</rp></ruby> ®γσ, ξηg Lιαη Ημ，<ruby>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>联<rp>(</rp><rt>lián</rt><rp>)</rp>富<rp>(</rp><rt>fù</rt><rp>)</rp></ruby>（<ruby>雷<rp>(</rp><rt>léi</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>∪ <ruby>瑞<rp>(</rp><rt>ruì</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>）](https://englianhu.wordpress.com.com) ![](诸子百家考工记/大秦赋 - 北京大学.png){height=14}![](诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png){height=14}®"
 date: "民国日期：民国一百一十三年杏月廿六<br>道家节日：[农历二零二四年（属龙 甲辰年 戊辰月
 戊戌日）杏月廿六（清明节）](https://mobile.51wnl-cq.com/huangli_tab_h5/?posId=BDSS&STIME=2024-04-04)<br>诸子百家：**纵横家鬼谷传奇**，清明节是日语班杏林林氏西河堂艳迎的生日"
@@ -461,6 +461,8 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
   样本二零一八半年, 日内指数平滑数据二零一八年上半年总汇) %>% 
     na.omit %>% 
     select_dt(-闭市价))
+
+日内指数平滑数据二零一八年上半年总汇[频率==1]
 ```
 
 以上图表显示数据`年月日时分`，由`r 日内指数平滑数据二零一八年上半年总汇 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/仓库/日内指数平滑数据二零一八年上半年总汇.rds'); paste(range(日内指数平滑数据二零一八年上半年总汇$年月日时分), collapse = ' 至 ')`，接下来的科研一律使用同样的半年数据，是为了在回测多元计数模型，才能获知并筛选最优计数模型。
@@ -573,12 +575,11 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 - [种植鸡枞全过程？（鸡纵菇种植方法）](https://www.tippingpointmediastudios.com/delicacy/78303.html)
 - [白蚁系列鸡枞菌的纯人工栽培方法](https://patents.google.com/patent/CN103004454A/zh)
 - [一种黑鸡枞菌的智能化工厂栽培技术](https://patents.google.com/patent/CN104705070A/zh)
+- [鸡枞菌的人工驯化种植方法](https://patents.google.com/patent/CN102599007A/zh)
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/Ff202w8-j7s" title="有3000年歷史的「守宮砂」，真能辨別女子貞操？有沒有科學依據？[酒窩趣科普] #趣味歷史#歷史科普#古代歷史" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-> ![](诸子百家百戏/「抖音」计量经济学霸ξ诗 - hypothesis test.mp4){width=400}
-
-*出处：[「抖音」计量经济学霸ξ诗 - hypothesis test](https://youtube.com/shorts/nbMbxkFN2a8)*
+<iframe width="400" height="225" src="https://www.youtube.com/embed/nbMbxkFN2a8" title="「抖音」计量经济学霸ξ诗 - hypothesis test" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 **#秦灭六洲，一统天下；**<br>
 **#莫忘初衷，方得始终。**
@@ -588,7 +589,9 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 **「世袭制法家回教徒蕲年宫之变、安史之乱，集体朗诵可兰经——楚歌」**<br>
 借鉴[斩首、石刑、截肢…阿富汗“伊斯兰教法”或将重现酷刑](https://www.163.com/dy/article/HM881SKU0511RVG1.html)，内部处分阿里巴巴、淘宝、腾讯、百度等所有背叛世袭制道家姓氏堂号子嗣贞节牌坊的商家、头戴白色女假发的世袭制法家司法界包括男同志美国国父瓦盛顿把洋番基督耶稣一律钉在十字架、大宝森节和屠妖节习俗文化种族灭绝印度裔兴都教徒、瓜雪RHU（淮西派）花园加德士油站隔壁第三巷门牌卅二号边抽鼻涕边求命边膜拜边失心疯边自残自虐自杀的土司乩童刘瑾貹、瓜雪巴西不能帮门牌T十五号吱吱吾语的失心疯猥亵淫魔土司乩童张佳坤、那些世袭制法家可兰经回教徒自杀式冒充咱们世袭制道家中华民族是触犯可兰经回教刑事法典断肢法，[可兰经断肢法，回教徒不是不可以赌博吗？](https://youtube.com/shorts/hTsFgQ3mfBc)、马航所有世袭制法家回教徒公仆、瓜雪回教警署、瓜雪回教市政局、瓜雪回教土地局、四季仔的印尼外劳回教徒房客、阿塔的孟加拉外劳回教徒房客、峇峇娘惹的可兰经的习俗文化宗教语言断肢法！世袭制法家回教徒的可兰经习俗文化宗教语言断肢法，学习或参与使用任何外文学术数学算卜概率论博弈论、习俗文化宗教语言、吃猪肉喝酒抽烟、色情尤其是传宗接代（公元前没有人工受孕的科学技术下立下的世袭制法家回教徒的千年可兰经习俗文化宗教语言断肢法）、女回教徒就连抛头露面出外更何况是工作、女回教徒裸露鼻子嘴巴耳朵手臂脚、勾引、迷魂、巫术降头、持有任何武器、冒充他族或其它宗教教徒、叛乱、判教等甚至活命，都是触犯法家立下的千年可兰经回教刑事法典断肢法。
 
-#### 杏林与操作系统
+#### 杏林经济学
+
+##### 杏林与操作系统
 
 目前市场充斥着许多外来语甚至不翻译直接使用洋文术语。洋文Computer是代表计算器而中译为白话文「计算机」或古文「算筹」^[「算筹」电子仪器与「大秦赋」操作系统：<br> - [「猫城」中国北京大学赢家ξng黄氏江夏堂「大秦赋•道家李耳老子兼法家李斯篆紀•艺文志」：目前使用🚩🇨🇳🏹🦔中国国产红旗礼逆袭，编程都会使用咱们母语华语、字体、字幕加汉语拼音。 #6](https://github.com/englianhu/RedFlag-Linux/issues/6)<br> - [自然对数「干支算筹」与农历天文历法](https://github.com/englianhu/RedFlag-Linux/issues/12#issuecomment-1676066137)]，至于咱们平时所说的「电脑」应该英译为「Electronic Brain」，平时所说的个人电脑Personal Computer缩写PC与女生生殖器官Pussy近音。操作系统终端一般上称之为“Shell”，故此翻阅一些相关文献如下：
 
@@ -645,11 +648,9 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 *出处：[「问百度」<ruby>牡<rp>(</rp><rt>mǔ</rt><rp>)</rp>蛎<rp>(</rp><rt>lì</rt><rp>)</rp></ruby>](https://baike.baidu.com/item/牡蛎/395594)*
 
-综合以上所述，与咱们世袭制道家杏林中药材相关的贝类叫「牡蛎」（也称「生蚝」）。
+综合以上所述，与咱们世袭制道家杏林中药材相关的贝类叫[「牡蛎」](https://mp.weixin.qq.com/s?__biz=MzU0Mjg5MTQyMA==&mid=2247505741&idx=8&sn=155bfe0f893c6b5b2f150240a26b1969&chksm=fb115bbecc66d2a83c2c95a4e6e780761f656f612f08bbbdfc484a333c7391c9c32f1dc481ac&scene=27)（也称「生蚝」）。
 
-> ![](诸子百家百戏/「抖音」加油不放弃.mp4){width=400}
-
-*出处：[「抖音」加油不放弃](https://youtube.com/shorts/qMmlwttfad8)*
+<iframe width="400" height="225" src="https://www.youtube.com/embed/qMmlwttfad8" title="「抖音」加油不放弃" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 > …
 > 
@@ -695,13 +696,23 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 欲知更多详情，请查阅：
 
 - [李锦记百卅历史了](https://www.ixigua.com/6977491627480711692)
+- [「微信」明德初心](https://mp.weixin.qq.com/s/ldEY0h4JTE5n9gryvEQmLQ)
+- [「微信」牡蛎（中药大辞典、中华本草）](https://mp.weixin.qq.com/s?__biz=MzU0Mjg5MTQyMA==&mid=2247505741&idx=8&sn=155bfe0f893c6b5b2f150240a26b1969&chksm=fb115bbecc66d2a83c2c95a4e6e780761f656f612f08bbbdfc484a333c7391c9c32f1dc481ac&scene=27)
 - [「猫城」🚩🔆🏹🌟👊🚀🦔大秦赋：ξng赢家黄氏江夏堂 - 黄埔军校，辛亥革命；中科红旗，量化对冲。一带一路，史无前例；横跨七洲，一统天下。（咱们东南亚那些回教政府和敌国西方基督耶稣政府是世仇） #三](https://github.com/englianhu/library/issues/3#issuecomment-1308370079)
 
 ##### 子宫与皇宫
 
 - 借鉴咱们中华古代婚礼，花冠与苗族（万物皆有灵，取代天下所有回教徒）。
 
-##### 中华复古之道
+##### 怀孕与算卜
+
+##### 杏林方技学
+
+- [「微信」明德初心](https://mp.weixin.qq.com/s/ldEY0h4JTE5n9gryvEQmLQ)
+
+##### 黄氏与皇室
+
+##### 黄氏复古之道
 
 - 服饰与发型
     - MY大汉山，东汉末年：[馬來西亞漢服運動 Hanfu Malaysia](https://www.facebook.com/hanfumalaysia)，借鉴咱们中华史赢家黄氏江夏堂是秦蜀时期最正统正义的家族。
@@ -992,7 +1003,13 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 - [一刻钟是多久，古代的一天为几刻钟呢？](https://zhidao.baidu.com/question/16558757)
 - [「问百度」一刻钟](https://baike.baidu.com/item/一刻钟/2070381)
 
-![*诸子百家，万家灯火；天文历法，张灯结彩。*](/home/englianhu/文档/猫城/img/诸子百家百戏/大秦赋 - 黄埔军校黄种人民族主义赢家黄氏江夏堂始祖嬴政永春庄（峇东新村）/万家灯火，张灯结彩.mp4){width=400 height=225}
+<iframe width="400" height="225" src="https://www.youtube.com/embed/krSYu_vawNc" title="万家灯火，张灯结彩" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+> 您想问的是**衣锦夜行**还是**锦衣夜行**的区别吗？含义不同。
+> 
+> **衣锦夜行**意为穿着华美的衣裳在夜间行走，比喻有才华、有能力却默默无闻，不为世人所知。**锦衣夜行**则是指富贵人家的子弟夜晚出游，穿着华丽的衣服，形容生活奢华、富有。
+
+*出处：[衣锦夜行还是锦衣夜行？](https://zhidao.baidu.com/question/2277942097738415748.html)*
 
 > ![*时间单位，是七种基本单位之一*](诸子百家考工记/时间单位，是七种基本单位之一.png){width=400}
 > 
@@ -1021,16 +1038,20 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 [十二生肖都咋来的？为啥鼠是第一个？怎么没猫？](http://www.xinhuanet.com/politics/2020-01/22/c_1125491667.htm)，如果有留意十二生肖中，只有龙（飞蜥[^3]）是神话的三栖动物而非其余十一个生肖现实生活中的动物，蛇是两栖动物可以潜水和活在水里而其余的都是陆上动物。
 
-> ![*世袭制道教徒十二生肖赢家黄氏江夏堂联富本人的曾祖父黄福全，清末光绪年间鸦片战争，从满洲到星洲*](/home/englianhu/文档/猫城/binary.com-interview-question/诸子百家百戏/峇东新村.mp4){width=400 height=225}
+> <iframe width="400" height="225" src="https://www.youtube.com/embed/tNTuFtDnJDk" title="δ「Tiktok」故郷 ふるさと" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+> 
+> *世袭制道教徒十二生肖赢家黄氏江夏堂联富本人的曾祖父黄福全，清末光绪年间鸦片战争，从满洲到星洲——峇东新村。*
 > 
 > - [「文派」**阳历二零二三年十二月三日**今日是紫云生日](https://englianhu.wordpress.com/2024/02/04/「阳历二零二三年十二月三日」今日是紫云生日)
 > - 咱们峇东新村巫文叫Kampung Tiram Buruk（中译：邪恶或滥交的生蚝之乡/娼妓之乡/青楼之乡、秦人牧马选妻出淤泥而不染的西施与郑旦生蚝之乡），民智国民华校小学五年级时期的中文老师兼班主任颜玉婷老师和陈温温老师说过改名为Kampung Tiram Setia（中译：[《臣服🎶》](https://www.bilibili.com/video/BV19E411y7n8)于[西施](https://www.instagram.com/p/C1_tupjM3bl)之乡/忠诚的生蚝之乡、贤妻之乡、糟糠之妻之乡、母仪天下之乡），小学时期喜欢中文老师兼班主任颜玉婷老师觉得老师很伟大，下篇中的[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（丁：春秋战国道家）**</span>](https://github.com/englianhu/binary.com-interview-question)矩阵「行与列」中、有会聊起一九九五年在民智国民华校小学时期五年级、民众会堂陈奕迅的歌曲[《你的背包🎶》](https://www.bilibili.com/video/BV14f4y1p7nH)、和吴双喜老师（老师间的爱情）、吴荣兴中文学会老师兼学校主任的历史，灌输我在中国历史春秋战国、成语典故、中文和数学和喜欢中文数学科学的重大影响一生受用，包括李登辉总统执政时期台湾岛被中国解放军围绕。自小对于老师教导的道德教育、中庸之道、姓氏堂号子嗣贞节牌坊非常看重，传统的男生。若没记错小一时期就奇怪为什么身边所有同学甚至老师说的中文和老师通过字面上的拼音授教的国际标准中文会完全不一样呢？当时听到中国同胞说一口流利国际标准中文就觉得特别亲切像是自家人，当时全班同学说的中文不标准全是语病，只有我一人发音标准竟然成了全班的异类被许多同学冷嘲热讽，借鉴幼儿园时期强出头被群殴，一朝被蛇咬，十年怕草蛇，从此就保持沉默当个品学兼优文静内向的模范生（只是心想着有朝一日必须到中国发展，二零零八年像修读大学在西施康当客服时四年多，主管品学兼优的独中生李小新一直以为我也是独中生中文口音很标准也品学兼优，每天通过电话和中国同胞打交道就觉得祖国中国同胞很亲切。二零一二零一七年到柬埔寨西哈努克港黄金城、柬埔寨西哈努克港贵族酒店、菲律宾克拉克太阳谷和祖国中国同胞），被逼入乡随俗也随着说一口不流利不标准的台式中文，然后小二就开始追台剧《军官与淑女》中的女主角涂善妮（之后就追台剧《包青天》系列）就好奇为什么那么巧合和中文老师兼主任长相相似呢？直到小四的隔壁版数学老师陈温温说明年小五会任教数学课老师，校方会引入一位中文老师兼主任颜玉婷任教两年，兢兢业业还恶补字辨、语法、成语、修辞等，而数学课陈温温老师也是兢兢业业名师出高徒、桃李满天下。
 
 *出处：[《故郷ふるさと》🎶J-League ⚽🎌🎎🎏#ふるさと #故郷](https://www.tiktok.com/@englianhu/video/6876997614085082370)*
 
-> <iframe width="400" height="225" src="https://www.youtube.com/embed/AEsk9DBoIq4?si=Fu59RMVDsTXx7WLW" title="🚩🔆🏹🌟👊🚀🦔「大秦赋」拨款建寺庙与发展咱们中华民族新村" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+> <iframe width="400" height="225" src="https://www.youtube.com/embed/AEsk9DBoIq4" title="🚩🔆🏹🌟👊🚀🦔「大秦赋」拨款建寺庙与发展咱们中华民族新村" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-![*河南中原人士中华妞儿：春风若有桃花意，落花时节又逢君*](诸子百家百戏/春风若有桃花意，落花时节又逢君.mp4){width=400 height=225}
+<iframe width="400" height="225" src="https://www.youtube.com/embed/nyj_dbXfj6I" title="春风若有桃花意，落花时节又逢君" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*黄河文明、鬼谷传奇、河南中原女子：春风若有桃花意，落花时节又逢君*
 
 > **《世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊》**<br>
 世风日下，人心不古；<br>
