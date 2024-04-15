@@ -2127,7 +2127,23 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 
 ##### 黄氏与皇室（世袭制道教徒）
 
+<iframe width="400" height="225" src="https://www.youtube.com/embed/mV5IQbd0o0U" title="謝霆鋒 Nicholas Tse《黃種人》[Official MV]" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+<iframe width="400" height="225" src="https://www.youtube.com/embed/8TnfsmpRlFk" title="「三维地图」一口气讲完秦国卅八位国君,以及五百圆三年历史，它们为秦始皇统一六国打下了哪些基础？" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+<iframe width="400" height="225" src="https://www.youtube.com/embed/5UpXZKu0M3E" title="《秦灭六国统一中国》演示动画" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+<iframe width="400" height="225" src="https://www.youtube.com/embed/uI1LOAaVm9g" title="中國第一個皇帝，秦始皇 | 老高與小茉 Mr & Mrs Gao" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 <iframe width="400" height="225" src="https://www.youtube.com/embed/qMmlwttfad8" title="「抖音」加油不放弃" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+愚生世袭制道教徒赢家黄氏江夏堂联富只顾自身与家眷亲属，修身齐家平天下。目前正在着手科研高频量化对冲、道家、易经、一系列与咱们世袭制道教徒赢家黄氏江夏堂，秦人崛起的方针、路线、概念、「文言文编程大秦赋」/「大秦赋」操作系统与「自然数算筹」/「算筹」电子仪器：
+
+- [「猫城」/黄联富（®γσ ξηg 雷欧）/中科红旗/国学论.qmd](https://github.com/englianhu/RedFlag-Linux/blob/世博量化研究院/国学论.qmd)
+- [「猫城」/黄联富（®γσ ξηg 雷欧）/中科红旗/秦谏.qmd](https://github.com/englianhu/RedFlag-Linux/blob/世博量化研究院/秦谏.qmd)
+- [「猫城」/黄联富（®γσ ξηg 雷欧）/中科红旗/统筹法 - 系统工程学.Rmd](https://github.com/englianhu/RedFlag-Linux/blob/世博量化研究院/秦谏.Rmd)
+- [「猫城」/黄联富（®γσ ξηg 雷欧）/中科红旗/统筹法 - 系统工程学.Rmd](https://github.com/englianhu/RedFlag-Linux/blob/世博量化研究院/秦谏.Rmd)
+- [「猫城」/黄联富（®γσ ξηg 雷欧）/中科红旗/运筹帷幄 - 阿里.Rmd](https://github.com/englianhu/RedFlag-Linux/blob/世博量化研究院/运筹帷幄%20-%20阿里.Rmd)
 
 ##### 黄氏复古之道（世袭制道教徒）
 
@@ -3256,11 +3272,11 @@ Rob J Hyndman
 WWWusage %>% auto.arima %>% arimaorder
 ```
 
-下篇再使用`arfima()`和`fracdiff()`
+`自回归均移模型最优值()`，下篇再使用`arfima()`、`fracdiff()`和`()`。
 
 ##### 动态模型
 
-经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
+经过[周期与节气小节](#周期与节气小节)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
 
 ```{r 动态外因甲, warning = FALSE, error = TRUE}
 ## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数模型只允许使用数字筹算，在此就使用时分计筹算。
@@ -3308,6 +3324,9 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
+
+- [「视频」ARIMA时间序列模型原理和R鄀语言ARIMAX预测实现案例](https://www.bilibili.com/read/cv24333037)
+- [「站」多元时间序列滚动预测：ARIMA、回归、ARIMAX模型分析|附代码数据](https://www.bilibili.com/read/cv23326560)
 
 ##### 动态模型
 
