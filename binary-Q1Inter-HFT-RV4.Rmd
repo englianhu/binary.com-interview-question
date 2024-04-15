@@ -665,7 +665,9 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 - [下午四点是什么时辰？](https://m.ceming.com/sm/139948.html)
 - [申时中是几点？](https://zhidao.baidu.com/question/561434997305718844.html)
-- [打更 - 中国古代民间的一种夜间报时制度](https://baike.baidu.com/item/%E6%89%93%E6%9B%B4/2113152)
+- [打更 - 中国古代民间的一种夜间报时制度](https://baike.baidu.com/item/打更/2113152)
+- [看鉴百秒 | 古代没有闹钟，是如何避免上班迟到的问题？](http://baike.baidu.com/l/KBxaNRzN)
+- [夜半更声有讲究看鉴百秒 | 古代没有闹钟，是如何避免上班迟到的问题？](http://baike.baidu.com/l/DT9W19G0)
 
 > ... 东汉末年，二十岁的曹操初出茅庐，担任的官职为洛阳北部都尉，相当于首都副县级公安局长职位，负责管理京城洛阳及北部郊区的治安。
 > 
@@ -1414,6 +1416,8 @@ I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 m
 - 服饰与发型
     - MY大汉山，东汉末年：[馬來西亞漢服運動 Hanfu Malaysia](https://www.facebook.com/hanfumalaysia)，借鉴咱们中华史赢家黄氏江夏堂是秦蜀时期最正统正义的家族。
     - 东马猫城，古晋（司马错得蜀既得楚/大都督司马懿）：[古晋华服社 Kuching Huafu Society](https://www.facebook.com/profile.php?id=100057257298724)，借鉴咱们中华史，「秦晋之好」都是靠拢咱们祖籍中国复古，推翻回教徒宦官民族的政权。
+    - [「知乎」求推荐介绍中国古代服饰的书？](https://www.zhihu.com/question/322168692)
+    - [「猫城」黄联富（®γσ ξηg 雷欧）/大秦赋始祖永春——秦谏/始祖永春∙大秦赋（Chinese Emperor）/诸子百家（左氏春秋、史记、战国策辞典）](https://github.com/englianhu/library/tree/世博量化研究院/始祖永春∙大秦赋（Chinese%20Emperor）/诸子百家（左氏春秋、史记、战国策辞典）)
 - 建筑与旅游
     - [中国传统建筑九大体系。](https://www.facebook.com/watch/?v=736574607893234)
     - [亭, 台(臺), 楼, 阁…有啥区别 ?](https://www.facebook.com/permalink.php?story_fbid=pfbid02uPn8UQhgBNk5uTYMgKHWm6yZ2eZLHKCm4UHYovxXgPXJVF68tSNd2o7tzkG6udS6l&id=100075253765334)
