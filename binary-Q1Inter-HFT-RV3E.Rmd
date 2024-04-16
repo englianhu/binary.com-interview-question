@@ -1933,6 +1933,8 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 ## saveRDS(自回归综合滑均模型系列, file = paste0(.蜀道仓库, '自回归综合滑均模型系列_ts_xts_zoo_msts.rds'))
 rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_xts_数据量1200_频率1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_zoo1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1)
+
+rm(样本二零一八半年, 日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据二零一八年一月结论, 日内指数平滑数据二零一八年二月总汇, 日内指数平滑数据二零一八年二月结论, 日内指数平滑数据二零一八年三月总汇, 日内指数平滑数据二零一八年三月结论, 日内指数平滑数据二零一八年四月总汇, 日内指数平滑数据二零一八年四月结论, 日内指数平滑数据二零一八年五月总汇, 日内指数平滑数据二零一八年五月结论, 日内指数平滑数据二零一八年六月总汇, 日内指数平滑数据二零一八年六月结论, 日内指数平滑数据二零一八年第一周总汇, 日内指数平滑数据二零一八年第一周结论, 日内指数平滑数据二零一八年第二周总汇, 日内指数平滑数据二零一八年第二周结论, 日内指数平滑数据二零一八年第三周总汇, 日内指数平滑数据二零一八年第三周结论, 日内指数平滑数据二零一八年第四周总汇, 日内指数平滑数据二零一八年第四周结论, 日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据二零一八年一月平滑周计结论, 自回归综合滑均模型系列, 日内指数平滑数据二零一八年上半年总汇)
 ```
 
 一般上可以顺序根据`MASE`，然后`MAE`，接着`MSE`来评估筹算出来的算卜（预测值）的精准度。以上自回归模型分别比较了`ts`、`xts`、`zoo`、`msts`季节性数据建模后，得到一样的结果，故此就不区分使用那种计数模型来建立季节性数据。
@@ -2119,6 +2121,7 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 ##### 怀孕与算卜（世袭制道教徒）
 
 ![*从北京到成都——统计之都*](诸子百家考工记/统计学专业本科生该找啥实习呢？.png){width=400}
+
 - [中国古代的人口统计](https://cdo.develpress.com/?p=10970)
 
 ##### 杏林方技学（世袭制道教徒）
@@ -2462,11 +2465,14 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 | 长于年 |            千年 | 一千年
 | 长于年 |            世纪 | 
 | 长于年 |            年代 | 
-|     年 |          近点年 | 三百圆六点二五九六四日
-|     年 |          恒星年 | 365.256363004个平太阳日（≈365日6时9分10秒）
-| 
-| 
-| 
+|     年 |          近点年 | 三百圆五点二五九六四日
+|     年 |          恒星年 | 三百圆五点二五六三六三零零四个[平太阳日](https://baike.baidu.com/item/平太阳日/6182813)（≈三百园五日六时九分十秒）
+|     年 | [回归年](https://baike.baidu.com/item/太阳年/691162)/贝塞尔年 | 三百圆五点二四二一九九一七四日（≈三百圆五日五小时卌八分卌五点五秒）
+|     年 |          交点年 | 三百卌六点六二零零三日（三百卌六日十四小时圩二分圩二点九秒） |
+|     年 | 从一九八四年起，天文学上采用儒略年(不可和历法上的[儒略历](https://baike.baidu.com/item/儒略历/3052736)相混淆)作为统一的年的时间单位 | 规定为三百圆五点二四二五日，与回归年相比每三千年误差一日。 |
+|     年 |      平年与闰年 | 现代公历里，平年一年为三百圆五天（包含圩二周一天），闰年一年为三百圆六天（包含圩二周两天）。 |
+|     年 | 贝塞耳年Besselian year | 是以太阳平黄经等于皕枯°的瞬间为年首的回归年。 |
+|     年 | 恒星年Sidereal year | 
 
 *出处：[时间单位，是七种基本单位之一](https://baike.baidu.com/item/时间单位/3078999)*
 
@@ -2485,11 +2491,11 @@ rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节�
 
 *出处：[《故郷ふるさと》🎶J-League ⚽🎌🎎🎏#ふるさと #故郷](https://www.tiktok.com/@englianhu/video/6876997614085082370)*
 
-> <iframe width="400" height="225" src="https://www.youtube.com/embed/AEsk9DBoIq4" title="🚩🔆🏹🌟👊🚀🦔「大秦赋」拨款建寺庙与发展咱们中华民族新村" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/AEsk9DBoIq4" title="🚩🔆🏹🌟👊🚀🦔「大秦赋」拨款建寺庙与发展咱们中华民族新村" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/nyj_dbXfj6I" title="春风若有桃花意，落花时节又逢君" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-*黄河文明、鬼谷传奇、河南中原女子：春风若有桃花意，落花时节又逢君*
+*黄河文明、鬼谷传奇、河南中原女子：春风若有桃花意，落花时节又逢君。*
 
 > **《世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊》**<br>
 世风日下，人心不古；<br>
@@ -3086,6 +3092,8 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 - [浅析二十四节气](https://zhuanlan.zhihu.com/p/586252935)
 - [最全的二十四节气的含义介绍（图文） 二十四节气介绍](https://www.hehun.com.cn/article/11914/6108226.html)
 - [二十四节气到底是如何确立的？](https://www.xiaohongshu.com/explore/63f0c2f40000000013001435)
+
+[Forecasting ARIMA vs ARIMAX vs Dynamic Regression](https://rpubs.com/Bardock123/561991)分析气象学与工作日，文献中的数据`c('Date', 'Temperature', 'Humidity', 'Windspeed', 'Count', 'All_workdays')`筹算日期、气候温度、空气湿度、风速。
 
 `季节差分的次数 = NULL`
 
