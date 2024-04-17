@@ -252,6 +252,7 @@ nameserver 114.114.114.114
 
 ### 鬼谷传奇
 
+- [「抖音」云梦山](https://v.douyin.com/iYV1gFFw)
 - [「海外抖音」如是江南](https://www.tiktok.com/@nametho171)
 - [「抖音」总要去一趟现实版的仙侠世界吧，奔赴一场仙剑的梦！#仙剑 #望仙谷](https://www.douyin.com/discover?modal_id=7346462334371646783)
 
@@ -460,7 +461,7 @@ nameserver 114.114.114.114
 
 #### 李斯篆书
 
-### 赢家黄氏江夏堂——联富始祖之道
+### 赢家黄氏江夏堂——联富始祖之道（世袭制道教徒）
 
 ![*道家既赢家，走向道家算卜。*](诸子百家考工记/陈省身 - 走向数学.png)
 
@@ -811,13 +812,13 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 在此论文中，使用[季节性自回归综合滑均模型系列]{style="color:RoyalBlue"}。
 
 - 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）
-- 外部因素周期性自回归综合滑均模型（ARIMAX）
+- 外因周期性自回归综合滑均模型（ARIMAX）
 - 季节性自回归综合滑均模型（SARIMA）
-- 外部因素周期性季节性自回归综合滑均模型（SARIMAX）
-- 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
+- 外因周期性季节性自回归综合滑均模型（SARIMAX）
+- 外因周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 - 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
-然后在**外部因素周期性季节性**添加天文历法因素，例如天干地支、廿四节气，下一篇会更详细添加农历月份雅称等参数计算周期。[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)叙述一些有关天文历法、天干地支纪年、纪月、纪日、纪时、时辰、十二生肖和生辰八字。
+然后在**外因周期性季节性**添加天文历法因素，例如天干地支、廿四节气，下一篇会更详细添加农历月份雅称等参数计算周期。[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)叙述一些有关天文历法、天干地支纪年、纪月、纪日、纪时、时辰、十二生肖和生辰八字。
 
 <br>
 
@@ -859,7 +860,7 @@ if (!exists('日内指数平滑数据二零一八年上半年总汇')) 日内指
     na.omit %>% 
     select_dt(-闭市价))
 
-日内指数平滑数据二零一八年上半年总汇[频率==1]
+(日内指数平滑数据二零一八年上半年总汇 %<>% .[频率==1])
 ```
 
 以上图表显示数据`年月日时分`，由`r 日内指数平滑数据二零一八年上半年总汇 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/仓库/日内指数平滑数据二零一八年上半年总汇.rds'); paste(range(日内指数平滑数据二零一八年上半年总汇$年月日时分), collapse = ' 至 ')`，接下来的科研一律使用同样的半年数据，是为了在回测多元计数模型，才能获知并筛选最优计数模型。
@@ -2006,7 +2007,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 ## saveRDS(自回归综合滑均模型系列, file = paste0(.蜀道仓库, '自回归综合滑均模型系列_ts_xts_zoo_msts.rds'))
 rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_xts_数据量1200_频率1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_zoo1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1)
 
-rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据二零一八年一月结论, 日内指数平滑数据二零一八年二月总汇, 日内指数平滑数据二零一八年二月结论, 日内指数平滑数据二零一八年三月总汇, 日内指数平滑数据二零一八年三月结论, 日内指数平滑数据二零一八年四月总汇, 日内指数平滑数据二零一八年四月结论, 日内指数平滑数据二零一八年五月总汇, 日内指数平滑数据二零一八年五月结论, 日内指数平滑数据二零一八年六月总汇, 日内指数平滑数据二零一八年六月结论, 日内指数平滑数据二零一八年第一周总汇, 日内指数平滑数据二零一八年第一周结论, 日内指数平滑数据二零一八年第二周总汇, 日内指数平滑数据二零一八年第二周结论, 日内指数平滑数据二零一八年第三周总汇, 日内指数平滑数据二零一八年第三周结论, 日内指数平滑数据二零一八年第四周总汇, 日内指数平滑数据二零一八年第四周结论, 日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据二零一八年一月平滑周计结论, 自回归综合滑均模型系列, 日内指数平滑数据二零一八年上半年总汇)
+rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据二零一八年一月结论, 日内指数平滑数据二零一八年二月总汇, 日内指数平滑数据二零一八年二月结论, 日内指数平滑数据二零一八年三月总汇, 日内指数平滑数据二零一八年三月结论, 日内指数平滑数据二零一八年四月总汇, 日内指数平滑数据二零一八年四月结论, 日内指数平滑数据二零一八年五月总汇, 日内指数平滑数据二零一八年五月结论, 日内指数平滑数据二零一八年六月总汇, 日内指数平滑数据二零一八年六月结论, 日内指数平滑数据二零一八年第一周总汇, 日内指数平滑数据二零一八年第一周结论, 日内指数平滑数据二零一八年第二周总汇, 日内指数平滑数据二零一八年第二周结论, 日内指数平滑数据二零一八年第三周总汇, 日内指数平滑数据二零一八年第三周结论, 日内指数平滑数据二零一八年第四周总汇, 日内指数平滑数据二零一八年第四周结论, 日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据二零一八年一月平滑周计结论, 自回归综合滑均模型系列)
 ```
 
 一般上可以顺序根据`MASE`，然后`MAE`，接着`MSE`来评估筹算出来的算卜（预测值）的精准度。以上自回归模型分别比较了`ts`、`xts`、`zoo`、`msts`季节性数据建模后，得到一样的结果，故此就不区分使用那种计数模型来建立季节性数据。
@@ -2739,15 +2740,17 @@ if(!exists('干支')) {
 }
 cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
-if (!exists('样本二零一八半年')) 样本二零一八半年 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本二零一八半年.rds'))
+if (!exists('样本二零一八半年')) 样本二零一八半年 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本二零一八半年.rds'))[频率==1]
 
 ## A data.table and dplyr tour
 ## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/#addupdatedelete-columns
-if (!exists('日内指数平滑数据二零一八年上半年总汇')) 日内指数平滑数据二零一八年上半年总汇 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据二零一八年上半年总汇.rds'))
-
-日内指数平滑数据二零一八年上半年总汇 <- full_join(样本二零一八半年, 日内指数平滑数据二零一八年上半年总汇) %>% 
+if (!exists('日内指数平滑数据二零一八年上半年总汇')) {
+  日内指数平滑数据二零一八年上半年总汇 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据二零一八年上半年总汇.rds'))[频率==1]
+  
+  日内指数平滑数据二零一八年上半年总汇 <- full_join(样本二零一八半年, 日内指数平滑数据二零一八年上半年总汇) %>% 
     na.omit %>% 
     select_dt(-闭市价)
+} 
 
 ## 在此添加两列，分别是干支和廿四节气。
 ## > range(总汇$日期)
@@ -2845,7 +2848,7 @@ if (!exists('日内指数平滑数据二零一八年上半年总汇')) 日内指
 # rm(天干, 地支, 干支, 廿四节气)
 ```
 
-### 外部因素周期性自回归综合滑均模型（ARIMAX）
+### 外因周期性自回归综合滑均模型（ARIMAX）
 
 #### `forecast::Arima()`
 
@@ -2853,13 +2856,13 @@ if (!exists('日内指数平滑数据二零一八年上半年总汇')) 日内指
 
 ![](诸子百家考工记/预测 - 方法与实践（第三版）.png){width=400}
 
-> 当没有特殊指定时，ARIMA() 函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`和`q`，`P`和`Q`)的选择都通过最小化`AICc`来决定。
+> 当没有特殊指定时，`ARIMA()`函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`和`q`，`P`和`Q`)的选择都通过最小化`AICc`来决定。
 
 *引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
 
 一般上，存活分析模型、循环神经网络模型，[**迪逊与罗宾逊（一九九七年）**](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/reference/DixonRobinson1997.pdf)^[[「猫城」Odds Modelling and Testing Inefficiency of Sports Bookmakers](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)项目中主页有陈列马克·迪逊一系列<ruby>蹴<rp>(</rp><rt>cù</rt><rp>)</rp>鞠<rp>(</rp><rt>jū</rt><rp>)</rp></ruby>]通过进球率和加权指数来筹算滚球赛事中的球员斗志与士气（也可以运用在军事训练与战场上、或者学者在学习吸收能力上，而一般上隐马尔可夫链计数/机数模型使用夏普率评估风险与空间状态触碰点也可以运用在学术教育评估学生、教师、校长、校工、各科系、学校整体素质上）、天灾人祸。借鉴[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)中使用`forecast::arimaorder()`筹算自回归模型并将规律`p`值、`d`值、`q`值最优化，来提高计数模型的精准度。在此将咱们世袭制道家的习俗文化、算卜、天文历法、气象学、天文学中的**廿四节气**来诠释`D`（季节差分的次数）。欲知更多详情，请查阅以下[廿四节气](廿四节气)章节。
 
-欲知更多有关外部因素周期性自回归综合滑均模型（ARIMAX），请查阅以下文章：
+欲知更多有关外因周期性自回归综合滑均模型（ARIMAX），请查阅以下文章：
 
 - [The ARIMAX model muddle](https://robjhyndman.com/hyndsight/arimax)
 - [ARIMAX Model and Forecast](https://real-statistics.com/time-series-analysis/time-series-miscellaneous/arimax-model-and-forecast)
@@ -3776,7 +3779,7 @@ sarima::sarima()
 - [SARIMAX model in R](https://stackoverflow.com/a/17816958/3806250)
 - [ARIMA - Advanced Time Series Methods: Auto Regression Integrated Moving Average](https://medium.com/analytics-vidhya/arima-fc1f962c22d4)
 
-### 外部因素周期性季节性自回归综合滑均模型（SARIMAX）
+### 外因周期性季节性自回归综合滑均模型（SARIMAX）
 
 ```{r , warning = FALSE, error = TRUE, eval = FALSE}
 
@@ -3784,7 +3787,7 @@ sarima::sarima()
 
 - [pmdarima.arima.ARIMA](https://alkaline-ml.com/pmdarima/modules/generated/pmdarima.arima.ARIMA.html)
 
-### 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
+### 外因周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 
 ```{r , warning = FALSE, error = TRUE, eval = FALSE}
 
@@ -3994,7 +3997,7 @@ options(warn = 0)
 
 - [人工智障检测《国产凌凌漆》名场面](https://www.bilibili.com/video/BV1Cd4y1R7jT)中的[「猫城」OW-YOLO（具有区分已知与未知能力的全新检测器）](https://github.com/englianhu/OW-YOLO)初步侦测物体技术。
 - [有了人工智能，从此程序员只写注释，不写代码？| 手把手安装自动写代码人工智能——Code Whisperer](https://www.youtube.com/watch?v=TIpRA6iwNus)
-- 
+- [Ansible vs Puppet vs Chef – 2021 配置管理工具比较](https://www.incredibuild.cn/blog/ansible-vs-puppet-vs-chef-2021-peizhiguanligongjubijiao)
 
 ##### 电子仪器与硬件
 
@@ -4085,7 +4088,7 @@ options(warn = 0)
 
 *引用：[🌟秦人牧马之《商君书》](#🌟秦人牧马之《商君书》)*
 
-- [外部因素周期性自回归综合滑均模型（ARIMAX）](外部因素周期性自回归综合滑均模型（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
+- [外因周期性自回归综合滑均模型（ARIMAX）](外因周期性自回归综合滑均模型（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
 - [平滑周计](#平滑周计)美国洲际犯罪案！
 
 > ![*项目中运行代码篆（Chunk）出现错误信息*](诸子百家考工记/鄀计数或机数编程load函数错误信息.png){width=400}
