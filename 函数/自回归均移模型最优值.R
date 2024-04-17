@@ -1,4 +1,4 @@
-自回归均移模型最优值 <- function(样本, 季节差分的次数 = NULL, 季节性 = '勾', 规律极限值 = 10, 自回归均移模型值 = '叉', 外因 = NULL) {
+自回归均移模型最优值 <- function(样本, 季节差分的次数 = NULL, 季节性 = '勾', 规律极限值 = 10, 自回归均移模型值 = '勾', 外因 = NULL) {
   ## 通过设置并迭代筹算自回归均移模型中不同`p, d, q`的规律值，来比较并筛选出最低或最大负数的赤池信息量准则，也就是最优统计模型。
   ## 
   ## [《预测：方法与实践（第三版）》第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)
@@ -29,7 +29,7 @@
     #https://stackoverflow.com/questions/23617662/extract-arima-specificaiton
     names(成果) <- c('p', 'q', 'P', 'Q', 's', 'd', 'D')
     成果 %<>% .[c(1, 6, 2, 3, 7, 4, 5)]
-    成果 <- cbind(精准度, as_tibble(t(arimaorder(成果))))
+    成果 <- cbind(精准度, t(as.matrix(成果)))
     #(p,d,q) and (P,D,Q) and seasonal period
   } #范例：`s` seasonal period = 12 表示十二个月
   return(成果)
