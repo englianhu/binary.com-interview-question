@@ -1722,7 +1722,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 
 `季节差分的次数 = 2`
 
-```{r 静态外因戊, warning = FALSE, error = TRUE}
+```{r 静态外因戊, error=, warning=FALSE}
 # 季节差分的次数 = 2
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
