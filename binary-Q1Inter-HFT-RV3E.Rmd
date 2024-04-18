@@ -2753,7 +2753,7 @@ if(!exists('干支')) {
 }
 cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
-if (!exists('样本二零一八半年')) 样本二零一八半年 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本二零一八半年.rds'))[频率==1]
+# if (!exists('样本二零一八半年')) 样本二零一八半年 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本二零一八半年.rds'))[频率==1]
 
 ## A data.table and dplyr tour
 ## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/#addupdatedelete-columns
