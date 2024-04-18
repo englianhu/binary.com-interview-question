@@ -3456,14 +3456,14 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 > You need to define the `xreg` when you estimate the model itself, and these need to be forecasted ahead as well. So this will look something like:
 > 
-> ```{r}
+> ```
 > Arima.fit <- auto.arima(Train, xreg = SampleData$TimeTT)
 > forecast(Arima.fit, h = 508, xreg = NewData$TimeTT)
 > ```
 > 
 > Here is an example using `Arima` and `xreg` from Rob Hyndman (here is the [link](https://robjhyndman.com/hyndsight/longseasonality) to the example, but to read more about using contemporaneous covariates in ARIMA models go [here](https://otexts.com/fpp2/dynamic.html)), this is analogous to `auto.arima`.
 > 
-> ```{r}
+> ```
 > n <- 2000
 > m <- 200
 > y <- ts(rnorm(n) + (1:n)%%100/30, f=m)
