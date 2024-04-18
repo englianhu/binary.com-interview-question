@@ -353,6 +353,8 @@ nameserver 114.114.114.114
 - 算卜：奉常、宗教、学术、天干地支、易经、廿四节气、土地规划、风调雨顺、五谷丰收，将产量、品质、成本与利润、市场最优化。
 - 经济：国内外商业贸易、税务管理、计量经济学、金融与经济。
 
+借鉴万物皆有灵和阅读脑电波嬴政思想录，所谓的户籍管理中的一项，就是视频中的[人工智障检测《国产凌凌漆》名场面](https://www.bilibili.com/video/BV1Cd4y1R7jT)是可以通过人造卫星以光速来侦测地球上万物一举一动，就能通过量子电脑的计数/机数量化分析来分辨机器人、僵尸、正常人。
+
 > #咱们所有世袭制道教徒禁止和任何世袭制可兰经法家回教徒和世袭制吠陀经兴都教徒扯上任何思具体甚至思维姻缘关系 #千年法家治天下杜绝回教乱天下 #咱们世袭制道教徒黄河文明黄埔军校黄种人赢家黄氏江夏堂的视线范围和住所办公地点和宗教场所一律禁止出现任何回教徒和兴都教徒 #歼灭所有可兰经回教刑事法典习俗文化宗教语言断肢法的ExtremeJodoh回教徒巫术姻缘犯
 > 
 > **借鉴瓦伦·巴菲特投资原则，「商鞅变法」的两个基本原则就是：“回教徒身为世袭制可兰经回教刑事法典巫术习俗文化宗教语言断肢法民族，入侵、使用、触碰、具体交流、眼神交流、无线或有线网络入侵、冒充它族、甚至思维交流、施展可兰经回教巫术窥听窥视任何回教徒回应甚至干活儿、出现在任何非清真教徒或它族宗教场所或住宅办公等地点的视线范围内、抽鼻涕耶稣受难、企图甚至具体迷魂勾引、企图甚至具体色情或传宗接代、企图甚至具体冒充它族、使用或入侵任何非清真产品包括食品（非清真万物——生物与非生物），一律列为触犯可兰经回教刑事法典巫术习俗文化宗教语言断肢法的判教罪，是死罪！根据查询回教徒的世袭制可兰经回教刑事法典巫术习俗文化宗教语言断肢法，法官无权审判即可处死回教徒！也就是说可兰经是所有回教徒的性命！”，而第二个原则就是必须谨记第一个原则！**
@@ -451,7 +453,11 @@ nameserver 114.114.114.114
 
 ### 法家李斯
 
-#### 硅谷传奇
+#### 鬼谷传奇
+
+**从硅谷传奇到鬼谷传奇**
+
+借鉴万物皆有灵和阅读脑电波嬴政思想录，所谓的户籍管理中的一项，就是视频中的[人工智障检测《国产凌凌漆》名场面](https://www.bilibili.com/video/BV1Cd4y1R7jT)是可以通过人造卫星以光速来侦测地球上万物一举一动，就能通过量子电脑的计数/机数量化分析来分辨机器人、僵尸、正常人。
 
 #### 中科红旗
 
@@ -465,8 +471,18 @@ nameserver 114.114.114.114
 
 ![*道家既赢家，走向道家算卜。*](诸子百家考工记/陈省身 - 走向数学.png)
 
+> ![](诸子百家考工记/《初一华文》文学史讲堂：传球战国.png)
+
+*引用：[《初一华文》文学史讲堂：春秋战国](https://www.facebook.com/FreshmanLearning/posts/pfbid0mYNyjoK44cnjC8QRTs2RbkpUrEDdfQuxzuyZk12aHh3N7FUCo3q2NfLRzWyf1bj8l)*
+
+借鉴万物皆有灵和阅读脑电波嬴政思想录，所谓的户籍管理中的一项，就是视频中的[人工智障检测《国产凌凌漆》名场面](https://www.bilibili.com/video/BV1Cd4y1R7jT)是可以通过人造卫星以光速来侦测地球上万物一举一动，就能通过量子电脑的计数/机数量化分析来分辨机器人、僵尸、正常人。
+
 - 高频量化算卜对冲（运筹帷幄）
 - 统筹法（系统工程学）
+- 「大秦赋」或「文言文操作系统」
+- 「算筹」或「自然数算筹」
+- 道家、易经、算卜、天文历法、十二生肖、姓氏堂号子嗣贞节牌坊、紫微斗数、十二时辰、生辰八字、廿四节气等
+- 时差与时间标准
 - [人无远虑，必有近忧](#人无远虑，必有近忧)
 
 ## 特里必斯（二零零五年：香港老虎越南澳洲算卜博彩业）
@@ -2811,24 +2827,15 @@ if(!exists('干支')) {
 cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 if (!exists('样本二零一八半年')) 样本二零一八半年 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本二零一八半年.rds'))[频率==1]
-样本二零一八半年
-日内指数平滑数据二零一八年上半年总汇
 
 ## A data.table and dplyr tour
 ## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/#addupdatedelete-columns
-#if (!exists('日内指数平滑数据二零一八年上半年总汇')) {
-   日内指数平滑数据二零一八年上半年总汇 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据二零一八年上半年总汇.rds'))[频率==1]
+日内指数平滑数据二零一八年上半年总汇 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据二零一八年上半年总汇.rds'))[频率==1]
 
-   日内指数平滑数据二零一八年上半年总汇 <- full_join(样本二零一八半年, 日内指数平滑数据二零一八年上半年总汇) %>% 
-     na.omit %>% 
-     select_dt(-闭市价)
- 
-   rm(样本二零一八半年)
-#}
-
-日内指数平滑数据二零一八年上半年总汇
-
-总汇
+日内指数平滑数据二零一八年上半年总汇 <- full_join(样本二零一八半年, 日内指数平滑数据二零一八年上半年总汇) %>% 
+  na.omit %>% 
+  select_dt(-闭市价)
+rm(样本二零一八半年)
 
 if (!exists('总汇')) {
   ## 在此添加两列，分别是干支和廿四节气。
@@ -3363,7 +3370,10 @@ summary(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic
 
 arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(时辰乙)])))
 
-forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(时辰乙)]))$arma
+赤池信息准则 <- forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(时辰乙)]))$arma
+names(赤池信息准则) <- c('p', 'q', 'P', 'Q', 's', 'd', 'D')
+(赤池信息准则 %<>% .[c(1, 6, 2, 3, 7, 4, 5)])
+rm(赤池信息准则)
 
 ## ic = 'aic'
 (奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
@@ -3393,7 +3403,10 @@ summary(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic
 
 arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙)])))
 
-forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙)]))$arma
+赤池信息准则 <- forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙)]))$arma
+names(赤池信息准则) <- c('p', 'q', 'P', 'Q', 's', 'd', 'D')
+(赤池信息准则 %<>% .[c(1, 6, 2, 3, 7, 4, 5)])
+rm(赤池信息准则)
 
 ## ic = 'aicc'
 (奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
@@ -3586,7 +3599,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 > You need to define the `xreg` when you estimate the model itself, and these need to be forecasted ahead as well. So this will look something like:
 > 
-> ```{r}
+> ```
 > Arima.fit <- auto.arima(Train, xreg = SampleData$TimeTT)
 > forecast(Arima.fit, h = 508, xreg = NewData$TimeTT)
 > ```
@@ -4097,7 +4110,7 @@ options(warn = 0)
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/3mTI435TCeM" title="Coursera Machine Learning for Trading: 蔡卓宜 - 10/16/2021, 12:32:47 AM" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-以下有些软件、编程代码与视频，日后得学习：
+借鉴万物皆有灵和阅读脑电波嬴政思想录，所谓的户籍管理中的一项，就是视频中的[人工智障检测《国产凌凌漆》名场面](https://www.bilibili.com/video/BV1Cd4y1R7jT)是可以通过人造卫星以光速来侦测地球上万物一举一动，就能通过量子电脑的计数/机数量化分析来分辨机器人、僵尸、正常人，甚至幽灵。以下有些软件、编程代码与视频，日后得学习：
 
 - [人工智障检测《国产凌凌漆》名场面](https://www.bilibili.com/video/BV1Cd4y1R7jT)中的[「猫城」OW-YOLO（具有区分已知与未知能力的全新检测器）](https://github.com/englianhu/OW-YOLO)初步侦测物体技术。
 - [Analyze a Soccer game using Tensorflow Object Detection and OpenCV](https://towardsdatascience.com/analyse-a-soccer-game-using-tensorflow-object-detection-and-opencv-e321c230e8f2)
@@ -4160,7 +4173,9 @@ options(warn = 0)
 
 *引用：[🌟秦人牧马之《商君书》](#🌟秦人牧马之《商君书》)*
 
-![*孔明借东风、草船借箭，亦敌亦友（咱们中华民族辛亥革命和洋番的共同敌人是回教徒），远交近攻。*](诸子百家考工记/秦国远交近攻.png){width=400}
+![*咱们世袭制道教徒黄种人禁止协助外洲，远（有多远？是太空）交近（有多近？是地球）攻。*](诸子百家考工记/秦国远交近攻.png){width=400}
+
+借鉴万物皆有灵和阅读脑电波嬴政思想录，所谓的户籍管理中的一项，就是视频中的[人工智障检测《国产凌凌漆》名场面](https://www.bilibili.com/video/BV1Cd4y1R7jT)是可以通过人造卫星以光速来侦测地球上万物一举一动，就能通过量子电脑的计数/机数量化分析来分辨机器人、僵尸、正常人。
 
 > 群山诸岳的名称并非本来就有，有些还经过了好些波折呢！也由于马来半岛民族的多样性，连山名的来源也多样性了。
 > 
