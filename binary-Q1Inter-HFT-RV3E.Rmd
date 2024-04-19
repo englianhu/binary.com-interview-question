@@ -9,7 +9,7 @@ output:
     mathjax: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
     number_sections: true
     toc: true
-    toc_depth: 8
+    toc_depth: 6
     toc_float:
       collapsed: true
       smooth_scroll: true
@@ -3566,8 +3566,12 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 *注释：需要回测数据，才能为标准。不过目前都是以MASE来评估与衡量精准度。*
 
+
+
 - [AIC vs AICc: Performance Comparison in Model Selection](https://github.com/angela-xu/aic-aicc-performance-comparison-in-model-selection)
-- [Time Decomposition and Short-Term Forecasting of Hydrometeorological Conditions in the South Baltic Coastal Zone of Poland]()
+- [Time Decomposition and Short-Term Forecasting of Hydrometeorological Conditions in the South Baltic Coastal Zone of Poland](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/Time%20Decomposition%20and%20Short-Term%20Forecasting%20of%20Hydrometeorological%20Conditions%20in%20the%20South%20Baltic%20Coastal%20Zone%20of%20Poland.pdf)
+- [The relative performance of AIC, AICC and BIC in
+the presence of unobserved heterogeneity]()
 
 **设置最优赤池信息量准则为`ic = 'aic'`**
 
