@@ -37,6 +37,7 @@ output:
 *引用：[牢记祖先，彰显祖宗功德，四百卅三个姓氏堂号大全](https://zhuanlan.zhihu.com/p/82039189)*
 
 - [中国古代亲属称谓家谱总览](https://zhuanlan.zhihu.com/p/458028908)
+- []()
 - [「元宇宙」春节拜年，亲戚怎么叫？](https://www.facebook.com/englianhu/posts/pfbid0cqugyMqSdk1DBwzB8XiawCCz8bRXf5mZktm1Wr2WKs1ozj1D84FpB9RYXuCrmzDTl)
 - [「百度」我怎么称呼我堂叔的儿子啊？ 他比我小 应该怎么称呼？ 叫堂弟吗？ 可是堂叔的儿子已经不是堂了啊？](https://zhidao.baidu.com/question/291505101/answer/3012972358.html)
 - [「范本模板」古代称谓大全](https://wenku.baidu.com/view/8a3d6c3ca3c7aa00b52acfc789eb172dec639967.html?_wkts_=1709365939475&bdQuery=%E6%A8%A1%E6%9D%BF%E5%8F%A4%E7%A7%B0)
@@ -403,11 +404,11 @@ nameserver 114.114.114.114
 
 #### 🌟秦人牧马之《吕氏春秋》
 
-![*上图显示英系曦与曦佳佳编程操作系统，逐渐走向派森（巫文）、爪哇文、爪哇校本；目前正在自修并科研咱们世袭制道教徒的文言文编程「大秦赋」操作系统。*](诸子百家考工记/高频交易系统.png)
+![*上图显示英系曦与曦佳佳编程操作系统，逐渐走向派森（巫文）、爪哇文、爪哇校本；目前正在自修并科研咱们世袭制道教徒的文言文编程「大秦赋」操作系统。*](诸子百家考工记/高频交易系统.png){width=400}
 
 借鉴春秋战国史和近代明治维新史，可先查阅[解密复兴科技 - 基于隐蔽马尔科夫模型的时序分析方法](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/解密复兴科技%20-%20基于隐蔽马尔科夫模型的时序分析方法.pdf)了解目前几十年来投资回酬世界第一（比瓦伦·巴菲特的平均年投资回酬率高）的文艺复兴科技。欲发展咱们道教、杏林、金融、道家与务农与金融科技、娱乐圈相关信息，可查阅[黄氏复古之道（世袭制道教徒）](#黄氏复古之道（世袭制道教徒）)，功勋超过历代三黄五帝，史称「秦始皇」，请查阅[黄氏与皇室（世袭制道教徒）](#黄氏与皇室（世袭制道教徒）)、[黄氏复古之道（世袭制道教徒）](#黄氏复古之道（世袭制道教徒）)。
 
-![*目前正在自修并科研咱们世袭制道教徒的文言文编程「大秦赋」高频量化对冲操作系统。*](诸子百家考工记/陈省身 - 走向数学.png)
+![*目前正在自修并科研咱们世袭制道教徒的文言文编程「大秦赋」高频量化对冲操作系统。*](诸子百家考工记/陈省身 - 走向数学.png){width=400}
 
 金融书籍（电子书），请查阅：
 
@@ -431,16 +432,18 @@ nameserver 114.114.114.114
 ![*技术型量化投资 -与- 主观基本面投资*](诸子百家考工记/技术型量化投资与主观基本面投资.png){width=400}
 
 主观基本面投资
-    - 法家佐治∙索罗斯（奇货可居，物极必反论）
+    - 法家佐治∙索罗斯（[奇货可居](#奇货可居)，物极必反论）
     - 瓦伦∙巴菲特投资哲学
         - [鸡蛋到底放不放一个篮子里？巴菲特的老师是这么说的](https://baijiahao.baidu.com/s?id=1582849960791847043)
         - [巴菲特：应该把鸡蛋放在一个篮子里，然后小心的看好它！](https://www.163.com/dy/article/IJP46ENP05561KMQ.html)
 
 技术型量化投资
-    - 詹姆斯∙西蒙斯（奇货可居，物极必反论）
+    - 詹姆斯∙西蒙斯（[奇货可居](#奇货可居)，物极必反论）
     - 雷∙达利欧
 
 ##### 金融炼金术
+
+**[奇货可居](#奇货可居)，物极必反论**
 
 ![*股票市场反身理论系统思考图*](诸子百家考工记/股票市场反身理论系统思考图.png){width=400}
 
@@ -449,7 +452,12 @@ nameserver 114.114.114.114
 
 ##### 高频量化对冲
 
+![*解秘文艺复兴科技 - 第九节：交易策略的评估问题*](诸子百家考工记/解秘文艺复兴科技 - 第九节：交易策略的评估问题（甲）.png){width=400}
+
+![*解秘文艺复兴科技 - 第九节：交易策略的评估问题*](诸子百家考工记/解秘文艺复兴科技 - 第九节：交易策略的评估问题（乙）.png){width=400}
+
 - [「猫城」次元期权（binary.com）量化分析员/量化交易员面试题](https://github.com/englianhu/binary.com-interview-question)
+- [「猫城」世博量化/FXCM 量化对冲实时数据](https://github.com/scibrokes/real-time-fxcm)
 
 #### 蕲年宫之变
 
@@ -472,7 +480,11 @@ nameserver 114.114.114.114
 
 *引用：[「抖音」大秦赋 - 时光机器农历二零零二年](https://v.douyin.com/iNwNe2Q6)*
 
-##### 期权/“期”货可居
+##### 奇货可居
+
+**期权/“期”货可居**
+
+![*解秘文艺复兴科技 - 第九节：交易策略的评估问题*](诸子百家考工记/解秘文艺复兴科技 - 第九节：交易策略的评估问题（甲）.png){width=400}
 
 ### 法家李斯
 
@@ -500,7 +512,27 @@ nameserver 114.114.114.114
 
 #### 李斯篆书
 
+##### 字体、字库与输入法
+
+<iframe width="400" height="225" src="https://www.youtube.com/embed/GAGJAI6CY64" title="「抖音」写了篆书才知篆书有多美啊！" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+- [「猫城」黄联富（®γσ ξηg 雷欧）/「🚩🇨🇳🏹🦔中科红旗」🎋🎋🎍🐼🎍🎋🎋附有公元前秦人拼音的红旗输入法#八](https://github.com/englianhu/RedFlag-Linux/issues/8)
+- [「雎虒」黄联富（®γσ ξηg 雷欧）/Rime输入法Emoji与符号滤镜](https://gitee.com/englianhu/rime_OpenCC_emoji_symbols)
+- [礼逆袭上的输入法－Gcin（支持词音、注音、拼音、仓颉、呒虾米）](https://magiclen.org/gcin)
+- [「达比安」`scim`软件包](https://packages.debian.org/bullseye/scim)
+- [「猫城」黄联富（®γσ ξηg 雷欧）/`pinyin-pro`专业的汉语拼音转化器](https://github.com/englianhu/pinyin-pro)提供中文转拼音、拼音音调、拼音声母、拼音韵母、多音字拼音、姓氏拼音、拼音匹配。
+- [「猫城」黄联富（®γσ ξηg 雷欧）/小篆查询](https://github.com/englianhu/xiaozhuan)
+
+##### 编程语言
+
+- [「雎虒」黄联富（®γσ ξηg 雷欧）/丙语言编译器](https://gitee.com/englianhu/bingyuyanbianyiqi)
+- []()
+
 ### 赢家黄氏江夏堂——联富始祖之道（世袭制道教徒）
+
+<iframe width="400" height="225" src="https://www.youtube.com/embed/j-YFB_HTt2s" title="数学帝国始皇帝 - 炎黄子孙" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+<iframe width="400" height="225" src="https://www.youtube.com/embed/auPaUFDYuBc" title="数学剑法 - 独孤九剑" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 ![*道家既赢家，走向道家算卜。*](诸子百家考工记/陈省身 - 走向数学.png){width=400}
 
@@ -635,11 +667,11 @@ nameserver 114.114.114.114
 - [黄联富（®γσ ξηg 雷欧）/乐发集团（阿里报告）](https://github.com/englianhu/report)
 - [「油管」可兰经断肢法，回教徒不是不可以赌博吗？](https://www.youtube.com/shorts/hTsFgQ3mfBc)，干脆由咱们世袭制道教徒易经算卜（中国政府或咱们东南亚复古中华五千年文化革命再联合东亚中国西征）来接管回教徒的领土好了！
 
-## 世袭制道家学府（（世袭制道教徒赢家黄氏江夏堂）鬼谷传奇）
+## 世袭制道教徒赢家黄氏江夏堂之世博量化研究所
 
-![*借鉴武汉大学校徽*](诸子百家考工记/赢房宫 - 赢家兵营阿房宫.png){width=400}
+![*借鉴武汉大学校徽复古中华学府，赢房宫——赢家兵营阿房宫*](诸子百家考工记/赢房宫 - 赢家兵营阿房宫.png){width=400}
 
-借鉴春秋战国史和目前七大洲五大洋，目前咱们祖国中国河南淇县云梦山建立易经大学，咱们《易经》学问博大精修
+借鉴春秋战国史和目前七大洲五大洋，目前咱们祖国中国河南淇县云梦山建立易经大学，咱们《易经》学问博大精修，请查阅[前瞻科研](#前瞻科研)。
 
 - 道家通史
     - 春秋战国史
@@ -912,47 +944,53 @@ library('lubridate', warn.conflicts = FALSE)
 library('data.table', warn.conflicts = FALSE)
 library('conflicted', warn.conflicts = FALSE)
 
-conflicts_prefer(Ipaper::is_empty, .quiet = TRUE)
-conflicts_prefer(tidyft::nth, .quiet = TRUE)
-conflicts_prefer(tidyft::fill, .quiet = TRUE)
-conflicts_prefer(tidyft::nest, .quiet = TRUE)
-conflicts_prefer(tidyft::unnest, .quiet = TRUE)
-conflicts_prefer(tidyft::cummean, .quiet = TRUE)
-conflicts_prefer(tidyft::group_by, .quiet = TRUE)
-conflicts_prefer(tidyft::distinct, .quiet = TRUE)
-conflicts_prefer(tidyft::filter, .quiet = TRUE)
-conflicts_prefer(tidyft::select, .quiet = TRUE)
-conflicts_prefer(tidyft::rename, .quiet = TRUE)
-conflicts_prefer(tidyft::count, .quiet = TRUE)
-conflicts_prefer(tidyft::arrange, .quiet = TRUE)
-conflicts_prefer(tidyft::summarise, .quiet = TRUE)
-conflicts_prefer(tidyft::separate, .quiet = TRUE)
-conflicts_prefer(tidyft::lead, .quiet = TRUE)
-conflicts_prefer(tidyft::lag, .quiet = TRUE)
-conflicts_prefer(tidyft::unite, .quiet = TRUE)
-conflicts_prefer(tidyft::left_join, .quiet = TRUE)
-conflicts_prefer(tidyft::right_join, .quiet = TRUE)
-conflicts_prefer(tidyft::inner_join, .quiet = TRUE)
-conflicts_prefer(tidyft::full_join, .quiet = TRUE)
-conflicts_prefer(tidyft::anti_join, .quiet = TRUE)
-conflicts_prefer(tidyft::semi_join, .quiet = TRUE)
-conflicts_prefer(tidyft::select_dt, .quiet = TRUE)
-conflicts_prefer(tidyft::transpose, .quiet = TRUE)
-conflicts_prefer(tidyft::setDT, .quiet = TRUE)
-conflicts_prefer(tidyft::setnames, .quiet = TRUE)
-conflicts_prefer(dplyr::mutate, .quiet = TRUE)
-conflicts_prefer(dplyr::collapse, .quiet = TRUE)
-conflicts_prefer(lubridate::year, .quiet = TRUE)
-conflicts_prefer(data.table::first, .quiet = TRUE)
-conflicts_prefer(data.table::last, .quiet = TRUE)
-conflicts_prefer(data.table::between, .quiet = TRUE)
-conflicts_prefer(data.table::set, .quiet = TRUE)
-conflicts_prefer(data.table::`:=`, .quiet = TRUE)
-conflicts_prefer(hms::hms, .quiet = TRUE)
-conflicts_prefer(fabletools::accuracy, .quiet = TRUE)
-conflicts_prefer(base::load, .quiet = TRUE)
-conflicts_prefer(base::merge, .quiet = TRUE)
-conflicts_prefer(data.table::between, .quiet = TRUE)
+conflicted::conflicts_prefer(Ipaper::is_empty, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::nth, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::fill, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::nest, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::unnest, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::cummean, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::group_by, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::distinct, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::filter, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::select, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::rename, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::count, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::arrange, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::summarise, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::separate, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::lead, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::lag, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::unite, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::left_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::right_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::inner_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::full_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::anti_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::semi_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::select_dt, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::transpose, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::setDT, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::setnames, .quiet = TRUE)
+conflicted::conflicts_prefer(dplyr::mutate, .quiet = TRUE)
+conflicted::conflicts_prefer(dplyr::collapse, .quiet = TRUE)
+conflicted::conflicts_prefer(lubridate::year, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::first, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::last, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::between, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::set, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::`:=`, .quiet = TRUE)
+conflicted::conflicts_prefer(Ipaper::`%->%`)
+conflicted::conflicts_prefer(hms::hms, .quiet = TRUE)
+conflicted::conflicts_prefer(fabletools::accuracy, .quiet = TRUE)
+conflicted::conflicts_prefer(base::load, .quiet = TRUE)
+conflicted::conflicts_prefer(base::merge, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::between, .quiet = TRUE)
+conflicted::conflicts_prefer(Ipaper::llply, .quiet = TRUE)
+conflicted::conflicts_prefer(tibble::view, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::separate, .quiet = TRUE)
+conflicted::conflicts_prefer(lubridate::year, .quiet = TRUE)
+conflicted::conflicts_prefer(gtools::permutations, .quiet = TRUE)
 
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 
@@ -989,14 +1027,6 @@ rm(程序包)
 谷歌绘图设置 <- options(gvis.plot.tag = 'chart')
 
 ## <audio src='诸子百家诗经与古诗源/bigmoney.mp3' autoplay controls loop></audio>
-```
-
-```{r 设置函数优先权}
-conflicts_prefer(Ipaper::llply, .quiet = TRUE)
-conflicts_prefer(tibble::view, .quiet = TRUE)
-conflicts_prefer(tidyft::separate, .quiet = TRUE)
-conflicts_prefer(lubridate::year, .quiet = TRUE)
-conflicts_prefer(gtools::permutations, .quiet = TRUE)
 ```
 
 <br>
@@ -1962,9 +1992,7 @@ source('函数/总汇结论.R')
 
 ### 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）
 
-```{r }
-
-```
+此文献的数据中的默认预测价就是延续上篇[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://rpubs.com/englianhu/HFT-RV3)（鄀夜总会）或[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://englianhu.github.io/民国一百一十三年（甲辰年）/杏月/binary-Q1Inter-HFT-RV3.html)（猫城个人随笔记事本），使用**季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）**，详情请查阅[开函阅牍/简](#开函阅牍/简)。
 
 ### 自回归综合滑均模型系列（ARIMA Series）
 
@@ -2244,13 +2272,14 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 *引用：[第八章第七节 在R鄀中建立ARIMA模型](https://otexts.com/fppcn/arima-r.html)*
 
-- [「经管之家」 [计数软件与数据分析] 如何理解R中给出的ARIMA模型的拟合结果？](https://bbs.pinggu.org/forum.php?mod=viewthread&tid=3236918)
-- [**Forecasting: Principle & Practice** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)
-- [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3cn)
-
 [赤池信息量准则](#赤池信息量准则)介绍`AIC`、`AICc`和`BIC`来评估计数/机数模型的精准度，这儿使用`forecast`、`fable`、`fabletools`程序包，该程序包中的`accuracy()`[^8]函数和`report()`函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的计数模型预测值。至于`stats`、`TSA`并无兼容`forecast`、`fable`、`fabletools`程序包，故此以`MAE`, `MAPE`, `RMSE`, `SMAPE`, `MSE`来评估。
 
-[^8]: 预测：方法与实践（第三版）<br> - [**Forecasting: Principles and Practice (3rd ed)** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)阐明评估预测精准度的计算公式。<br> - [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3cn)阐明评估预测精准度的计算公式。<br> - [「CSDN」选择正确的错误度量标准：MAPE与sMAPE的优缺点](https://blog.csdn.net/deephub/article/details/109483129)<br> - [「β站」康雁飞在线视频教程《预测：方法与实践》（第三版）](https://space.bilibili.com/624024421)
+- [「经管之家」计数软件与数据分析：如何理解R中给出的ARIMA模型的拟合结果？](https://bbs.pinggu.org/forum.php?mod=viewthread&tid=3236918)
+- [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3cn/accuracy-cn.html)
+- [**Forecasting: Principle & Practice** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)
+- [Regression Model Accuracy Metrics: R-square, AIC, BIC, Cp and more](http://www.sthda.com/english/articles/38-regression-model-validation/158-regression-model-accuracy-metrics-r-square-aic-bic-cp-and-more/#google_vignette)
+
+[^8]: 预测：方法与实践（第三版）<br> - [**Forecasting: Principles and Practice (3rd ed)** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)阐明评估预测精准度的计算公式。<br> - [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3/accuracy.html)阐明评估预测精准度的计算公式。<br> - [「CSDN」选择正确的错误度量标准：MAPE与sMAPE的优缺点](https://blog.csdn.net/deephub/article/details/109483129)<br> - [「β站」康雁飞在线视频教程《预测：方法与实践》（第三版）](https://space.bilibili.com/624024421)
 
 ## 道家计数建模（世袭制道教徒）
 
@@ -3556,7 +3585,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ###### 赤池信息量准则
 
-![*解秘文艺复兴科技 - 第五节：模型选择标准*](诸子百家考工记/解秘文艺复兴科技 - 第五节：模型选择标准.png)
+![*解秘文艺复兴科技 - 第五节：模型选择标准*](诸子百家考工记/解秘文艺复兴科技 - 第五节：模型选择标准.png){width=400}
 
 借鉴[「猫城」次元期权（binary.com）量化分析员/量化交易员面试题#第一题](https://github.com/englianhu/binary.com-interview-question?tab=readme-ov-file#第一题)中的`USDJPY`和七种国际主要货币并非抽样局部数据，以下赤池信息量准则分为`AIC`、`AICc`和`BIC`。
 
@@ -3568,10 +3597,11 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 欲知更多关于赤池信息量准则文献与信息，请查阅：
 
-- [AIC vs AICc: Performance Comparison in Model Selection](https://github.com/angela-xu/aic-aicc-performance-comparison-in-model-selection)
-- [Time Decomposition and Short-Term Forecasting of Hydrometeorological Conditions in the South Baltic Coastal Zone of Poland](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/Time%20Decomposition%20and%20Short-Term%20Forecasting%20of%20Hydrometeorological%20Conditions%20in%20the%20South%20Baltic%20Coastal%20Zone%20of%20Poland.pdf)
-- [The relative performance of AIC, AICC and BIC in
-the presence of unobserved heterogeneity](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/The%20relative%20performance%20of%20AIC%2C%20AICC%20and%20BIC%20in%0Athe%20presence%20of%20unobserved%20heterogeneity.pdf)介绍`ICsims`鄀软件包，可以通过`install.package('Ipaper'); Ipaper::install_github('MarkJBrewer/ICsims')`或`install.package('devtools'); devtools::install_github('MarkJBrewer/ICsims')`安装。
+- [「油管」Statistics 101: Multiple Regression, AIC, AICc, and BIC Basics](https://youtu.be/-BR4WElPIXg)
+- [「油管」Model selection with AIC and AICc](https://youtu.be/HOqHI53x9Go)
+- [「猫城」AIC vs AICc: Performance Comparison in Model Selection](https://github.com/angela-xu/aic-aicc-performance-comparison-in-model-selection)
+- [「猫城」Time Decomposition and Short-Term Forecasting of Hydrometeorological Conditions in the South Baltic Coastal Zone of Poland](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/Time%20Decomposition%20and%20Short-Term%20Forecasting%20of%20Hydrometeorological%20Conditions%20in%20the%20South%20Baltic%20Coastal%20Zone%20of%20Poland.pdf)
+- [「猫城」The relative performance of AIC, AICC and BIC in the presence of unobserved heterogeneity](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/The%20relative%20performance%20of%20AIC%2C%20AICC%20and%20BIC%20in%0Athe%20presence%20of%20unobserved%20heterogeneity.pdf)介绍`ICsims`鄀软件包，可以通过`install.package('Ipaper'); Ipaper::install_github('MarkJBrewer/ICsims')`或`install.package('devtools'); devtools::install_github('MarkJBrewer/ICsims')`安装。
 
 **设置最优赤池信息量准则为`ic = 'aic'`**
 
@@ -4199,7 +4229,7 @@ sarima::sarima()
 
 ![*礼逆袭系统文件框架*](诸子百家考工记/礼逆袭系统文件框架.png){width=400}
 
-> ![*逆水行舟，不进则退*](诸子百家考工记/逆水行舟，不进则退.png){width=400}
+![*逆水行舟，不进则退*](诸子百家考工记/逆水行舟，不进则退.png){width=400}
 
 **人无远虑，必有近忧**
 
