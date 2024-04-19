@@ -56,7 +56,7 @@ output:
 
 *引用：[「维基百科」孔子学院列表](https://zh.wikipedia.org/wiki/孔子学院列表)*
 
-![*引用：[「猫城」中国北京大学赢家ξng黄氏江夏堂「大秦赋•道家李耳老子兼法家李斯篆紀•艺文志」：目前使用🚩🇨🇳🏹🦔中国国产红旗礼逆袭，编程都会使用咱们母语华语、字体、字幕加汉语拼音。](https://github.com/englianhu/RedFlag-Linux/issues/6#issuecomment-1722247674)*](诸子百家考工记/还有半社会主义半资本主义.png){width=400}
+![*引用：[「猫城」黄联富（®γσ ξηg 雷欧）/中国北京大学赢家ξng黄氏江夏堂「大秦赋•道家李耳老子兼法家李斯篆紀•艺文志」：目前使用🚩🇨🇳🏹🦔中国国产红旗礼逆袭，编程都会使用咱们母语华语、字体、字幕加汉语拼音。](https://github.com/englianhu/RedFlag-Linux/issues/6#issuecomment-1722247674)*](诸子百家考工记/还有半社会主义半资本主义.png){width=400}
 
 <iframe width="400" height="225" src="//player.bilibili.com/player.html?bvid=BV15r4y1c7Kv" title="九分钟速看《大秦帝国》系列四部剧情" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -422,9 +422,9 @@ nameserver 114.114.114.114
 - [高频交易系统是不是绝大多数都是基于曦佳佳开发的？](https://github.com/englianhu/library/blob/世博量化研究院/始祖永春∙秦谏（诸子百家，中文编程）/秦国始祖道家∙嬴政黄永春ξηg%20Tεηg、道家一统天下的电子仪器「干支算筹」和操作系统「大秦赋」）/大秦赋之干支算筹/高频交易系统是不是绝大多数都是基于曦佳佳开发的？.pdf)
 - [量化对冲策略解读及配置价值分析](https://github.com/englianhu/library/blob/世博量化研究院/始祖永春∙秦谏（诸子百家，中文编程）/秦国始祖道家∙嬴政黄永春ξηg%20Tεηg、道家一统天下的电子仪器「干支算筹」和操作系统「大秦赋」）/大秦赋之干支算筹/量化对冲策略解读及配置价值分析.pdf)
 - 欲知更多金融相关文献，请查阅：
-    - 「猫城」FXCM 量化对冲实时数据中的[图书馆](https://github.com/scibrokes/real-time-fxcm/tree/世博量化研究院/图书馆)
-    - 「猫城」次元期权（binary.com）量化分析员/量化交易员面试题[图书馆](https://github.com/englianhu/binary.com-interview-question/tree/世博量化研究院/图书馆)
-    - [「猫城」《始祖永春•秦谏——大秦赋》](https://github.com/englianhu/library)
+    - 「猫城」世博量化/FXCM 量化对冲实时数据中的[图书馆](https://github.com/scibrokes/real-time-fxcm/tree/世博量化研究院/图书馆)
+    - 「猫城」黄联富（®γσ ξηg 雷欧）/次元期权（binary.com）量化分析员/量化交易员面试题[图书馆](https://github.com/englianhu/binary.com-interview-question/tree/世博量化研究院/图书馆)
+    - [「猫城」黄联富（®γσ ξηg 雷欧）/《始祖永春•秦谏——大秦赋》](https://github.com/englianhu/library)
     - [赢家黄氏江夏堂——联富始祖之道](#赢家黄氏江夏堂——联富始祖之道)
 
 ##### 法家佐治∙索罗斯与瓦伦∙巴菲特投资哲学
@@ -522,6 +522,36 @@ nameserver 114.114.114.114
 - [「达比安」`scim`软件包](https://packages.debian.org/bullseye/scim)
 - [「猫城」黄联富（®γσ ξηg 雷欧）/`pinyin-pro`专业的汉语拼音转化器](https://github.com/englianhu/pinyin-pro)提供中文转拼音、拼音音调、拼音声母、拼音韵母、多音字拼音、姓氏拼音、拼音匹配。
 - [「猫城」黄联富（®γσ ξηg 雷欧）/小篆查询](https://github.com/englianhu/xiaozhuan)
+- [「天下字体」方正楷体拼音字库](https://www.fonts.net.cn/font-32489380389.html)
+- [「字体帝」瑞美加张清平硬笔楷书](https://www.zitidi.com/thread-2259.htm)
+
+> ...
+> 
+> ```
+> ##安装🎋🎋🎍🐼🎍🎋🎋百度输入法🐾应用
+> ##https://srf.baidu.com/?c=j&e=d&from=1000e&platform=ubuntu&ref=index_entrance_android_click
+> wget https://imeres.baidu.com/imeres/ime-res/guanwang/img/Ubuntu_Deepin-fcitx-baidupinyin-64.zip
+> unzip */*.zip && sudo rm -rf *.zip *.docx
+> #sudo gdebi fcitx-baidupinyin.deb
+> sudo apt install -y ./*.deb && sudo rm -rf *.deb
+> ##注：本输入法输入面板程序与其他输入法如搜狗输入法、讯飞输入法冲突，可能会受其他输入法影响而无法正常启动，若已安装其他输入法并导致百度输入法输入面板无法正常启动，应关闭其他输入法相关进程并重启百度输入法输入面板程序，输入面板程序安装路径为/opt/apps/com.baidu.fcitx-baidupinyin/files/bin/baidu-qimpanel
+> /opt/apps/com.baidu.fcitx-baidupinyin/files/bin/baidu-qimpanel
+> sudo chmod +x /opt/apps/com.baidu.fcitx-baidupinyin/files/bin/bd-qimpanel.watchdog.sh
+> 
+> ##安装gcin和hime输入法
+> ##https://github.com/scibrokes/r-world/issues/1#issuecomment-1434387627
+> sudo apt install *scim* *gcin* *hime* *fcitx* *im*panel* -y
+> 
+> sudo apt install -y *aptitude* ## 通过命令行利用aptitude 安装fcitx、qt
+> sudo aptitude install -y fcitx-bin fcitx-table fcitx-config-gtk fcitx-config-gtk2 fcitx-frontend-all
+> sudo aptitude install -y qt5-default qtcreator qml-module-qtquick-controls2
+> ```
+> 
+> ...
+
+*引用：[「猫城」黄联富（®γσ ξηg 雷欧）/「🚩🇨🇳🏹🦔中科红旗」🎋🎋🎍🐼🎍🎋🎋附有公元前秦人拼音的红旗输入法#八](https://github.com/englianhu/RedFlag-Linux/issues/8)*，[天下字体](https://www.fonts.net.cn)和[字体帝](https://www.zitidi.com/thread-2259.htm)
+
+![*输入法*](诸子百家考工记/输入法.png)
 
 ##### 编程语言
 
@@ -2002,13 +2032,113 @@ source('函数/总汇结论.R')
 
 > `ARIMA(p, d, q)`模型中
 >
-- `p`是自回归(AR)的项数，用来获取自变量
-- `d`是差分(I)的系数，为了使时间序列平稳
-- `q`是移动平均(MA)的项数，为了使其光滑
+> - `p`是自回归(AR)的项数，用来获取自变量
+> - `d`是差分(I)的系数，为了使时间序列平稳
+> - `q`是移动平均(MA)的项数，为了使其光滑
 
 *引用：[ARIMA模型中的三个参数(`p`,`d`,`q`)都是什么意思?](http://sofasofa.io/forum_main_post.php?postid=1000324)*
 
-> 运用SPSS第十九版软件中的相关模块进行数据处理和分析。本研究是以月份为时间单位的研究序列，故选择复合季节模型[5, 6]：`ARIMA(p，d，q)(P，D，Q)`s，参数`p`为非季节性自回归阶数，`d`为一般差分阶数，`q`为非季节性滑动平均阶数；`P`为季节性自回归阶数，`D`为季节差分阶数，`Q`为季节性移动平均阶数，s为季节模型的时间单位相应周期（本研究`s = 12`）。
+> …ARIMA模型，全称为自回归积分滑动平均模型（Autoregressive Integrated Moving Average Model），是由博克思（Box）和詹金斯（Jenkins）于廿世纪进年代初提出的一种时间序列预测方法。ARIMA模型是指在将非平稳时间序列转化为平稳时间序列过程中，将因变量仅对它的滞后值以及随机误差项的现值和滞后值进行回归所建立的模型。
+> 
+> *注：时间序列模型适用于做短期预测，即统计序列过去的变化模式还未发生根本性变化…*
+
+*引用：[「简书」ARIMA时间序列模型](https://www.jianshu.com/p/9a05472b0e7d)*
+
+> 给大家分享一篇时间序列ARMA应用的干货文章。
+> 
+> ARMA可谓是时间序列最为经典常用的预测方法，广泛应有于涉及时间序列的各个领域。ARMA模型自出道以来，出场次数不可胜数。想必大家也都不陌生，常学常新，我们今天不妨再来回顾一遍～。
+> 
+> ARMA全称Autoregressive moving average model（自回归滑动平均模型），由美国统计学家博克斯（G.E.P.Box）和英国统计学家詹金斯（G.M.Jenkins）在二十世纪七十年代提出，也称B-J方法。
+> 
+> ARMA模型有三种基本形式：
+> 
+> - 自回归模型（AR， Auto- regressive）：自回归模型根据历史观测值进行预测。其中，是预测误差，为回归系数。
+> 
+> - 移动平均模型（MA，Moving Average）：移动平均模型根据历史预测误差进行预测。其中，为前`q`期的随机扰动项，误差项是当前期的随机干扰（零均值白噪声序列），为平滑系数。
+> 
+> - 混合模型（ARMA，Auto-regressive Moving Average）：混合模型为同时包含AR模型和MA模型。
+> 
+> 自回归不是多元线性回归
+小标题中的多元线性回归这里特指平时常说的带有多个自变量的非时间序列多元线性回归模型。
+> 
+> - 回归模型：其中，为因变量，为自变量，为待估计的参数，为误差项。
+> - 自回归模型：其中，为序列本身前个观测值。
+> 
+> 回归是一种分析自变量和因变量关系的模型，当因变量和自变量为线性关系时叫线性回归模型，当有多个变量时叫多元线性回归模型。自回归（AR）模型是一种特殊的多元线性回归模型，和平时用的多元线性回归模型略有不同。
+> 
+> 多元线性回归模型有多个自变量，但时间序列因其特殊性，一个时刻只有一个观测值，在无其他维度数据补充的前提下，没有可辅助预测的自变量，因而只能取其自身延迟`p`个时刻的观测值作为自变量，所以称自回归。
+> 
+> 自回归使用自身的数据进行预测，序列前后应当有相关性。所以多元线性回归模型预测时并不要求序列平稳，但AR模型则要求序列必须是平稳的。
+> 
+> AR模型对平稳性要求体现在如下几个方面：
+> 
+> | 统计量 | 特征       |
+> |:------:|:----------:|
+> | 均值	 | 常数       |
+> | 方差	 | 常数       |
+> | ACF	   | 拖尾       |
+> | PACF	 | `p`阶截尾  |
+> 
+> 对于一般的`AR(p)`模型，其ACF的性质以及序列的随机周期，也由其特征根决定。ACF可以是单调衰减、震荡衰 减、正负交替衰减、呈周期震荡衰减。在有复特征根根或者有接近−1的特征根时时间序列呈现出一定的随机周期变化。
+> 
+> 下面是`AR(2)`模型对 不同取值画出ACF的典型图形，供参考：
+> 
+> 偏自相关函数`p`阶截尾表明，变量只与前`p`个变量有关，因而也可以借助PACF确定AR模型的阶数`p`…
+
+*引用：[时间序列：ARMA应用指南](https://www.sohu.com/a/525561002_121118999)*
+
+> `ARIMA(p,d,q)`模型中
+>
+- **p**是自回归(AR)的项数，用来获取自变量
+- **d**是差分(I)的系数，为了使时间序列平稳
+- **q**是移动平均(MA)的项数，为了使其光滑
+
+*引用：[ARIMA模型中的三个参数`(p, d, q`)都是什么意思?](http://sofasofa.io/forum_main_post.php?postid=1000324)*
+
+> …
+> 三、ARIMA模型
+> 
+> MA模型的计算公式说明了它着重于当前值和过去值之间的差异，用于捕捉时间序列中的变化，而AR模型只是描述了时间序列中和过去观测值的相关性，它没有像MA模型那样可以捕捉随着时间变化而产生的波动。
+> 
+> AR模型是认同历史和未来是相似的，历史的过去规律一致延续到未来，并继续出现它历史上的特征，不过这个模型则没有很好地表现出历史数据上地突然的意外，产生的噪声较大的数据，也就是说它不能把过去那些突发的意外性所带来的因素考虑在内，并用于预测之中。
+> 
+> 而MA模型则不同，它固然能够捕捉那些突发的意外因素，这些因素导致了波动的变化，但是它却不能像AR模型那样复制过去历史延申而来的趋势。
+> 
+> 两者的结合就是为了克服彼此的缺点，从而把预测认为过去历史的特征既会继续反映到未来的预测上，同时过去收到的偶然意外因素，也会为未来带来一定的波动。不过它们结合首先成为了ARMA模型，和ARIMA模型相比，缺少了差分。如果数据是稳定的，那么使用ARMA是简便的，不过现实上也往往显示数据并非稳定的。
+> 
+> 简单的理解，ARMA告诉的是，未来的玉米价格是如何，仅仅取决于以前的玉米价格和与之相关的误差，但是ARIMA告诉了我，除了同样的因素，还考虑了玉米价格中存在的趋势和季节因素。
+> 
+> ARIMA的I就是差分过程，将非平稳的序列数据转为平稳序列的数据，从而减少或消除时间序列的趋势和季节性变化。
+> 
+> 差分的计算就是计算一组数值中相邻数据点的差值，比如一组两个数据，为五和七，那么其差分就是七减五等于二（`7-5 = 2`）了。通过差分过程，序列也因此变得比原来的少了一位，原来有二个序列，数值分别是五和七，现在差分后，只有一个序列，为二。
+> 
+> 以下是差分的例子，除了经过一次差分外，继续第二次的差分：
+> 
+> ![](诸子百家考工记/ARIMA模型的差分例子.png){width=400}
+> 
+> …在ARIMA模型中，`p, q, d`三个参数是相当重要的，`p`和`q`分别控制ARIMA模型中自回归和移动平均的部分，而`d`则控制输入ARIMA模型的数据被执行的差分的阶数。
+> 
+> 不同的参数带来的意义不同，也会影响模型的使用。
+> 
+> 笔者演示这里顺序不太恰当，应该首先看ACF，PACF，看其平稳性等，研究是否适合ARIMA模型和参数选择。后续才是通过ARIMA模型计算预测，特别是某个和几个参数都是`0`的情况，会出现如下情况：
+> 
+> - 当`d = 0`，没有非稳态数据，因此为ARMA模型
+> - 当`d = 0`，`q = 0`，没有移动平均线或稳态数据，只是对过去值的自回归，采用AR模型
+> - 当`p = 0`，`d = 0`，没有自回归或稳态数据的移动平均模型，采用MA模型
+> 
+> 当然，由于ARIMA模型比起指数平滑等方法，更加复杂，因此使用软件处理更适合，避免麻烦地建模和计算，不过要让模型可靠，数据必须可靠，并且必须显示收集数据的时间跨度相对较长，按照一些推荐的说法，数据时间跨度主张在卌期或以上。
+> 
+> 尽管ARIMA模型在适当的条件和数据可用性下可以高度准确和可靠，但该模型的主要局限性之一是参数`（p、d、q）`需要手动定义；因此，找到最准确的拟合可能是一个漫长的试错过程。
+> 
+> 同样，该模型高度依赖于历史数据的可靠性和数据的差异。重要的是要确保数据是在很长一段时间内准确收集的，以便模型提供准确的结果和预测。
+> 
+> 笔者这里只能大致对ARIMA模型作出比较显浅的介绍，更深入的研究和学习，还是需要更多的实践和专业的理论学习。
+> 
+> 虽然ARIMA模型是强大有效的模型之一，不过还是那句，预测有时并非是越复杂就越好，重要的是通过预测理解相应的因素，并且在计划中更多地可以做出修正…
+
+*引用：[ARIMA模型说明](https://zhuanlan.zhihu.com/p/673234501)*
+
+> 运用SPSS第十九版软件中的相关模块进行数据处理和分析。本研究是以月份为时间单位的研究序列，故选择复合季节模型`[5, 6]`：$ARIMA(p,d,q)(P,D,Q)_s$，参数`p`为非季节性自回归阶数，`d`为一般差分阶数，`q`为非季节性滑动平均阶数；`P`为季节性自回归阶数，`D`为季节差分阶数，`Q`为季节性移动平均阶数，`s`为季节模型的时间单位相应周期（本研究`s = 12`）。
 
 *引用：[北京市昌平区肺结核发病数ARIMA模型预测](http://www.jbjc.org/JBJC/html/article_8538.htm)*
 
@@ -3046,6 +3176,15 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 - [二十四节气 - 中国历法中廿四个特定节令、人类非物质文化遗产代表作](https://baike.baidu.com/item/二十四节气/191597)
 - [维基百科 - 节气](https://zh.wikipedia.org/zh-my/节气)
 
+##### 建立农历数据
+
+阅读[自回归简介](#自回归简介)了解模型概念后，这儿就添加咱们世袭制道家的农历数据，包括：
+
+- 农历
+- 干支
+- 廿四节气
+- 时辰
+
 ```{r 天文历法-计数建模, warning=FALSE, error=TRUE}
 if(!exists('天干')) 天干 <- c('甲', '乙', '丙', '丁', '戊', '己', '庾', '辛', '壬', '癸')
 if(!exists('地支')) 地支 <- c('子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥')
@@ -3129,6 +3268,8 @@ if (!exists('总汇')) {
       
       廿四节气乙 = if_else(is.na(廿四节气乙), 0, 廿四节气乙), 
       时分秒 = as_hms(年月日时分), 
+      
+      ## 添加时辰
       时辰 = factor(case_when(
         时分秒 >  as_hms('23:00:00') & 时分秒 <= as_hms('23:59:59') ~ '子时', 
         时分秒 >= as_hms('00:00:00') & 时分秒 <= as_hms('01:00:00') ~ '子时', 
@@ -3179,7 +3320,7 @@ if (!exists('总汇')) {
 
 *引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
 
-一般上，存活分析模型、循环神经网络模型，[**迪逊与罗宾逊（一九九七年）**](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/reference/DixonRobinson1997.pdf)^[[「猫城」Odds Modelling and Testing Inefficiency of Sports Bookmakers](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)项目中主页有陈列马克·迪逊一系列<ruby>蹴<rp>(</rp><rt>cù</rt><rp>)</rp>鞠<rp>(</rp><rt>jū</rt><rp>)</rp></ruby>]通过进球率和加权指数来筹算滚球赛事中的球员斗志与士气（也可以运用在军事训练与战场上、或者学者在学习吸收能力上，而一般上隐马尔可夫链计数/机数模型使用夏普率评估风险与空间状态触碰点也可以运用在学术教育评估学生、教师、校长、校工、各科系、学校整体素质上）、天灾人祸。借鉴[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)中使用`forecast::arimaorder()`筹算自回归模型并将规律`p`值、`d`值、`q`值最优化，来提高计数模型的精准度。在此将咱们世袭制道家的习俗文化、算卜、天文历法、气象学、天文学中的**廿四节气**来诠释`D`（季节差分的次数）。欲知更多详情，请查阅以下[廿四节气](廿四节气)章节。
+一般上，存活分析模型、循环神经网络模型，[**迪克逊与罗宾逊（一九九七年∙英）**](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/reference/DixonRobinson1997.pdf)^[**马克·迪逊**一系列<ruby>蹴<rp>(</rp><rt>cù</rt><rp>)</rp>鞠<rp>(</rp><rt>jū</rt><rp>)</rp></ruby>科研文献，请查阅：<br> - [「文派」専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)<br> - [「猫城」黄联富（®γσ ξηg 雷欧）/赔率建模与测试低效率的体育博彩庄家（英）](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)]通过进球率和加权指数来筹算滚球赛事中的球员斗志与士气（也可以运用在军事训练与战场上、或者学者在学习吸收能力上，而一般上隐马尔可夫链计数/机数模型使用夏普率评估风险与空间状态触碰点也可以运用在学术教育评估学生、教师、校长、校工、各科系、学校整体素质上）、天灾人祸。借鉴[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)中使用`forecast::arimaorder()`筹算自回归模型并将规律`p`值、`d`值、`q`值最优化，来提高计数模型的精准度。在此将咱们世袭制道家的习俗文化、算卜、天文历法、气象学、天文学中的**廿四节气**来诠释`D`（季节差分的次数）。欲知更多详情，请查阅以下[廿四节气](廿四节气)章节。
 
 欲知更多有关外因周期性自回归综合滑均模型（ARIMAX），请查阅以下文章：
 
@@ -3366,112 +3507,6 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 
 ##### 季节周期
 
-###### 自回归模型史
-
-> …ARIMA模型，全称为自回归积分滑动平均模型（Autoregressive Integrated Moving Average Model），是由博克思（Box）和詹金斯（Jenkins）于廿世纪进年代初提出的一种时间序列预测方法。ARIMA模型是指在将非平稳时间序列转化为平稳时间序列过程中，将因变量仅对它的滞后值以及随机误差项的现值和滞后值进行回归所建立的模型。
-> 
-> *注：时间序列模型适用于做短期预测，即统计序列过去的变化模式还未发生根本性变化…*
-
-*引用：[「简书」ARIMA时间序列模型](https://www.jianshu.com/p/9a05472b0e7d)*
-
-> 给大家分享一篇时间序列ARMA应用的干货文章。
-> 
-> ARMA可谓是时间序列最为经典常用的预测方法，广泛应有于涉及时间序列的各个领域。ARMA模型自出道以来，出场次数不可胜数。想必大家也都不陌生，常学常新，我们今天不妨再来回顾一遍～。
-> 
-> ARMA全称Autoregressive moving average model（自回归滑动平均模型），由美国统计学家博克斯（G.E.P.Box）和英国统计学家詹金斯（G.M.Jenkins）在二十世纪七十年代提出，也称B-J方法。
-> 
-> ARMA模型有三种基本形式：
-> 
-> - 自回归模型（AR， Auto- regressive）：自回归模型根据历史观测值进行预测。其中，是预测误差，为回归系数。
-> 
-> - 移动平均模型（MA，Moving Average）：移动平均模型根据历史预测误差进行预测。其中，为前`q`期的随机扰动项，误差项是当前期的随机干扰（零均值白噪声序列），为平滑系数。
-> 
-> - 混合模型（ARMA，Auto-regressive Moving Average）：混合模型为同时包含AR模型和MA模型。
-> 
-> 自回归不是多元线性回归
-小标题中的多元线性回归这里特指平时常说的带有多个自变量的非时间序列多元线性回归模型。
-> 
-> - 回归模型：其中，为因变量，为自变量，为待估计的参数，为误差项。
-> - 自回归模型：其中，为序列本身前个观测值。
-> 
-> 回归是一种分析自变量和因变量关系的模型，当因变量和自变量为线性关系时叫线性回归模型，当有多个变量时叫多元线性回归模型。自回归（AR）模型是一种特殊的多元线性回归模型，和平时用的多元线性回归模型略有不同。
-> 
-> 多元线性回归模型有多个自变量，但时间序列因其特殊性，一个时刻只有一个观测值，在无其他维度数据补充的前提下，没有可辅助预测的自变量，因而只能取其自身延迟`p`个时刻的观测值作为自变量，所以称自回归。
-> 
-> 自回归使用自身的数据进行预测，序列前后应当有相关性。所以多元线性回归模型预测时并不要求序列平稳，但AR模型则要求序列必须是平稳的。
-> 
-> AR模型对平稳性要求体现在如下几个方面：
-> 
-> | 统计量 | 特征       |
-> |:------:|:----------:|
-> | 均值	 | 常数       |
-> | 方差	 | 常数       |
-> | ACF	   | 拖尾       |
-> | PACF	 | `p`阶截尾  |
-> 
-> 对于一般的`AR(p)`模型，其ACF的性质以及序列的随机周期，也由其特征根决定。ACF可以是单调衰减、震荡衰 减、正负交替衰减、呈周期震荡衰减。在有复特征根根或者有接近−1的特征根时时间序列呈现出一定的随机周期变化。
-> 
-> 下面是`AR(2)`模型对 不同取值画出ACF的典型图形，供参考：
-> 
-> 偏自相关函数`p`阶截尾表明，变量只与前`p`个变量有关，因而也可以借助PACF确定AR模型的阶数`p`…
-
-*引用：[时间序列：ARMA应用指南](https://www.sohu.com/a/525561002_121118999)*
-
-> `ARIMA(p,d,q)`模型中
->
-- **p**是自回归(AR)的项数，用来获取自变量
-- **d**是差分(I)的系数，为了使时间序列平稳
-- **q**是移动平均(MA)的项数，为了使其光滑
-
-*引用：[ARIMA模型中的三个参数`(p, d, q`)都是什么意思?](http://sofasofa.io/forum_main_post.php?postid=1000324)*
-
-> …
-> 三、ARIMA模型
-> 
-> MA模型的计算公式说明了它着重于当前值和过去值之间的差异，用于捕捉时间序列中的变化，而AR模型只是描述了时间序列中和过去观测值的相关性，它没有像MA模型那样可以捕捉随着时间变化而产生的波动。
-> 
-> AR模型是认同历史和未来是相似的，历史的过去规律一致延续到未来，并继续出现它历史上的特征，不过这个模型则没有很好地表现出历史数据上地突然的意外，产生的噪声较大的数据，也就是说它不能把过去那些突发的意外性所带来的因素考虑在内，并用于预测之中。
-> 
-> 而MA模型则不同，它固然能够捕捉那些突发的意外因素，这些因素导致了波动的变化，但是它却不能像AR模型那样复制过去历史延申而来的趋势。
-> 
-> 两者的结合就是为了克服彼此的缺点，从而把预测认为过去历史的特征既会继续反映到未来的预测上，同时过去收到的偶然意外因素，也会为未来带来一定的波动。不过它们结合首先成为了ARMA模型，和ARIMA模型相比，缺少了差分。如果数据是稳定的，那么使用ARMA是简便的，不过现实上也往往显示数据并非稳定的。
-> 
-> 简单的理解，ARMA告诉的是，未来的玉米价格是如何，仅仅取决于以前的玉米价格和与之相关的误差，但是ARIMA告诉了我，除了同样的因素，还考虑了玉米价格中存在的趋势和季节因素。
-> 
-> ARIMA的I就是差分过程，将非平稳的序列数据转为平稳序列的数据，从而减少或消除时间序列的趋势和季节性变化。
-> 
-> 差分的计算就是计算一组数值中相邻数据点的差值，比如一组两个数据，为五和七，那么其差分就是七减五等于二（`7-5 = 2`）了。通过差分过程，序列也因此变得比原来的少了一位，原来有二个序列，数值分别是五和七，现在差分后，只有一个序列，为二。
-> 
-> 以下是差分的例子，除了经过一次差分外，继续第二次的差分：
-> 
-> ![](诸子百家考工记/ARIMA模型的差分例子.png){width=400}
-> 
-> …在ARIMA模型中，`p, q, d`三个参数是相当重要的，`p`和`q`分别控制ARIMA模型中自回归和移动平均的部分，而`d`则控制输入ARIMA模型的数据被执行的差分的阶数。
-> 
-> 不同的参数带来的意义不同，也会影响模型的使用。
-> 
-> 笔者演示这里顺序不太恰当，应该首先看ACF，PACF，看其平稳性等，研究是否适合ARIMA模型和参数选择。后续才是通过ARIMA模型计算预测，特别是某个和几个参数都是`0`的情况，会出现如下情况：
-> 
-> - 当`d = 0`，没有非稳态数据，因此为ARMA模型
-> - 当`d = 0`，`q = 0`，没有移动平均线或稳态数据，只是对过去值的自回归，采用AR模型
-> - 当`p = 0`，`d = 0`，没有自回归或稳态数据的移动平均模型，采用MA模型
-> 
-> 当然，由于ARIMA模型比起指数平滑等方法，更加复杂，因此使用软件处理更适合，避免麻烦地建模和计算，不过要让模型可靠，数据必须可靠，并且必须显示收集数据的时间跨度相对较长，按照一些推荐的说法，数据时间跨度主张在卌期或以上。
-> 
-> 尽管ARIMA模型在适当的条件和数据可用性下可以高度准确和可靠，但该模型的主要局限性之一是参数`（p、d、q）`需要手动定义；因此，找到最准确的拟合可能是一个漫长的试错过程。
-> 
-> 同样，该模型高度依赖于历史数据的可靠性和数据的差异。重要的是要确保数据是在很长一段时间内准确收集的，以便模型提供准确的结果和预测。
-> 
-> 笔者这里只能大致对ARIMA模型作出比较显浅的介绍，更深入的研究和学习，还是需要更多的实践和专业的理论学习。
-> 
-> 虽然ARIMA模型是强大有效的模型之一，不过还是那句，预测有时并非是越复杂就越好，重要的是通过预测理解相应的因素，并且在计划中更多地可以做出修正…
-
-*引用：[ARIMA模型说明](https://zhuanlan.zhihu.com/p/673234501)*
-
-> 运用SPSS（第十九版）软件中的相关模块进行数据处理和分析。本研究是以月份为时间单位的研究序列，故选择复合季节模型[5, 6]：`ARIMA(p，d，q)(P，D，Q)`s，参数`p`为非季节性自回归阶数，`d`为一般差分阶数，`q`为非季节性滑动平均阶数；`P`为季节性自回归阶数，`D`为季节差分阶数，`Q`为季节性移动平均阶数，`s`为季节模型的时间单位相应周期（本研究`s = 12`）。
-
-*引用：[北京市昌平区肺结核发病数ARIMA模型预测](http://www.jbjc.org/JBJC/html/article_8538.htm)*
-
 ###### 廿四节气
 
 ![*廿四节气表*](诸子百家考工记/廿四节气表.png){width=400}
@@ -3498,7 +3533,7 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 
 *引用：[「知乎」ARIMA模型说明](https://zhuanlan.zhihu.com/p/673234501)*
 
-由于[二十四节气到底是如何确立的？](https://www.xiaohongshu.com/explore/63f0c2f40000000013001435)中叙述廿四节气十如何确立的，这就牵涉到气象学与天文学，也就是咱们道家的”天文历法“中的其中一项，由于地球公转的轨道是椭圆形并不均匀其速度并不均匀（[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)教程ARIMA模型中`D`（季节差分的次数）和`d`（普通差分的次数）），所以气候不均匀并不一定是每年的指定哪天而会有微妙的差异。
+由于[二十四节气到底是如何确立的？](https://www.xiaohongshu.com/explore/63f0c2f40000000013001435)中叙述廿四节气十如何确立的，这就牵涉到气象学与天文学，也就是咱们道家的”天文历法“中的其中一项，由于地球公转的轨道是椭圆形并不均匀其速度并不均匀，[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)教程ARIMA模型中`D`（季节差分的次数）和`d`（普通差分的次数），所以气候不均匀并不一定是每年的指定哪天而会有微妙的差异。
 
 - [浅析二十四节气](https://zhuanlan.zhihu.com/p/586252935)
 - [最全的二十四节气的含义介绍（图文） 二十四节气介绍](https://www.hehun.com.cn/article/11914/6108226.html)
@@ -3523,10 +3558,10 @@ source('函数/自回归均移模型最优值.R')
 # 自回归均移模型最优值丙
 
 # 季节差分的次数 = NULL
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
 
 # 季节差分的次数 = NULL
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数模型') %>% 
     data.frame() %>% 
     mutate(计数模型 = factor(
@@ -3539,10 +3574,10 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 
 ```{r 普通外因丙, warning=FALSE, error=TRUE}
 # 季节差分的次数 = 0
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 0, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 季节差分的次数 = 0, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
 
 # 季节差分的次数 = 0
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 0, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 季节差分的次数 = 0, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数模型') %>% 
     data.frame() %>% 
     mutate(计数模型 = factor(
@@ -3555,10 +3590,10 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 
 ```{r 普通外因丁, warning=FALSE, error=TRUE}
 # 季节差分的次数 = 1
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 1, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 季节差分的次数 = 1, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
 
 # 季节差分的次数 = 1
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 1, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 季节差分的次数 = 1, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数模型') %>% 
     data.frame() %>% 
     mutate(计数模型 = factor(
@@ -3571,10 +3606,10 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 
 ```{r 普通外因戊, warning=FALSE, error=TRUE}
 # 季节差分的次数 = 2
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 # 季节差分的次数 = 2
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 2, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 季节差分的次数 = 2, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数模型') %>% 
     data.frame() %>% 
     mutate(计数模型 = factor(
@@ -3587,7 +3622,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ![*解秘文艺复兴科技 - 第五节：模型选择标准*](诸子百家考工记/解秘文艺复兴科技 - 第五节：模型选择标准.png){width=400}
 
-借鉴[「猫城」次元期权（binary.com）量化分析员/量化交易员面试题#第一题](https://github.com/englianhu/binary.com-interview-question?tab=readme-ov-file#第一题)中的`USDJPY`和七种国际主要货币并非抽样局部数据，以下赤池信息量准则分为`AIC`、`AICc`和`BIC`。
+借鉴[「猫城」黄联富（®γσ ξηg 雷欧）/次元期权（binary.com）量化分析员/量化交易员面试题#第一题](https://github.com/englianhu/binary.com-interview-question?tab=readme-ov-file#第一题)中的`USDJPY`和七种国际主要货币并非抽样局部数据，以下赤池信息量准则分为`AIC`、`AICc`和`BIC`。
 
 - `AIC`适用于全局数据。
 - `AICc`适用于局部数据。
@@ -3627,7 +3662,7 @@ names(赤池信息准则AIC) <- c('p', 'q', 'P', 'Q', 's', 'd', 'D')
 rm(赤池信息准则AIC)
 
 ## ic = 'aic'
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', ic = 'aic', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数模型') %>% 
     data.frame() %>% 
     mutate(计数模型 = factor(
@@ -3686,7 +3721,7 @@ rm(赤池信息准则AICc)
 - `数据 %>% auto.arima() %>% arimaorder()`
 - 设置`auto.arima(id='aic',...)`或`auto.arima(id='aicc',...)`
 
-得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
+得知自回归均移模型最优值的`p, d, q, P, D, Q, s`分别为`0, 1, 4, 0, 0, 0, 0`。
 
 ```
 > ??forecast::arimaorder
@@ -3735,16 +3770,20 @@ WWWusage %>% auto.arima %>% arimaorder
   ...
 ```
 
-*引用：[「猫城」次元期权（binary.com）量化分析员/量化交易员面试题/函数/自回归均移模型最优值.R](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/函数/自回归均移模型最优值.R#L24-L34)*
+*引用：[「猫城」黄联富（®γσ ξηg 雷欧）/次元期权（binary.com）量化分析员/量化交易员面试题/函数/自回归均移模型最优值.R](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/函数/自回归均移模型最优值.R#L24-L34)*
 
-[`forecast::Arima()`](#`forecast::Arima()`)中`**普通模型**中所提及的`p, d, q`、`P, D, Q`和季节性`s`参数。可通过以上`自回归均移模型最优值()`函数，或者直接使用`auto.arima()$arma`（筹算后需要再排列如上代码）列出自回归计数/机数模型中的周期性、季节性、循环参数，可以应用在筹算任何天文历法、轮回、廿四节气上、公转与自转。
+$$\underset{自回归计数/机数模型}{ARIMA}(\underset{非季节性数据}{(p, d, q)} \ \underset{季节性数据}{(P, D, Q)_s})$$
+
+*注释：[数术公式编译器（英）](https://editor.codecogs.com)可自行编写任何数术公式。*
+
+[`forecast::Arima()`](#`forecast::Arima()`)中**普通模型**中所提及的`p, d, q`、`P, D, Q`和季节性`s`参数。可通过以上`自回归均移模型最优值()`函数，或者直接使用`auto.arima()$arma`（筹算后需要再排列如上代码）列出自回归计数/机数模型中的周期性、季节性、循环参数，可以应用在筹算任何天文历法、轮回、廿四节气上、公转与自转。
 
 - [How to read `p, d, q` of `auto.arima()`?](https://stats.stackexchange.com/a/178635/68357)
 - [extract ARIMA specificaiton](https://stackoverflow.com/a/23619082/3806250)
 
 ##### 周期季节性模型
 
-经过[周期与节气结论](#周期与节气结论)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
+经过[周期与节气结论](#周期与节气结论)筹算季节周期后，得知自回归均移模型最优值的`p, d, q, P, D, Q, s`分别为`0, 1, 4, 0, 0, 0, 0`。
 
 ```{r 周期季节性外因甲, warning=FALSE, error=TRUE}
 ## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数模型只允许使用数字筹算，在此就使用时分计筹算。
@@ -4252,8 +4291,8 @@ sarima::sarima()
 - [解密复兴科技 - 基于隐蔽马尔科夫模型的时序分析方法](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/解密复兴科技%20-%20基于隐蔽马尔科夫模型的时序分析方法.pdf)
 
 欲知更多咱们世袭制道家十二生肖秦人从满洲到星洲世袭制道教徒黄种人辛亥革命/黄河文明/黄埔军校《商君书》、《吕氏春秋》和《李斯篆书》系列科研，请查阅：
-- [「猫城」联富（雷欧）/🚩🇨🇳🏹红旗礼逆袭](https://github.com/englianhu/RedFlag-Linux)
-- [「猫城」联富（雷欧）/《始祖永春•秦谏——大秦赋》](https://github.com/englianhu/library)
+- [「猫城」黄联富（®γσ ξηg 雷欧）/🚩🇨🇳🏹红旗礼逆袭](https://github.com/englianhu/RedFlag-Linux)
+- [「猫城」黄联富（®γσ ξηg 雷欧）/《始祖永春•秦谏——大秦赋》](https://github.com/englianhu/library)
 - [「猫城」黄联富（®γσ ξηg 雷欧）/次元期权（binary.com）](https://github.com/englianhu/binary.com-interview-question)
 
 ##### 杏林经济学
@@ -4347,6 +4386,15 @@ options(warn = 0)
 
 ![*中国不能没有自己的操作系统——记中科红旗董事长、著名科学家孙玉芳教授*](诸子百家考工记/中国不能没有自己的操作系统——记中科红旗董事长、著名科学家孙玉芳教授.png){width=400}
 
+> 在`/usr/lib/rstudio/resources/app/resources/themes/css`路径下找到了`fonts.css`文件，代码如下：
+> 
+> …
+> …
+> 
+> 目前只看到只支援英国话和法国话，虽然可以先着手添加咱们的中国话，方便拉低学习高端科技的门槛。目前代码主题并没有中文和咱们中华习俗文化宗教语言，而应用主题设置Sky和Modern并没有任何不一样；何不学习以前谷歌输入法、WPS可以设置应用主题背景甚至框架特色。**虽然可以暂时收录移动终端操作系统（Posit）为咱们中科红旗操作系统的主要量化分析产品，但借鉴中科红旗🚩创办人兼数术家孙玉芳教授考量到安全隐忧，终究是敌洲美国洋番基督耶稣产品而客户是美国航天局。**
+
+*引用：[中国北京大学赢家ξng黄氏江夏堂「大秦赋」：目前使用🚩🇨🇳🏹中国国产红旗礼逆袭，并且将REmap鄀编程语言程序包中文化，以下鄀编程语言函数也开始中文化，日后编程都会使用中文编程。#七](https://github.com/englianhu/binary.com-interview-question/issues/7#issuecomment-1588499121)*
+
 > ![](诸子百家考工记/目前市场尚未研发推出咱们秦人制的科研、编程软件、高端数理统计软件，加油吧！.png){width=400}
 
 *出处：[目前市场尚未研发推出咱们秦人制的科研、编程软件、高端数理统计软件，加油吧！](https://www.facebook.com/xyzhiju/posts/pfbid0f5TYXPq46UwSGJ3yXxpHtVrgoeZtnLSzt6GKfChk7vEuKZC87aGsF28qtEz3GcAfl)*
@@ -4395,7 +4443,7 @@ options(warn = 0)
 *引用：[🌟秦人牧马之《商君书》](#🌟秦人牧马之《商君书》)*
 
 - 借鉴目前的电脑计算机[🎦「pre🆕高颜值🖥️」俺は、お前を買ってるんだぜ!🇭🇰](https://youtube.com/shorts/DFvpqKb2XH0)派热系统，它日研发咱们赢家黄氏江夏堂「大秦赋」/「文言文大秦赋」操作系统和「算筹」/「自然数算筹」电子仪器。
-- [「猫城」🚩🔆🏹🌟👊🚀🦔大秦赋：「甘石星经，周髀算经；诸子百家，干支算筹」取代阿拉伯数字和回教徒语言（包括巫术、货币、习俗文化、可兰经断肢法）#十二 *自然对数「干支算筹」与农历天文历法*](https://github.com/englianhu/RedFlag-Linux/issues/12#issuecomment-1676066137)
+- [「猫城」黄联富（®γσ ξηg 雷欧）/🚩🔆🏹🌟👊🚀🦔大秦赋：「甘石星经，周髀算经；诸子百家，干支算筹」取代阿拉伯数字和回教徒语言（包括巫术、货币、习俗文化、可兰经断肢法）#十二 *自然对数「干支算筹」与农历天文历法*](https://github.com/englianhu/RedFlag-Linux/issues/12#issuecomment-1676066137)
 - [上篇：国产六大中央处理单位技术全对比（附下载）](https://www.modb.pro/db/107396)
 - [下篇：国产六大中央处理单位的春秋战国（附下载）](https://www.eet-china.com/mp/a75720.html)
 - [「图享」国产六大中央处理单位的春秋战国](https://www.instagram.com/p/CYRDpsdJO2R)
@@ -4430,19 +4478,19 @@ options(warn = 0)
 
 > 原本不晓得该怎么翻译GitHub，就想起二零一九年在阿里彩票工作，有个女商人客户经营宠物店、养了两只猫、有猫舍，就引用之为“猫舍”；然而最近才知道咱们峇东新村明智华校大门前一家角落间（以前Peter Goh故居兼茶室）茶室目前是一位中国籍福州女商人经营茶室，以前在拉曼学院修读电脑科学时课外学习日语的日语班女老师砂捞越祖籍福州王佩佩Peggyさん，就翻译为猫城，当时连续好几个月每天泡拉曼学院图书馆从早待到晚上一直看书自修，有天阅读一本中国史书，其中一章说到鬼谷子和卫鞅仕魏联合六国伐秦不果，就倒戈仕秦伐众，三顾秦公《商君书》落实大秦赋的“商鞅变法”、吴越之争的“孙子兵法”和“卧薪尝胆”历史故事是最铭记于心，其余包括汉史楚汉之争...
 
-*引用：[「猫城」Pandoc based Quarto应该翻译成什么？#三](https://github.com/scibrokes/r-world/issues/3#issue-1618233383)*
+*引用：[「猫城」世博量化/Pandoc based Quarto应该翻译成什么？#三](https://github.com/scibrokes/r-world/issues/3#issue-1618233383)*
 
 **人无远虑，必有近忧。**
 
 引用姜太公钓鱼、大数定律和阿里主管明天钟余庆之名言：“咱们需要以现有的资源，将业绩与效率最优化最大化！平时需要检讨为啥别家企业可以做到，而咱们却办不到？是咱们哪儿做得不够好？需要找出问题的根源！”，目前需要先使用鄀文艺坊/移动终端操作系统并提升红旗礼逆袭操作系统，直到研发咱们赢家黄氏江夏堂「大秦赋」/「文言文大秦赋」操作系统和「算筹」/「自然数算筹」电子仪器，和美企视窗、苹果、谷歌、礼逆袭分庭抗礼。欲知更多幕后花絮或详情，请查阅：
 
-- [「猫城」englianhu/binary.com-interview-question#3大秦赋：商鞅变法、辛亥革命、一带一路、计量经济学、孙子兵法](https://github.com/englianhu/library/issues/3)
-- [「猫城」scibrokes/r-world#1`REmap`百度绘图，点缀全球](https://github.com/scibrokes/r-world/issues/1)
-- [「猫城」englianhu/binary.com-interview-question#6`Error: forecast::Arima() #910`](https://github.com/englianhu/binary.com-interview-question/issues/6)
-- [「猫城」englianhu/binary.com-interview-question#8在`ts`和`xts`和`matrix`格式上使用`auto.arima`](https://github.com/englianhu/binary.com-interview-question/issues/8)
-- [「猫城」scibrokes/setup-centOS7-DO#2🚩🇨🇳🏹中科红旗 RedFlag Linux (🍥Debian)](https://github.com/scibrokes/setup-centOS7-DO/issues/2)
-- [「猫城」雷欧@中科红旗](https://github.com/englianhu/RedFlag-Linux)
-- [「猫城」雷欧@图书馆](https://github.com/englianhu/library)
+- [「猫城」黄联富（®γσ ξηg 雷欧）/binary.com-interview-question#三 大秦赋：商鞅变法、辛亥革命、一带一路、计量经济学、孙子兵法](https://github.com/englianhu/library/issues/3)
+- [「猫城」世博量化/r-world#一`REmap`百度绘图，点缀全球](https://github.com/scibrokes/r-world/issues/1)
+- [「猫城」黄联富（®γσ ξηg 雷欧）/binary.com-interview-question#六 `Error: forecast::Arima()`#九百一十](https://github.com/englianhu/binary.com-interview-question/issues/6)
+- [「猫城」黄联富（®γσ ξηg 雷欧）/binary.com-interview-question#八 在`ts`和`xts`和`matrix`格式上使用`auto.arima`](https://github.com/englianhu/binary.com-interview-question/issues/8)
+- [「猫城」世博量化/setup-centOS7-DO#二 🚩🇨🇳🏹中科红旗 RedFlag Linux (🍥Debian)](https://github.com/scibrokes/setup-centOS7-DO/issues/2)
+- [「猫城」黄联富（®γσ ξηg 雷欧）/中科红旗](https://github.com/englianhu/RedFlag-Linux)
+- [「猫城」黄联富（®γσ ξηg 雷欧）/图书馆](https://github.com/englianhu/library)
 - [「油管」雷欧 ®γσ ξηg视频总览](https://www.youtube.com/@englianhu/videos)
 - [「油管」雷欧 ®γσ ξηg短视频总览](https://www.youtube.com/@englianhu/shorts)
 - [「微视」赢家黄氏江夏堂，联富（雷欧）](https://vimeo.com/englianhu)
@@ -4458,7 +4506,7 @@ options(warn = 0)
 
 *引用：[🌟秦人牧马之《商君书》](#🌟秦人牧马之《商君书》)*
 
-![*咱们世袭制道教徒黄种人禁止协助外洲，远（有多远？是太空）交近（有多近？是地球）攻。*](诸子百家考工记/秦国远交近攻.png){width=400}
+![*咱们世袭制道教徒黄种人禁止协助外洲，远^[有多远？是太空]交近^[有多近？是地球]攻。*](诸子百家考工记/秦国远交近攻.png){width=400}
 
 ![礼逆袭的超越之路（礼逆袭革命风暴）](诸子百家考工记/礼逆袭的超越之路（礼逆袭革命风暴）.png){width=400}
 
@@ -4498,7 +4546,7 @@ options(warn = 0)
 
 *引用：[🌟秦人牧马之《商君书》](#🌟秦人牧马之《商君书》)*
 
-- [外因周期性自回归综合滑均模型（ARIMAX）](外因周期性自回归综合滑均模型（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
+- [外因周期性自回归综合滑均模型（ARIMAX）](外因周期性自回归综合滑均模型（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q, P, D, Q, s`分别为`0, 1, 4, 0, 0, 0, 0`。
 - [平滑周计](#平滑周计)美国洲际犯罪案！
 - [马王之争（争取承接🇬🇧英国立博🚩红军百年老店操盘与科研项目）](#马王之争（争取承接🇬🇧英国立博🚩红军百年老店操盘与科研项目）)
 
