@@ -568,7 +568,7 @@ nameserver 114.114.114.114
 - [CSDN]()
 - [数学中国](http://www.mathchina.com/bbs)
 
-有天通过网上搜索到[迪克逊与克尔斯 一九九六（原文：Dixon & Coles 1996）](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/图书馆/DixonColes1996.pdf)阅读后就感到惊讶很专业（就像之前对日语班老师佩琪桑、安利传销经理、PAAC会计老师说过：“如果你那么厉害，会灵活应用就不会只是个夸夸其谈的门面功夫老师而已。”因为马克·迪克逊/马克·大顺在一九九四年左右，在当时落后的科技下每天记载报章上所有的赔率而非局部抽样，来回测再算卜预测。一九九八年创办自家[ATASS](https://www.atass-sports.co.uk)公司提供数句分析与高频量化对冲生意，该科研文献中的学者司徒·克尔斯就是在Shawn Lim伟雄的客户公司[精明赔率（原文：SmartOdds）](https://www.smartodds.co.uk)智能赔率中当高级主管，而精明赔率的创办人老板以前帮托尼·布伦打工，详情请查阅：[他不认同Moneyball，却靠数据在三重身份里都成了大神 | 颜强专栏](https://zhuanlan.zhihu.com/p/657802733)），然后再搜索估计一共储存了有好几百篇科研论文，每天像佐治·索罗斯和金牧·罗杰斯一样翻阅许多篇科研文献筛选最优最实用的科研文献和所有作者的背景包括在哪家公司工作。在数学中国论坛咨询并发送邮件联系坛主陆远鸿教授，陆教授好心回复并使用三四天时间依照[**Maher 1982](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/图书馆/Maher1982.pdf)论文中的数学公式编写个矩阵软件计数/机数分析给我。当时陆教授好像使用C#语言编程，只要导入一个文本矩阵数字，点击计算就能解析。（借鉴硅谷传奇史，比尔∙盖茨从研发MS-DOS磁盘操作系统到视窗Win操作系统，视窗Win操作系统的主打办公软件是由一位教授所编写而非比尔∙盖茨编写的。）陆教授是中国数学系领域十大著名教授之一，当时我还咨询陆教授怎么中国各大学校都没有一个统一的计数/机数软件来授教莘莘学子呢？如果每次都得各别编写个计数/机数软件给各别学生的话，教授不就很忙？然后也顺便咨询陆教授会不会R鄀计数/机数编程语言方便许多，当时我才刚开始自修R鄀计数/机数编程语言。愚生建立专业计数/机数学术论坛[](https://soccer.oksport)在友邦保险工作时期（当时自个儿到公司附近工商银行注册了储蓄户口）被中国公安局屏蔽后，之后就建立个个人随笔记事本记载[「文派」統計學に就いて](https://englianhu.wordpress.com/statistics)，寻觅个完善的计数/机数软件，然后开始自修R鄀计数/机数编程语言混《统计之都》的谢益辉——谢氏宝树堂同姓）
+有天通过网上搜索到[迪克逊与克尔斯 一九九六（原文：Dixon & Coles 1996）](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/图书馆/DixonColes1996.pdf)阅读后就感到惊讶很专业（就像之前对日语班老师佩琪桑、安利传销经理、PAAC会计老师说过：“如果你那么厉害，会灵活应用就不会只是个夸夸其谈的门面功夫老师而已。”因为马克·迪克逊/马克·大顺在一九九四年左右，在当时落后的科技下每天记载报章上所有的赔率而非局部抽样，来回测再算卜预测。一九九八年创办自家[ATASS](https://www.atass-sports.co.uk)公司提供数句分析与高频量化对冲生意，该科研文献中的学者司徒·克尔斯就是在Shawn Lim伟雄的客户公司[精明赔率（原文：SmartOdds）](https://www.smartodds.co.uk)智能赔率中当高级主管，而精明赔率的创办人老板以前帮托尼·布伦打工，详情请查阅：[他不认同Moneyball，却靠数据在三重身份里都成了大神](https://zhuanlan.zhihu.com/p/657802733)），然后再搜索估计一共储存了有好几百篇科研论文，每天像佐治·索罗斯和金牧·罗杰斯一样翻阅许多篇科研文献筛选最优最实用的科研文献和所有作者的背景包括在哪家公司工作。在数学中国论坛咨询并发送邮件联系坛主陆远鸿教授，陆教授好心回复并使用三四天时间依照[**Maher 1982](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/图书馆/Maher1982.pdf)论文中的数学公式编写个矩阵软件计数/机数分析给我。当时陆教授好像使用C#语言编程，只要导入一个文本矩阵数字，点击计算就能解析。（借鉴硅谷传奇史，比尔∙盖茨从研发MS-DOS磁盘操作系统到视窗Win操作系统，视窗Win操作系统的主打办公软件是由一位教授所编写而非比尔∙盖茨编写的。）陆教授是中国数学系领域十大著名教授之一，当时我还咨询陆教授怎么中国各大学校都没有一个统一的计数/机数软件来授教莘莘学子呢？如果每次都得各别编写个计数/机数软件给各别学生的话，教授不就很忙？然后也顺便咨询陆教授会不会R鄀计数/机数编程语言方便许多，当时我才刚开始自修R鄀计数/机数编程语言。愚生建立专业计数/机数学术论坛[](https://soccer.oksport)在友邦保险工作时期（当时自个儿到公司附近工商银行注册了储蓄户口）被中国公安局屏蔽后，之后就建立个个人随笔记事本记载[「文派」統計學に就いて](https://englianhu.wordpress.com/statistics)，寻觅个完善的计数/机数软件，然后开始自修R鄀计数/机数编程语言混《统计之都》的谢益辉——谢氏宝树堂同姓）
 
 ![*夸夸其谈，纸上谈兵*](诸子百家考工记/大顺农民皇帝闯王 - 夸夸其谈，纸上谈兵.png){width=400}
 
@@ -2248,7 +2248,7 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 - [**Forecasting: Principle & Practice** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)
 - [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3cn)
 
-这儿使用`forecast`、`fable`、`fabletools`程序包，该程序包中的`accuracy()`[^8]函数和`report()`函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的计数模型预测值。至于`stats`、`TSA`并无兼容`forecast`、`fable`、`fabletools`程序包，故此以`MAE`, `MAPE`, `RMSE`, `SMAPE`, `MSE`来评估。
+[赤池信息量准则](#赤池信息量准则)介绍`AIC`、`AICc`和`BIC`来评估计数/机数模型的精准度，这儿使用`forecast`、`fable`、`fabletools`程序包，该程序包中的`accuracy()`[^8]函数和`report()`函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的计数模型预测值。至于`stats`、`TSA`并无兼容`forecast`、`fable`、`fabletools`程序包，故此以`MAE`, `MAPE`, `RMSE`, `SMAPE`, `MSE`来评估。
 
 [^8]: 预测：方法与实践（第三版）<br> - [**Forecasting: Principles and Practice (3rd ed)** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)阐明评估预测精准度的计算公式。<br> - [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3cn)阐明评估预测精准度的计算公式。<br> - [「CSDN」选择正确的错误度量标准：MAPE与sMAPE的优缺点](https://blog.csdn.net/deephub/article/details/109483129)<br> - [「β站」康雁飞在线视频教程《预测：方法与实践》（第三版）](https://space.bilibili.com/624024421)
 
@@ -3558,20 +3558,20 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ![*解秘文艺复兴科技 - 第五节：模型选择标准*](诸子百家考工记/解秘文艺复兴科技 - 第五节：模型选择标准.png)
 
-借鉴[「猫城」次元期权（binary.com）量化分析员/量化交易员面试题#第一题](https://github.com/englianhu/binary.com-interview-question?tab=readme-ov-file#第一题)中的`USDJPY`和七种国际主要货币并非抽样局部数据，以下赤池信息量准则分为`AIC`和`AICc`。
+借鉴[「猫城」次元期权（binary.com）量化分析员/量化交易员面试题#第一题](https://github.com/englianhu/binary.com-interview-question?tab=readme-ov-file#第一题)中的`USDJPY`和七种国际主要货币并非抽样局部数据，以下赤池信息量准则分为`AIC`、`AICc`和`BIC`。
 
 - `AIC`适用于全局数据。
 - `AICc`适用于局部数据。
-- `BIC`适用于比较少参数的数据。
+- `BIC`适用于比较少参数的数据，请查阅上图。
 
-*注释：需要回测数据，才能为标准。不过目前都是以MASE来评估与衡量精准度。*
+*注释：需要回测数据，才能为标准。不过目前都是以MASE来评估与衡量精准度，详情请查阅[精准度](#精准度)。*
 
-
+欲知更多关于赤池信息量准则文献与信息，请查阅：
 
 - [AIC vs AICc: Performance Comparison in Model Selection](https://github.com/angela-xu/aic-aicc-performance-comparison-in-model-selection)
 - [Time Decomposition and Short-Term Forecasting of Hydrometeorological Conditions in the South Baltic Coastal Zone of Poland](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/Time%20Decomposition%20and%20Short-Term%20Forecasting%20of%20Hydrometeorological%20Conditions%20in%20the%20South%20Baltic%20Coastal%20Zone%20of%20Poland.pdf)
 - [The relative performance of AIC, AICC and BIC in
-the presence of unobserved heterogeneity]()
+the presence of unobserved heterogeneity](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/The%20relative%20performance%20of%20AIC%2C%20AICC%20and%20BIC%20in%0Athe%20presence%20of%20unobserved%20heterogeneity.pdf)介绍`ICsims`鄀软件包，可以通过`install.package('Ipaper'); Ipaper::install_github('MarkJBrewer/ICsims')`或`install.package('devtools'); devtools::install_github('MarkJBrewer/ICsims')`安装。
 
 **设置最优赤池信息量准则为`ic = 'aic'`**
 
@@ -3893,17 +3893,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 *引用：[Sarimax model issue with `xreg`](https://stackoverflow.com/a/76269638/3806250)*
 
-> …
-> 
-> `auto.arima()`的函数参数可以对算法进行修正和改进。上述步骤是在默认参数下的过程。
-> 
-> 默认的步骤中采用了一些近似方法来加速搜索，可以设置参数`approximation=FALSE`不使用这些近似方法，可能会出现由于这些近似方法或逐步变量筛选（stepwise）而无法找到最小`AICc`的情况。如果设置参数`stepwise=FALSE`，会有更多的模型被搜索。所有参数的详细描述请查看帮助文档。
-> 
-> **选择自己的模型**
-> 
-> 如果你想自己选择模型，你可以使用R中的`Arima()`函数。R中的`arima()`函数也可以用来拟合ARIMA模型，但是它不适用于常数`c`存在的情况(除非`d=0`)，并且它和`forecast`包中的一些函数不兼容。最后，它的估计模型也不能被用于新数据集（新数据在检测预测准确率时非常有用）。因此我们强烈建议使用`Arima()`而不是`arima()`…
-
-*引用：[第八章第七节 在R鄀中建立ARIMA模型](https://otexts.com/fppcn/arima-r.html)*
+[精准度](#精准度)有说明*…如果你想自己选择模型，你可以使用R中的`Arima()`函数。R中的`arima()`函数也可以用来拟合ARIMA模型，但是它不适用于常数`c`存在的情况(除非`d=0`)，并且它和`forecast`包中的一些函数不兼容。最后，它的估计模型也不能被用于新数据集（新数据在检测预测准确率时非常有用）。因此我们强烈建议使用`Arima()`而不是`arima()`…*
 
 > I'm working with a time series of 59 elements. I'm wondering why the R function, Arima, throws an NaN for the standard errors of some parameters. I'm trying to model the residuals of a log-quadratic stational model:
 > ```
