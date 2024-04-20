@@ -1,0 +1,60 @@
+---
+title: "<ruby>大<rp>(</rp><rt>dà</rt><rp>)</rp>秦<rp>(</rp><rt>qín</rt><rp>)</rp>赋<rp>(</rp><rt>fù</rt><rp>)</rp></ruby> - <ruby>秦<rp>(</rp><rt>qín</rt><rp>)</rp>谏<rp>(</rp><rt>fù</rt><rp>)</rp></ruby>"
+subtitle: "<ruby>一<rp>(</rp><rt>bā</rt><rp>)</rp>带<rp>(</rp><rt>dōng</rt><rp>)</rp>一<rp>(</rp><rt>xīn</rt><rp>)</rp>路<rp>(</rp><rt>cūn</rt><rp>)</rp></ruby>"
+date: "`r lubridate::today('Asia/Shanghai')`"
+author: "[<ruby>雷<rp>(</rp><rt>léi</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby> ∪ <ruby>瑞<rp>(</rp><rt>ruì</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>，<ruby>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>联<rp>(</rp><rt>lián</rt><rp>)</rp>富<rp>(</rp><rt>fù</rt><rp>)</rp></ruby>](https://englianhu.wordpress.com.com) <img src='诸子百家考工记/大秦赋 - 北京大学.png' height='20'> <img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲.png' height='20'>®"
+institute: "<ruby>北<rp>(</rp><rt>běi</rt><rp>)</rp>京<rp>(</rp><rt>jīng</rt><rp>)</rp>大<rp>(</rp><rt>dà</rt><rp>)</rp>学<rp>(</rp><rt>xué</rt><rp>)</rp></ruby>"
+format: html
+editor: source
+---
+
+# 田邑秦谏
+
+<ruby>东<rp>(</rp><rt>dōng</rt><rp>)</rp>大<rp>(</rp><rt>dà</rt><rp>)</rp>桥<rp>(</rp><rt>qiáo</rt><rp>)</rp>路<rp>(</rp><rt>lù</rt><rp>)</rp></ruby>
+
+# 秦明谏
+
+## 简介
+
+- 《史记）
+- 《中国通史》
+- 《通鉴之治》
+- 《秦明谏》
+
+## 秦谏
+
+- 辛亥革命
+- [猫城@🚩🔆🏹🌟👊🚀🦔大秦赋：ξng赢家黄氏江夏堂 - 中华民族，北京大学；中科红旗，量化对冲。一带一路，史无前例；横跨七洲，一统天下。](https://github.com/englianhu/library/issues/3)
+
+- 十二生肖，辛亥革命，孙文/孙武/朱允文/李斯艺文志（倉厥繁体）
+- 朱由检，简体中文，一切从简
+- 海外大秦子民/明星/赢异人/里根经济学
+- 民主行动党/阖闾
+
+## 明谏
+
+- 重八从兵
+- 烧饼歌
+- 靖难之役
+- 海外大秦子民/明星/赢异人/里根经济学
+- 朱由检，简体中文，一切从简
+
+> 問：你家鄉馬來西亞的軍力如何？
+我：大馬軍力不出東南亞，因為我們沒有野心。
+問：軍備如何？
+我：小富由儉，我們小國不鋪張浪費。F5E 我們還在用，墜毀了就不補充了，斷捨離嘛。雖然也有些 F18，不過美國貨貴，所以近來多買俄羅斯貨。陸軍坦克主力還是波蘭的 PT-91，英國的蠍子 PV101也老了，但能用就好，我們軍人福利好，所以運兵車比坦克多。海軍剛剛買了不久的法國潛艦由於我國政客抽佣太過引人詬病。不過潛水好像沒問題。托福，托福。
+問：那在東南亞算老幾？
+我：空軍比不上新加坡，海軍比不上印尼，陸軍不夠泰國和越南打，海盜比不上菲律賓，但總的來說應該比柬埔寨和寮國強。大馬採取的是中庸之道。
+問：你們邊防問題嚴重嗎？
+我：基本沒大問題，南邊新加坡不敢造次，我們每天十幾萬馬勞過境工作，北邊由於有馬泰毒販的協調，和泰國軍警關係融洽，雖然回教分離勢力有時會放點炸彈，習慣就好啦。西邊印尼海軍不時綁架，喔不，扣留我國漁船，但這也促進經濟交流，屬於小三通性質咯。東北婆羅洲只要不被菲律賓海盜綁架就沒事。
+問：聽說華人普遍不參軍？
+我：哎呀，升遷機會不大嘛，我們華人事業心重啊。不過華人社區自己有演練。每年正月初九拜天公我們都有實彈射擊，聲勢堪比金門炮戰，老美來到也要嚇跑。
+
+*出处：[]()*
+
+```{r}
+#| echo: false
+2 * 2
+```
+
+The `echo: false` option disables the printing of code (only output is displayed).

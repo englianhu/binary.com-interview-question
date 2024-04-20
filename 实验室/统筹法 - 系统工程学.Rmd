@@ -1,0 +1,1088 @@
+---
+title: "<img src='诸子百家考工记/仙游横店秦王宫，时空旅行文案.gif' height='240'>"
+subtitle: "[<span style='color:#9B0202; background-color:black;'>鬼谷传奇</span> - 系统工程学统计模型 <span style='color:#4E79A7'>**统筹法**</span>](https://github.com/englianhu/binary.com-interview-question)"
+author: "[®γσ, ξηg Lιαη Ημ（雷欧）](https://englianhu.github.io) <img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='14'>® <img src='诸子百家考工记/大秦赋 - 北京大学.png' height='14'>"
+date: "`r lubridate::today('Asia/Shanghai')`"
+output:
+  html_document: 
+    mathjax: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
+    number_sections: yes
+    toc: yes
+    toc_depth: 6
+    toc_float:
+      collapsed: yes
+      smooth_scroll: yes
+    code_folding: hide
+    css: CSSBackgrounds.css
+---
+
+# 主题
+
+## 大秦赋 Chinese Emperor
+
+🚩🇬🇧🇲🇾🇹🇼🇨🇳大秦赋赢家ξng黄氏江夏堂
+
+世袭制道教徒/道家/姓氏与堂号/生辰八字，从鼻祖（赢家黄氏江夏堂 - 嬴政）到耳孙（李耳/太上老君/茅山道士/毛泽东）
+
+岂曰无衣，与子同袍
+
+<br>
+<span style='color:#9B111E'>**🚩🦔主题曲🦔🚩**</span>
+<br>
+<audio controls loop autoplay src="诸子百家诗经与古诗源/卜学亮 - 子曰.mp3" controls></audio>
+<br>
+
+<iframe width="560" height="315" src="https://player.bilibili.com/player.html?aid=757957931" title="天下(电视剧《大秦赋》主题曲完整版)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
+
+*出处：*[**天下***(电视剧《大秦赋》主题曲完整版)*](https://player.bilibili.com/player.html?aid=757957931)
+
+## 古诗
+
+最近几年民不聊生，借鉴俄乌战争；歼灭东南亚所有回教徒，建立六四学术中华政府。
+
+🚩🦔Great Britain = 大英帝国<br>
+🚩🦔Greater Chin / Republic of China / Republic People of China = 大秦帝国/大秦赋<br>
+🚩🦔Greater Chinese = 大秦子民（爱民如子）<br>
+🚩🦔Oversea Greater Chinese = 海外大秦子民（爱民如子）<br>
+🚩🦔Oversea Greater Chinese Union = 海外大秦子民公会（秦始皇的秦太祖 ----- 🌟秦孝公/🌟陈祯禄公爵，联合秦始皇 ----- 秦始祖嬴政，爱民如子，商鞅变法断肢法铲除咱们巫裔回教徒九一一恐怖份子Judi回教博彩庄，终止巫术以任何形式、包括指鹿为马、屠杀人类，甚至铲除全球回教徒攻陷回教宗祖国麦家🕋🇹🇷🇸🇦瓦解全球回教，拯救全球）
+
+🚩🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯秦孝公 | 🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯姜太公 --- 🇬🇧🇲🇾🇹🇼🇨🇳🌟陈祯禄公爵/🇬🇧🇲🇾🇹🇼🇨🐯邱德拔公爵/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶亚来队长/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶观盛队长
+
+🚩🦔《大秦赋》<br>
+🚩🦔巫师治国，禍殃全球；<br>
+🚩🦔巫裔尽弃，瓦釜雷鸣。<br>
+🚩🦔商鞅变法，铲除巫裔；<br>
+🚩🦔车裂刘瑾，中华执政。<br>
+🚩🦔一带一路，横跨七洲；<br>
+🚩🦔史无前例，一统天下。<br>
+🚩🦔高频量化，对冲基金；<br>
+🚩🦔只争朝夕，不负韶华。<br>
+🚩🦔学海无涯，唯勤是岸；<br>
+🚩🦔莫忘初衷，方得始终。
+
+《大秦赋》<br>
+🚩大秦孝公，秦惠文王；<br>
+🚩始于商鞅，终于辛亥。<br>
+🚩巫裔尽弃，瓦釜雷鸣；<br>
+🚩铲除巫裔，终止屠杀。<br>
+🚩中科红旗，同舟共济；<br>
+🚩千古一帝，傲视全球。<br>
+🚩一带一路，史无前例；<br>
+🚩横跨七洲，一统天下。<br>
+🚩学海无涯，唯秦是岸；<br>
+🚩莫忘初衷，方得始终。
+
+![](林燕芳（中学乘搭韵祯校车的隔壁校私立丹绒学妹，行不改名坐不改姓）/Wai Yee So（庞氏托号）.png)
+
+*引用：[#大奖章基金之路 #RT #ST lim ₓ→ₐ f ) HMM... LSTM...](https://www.instagram.com/p/CNm43grAbVz)*
+
+上图的漂亮妞儿就长得像农历二零零零年到二零零一年中四勤班和中五勤班时期，乘搭韵祯校车的隔壁校私立丹绒学妹国民华校校友**林燕芳**（🚩🇨🇳🔆🏹🌟👊🚀🦔中科红旗孙玉芳教授中正纪念堂殡涓之争，并非庞氏骗局）或赢家黄氏江夏堂家翁道教徒嬴政永春好学的华越混血儿孙女状元黄筱婕（哥哥黄联升和越族阮美美的女儿，赢子婴），行不改名坐不改姓。
+
+![](/home/englianhu/文档/猫城/RedFlag-Linux/校花神仙姐姐苏丽欣（中学乘搭韵祯校车的隔壁校私立丹绒学姐，行不改名坐不改姓）/复古（乙）.png)
+
+上图的漂亮妞儿[Celine Sim 沈小姐]()和[陈瑞]()就长得像农历二零零零年到二零零一年中四勤班和中五勤班时期，乘搭韵祯校车的隔壁校私立丹绒沉鱼落雁，闭月羞花、文静又有气质的校花学姐**神仙姐姐苏丽欣**，行不改名坐不改姓。
+
+中国史册：
+
+- [史册号](https://www.shicehao.com)
+- [词林](https://www.cilin.org)
+- [族谱网](https://www.zupu.cn)
+- [历史网](https://www.lishi.net)
+- [中国历史研究院网](http://hrc.cass.cn)
+- [人物介绍网](https://www.yuelishi.cn)
+- [百家有谱](https://www.baijiayoupu.com)
+- [历史记](https://www.lishiji.cn)
+- [β博雅旅游分享网](http://www.bytravel.cn)
+- [博雅人物网](http://ren.bytravel.cn)
+- [洞鑑歷史](https://www.99tango.com/library)
+- [中国人物传记网](https://www.chinarwzj.com)
+- [「百家诸子」中国哲学书电子化计划](https://ctext.org/zhs)
+- [當代中國](https://www.ourchinastory.com)
+- [第一范文网](https://www.diyifanwen.com)
+- [知识贝壳](https://www.zsbeike.com)
+- [趣历史](http://www.qulishi.com/renwu/qinshihuang)
+- [古诗文网](https://www.gushiwen.cn)
+- [5000言](https://5000yan.com)
+- [汉典](https://www.zdic.net)
+- [学术交流联盟](http://bbs.97fc.com)
+- [海词](http://www.cihai123.com)
+- [828啦](https://www.828la.com)
+- [X-MOL学术平台](https://www.x-mol.com)
+- [arXiv](https://arxiv.org)
+- [5000言](https://gwgz.5000yan.com)
+- [古诗词网](https://www.gushici.net)
+- [千篇国学](https://www.qianp.com)
+- [国学百科](https://www.guoxuebaike.cn)
+
+> [《万般皆下品，唯有读书高》]{style="color:#3C33FF"}<br>
+[习李经济，一带一路；]{style="color:#6883FC"}<br>
+[九二共识，量化对冲。]{style="color:#6883FC"}<br>
+[鞭策六四，铲除黑帮；]{style="color:#6883FC"}^[尤其是咱们东南亚回教政府施展巫术屠杀六百八十万人类的巫师Judi邪教巫裔宦官博彩庄诸国]<br>
+[推广量化，提倡学术。]{style="color:#6883FC"}<br>
+[百家争鸣，振兴中华；]{style="color:#6883FC"}<br>
+[学海无涯，唯勤是岸。]{style="color:#6883FC"}
+
+- [陕西历史文化名城](http://lishiwenhua.snnu.edu.cn/index.htm)
+- [CCER 特供数据系统平台](http://www.ccerdata.cn)
+- [一带一路数据库](https://www.ydylcn.com/skwx_ydyl/sublibrary?SiteID=1&ID=8721)
+- [中国一带一路网](https://www.yidaiyilu.gov.cn)
+
+> 中科红旗高频量化对冲学术份子，歼灭东南亚所有回教徒尤其是土司乩童回教徒瑾貹·殡·刘。
+
+```
+##赢家黄氏江夏堂黄埔军校兵马俑秦人牧马世袭制学术辛亥革命武昌起义愚生联富和家卷亲属，歼灭土司乩童张佳坤刘瑾貹倆，拯救亚洲人，点缀全球。 
+nameserver 114.114.114.114
+```
+
+<img src='诸子百家考工记/乩童白骨精回教徒瑾貹·殡·刘咕噜.png' width = '400'>
+
+<img src='诸子百家考工记/css.png' width = '400'>
+
+省吃俭用的工匠建筑工人（嬴政兼鲁班兼蒙毅）家翁嬴政ξηg Tεηg（赢家黄氏江夏堂）
+
+<img src='诸子百家考工记/槟城孙中山纪念馆（图二）.png' width = '400'>
+
+秦人牧马论，从满洲到星洲、从鼻祖到耳孙，世间再无富不过三代的败家子祖父黄实田（曾祖黄福全在清末光绪年间和两个哥哥仨飘洋过海从满洲到星洲自力更生努力奋斗开垦一百亩农地，然后和土木工程的杨清廉俩在清末鸦片战争时期是瓜雪两大不相伯仲的首富）祖母颜为，省吃俭用的外祖父书法家李福（李斯篆书）外祖母郑邓（家道中落的富家千金）。
+
+<br>
+
+# 设定
+
+## SCSS 设置
+
+<style>
+pre {
+  overflow-x: auto;
+}
+pre code {
+  word-wrap: normal;
+  white-space: pre;
+}
+.table-hover > tbody > tr:hover { 
+  background-color: #8D918D;
+}
+</style>
+
+```{r 读取SASS, class.source='bg-success', class.output='bg-primary'}
+##
+## 中科红旗（百家争鸣，文艺复兴）
+## Oversea Greater Chinese Union 大秦子民公会（秦孝公 / 姜太公 --- 陈祯禄公爵）
+## 史无前例，一统天下
+##
+##
+##
+## 中科红旗
+## 全球NonMuslim中华民族，支持中共称霸天下战略。
+## Great Britain 大英帝国
+## Greater Chin 大秦赋
+## Republic of Chin / Republic People of Chin 大秦赋（中华民国 / 中华人民共和国）
+## Greater Chinese 大秦子民（爱民如子）
+## Oversea Greater Chinese 大秦子民（爱民如子）
+## Oversea Greater Chinese Union 大秦子民公会（秦孝公 / 姜太公 --- 陈祯禄公爵）
+## 史无前例，一统天下
+##
+## Great Britain = 大布列颠帝国/大英帝国1
+## Greater Chin = 大秦赋
+## Greater Chinese = 大秦子民（爱子如民）
+##
+## NonMuslim马来西亚籍（海外NonMuslim中华民族，自从清末民初下南洋，咱们马来西亚陈祯禄创办 Oversea Chinese Union）秦始皇黄氏江夏堂，笑傲江湖最大文明贡献
+##
+## 1）借鉴以前大英帝国东印度公司，有生之年就把一带一路高铁所经过的国家领土，一律得攻占下来（要比以前大英帝国/大蒙古帝国还要强大）称霸天下，世代延续直至史无前例，一统天下。
+## 2）一带一路所有告示牌、必须使用中文和拼音。
+## 3）借鉴大蒙古帝国骑兵所到之处寸草不生，所有被中国攻占下来的领土，所经之地（包括城市/市镇/乡村），一带一路所有高铁站，都建立国民登记局可以申请入籍中国。
+## 4）川普已经发言多次，美国兵变，会再次内战（借鉴越王勾践，中越不内讧，善用马来西亚回教徒太监不造反牵制美国，军售中东/西亚/东欧回教诸国）
+## 5）中东回教国回教徒九一一恐怖份子与美国开战，中国军售中东西亚/东欧/非洲回教国（借鉴越王勾践NonMuslim中华民族与美国洋人Democrats阖闾政府，中越不内讧，善用马来西亚回教徒太监不造反牵制美国，军售中东/西亚/东欧回教诸国）
+## 6）中国目前高铁除了尚未与马来西亚达成协议开工建立高铁但是已经借鉴王翦只围不攻战略，把东南亚国家都温馨说服并建立高铁，中国先不与马来西亚开战，让马来西亚兵变内战（借鉴越王勾践NonMuslim中华民族与美国洋人Democrats阖闾政府，中越不内讧，善用马来西亚回教徒太监不造反牵制美国，军售中东/西亚/东欧回教诸国）
+## 7）南太平洋战略：中国和东南亚已经签署合约，达成协议不使用空军、核武器，出动海陆军攻占东南亚
+## 8）商鞅变法多多益善战略：最大贡献是全球十六亿回教徒太监民族与全球基督洋人鹬蚌相争... 回教徒默罕默德创办回教，建立可兰经回教刑事法典断肢法规定回教徒伪太监民族必须虔诚戴乌纱帽一天祈祷五次，倘若不虔诚施展巫术屠杀是触犯断肢法而虔诚屠杀也触犯断肢法，只有辛亥革命铲除全球回教徒、断肢法处死或宫刑全球回教徒绝子绝孙，多管齐下才能终止巫术屠杀，拯救全球16亿回教徒还俗。China大秦赋秦孝公至顾自己家族禁止七步诗自相残杀，铲除分一杯羹白骨精刘家彭城堂造反，回教徒会巫术屠杀人类，回教徒太监民族只能屠杀欧美洋人并且被断肢处死，不效忠中共称霸天下，直至一统天下的伪满洲国马来西亚1700万个回教徒九一一恐怖份子太监民族包括Michael Cutter Christopher，一律断肢法处死（借鉴越王勾践NonMuslim中华民族与美国洋人Democrats阖闾政府，中越不内讧，善用秦二世胡亥、辛亥革命、越王胡志明、中国胡景涛、马来西亚回教徒太监不反中共牵制美国，军售中东/西亚/东欧回教诸国对抗美国）。秦始皇在统一七国后就不思进取导致赵高李斯谋反（借鉴中国历史秦始皇，水能载舟亦能覆舟，宗教巫术，古惑民心，指鹿为马，成也赵李，败也赵李。所以秦始皇得铭记当初秦孝公，不能昏庸被回教徒篡位），中国借鉴秦孝公战略善用商朝和苏联俄罗斯叶利钦。秦始皇铭记秦孝公，善用全球回教徒古惑全球洋人再依照可兰经回教刑事法典断肢全球回教徒，让咱们全球NonMuslim中华民族支持中共，一统天下。
+## 9）华尔街、史无前例的万里长城Great Wall Sreet、一带一路高铁：计量经济学、学术治国、编程、统计、科学科技、量化（Fisher姜太公钓鱼大数据，各行各业购物喜好、民意、生活习惯、各国各集团、军事、诊断上市公司等）、金融、贸易、经商、军事、发展各行各业。
+## 10）中文编程语言：借鉴日本自从唐朝大话革新学习中文至明治维新学习欧洲，日本是全球首个亚洲人自创Ruby红宝石编程语言（Ruby Text可以标音），自从2008年就开始使用R语言并且认识中国R语言论坛《统计之都》论坛创办人网友谢益辉和赵坚毅创办的中国最大计量经济学专业论坛《经管之家》至今十年有余、目前已经开始以中文编程，中华人民共和国的国庆日1001和中华民国的国庆日1010都是二进制的电脑语言binary code，如同黄埔军校国共本是一家，赢家黄氏江夏堂秦孝公禁止《七步诗》自相残杀。咱们东南亚NonMuslim中华民族几乎都是国民华校生，洋人研发电脑、许多编程语言R语言、C语言、C++，推广与发展中文，希望它日有咱们NonMuslim中华民族自创新的编程语言，均以中文编程。
+## 11）发展台式电脑操作系统：中科红旗是由中国北京大学校友孙玉芳创办将Linux礼逆袭和南非原住民开发的Kubuntu忽奔兔中文化并推出自家产品，在美国微软视窗Win台式电脑操作系统垄断全球十多二十年有余，目前已经开始使用芬兰研发的Linux礼逆袭、中国中科红旗台式电脑操作系统，推广与发展中科红旗。
+##
+## 《关雎 --- 英国基督洋妞儿芈拉传》
+## 英国基督洋妞儿芈拉不可以死，隔壁后头邻居黄福全与本人（赢家黄氏江夏堂）祖父同名同姓。
+##
+## 借鉴欧洲中世纪，文艺复兴后就是开始海外军事，称霸天下之路。目前全球疫情已过三年，一带一路如火如荼进行着。
+## 借鉴周公礼乐制度，大英帝国和大日本帝国向来都是自诩绅士淑女，孔子学院，以礼待人，来称霸天下。
+## 借鉴指鹿为马的历史，百家争鸣如果散播回教徒屠杀罪、不杀马来西亚回教徒的话，就得处死回教徒学习可兰经，施展巫术下降头，古惑民心之罪，篡位咱们全球NonMuslim中华民族，人心惶惶、民不聊生，一律依照可兰经回教刑事法典断肢法处死回教徒巫师王（张佳坤Sulaiman Abdullah，分一杯羹白骨精巫师王刘瑾貹Abdul Halim）。
+## 借鉴圣经、诺亚方舟（划龙舟）、孔子儒学（Confusion Catholic）、神父Father与信徒、中国历史、姬昌伯一扈兔子、徐达吃鹅肉、富不过三代的秦始皇嬴政秦二世胡亥至嬴政孙子、公爵、公公孙子、孙文辛亥革命、马来西亚火箭民主行动党由曾敏兴创党后林吉祥林冠英后换人、蒋介石蒋经国后就不延续世袭制，圣经都是善用父子关系，咱们中华民族和英系都是善用公孙关系、法官律师女子假发、自由女神。
+## 中科红旗：借鉴北洋军阀与北约、杀袁者清，灭清者袁，许某可破北洋北约袁绍。黄埔军校国民党共产党辛亥革命是为了铲除回教徒，咱们东南亚回教徒身为伪满洲国九一一恐怖份子触犯可兰经回教刑事法典断肢法，组织个由回教徒执政的国民阵线（伪国民党）立国，1700万个马来西亚回教徒只能集体自杀，宣布亡国。
+## 何谓中国（大秦赋Chin）？中华民国和中华人民共和国。咱们东南亚自从东亚清末民初几乎都是国民华校生，自从西周的周公开始礼乐制度后，大英帝国和大日本帝国都效仿来称霸天下做得有声有色、禁止回教巫术Judi博彩庄、艺人（异人）、导演巫师巫婆道衍师傅装疯卖傻、青山是巫裔回教徒的归属地，回教巫师巫婆是屠杀人类的语言宗教习俗文化，得断肢法处死1700万个马来西亚巫裔回教徒。
+
+# install.packages('remotes', dependencies = TRUE, INSTALL_opts = '--no-lock')
+library('BBmisc', 'rmsfuns')
+#remotes::install_github("rstudio/sass")
+lib('sass')
+
+## https://support.rstudio.com/hc/en-us/articles/200532197
+## https://community.rstudio.com/t/r-does-not-display-korean-chinese/30889/3?u=englianhu
+#Sys.setlocale("LC_CTYPE", "en_US.UTF-8")
+#Sys.setlocale("LC_CTYPE", "zh_CN.UTF-8")
+#Sys.setlocale(category = "LC_CTYPE", "Chinese (Simplified)_China.936")
+#Sys.setlocale(locale = "Chinese")
+#Sys.setlocale(locale = "Japanese")
+#Sys.setlocale(locale = "English")
+
+# rmarkdown::render('/home/englianhu/Documents/owner/ryo-cn.Rmd',  encoding = 'UTF-8')
+#Sys.setlocale("LC_CTYPE", "UTF-8")
+#Sys.setlocale(locale = "UTF-8")
+#Sys.setlocale(category = "LC_ALL", locale = "chs")
+#Sys.setlocale(category = "LC_ALL", locale = "UTF-8")
+#Sys.setlocale(category = "LC_ALL", locale = "Chinese")
+#Sys.setlocale(category = "LC_ALL", locale = "zh_CN.UTF-8")
+Sys.setlocale("LC_ALL", "en_US.UTF-8")
+```
+
+```{scss SCSS设置, class.source='bg-success', class.output='bg-primary'}
+/* https://stackoverflow.com/a/66029010/3806250 */
+h1 { color: #002C54; }
+h2 { color: #2F496E; }
+h3 { color: #375E97; }
+h4 { color: #556DAC; }
+h5 { color: #92AAC7; }
+
+/* ----------------------------------------------------------------- */
+/* https://gist.github.com/himynameisdave/c7a7ed14500d29e58149#file-broken-gradient-animation-less */
+.hover01 {
+  /* color: #FFD64D; */
+  background: linear-gradient(155deg, #EDAE01 0%, #FFEB94 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #EDAE01 20%, #FFEB94 80%);
+    }
+  }
+
+.hover02 {
+  color: #FFD64D;
+  background: linear-gradient(155deg, #002C54 0%, #4CB5F5 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #002C54 20%, #4CB5F5 80%);
+    }
+  }
+
+.hover03 {
+  color: #FFD64D;
+  background: linear-gradient(155deg, #A10115 0%, #FF3C5C 100%);
+  transition: all 0.45s;
+  &:hover{
+    background: linear-gradient(155deg, #A10115 20%, #FF3C5C 80%);
+    }
+  }
+```
+
+```{r 编织选项, class.source='hover01', class.output='hover02'}
+## 更换时间区域，保留日期时间。
+Sys.setenv(TZ = 'Asia/Shanghai')
+
+## 忽略所有警讯
+## https://stackoverflow.com/a/36846793/3806250
+## 设置宽度
+## options(knitr.table.format = 'html')将所有kableExtra图表一致设置为'html'格式，省略设置各别图表。
+## options(repos = 'https://cran.rstudio.com')将仓库设置为安全网。
+## options(repos = 'http://cran.rstudio.com')将仓库设置为普通网。
+options(warn = -1, width = 999, knitr.table.format = 'html', 
+        digits = 22, digits.secs = Inf, repos = 'https://cran.rstudio.com')
+
+## https://stackoverflow.com/questions/39417003/long-vectors-not-supported-yet-abnor-in-rmd-but-not-in-r-script
+## https://yihui.org/knitr/options
+knitr::opts_chunk$set(
+  class.source = 'hover01', class.output = 'hover02', class.error = 'hover03', 
+  message = FALSE, warning = FALSE, error = TRUE, 
+  autodep = TRUE, aniopts = 'loop', progress = TRUE, verbose = TRUE, 
+  cache = FALSE, cache.lazy = FALSE, result = 'asis')
+```
+
+## 设置
+
+读取以下所需程序包。
+
+```{r 读取程序包}
+## 读取程序包、设置编织与环境选项。
+## 3210448065@qq.com
+## leiou123
+
+## 2849108450@qq.com
+## leiou123
+## https://rstudio.cloud/project/1198888
+
+## 读取'BBmisc'程序包。
+if (suppressMessages(!require('BBmisc'))) {
+  install.packages('BBmisc', dependencies = TRUE, INSTALL_opts = '--no-lock')
+}
+suppressMessages(library('BBmisc'))
+
+if (suppressMessages(!require('rmsfuns'))) {
+  install.packages('rmsfuns', dependencies = TRUE, INSTALL_opts = '--no-lock')
+}
+suppressMessages(library('rmsfuns'))
+
+if (!require('REmap')) devtools::install_github('lchiffon/REmap')
+
+## 一次性读取所需程序包。
+## 
+## [R语言高效数据框操作：tidyfst](https://z.itpub.net/article/detail/5EE2CA3CDCD527ADAF5071BF2ADF8874)
+## 
+## [「知乎」tidyft高性能数据操作](https://zhuanlan.zhihu.com/p/128645634)
+## 最下面是tidyft的性能，占用空间最少，花费时间最少。
+##   其实这个包基本拥有tidyfst的所有功能，只是原位更新的概念对于新手是有挑战...
+
+library('tidyfst', warn.conflicts = FALSE)
+library('tidyft', warn.conflicts = FALSE)
+library('dplyr', warn.conflicts = FALSE)
+library('lubridate', warn.conflicts = FALSE)
+library('data.table', warn.conflicts = FALSE)
+library('conflicted', warn.conflicts = FALSE)
+library('Ipaper', warn.conflicts = FALSE)
+library('purrr', warn.conflicts = FALSE)
+
+conflicts_prefer(Ipaper::is_empty, .quiet = TRUE)
+conflict_prefer('nth', 'tidyft', quiet = TRUE)
+conflict_prefer('fill', 'tidyft', quiet = TRUE)
+conflict_prefer('nest', 'tidyft', quiet = TRUE)
+conflict_prefer('unnest', 'tidyft', quiet = TRUE)
+conflict_prefer('cummean', 'tidyft', quiet = TRUE)
+conflict_prefer('group_by', 'tidyft', quiet = TRUE)
+conflict_prefer('distinct', 'tidyft', quiet = TRUE)
+conflict_prefer('filter', 'tidyft', quiet = TRUE)
+conflict_prefer('select', 'tidyft', quiet = TRUE)
+conflict_prefer('rename', 'tidyft', quiet = TRUE)
+conflict_prefer('count', 'tidyft', quiet = TRUE)
+conflict_prefer('arrange', 'tidyft', quiet = TRUE)
+conflict_prefer('summarise', 'tidyft', quiet = TRUE)
+conflict_prefer('separate', 'tidyft', quiet = TRUE)
+conflict_prefer('lead', 'tidyft', quiet = TRUE)
+conflict_prefer('lag', 'tidyft', quiet = TRUE)
+conflict_prefer('unite', 'tidyft', quiet = TRUE)
+conflict_prefer('left_join', 'tidyft', quiet = TRUE)
+conflict_prefer('right_join', 'tidyft', quiet = TRUE)
+conflict_prefer('inner_join', 'tidyft', quiet = TRUE)
+conflict_prefer('full_join', 'tidyft', quiet = TRUE)
+conflict_prefer('anti_join', 'tidyft', quiet = TRUE)
+conflict_prefer('semi_join', 'tidyft', quiet = TRUE)
+conflict_prefer('select_dt', 'tidyft', quiet = TRUE)
+conflict_prefer('transpose', 'tidyft', quiet = TRUE)
+conflict_prefer('setDT', 'tidyft', quiet = TRUE)
+conflict_prefer('setnames', 'tidyft', quiet = TRUE)
+conflict_prefer('mutate', 'dplyr', quiet = TRUE)
+conflict_prefer('collapse', 'dplyr', quiet = TRUE)
+conflict_prefer('year', 'lubridate', quiet = TRUE)
+conflict_prefer('first', 'data.table', quiet = TRUE)
+conflict_prefer('last', 'data.table', quiet = TRUE)
+conflict_prefer('between', 'data.table', quiet = TRUE)
+conflict_prefer('set', 'data.table', quiet = TRUE)
+
+程序包 <- c(
+  'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 'tidyr', 
+  'readr', 'lubridate', 'reprex', 'stringr', 'feather', 'purrr', 'rlist', 
+  'tidyfst', 'rvest', 'XML', 'RCurl', 'xml2', 'quantmod', 'tidyquant', 
+  'tibbletime', 'timetk', 'plyr', 'dplyr', 'cnum', 'arabic2kansuji', 
+  'tsibble', #'Rfast', TSA', 
+  'dbplyr', 'magrittr', 'sarima', 'tidyverse', 'memoise', 'htmltools', 
+  'formattable', 'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 
+  'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 'feather', 
+  'sparklyr', 'jcolors', 'microbenchmark', 'dendextend', 'vembedr', 
+  'lhmetools', 'gtools', 'stringi', 'pacman', 'profmem', 'ggthemes', 
+  'flyingfox', 'htmltools', 'echarts4r', 'viridis', 'hrbrthemes', 
+  'fable', 'fabletools', 'fable.prophet', 'Metrics', 'MLmetrics')
+
+conflicts_prefer(Ipaper::llply, .quiet = TRUE)
+conflicts_prefer(Ipaper::`%->%`, .quiet = TRUE)
+conflicts_prefer(git2r::reset, .quiet = TRUE)
+conflicts_prefer(tibble::view, .quiet = TRUE)
+conflicts_prefer(lubridate::year, .quiet = TRUE)
+conflicts_prefer(gtools::permutations, .quiet = TRUE)
+conflicts_prefer(tidyft::complete, .quiet = TRUE)
+
+## cnum 是協助處理中文數字的R套件，提供轉換、識別及抽取中文數字的函數。
+## cnum 是协助处理中文数字的R包，提供转换、识别及抽取中文数字的函数。
+# https://cran.r-project.org/web/packages/cnum/readme/README.html
+# devtools::install_github("elgarteo/cnum")
+
+# load_pkg(程序包)
+suppressAll(lib(程序包))
+load_pkg(程序包)
+rm(程序包)
+
+## 秦国 China，秦人 Chinese
+## 司马错得蜀既得楚
+if (!exists('.蜀道')) {
+  .蜀道 <- getwd() |> 
+    {\(.) str_split(., '/')}() |> 
+    {\(.) c('/', .[[1]][2:5])}() |> 
+    {\(.) c(., 'zhongkehongqi-cangku/')}() |> 
+    {\(.) paste(., collapse = '/')}() |> 
+    {\(.) substring(., 2)}()
+}
+
+if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/聚汇数据/')
+if (!dir.exists(.蜀道仓库))  dir.create(.蜀道仓库)
+
+## 设置googleVis选项，促使plot.gvis只陈列HTML格式的完成品。
+谷歌绘图设置 <- options(gvis.plot.tag = 'chart')
+
+## <audio src='文艺坊曲库/bigmoney.mp3' autoplay controls loop></audio>
+```
+
+```{r 设置函数优先权}
+conflicts_prefer(Ipaper::llply, .quiet = TRUE)
+conflicts_prefer(Ipaper::`%->%`, .quiet = TRUE)
+conflicts_prefer(git2r::reset, .quiet = TRUE)
+conflicts_prefer(tibble::view, .quiet = TRUE)
+conflicts_prefer(lubridate::year, .quiet = TRUE)
+conflicts_prefer(gtools::permutations, .quiet = TRUE)
+conflicts_prefer(tidyft::complete, .quiet = TRUE)
+```
+
+<br>
+
+# 简介
+
+## 诸子百家
+
+### 鬼谷传奇
+
+诸子百家、文艺复兴和美国硅谷传奇分为两条路线：
+
+- 偶像派：情色优先 ，靖康之耻或娼妓、娱乐圈、借运、任何攻击性或回教广告。
+- 实力派：学术优先，数学科学科技和习俗文化宗教语言复古等，万般皆下品唯有读书高。
+
+> 借鉴革命家拿破仑、瓦盛顿、袁世凯、孙中山、毛泽东... 歼灭东南亚马来西亚雪州瓜雪巴西不能帮新村门牌T十五号土司乩童巫师王张佳坤（蕲年宫之变/安史之乱）和所有回教徒和峇峇娘惹党羽、包括施展可兰经巫术下降头宗教司和回教徒。
+
+- 
+- 
+
+### 道家
+
+#### 十二生肖论
+
+从满洲到星洲，从鼻祖暨耳孙。论生肖的「演化史」，先秦时已有相关记载：
+
+[十二生肖都咋来的？为啥鼠是第一个？怎么没猫？](http://www.xinhuanet.com/politics/2020-01/22/c_1125491667.htm)，如果有留意十二生肖中，只有龙（飞蜥[^2]）是神话的三栖动物而非其余十一个生肖现实生活中的动物，蛇是两栖动物可以潜水和活在水里而其余的都是陆上动物。
+
+它日再通过运筹学、物理学来诠释咱们春秋战国时期诸子百家中道家李耳的易经、张灯结彩、天文历法、廿四节气[^1]、时辰、十二生肖、咱们世袭制道家姓氏堂号子嗣贞节牌坊等。
+
+[^1]: [⼆⼗四节⽓⼤全](https://mp.weixin.qq.com/s?__biz=Mzg3MTUzNjAwMw==&mid=2247492492&idx=6&sn=0614e89a7eb7e827cec6d878dd7acf23&chksm=ceffa760f9882e768fcff27488f46736f562d7964604a78ce066340968583b343c5ab95a0bee&scene=27)
+[^2]: [唯一会飞的爬行动物飞蜥是翼龙的后代吗？](https://haokan.baidu.com/v?pd=wisenatural&vid=14393146146365528807)
+
+#### 计时法
+
+> ... 综上所述，古人常说的「一刻钟」相当于现代的十四至十五分钟，「一炷香」相当于现代的卅分钟，也就是古人所说的两刻钟；而「一盏茶」的时间就更短了，约等于八至十二分钟。
+
+*引用：[「原创」古人常说的：“一刻钟、一炷香、一盏茶”，分别指多长时间？](https://www.sohu.com/a/663536640_121205324)*
+
+> **题外话**：“刹那”是多久？
+> 在文章的最后，青年君想用很短的时间和大家稍微唠一唠「很短的时间」——刹那。
+> 
+刹那是古印度佛教术语，也是时间度量单位，表示一念之间的极短时间，随佛教传入中国。据《摩诃僧祇律》记载：“须臾者，二十念名一瞬顷，二十瞬名一弹指，二十弹指名一罗豫，二十罗豫名一须臾。日极长时有十八须臾，夜极短时有十二须臾；夜极长时有十八须臾，日极短时有十二须臾。”
+> 
+一日一夜有卅个须臾，六百个罗豫，一万两千个弹指，廿四万个「瞬间」，四百枯万个「刹那」。据此推算——
+> 
+「须臾」是卌八分钟
+> 「罗豫」是两分钟廿四秒
+> 「弹指」是七点二秒
+> 「瞬顷」是三百圆厘秒
+> 「刹那」是十八厘秒
+> 
+我国古代形成的完整的计时方法和计时制度，是古人在探索时间计量方式上取得的进步、是智慧的结晶。当然，无论如何度量时间，一天就只有廿四小时。盛年不重来，一日难再晨。及时当勉励，岁月不待人。只要我们能善用时间，就永远不愁时间不够用。忘掉今天的人，也终将被明天忘掉。
+
+*引用：[「十二时辰」简史](http://news.ts.cn/system/2019/07/26/035802762.shtml)*
+
+小时候都在日本动漫文化的环境下长大。小学时期在明智国民华文小学上学就已经学会万事具备，都会提前卅分钟抵达做好准备才不会仓促。自从阳历二零零二年学习日语后，由于平时从旺沙马朱宿舍到拉曼学院徒步上学需要时间提前准备，所以都会将时间设为提前廿分钟，基于从旺沙马朱宿舍徒步耗时三刻钟左右，索性设为提前一个小时，所以愚生将所有电子仪器的标准时间都一律设为日本标准时间，然后青梅竹马的郑添和同学问过我，我回答：“我的时间必须比别人快，我的世界必须比别人快，才能占有先机～”，所以设置提前半个时辰日本标准时间，再提前半个时辰就看到是本土提前一个时辰。**自从阳历二零一九年在菲律宾阿里与中国同胞工作离职后，就开始思考身为🇹🇼🇨🇳中华民族，岂能沦为（大化革新的）倭奴或者倭寇，所以目前的科研语言、时间标准、甚至编码，都一律使用中文。**由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加半个时辰时差为中国标准时间，以确保时间规律计算方面，不会出错。
+
+- [修读COURSERA : MACHINE LEARNING FOR ALGORITHMIC TRADING中…](https://englianhu.wordpress.com/2021/09/15/%e4%bf%ae%e8%af%bbcoursera-machine-learning-for-algorithmic-trading%e4%b8%ad)
+- [迟了一年，更新履历表 B4TELEBIZ (18-DEC-2021)](https://englianhu.wordpress.com/2021/12/20/%e8%bf%9f%e4%ba%86%e4%b8%80%e5%b9%b4%ef%bc%8c%e6%9b%b4%e6%96%b0%e5%b1%a5%e5%8e%86%e8%a1%a8-b4telebiz)
+- [《赢家黄氏江夏堂》 – 始祖赢政ΞΗG TΕΗG·黄永春家谱](https://englianhu.wordpress.com/2022/02/22/%e3%80%8a%e9%9b%aa%e9%9a%86%e6%b1%9f%e5%a4%8f%e5%a0%82%e3%80%8b-%e5%ae%b6%e8%b0%b1)
+- [「阳历二零二三年十二月三日」今日是紫云生日](https://englianhu.wordpress.com/2024/02/04/%e3%80%8c%e9%98%b3%e5%8e%86%e4%ba%8c%e9%9b%b6%e4%ba%8c%e4%b8%89%e5%b9%b4%e5%8d%81%e4%ba%8c%e6%9c%88%e4%b8%89%e6%97%a5%e3%80%8d%e4%bb%8a%e6%97%a5%e6%98%af%e7%b4%ab%e4%ba%91%e7%94%9f%e6%97%a5/)
+
+### 法家
+
+#### 商鞅
+
+- 愚生赢家黄氏江夏堂联富（二零零八年暨二零一二年在西施康工作时，经过佳丽论坛跑龙套当业余演员，当时YY姐是中介负责人）以目前春秋战国（七大洲五大洋）天下局势，将商鞅、吕不韦和李斯列为秦国文臣三杰。秦灭六洲，一统天下；莫忘初衷，方得始终。
+- 商君书、关雎、辅佐秦孝公（海外华人公会陈祯禄公爵）颁发求贤令，以学术份子治天下。
+- 使用现有资源R鄀统计学编程来分析各行各业，包括学术与教育发展、管理、营销、品质监控，咱们世袭制道家姓氏堂号子嗣贞节牌坊，从满洲暨星洲、从回测暨预测、从鼻祖暨耳孙。
+- 借鉴「帝道、王道、霸道」，帝道乃一劳永逸之计，就是专攻科学管理与数学科学、统筹法等运筹帷幄，通过「李斯篆书」、求贤令与统筹法运筹帷幄，研发咱们中华民族道家操作系统取代微软视窗、苹果、谷歌、礼逆袭等目前垄断天下的美国产品，才能通过电子仪器和数学科学科技学术与时并进继续进化，立下万年治国方针、长久之治，直到一统天下。
+- 商君书、三农政策大势耕耘并扎实发展中药（将中药列为金融商品与学术数学科学科技贸易）与中医世纪大革命取代天下所有西药西医，以学术科学科技务农包括计量单位与道家习俗文化宗教语言，物理学配合道家天文历法，中华复古世纪大革命。
+- [中国社会科学院研究生院学报（二零一五年第三期）（秦灭六洲、通过玄学物理学与贸易制裁洋蕃与量化对冲）.pdf](https://github.com/englianhu/library/blob/%E4%B8%96%E5%8D%9A%E9%87%8F%E5%8C%96%E7%A0%94%E7%A9%B6%E9%99%A2/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%BB%8F%E6%B5%8E%E5%AD%A6%EF%BC%88%CE%BEconometrics%EF%BC%89/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%89%A9%E7%90%86%E5%AD%A6%EF%BC%88%E7%A7%A6%E7%81%AD%E5%85%AD%E5%9B%BD%EF%BC%8C%E6%98%A5%E7%A7%8B%E5%A4%A7%E4%B8%9A%E3%80%82%E7%94%98%E7%9F%B3%E6%98%9F%E7%BB%8F%E3%80%81%E7%94%9F%E8%BE%B0%E5%85%AB%E5%AD%97%E3%80%81%E9%81%93%E6%95%99%E3%80%81%E4%BD%9B%E6%95%99%E3%80%81%E5%84%92%E5%AE%B6%E3%80%81%E5%A2%A8%E5%AE%B6%E3%80%81Zodiac%20%26%20Chinese%20Zodiac%EF%BC%89/%E7%8E%84%E9%9F%B3%E4%B8%8E%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AE%A1%E7%90%86/%E4%B8%AD%E5%9B%BD%E7%A4%BE%E4%BC%9A%E7%A7%91%E5%AD%A6%E9%99%A2%E7%A0%94%E7%A9%B6%E7%94%9F%E9%99%A2%E5%AD%A6%E6%8A%A5%EF%BC%88%E4%BA%8C%E9%9B%B6%E4%B8%80%E4%BA%94%E5%B9%B4%E7%AC%AC%E4%B8%89%E6%9C%9F%EF%BC%89%EF%BC%88%E7%A7%A6%E7%81%AD%E5%85%AD%E6%B4%B2%E3%80%81%E9%80%9A%E8%BF%87%E7%8E%84%E5%AD%A6%E7%89%A9%E7%90%86%E5%AD%A6%E4%B8%8E%E8%B4%B8%E6%98%93%E5%88%B6%E8%A3%81%E6%B4%8B%E8%95%83%E4%B8%8E%E9%87%8F%E5%8C%96%E5%AF%B9%E5%86%B2%EF%BC%89.pdf)
+
+#### 李斯
+
+- 愚生赢家黄氏江夏堂联富（二零零八年暨二零一二年在西施康工作时，经过佳丽论坛跑龙套当业余演员，当时YY姐是中介负责人）以目前春秋战国（七大洲五大洋）天下局势，将商鞅、吕不韦和李斯列为秦国文臣三杰。秦灭六洲，一统天下；莫忘初衷，方得始终。
+- 李斯（外祖父李福与外祖母郑邓）篆书辅佐嬴政（家翁赢家黄氏江夏堂，嬴政/永隆/永春）以学术份子治天下。
+- 借鉴咱们中国鬼谷传奇与美国硅谷传奇（从肯汤森与丹尼斯、王安、乔布斯和比尔盖茨，到杨致远、瑟吉布林与拉里佩琦、艾隆马斯克、马克扎克伯格、奥特曼），一劳永逸之道就是通过「李斯篆书」研发咱们中华民族道家操作系统取代微软视窗、苹果、谷歌、礼逆袭等目前垄断天下的美国产品，才能通过电子仪器和数学科学科技学术与时并进继续进化，立下万年治国方针、长久之治，直到一统天下。
+- 李斯篆书，先把现有资源操作系统和电子仪器中华道家化再持续研发，以学术文学、古文、文言文编程、古诗、成语典故、物理学配合道家天文历法、知治通鉴、统筹法、运筹学等发展教育界一劳永逸，高端科学科技软件应用与电子仪器、人造文星与数学科学科技网络来士农工商贯通各行各业，中华复古世纪大革命。
+- [中国社会科学院研究生院学报（二零一五年第三期）（秦灭六洲、通过玄学物理学与贸易制裁洋蕃与量化对冲）.pdf](https://github.com/englianhu/library/blob/%E4%B8%96%E5%8D%9A%E9%87%8F%E5%8C%96%E7%A0%94%E7%A9%B6%E9%99%A2/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%BB%8F%E6%B5%8E%E5%AD%A6%EF%BC%88%CE%BEconometrics%EF%BC%89/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%89%A9%E7%90%86%E5%AD%A6%EF%BC%88%E7%A7%A6%E7%81%AD%E5%85%AD%E5%9B%BD%EF%BC%8C%E6%98%A5%E7%A7%8B%E5%A4%A7%E4%B8%9A%E3%80%82%E7%94%98%E7%9F%B3%E6%98%9F%E7%BB%8F%E3%80%81%E7%94%9F%E8%BE%B0%E5%85%AB%E5%AD%97%E3%80%81%E9%81%93%E6%95%99%E3%80%81%E4%BD%9B%E6%95%99%E3%80%81%E5%84%92%E5%AE%B6%E3%80%81%E5%A2%A8%E5%AE%B6%E3%80%81Zodiac%20%26%20Chinese%20Zodiac%EF%BC%89/%E7%8E%84%E9%9F%B3%E4%B8%8E%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AE%A1%E7%90%86/%E4%B8%AD%E5%9B%BD%E7%A4%BE%E4%BC%9A%E7%A7%91%E5%AD%A6%E9%99%A2%E7%A0%94%E7%A9%B6%E7%94%9F%E9%99%A2%E5%AD%A6%E6%8A%A5%EF%BC%88%E4%BA%8C%E9%9B%B6%E4%B8%80%E4%BA%94%E5%B9%B4%E7%AC%AC%E4%B8%89%E6%9C%9F%EF%BC%89%EF%BC%88%E7%A7%A6%E7%81%AD%E5%85%AD%E6%B4%B2%E3%80%81%E9%80%9A%E8%BF%87%E7%8E%84%E5%AD%A6%E7%89%A9%E7%90%86%E5%AD%A6%E4%B8%8E%E8%B4%B8%E6%98%93%E5%88%B6%E8%A3%81%E6%B4%8B%E8%95%83%E4%B8%8E%E9%87%8F%E5%8C%96%E5%AF%B9%E5%86%B2%EF%BC%89.pdf)
+
+### 墨家
+
+#### 墨翟
+
+### 纵横家
+
+#### 吕不韦
+
+- 愚生赢家黄氏江夏堂联富（二零零八年暨二零一二年在西施康工作时，经过佳丽论坛跑龙套当业余演员，当时YY姐是中介负责人）以目前春秋战国（七大洲五大洋）天下局势，将商鞅、吕不韦和李斯列为秦国文臣三杰。秦灭六洲，一统天下；莫忘初衷，方得始终。
+- 吕氏春秋辅佐嬴政（家翁赢家黄氏江夏堂，嬴政/永隆/永春），以学术治天下。
+- 借鉴美国好莱坞与目前杭州横店，吕氏春秋以天文历法与中药与中医、发展咱们中华习俗文化宗教语言复古娱乐圈（包括各类综艺节目、媒体主播包括天文历法天气预报、古今戏剧尤其是中华古装戏剧和偶像剧喜剧商业军事戏、京剧布偶戏、北京绝活、歌唱舞蹈创作与李斯篆书电子仪器操作系统软件科技产品、代言各类产品与广告、打造个琴棋书画、四书五经六艺、古文、文言文与中国通史等宗教语言习俗文化包括建筑服装等风气、塑造一个健康正义的形象）与保健和中药中华保险业、房地产等来复兴咱们春秋战国时期的中华复古世纪大革命取代天下所有西药西医与西方保险业和西方习俗文化宗教语言娱乐圈。中华文化大革命，一劳永逸，一统天下。
+- 吕氏春秋高频量化对冲鸟瞰天下，联合李斯篆书电子仪器操作系统和商君书的三农政策大势耕耘并扎实发展中药（将中药列为金融商品发展金融与学术数学科学科技贸易）包括计量单位与道家习俗文化宗教语言、金融期货期权市场，垄断全球农林牧渔业与金融国际贸易业，物理学配合道家天文历法，中华复古世纪大革命。
+- [中国社会科学院研究生院学报（二零一五年第三期）（秦灭六洲、通过玄学物理学与贸易制裁洋蕃与量化对冲）.pdf](https://github.com/englianhu/library/blob/%E4%B8%96%E5%8D%9A%E9%87%8F%E5%8C%96%E7%A0%94%E7%A9%B6%E9%99%A2/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%BB%8F%E6%B5%8E%E5%AD%A6%EF%BC%88%CE%BEconometrics%EF%BC%89/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%89%A9%E7%90%86%E5%AD%A6%EF%BC%88%E7%A7%A6%E7%81%AD%E5%85%AD%E5%9B%BD%EF%BC%8C%E6%98%A5%E7%A7%8B%E5%A4%A7%E4%B8%9A%E3%80%82%E7%94%98%E7%9F%B3%E6%98%9F%E7%BB%8F%E3%80%81%E7%94%9F%E8%BE%B0%E5%85%AB%E5%AD%97%E3%80%81%E9%81%93%E6%95%99%E3%80%81%E4%BD%9B%E6%95%99%E3%80%81%E5%84%92%E5%AE%B6%E3%80%81%E5%A2%A8%E5%AE%B6%E3%80%81Zodiac%20%26%20Chinese%20Zodiac%EF%BC%89/%E7%8E%84%E9%9F%B3%E4%B8%8E%E6%95%B0%E6%8D%AE%E4%B8%AD%E5%BF%83%E6%9C%8D%E5%8A%A1%E5%99%A8%E7%AE%A1%E7%90%86/%E4%B8%AD%E5%9B%BD%E7%A4%BE%E4%BC%9A%E7%A7%91%E5%AD%A6%E9%99%A2%E7%A0%94%E7%A9%B6%E7%94%9F%E9%99%A2%E5%AD%A6%E6%8A%A5%EF%BC%88%E4%BA%8C%E9%9B%B6%E4%B8%80%E4%BA%94%E5%B9%B4%E7%AC%AC%E4%B8%89%E6%9C%9F%EF%BC%89%EF%BC%88%E7%A7%A6%E7%81%AD%E5%85%AD%E6%B4%B2%E3%80%81%E9%80%9A%E8%BF%87%E7%8E%84%E5%AD%A6%E7%89%A9%E7%90%86%E5%AD%A6%E4%B8%8E%E8%B4%B8%E6%98%93%E5%88%B6%E8%A3%81%E6%B4%8B%E8%95%83%E4%B8%8E%E9%87%8F%E5%8C%96%E5%AF%B9%E5%86%B2%EF%BC%89.pdf)
+
+### 兵家
+
+#### 司马错
+
+- 愚生赢家黄氏江夏堂联富（二零零八年暨二零一二年在西施康工作时，经过佳丽论坛跑龙套当业余演员，当时YY姐是中介负责人）以目前春秋战国（七大洲五大洋）天下局势，将司马错、白起和王剪列为秦国军事三杰，平夷攻赵灭楚。秦灭六洲，一统天下；莫忘初衷，方得始终。
+
+#### 白起
+
+- 愚生赢家黄氏江夏堂联富（二零零八年暨二零一二年在西施康工作时，经过佳丽论坛跑龙套当业余演员，当时YY姐是中介负责人）以目前春秋战国（七大洲五大洋）天下局势，将司马错、白起和王剪列为秦国军事三杰，平夷攻赵灭楚。秦灭六洲，一统天下；莫忘初衷，方得始终。
+
+#### 王剪
+
+- 愚生赢家黄氏江夏堂联富（二零零八年暨二零一二年在西施康工作时，经过佳丽论坛跑龙套当业余演员，当时YY姐是中介负责人）以目前春秋战国（七大洲五大洋）天下局势，将司马错、白起和王剪列为秦国军事三杰，平夷攻赵灭楚。秦灭六洲，一统天下；莫忘初衷，方得始终。
+
+## 论文简介
+
+> 毕业生主要就业领域为：
+- 系统工程及相关学科的教学和科研工作：国家机关、军事系统等的系统规划
+- 设计和管理工作：工厂、企业
+- 工程项目的生产系统从事设计规划、设计和管理工作：铁路和城市轨道交通行业、系统工程、交通运输工程、管理科学与工程、电气工程，以及与工业自动化密切相关的企事业单位和研究机构和大专院校。<br>
+*农历二零二零年六月廿七日 庚子年甲申月辛卯日 属鼠 周日*
+
+*出处：[系统工程专业介绍、研究方向、就业前景分析](https://www.dxsbb.com/news/21644.html)*
+
+统筹法俗称「系统工程学」，一般上大至用于规模庞大的工程多管齐下项目管理、军事与玄术物理学包括实战洲际军事埋伏「王翦灭楚」与「四面楚歌」、教育与学术科技业如鬼谷传奇、中华习俗文化宗教易经中药中医等取代所有西药西医月亮十字架和发展中华保健娱乐圈与保险业、全球金融业投资组合，小至个人起居饮食、修身齐家平天下、高频量化量子电脑甚至个人电脑进程组合最优化、学习与教育事业等多管齐下进度管理。
+
+借鉴春秋战国史、七大洲五大洋、秦国China而秦人为Chinese、左氏春秋与战国策分析天下局势（此文章所采撷的范例并无任何天下诸侯详细军事、外交、内阁数据）、秦人牧马论、[马克·棣逊（阳历一九九六年）]()中应用英国数学家罗纳尔·飞雪（渔夫 - 姜太公钓鱼）的大数定律概念部署全局而非局部样本与愚生旧作[「猫城」`Rmodel` 赔率建模与测试博彩庄的无效性（英）](https://github.com/englianhu/Rmodel)[^3]，此文章以计量经济学（ξconometrics）为主，采撷[聚汇数据](https://www.gotohui.com)咱们祖国秦国与天下诸侯经济数据为范例，通过统筹法概念和计量经济学来解析。三国志中的诸葛孔明在隆中自诩春秋战国时期的管仲乐毅之才和春秋战国管鲍之交，管仲 --- 拮据的经济学管夷吾之家[JG经管之家](http://bbs.pinggu.org)是个专业且秦国最大的计量经济学论坛。
+- [管仲：被称为圣人之师，是如何帮助齐国成为霸主？](https://baijiahao.baidu.com/s?id=1726987717054429767)
+- [鲍叔牙与管仲一起做生意，管仲分钱最多，参军打仗管仲跑在最后](https://baijiahao.baidu.com/s?id=1722824981716177616)
+- [春秋那些事：管仲只是买鹿，三年后楚国就被迫向齐国屈服](https://baijiahao.baidu.com/s?id=1666655697521548815)
+- [管仲和鲍叔牙的友谊故事](http://www.eastte.com/lswh/yswh/18896.html)
+- [管仲鲍叔牙之交](https://zhuanlan.zhihu.com/p/456759135)
+- [世界最早的经济学家，管仲究竟有多牛？灭国不用兵、杀人不用刀！](https://mbd.baidu.com/newspage/data/dtlandingsuper?nid=dt_4265494312265401027)
+- [开创国家调控经济的第一人：中国最早的经济学家-管仲（一）](https://baijiahao.baidu.com/s?id=1787753993653241866)
+- [春秋战国时期的经商鼻祖](https://baijiahao.baidu.com/s?id=1680895726136334106)
+- [经济祖师，第一名相---管仲](https://zhuanlan.zhihu.com/p/21795638)
+- [管仲堪称中国第一个经济学家，提出的这个概念，超越了欧洲几千年](https://baijiahao.baidu.com/s?id=1668253510652377011)
+
+[^3]: https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers<br>http://rpubs.com/englianhu/rmodel-vignettes1
+
+- [🚩🔆🏹🌟🦔数据仓库：中科红旗](https://github.com/englianhu/zhongkehongqi-cangku)
+- [聚汇数据](https://www.gotohui.com)
+- [一带一路统计数据库](https://ydyl.cei.cn/jsps/Default)
+- [中经数据](https://ceidata.cei.cn)
+- [数据世界](https://data.world)
+- https://paperswithcode.com
+- https://www.kaggle.com/datasets
+- `datasets`鄀程序包。
+
+<iframe width="560" height="315" src="https://www.youtube.com/embed/LaIvDIu1Yxw?si=ZMsUUM8xJw1EJ6EJ" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+*出处：[「油管」中美二零二四年相比](https://www.youtube.com/watch?v=LaIvDIu1Yxw)*
+
+> 其次，要做到对古典作品有很深的感性认识，有大量的词汇和句式积淀，甚至要做到可以用文言文进行思考和布局，文言文有它固有的用词，熟悉这些模式，才有可能运用自如。例如《高小琴传》，讲到高小凤奉承高育良，眉目温顺传神，我就用了「俯眉承睫」，这个词就来自《聊斋志异》里的《吕无病》。再如《赵东来传》里写到赵东来「声如乳虎」，就来自于《庄子》。积累的文言词汇多了，就能运用自如。再如李达康书记很重视GDP，这个在古文里怎么表达呢？如果读史书读得多，就会自然而然地想到一个词**「钱谷」，重视GDP的官吏就叫钱谷吏**...
+
+*出处：[既流行又小众，学学如何用文言文写稿](https://www.sohu.com/a/155211408_375507)*
+
+> ... 
+「國總產」（名）謂國內生產總值、GDP。
+「民總產」（名）謂國民生產總值、GNP。
+「民總獲」（名）謂國民總收入、GNI。
+...
+
+*出处：[知乎@近現代漢語文變革](https://zhuanlan.zhihu.com/p/656800286)*
+
+- [国际元是什么？为何世行采用的购买力平价，使用「国际美元」](https://new.qq.com/rain/a/20200930A04J4I00)
+- [古代中国哪个时期的钱谷（GDP）最高](https://zhidao.baidu.com/question/372808750996691404.html)
+- [中国古代钱谷（GDP）有多高？宋朝半壁江山成就世界第一，占全球的一半](http://k.sina.com.cn/article_6401542798_17d8fca8e00100702z.html)
+- [知乎@古代的钱谷（GDP）是怎么算出来的？](https://www.zhihu.com/question/20626908)
+- [「猫城」始祖永春∙经济学（ξconometrics）/始祖永春∙经济学（秦灭六洲 - 一带一路路线图战略、天下诸侯经商、贸易与经济）/中国社会经济通史.7z.001](https://github.com/englianhu/library/blob/%E4%B8%96%E5%8D%9A%E9%87%8F%E5%8C%96%E7%A0%94%E7%A9%B6%E9%99%A2/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%BB%8F%E6%B5%8E%E5%AD%A6%EF%BC%88%CE%BEconometrics%EF%BC%89/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%BB%8F%E6%B5%8E%E5%AD%A6%EF%BC%88%E7%A7%A6%E7%81%AD%E5%85%AD%E6%B4%B2%20-%20%E4%B8%80%E5%B8%A6%E4%B8%80%E8%B7%AF%E8%B7%AF%E7%BA%BF%E5%9B%BE%E6%88%98%E7%95%A5%E3%80%81%E5%A4%A9%E4%B8%8B%E8%AF%B8%E4%BE%AF%E7%BB%8F%E5%95%86%E3%80%81%E8%B4%B8%E6%98%93%E4%B8%8E%E7%BB%8F%E6%B5%8E%EF%BC%89/%E4%B8%AD%E5%9B%BD%E7%A4%BE%E4%BC%9A%E7%BB%8F%E6%B5%8E%E9%80%9A%E5%8F%B2.7z.001)
+- [「猫城」始祖永春∙经济学（ξconometrics）/始祖永春∙经济学（秦灭六洲 - 一带一路路线图战略、天下诸侯经商、贸易与经济）/中国社会经济通史.7z.002](https://github.com/englianhu/library/blob/%E4%B8%96%E5%8D%9A%E9%87%8F%E5%8C%96%E7%A0%94%E7%A9%B6%E9%99%A2/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%BB%8F%E6%B5%8E%E5%AD%A6%EF%BC%88%CE%BEconometrics%EF%BC%89/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%BB%8F%E6%B5%8E%E5%AD%A6%EF%BC%88%E7%A7%A6%E7%81%AD%E5%85%AD%E6%B4%B2%20-%20%E4%B8%80%E5%B8%A6%E4%B8%80%E8%B7%AF%E8%B7%AF%E7%BA%BF%E5%9B%BE%E6%88%98%E7%95%A5%E3%80%81%E5%A4%A9%E4%B8%8B%E8%AF%B8%E4%BE%AF%E7%BB%8F%E5%95%86%E3%80%81%E8%B4%B8%E6%98%93%E4%B8%8E%E7%BB%8F%E6%B5%8E%EF%BC%89/%E4%B8%AD%E5%9B%BD%E7%A4%BE%E4%BC%9A%E7%BB%8F%E6%B5%8E%E9%80%9A%E5%8F%B2.7z.002)
+- [「猫城」始祖永春∙经济学（ξconometrics）/始祖永春∙经济学（秦灭六洲 - 一带一路路线图战略、天下诸侯经商、贸易与经济）/中国社会经济通史.7z.003](https://github.com/englianhu/library/blob/%E4%B8%96%E5%8D%9A%E9%87%8F%E5%8C%96%E7%A0%94%E7%A9%B6%E9%99%A2/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%BB%8F%E6%B5%8E%E5%AD%A6%EF%BC%88%CE%BEconometrics%EF%BC%89/%E5%A7%8B%E7%A5%96%E6%B0%B8%E6%98%A5%E2%88%99%E7%BB%8F%E6%B5%8E%E5%AD%A6%EF%BC%88%E7%A7%A6%E7%81%AD%E5%85%AD%E6%B4%B2%20-%20%E4%B8%80%E5%B8%A6%E4%B8%80%E8%B7%AF%E8%B7%AF%E7%BA%BF%E5%9B%BE%E6%88%98%E7%95%A5%E3%80%81%E5%A4%A9%E4%B8%8B%E8%AF%B8%E4%BE%AF%E7%BB%8F%E5%95%86%E3%80%81%E8%B4%B8%E6%98%93%E4%B8%8E%E7%BB%8F%E6%B5%8E%EF%BC%89/%E4%B8%AD%E5%9B%BD%E7%A4%BE%E4%BC%9A%E7%BB%8F%E6%B5%8E%E9%80%9A%E5%8F%B2.7z.003)
+
+<br>
+
+# 册 / 策
+
+## 文本纪元
+
+> 中国古人开始把文字写在土块、石壁上，后来写在龟甲、牛骨上，再到写在青铜器、帛、牍简上，最后发展到写在纸张上。
+> 
+> **下面是中国古人写字主要使用的载体**
+> 
+> - <ruby>椠<rp>(</rp><rt>qiàn</rt><rp>)</rp></ruby>：原始数据[^4]
+> - <ruby>版<rp>(</rp><rt>bǎn</rt><rp>)</rp></ruby>：二维数据，数据框、矩阵[^5]
+> - <ruby>方<rp>(</rp><rt>fāng</rt><rp>)</rp></ruby>：矩阵、方阵[^6]
+> - <ruby>牍<rp>(</rp><rt>dú</rt><rp>)</rp></ruby>：数据框[^7]
+> - <ruby>简<rp>(</rp><rt>jiǎn</rt><rp>)</rp></ruby>或<ruby>牒<rp>(</rp><rt>dié</rt><rp>)</rp></ruby>：矢量、方列式（方阵的det值）[^8]
+> - <ruby>函<rp>(</rp><rt>hán</rt><rp>)</rp></ruby>：信函，压缩文件[^9]
+> - <ruby>策<rp>(</rp><rt>cè</rt><rp>)</rp></ruby>或<ruby>册<rp>(</rp><rt>cè</rt><rp>)</rp></ruby>：列表、数组[^10]
+> - <ruby>觚<rp>(</rp><rt>gū</rt><rp>)</rp></ruby>：多维数据或张量数据，列表、数组[^11]
+> - <ruby>帛<rp>(</rp><rt>bó</rt><rp>)</rp></ruby>：高机动性能方便携带与纺织品密码学加密解密与高速读写数据，随身碟或云端加密数据、网盘、云端技术、服务器[^12]
+> - <ruby>笺<rp>(</rp><rt>jiān</rt><rp>)</rp></ruby>：诸子百家、办公软件、Rmarkdown、编程论文著作等[^13]
+> - <ruby>纸<rp>(</rp><rt>zhǐ</rt><rp>)</rp></ruby>：轻薄干净轻巧和高速高速读写数据，高速读写和有规划和规律的量化数据和量子电脑服务器[^14]
+
+*引用：[中国古人书写载体：椠、版、方、牍、简、牒、策、觚、帛、纸](https://baijiahao.baidu.com/s?id=1781595015562599076)*
+
+**数据种类相关参考文献**
+
+- [向量、矩阵、数组、列表、数据框关系](https://blog.csdn.net/harry_hurry/article/details/80540242)
+- [数组，矩阵，向量，方阵与行列式的相关关系](https://blog.csdn.net/qq_33715176/article/details/120797110)
+- [参差不齐的数组](https://www.shence123.com/s/52375.html)
+- [数组与张量的区别](https://www.cnblogs.com/szj666/p/15009760.html)
+- [数组的极限大小](https://blog.csdn.net/u011446963/article/details/46278537)
+
+[^4]: <ruby>椠<rp>(</rp><rt>qiàn</rt><rp>)</rp></ruby>：三汉尺长（圆九点三公分，一汉尺等于廿三点一公分）木板。《释名∙释书契》说：“椠，板之长三尺者也。”《论衡·量知》说：“断木为椠，析之为板，力加刮削，乃成奏牍。”
+[^5]: <ruby>版<rp>(</rp><rt>bǎn</rt><rp>)</rp></ruby>：相比椠短和窄的长方形木板，两面刨光以供书写。
+[^6]: <ruby>方<rp>(</rp><rt>fāng</rt><rp>)</rp></ruby>：正方形的版。
+[^7]: <ruby>牍<rp>(</rp><rt>dú</rt><rp>)</rp></ruby>：狭长又薄的小竹片或木条，称为「简」。南方多竹简，北方多木简。<br><br>刚劈成的简很湿，无法写字，要用火烤干脱水后记录在上面的文字可以保存上千年。烤制过程称为「汗青」，也称「杀青」、「汗简」。后来，人们把汗青特指史册。文天祥的《过零丁洋》诗句：“人生自古谁无死，留取丹心照汗背。”<br><br>罄竹难书：用尽南山的竹子做竹简，都写不完他的罪行，用来强调某些人所犯的罪恶之多。
+[^8]:  <ruby>简<rp>(</rp><rt>jiǎn</rt><rp>)</rp></ruby>或<ruby>牒<rp>(</rp><rt>dié</rt><rp>)</rp></ruby>：
+[^9]: <ruby>函<rp>(</rp><rt>hán</rt><rp>)</rp></ruby>：将牍和简捆扎在一起叫做函。
+[^10]: <ruby>策<rp>(</rp><rt>cè</rt><rp>)</rp></ruby>或<ruby>册<rp>(</rp><rt>cè</rt><rp>)</rp></ruby>：较长的文章或书使用多个简，须按顺序编号、排齐，然后用绳子、丝线或牛皮条编串起来，叫做「策」或者「册」。
+[^11]: <ruby>觚<rp>(</rp><rt>gū</rt><rp>)</rp></ruby>：用木头削成多面的棱形， 可多至七、 八个面。一般比较长，可以长至枯多公分，容字较多，常用来抄写《急就篇》、《苍颉篇》等字书(见字典)，也可用作记事、打草稿或练字。
+[^12]: 在一汉尺见方丝织品上书写，比如「素」（白绢）。
+[^13]: <ruby>笺<rp>(</rp><rt>jiān</rt><rp>)</rp></ruby>：原指供题诗作画用的精美小竹片，类似简。
+[^14]: <ruby>纸<rp>(</rp><rt>zhǐ</rt><rp>)</rp></ruby>：西汉时期，人们已经懂得了造纸的基本方法。东汉时，宦官蔡伦总结前人经验，改进造纸工艺，发明了质地细腻的「蔡侯纸」，用树皮、麻头、破布、旧鱼网等植物纤维为原料造纸，纸的质量大大提高。这种纸原料易找，价格便宜，易于推广。
+
+> 古代记载文字的器物
+古代用以记载文字的器物主要包括以下几种：
+> 1) 甲骨：在中国新石器时代晚期就已经出现，主要用于占卜，商代时期甲骨的使用尤为盛行，一直延续到周初或更晚。[^15]
+2) 青铜器：中国在夏代就进入了青铜时代，铜的冶炼和铜器的制造技术非常发达。商周时期，青铜器作为礼器和乐器的重要象征，如鼎和钟，它们的铭文被称为金文或吉金文字。[^16][^17]
+3) 简牍：在造纸术发明前，简牍是用竹子或木板制成的书写材料，用于记录文书和书籍。战国时期的竹简展示了当时文字的发展变化，对研究春秋战国时期的文化和历史具有重要价值。[^18]
+4) 帛书：又称缯书，以白色丝帛为书写材料，其起源可以追溯到春秋时期，用于书写文献和文书。
+5) 纸张：尽管纸张在东汉时期才开始广泛使用，但它最终取代了其他书写材料，成为主要的书写媒介之一。
+> 
+以上各种器物在不同的历史时期发挥着各自的作用，共同促进了文字的记录和传承。
+
+*引用：[古代记载文字的器物](https://answer.baidu.com/answer/land?params=XhTFwfUBZnK%2FsK4aZ5%2BxtPQ9p%2FtIy5xeQuIK%2Brgrrwusfli3nTGnKAViD%2FEGBXs6xpH3xLVBemI%2Blc%2BgUFfHFyxNYwebSOcqU4dj0FdGlKquvFmU4UeiIhVPgMPwCRrPibhyJ8rGXN%2BQdQXiX6TXwc1YosGK1GfufZ6vfWlGQIm7PRIQBvKwl%2FuD6Lu2VuF9&from=dqa&lid=b0afb0f1000c9a44&word=%E5%8F%A4%E4%BB%A3%E8%AE%B0%E8%BD%BD%E6%96%87%E5%AD%97%E7%9A%84%E5%99%A8%E7%89%A9)*
+
+> 由于写信的木版，通常只有一尺长，故信函又叫「尺牍」。笺是古代一种短小的简牍，是供读书者随时注释的，它系在相应的简上以备参考之用。现在人们所说的笺注就是起源于此。简牍因制形不同，用途不同，称呼甚多，但从策、简、籍、簿、笺、札、检、椠等从竹、木字形上，都反映出简牍的制成材料...
+
+*引用：[做成简牍的材料有哪些？](https://zhidao.baidu.com/question/495076968146419812.html)*
+
+> 古人在使用简牍书写过程中发明了很多专用名词。例如把单片的竹片叫「简」，由许多简编联而成的物体叫做「册」或「策」。把连简成册的丝绳叫做「编」，把单块方状木板叫做「版」，已写字的版叫「牍」等等。一部著作用简很多，就每篇为一册，每一册围绕最末一简卷为一束，再在第一简的前面加上「赘简」，写上篇名，以方便查阅。因此，上所给严格说应当是册或简牍（著作成文写在册上，百字以下短文或书信写在简牍上）。
+
+*引用：[「一卷书」的「卷」是怎样一个单位？](https://www.zhihu.com/question/20821237)*中叙述古代许多史书平均一卷大概一万至万二个文字。
+
+> 先秦记录文字的材料从甲骨、青铜到石头，不断更替变化，后来又出现了简牍。其实，在纸发明以前，古代书籍的最主要形式则是简牍。
+> 
+简牍，是对古代遗存下来的写有文字的竹简与木牍的统称。用竹片写的书叫做「简策」，而用木版写的书叫做「版牍」。
+据考古实物发现及古书记载，写在木版上的文字大多数是有关官方文书、户籍、告示、信札、遣册及图画。由于文字内容有异，其称谓有别。
+> 
+如军事的文书叫「檄」。用于告示者称之「榜」。将信写于木版，然后再加一版叫做「检」。在检上写寄信人和收信人的姓名，地址叫做「署」，这是信封的起源。
+> 
+然后将两版合好捆扎，在打结的地方涂上黏土，盖上阴文印章，在黏土上出现凸起的字，这就是「封」，使用的黏土叫「封泥」。由于写信的木版，通常只有一尺长，故信函又叫「尺牍」。
+> 
+笺是古代一种短小的简牍，是供读书者随时注释的，它系在相应的简以备参考之用。现在人们所说的笺注就是起源于此。
+> 
+简牍因制形不同，用途不同，称呼甚多，但从策、简、籍、簿、笺、札、检、椠等从竹、木字形上，都反映出简牍的制成材料。
+> 
+竹简在西北出土较少，也许是因为西北天气干旱，不适宜竹子生长。而南方气温湿润，竹材丰实，因此竹简的出土主要在南方，如阳历一九九九年在长沙走马楼出土的三国吴简，多达十万枚...
+
+*引用：[汉代以前的简牍与简牍书是怎样的？](https://zhidao.baidu.com/question/1437482983035259259.html)*
+
+> 简牍是对我国古代遗存下来的写有文字的竹简与木牍的概称。用竹片写的书称"简策"，用木版(也作「板」)写的叫「版牍」。超过一百字的长文，就写在简策上，不到一百字的短文，便写在木版上。写在木版上的文字大多数是有关官方文书、户籍、告示、信札、遣册及图画。由于文字内容有异，其称谓有别，如军事的文书叫「檄」；用于告示者称之「榜」；将信写于木版，然后再加一版叫作「检」。在检上写寄信人和收信人的姓名、地址叫作「署」---这是信封的起源。然后将两版合好捆扎，在打结的地方涂上粘土，盖上阴文印章，在粘土上出现凸起的字，这就是「封」，使用的粘土叫「封泥」。由于写信的木版，通常只有一尺长，故信函又叫「尺牍」。笺是古代一种短小的简牍，是供读书者随时注释的，它系在相应的简以备参考之用。现今人们所说的笺注就是起源于此。从策、简、籍、簿、笺、札、检、椠等从竹、木字形上，都反映出简牍的制成材料...
+
+*引用：[简牍｜汉代人的自然书写](https://mp.weixin.qq.com/s?__biz=MzA3OTU3NzMyOQ==&mid=2651319402&idx=4&sn=112dad4fbc94a161acabdcf2ef44e419&chksm=844225f4b335ace227a557c26d5b76d810a167c210ad35aa368b7eae7f202dd7b1f7705783ce&scene=27)*
+
+**历史记载数据的载体相关文献**
+
+- [简牍](https://baike.baidu.com/item/%E7%AE%80%E7%89%8D/2043791)
+- [隶书](https://baike.baidu.com/item/%E9%9A%B6%E4%B9%A6/835864)
+
+## 采撷数据
+
+```{r 采撷数据, eval = FALSE}
+lib('datasets')
+
+## 聚汇数据地区数量只到四千四百五十七。
+## num2c(1:4457, lang = 'sc')
+## https://www.gotohui.com/area/4457
+数 <- 1:4457
+head(数)
+链 <- paste0('https://www.gotohui.com/area/', 数)
+集 <- llply(链, function(迭) {
+  表 = 迭 %>% read_html %>% html_table
+  名 = 迭 %>% read_html %>% 
+    html_nodes(css = "[class = 'ptitle pad-b5 htit']") %>% 
+    html_text %>% str_split(' - ') %>% .[[1]] %>% .[1]
+  
+  if (length(表) == 1) {
+    表 = list(宏观 = data.frame(时间, `GDP（亿元）`, `人均GDP（元）`, `第一产业（亿元）`, `第二产业（亿元）`, `第三产业（亿元）`, `GDP:金融业（亿元）`, `GDP:房地产业（亿元）`, `GDP:工业（亿元）`, `GDP:批发和零售业（亿元）`, `GDP:住宿和餐饮业（亿元）`, `GDP:农林牧渔业（亿元）`), 表)
+  
+  } else if (length(表) == 2) {
+    表 = 表
+  
+  } else {
+    stop(paste0('请查阅网址中', 迭, '的列表！'))
+  }
+  
+  names(表) = c(paste0(名, last(str_split(迭 , '/')[[1]]), '：宏观'), paste0(名, '：明细'))
+  print(表)
+  册 = paste0(.蜀道仓库, 名, last(str_split(迭 , '/')[[1]]), '.rds')
+  saveRDS(表, 册)
+  cat(paste0('\n聚汇数据：', 迭, '\n储存于：', 册, '\n已储存！'))
+  rm(表, 名, 册)
+}, .progress = "=", .parallel = TRUE)
+
+```
+
+以上原数据采撷于[聚汇数据](https://www.gotohui.com)的原数据分类参差不齐，储存于[「雎鹈」黄联富（®γσ ξηg 雷欧）/数据仓库：中科红旗](https://gitee.com/englianhu/zhongkehongqi-cangku)。
+
+```{r 绘制样本数据图表, eval = FALSE, results = 'asis'}
+## 检验是否已设置途径。
+# source('函数/...R')
+# source('函数/....R')
+
+## 秦国 China，秦人 Chinese
+## 司马错得蜀既得楚
+if (!exists('.蜀道')) {
+  .蜀道 <- getwd() |> 
+    {\(.) str_split(., '/')}() |> 
+    {\(.) c('/', .[[1]][2:5])}() |> 
+    {\(.) c(., 'zhongkehongqi-cangku/')}() |> 
+    {\(.) paste(., collapse = '/')}() |> 
+    {\(.) substring(., 2)}()
+}
+if (!exists('.蜀道仓库')) {
+  .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/聚汇数据/')
+}
+
+集 <- llply(list.files(.蜀道仓库), function(迭) readRDS(paste0(.蜀道仓库, 迭)), .progress = '=')
+names(集) <- list.files(.蜀道仓库) %>% 
+  str_replace_all('.rds', '')
+
+##
+## Filter data.frame with all columns NA but keep when some are NA
+## https://stackoverflow.com/questions/63478371
+#     
+# > llply(集[1], function(迭) {
+# +     list(
+# +         rowSums = 迭[[1]][-1][rowSums(!is.na(迭[[1]][-1])) > 0,], 
+# +         apply = 迭[[1]][-1][apply(!is.na(迭[[1]][-1]), 1, any), ], 
+# +         `filter + rowSums` = 迭[[1]][-1] %>% dplyr::filter(rowSums(!is.na(.)) > 0), 
+# +         `filter + c_across` = 迭[[1]][-1] %>% rowwise %>% dplyr::filter(!all(is.na(c_across(everything())))), 
+# +         #迭[[1]][-1][-which(is.na(迭[[1]][1]) & is.na(迭[[1]][2]) & is.na(迭[[1]][3]) & is.na(迭[[1]][4])), ], 
+# +         `filter + any_vars` = 迭[[1]][-1] %>% dplyr::filter_all(any_vars(!is.na(.)))
+# +     )
+# + })
+# > llply(集[1], function(迭) {
+# +     microbenchmark(
+# +         rowSums = 迭[[1]][-1][rowSums(!is.na(迭[[1]][-1])) > 0,], 
+# +         apply = 迭[[1]][-1][apply(!is.na(迭[[1]][-1]), 1, any), ], 
+# +         `filter + rowSums` = 迭[[1]][-1] %>% dplyr::filter(rowSums(!is.na(.)) > 0), 
+# +         `filter + c_across` = 迭[[1]][-1] %>% rowwise %>% dplyr::filter(!all(is.na(c_across(everything())))), 
+# +         #迭[[1]][-1][-which(is.na(迭[[1]][1]) & is.na(迭[[1]][2]) & is.na(迭[[1]][3]) & is.na(迭[[1]][4])), ], 
+# +         `filter + any_vars` = 迭[[1]][-1] %>% dplyr::filter_all(any_vars(!is.na(.)))
+# +         )
+# +     })
+# $万宁市1223
+# Unit: microseconds
+#               expr                       min                        lq                      mean                    median                        uq                        max neval
+#            rowSums   186.3369999999999890861   210.5994999999999777174   238.5852399999999988722   231.9329999999999927240   266.2110000000000127329    313.5640000000000213731   100
+#              apply   274.0450000000000159162   310.5865000000000009095   349.1137499999999818101   355.9975000000000022737   378.7010000000000218279    462.8539999999999849933   100
+#   filter + rowSums  1295.8389999999999417923  1367.0340000000001055014  1483.0337799999999788270  1456.2040000000001782610  1577.9200000000000727596   1875.7950000000000727596   100
+#  filter + c_across 26436.0139999999992141966 26793.3830000000016298145 28070.0261900000004970934 27587.3614999999990686774 28452.2849999999998544808  44603.1779999999998835847   100
+#  filter + any_vars  3866.7420000000001891749  4199.8204999999998108251  5941.9021000000002459274  4429.7785000000003492460  4705.3440000000000509317 145835.0350000000034924597   100
+
+版 <- llply(集, function(迭) {
+    牍 = 迭[[1]] %>% lapply(as.numeric) %>% bind_cols()
+    names(牍) = gsub('海南省:万宁市|海南省:东方市|大理州:鹤庆县|阿坝市:若尔盖县|阿坝市:茂县|滨州市:邹平县|澳门|海南省:陵水县|大理州:漾濞县|漳州:诏安县|荆州市:沙市区|烟台市:蓬莱市|大理州:祥云县|大理州:永平县|海南省:琼中县|大理州:洱源县|永州市:祁阳县|阿拉善:|海南省:琼海市|大理州:弥渡县|海南省:澄迈县|大理州市:祥云县|阿拉善|漳州:漳浦县|市:|泉州:泉港区|泉州:洛江区|海南省:文昌市|济南济阳县|海南省:保亭县|海南省:五指山市|大理州:南涧县|海南省:屯昌县|大理州:大理市|大理州:宾川县|泉州:德化县|省:|台湾|香港|大理州:剑川县|大理州:云龙县|龙岩:漳平市|大理州:巍山县|泉州:鲤城区|恩施州:来凤县|恩施州:巴东县|合肥经济技术开发区|延边:龙井', '', names(牍))
+    names(牍) = gsub('海南白沙县|泉州:惠安县|恩施州:恩施市|南平:建瓯市|泉州:安溪县|恩施州:咸丰县|塔城:和布克赛尔县|建德市|敦煌市|吉林龙潭区:|吴忠红寺堡:|塔城:和布克赛尔县|泉州:南安市|海南乐东县|昌吉:奇台县|巴州:和静县:|巴州:和静县|南平:政和县|昌吉:呼图壁县|南平:政和县|泉州:永春县|恩施州:建始县|余姚市|荆门京山县:|博州:精河县|泉州:石狮市|林区|湘西泸溪县|济南济阳县|安宁区|兴安:|海南州:兴海县|广州增城市|海南临高县|玉门市|平凉华亭县|海南昌江县|海西格尔木市', '', names(牍))
+    names(牍) = gsub('^:|^市|^省|普通|年末|年底|群岛|通化梅河口|在岗', '', names(牍))
+    牍[grep('万', names(牍))] <- round(牍[grep('万', names(牍))] * 10000)
+    names(牍) <- gsub('\\(万+.*)|\\(人)', '', names(牍))
+    牍[grep('千', names(牍))] <- round(牍[grep('千', names(牍))] * 1000)
+    names(牍) <- gsub('\\(千+.*)|\\(人)|\\)$', '', names(牍))
+    names(牍) <- gsub('\\(亿元|\\(亿元\\)', '（亿人民币）', names(牍))
+    names(牍) <- gsub('(^人民币+.*(亿元))', '\\1（亿人民币）', names(牍))
+    names(牍) <- gsub('\\(人民币|\\(人民币\\)|\\(户', '（人民币）', names(牍)) #户是指总额除以家庭量而非人口，而人均是总额除以人口；由于查询福建省数据以户为计量单位而数目依然与其它省份城邑相差不远，故此以文字游戏为由归类为人均数据。
+    names(牍) <- gsub('\\(^（亿元）（亿人民币）\\)|（亿元（亿人民币））|（人民币）（亿元）|（亿元）', '（亿人民币）', names(牍))
+    牍[grep('（亿人民币）', names(牍))] <- round(牍[grep('（亿人民币）', names(牍))] * 100000000)
+    names(牍) <- gsub('（亿人民币）', '', names(牍))
+    names(牍) <- gsub('\\(美元\\)\\(|\\(美元|美元\\(', '（美元）', names(牍))
+    names(牍) <- gsub('\\(百万吨油当量|\\(百万吨', '（百万吨）', names(牍))
+    names(牍) <- gsub('\\(\\%|\\(\\‰', '（百分比）', names(牍))
+    names(牍) <- gsub('\\(十亿桶', '（十亿桶）', names(牍))
+    names(牍) <- gsub('\\(吨', '（吨）', names(牍))
+    names(牍) <- gsub('\\(元', '（元）', names(牍))
+    names(牍) <- gsub('\\(吨', '（吨）', names(牍))
+    names(牍) <- gsub('\\(亿美元', '（亿美元）', names(牍))
+    牍[grep('（亿美元）', names(牍))] <- round(牍[grep('（亿美元）', names(牍))] * 100000000)
+    names(牍) <- gsub('（美元）亿美元|（亿美元）', '（美元）', names(牍))
+    names(牍) <- gsub('\\/人|\\(辆|\\(张| 55056', '', names(牍))
+    names(牍) <- gsub(':', '：', names(牍))
+    names(牍) <- gsub('：：', '：', names(牍))
+    names(牍) <- gsub('^人民币', '', names(牍))
+    names(牍) <- gsub('中国实际使用外资金额', '外资实货量', names(牍))
+    names(牍) <- gsub('GDP|GDP：', '钱谷', names(牍))
+    names(牍) <- gsub('^人均钱谷（美元）美元$', '人均钱谷（美元）', names(牍))
+    names(牍) <- gsub('^钱谷*.+百万美元$', '钱谷（百万美元）', names(牍))
+    names(牍) <- gsub('\\(个|\\(所：|登记', '', names(牍))
+    names(牍) <- gsub('\\(亿\\)', '（亿）', names(牍))
+    牍[grep('（亿）', names(牍))] <- round(牍[grep('（亿）', names(牍))] * 100000000)
+    names(牍) <- gsub('（亿）', '', names(牍))
+    names(牍) <- gsub('\\(个：', '', names(牍))
+    names(牍) <- gsub('\\(所：|\\(所', '', names(牍))
+    names(牍) <- gsub('\\(港元', '（港元）', names(牍))
+    牍[grep('（百万港元）', names(牍))] <- round(牍[grep('（百万港元）', names(牍))] * 1000000)
+    names(牍) <- gsub('\\(百万港元', '（港元）', names(牍))
+    names(牍) <- gsub('：全球占比|占世界比重|：占全球比例|比重', '占全球', names(牍))
+    names(牍) <- gsub('占比', '', names(牍))
+    names(牍) <- gsub('高职\\(专科\\)', '专科', names(牍))
+    names(牍) <- gsub('\\(购买力平价\\)\\(国际元', '', names(牍))
+    names(牍) <- gsub('\\(亿千瓦时', '（亿千瓦时）', names(牍))
+    names(牍) <- gsub('（亿千瓦时）', '（亿千瓦时）', names(牍))
+    names(牍) <- gsub('老年人占总人口占全球', '老年人口占全球', names(牍))
+    names(牍) <- gsub('服务业增加值占钱谷占全球', '服务业增加值占全球钱谷', names(牍))
+    names(牍) <- gsub('\\(10亿立方米', '（十亿立方米）', names(牍))
+    names(牍) <- gsub('老年人人口总数', '老年人口总数', names(牍))
+    names(牍) <- gsub('高等学校在校学生数|高等学校本专科在校学生数', '高校在校学生数', names(牍))
+    names(牍) <- gsub('\\(平方公里', '（平方公里）', names(牍))
+    names(牍) <- gsub('\\(床', '', names(牍))
+    names(牍) <- gsub('\\(活产男婴/活产女婴', '（男/女）', names(牍))
+    names(牍) <- gsub('（元）/平方米', '（元/平方米）', names(牍))
+    names(牍) <- gsub('：|：：', '', names(牍))
+    names(牍) <- gsub('\\(本国货币单位', '（本国货币单位）', names(牍))
+    names(牍) <- gsub('\\(本币\\)\\(欧元', '（欧元）', names(牍))
+    names(牍) <- gsub('\\(医院和卫生院床位数\\(家|医院和卫生院床位数\\(家|^医院床位数和卫生院|^医院和卫生院床位数$|^医院床位数$|^医疗卫生机构床位数$|^病床数$|^医院、卫生院床位数$', '医院和诊疗所床数', names(牍))
+    names(牍) <- gsub('\\(含劳务派遣\\)', '（含劳务派遣）', names(牍))
+    names(牍) <- gsub('\\(本国货币单位', '（本国货币单位）', names(牍))
+    names(牍) <- gsub('男性占总人口占全球（百分比）', '男性占全球人口（百分比）', names(牍))
+    names(牍) <- gsub('女性占总人口占全球（百分比）', '女性占全球人口（百分比）', names(牍))
+    names(牍) <- gsub('总人口数|^总人口$|^户籍总人口$', '户籍人口', names(牍))
+    names(牍) <- gsub('人口总数|人数|人口总数|人口数量', '人口', names(牍))
+    names(牍) <- gsub('常住人口', '人口', names(牍))
+    names(牍) <- gsub(' $', '', names(牍))
+    names(牍) <- gsub('年平均', '平均', names(牍))
+    names(牍) <- gsub('职工（含劳务派遣）平均工资（元）|全部单位职工平均工资（元）|城镇单位职工平均工资（元）', '职工平均工资（元）', names(牍))
+    
+    # lapply(牍, class)
+    names(牍) <- gsub('^钱谷增长率*.+$', '钱谷增长率（百分比）', names(牍))
+    names(牍) <- gsub('^在校小*.+$|小学*.+$', '在校小学生', names(牍))
+    names(牍) <- gsub('^高等*.+$|^高校*.+$', '在校高学生', names(牍))
+    names(牍) <- gsub('^专科*.+$|^本专科*.+$', '在校高专生', names(牍))
+    
+    # 版[grep('.id|时间|农村|农牧|农民|城镇', names(版), value = TRUE)] %>% 
+    #   .[rowSums(!is.na(版[grep('城镇化率', names(版), value = TRUE)])) > 0, ] # %>% names
+    # .[1001:1l500,] %>% data.frame
+    names(牍) <- gsub('农村居民|农牧民|农牧居民|渔农村居民', '农林牧渔民', names(牍))
+    names(牍) <- gsub('城镇居民', '邑民', names(牍)) #攻城堕邑，城镇故称「邑」
+    牍$`农林牧渔民可支配收入（人民币）` <- rowSums(牍[grep('农林牧渔民可支配收入', names(牍))], na.rm = TRUE) %>% na_if(0)
+    牍[grep('农林牧渔民可支配收入', names(牍))] <- NULL
+    牍$`邑民人均可支配收入（人民币）` <- rowSums(牍[grep('居民人均可支配收入', names(牍))], na.rm = TRUE) %>% na_if(0)
+    牍[grep('居民人均可支配收入', names(牍))] <- NULL
+    
+    牍$地方财税 <- rowSums(牍[grep('地方|财政|税收收入', names(牍))], na.rm = TRUE) %>% na_if(0)
+    牍[grep('财政|税收收入', names(牍))] <- NULL
+    
+    names(牍) <- gsub('存款余额个人储蓄存款|居民储蓄存款余额', '居民储蓄', names(牍))
+    names(牍) <- gsub('^居民储蓄存款余额（亿人民币）$|^存款余额个人储蓄存款（亿人民币）$|^城乡居民储蓄余额（亿人民币）$|^本外币居民储蓄（亿人民币）$|^城乡居民储蓄（亿人民币）$|^储蓄存款余额（亿人民币）$|^居民储蓄余额（亿人民币）$|^城乡居民储蓄（亿人民币）$|^本外币居民储蓄（亿人民币）$', '居民储蓄（亿人民币）', names(牍))
+    牍$`居民储蓄（亿人民币）` <- NULL
+    names(牍) <- gsub('^城乡居民储蓄余额$|居民储蓄存款余额|^城乡居民储蓄$|^居民储蓄余额$', '居民储蓄', names(牍))
+    
+    names(牍) <- gsub('（元）', '（人民币）', names(牍))
+    names(牍) <- gsub('^存款余额住户存款$|^本外币存款余额境内住户存款$|^存款余额境内住户存款$|^本外币住户存款余额$|^本外币存款余额住户存款$|^住户存款余额$|^存款余额境内存款-个人存款$', '本外币余额（人民币）', names(牍))
+    
+    names(牍) <- gsub('^住户存款余额（亿人民币）$|^存款余额境内住户存款（亿人民币）$|^本外币存款余额住户存款（亿人民币）$|^本外币住户存款余额（亿人民币）$|^存款余额住户存款（亿人民币）$|^本外币存款余额境内住户存款（亿人民币）$|^住户本外币存款余额（亿人民币）$|^存款余额境内存款住户存款（亿人民币）$|^个人存款余额（亿人民币）$|^本外币境内住户贷款余额（亿人民币）$', '本外币余额（亿人民币）', names(牍))
+    牍$`本外币余额（亿人民币）` <- NULL
+    牍[grep('（亿人民币）', names(牍))] <- round(牍[grep('（亿人民币）', names(牍))] * 100000000)
+    names(牍) <- gsub('^本外币居民储蓄$|^住户本外币存款余额$|^本外币境内住户贷款余额$|^储蓄存款余额$|^存款余额境内存款住户存款$|^个人存款余额$', '本外币余额（人民币）', names(牍))
+    names(牍) <- gsub('\\(本国货币|（本国货币单位）', '（本国币种）', names(牍))
+    names(牍) <- gsub('通货膨涨率\\(CPI\\)', '消费指数通胀率', names(牍))
+    names(牍) <- gsub('城镇', '城邑', names(牍))
+    names(牍) <- gsub('港货物吞吐量', '港口吞吐量', names(牍))
+    
+    # names(牍) <- gsub('^城乡居民储蓄余额$|^住户本外币存款余额$|^本外币境内住户贷款余额$', '本外币余额（人民币）', names(牍))
+    # 牍$`存款余额住户存款（亿人民币）` %<>% replace(is.na(.), 'NA')
+    #牍乙 = 牍[-1][rowSums(!is.na(牍[-1])) > 0,]
+    #牍丙 = dplyr::inner_join(牍[c('时间', '人口')], 牍乙)
+    #牍 %<>% replace_na_dt(to = 'NA')
+    
+    牍
+  }) %>% 
+  plyr::ldply() %>% 
+  as_tibble() %>% 
+  mutate(`.id` = factor(`.id`))
+names(版)
+# 版[grep('.id|时间|余额',  names(版))] %>% names
+# 版[grep('.id|时间|余额',  names(版))] %>% 
+#   .[rowSums(!is.na(.[grep('余额',  names(.))])) > 0, ]
+```
+
+由于采撷于[聚汇数据](https://www.gotohui.com)的原数据分类参差不齐，故此需要整顿并分门别类。以下连接提供一些经济学专用术语：
+- 可支配收入、纯收入与人均收入之别；农民与邑民之别
+    - [可支配收入和人均收入有什么区别？](https://cadforex.com/kezpsr/109138.html)
+    - [农民人均纯收入和农民人均可支配收入的区别是什么？](https://www.cnbz.gov.cn/zmhd/dwzsk/13320794.html)
+    - [什么是居民人均可支配收入？](https://www.stats.gov.cn/zs/tjws/tjzb/202301/t20230101_1903384.html)
+    - [人均收入和人均可支配收入有什么区别吗？](https://www.zhihu.com/question/288505153)
+    - [农村居民纯收入和城镇居民可支配收入有何区别？城镇居民人均可支配收入与以前的人均生活费收入有何区别？](http://tjj.hunan.gov.cn/hntj/bsfw/tjkp/tjjz/201507/t20150717_3825077.html)
+- 税收收入
+    - [税收收入包括哪些？](https://localsite.baidu.com/okam/pages/article/index?articleId=7849186&ucid=PjRvPHDYPjm)
+    - [「百度」税收收入](https://baike.baidu.com/item/%E7%A8%8E%E6%94%B6%E6%94%B6%E5%85%A5/10803104)
+
+- 原数据中的*农牧渔民人均纯收入*中的福建省数据矢量标题有误，「户」是指总额除以家庭量而非人口，而「人均」是总额除以人口；由于查询福建省数据以户为计量单位而数目依然与其它省份城邑相差不远，故此以文字游戏为由归类为人均数据。
+
+
+## 开函阅牍/简
+
+```{r}
+
+```
+
+# 统计建模
+
+<img src='诸子百家考工记/高频量化对冲与运筹学概念.png' width = '400'>
+
+![](诸子百家考工记/高频量化对冲与运筹学概念.png)
+
+# 模型比较
+
+## 精准度
+
+# 结论
+
+## 摘要
+
+**大秦赋 (Chinese Emperor)**<br>
+春秋战国《*礼记•经解*》<br>
+孔子曰：『君子慎始，差若毫厘，缪以千里。』
+
+> <span style='color:#FFEBCD; background-color:#D2B48C;'>**《礼记·经解》孔子曰：**</span><span style='color:#A9A9A9; background-color:#696969;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^19]
+
+*引用：[「快懂百科」《礼记•经解》](https://www.baike.com/wikiid/2225522569881832051?view_id=2tt3iw3blkq000)和[第一范文网：差之毫厘，谬以千里的故事](https://www.diyifanwen.com/chengyu/liuziyishangchengyugushi/2010051523105152347092749890.htm)和[「百度百科」春秋时期孔子作品《礼记•经解》](https://baike.baidu.com/item/%E7%A4%BC%E8%AE%B0%C2%B7%E7%BB%8F%E8%A7%A3/2523092)和[「當代中國」差之毫釐 謬以千里](https://www.ourchinastory.com/zh/2962/%E5%B7%AE%E4%B9%8B%E6%AF%AB%E9%87%90%20%E8%AC%AC%E4%BB%A5%E5%8D%83%E9%87%8C)*
+
+[^19]: [HTML Color Codes](https://html-color.codes)
+
+![](诸子百家考工记/秒计.png)
+
+![](诸子百家考工记/攻占东盟.png)
+![](诸子百家考工记/巫贼巫婆土司回教徒黑米哈山习俗文化虔诚爱国狂热份子和所有回教徒党羽只能集体自杀.png)
+*歼灭瓜雪瓜雪巴西不能帮新村门牌T十五号世袭制施展可兰经巫术、窥听窥视、自宫自残自虐自杀、男肛之耻的失心疯猥亵淫魔土司乩童巫师王张佳坤和瓜雪RHU（淮西派）花园加德士油站隔壁第三巷门牌卅二号世袭制施展可兰经巫术、窥听窥视、自宫自残自虐自杀、男肛之耻的失心疯猥亵淫魔土司乩童刘瑾貹俩、瓜雪回教警署的巫贼回教徒警察莫汉末德·黑米哈山·殡·伊不拉心（包括马航日语组巫贼回教徒莫汉末德·黑米哈山·殡·伊不拉心）*
+
+![](诸子百家考工记/大秦赋 Chinese Emperor.png)
+
+> #回教徒爱国就严格遵守回教徒可兰经法家国学论集体自杀而不爱国就集体退位让贤而已 #美国耶稣洋番集体被钉在十字架被晒死
+> 回教徒可兰经法家国学论，东南亚巫贼巫婆回教徒尤其是瓜雪巴西不能帮万佛寺土司张佳坤爱国虔诚狂热份子和大象共和国举国公民MH三七零和MH十七自杀式飞往东亚
+
+*引用：[勇于认错的美国洋番回教徒九一一恐怖份子国父华盛顿自杀式伐木都说东亚中国（包括咱们海内外所有华人）不是洋番的敌人，而敌人是东南亚所有巫贼巫婆回教徒包括新加坡首任总统忧索夫殡伊斯骇客回教徒九一一恐怖份子](https://www.youtube.com/watch?v=5LL8V2a_xp0)*
+
+> 核武器温馨提示：回教徒可兰经法家国学论，可兰经回教规定全球所有回教徒世袭制不许学可兰经以外的习俗文化宗教语言断肢法和不许叛乱和叛教
+
+*引用：[斩首、石刑、截肢... 阿富汗「伊斯兰教法」或将重现酷刑](https://www.163.com/dy/article/HM881SKU0511RVG1.html)*
+
+## 前瞻科研
+
+<img src='诸子百家考工记/量化投资与机器学习.png' width='240'>
+
+[**近期招聘一览表:**<span style='color:#3C5C; background-color:black;'>*全网Quant都在看!</span>](https://wemp.app/posts/31dffe83-68af-4e3f-a1f7-c49baf9a24cb?fbclid=IwAR1x3DOjThsEKG0CHVghFnIPAAcraM8kimXa_G9-xG070CiLDyXWj6_6Izs)
+
+```{r 选项设置, echo = FALSE}
+## Set options back to original options
+options(warn = 0)
+```
+
+<br>
+
+# 附录
+
+## 幕后花絮
+
+- [「猫城」englianhu/binary.com-interview-question#3大秦赋：商鞅变法、辛亥革命、一带一路、习李经济学、孙子兵法](https://github.com/englianhu/library/issues/3)
+- [「猫城」scibrokes/r-world#1`REmap`百度绘图，点缀全球](https://github.com/scibrokes/r-world/issues/1)
+- [「猫城」englianhu/binary.com-interview-question#6`Error: forecast::Arima() #910`](https://github.com/englianhu/binary.com-interview-question/issues/6)
+- [「猫城」englianhu/binary.com-interview-question#8在`ts`和`xts`和`matrix`格式上使用`auto.arima`](https://github.com/englianhu/binary.com-interview-question/issues/8)
+- [「猫城」scibrokes/setup-centOS7-DO#2🚩🇨🇳🏹中科红旗 RedFlag Linux (🍥Debian)](https://github.com/scibrokes/setup-centOS7-DO/issues/2)
+- [「猫城」雷欧@中科红旗](https://github.com/englianhu/RedFlag-Linux)
+- [「猫城」雷欧@图书馆](https://github.com/englianhu/library)
+
+## 文书明细
+
+以下乃此文书的文件信息。
+
+- 文集建立日：农历二零二三年十一月十八 癸卯年（兔年）甲子月壬戌日（阳历二零二三年十二月卅日 / 民国一百一十二年十一月十八）[^20]
+- 文集最新更新日：`r today('Asia/Shanghai')`
+- `r R.version.string`
+- [**rmarkdown**](https://github.com/rstudio/rmarkdown) 程序包版本：`r packageVersion('rmarkdown')`
+- 文集版本：一零一
+- 文集作者：[®γσ, ξηg Lιαη Ημ](https://rpubs.com/englianhu/ryo-cn)
+- 猫城：[源代码](https://github.com/englianhu/binary.com-interview-question)
+- 追加附属信息
+
+[^20]: 欲知更多阳历/民国/农历日历详情，请登录中华民国农业部官网查询日历查询[阳历/农历/民国查询](https://ppg.naif.org.tw/naif/MarketInformation/Other/Calendar_V3.aspx)。
+
+```{r 信息}
+suppressMessages(require('formattable', quietly = TRUE))
+suppressMessages(require('knitr', quietly = TRUE))
+suppressMessages(require('kableExtra', quietly = TRUE))
+suppressMessages(require('magittr', quietly = TRUE))
+suppressMessages(require('devtools', quietly = TRUE))
+
+系统信息甲 <- session_info()$platform |> 
+    unlist() |> 
+    {\(.) data.frame(row.names = 1:length(.), 
+                     Category = names(.), session_info = .)}()
+
+系统信息乙 <- data.frame(Sys.info()) |> 
+    {\(.) data.frame(Category = row.names(.), Sys.info = .[,1])}()
+
+#remarks, dim(系统信息甲), dim(系统信息乙)
+if (nrow(系统信息甲) == 11 && nrow(系统信息乙) == 8) {
+  系统信息乙 <- 系统信息乙 |> 
+    {\(.) rbind(., data.frame(
+    Category = c('rmarkdown', 'rsconnect', '当前时间'), 
+    Sys.info = c(as.character(getwd()), 
+                 as.character(packageVersion('rsconnect')), 
+                 paste(as.character(
+                   lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
+  
+} else if (nrow(系统信息甲) == 10 && nrow(系统信息乙) == 8) {
+  系统信息甲 <- rbind(系统信息甲, data.frame(Category = '', session_info = ''))
+  
+  系统信息乙 <- 系统信息乙 |> 
+    {\(.) rbind(., data.frame(
+    Category = c('rmarkdown', 'rsconnect', '当前时间'), 
+    Sys.info = c(as.character(getwd()), 
+                 as.character(packageVersion('rsconnect')), 
+                 paste(as.character(
+                   lubridate::now('Asia/Shanghai')), 'CST 中国标准时间 🗺'))))}()
+}
+
+系统信息 <- cbind(系统信息甲, 系统信息乙)
+names(系统信息) <- c('分类甲', '访谈信息甲', '分类乙', '访谈信息乙')
+系统信息$分类甲 <- c('版本', '操作系统', '系统', '界面', '语言', '核对', 
+              '©标准库', '时区', '日期', '®文艺坊版本', 'Pandoc瑞士军刀')
+系统信息$分类乙 <- c('系统名称', '发布', '版本', '元素节点', '机器', '登录', 
+              '用户', '活跃用户', 'rmarkdown (®降价编译)', 
+              'rsconnect (®s联通)', '当前时间')
+rm(系统信息甲, 系统信息乙)
+
+系统信息 |> 
+  {\(.) 
+    kbl(., caption = '附加访谈信息：')}() |> 
+  {\(.) 
+    kable_styling(
+      ., bootstrap_options = c('striped', 'hover', 'condensed', 'responsive'))}() |> 
+  {\(.) 
+    row_spec(., 0, background = 'DimGrey', color = '#7b1113')}() |> 
+  {\(.) 
+    column_spec(., 1, background = 'CornflowerBlue', color = 'red')}() |> 
+  {\(.) 
+    column_spec(., 2, background = 'grey', color = '#8B0000')}() |> 
+  {\(.) 
+    column_spec(., 3, background = 'CornflowerBlue', color = 'blue')}() |> 
+  {\(.) 
+    column_spec(., 4, background = 'grey', color = 'white')}() |> 
+  {\(.) 
+    row_spec(., 11, bold = TRUE, color = 'yellow', background = '#D7261E')}()
+```
+
+## 参考文献
+
+01. 
+
+---
+
+[<img src="诸子百家考工记/世博量化.png" height="14"/> Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
+[**[<img src="诸子百家考工记/世博量化.png" height="14"/> 世博量化®](http://www.scibrokes.com)企业知识产权及版权所有，盗版必究。**]{style="color:RoyalBlue"}
