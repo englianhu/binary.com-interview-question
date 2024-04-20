@@ -561,8 +561,16 @@ nameserver 114.114.114.114
 
 ##### 编程语言
 
+- [「猫城」中国北京大学赢家ξng黄氏江夏堂「大秦赋•道家李耳老子兼法家李斯篆紀•艺文志」：目前使用🚩🇨🇳🏹🦔中国国产红旗礼逆袭，编程都会使用咱们母语华语、字体、字幕加汉语拼音。#六](https://github.com/englianhu/RedFlag-Linux/issues/6)
 - [「雎虒」黄联富（®γσ ξηg 雷欧）/丙语言编译器](https://gitee.com/englianhu/bingyuyanbianyiqi)
-- []()
+- [易语言](https://www.dywt.com.cn/pdown.htm)
+- [青语言](https://qingyuyan.cn)
+- [「知乎」步履蹒跚六十年：中文编程史话](https://zhuanlan.zhihu.com/p/98677771)
+- [「知乎」你见过真正国产的编程语言吗？](https://www.zhihu.com/question/327300430)
+
+##### 密码学
+
+- [拉曼学院史（鬼谷传奇）](#拉曼学院史（鬼谷传奇）)与[🧶刺绣密码学](#🧶刺绣密码学)。
 
 ### 赢家黄氏江夏堂——联富始祖之道
 
@@ -2454,6 +2462,8 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 ### 黄氏与西河堂
 
+<iframe width="400" height="225" src="https://www.youtube.com/embed/Q5bSoiFxwFE" title="先秦列国疆域变化 Pre-Qin China: Every Year" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
 ### 杏林林氏西河堂
 
 #### 杏林经济学（世袭制道教徒）
@@ -2636,6 +2646,13 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 - [「微信」牡蛎（中药大辞典、中华本草）](https://mp.weixin.qq.com/s?__biz=MzU0Mjg5MTQyMA==&mid=2247505741&idx=8&sn=155bfe0f893c6b5b2f150240a26b1969&chksm=fb115bbecc66d2a83c2c95a4e6e780761f656f612f08bbbdfc484a333c7391c9c32f1dc481ac&scene=27)
 - [「猫城」🚩🔆🏹🌟👊🚀🦔大秦赋：ξng赢家黄氏江夏堂 - 黄埔军校，辛亥革命；中科红旗，量化对冲。一带一路，史无前例；横跨七洲，一统天下。（咱们东南亚那些回教政府和敌国西方基督耶稣政府是世仇） #三](https://github.com/englianhu/library/issues/3#issuecomment-1308370079)
 
+#### 🧶刺绣密码学
+
+- [「沧浪」秦国怎样提升军队战斗力](https://www.bilibili.com/video/BV1Kx42117rj)将阅读脑电波和坏竹出好笋、出淤泥而不染的原理，让敌洲内讧。
+    - [「知乎」MIDAS：混频数据回归](https://zhuanlan.zhihu.com/p/343307253)
+    - [MIDAS：混频数据回归](https://www.lianxh.cn/news/8ab193e6f04cc.html)
+- [拉曼学院史（鬼谷传奇）](#拉曼学院史（鬼谷传奇）)刺绣除了可以复兴咱们中华历史与娱乐圈，详情请查阅[复兴赢家黄氏江夏堂](#复兴赢家黄氏江夏堂)。借鉴🧶刺绣概念，每次刺绣的针孔在不一样的位置、使用不一样颜色、不一样的布料、不一样粗的线条，就会刺绣出不一样的图案、质感、外观艳丽与耐热、防止紫外线。借鉴达文奇密码学概念，一些图案左看友看上看下看会是不一样的图案，局部刺绣与观看全局刺绣图案密码学，在没有拉慢操作系统的高频量化计数/机数分析速度的情况之下，就像目前的视窗操作系统会出现硬件随机IP地址，通过建立一个虚拟内存来随机（比方说通过MIDAS计数/机数模型）更换位置、切片转化语言图案后保密再更换位置等、字词、语言、对联、各行各业专业术语、语音、视频、图案等，成为密码学。
+
 #### 算卜与因缘
 
 **大数定律**
@@ -2644,7 +2661,18 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 ##### 大夫
 
+###### 评估学习能力
+
+- 隐马尔可夫链、状态分析、夏普率
+- [「油管」Model selection with AIC and AICc](https://www.youtube.com/watch?v=HOqHI53x9Go)测试学生的血压、性别、岁数和数术得分，来评估学生的学习能力。
+
+###### 看诊
+
+对症下药、把脉、服药、推拿、药帖、褒药等
+
 - [「微信」明德初心](https://mp.weixin.qq.com/s/ldEY0h4JTE5n9gryvEQmLQ)
+
+###### 大夫（官职）
 
 ##### 人口户籍
 
@@ -4603,7 +4631,7 @@ options(warn = 0)
 
 #### 春秋战国——秦国∙内忧
 
-##### 操作系统与软件
+##### 操作系统与程序包
 
 **拯救亚洲人，削蕃外洲人。**
 
@@ -4618,13 +4646,19 @@ options(warn = 0)
 
 ![*中国不能没有自己的操作系统——记中科红旗董事长、著名科学家孙玉芳教授*](诸子百家考工记/中国不能没有自己的操作系统——记中科红旗董事长、著名科学家孙玉芳教授.png){width=400}
 
+目前最迫切的是需要查看礼逆袭操作系统框架，有个类似鄀编程语言`devtools`程序包一样，方便修改和编写操作系统的工具，先翻译再加密现有操作系统并研发咱们赢家黄氏江夏堂「大秦赋」或「文言文大秦赋」操作系统，先查阅以下连接：
+
+- [How to modify an installation ISO and keep it bootable?](https://unix.stackexchange.com/a/635839/128388)
+- [ISO Master install isomaster](https://askubuntu.com/questions/46646/how-to-edit-iso-images-including-bootable-isos)
+- [Three Ways to Extract and Copy Files from ISO Image in Linux](https://www.tecmint.com/extract-files-from-iso-files-linux)
+
 > 在`/usr/lib/rstudio/resources/app/resources/themes/css`路径下找到了`fonts.css`文件，代码如下：
 > 
 > …
 > 
 > …
 > 
-> 目前只看到只支援英国话和法国话，虽然可以先着手添加咱们的中国话，方便拉低学习高端科技的门槛。目前代码主题并没有中文和咱们中华习俗文化宗教语言，而应用主题设置Sky和Modern并没有任何不一样；何不学习以前谷歌输入法、WPS可以设置应用主题背景甚至框架特色。**虽然可以暂时收录移动终端操作系统（Posit）为咱们中科红旗操作系统的主要量化分析产品，但借鉴中科红旗🚩创办人兼数术家孙玉芳教授考量到安全隐忧，终究是敌洲美国洋番基督耶稣产品而客户是美国航天局。**
+> 目前只看到只支援英国话和法国话，虽然可以先着手添加咱们的中国话，方便拉低学习高端科技的门槛。目前代码主题并没有中文和咱们中华习俗文化宗教语言，而应用主题设置Sky和Modern并没有任何不一样；何不学习以前谷歌输入法、WPS可以设置应用主题背景甚至框架特色。**虽然可以暂时收录移动终端操作系统（Posit）为咱们中科红旗操作系统的主要量化分析产品，但借鉴中科红旗🚩创办人兼数术家孙玉芳教授考量到安全隐忧，终究是敌洲美国洋番基督耶稣产品而客户是美国航天局。借鉴以前微软视窗禁止将办公软件内嵌到PC（因为那些不会中文也不是咱们世袭制道教徒的巫婆非法回教徒不允许违反千年法家立下的可兰经回教刑事法典断肢法工作、色情、传宗接代），咱们世袭制道教徒以力争上游的精子赢家黄氏江夏堂内嵌到杏林林氏西河堂生蚝的概念编写程序包而非外来软件，方便安装、使用、维护、卸装。**
 
 *引用：[中国北京大学赢家ξng黄氏江夏堂「大秦赋」：目前使用🚩🇨🇳🏹中国国产红旗礼逆袭，并且将REmap鄀编程语言程序包中文化，以下鄀编程语言函数也开始中文化，日后编程都会使用中文编程。#七](https://github.com/englianhu/binary.com-interview-question/issues/7#issuecomment-1588499121)*
 
@@ -4668,6 +4702,8 @@ options(warn = 0)
 
 ##### 电子仪器与硬件
 
+###### 电子仪器
+
 **拯救亚洲人，削蕃外洲人。**
 
 秦灭六洲，一统天下；
@@ -4681,6 +4717,8 @@ options(warn = 0)
 - [下篇：国产六大中央处理单位的春秋战国（附下载）](https://www.eet-china.com/mp/a75720.html)
 - [「图享」国产六大中央处理单位的春秋战国](https://www.instagram.com/p/CYRDpsdJO2R)
 - [「计算机网络发展史」你在网上勇闯天涯时用的网络，是如何发展至今的呢？](https://youtu.be/CjAl6jODHq8)
+
+###### BIOS微型操作系统
 
 ##### 演员的自我修养
 
