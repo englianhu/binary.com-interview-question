@@ -1,6 +1,6 @@
 ---
 title: "![](诸子百家考工记/deriv.png){height=240}"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数艺术品 <span style='color:#4E79A7'>**第三部乙∙上（世袭制道教徒赢家黄氏江夏堂十二生肖秦人牧马：🌟儒家秦孝公清君侧之商鞅变法**）</span>](https://github.com/englianhu/binary.com-interview-question)"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数尤物 <span style='color:#4E79A7'>**第三部乙∙上（世袭制道教徒赢家黄氏江夏堂十二生肖秦人牧马：🌟儒家秦孝公清君侧之商鞅变法**）</span>](https://github.com/englianhu/binary.com-interview-question)"
 author: "道家笔者：[<ruby>赢<rp>(</rp><rt>yíng</rt><rp>)</rp>家<rp>(</rp><rt>jiā</rt><rp>)</rp>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>氏<rp>(</rp><rt>shì</rt><rp>)</rp>江<rp>(</rp><rt>jiānɡ</rt><rp>)</rp>夏<rp>(</rp><rt>xià</rt><rp>)</rp>堂<rp>(</rp><rt>táng</rt><rp>)</rp></ruby> ®γσ, ξηg Lιαη Ημ，<ruby>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>联<rp>(</rp><rt>lián</rt><rp>)</rp>富<rp>(</rp><rt>fù</rt><rp>)</rp></ruby>（<ruby>雷<rp>(</rp><rt>léi</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>∪ <ruby>瑞<rp>(</rp><rt>ruì</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>）](https://englianhu.wordpress.com.com) ![](诸子百家考工记/大秦赋 - 北京大学.png){height=14}![](诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png){height=14}®"
 date: "🔆民国日期：民国一百一十三年杏月廿六<br>☯道家节日：[农历二零二四年（属龙 甲辰年 戊辰月
 戊戌日）杏月廿六（清明节）](https://mobile.51wnl-cq.com/huangli_tab_h5/?posId=BDSS&STIME=2024-04-04)<br>诸子百家：**纵横家鬼谷传奇**，清明节是大学刺绣系🧶课外家庭日语班杏林林氏西河堂，艳迎的生日"
@@ -236,7 +236,14 @@ nameserver 114.114.114.114
 - 偶像派：情色优先，靖康之耻或娼妓、娱乐圈、借运、任何攻击性或回教广告。
 - 实力派：学术优先，数学科学科技和习俗文化宗教语言复古等，万般皆下品唯有读书高。
 
-英文Model中译：模型、艺术品、艺术文物、性感尤物、古玩、艺妓。
+> 古代的文物，就叫金石学。元明清三朝，扩大了金石学使用范围，添加了书画，玉石，瓷器，杂件等，历代遗留下的东西，就叫古物。在明代及清初，又有一种说法，叫骨董，古董。到清朝乾隆年间，又叫古玩。到了民国，又叫做文物。现在文物和古玩词语同用，古玩在民间使用，文物为官方语言。
+
+*引用：[古代文物的雅称](https://m.iask.sina.com.cn/b/new2GuLrSccjGl.html)*
+
+英文Model，中译为：模型、古玩^[[「问百度」古玩](https://baike.baidu.com/item/古玩/2539561)]、文物、尤物、艺术文物、尤物、性感尤物、艺妓。「世风日下，人心不古」一般上许多人将英文Model均以外来语翻译为模特儿崇洋心态如同沐猴而冠、东施效颦；由于英文Model可以描述物品或人物，故此以咱们世袭制道教徒黄种人的中国五千年历史传统春秋战国的诸子百家为标准，国际标准中文翻译为“尤物”。
+
+- [「古诗文」尤物](https://www.gushiall.com/dict/youwu)
+- 
 
 ![[🌌🈳🀄🌟夜空中最亮的星🎶](https://www.bilibili.com/video/BV13J41117gd)](诸子百家考工记/马来西亚华人公会.png){width=400}
 
@@ -1088,20 +1095,20 @@ rm(程序包)
 
 ## 论文简介
 
-[<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)科研论文中提及一些技术问题，而**Part I**中的数据加以修饰并回测后与**Part II**比较，**（第III部）**则筛选出使用`频率（分计） 等于 一`数据观测量为`r cnum::num2c(187199, lang = 'sc')`最优计数艺术品。故此，二度过滤并筛选`频率（分计） 等于 一`的数据来筹算节省筹算时间。
+[<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)科研论文中提及一些技术问题，而**Part I**中的数据加以修饰并回测后与**Part II**比较，**（第III部）**则筛选出使用`频率（分计） 等于 一`数据观测量为`r cnum::num2c(187199, lang = 'sc')`最优计数尤物。故此，二度过滤并筛选`频率（分计） 等于 一`的数据来筹算节省筹算时间。
 
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1)（或[备用网址](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html)）
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275)（或[备用网址](https://beta.rstudioconnect.com/content/16442/binary-Q1Inter-HFT-RV2.html)）
 - [_<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - 筛选日内高频量化交易计数模型 - <span style='color:RoyalBlue'>（第III部）</span>_](https://rpubs.com/englianhu/HFT-RV3)
 
-在此论文中，使用[季节性自回归综合滑均艺术品系列]{style="color:RoyalBlue"}。
+在此论文中，使用[季节性自回归综合滑均尤物系列]{style="color:RoyalBlue"}。
 
-- 季节性指数平滑艺术品（Seasonal Exponential Smoothing - Seasonal ETS）
-- 外因周期性自回归综合滑均艺术品（ARIMAX）
-- 季节性自回归综合滑均艺术品（SARIMA）
-- 外因周期性季节性自回归综合滑均艺术品（SARIMAX）
-- 外因周期性自回归分整综合滑均艺术品（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
-- 多元季节性自回归综合滑均艺术品（Multi-Seasonal Time Series `msts()`）
+- 季节性指数平滑尤物（Seasonal Exponential Smoothing - Seasonal ETS）
+- 外因周期性自回归综合滑均尤物（ARIMAX）
+- 季节性自回归综合滑均尤物（SARIMA）
+- 外因周期性季节性自回归综合滑均尤物（SARIMAX）
+- 外因周期性自回归分整综合滑均尤物（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
+- 多元季节性自回归综合滑均尤物（Multi-Seasonal Time Series `msts()`）
 
 然后在**外因周期性季节性**添加天文历法因素，例如天干地支、廿四节气，下一篇会更详细添加农历月份雅称等参数计算周期。[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)叙述一些有关天文历法、天干地支纪年、纪月、纪日、纪时、时辰、十二生肖和生辰八字。
 
@@ -1109,18 +1116,18 @@ rm(程序包)
 
 # 册 / 策
 
-## 季节性指数平滑艺术品（Seasonal Exponential Smoothing - Seasonal ETS）
+## 季节性指数平滑尤物（Seasonal Exponential Smoothing - Seasonal ETS）
 
 ### 开函阅牍/简
 
-此文献的数据中的默认预测价就是延续上篇使用最基本的季节性指数平滑艺术品（Seasonal Exponential Smoothing - Seasonal ETS）计数/机数艺术品，而且筹算出使用最少观测值来达到最精准的算卜结果，才来使用较高端的计数/机数艺术品，以节省筹算时间与资源：
+此文献的数据中的默认预测价就是延续上篇使用最基本的季节性指数平滑尤物（Seasonal Exponential Smoothing - Seasonal ETS）计数/机数尤物，而且筹算出使用最少观测值来达到最精准的算卜结果，才来使用较高端的计数/机数尤物，以节省筹算时间与资源：
 
 - [<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://rpubs.com/englianhu/HFT-RV3)（鄀夜总会）
 - [<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://englianhu.github.io/民国一百一十三年（甲辰年）/杏月/binary-Q1Inter-HFT-RV3.html)（猫城个人随笔记事本）
 
-**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**（第III部）**次论文读取该数据，将网页轻巧化、省略掉修饰数据的一栏，**（第III部）**虽然出现小出错，但整体上还是可以筛选出**最优计数艺术品**，总结使用阳历二零一八年上半年汇价数据即可，节省许多科研时间。**（第三部）**则筛选出使用`频率（分计） 等于 一`数据观测量为`r cnum::num2c(187199, lang = 'sc')`最优计数艺术品。故此，二度过滤并筛选`频率（分计） 等于 一`的数据来筹算节省筹算时间。
+**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**（第III部）**次论文读取该数据，将网页轻巧化、省略掉修饰数据的一栏，**（第III部）**虽然出现小出错，但整体上还是可以筛选出**最优计数尤物**，总结使用阳历二零一八年上半年汇价数据即可，节省许多科研时间。**（第三部）**则筛选出使用`频率（分计） 等于 一`数据观测量为`r cnum::num2c(187199, lang = 'sc')`最优计数尤物。故此，二度过滤并筛选`频率（分计） 等于 一`的数据来筹算节省筹算时间。
 
-以天文学公转周期与自转周期的概念，预测时间单位为一分钟而数据量为十个时辰；**总汇结论（从阳历二零一六年至二零一八年七月七日）**和**总汇阳历二零一八年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**以百分之一个时辰时间单位为一个周期（一分钟单位千皕观测量一个循环周期）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优计数艺术品**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
+以天文学公转周期与自转周期的概念，预测时间单位为一分钟而数据量为十个时辰；**总汇结论（从阳历二零一六年至二零一八年七月七日）**和**总汇阳历二零一八年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**以百分之一个时辰时间单位为一个周期（一分钟单位千皕观测量一个循环周期）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优计数尤物**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
 
 基于`千皕分钟`为一个最优循环期数据量，此篇文章将样本数据过滤为`2017-12-31 16:01:00 CST（中国标准时间）`至`2018-07-01 00:00:00 CST（中国标准时间）`，这样所预测出来的汇价会从`2018-01-01 00:00:00 CST（中国标准时间）`至`2018-07-01 00:00:00 CST（中国标准时间）`七个月整的汇价数据，再来比较闭市价误差，二零一八年汇价数据第一周并无闭市价，估计是年假休市，再比较误差时会忽略`NA值`时间的数据。
 
@@ -1156,7 +1163,7 @@ rm(样本二零一八半年)
 (日内指数平滑数据二零一八年上半年总汇 %<>% .[频率==1])
 ```
 
-以上图表显示数据`年月日时分`，由`r 日内指数平滑数据二零一八年上半年总汇 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/仓库/日内指数平滑数据二零一八年上半年总汇.rds'); paste(range(日内指数平滑数据二零一八年上半年总汇$年月日时分), collapse = ' 至 ')`，接下来的科研一律使用同样的半年数据，是为了在回测多元计数艺术品，才能获知并筛选最优计数艺术品。
+以上图表显示数据`年月日时分`，由`r 日内指数平滑数据二零一八年上半年总汇 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/仓库/日内指数平滑数据二零一八年上半年总汇.rds'); paste(range(日内指数平滑数据二零一八年上半年总汇$年月日时分), collapse = ' 至 ')`，接下来的科研一律使用同样的半年数据，是为了在回测多元计数尤物，才能获知并筛选最优计数尤物。
 
 以上首千多个汇价（观测值）都是一样的汇价。
 
@@ -1232,7 +1239,7 @@ source('函数/总汇结论.R')
       cell_spec(
         paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = '**芳名榜**：最优计数艺术品（日内指数平滑数据二零一八年一月结论）', escape = FALSE) %>% 
+  kbl(caption = '**芳名榜**：最优计数尤物（日内指数平滑数据二零一八年一月结论）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -1312,7 +1319,7 @@ source('函数/总汇结论.R')
       cell_spec(
         paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = '**芳名榜**：最优计数艺术品（日内指数平滑数据二零一八年二月结论）', escape = FALSE) %>% 
+  kbl(caption = '**芳名榜**：最优计数尤物（日内指数平滑数据二零一八年二月结论）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -1392,7 +1399,7 @@ source('函数/总汇结论.R')
       cell_spec(
         paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = '**芳名榜**：最优计数艺术品（日内指数平滑数据二零一八年三月结论）', escape = FALSE) %>% 
+  kbl(caption = '**芳名榜**：最优计数尤物（日内指数平滑数据二零一八年三月结论）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -1472,7 +1479,7 @@ source('函数/总汇结论.R')
       cell_spec(
         paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = '**芳名榜**：最优计数艺术品（日内指数平滑数据二零一八年四月结论）', escape = FALSE) %>% 
+  kbl(caption = '**芳名榜**：最优计数尤物（日内指数平滑数据二零一八年四月结论）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -1552,7 +1559,7 @@ source('函数/总汇结论.R')
       cell_spec(
         paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = '**芳名榜**：最优计数艺术品（日内指数平滑数据二零一八年五月结论）', escape = FALSE) %>% 
+  kbl(caption = '**芳名榜**：最优计数尤物（日内指数平滑数据二零一八年五月结论）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -1632,7 +1639,7 @@ source('函数/总汇结论.R')
       cell_spec(
         paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = '**芳名榜**：最优计数艺术品（日内指数平滑数据二零一八年六月结论）', escape = FALSE) %>% 
+  kbl(caption = '**芳名榜**：最优计数尤物（日内指数平滑数据二零一八年六月结论）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -1713,7 +1720,7 @@ source('函数/总汇结论.R')
       cell_spec(
         paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = '**芳名榜**：最优计数艺术品（日内指数平滑数据二零一八年第一周结论）', escape = FALSE) %>% 
+  kbl(caption = '**芳名榜**：最优计数尤物（日内指数平滑数据二零一八年第一周结论）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -1793,7 +1800,7 @@ source('函数/总汇结论.R')
       cell_spec(
         paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = '**芳名榜**：最优计数艺术品（日内指数平滑数据二零一八年第二周结论）', escape = FALSE) %>% 
+  kbl(caption = '**芳名榜**：最优计数尤物（日内指数平滑数据二零一八年第二周结论）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -1873,7 +1880,7 @@ source('函数/总汇结论.R')
       cell_spec(
         paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = '**芳名榜**：最优计数艺术品（日内指数平滑数据二零一八年第三周结论）', escape = FALSE) %>% 
+  kbl(caption = '**芳名榜**：最优计数尤物（日内指数平滑数据二零一八年第三周结论）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -1953,7 +1960,7 @@ source('函数/总汇结论.R')
       cell_spec(
         paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = '**芳名榜**：最优计数艺术品（日内指数平滑数据二零一八年第四周结论）', escape = FALSE) %>% 
+  kbl(caption = '**芳名榜**：最优计数尤物（日内指数平滑数据二零一八年第四周结论）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -2044,7 +2051,7 @@ source('函数/总汇结论.R')
       cell_spec(
         paste0(round(`均方误差（MSE）`, 30), ' (rank: ', sprintf('%1.f', rank(`均方误差（MSE）`)), ')'), 
         color = 'grey', italic = TRUE))) %>% 
-  kbl(caption = '**芳名榜**：最优计数艺术品（日内指数平滑数据二零一八年第四周结论）', escape = FALSE) %>% 
+  kbl(caption = '**芳名榜**：最优计数尤物（日内指数平滑数据二零一八年第四周结论）', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
   column_spec(1, background = 'CornflowerBlue') %>% 
@@ -2067,7 +2074,7 @@ source('函数/总汇结论.R')
 
 估计是由于骇客人为篡改数据，导致**总汇二零一六年结论**和**总汇二零一七年结论**显示误差完全一样，*四个小数位*的汇价的预测误差，有可能计算出*十五个小数位*（倘若以秒计，飞秒（fs））误差值一模一样吗？上几周骇客频频入侵电子仪器`频率=12`的数据，骇客人为篡改为多一个观测值汇价。
 
-然而**总汇结论（从二零一六年至二零一八年七月七日）**和**总汇二零一八年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**百分之一个时辰一周期（一分钟循环千皕次）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优计数艺术品**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
+然而**总汇结论（从二零一六年至二零一八年七月七日）**和**总汇二零一八年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**百分之一个时辰一周期（一分钟循环千皕次）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优计数尤物**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
 
 ## 季节性数据建模`ts()`、`xts()`、`zoo()`、`msts()`
 
@@ -2346,7 +2353,7 @@ source('函数/整顿数据.R')
 
 ### 季节性数据建模结论
 
-```{r 初步艺术品比较}
+```{r 初步尤物比较}
 # 蜀道
 if (!exists('.蜀道')) {
   .蜀道 <- getwd() |> 
@@ -2371,17 +2378,17 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1 <- readRDS(paste0(.蜀道仓库, '季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1.rds'))
 
 # 组合数据
-# 自回归综合滑均艺术品系列 <- bind_cols(list(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_xts_数据量1200_频率1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_zoo1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1))
+# 自回归综合滑均尤物系列 <- bind_cols(list(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_xts_数据量1200_频率1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_zoo1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1))
 
 # 筛选数据重命名预测价
-# 自回归综合滑均艺术品系列 <- 自回归综合滑均艺术品系列[, c(1:3, 6, 9, 12)]
-# setnames(自回归综合滑均艺术品系列, old = c('年月日时分…1', '市场价…2', '预测价…3', '预测价…6', '预测价…9', '预测价…12'), new = c('年月日时分', '市场价', 'ts', 'xts', 'zoo', 'msts'))
-# 自回归综合滑均艺术品系列[, c('ts精准率', 'xts精准率', 'zoo精准率', 'msts精准率') := .(Metrics::accuracy(市场价, ts), Metrics::accuracy(市场价, xts), Metrics::accuracy(市场价, zoo), Metrics::accuracy(市场价, msts))]
+# 自回归综合滑均尤物系列 <- 自回归综合滑均尤物系列[, c(1:3, 6, 9, 12)]
+# setnames(自回归综合滑均尤物系列, old = c('年月日时分…1', '市场价…2', '预测价…3', '预测价…6', '预测价…9', '预测价…12'), new = c('年月日时分', '市场价', 'ts', 'xts', 'zoo', 'msts'))
+# 自回归综合滑均尤物系列[, c('ts精准率', 'xts精准率', 'zoo精准率', 'msts精准率') := .(Metrics::accuracy(市场价, ts), Metrics::accuracy(市场价, xts), Metrics::accuracy(市场价, zoo), Metrics::accuracy(市场价, msts))]
 
-(自回归综合滑均艺术品系列 <- list(
+(自回归综合滑均尤物系列 <- list(
   unique(
   季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1[, 
-                               ':='(自回归艺术品 = 'ts', 
+                               ':='(自回归尤物 = 'ts', 
     MAE = MLmetrics::MAE(y_true = 市场价, y_pred = 预测价), 
     MAPE = MLmetrics::MAPE(y_true = 市场价, y_pred = 预测价), 
     RMSE = MLmetrics::RMSE(y_true = 市场价, y_pred = 预测价), 
@@ -2390,7 +2397,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
     年月日时分 = NULL, 市场价 = NULL, 预测价 = NULL)]), 
   unique(
     季节性自回归自动化_差分阶数0_季节性差分阶数0_xts_数据量1200_频率1[, 
-                                             ':='(自回归艺术品 = 'xts', 
+                                             ':='(自回归尤物 = 'xts', 
     MAE = MLmetrics::MAE(y_true = 市场价, y_pred = 预测价), 
     MAPE = MLmetrics::MAPE(y_true = 市场价, y_pred = 预测价), 
     RMSE = MLmetrics::RMSE(y_true = 市场价, y_pred = 预测价), 
@@ -2399,7 +2406,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
     年月日时分 = NULL, 市场价 = NULL, 预测价 = NULL)]), 
   unique(
     季节性自回归自动化_差分阶数0_季节性差分阶数0_zoo1[, 
-                                  ':='(自回归艺术品 = 'zoo', 
+                                  ':='(自回归尤物 = 'zoo', 
     MAE = MLmetrics::MAE(y_true = 市场价, y_pred = 预测价), 
     MAPE = MLmetrics::MAPE(y_true = 市场价, y_pred = 预测价), 
     RMSE = MLmetrics::RMSE(y_true = 市场价, y_pred = 预测价), 
@@ -2408,7 +2415,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
     年月日时分 = NULL, 市场价 = NULL, 预测价 = NULL)]), 
   unique(
     季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1[, 
-                                              ':='(自回归艺术品 = 'msts', 
+                                              ':='(自回归尤物 = 'msts', 
     MAE = MLmetrics::MAE(y_true = 市场价, y_pred = 预测价), 
     MAPE = MLmetrics::MAPE(y_true = 市场价, y_pred = 预测价), 
     RMSE = MLmetrics::RMSE(y_true = 市场价, y_pred = 预测价), 
@@ -2417,16 +2424,16 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
     年月日时分 = NULL, 市场价 = NULL, 预测价 = NULL)])) |> 
   bind_rows() |> 
   data.frame()) |> 
-  dplyr::mutate(自回归艺术品 = factor(自回归艺术品), 
+  dplyr::mutate(自回归尤物 = factor(自回归尤物), 
                 '芳名榜（MAE）' = base::rank(MAE, ties.method = 'min'))
 
-## saveRDS(自回归综合滑均艺术品系列, file = paste0(.蜀道仓库, '自回归综合滑均艺术品系列_ts_xts_zoo_msts.rds'))
+## saveRDS(自回归综合滑均尤物系列, file = paste0(.蜀道仓库, '自回归综合滑均尤物系列_ts_xts_zoo_msts.rds'))
 rm(季节性自回归自动化_差分阶数0_季节性差分阶数0_ts1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_xts_数据量1200_频率1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_zoo1, 季节性自回归自动化_差分阶数0_季节性差分阶数0_msts_数据量1200_频率1)
 
-rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据二零一八年一月结论, 日内指数平滑数据二零一八年二月总汇, 日内指数平滑数据二零一八年二月结论, 日内指数平滑数据二零一八年三月总汇, 日内指数平滑数据二零一八年三月结论, 日内指数平滑数据二零一八年四月总汇, 日内指数平滑数据二零一八年四月结论, 日内指数平滑数据二零一八年五月总汇, 日内指数平滑数据二零一八年五月结论, 日内指数平滑数据二零一八年六月总汇, 日内指数平滑数据二零一八年六月结论, 日内指数平滑数据二零一八年第一周总汇, 日内指数平滑数据二零一八年第一周结论, 日内指数平滑数据二零一八年第二周总汇, 日内指数平滑数据二零一八年第二周结论, 日内指数平滑数据二零一八年第三周总汇, 日内指数平滑数据二零一八年第三周结论, 日内指数平滑数据二零一八年第四周总汇, 日内指数平滑数据二零一八年第四周结论, 日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据二零一八年一月平滑周计结论, 自回归综合滑均艺术品系列)
+rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据二零一八年一月结论, 日内指数平滑数据二零一八年二月总汇, 日内指数平滑数据二零一八年二月结论, 日内指数平滑数据二零一八年三月总汇, 日内指数平滑数据二零一八年三月结论, 日内指数平滑数据二零一八年四月总汇, 日内指数平滑数据二零一八年四月结论, 日内指数平滑数据二零一八年五月总汇, 日内指数平滑数据二零一八年五月结论, 日内指数平滑数据二零一八年六月总汇, 日内指数平滑数据二零一八年六月结论, 日内指数平滑数据二零一八年第一周总汇, 日内指数平滑数据二零一八年第一周结论, 日内指数平滑数据二零一八年第二周总汇, 日内指数平滑数据二零一八年第二周结论, 日内指数平滑数据二零一八年第三周总汇, 日内指数平滑数据二零一八年第三周结论, 日内指数平滑数据二零一八年第四周总汇, 日内指数平滑数据二零一八年第四周结论, 日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据二零一八年一月平滑周计结论, 自回归综合滑均尤物系列)
 ```
 
-一般上可以顺序根据`MASE`，然后`MAE`，接着`MSE`来评估筹算出来的算卜（预测值）的精准度。以上自回归艺术品分别比较了`ts`、`xts`、`zoo`、`msts`季节性数据建模后，得到一样的结果，故此就不区分使用那种计数艺术品来建立季节性数据。
+一般上可以顺序根据`MASE`，然后`MAE`，接着`MSE`来评估筹算出来的算卜（预测值）的精准度。以上自回归尤物分别比较了`ts`、`xts`、`zoo`、`msts`季节性数据建模后，得到一样的结果，故此就不区分使用那种计数尤物来建立季节性数据。
 
 ## 精准度
 
@@ -2446,7 +2453,7 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 *引用：[第八章第七节 在R鄀中建立ARIMA模型](https://otexts.com/fppcn/arima-r.html)*
 
-[赤池信息量准则](#赤池信息量准则)介绍`AIC`、`AICc`和`BIC`来评估计数/机数艺术品的精准度，这儿使用`forecast`、`fable`、`fabletools`程序包，该程序包中的`accuracy()`[^8]函数和`report()`函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的计数艺术品预测值。至于`stats`、`TSA`并无兼容`forecast`、`fable`、`fabletools`程序包，故此以`MAE`, `MAPE`, `RMSE`, `SMAPE`, `MSE`来评估。
+[赤池信息量准则](#赤池信息量准则)介绍`AIC`、`AICc`和`BIC`来评估计数/机数尤物的精准度，这儿使用`forecast`、`fable`、`fabletools`程序包，该程序包中的`accuracy()`[^8]函数和`report()`函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的计数尤物预测值。至于`stats`、`TSA`并无兼容`forecast`、`fable`、`fabletools`程序包，故此以`MAE`, `MAPE`, `RMSE`, `SMAPE`, `MSE`来评估。
 
 - [「经管之家」计数软件与数据分析：如何理解R中给出的ARIMA模型的拟合结果？](https://bbs.pinggu.org/forum.php?mod=viewthread&tid=3236918)
 - [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3cn/accuracy-cn.html)
@@ -2654,7 +2661,10 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 - [「沧浪」秦国怎样提升军队战斗力](https://www.bilibili.com/video/BV1Kx42117rj)将阅读脑电波和坏竹出好笋、出淤泥而不染的原理，让敌洲内讧。
     - [「知乎」MIDAS：混频数据回归](https://zhuanlan.zhihu.com/p/343307253)
     - [MIDAS：混频数据回归](https://www.lianxh.cn/news/8ab193e6f04cc.html)
-- [拉曼学院史（鬼谷传奇）](#拉曼学院史（鬼谷传奇）)刺绣除了可以复兴咱们中华历史与娱乐圈，详情请查阅[复兴赢家黄氏江夏堂](#复兴赢家黄氏江夏堂)。借鉴🧶刺绣概念，每次刺绣的针孔在不一样的位置、使用不一样颜色、不一样的布料、不一样粗的线条，就会刺绣出不一样的图案、质感、外观艳丽与耐热、防止紫外线。借鉴达文奇密码学概念，一些图案左看友看上看下看会是不一样的图案，局部刺绣与观看全局刺绣图案密码学，在没有拉慢操作系统的高频量化计数/机数分析速度的情况之下，就像目前的视窗操作系统会出现硬件随机IP地址，通过建立一个虚拟内存来随机（比方说通过MIDAS计数/机数艺术品）更换位置、切片转化语言图案后保密再更换位置等、字词、语言、对联、各行各业专业术语、语音、视频、图案等，成为密码学。
+- 借鉴春秋战国诸子百家史与文艺复兴史，🧶刺绣出来的作品是尤物也就是尤物，除了可以复兴咱们中华历史与娱乐圈。借鉴🧶刺绣概念，每次刺绣的针孔在不一样的位置、使用不一样颜色、不一样的布料、不一样粗的线条，就会刺绣出不一样的图案、质感、外观艳丽与耐热、防止紫外线。借鉴达文奇密码学概念，一些图案左看友看上看下看会是不一样的图案，局部刺绣与观看全局刺绣图案密码学，在没有拉慢操作系统的高频量化计数/机数分析速度的情况之下，就像目前的视窗操作系统会出现硬件随机IP地址，通过建立一个虚拟内存来随机（比方说通过MIDAS计数/机数尤物）更换位置、切片转化语言图案后保密再更换位置等、字词、语言、对联、各行各业专业术语、语音、视频、图案等，成为密码学。请查阅以下相关信息：
+    - [春秋战国](#春秋战国)
+    - [复兴赢家黄氏江夏堂](#复兴赢家黄氏江夏堂)
+    - [拉曼学院史（鬼谷传奇）](#拉曼学院史（鬼谷传奇）)
 
 #### 算卜与因缘
 
@@ -2693,7 +2703,7 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 #### 生肖简介
 
-有空再自修并科研与详解咱们道家十二生肖与算卜，包括兵马俑之幽灵军团、王翦以干支轮回（天文历法、匈奴骑在马上得天下、隐马尔可夫链艺术品俗称“马氏物理学”）的圆万大军灭楚、四面楚歌的统筹法——军用物理学。
+有空再自修并科研与详解咱们道家十二生肖与算卜，包括兵马俑之幽灵军团、王翦以干支轮回（天文历法、匈奴骑在马上得天下、隐马尔可夫链尤物俗称“马氏物理学”）的圆万大军灭楚、四面楚歌的统筹法——军用物理学。
 
 #### 🐉卧龙与天文历法
 
@@ -2767,7 +2777,7 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 *引用：[经典回顾之QQ爱](https://www.bilibili.com/video/BV1yT4y1n7C4)*
 
-![*马尔可夫链预测艺术品及一些应用（第卅八页）*](诸子百家考工记/马尔可夫链预测模型及一些应用（第卅八页）.png){width=400}
+![*马尔可夫链预测尤物及一些应用（第卅八页）*](诸子百家考工记/马尔可夫链预测模型及一些应用（第卅八页）.png){width=400}
 
 借鉴礼逆袭的Root最高权限，诠释为咱们中华道家十二生肖（秦人牧马、燕从京来、良禽择木而栖）「在天愿做比翼鸟，在地愿做连理枝。」。它日再通过运筹学、物理学来诠释咱们春秋战国时期诸子百家中道家李耳的易经、张灯结彩、天文历法、廿四节气[^4]、时辰、十二生肖、姻缘与子宫怀孕（借鉴秦灭六国史，建立皇宫称帝「秦始皇」、算卜数学学术概率论）、咱们[世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊。白月光与朱砂痣学生爱国版自制视频](https://www.bilibili.com/video/BV12J4m1W7f9)[^5]等。
 
@@ -3269,7 +3279,7 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 *出处：[一刹那、一瞬间、一弹指、一须臾、一盏茶、一炷香是指多长时间？](https://baijiahao.baidu.com/s?id=1607941410490241683)*
 
-欲以古代计时法来精准筹算咱们「一炷香」和「一盏茶」的话，就得使用隐马尔可夫链艺术品或其它计数艺术品筹算气温、空气湿度、空气流动风速、空气中的氢气成分等各种因素可以设置精准到飞秒（fs，十五个小数位）或更精准时间计量单位。
+欲以古代计时法来精准筹算咱们「一炷香」和「一盏茶」的话，就得使用隐马尔可夫链尤物或其它计数尤物筹算气温、空气湿度、空气流动风速、空气中的氢气成分等各种因素可以设置精准到飞秒（fs，十五个小数位）或更精准时间计量单位。
 
 - [一刻钟等于多少分钟（古代一刻钟是多长时间）](https://k.sina.cn/article_2188503504_8271e9d002700woon.html)
 - [古代一刻钟是多久？一点钟为什么不是一小时？弄不清会很尴尬的](https://zhuanlan.zhihu.com/p/525032381)
@@ -3422,13 +3432,13 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 #### 道家数据
 
-阅读[自回归简介](#自回归简介)了解艺术品概念后，这儿就添加咱们世袭制道家的农历数据，包括：
+阅读[自回归简介](#自回归简介)了解尤物概念后，这儿就添加咱们世袭制道家的农历数据，包括：
 
 - 干支
 - 廿四节气
 - 时辰
 
-至于更多数据，等它日使用更高端的计数/机数艺术品再添加回测并加以占卜来预测，咱们道家俗称「算卜」，「命运」也就是性命与运势。
+至于更多数据，等它日使用更高端的计数/机数尤物再添加回测并加以占卜来预测，咱们道家俗称「算卜」，「命运」也就是性命与运势。
 
 - 农历
     - [「便民查询网」万年日历查询](https://wannianrili.bmcx.com)
@@ -3570,15 +3580,15 @@ if (!exists('总汇')) {
 总汇
 ```
 
-# 自回归综合滑均艺术品系列（ARIMA Series）
+# 自回归综合滑均尤物系列（ARIMA Series）
 
-## 静态艺术品
+## 静态尤物
 
-### 外因周期性自回归综合滑均艺术品（ARIMAX）
+### 外因周期性自回归综合滑均尤物（ARIMAX）
 
 #### `forecast::Arima()`
 
-##### 普通艺术品
+##### 普通尤物
 
 ![](诸子百家考工记/预测 - 方法与实践（第三版）.png){width=400}
 
@@ -3586,9 +3596,9 @@ if (!exists('总汇')) {
 
 *引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
 
-一般上，存活分析艺术品、循环神经网络艺术品，[迪克逊与罗宾逊（一九九七年∙英）](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/reference/DixonRobinson1997.pdf)^[**马克∙迪逊**一系列<ruby>蹴<rp>(</rp><rt>cù</rt><rp>)</rp>鞠<rp>(</rp><rt>jū</rt><rp>)</rp></ruby>科研文献，请查阅：<br> - [「文派」専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)<br> - [「猫城」黄联富（®γσ ξηg 雷欧）/赔率建模与测试低效率的体育博彩庄家（英）](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)]通过进球率和加权指数来筹算滚球赛事中的球员斗志与士气（也可以运用在军事训练与战场上、或者学者在学习吸收能力上，而一般上隐马尔可夫链计数/机数艺术品使用夏普率评估风险与空间状态触碰点也可以运用在学术教育评估学生、教师、校长、校工、各科系、学校整体素质上）、天灾人祸。借鉴[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)中使用`forecast::arimaorder()`筹算自回归艺术品并将规律`p`值、`d`值、`q`值最优化，来提高计数艺术品的精准度。在此将咱们世袭制道家的习俗文化、算卜、天文历法、气象学、天文学中的**廿四节气**来诠释`D`（季节差分的次数）。欲知更多详情，请查阅以下[廿四节气](廿四节气)章节。
+一般上，存活分析尤物、循环神经网络尤物，[迪克逊与罗宾逊（一九九七年∙英）](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/reference/DixonRobinson1997.pdf)^[**马克∙迪逊**一系列<ruby>蹴<rp>(</rp><rt>cù</rt><rp>)</rp>鞠<rp>(</rp><rt>jū</rt><rp>)</rp></ruby>科研文献，请查阅：<br> - [「文派」専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)<br> - [「猫城」黄联富（®γσ ξηg 雷欧）/赔率建模与测试低效率的体育博彩庄家（英）](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)]通过进球率和加权指数来筹算滚球赛事中的球员斗志与士气（也可以运用在军事训练与战场上、或者学者在学习吸收能力上，而一般上隐马尔可夫链计数/机数尤物使用夏普率评估风险与空间状态触碰点也可以运用在学术教育评估学生、教师、校长、校工、各科系、学校整体素质上）、天灾人祸。借鉴[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)中使用`forecast::arimaorder()`筹算自回归尤物并将规律`p`值、`d`值、`q`值最优化，来提高计数尤物的精准度。在此将咱们世袭制道家的习俗文化、算卜、天文历法、气象学、天文学中的**廿四节气**来诠释`D`（季节差分的次数）。欲知更多详情，请查阅以下[廿四节气](廿四节气)章节。
 
-欲知更多有关外因周期性自回归综合滑均艺术品（ARIMAX），请查阅以下文章：
+欲知更多有关外因周期性自回归综合滑均尤物（ARIMAX），请查阅以下文章：
 
 - [The ARIMAX model muddle](https://robjhyndman.com/hyndsight/arimax)
 - [ARIMAX Model and Forecast](https://real-statistics.com/time-series-analysis/time-series-miscellaneous/arimax-model-and-forecast)
@@ -3608,10 +3618,10 @@ if (!exists('总汇')) {
 - [forecast with object, xreg, and arima xreg model fails #682](https://github.com/robjhyndman/forecast/issues/682)
 - [9.2 ARIMA 误差回归在 R 中的实现](https://otexts.com/fppcn/regarima.html)
 
-[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)经过测试`method = c('CSS-ML', 'ML', 'CSS')`仨，筹算出的赤池信息量准则比`ML`来得小或较大负数（赤池信息量准则最优值）而`CSS`出现错误信息，故此将`CSS-ML`筹算法的最优计数/机数艺术品设置为默认值。
+[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)经过测试`method = c('CSS-ML', 'ML', 'CSS')`仨，筹算出的赤池信息量准则比`ML`来得小或较大负数（赤池信息量准则最优值）而`CSS`出现错误信息，故此将`CSS-ML`筹算法的最优计数/机数尤物设置为默认值。
 
 ```{r 普通外因甲, warning=FALSE, error=TRUE}
-## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数艺术品只允许使用数字筹算，在此就使用时分计筹算。
+## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数尤物只允许使用数字筹算，在此就使用时分计筹算。
 
 ## forecast::Arima()
 季节差分的次数 = 0:2
@@ -3627,16 +3637,16 @@ if (!exists('总汇')) {
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 (奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数艺术品') %>% 
+    bind_rows(.id = '计数尤物') %>% 
     as_tibble() %>% 
     data.frame() %>% 
-    mutate(计数艺术品 = factor(
+    mutate(计数尤物 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-经过筹算后筛选最优计数/机数艺术品如以上图表**芳名榜（MASE）**所示，计数/机数艺术品`r 奏章[奏章$'芳名榜（MASE）'==1, '计数模型']`^[为了防止黑骇客入侵，**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数艺术品。]的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。基于洋本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); cnum::num2c(nrow(样本二零一八半年), lang = 'sc')`个观测值中的**廿四节气**参数有许多缺失值。
+经过筹算后筛选最优计数/机数尤物如以上图表**芳名榜（MASE）**所示，计数/机数尤物`r 奏章[奏章$'芳名榜（MASE）'==1, '计数模型']`^[为了防止黑骇客入侵，**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数尤物。]的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。基于洋本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); cnum::num2c(nrow(样本二零一八半年), lang = 'sc')`个观测值中的**廿四节气**参数有许多缺失值。
 
 如果需要筹算更精准的算卜预测值，需要读取**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**论文中三年七个月的数据，一共`r 样本 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本乙.rds'); cnum::num2c(nrow(样本), lang = 'sc')`观测值。为了节省筹算时间，就只以半年数据为标准先筛选计数/机数模型。改日应用更高端精准计数/机数模型再筹算参数**廿四节气**对于风调雨顺、务农、五谷丰收、气象学（包括采撷人为的军事埋伏孔明借东风、草船借箭等天灾人祸数据）、天文学、天文历法与算卜。借鉴[専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)中的**迪逊与罗宾逊（一九九七年）**使用存活模型，例如：
 
@@ -4078,7 +4088,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-综合以上筹算结果，计数/机数艺术品`r 奏章[奏章$'芳名榜（MASE）'==1, '计数模型']`^[为了防止黑骇客入侵，**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数艺术品。]的**外因周期自回归戊**的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。
+综合以上筹算结果，计数/机数尤物`r 奏章[奏章$'芳名榜（MASE）'==1, '计数模型']`^[为了防止黑骇客入侵，**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数尤物。]的**外因周期自回归戊**的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。
 
 > You need to define the `xreg` when you estimate the model itself, and these need to be forecasted ahead as well. So this will look something like:
 > 
@@ -4837,7 +4847,7 @@ options(warn = 0)
 
 *引用：[🌟秦人牧马之《商君书》](#🌟秦人牧马之《商君书》)*
 
-- [外因周期性自回归综合滑均模型（ARIMAX）](外因周期性自回归综合滑均模型（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q, P, D, Q, s`分别为`0, 1, 4, 0, 0, 0, 0`。
+- [外因周期性自回归综合滑均模型（ARIMAX）](外因周期性自回归综合滑均模型（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移尤物最优值的`p, d, q, P, D, Q, s`分别为`0, 1, 4, 0, 0, 0, 0`。
 - [平滑周计](#平滑周计)美国洲际犯罪案！
 - [马王之争（争取承接🇬🇧英国立博🚩红军百年老店操盘与科研项目）](#马王之争（争取承接🇬🇧英国立博🚩红军百年老店操盘与科研项目）)
 
