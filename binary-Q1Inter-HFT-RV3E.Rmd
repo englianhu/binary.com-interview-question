@@ -3681,7 +3681,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-经过筹算后筛选最优计数/机数尤物如以上图表**芳名榜（MASE）**所示，计数/机数尤物**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))`是最优计数/机数尤物。基于样本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); cnum::num2c(nrow(样本二零一八半年), lang = 'sc')`个观测值中的**廿四节气**参数有许多缺失值。
+经过筹算后筛选最优计数/机数尤物如以上图表**芳名榜（MASE）**所示，计数/机数尤物**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))`是最优计数/机数尤物。基于样本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); cnum::num2c(nrow(样本二零一八半年), lang = 'sc')`个观测值中的**廿四节气**参数有许多缺失值。
 
 如果需要筹算更精准的算卜预测值，需要读取**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**论文中三年七个月的数据，一共`r 样本 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本乙.rds'); cnum::num2c(nrow(样本), lang = 'sc')`观测值。为了节省筹算时间，就只以半年数据为标准先筛选计数/机数尤物。改日应用更高端精准计数/机数尤物再筹算参数**廿四节气**对于风调雨顺、务农、五谷丰收、气象学（包括采撷人为的军事埋伏孔明借东风、草船借箭等天灾人祸数据）、天文学、天文历法与算卜。借鉴[専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)中的**迪逊与罗宾逊（一九九七年）**使用存活尤物，例如：
 
@@ -4123,7 +4123,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-综合以上筹算结果，计数/机数尤物**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))`是最优计数/机数尤物。
+综合以上筹算结果，计数/机数尤物**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))`是最优计数/机数尤物。
 
 > You need to define the `xreg` when you estimate the model itself, and these need to be forecasted ahead as well. So this will look something like:
 > 
