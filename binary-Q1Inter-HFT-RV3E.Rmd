@@ -1076,16 +1076,16 @@ conflicted::conflicts_prefer(data.table::set, .quiet = TRUE)
 conflicted::conflicts_prefer(data.table::`:=`, .quiet = TRUE)
 conflicted::conflicts_prefer(Ipaper::`%->%`, .quiet = TRUE)
 conflicted::conflicts_prefer(hms::hms, .quiet = TRUE)
-conflicted::conflicts_prefer(fabletools::accuracy, .quiet = TRUE)
+conflicted::conflicts_prefer(forecast::accuracy, .quiet = TRUE)
 conflicted::conflicts_prefer(base::load, .quiet = TRUE)
 conflicted::conflicts_prefer(base::merge, .quiet = TRUE)
+conflicted::conflicts_prefer(base::rank, .quiet = TRUE)
 conflicted::conflicts_prefer(data.table::between, .quiet = TRUE)
 conflicted::conflicts_prefer(Ipaper::llply, .quiet = TRUE)
 conflicted::conflicts_prefer(tibble::view, .quiet = TRUE)
 conflicted::conflicts_prefer(tidyft::separate, .quiet = TRUE)
 conflicted::conflicts_prefer(lubridate::year, .quiet = TRUE)
 conflicted::conflicts_prefer(gtools::permutations, .quiet = TRUE)
-conflicted::conflicts_prefer(forecast::accuracy, .quiet = TRUE)
 
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 
