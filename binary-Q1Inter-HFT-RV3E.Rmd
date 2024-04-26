@@ -865,7 +865,7 @@ pre code {
 }
 </style>
 
-```{r 读取SASS, class.source='bg-success', class.output='bg-primary'}
+```{r 读取SASS, class.source='bg-success', class.output='bg-primary', error=TRUE}
 ##
 ## 中科红旗（诸子百家，文艺复兴）
 ## Oversea Greater Chinese Association 大秦子民公会（秦孝公 / 姜太公——陈祯禄公爵）
@@ -974,7 +974,7 @@ h5 { color: #92AAC7; }
   }
 ```
 
-```{r 编织选项, class.source='hover01', class.output='hover02'}
+```{r 编织选项, class.source='hover01', class.output='hover02', error=TRUE}
 ## 更换时间区域，保留日期时间。
 Sys.setenv(TZ = 'Asia/Shanghai')
 
@@ -1000,7 +1000,7 @@ knitr::opts_chunk$set(
 
 读取以下所需程序包。
 
-```{r 读取程序包}
+```{r 读取程序包, error=TRUE}
 ## 读取程序包、设置编织与环境选项。
 ## 3210448065@qq.com
 ## leiou123
@@ -1168,7 +1168,7 @@ rm(程序包)
 
 为了方便日后节省时间，这儿再过滤汇价数据量。
 
-```{r 绘制样本数据图表}
+```{r 绘制样本数据图表, error=TRUE}
 ## 检验是否已设置途径。
 source('函数/汇总上奏.R')
 source('函数/总汇结论.R')
@@ -1208,7 +1208,7 @@ rm(样本二零一八半年)
 
 ##### 总汇二零一八年一月结论
 
-```{r 日内指数平滑数据二零一八年一月总汇}
+```{r 日内指数平滑数据二零一八年一月总汇, error=TRUE}
 source('函数/总汇结论.R')
 日内指数平滑数据二零一八年一月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
 
@@ -1226,7 +1226,7 @@ source('函数/总汇结论.R')
 # eval(parse(text = paste0('(日内指数平滑数据二零一八年一月结论 <- readRDS(\'', .蜀道仓库, '日内指数平滑数据二零一八年一月结论.rds\') |> as_tibble())')))
 ```
 
-```{r 日内指数平滑数据二零一八年一月结论, results = 'asis'}
+```{r 日内指数平滑数据二零一八年一月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年一月结论 %>% 
   dplyr::mutate(
@@ -1295,7 +1295,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年二月结论
 
-```{r 日内指数平滑数据二零一八年二月总汇}
+```{r 日内指数平滑数据二零一八年二月总汇, error=TRUE}
 日内指数平滑数据二零一八年二月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 2]
 
 #日内指数平滑数据二零一八年二月结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年二月总汇, 文件名 = '日内指数平滑数据二零一八年二月', 是否储存结论 = '勾')
@@ -1306,7 +1306,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年二月结论, results = 'asis'}
+```{r 日内指数平滑数据二零一八年二月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年二月结论 %>% 
   dplyr::mutate(
@@ -1375,7 +1375,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年三月结论
 
-```{r 日内指数平滑数据二零一八年三月总汇}
+```{r 日内指数平滑数据二零一八年三月总汇, error=TRUE}
 日内指数平滑数据二零一八年三月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 3]
 
 #日内指数平滑数据二零一八年三月结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年三月总汇, 文件名 = '日内指数平滑数据二零一八年三月', 是否储存结论 = '勾')
@@ -1386,7 +1386,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年三月结论, results = 'asis'}
+```{r 日内指数平滑数据二零一八年三月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年三月结论 %>% 
   dplyr::mutate(
@@ -1455,7 +1455,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年四月结论
 
-```{r 日内指数平滑数据二零一八年四月总汇}
+```{r 日内指数平滑数据二零一八年四月总汇, error=TRUE}
 日内指数平滑数据二零一八年四月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 4]
 
 #日内指数平滑数据二零一八年四月结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年四月总汇, 文件名 = '日内指数平滑数据二零一八年四月', 是否储存结论 = '勾')
@@ -1466,7 +1466,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年四月结论, results = 'asis'}
+```{r 日内指数平滑数据二零一八年四月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年四月结论 %>% 
   dplyr::mutate(
@@ -1535,7 +1535,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年五月结论
 
-```{r 日内指数平滑数据二零一八年五月总汇}
+```{r 日内指数平滑数据二零一八年五月总汇, error=TRUE}
 日内指数平滑数据二零一八年五月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 5]
 
 #日内指数平滑数据二零一八年五月结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年五月总汇, 文件名 = '日内指数平滑数据二零一八年五月', 是否储存结论 = '勾')
@@ -1546,7 +1546,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年五月结论, results = 'asis'}
+```{r 日内指数平滑数据二零一八年五月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年五月结论 %>% 
   dplyr::mutate(
@@ -1615,7 +1615,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年六月结论
 
-```{r 日内指数平滑数据二零一八年六月总汇}
+```{r 日内指数平滑数据二零一八年六月总汇, error=TRUE}
 日内指数平滑数据二零一八年六月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 6]
 
 #日内指数平滑数据二零一八年六月结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年六月总汇, 文件名 = '日内指数平滑数据二零一八年六月', 是否储存结论 = '勾')
@@ -1626,7 +1626,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年六月结论, results = 'asis'}
+```{r 日内指数平滑数据二零一八年六月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年六月结论 %>% 
   dplyr::mutate(
@@ -1697,7 +1697,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年第一周结论
 
-```{r 日内指数平滑数据二零一八年第一周总汇}
+```{r 日内指数平滑数据二零一八年第一周总汇, error=TRUE}
 日内指数平滑数据二零一八年第一周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
 
 #日内指数平滑数据二零一八年第一周结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年第一周总汇, 文件名 = '日内指数平滑数据二零一八年第一周', 是否储存结论 = '勾')
@@ -1707,7 +1707,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年第一周结论, results = 'asis'}
+```{r 日内指数平滑数据二零一八年第一周结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年第一周结论 %>% 
   dplyr::mutate(
@@ -1776,7 +1776,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年第二周结论
 
-```{r 日内指数平滑数据二零一八年第二周总汇}
+```{r 日内指数平滑数据二零一八年第二周总汇, error=TRUE}
 日内指数平滑数据二零一八年第二周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
 
 #日内指数平滑数据二零一八年第二周结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年第二周总汇, 文件名 = '日内指数平滑数据二零一八年第二周', 是否储存结论 = '勾')
@@ -1787,7 +1787,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年第二周结论, results = 'asis'}
+```{r 日内指数平滑数据二零一八年第二周结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年第二周结论 %>% 
   dplyr::mutate(
@@ -1856,7 +1856,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年第三周结论
 
-```{r 日内指数平滑数据二零一八年第三周总汇}
+```{r 日内指数平滑数据二零一八年第三周总汇, error=TRUE}
 日内指数平滑数据二零一八年第三周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
 
 #日内指数平滑数据二零一八年第三周结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年第三周总汇, 文件名 = '日内指数平滑数据二零一八年第三周', 是否储存结论 = '勾')
@@ -1867,7 +1867,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年第三周结论, results = 'asis'}
+```{r 日内指数平滑数据二零一八年第三周结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年第三周结论 %>% 
   dplyr::mutate(
@@ -1936,7 +1936,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年第四周结论
 
-```{r 日内指数平滑数据二零一八年第四周总汇}
+```{r 日内指数平滑数据二零一八年第四周总汇, error=TRUE}
 日内指数平滑数据二零一八年第四周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
 
 #日内指数平滑数据二零一八年第四周结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年第四周总汇, 文件名 = '日内指数平滑数据二零一八年第四周', 是否储存结论 = '勾')
@@ -1947,7 +1947,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年第四周结论, results = 'asis'}
+```{r 日内指数平滑数据二零一八年第四周结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年第四周结论 %>% 
   dplyr::mutate(
@@ -2038,7 +2038,7 @@ source('函数/总汇结论.R')
 - [Subset rows corresponding to max value by group using data.table](https://stackoverflow.com/a/16574176/3806250)
 - [`data.table`: Slice both dimensions, list of string columns](https://stackoverflow.com/questions/24937134/data-table-slice-both-dimensions-list-of-string-columns)
 
-```{r 日内指数平滑数据二零一八年一月平滑周计结论, error=TRUE, results = 'asis'}
+```{r 日内指数平滑数据二零一八年一月平滑周计结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年一月平滑周计结论 %>% 
   dplyr::mutate(
@@ -2244,7 +2244,7 @@ source('函数/总汇结论.R')
 
 **百分之一时辰一周期（一分钟循环千皕次）**
 
-```{r Arima-ts, eval=FALSE}
+```{r Arima-ts, error=TRUE, eval=FALSE}
 # —— eval = FALSE ——
 source('函数/季节性自回归自动化.R')
 source('函数/整顿数据.R')
@@ -2275,7 +2275,7 @@ source('函数/整顿数据.R')
 
 ### `xts`
 
-```{r Arima-xts, eval=FALSE}
+```{r Arima-xts, error=TRUE, eval=FALSE}
 # —— eval = FALSE ——
 source('函数/季节性自回归自动化.R')
 source('函数/整顿数据.R')
@@ -2321,7 +2321,7 @@ source('函数/整顿数据.R')
 
 ### `zoo`
 
-```{r Arima-zoo, eval=FALSE}
+```{r Arima-zoo, error=TRUE, eval=FALSE}
 # —— eval = FALSE ——
 source('函数/季节性自回归自动化.R')
 source('函数/整顿数据.R')
@@ -2352,7 +2352,7 @@ source('函数/整顿数据.R')
 
 ### `msts`
 
-```{r Arima-msts, eval=FALSE}
+```{r Arima-msts, error=TRUE, eval=FALSE}
 # —— eval = FALSE ——
 source('函数/季节性自回归自动化.R')
 source('函数/整顿数据.R')
@@ -2388,7 +2388,7 @@ source('函数/整顿数据.R')
 
 ### 季节性数据建模结论
 
-```{r 初步尤物比较}
+```{r 初步尤物比较, error=TRUE}
 # 蜀道
 if (!exists('.蜀道')) {
   .蜀道 <- getwd() |> 
@@ -3072,19 +3072,19 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 **十天干**
 
-```{r 天文历法-天干}
+```{r 天文历法-天干, error=TRUE}
 (天干 <- c('甲', '乙', '丙', '丁', '戊', '己', '庾', '辛', '壬', '癸'))
 ```
 
 **十二地支**
 
-```{r 天文历法-地支}
+```{r 天文历法-地支, error=TRUE}
 (地支 <- c('子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'))
 ```
 
 **六十甲子与天干地支**
 
-```{r 天文历法-干支}
+```{r 天文历法-干支, error=TRUE}
 干支 <- paste0(rep(天干, 6), rep(地支, 5))
 干支 |> 
   matrix(nrow = 12, dimnames = list(
@@ -3681,7 +3681,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-经过筹算后筛选最优计数/机数尤物如以上图表**芳名榜（MASE）**所示，计数/机数尤物**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))`是最优计数/机数尤物。基于样本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); cnum::num2c(nrow(样本二零一八半年), lang = 'sc')`个观测值中的**廿四节气**参数有许多缺失值。
+经过筹算后筛选最优计数/机数尤物如以上图表**芳名榜（MASE）**所示，计数/机数尤物**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r unlist(as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)])))))`是最优计数/机数尤物。基于样本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); cnum::num2c(nrow(样本二零一八半年), lang = 'sc')`个观测值中的**廿四节气**参数有许多缺失值。
 
 如果需要筹算更精准的算卜预测值，需要读取**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**论文中三年七个月的数据，一共`r 样本 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本乙.rds'); cnum::num2c(nrow(样本), lang = 'sc')`观测值。为了节省筹算时间，就只以半年数据为标准先筛选计数/机数尤物。改日应用更高端精准计数/机数尤物再筹算参数**廿四节气**对于风调雨顺、务农、五谷丰收、气象学（包括采撷人为的军事埋伏孔明借东风、草船借箭等天灾人祸数据）、天文学、天文历法与算卜。借鉴[専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)中的**迪逊与罗宾逊（一九九七年）**使用存活尤物，例如：
 
@@ -4123,7 +4123,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-综合以上筹算结果，计数/机数尤物**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))`是最优计数/机数尤物。
+综合以上筹算结果，计数/机数尤物**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r unlist(as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)])))))`是最优计数/机数尤物。
 
 > You need to define the `xreg` when you estimate the model itself, and these need to be forecasted ahead as well. So this will look something like:
 > 
@@ -4679,7 +4679,7 @@ sarima::sarima()
 - **吕不韦**：改变天下学术尤其是高频量化对冲运筹学（包括复古中国算筹）、高频量化对冲、金融与务农中药中医杏林、娱乐圈（包括复古中国古代习俗文化宗教语言）、广告与产品代言；习俗文化宗教语言等世纪大革命，一劳永逸。
 - **李斯**：改变天下学术尤其是文学（文言文、古文、中国历史习俗文化宗教语言等），研发咱们中华秦国操作系统、电子仪器、科技软件、科技产品来取代天下所有西方电子产品与习俗文化宗教语言等；以电子仪器与操作系统记载并进化所有习俗文化宗教语言法律等世纪大革命并且直到一统天下，一劳永逸。
 
-```{r 选项设置, echo=FALSE}
+```{r 选项设置, echo=FALSE, error=TRUE}
 ## Set options back to original options
 options(warn = 0)
 ```
@@ -4918,7 +4918,7 @@ options(warn = 0)
 
 [^9]: 欲知更多阳历/民国/农历日历详情，请登录中华民国农业部官网查询日历查询[阳历/农历/民国查询](https://ppg.naif.org.tw/naif/MarketInformation/Other/Calendar_V3.aspx)。
 
-```{r 信息}
+```{r 信息, error=TRUE}
 suppressMessages(require('formattable', quietly = TRUE))
 suppressMessages(require('knitr', quietly = TRUE))
 suppressMessages(require('kableExtra', quietly = TRUE))
