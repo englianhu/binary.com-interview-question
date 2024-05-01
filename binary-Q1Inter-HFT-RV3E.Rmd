@@ -1,6 +1,6 @@
 ---
 title: "![](诸子百家考工记/deriv.png){height=240}"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数尤物 <span style='color:#4E79A7'>**第三部乙∙上（世袭制道教徒赢家黄氏江夏堂十二生肖秦人牧马：🌟儒家秦孝公清君侧之商鞅变法**）</span>](https://github.com/englianhu/binary.com-interview-question)"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数尤物 <span style='color:#4E79A7'>**第三部乙∙上（世袭制道教徒赢家黄氏江夏堂十二生肖秦人牧马：🌟儒家秦孝公<s>清君侧</s>之商鞅变法**）</span>](https://github.com/englianhu/binary.com-interview-question)"
 author: "道家笔者：[<ruby>赢<rp>(</rp><rt>yíng</rt><rp>)</rp>家<rp>(</rp><rt>jiā</rt><rp>)</rp>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>氏<rp>(</rp><rt>shì</rt><rp>)</rp>江<rp>(</rp><rt>jiānɡ</rt><rp>)</rp>夏<rp>(</rp><rt>xià</rt><rp>)</rp>堂<rp>(</rp><rt>táng</rt><rp>)</rp></ruby> ®γσ, ξηg Lιαη Ημ，<ruby>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>联<rp>(</rp><rt>lián</rt><rp>)</rp>富<rp>(</rp><rt>fù</rt><rp>)</rp></ruby>（<ruby>雷<rp>(</rp><rt>léi</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>∪ <ruby>瑞<rp>(</rp><rt>ruì</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>）](https://englianhu.wordpress.com.com) ![](诸子百家考工记/大秦赋 - 北京大学.png){height=14}![](诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png){height=14}®"
 date: "🔆民国日期：民国一百一十三年杏月廿六<br>☯道家节日：[农历二零二四年（属龙 甲辰年 戊辰月
 戊戌日）杏月廿六（清明节）](https://mobile.51wnl-cq.com/huangli_tab_h5/?posId=BDSS&STIME=2024-04-04)<br>诸子百家：**纵横家鬼谷传奇**，清明节是大学刺绣系🧶课外家庭日语班杏林林氏西河堂，艳迎的生日"
@@ -3483,7 +3483,7 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
     - [「便民查询网」二零二四年节气](https://jieqi.bmcx.com)
 - 各国汇报经济数据发言人与负责人和各国每家证券交易所的老板、上司、下属、交易员、世袭制姓氏、宝号的生辰八字与背景（人际网络、交易记录、学术背景等）。
 
-类似WiningEleven或筹算出个人与整体能力值。
+类似Winning Eleven或筹算出个人与整体能力值。
 
 #### 经济数据
 
@@ -3658,6 +3658,8 @@ if (!exists('总汇')) {
 [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)经过测试`method = c('CSS-ML', 'ML', 'CSS')`仨，筹算出的赤池信息量准则比`ML`来得小或较大负数（赤池信息量准则最优值）而`CSS`出现错误信息，故此将`CSS-ML`筹算法的最优计数/机数尤物设置为默认值。
 
 ```{r 普通外因甲, warning=FALSE, error=TRUE}
+lib('magrittr')
+
 ## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数尤物只允许使用数字筹算，在此就使用时分计筹算。
 
 ## forecast::Arima()
@@ -3671,9 +3673,9 @@ if (!exists('总汇')) {
     unique()
 列表 <- 列表[order(sapply(列表, length))]
 
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     as_tibble() %>% 
     data.frame() %>% 
@@ -3683,7 +3685,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-经过筹算后筛选最优计数/机数尤物如以上图表**芳名榜（MASE）**所示，计数/机数尤物**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r unlist(as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)])))))`是最优计数/机数尤物。基于样本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); cnum::num2c(nrow(样本二零一八半年), lang = 'sc')`个观测值中的**廿四节气**参数有许多缺失值。
+经过筹算后筛选最优计数/机数尤物如以上图表**芳名榜（MASE）**所示，计数/机数尤物**外因周期自回归戊**的`"as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r unlist(as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)])))))`是最优计数/机数尤物。基于样本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); cnum::num2c(nrow(样本二零一八半年), lang = 'sc')`个观测值中的**廿四节气**参数有许多缺失值。
 
 如果需要筹算更精准的算卜预测值，需要读取**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**论文中三年七个月的数据，一共`r 样本 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本乙.rds'); cnum::num2c(nrow(样本), lang = 'sc')`观测值。为了节省筹算时间，就只以半年数据为标准先筛选计数/机数尤物。改日应用更高端精准计数/机数尤物再筹算参数**廿四节气**对于风调雨顺、务农、五谷丰收、气象学（包括采撷人为的军事埋伏孔明借东风、草船借箭等天灾人祸数据）、天文学、天文历法与算卜。借鉴[専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)中的**迪逊与罗宾逊（一九九七年）**使用存活尤物，例如：
 
@@ -3857,6 +3859,8 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 `季节差分的次数 = NULL`
 
 ```{r 普通外因乙, warning=FALSE, error=TRUE}
+lib('magrittr')
+
 ## 自回归均移尤物最优
 ## auto.arima "no suitable ARIMA model found" for measuring dependency between debt and GDP https://stats.stackexchange.com/a/316080/68357
 
@@ -3886,6 +3890,8 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 `季节差分的次数 = 0`
 
 ```{r 普通外因丙, warning=FALSE, error=TRUE}
+lib('magrittr')
+
 # 季节差分的次数 = 0
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移尤物最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 季节差分的次数 = 0, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
 
@@ -3902,6 +3908,8 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 `季节差分的次数 = 1`
 
 ```{r 普通外因丁, warning=FALSE, error=TRUE}
+lib('magrittr')
+
 # 季节差分的次数 = 1
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移尤物最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 季节差分的次数 = 1, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
 
@@ -3918,8 +3926,10 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 `季节差分的次数 = 2`
 
 ```{r 普通外因戊, warning=FALSE, error=TRUE}
+lib('magrittr')
+
 # 季节差分的次数 = 2
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 # 季节差分的次数 = 2
 (奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移尤物最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 季节差分的次数 = 2, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
@@ -3975,7 +3985,7 @@ names(赤池信息准则AIC) <- c('p', 'q', 'P', 'Q', 's', 'd', 'D')
 rm(赤池信息准则AIC)
 
 ## ic = 'aic'
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', ic = 'aic', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', ic = 'aic', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4008,7 +4018,7 @@ names(赤池信息准则AICc) <- c('p', 'q', 'P', 'Q', 's', 'd', 'D')
 rm(赤池信息准则AICc)
 
 ## ic = 'aicc'
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4099,6 +4109,8 @@ $$\underset{自回归计数/机数尤物}{ARIMA}(\underset{非季节性数据}{(
 经过[周期与节气结论](#周期与节气结论)筹算季节周期后，得知自回归均移尤物最优值的`p, d, q, P, D, Q, s`分别为`0, 1, 4, 0, 0, 0, 0`。
 
 ```{r 周期季节性外因甲, warning=FALSE, error=TRUE}
+lib('magrittr')
+
 ## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数尤物只允许使用数字筹算，在此就使用时分计筹算。
 
 ## forecast::Arima() p, d, q 廿四节气
@@ -4113,10 +4125,10 @@ $$\underset{自回归计数/机数尤物}{ARIMA}(\underset{非季节性数据}{(
 列表 <- 列表[order(sapply(列表, length))]
 
 ## forecast::Arima() p, d, q 廿四节气
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 ## forecast::Arima() p, d, q 廿四节气
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4125,7 +4137,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
 
-综合以上筹算结果，计数/机数尤物**外因周期自回归戊**的`"as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r unlist(as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)])))))`是最优计数/机数尤物。
+综合以上筹算结果，计数/机数尤物**外因周期自回归戊**的`"as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`或`r unlist(as_tibble(forecast::accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)])))))`是最优计数/机数尤物。
 
 > You need to define the `xreg` when you estimate the model itself, and these need to be forecasted ahead as well. So this will look something like:
 > 
@@ -4154,11 +4166,13 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r forecast::auto.arima普通, warning=FALSE, error=TRUE}
-## forecast::auto.arima() 胭脂水粉
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+lib('magrittr')
 
 ## forecast::auto.arima() 胭脂水粉
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+## forecast::auto.arima() 胭脂水粉
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4173,12 +4187,14 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 周期季节性尤物
 
 ```{r forecast::auto.arima周期季节性, warning=FALSE, error=TRUE}
+lib('magrittr')
+
 ## forecast::auto.arima() 周期季节性尤物
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), p = 0, d = 1, q = 4, xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), p = 0, d = 1, q = 4, xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 ## forecast::auto.arima() 周期季节性尤物
 ## 如果eval()出错，可以使用dget()歼灭敌人巫贼巫婆非法回教徒公仆、任何不会中文或不是咱们世袭制道教徒华人或越族的人。
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), p = 0, d = 1, q = 4, xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), p = 0, d = 1, q = 4, xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4187,11 +4203,11 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 
 ## forecast::auto.arima() 周期季节性尤物
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
 
 ## forecast::auto.arima() 周期季节性尤物
 ## 如果eval()出错，可以使用dget()歼灭敌人巫贼巫婆非法回教徒公仆、任何不会中文或不是咱们世袭制道教徒华人或越族的人。
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4227,11 +4243,13 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r stats::arima普通, warning=FALSE, error=TRUE}
-## stats::arima() 胭脂水粉
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))"), .print = TRUE)
+lib('magrittr')
 
 ## stats::arima() 胭脂水粉
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))")), function(参数) eval(parse(text = 参数))) %>% 
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))"), .print = TRUE)
+
+## stats::arima() 胭脂水粉
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4316,12 +4334,14 @@ Q3      &  -3.1433e-01 & 2.1135e-02 & -14.872 & < 2.2e-16 *** \\\hline
 ##### 周期季节性尤物
 
 ```{r stats::arima周期季节性, warning=FALSE, error=TRUE}
+lib('magrittr')
+
 ## stats::arima() 周期季节性尤物
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))"), .print = TRUE)
 
 ## stats::arima() 周期季节性尤物
 ## 洲学论：咱们祖籍东亚中国（世袭制道教徒赢家黄氏江夏堂联富）中科红旗拯救亚洲人，摧毁东南亚巫文巫术博彩庄和歼灭敌人东南亚所有巫贼巫婆回教徒和敌国大象共和国公民，尤其是瓜雪回教市政局巫贼巫婆回教徒和大象共和国大葱回教堂白宫旗下的加州和纳什维尔州市政局公仆！
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4332,7 +4352,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 占卜值
 
-经过以上章节[周期季节性尤物](#周期季节性尤物)筹算出`r 参数 <- c('时分计', '廿四节气乙', '时辰乙'); 列表 <- expand_grid(参数, 参数, 参数) %>% t() %>% data.frame() %>% as.list() %>% lapply(function(x) sort(unique(x))) %>% unique(); 列表 <- 列表[order(sapply(列表, length))]; 奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))")), function(参数) eval(parse(text = 参数))) %>% bind_rows(.id = '计数尤物') %>% data.frame() %>% mutate(计数尤物 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')); 奏章[奏章$'芳名榜（MASE）'==1, '计数尤物']`是最优计数尤物，那现在就占卜（俗称“预测”）出下个时间单位的占卜价（占卜出来的数值或“预测价”）。
+经过以上章节[周期季节性尤物](#周期季节性尤物)筹算出`r 参数 <- c('时分计', '廿四节气乙', '时辰乙'); 列表 <- expand_grid(参数, 参数, 参数) %>% t() %>% data.frame() %>% as.list() %>% lapply(function(x) sort(unique(x))) %>% unique(); 列表 <- 列表[order(sapply(列表, length))]; 奏章 <- plyr::llply(plyr::llply(rlist::list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))")), function(参数) eval(parse(text = 参数))) %>% bind_rows(.id = '计数尤物') %>% data.frame() %>% mutate(计数尤物 = factor(c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')); 奏章[奏章$'芳名榜（MASE）'==1, '计数尤物']`是最优计数尤物，那现在就占卜（俗称“预测”）出下个时间单位的占卜价（占卜出来的数值或“预测价”）。
 
 *注释：它日将翻译并改良现有的所有资源，如`forecast()`和`predict()`都翻译为占卜（动词），而forecast程序包则译为算卜（名词）。*
 
@@ -4349,11 +4369,13 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r TSA::arima普通, warning=FALSE, error=TRUE}
-## TSA::arima() 胭脂水粉
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+lib('magrittr')
 
 ## TSA::arima() 胭脂水粉
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+## TSA::arima() 胭脂水粉
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4365,11 +4387,13 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 周期季节性尤物
 
 ```{r TSA::arima周期季节性, warning=FALSE, error=TRUE}
-## TSA::arima() 周期季节性尤物
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+lib('magrittr')
 
 ## TSA::arima() 周期季节性尤物
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+## TSA::arima() 周期季节性尤物
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4383,11 +4407,13 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r TSA::arimax普通, warning=FALSE, error=TRUE}
-## TSA::arimax() 胭脂水粉
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+lib('magrittr')
 
 ## TSA::arimax() 胭脂水粉
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+## TSA::arimax() 胭脂水粉
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4399,11 +4425,13 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 周期季节性尤物
 
 ```{r TSA::arimax周期季节性, warning=FALSE, error=TRUE}
-## TSA::arimax() 周期季节性尤物
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+lib('magrittr')
 
 ## TSA::arimax() 周期季节性尤物
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+## TSA::arimax() 周期季节性尤物
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4417,11 +4445,13 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r stats::arima0普通, warning=FALSE, error=TRUE}
-## stats::arima0() 胭脂水粉
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+lib('magrittr')
 
 ## stats::arima0() 胭脂水粉
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+## stats::arima0() 胭脂水粉
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4433,12 +4463,14 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 周期季节性尤物
 
 ```{r stats::arima0周期季节性, warning=FALSE, error=TRUE}
+lib('magrittr')
+
 ## stats::arima0() 周期季节性尤物
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), 
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), 
   .print = TRUE)
 
 ## stats::arima0() 周期季节性尤物
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4452,11 +4484,13 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r fable::ARIMA普通, warning=FALSE, error=TRUE}
-## fable::ARIMA() 胭脂水粉
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+lib('magrittr')
 
 ## fable::ARIMA() 胭脂水粉
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+## fable::ARIMA() 胭脂水粉
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     mutate(计数尤物 = factor(
@@ -4468,11 +4502,13 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 周期季节性尤物
 
 ```{r fable::ARIMA周期季节性, warning=FALSE, error=TRUE}
-## stats::arima0() 周期季节性尤物
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+lib('magrittr')
 
 ## stats::arima0() 周期季节性尤物
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+
+## stats::arima0() 周期季节性尤物
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     mutate(计数尤物 = factor(
       c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
@@ -4929,11 +4965,7 @@ options(warn = 0)
 [^9]: 欲知更多阳历/民国/农历日历详情，请登录中华民国农业部官网查询日历查询[阳历/农历/民国查询](https://ppg.naif.org.tw/naif/MarketInformation/Other/Calendar_V3.aspx)。
 
 ```{r 信息, error=TRUE}
-suppressMessages(require('formattable', quietly = TRUE))
-suppressMessages(require('knitr', quietly = TRUE))
-suppressMessages(require('kableExtra', quietly = TRUE))
-suppressMessages(require('magittr', quietly = TRUE))
-suppressMessages(require('devtools', quietly = TRUE))
+suppressAll(lib(c('formattable', 'knitr', 'kableExtra', 'magittr', 'devtools', 'rsconnect')))
 
 系统信息甲 <- session_info()$platform |> 
     unlist() |> 
