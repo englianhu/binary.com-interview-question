@@ -689,8 +689,8 @@ nameserver 114.114.114.114
 二零零八年三月到二零一二年七月四年有余，如同在学院或大学修读时期一样安逸悠闲。每天上班时间都在上网浏览并搜索各种计数/机数软件和任何足彩计数/机数建模科研文献，当时市场上并没有任何普遍通行的计数/机数软件，在搜索和浏览并参与许多论坛后，经常混：
 
 - [统计之都](https://d.cosx.org)
-- [经管之家（旧称：人大经济论坛）]()
-- [CSDN]()
+- [经管之家（旧称：人大经济论坛）](https://bbs.pinggu.org)
+- [中国专业IT社区CSDN](https://www.csdn.net)
 - [数学中国](http://www.mathchina.com/bbs)
 
 有天通过网上搜索到[迪克逊与克尔斯（一九九六∙英）](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/图书馆/DixonColes1996.pdf)阅读后就感到惊讶很专业（就像之前对日语班老师佩琪桑、安利传销经理、PAAC会计老师说过：“如果你那么厉害，会灵活应用就不会只是个夸夸其谈的门面功夫老师而已。”因为马克∙迪克逊/马克∙大顺在一九九四年左右，在当时落后的科技下每天记载报章上所有的赔率而非局部抽样，来回测再算卜预测。一九九八年创办自家[ATASS](https://www.atass-sports.co.uk)公司提供数句分析与高频量化对冲生意，该科研文献中的学者司徒∙克尔斯就是在Shawn Lim伟雄的客户公司[睿卜（原文：SmartOdds）](https://www.smartodds.co.uk)中当高级主管，而睿卜的创办人老板以前帮托尼∙布伦打工，详情请查阅：[他不认同Moneyball，却靠数据在三重身份里都成了大神](https://zhuanlan.zhihu.com/p/657802733)），然后再搜索估计一共储存了有好几百篇科研论文，每天像佐治∙索罗斯和金牧∙罗杰斯一样翻阅许多篇科研文献筛选最优最实用的科研文献和所有作者的背景包括在哪家公司工作。在数学中国论坛咨询并发送邮件联系坛主陆远鸿教授，陆教授好心回复并使用三四天时间依照[马赫尔（一九八二∙英）](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/图书馆/Maher1982.pdf)论文中的数学公式编写个矩阵软件计数/机数分析给我。当时陆教授好像使用C#语言编程，只要导入一个文本矩阵数字，点击计算就能解析。（借鉴硅谷传奇史，比尔∙盖茨从研发MS-DOS磁盘操作系统到视窗Win操作系统，视窗Win操作系统的主打办公软件是由一位教授所编写而非比尔∙盖茨编写的。）陆教授是中国数学系领域十大著名教授之一，当时我还咨询陆教授怎么中国各大学校都没有一个统一的计数/机数软件来授教莘莘学子呢？如果每次都得各别编写个计数/机数软件给各别学生的话，教授不就很忙？然后也顺便咨询陆教授会不会R鄀计数/机数编程语言方便许多，当时我才刚开始自修R鄀计数/机数编程语言。愚生建立专业计数/机数学术论坛[](https://soccer.oksport)在友邦保险工作时期（当时自个儿到公司附近工商银行注册了储蓄户口）被中国公安局屏蔽后，之后就建立个个人随笔记事本记载[「文派」統計學に就いて](https://englianhu.wordpress.com/statistics)，寻觅个完善的计数/机数软件，然后开始自修R鄀计数/机数编程语言混《统计之都》的谢益辉——谢氏宝树堂同姓）
@@ -1081,12 +1081,13 @@ conflicted::conflicts_prefer(base::load, .quiet = TRUE)
 conflicted::conflicts_prefer(base::merge, .quiet = TRUE)
 conflicted::conflicts_prefer(base::rank, .quiet = TRUE)
 conflicted::conflicts_prefer(data.table::between, .quiet = TRUE)
-conflicted::conflicts_prefer(Ipaper::llply, .quiet = TRUE)
+conflicted::conflicts_prefer(dplyr::llply, .quiet = TRUE)
 conflicted::conflicts_prefer(tibble::view, .quiet = TRUE)
 conflicted::conflicts_prefer(tidyft::separate, .quiet = TRUE)
 conflicted::conflicts_prefer(lubridate::year, .quiet = TRUE)
 conflicted::conflicts_prefer(gtools::permutations, .quiet = TRUE)
 conflicted::conflicts_prefer(Ipaper::chunk, .quiet = TRUE)
+conflicted::conflicts_prefer(formattable::percent, .quiet = TRUE)
 
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 
@@ -2567,7 +2568,7 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 >   - 而杜仲，有些不同，有人竟然把杜仲整段的树皮全部剥了下来。输送营养的树皮被完全切断后，这棵树还能活吗？您别说，影响真不大。一段时候后，杜仲树被环剥的部位慢慢又开始长出了新的树皮。大约一年之后，被环剥部位的树皮就看起来和普通树皮没多大区别了。
 >   - 杜仲树有点厉害？如果再跟您说，杜仲不光树皮能入药，还有“中国橡胶树”的别称，甚至在航天、医疗、通讯等领域都有应用呢？
 > 
-> 浏览详细精彩内容：[[绿色时空]大树姓“杜” 浑身是宝](http://tv.cctv.com/2017/11/12/VIDE7014bPPzXVURzDj0UFng171112.shtml)
+> 浏览详细精彩内容：[「绿色时空」大树姓“杜” 浑身是宝](http://tv.cctv.com/2017/11/12/VIDE7014bPPzXVURzDj0UFng171112.shtml)
 
 *引用：[你吃这些药，其实是在啃树皮？](http://sannong.cctv.com/2017/11/13/ARTIbpGGcA2Oc32Ila22ST5P171113.shtml)*，借鉴那些巫贼巫婆非法回教徒创办人叫Onn Jafaar（中译：温家法）与美国大葱回教堂白宫国父瓦盛顿伐木，详情请查阅[错误信息](#错误信息)。
 
@@ -2646,12 +2647,12 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 > 
 > #大秦赋 #秦孝公 #姜太公 #陈祯禄公爵 #邱德拔公爵 #巫裔尽弃瓦釜雷鸣 #期权可居 #商鞅变法铲除巫裔 #中科红旗🚩 #北京大学 #咱们马来西亚赢家ξng黄氏江夏堂和杏林林氏西河堂和商家苏氏阜阳堂和道家肖氏远芳堂和道家阮氏郡望堂<s> 🇬🇧NonMuslim👱🏻‍♀️英国基督洋妞儿芈拉</s>都不可以死 #咱们中华民族和越族不可以死 #文言文编程 #金族完颜氏 #越族Nguyễn阮氏 #道家李耳 #耳东陈耳元阮 
 > 
-> 借鉴春秋战国（目前七大洲五大洋）吴越之争，皇室与内阁：
+> 借鉴春秋战国（目前七大洲五大洋）的鬼谷传奇鬼谷子王诩（纵横家王氏开闽堂）和吴越之争，皇室与内阁：
 > 
 > - 福建闽南语：<ruby>**哇**<rp>(</rp><rt>wā</rt><rp>)</rp></ruby>/<s><ruby>**瓦**<rp>(</rp><rt>wǎ</rt><rp>)</rp></ruby></s> = 我
 > - 福建闽南语：国际标准中文<ruby>**阮**<rp>(</rp><rt>ruǎn</rt><rp>)</rp></ruby>字的闽南语发音为gūn = 咱们 / 我们
 > - 福建闽南语：<ruby>**吕**<rp>(</rp><rt>lǚ</rt><rp>)</rp></ruby> = 你 / 妳
-> - 福建闽南语：<ruby>**蔺**<rp>(</rp><rt>līn/lìn</rt><rp>)</rp></ruby>^[![_<ruby>蔺<rp>(</rp><rt>līn</rt><rp>)</rp></ruby>_](诸子百家考工记/姓蔺.png){width=400}<br>*出处：[閩南語音字分清楚１：語言用字暨詞彙分類](https://books.google.com.my/books?id=Y96-EAAAQBAJ&pg=PA27&lpg=PA27&dq=姓氏读līn&source=bl&ots=WM8VJXZrcC&sig=ACfU3U2IgaEPi_Bs5g7JoN07bG7qX-y-DQ&hl=zh-CN&sa=X&ved=2ahUKEwjijtjC8MiFAxV5QfEDHX1hCB84ChDoAXoECAMQAw#v=onepage&q=姓氏读līn&f=false)*] = 你们 / 妳们
+> - 福建闽南语：<ruby>**蔺**<rp>(</rp><rt>līn/lìn</rt><rp>)</rp></ruby>^[![_<ruby>蔺<rp>(</rp><rt>līn</rt><rp>)</rp></ruby>_](诸子百家考工记/姓蔺.png){width=400}<br>*出处：[閩南語音字分清楚一：語言用字暨詞彙分類](https://books.google.com.my/books?id=Y96-EAAAQBAJ&pg=PA27&lpg=PA27&dq=姓氏读līn&source=bl&ots=WM8VJXZrcC&sig=ACfU3U2IgaEPi_Bs5g7JoN07bG7qX-y-DQ&hl=zh-CN&sa=X&ved=2ahUKEwjijtjC8MiFAxV5QfEDHX1hCB84ChDoAXoECAMQAw#v=onepage&q=姓氏读līn&f=false)*] = 你们 / 妳们
 > - 福建闽南语：<ruby>**伊**<rp>(</rp><rt>yī</rt><rp>)</rp></ruby> = 他 / 她（朝鲜族居多：如伊锡悦、伊恩惠）
 > - 福建闽南语：<ruby>**殷**<rp>(</rp><rt>yīn</rt><rp>)</rp></ruby> = 他们 / 她们
 > 
@@ -2743,6 +2744,8 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 #### 🐉卧龙与天文历法
 
+##### 峇东新村和地标《南天宫》盘古庙宇
+
 **龙来瓜雪峇东当自强，九五至尊来马兴邦国。**
 
 从满洲到星洲，从鼻祖暨耳孙。论生肖的「演化史」，先秦时已有相关记载[十二生肖都咋来的？为啥鼠是第一个？怎么没猫？](http://www.xinhuanet.com/politics/2020-01/22/c_1125491667.htm)，如果有留意十二生肖中，只有龙（飞蜥[^3]）是神话的三栖动物而非其余十一个生肖现实生活中的动物，蛇是两栖动物可以潜水和活在水里而其余的都是陆上动物。
@@ -2751,6 +2754,7 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 - [「百度」以龙为旗，是借鉴还是另有隐情？](https://haokan.baidu.com/v?vid=6154794624901057992)
 - [「国家旗帜」抗日战争时期傀儡政权的历代国旗和其他旗帜](https://www.bilibili.com/video/BV1W841127Q1)
 - 中国北京清华大学石碑刻着「行胜于言」。[「抖音」《台商的故事》中的黄朝阳](https://v.douyin.com/iYbXps8c)的励志故事，要做就要做世界第一！
+- 咱们峇东新村的村子正中央入口处大门招牌题字「出入平安」、「风调雨顺」和「五谷丰收」。
 - 咱们峇东新村的地标「南天宫」有面峭壁刻着「龙来瓜雪峇东当自强，九五至尊来马兴邦国。」
 
 >> 峇冬新村（Tiram Buruk/Tiram Setia），于一九五八年创立，位于雪兰莪州瓜雪县，村民的籍贯主要为福建。占地约60英亩的峇东新村大部份的村民都是油棕园园主，进入新村时可看到罗里载送油棕的痕迹。
@@ -2761,9 +2765,9 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 >> 
 >> 峇东新村在紧急法令时期局势十分混乱，尤其是在一九五一年，英军更在新村展开大逮捕行动，当时有人说每家每户须派遣一个代表去分屋子，结果却是一场逮捕行动。当时村里逾皕多名村民被逮捕，大批村民后来被关在巴生港口集中营里（即为现在的班达马兰新村）。
 >> 
->> 根据峇东新村简史记录，预计在一九一四年第一世界大战前，在新村还是一片原始森林时，从中国南来的华裔先贤就开始在该地拓荒。先辈在此地区进行垦殖，促使此地区生产橡胶、椰子、咖啡和芋头等农作物。随着橡胶价格滑落后，小园主纷纷改种油棕，油棕已成为该新村的主要经济脉搏。当时该新村共有370间房子，人口达3000多人，如今新村内的房子约有410间。然而，爱护家园的村民在数年后陆续迁到峇东新村，开始在开垦搭建浮脚式的板屋。如今时代变迁，大部份的村民已将房子翻新，村里仅有一户保留浮脚式板屋。与其他的新村一样，峇东新村是在紧急法令时期成立，该新村位于森林边缘，通过森林可直达煤炭山，北行则可到适耕庄和沙白安南，因此当时的马共在该新村相当活跃，并把该新村列为“黑区”，令村民的生活备受折磨。而一九五二年二月七日对于峇东新村的村民是黑色的一天，因为英军下令全体村民携带贵重物品和文件后，集在一起上军车，连夜被送到巴生港口班达马兰新村，并被安顿在长屋里。村民搬离之际，军队便放火逐一烧坏全村的房子，美满的家园在瞬间被烧成灰烬，如今此惨痛经历，仍是老村民们心中的痛。1955年后政府解除峇东“黑区”的禁令，村民获准到自己的园丘工作，直到英政府征用一块60英亩的胶园地，村民才陆续迁回峇东新村，并开始规划商店、校地、神庙和大草场等。而以橡胶、咖啡到后期的油棕为主的村民经过一段时间的努力后终开始摆脱贫穷的命运。如今的峇东新村已是一片欣欣向荣，基本设施尚算齐全，村民过着丰衣足食与安乐的生活。
+>> 根据峇东新村简史记录，预计在一九一四年第一世界大战前，在新村还是一片原始森林时，从中国南来的华裔先贤就开始在该地拓荒。先辈在此地区进行垦殖，促使此地区生产橡胶、椰子、咖啡和芋头等农作物。随着橡胶价格滑落后，小园主纷纷改种油棕，油棕已成为该新村的主要经济脉搏。当时该新村共有三百七十间房子，人口达三千多人，如今新村内的房子约有四百一十间。然而，爱护家园的村民在数年后陆续迁到峇东新村，开始在开垦搭建浮脚式的板屋。如今时代变迁，大部份的村民已将房子翻新，村里仅有一户保留浮脚式板屋。与其他的新村一样，峇东新村是在紧急法令时期成立，该新村位于森林边缘，通过森林可直达煤炭山，北行则可到适耕庄和沙白安南，因此当时的马共在该新村相当活跃，并把该新村列为“黑区”，令村民的生活备受折磨。而一九五二年二月七日对于峇东新村的村民是黑色的一天，因为英军下令全体村民携带贵重物品和文件后，集在一起上军车，连夜被送到巴生港口班达马兰新村，并被安顿在长屋里。村民搬离之际，军队便放火逐一烧坏全村的房子，美满的家园在瞬间被烧成灰烬，如今此惨痛经历，仍是老村民们心中的痛。一九五五年后政府解除峇东“黑区”的禁令，村民获准到自己的园丘工作，直到英政府征用一块六十英亩的胶园地，村民才陆续迁回峇东新村，并开始规划商店、校地、神庙和大草场等。而以橡胶、咖啡到后期的油棕为主的村民经过一段时间的努力后终开始摆脱贫穷的命运。如今的峇东新村已是一片欣欣向荣，基本设施尚算齐全，村民过着丰衣足食与安乐的生活。
 >> 
->> 此外，峇东新村以草菇和野味闻名，尤其是鲜甜美味的草菇更是一道美食，深受村民和外地人的喜爱。每当下雨后，油棕园的地上可见许多草菇长出来。除了油棕外，草菇也是村民的‘外快’，每公斤草菇的价格达10至20令吉不等。
+>> 此外，峇东新村以草菇和野味闻名，尤其是鲜甜美味的草菇更是一道美食，深受村民和外地人的喜爱。每当下雨后，油棕园的地上可见许多草菇长出来。除了油棕外，草菇也是村民的‘外快’，每公斤草菇的价格达十至二十令吉不等。
 >> 
 >> - 文字摘录自：https://www.sinchew.com.my/pad/con/content_779511.html
 >> - 坐标：3.42652°N 101.24703°E
@@ -2782,6 +2786,7 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 > *世袭制道教徒十二生肖赢家黄氏江夏堂联富本人的曾祖父黄福全，清末光绪年间从满洲到星洲——峇东新村开垦一百亩农地，鸦片战争时期和杨清廉（商业大亨杨忠礼之父）俩是咱们瓜雪县最富裕的土豪，最后因为染上鸦片毒瘾而死。*
 > 
 > 有关家谱与一些个人背景，可查阅文派个人随笔记事本：
+> 
 > - [「文派」**阳历二零二三年十二月三日**今日是紫云生日](https://englianhu.wordpress.com/2024/02/04/「阳历二零二三年十二月三日」今日是紫云生日)
 > - [「文派」《赢家黄氏江夏堂》 – 始祖赢政ΞΗG TΕΗG·黄永春家谱](https://englianhu.wordpress.com/2022/02/22/《雪隆江夏堂》-家谱)
 > 
@@ -2792,8 +2797,10 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 > 自小对于老师教导的道德教育、中庸之道、姓氏堂号子嗣贞节牌坊非常看重，传统的男生。若没记错小一时期就奇怪为什么身边所有同学甚至老师说的中文和老师通过字面上的拼音授教的国际标准中文会完全不一样呢？当时听到中国同胞说一口流利国际标准中文就觉得特别亲切像是自家人，当时全班同学说的中文不标准全是语病，只有我一人发音标准竟然成了全班的异类被许多同学冷嘲热讽，借鉴幼儿园时期强出头被群殴，一朝被蛇咬，十年怕草蛇，从此就保持沉默当个品学兼优文静内向的模范生（只是心想着有朝一日必须到中国发展，二零零八年像修读大学在西施康当客服时四年多，主管品学兼优的独中生李小新一直以为我也是独中生中文口音很标准也品学兼优，每天通过电话和中国同胞打交道就觉得祖国中国同胞很亲切。
 > 
 > 二零一二零一七年到柬埔寨西哈努克港黄金城、柬埔寨西哈努克港贵族酒店、菲律宾克拉克太阳谷和祖国中国同胞），被逼入乡随俗也随着说一口不流利不标准的台式中文，然后小二就开始追台剧《军官与淑女》中的女主角涂善妮（之后就追台剧《包青天》系列）就好奇为什么那么巧合和中文老师兼主任长相相似呢？直到小四的隔壁版数学老师陈温温说明年小五会任教数学课老师，校方会引入一位中文老师兼主任颜玉婷任教两年，兢兢业业还恶补字辨、语法、成语、修辞等，而数学课陈温温老师也是兢兢业业名师出高徒、桃李满天下。
-> 
-> **愚生在民智国民华文小学学习数学矩阵时「行列之别」的小插曲**
+
+##### 民智国民华文小学与「行列之别」
+
+> **愚生在民智国民华文小学学习数学矩阵时「行列之别」的典故/小插曲（围魏救赵、项庄舞剑志在沛公）**
 > 
 > 咱们海外国民教育制度历来分为十二年制，莘莘学子可以先报读幼儿园先修班，然后小学初级三年与高级三年一共六年制（咱们国民华校不允许出现任何回教徒），而中学也有个预备班让咱们华人先适应在国民回教巫校与回教徒学生共处一校的一年时间预备班，中学制度从中一至中五分为初中三年PMR（初中检定考试）与高中两年一共五年SPM（高中检定考试）就列为完成国家基本教育制度，小学六年加中学六年一共十二年制。而中六/高三/大学先修班一共两年。
 > 
@@ -2801,7 +2808,13 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 > 
 > 重温农历一九九二年民智国民华校刚上正规学校修读二年级和三年级两年的中文教师身兼班主任朱老师就[长得像台剧「军官与淑女」中的台湾明星涂善妮](https://www.ixigua.com/7092554529098760711)而自个儿长相就像钱小豪。农历九九四年上高级班爷爷黄实田去世、村子来了个长相似黄百鸣的转校生黄成祥就住在村子入口处大街像苏丽欣和林燕芳娘家的好几间小木屋中的民政党小木屋行动室考试全科优等第一名击垮咱们班上所有本地人然后生日那天在民政党小木屋同学会还有交换礼物（当时家里穷没钱买礼物就只有个天鹅插笔的笔杆比较得体就匆匆忙忙使用礼物纸胡乱包囊起来感觉礼品那么寒酸非常尴尬无地自容，成祥修读一年就转校了）、小学四年级的班主任兼中文老师是陈奕满而她姐姐陈奕好音乐课老师来自于丹绒加弄蒲甘渔村，陈奕满老师为人贤淑开朗每天都在微笑（因为人文与环境科的潘女老师有教导许多生态与环境，所以主任陈奕满老师还特地主团带咱们全班学生去渔村钓鱼虾体验渔村生活，对于生态与环境百闻不如一见；而[长相似台湾明星汤志伟/比尔∙盖茨斯斯文文也戴副眼镜。乔帮主vs比尔盖茨，怎样才不算枉活一生，解说纪录片《硅谷传奇》](https://www.bilibili.com/video/BV1BN411o7ff)的像二零零七年认识的吴紫云的爸爸伯父一样驼背的小学一九九四年生活与技能陈国宝老师（他满面春风为人开朗喜欢微笑风趣儿，有天开玩笑说他和添和都长得像郑则仕）。
 > 
-> 咱们民智国民华文小学全校整体学术水平都不理想比不上附近的启智国民华校和益智国民华校在咱们县都没名列三甲，陈仙凤女校长才特地要求教育部从其它学校调职陈温温数学老师过来任教的，小学四年级陈温温是隔壁班数学老师兼主任并非咱们老师不过久仰大名以前在其它学校任教都是自诩纪律部队长官「麻辣教师」严格调教学生而桃李满天下学生各各考A（甲级）优等成绩，由于学术要求特别高和严格要求达到世界水平而非本土水平，学生各各闻风丧胆。有天人文与环境的潘女老师在班上哭泣说：“学生冥顽不灵不学无术，老师苦口婆心奈若和，决定放弃了，工资照拿。”然后陈温温老师就走进来站台替人文与环境潘女老师（潘女老师和五年级的巫文吴爱妮老师——中文老师兼学校主任兼副校长吴荣兴老师之女，都是大姐莲碧的同学）打抱不平，然后就在班上大声立下承诺：“你们A班的数学整体水平那么差还比不上咱们B班。不觉得A班只是浪得虚名，可耻吗？我已经向校长要求明年要任教你们A班数学课和颜玉婷任教中文课！数学成绩要求也得像以前任教的学校一样标青，全班学生都必须考获优等成绩，地狱式训练。也就是放学后强制性补习，恶补数学和中文。”）而陈奕好音乐班老师为人沉着文静犹如长官时常拿根藤鞭指挥，闲暇时间和放学后时常在学校礼堂弹琴才下班，对于咱们学生的团体活动音乐交响曲的纪律与一致性非常重视。**农历一九九五年在民智国民华校任教的数学陈温温老师与中文颜玉婷老师也是当了两年的中文班主任与数学老师，授教中华民国与中华人民共和国在矩阵中的「行列之别」和[「列印与打印之别」](https://www.zhihu.com/question/68249580)**、而咱们峇东新村民众会堂也是在农历一九九五年所建立而小学UPSR检定考试开始全科（中文选择题、中文作文、巫文选择题、巫文作文、英文、数学一共六科；成绩等级从A、B、C、D到E，A为优等而D和E都是不及格）最低要求考获C及格即可直升中一节省一年的预备班光阴。
+> ![*国民二二八灭巫传*](诸子百家考工记/国民二二八灭巫传.png){width=400}
+> 
+> 咱们民智国民华文小学全校整体学术水平都不理想比不上附近的启智国民华校和益智国民华校在咱们县都没名列三甲，陈仙凤女校长才特地要求教育部从其它学校调职陈温温数学老师过来任教的，小学四年级陈温温是隔壁班数学老师兼主任并非咱们老师不过久仰大名以前在其它学校任教都是自诩纪律部队长官「麻辣教师」严格调教学生而桃李满天下学生各各考A（甲级）优等成绩，由于学术要求特别高和严格要求达到世界水平而非本土水平，学生各各闻风丧胆。有天人文与环境的潘女老师在班上哭泣说：“学生冥顽不灵不学无术，老师苦口婆心奈若和，决定放弃了，工资照拿。”然后陈温温老师就走进来站台替人文与环境潘女老师（潘女老师和五年级的巫文吴爱妮老师——中文老师兼学校主任兼副校长吴荣兴老师之女，都是大姐莲碧的同学）打抱不平，然后就在班上大声立下承诺：“你们A班的数学整体水平那么差还比不上咱们B班。不觉得A班只是浪得虚名，可耻吗？我已经向校长要求明年要任教你们A班数学课和颜玉婷任教中文课！数学成绩要求也得像以前任教的学校一样标青，全班学生都必须考获优等成绩，地狱式训练。也就是放学后强制性补习，恶补数学和中文。”）而陈奕好音乐班老师为人沉着文静犹如长官时常拿根藤鞭指挥，闲暇时间和放学后时常在学校礼堂弹琴才下班，对于咱们学生的团体活动音乐交响曲的纪律与一致性非常重视。
+> 
+> ![*项庄舞剑，志在沛公（MY大汉山与US大葱回教堂内阁，大葱回教堂世袭制法家的伐木认错的国父瓦盛顿）*](项庄舞剑，志在东盟.gif){width=400}
+> 
+> **农历一九九五年在民智国民华校任教的数学陈温温老师与中文颜玉婷老师也是当了两年的中文班主任与数学老师，授教中华民国与中华人民共和国在矩阵中的「行列之别」和[「列印与打印之别」](https://www.zhihu.com/question/68249580)**、而咱们峇东新村民众会堂也是在农历一九九五年所建立而小学UPSR检定考试开始全科（中文选择题、中文作文、巫文选择题、巫文作文、英文、数学一共六科；成绩等级从A、B、C、D到E，A为优等而D和E都是不及格）最低要求考获C及格即可直升中一节省一年的预备班光阴。
 > 
 > ![*五年级和六年级英文课老师是长相似港剧「帝女花」中饰演史可法的港星王伟梁的廖顺莱老师*](诸子百家考工记/明朝名将史可法（子非蜀，安知蜀之乐，廖老师与西施康廖副总、廖化本名淳字元俭）.png){width=400}
 > 
@@ -3695,7 +3708,7 @@ if (!exists('总汇')) {
 [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)经过测试`method = c('CSS-ML', 'ML', 'CSS')`仨，筹算出的赤池信息量准则比`ML`来得小或较大负数（赤池信息量准则最优值）而`CSS`出现错误信息，故此将`CSS-ML`筹算法的最优计数/机数尤物设置为默认值。
 
 ```{r 普通外因甲, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(suppressAll(lib('magrittr')))
 
 ## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数尤物只允许使用数字筹算，在此就使用时分计筹算。
 
@@ -3896,7 +3909,7 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 `季节差分的次数 = NULL`
 
 ```{r 普通外因乙, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## 自回归均移尤物最优
 ## auto.arima "no suitable ARIMA model found" for measuring dependency between debt and GDP https://stats.stackexchange.com/a/316080/68357
@@ -3927,7 +3940,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 `季节差分的次数 = 0`
 
 ```{r 普通外因丙, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 # 季节差分的次数 = 0
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移尤物最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 季节差分的次数 = 0, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
@@ -3945,7 +3958,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 `季节差分的次数 = 1`
 
 ```{r 普通外因丁, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 # 季节差分的次数 = 1
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移尤物最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', 季节差分的次数 = 1, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
@@ -3963,7 +3976,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自�
 `季节差分的次数 = 2`
 
 ```{r 普通外因戊, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 # 季节差分的次数 = 2
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), 均移值 = '叉', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
@@ -4146,7 +4159,7 @@ $$\underset{自回归计数/机数尤物}{ARIMA}(\underset{非季节性数据}{(
 经过[周期与节气结论](#周期与节气结论)筹算季节周期后，得知自回归均移尤物最优值的`p, d, q, P, D, Q, s`分别为`0, 1, 4, 0, 0, 0, 0`。
 
 ```{r 周期季节性外因甲, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数尤物只允许使用数字筹算，在此就使用时分计筹算。
 
@@ -4203,7 +4216,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r forecast::auto.arima普通, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## forecast::auto.arima() 胭脂水粉
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
@@ -4224,7 +4237,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 周期季节性尤物
 
 ```{r forecast::auto.arima周期季节性, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## forecast::auto.arima() 周期季节性尤物
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), p = 0, d = 1, q = 4, xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
@@ -4280,7 +4293,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r stats::arima普通, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## stats::arima() 胭脂水粉
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))"), .print = TRUE)
@@ -4371,7 +4384,7 @@ Q3      &  -3.1433e-01 & 2.1135e-02 & -14.872 & < 2.2e-16 *** \\\hline
 ##### 周期季节性尤物
 
 ```{r stats::arima周期季节性, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## stats::arima() 周期季节性尤物
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))"), .print = TRUE)
@@ -4430,7 +4443,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r TSA::arima普通, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## TSA::arima() 胭脂水粉
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
@@ -4448,7 +4461,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 周期季节性尤物
 
 ```{r TSA::arima周期季节性, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## TSA::arima() 周期季节性尤物
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
@@ -4468,7 +4481,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r TSA::arimax普通, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## TSA::arimax() 胭脂水粉
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
@@ -4486,7 +4499,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 周期季节性尤物
 
 ```{r TSA::arimax周期季节性, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## TSA::arimax() 周期季节性尤物
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
@@ -4506,7 +4519,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r stats::arima0普通, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## stats::arima0() 胭脂水粉
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
@@ -4524,7 +4537,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 周期季节性尤物
 
 ```{r stats::arima0周期季节性, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## stats::arima0() 周期季节性尤物
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), 
@@ -4545,7 +4558,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 胭脂水粉
 
 ```{r fable::ARIMA普通, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## fable::ARIMA() 胭脂水粉
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
@@ -4563,7 +4576,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ##### 周期季节性尤物
 
 ```{r fable::ARIMA周期季节性, warning=FALSE, error=TRUE}
-lib('magrittr')
+suppressAll(lib('magrittr'))
 
 ## stats::arima0() 周期季节性尤物
 l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
