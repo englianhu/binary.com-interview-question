@@ -16,6 +16,11 @@ output:
     code_folding: hide
     css: 秦谏典范与楷模.css
     fig_caption: true
+params:
+  year: `r cnum::num2c(2002)`
+  region: Asia
+  printcode: TRUE
+  data: /home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds
 ---
 
 # 主题
@@ -4298,7 +4303,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ##### 周期季节性尤物
 
-```{r forecast::auto.arima周期季节性, warning=FALSE, error=TRUE}
+```{r forecast::auto.arima周期季节性, lazyload, warning=FALSE, error=TRUE}
 suppressAll(lib('magrittr'))
 
 ## forecast::auto.arima() 周期季节性尤物
@@ -5238,6 +5243,7 @@ rm(系统信息甲, 系统信息乙)
 21. [Time Series Forecasting Techniques using R](https://github.com/rajsiddarth/Time_Series_Forecasting)
 22. [A Guide to Time Series Forecasting in R You Should Know](https://www.simplilearn.com/tutorials/data-science-tutorial/time-series-forecasting-in-r)
 23. [HTML Color Codes](https://html-color.codes)
+24. [**R Markdown: The Definitive Guide** 15.1 Declaring parameters](https://bookdown.org/yihui/rmarkdown/params-declare.html)
 
 ---
 [![](诸子百家考工记/世博量化.png){height=14} Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
