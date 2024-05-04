@@ -19,7 +19,7 @@
   半成品 <- auto.arima(样本, D = 季节差分的次数, seasonal = 季节性, 
                     max.order = 规律极限值, xreg = 外因)
   精准度 <- 半成品 |> 
-    accuracy() |> 
+    forecast::accuracy() |> 
     as_tibble()
   if (均移值 == FALSE) {
     成果 <- cbind(精准度, as_tibble(t(arimaorder(半成品))))
