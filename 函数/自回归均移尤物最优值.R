@@ -16,11 +16,11 @@
   if (均移值 %in% c('叉', '冇', '否')) 均移值 <- FALSE
   
   # 季节差分的次数，一般上使用到的数值是零到二。
-  半成品 <- auto.arima(样本, D = 季节差分的次数, seasonal = 季节性, 
+  半成品 <- forecast::auto.arima(样本, D = 季节差分的次数, seasonal = 季节性, 
                     max.order = 规律极限值, xreg = 外因)
   精准度 <- 半成品 |> 
     forecast::accuracy() |> 
-    as_tibble()
+    tibble::as_tibble()
   if (均移值 == FALSE) {
     成果 <- cbind(精准度, as_tibble(t(arimaorder(半成品))))
   } else {
