@@ -16,11 +16,6 @@ output:
     code_folding: hide
     css: 秦谏典范与楷模.css
     fig_caption: true
-params:
-  year: `r cnum::num2c(2002)`
-  region: Asia
-  printcode: TRUE
-  data: /home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds
 ---
 
 # 主题
@@ -5012,6 +5007,8 @@ options(warn = 0)
 
 **无师自通，自学成才。**
 
+![](诸子百家考工记/从英俄到秦朝.png){width=400}
+
 借鉴春秋战国史和目前七大洲五大洋，咱们道家的风水学，从[秦人牧马/卧薪尝胆](#秦人牧马/卧薪尝胆)分享个人从门外汉、摸索、四处碰壁、购买一些计数/机数软件、自修计数/机数建模编程的窍门：
 
 - 一、交流、搜索与收集资源
@@ -5244,6 +5241,7 @@ rm(系统信息甲, 系统信息乙)
 22. [A Guide to Time Series Forecasting in R You Should Know](https://www.simplilearn.com/tutorials/data-science-tutorial/time-series-forecasting-in-r)
 23. [HTML Color Codes](https://html-color.codes)
 24. [**R Markdown: The Definitive Guide** 15.1 Declaring parameters](https://bookdown.org/yihui/rmarkdown/params-declare.html)
+25. [**R Markdown Cookbook** 17.5 Customize the Knit button (*)](https://bookdown.org/yihui/rmarkdown-cookbook/custom-knit.html)
 
 ---
 [![](诸子百家考工记/世博量化.png){height=14} Sςιβrοκεrs Trαdιηg®](http://www.scibrokes.com)<br>
