@@ -124,8 +124,9 @@ output:
 
 *引用：[浅谈春秋战国时期的统计分析](http://tjj.hunan.gov.cn/bsfw/tjkp/tjysh/201507/t20150717_3825224.html)*
 
-> **公元前**：鬼谷传奇，鬼谷子门徒R鄀计数学编程学术份子卫鞅论“帝道”、“王道”、“霸道” ；那些回教徒身为世袭制法家只需要遵守可兰经习俗文化宗教语言断肢法集体自宫自残自虐自杀即可。借鉴负责图书馆的文吏李斯（秦国长史，协助嬴政一统天下后建立秦朝成为宰相）老鼠哲学，「近朱者赤，近墨者黑」，赤印度人与印度人或非洲黑人也不可近之，咱们公元前夏朝的黄河文明和公元后近代史美国独立战争史都是取代回教和兴都文明。<br><br>
-**公元后**：借鉴卧薪尝胆史，蜀国世袭制道教徒卧龙「子非鼠，安知鼠之乐？」自修易经、算筹、天文历法、算卜、夜观星象、风水学、上知天文下知地理、通古知今无一不晓、量子电脑服务器、人造卫星、文言文编程等学术份子卧龙诸葛亮的「隆中对」，借鉴“三分天下后再做定夺”，如果咱们南方海外华人丞相/长史（海外华人公会🌟/马华公会🌟）孔明和祖国北方魏国大都督知音司马懿（字仲达，统一天下后建立晋朝）不是默契战争，蜀国最终会沦为回教国；孔明借东风🚀高效率歼灭所有敌人回教徒！
+> **公元前**：鬼谷传奇，鬼谷子门徒R鄀计数学编程学术份子卫鞅论“帝道”、“王道”、“霸道” ；那些回教徒身为世袭制法家只需要遵守可兰经习俗文化宗教语言断肢法集体自宫自残自虐自杀即可。借鉴负责图书馆的文吏李斯（秦国长史，协助嬴政一统天下后建立秦朝成为宰相）老鼠哲学，「近朱者赤，近墨者黑」，赤印度人与印度人或非洲黑人也不可近之，咱们公元前夏朝的黄河文明和公元后近代史美国独立战争史都是取代回教和兴都文明。
+> 
+> **公元后**：借鉴卧薪尝胆史，蜀国世袭制道教徒卧龙「子非鼠，安知鼠之乐？」自修易经、算筹、天文历法、算卜、夜观星象、风水学、上知天文下知地理、通古知今无一不晓、量子电脑服务器、人造卫星、文言文编程等学术份子卧龙诸葛亮的「隆中对」，借鉴“三分天下后再做定夺”，如果咱们南方海外华人丞相/长史（海外华人公会🌟/马华公会🌟）孔明和祖国北方魏国大都督知音司马懿（字仲达，统一天下后建立晋朝）不是默契战争，蜀国最终会沦为回教国；孔明借东风🚀高效率歼灭所有敌人回教徒！
 
 <iframe width="400" height="225" src="https://youtu.be/embed/S7BNq1Jbzr4" title="δ「抖音」万岁爷：一万个为什么" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -221,7 +222,9 @@ nameserver 114.114.114.114
 
 ![*🚩🇨🇳🔆🏹🌟👊🚀🦔孙玉芳教授在二零零二年创办中科红旗曰：”国产操作系统廿年 - 进退攻防，战斗不止。“*](林燕芳（中学乘搭韵祯校车的隔壁校私立丹绒学妹，行不改名坐不改姓，或自个儿侄女黄筱婕）/国产操作系统廿年 - 进退攻防，战斗不止.png){width=400}
 
-> <iframe width="400" height="225" src="https://youtu.be/embed/mC-OkNNDdxI" title="「抖音」俺の日本語クラスマット林艶迎🇯🇵🇮🇹" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+>> <iframe width="400" height="225" src="https://youtu.be/embed/mC-OkNNDdxI" title="「抖音」俺の日本語クラスマット林艶迎🇯🇵🇮🇹" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+> 
+> *出处：[「油管」俺の日本語クラスマット林艶迎🇯🇵🇮🇹](https://youtu.be/mC-OkN=KNNDdxI)*
 > 
 > [_「时光机器二零零二」🚩孙玉芳教授在二零零二年创办中科红旗曰：”中国不能没有自己的操作系统！“，科研高频量化对冲「大秦赋」操作系统和「自然对数算筹」_](https://www.instagram.com/p/CNm43grAbVz)
 > 
@@ -305,7 +308,7 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 <iframe width="400" height="225" src="https://youtu.be/embed/KsCpTch6QSg" title="瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-*出处：[瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/KsCpTch6QSg)*
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/KsCpTch6QSg)*
 
 铭记并警惕咱们中国史，夏末的夏桀^[[「五千言」荒淫的夏桀](https://zhonghua.5000yan.com/xiachao/678.html)]与妺喜、商末的纣王帝辛/子辛与苏妲己、周末的周幽王姬宫<ruby>湦<rp>(</rp><rt>shēng</rt><rp>)</rp></ruby>与<ruby>褒<rp>(</rp><rt>bāo</rt><rp>)</rp>姒<rp>(</rp><rt>sì</rt><rp>)</rp></ruby>、周末吴越春秋的特工西施与郑旦、秦史的赢异人与娱乐圈大亨贾人吕不韦之妻艺妓赵姬、宋史的宋徽宗赵佶和宋仁宗赵祯的靖康之耻，借鉴[「古诗文」尤物](https://www.gushiall.com/dict/youwu)中的引证解释，千年法家立下的可兰经回教刑事法典禁止任何回教徒进行色情活动，那些世袭制法家可兰经回教徒饮水思源、涉及色情活动、传宗接代，都是饮鸩止渴。
 
@@ -335,6 +338,8 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 - [「抖音」总要去一趟现实版的仙侠世界吧，奔赴一场仙剑的梦！#仙剑 #望仙谷](https://www.douyin.com/discover?modal_id=7346462334371646783)
 
 <iframe width="400" height="225" src="https://youtu.be/embed/0OvkWGRhf_g" title="Lamborghini V12 Vision GT" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/0OvkWGRhf_g)*
 
 - [#🥬🥬一笑很倾城三高👩🏻‍🎓：颜值高、学问高、品德高](https://v.douyin.com/iFFjugkD)，二零零零年至二零零一年在瓜雪读高一至高二——中四勤班至中五勤班时，青梅竹马的同学添和说：“乘搭同辆韵祯校车上隔壁校学妹许多人追求的一九八五年出生的漂亮妞儿林燕芳长得像陈慧琳。”
 - [「汤普勒」时间序例之贝式隐马尔可夫链（附学术参考书）](https://www.tumblr.com/blog/view/englianhu/641578918656212992?source=share)
@@ -377,6 +382,8 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 <iframe width="400" height="225" src="https://youtu.be/embed/ISiIZYZW8TQ" title="商鞅变法：华夏历史上最邪恶的改革" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/ISiIZYZW8TQ)*
+
 《商鞅变法》<br>
 印裔宦官，祸国殃民；<br>
 草菅人命，民不聊生。<br>
@@ -388,6 +395,8 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 *引用：[「洋人尼克变法」尼克∙胡哲：没手没脚，却站在了比正常人更高的地方](https://zhuanlan.zhihu.com/p/341301371)，核武器歼灭所有敌人巫贼巫婆非法回教徒公仆、瓜雪RHU（淮西派）花园加德士油站隔壁第三巷门牌卅二号世袭制自宫自残自虐自杀的变性失心疯猥亵淫魔土司乩童瑾貹∙殡敌∙刘和瓜雪巴西不能帮新村门牌T十五号世袭制自宫自残自虐自杀的变性失心疯猥亵淫魔土司乩童佳坤∙殡∙张、巫贼巫婆非法回教徒公仆、看守监狱的巫贼巫婆非法回教徒公仆。*
 
 <iframe width="400" height="225" src="https://youtu.be/embed/u_DYBdlyMYg" title="「三维地图」商鞅变法的具体内容是什么，为什么他的变法能让秦国从此崛起？一个视频带你了解全部" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/u_DBdlyMYg)*
 
 <iframe width="400" height="225" src="//player.bilibili.com/player.html?bvid=BV1Yt411K7UE" title="历史微课-商鞅变法" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -540,7 +549,9 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 ![*巫贼巫婆非法回教徒宦官民族*](诸子百家考工记/何谓宦官（图二）.png){width=400}
 
-<iframe width="400" height="225" src="https://youtu.be/embed/ndCUxQB0kzg" title="「抖音」大秦赋 - 时光机器农历二零零二年" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+> <iframe width="400" height="225" src="https://youtu.be/embed/ndCUxQB0kzg" title="「抖音」大秦赋 - 时光机器农历二零零二年" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+> 
+> *出处：[「油管」大秦赋 - 时光机器农历二零零二年](https://youtu.be/ndCUxQB0kzg)*
 
 *引用：[「抖音」大秦赋 - 时光机器农历二零零二年](https://v.douyin.com/iNwNe2Q6)*
 
@@ -599,6 +610,8 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 <iframe width="400" height="225" src="https://youtu.be/embed/GAGJAI6CY64" title="「抖音」写了篆书才知篆书有多美啊！" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/KsCpTch6QSg)*
+
 - [「猫城」黄联富（®γσ ξηg 雷欧）/「🚩🇨🇳🏹🦔中科红旗」🎋🎋🎍🐼🎍🎋🎋附有公元前秦人拼音的红旗输入法#八](https://github.com/englianhu/RedFlag-Linux/issues/8)
 - [「雎虒」黄联富（®γσ ξηg 雷欧）/Rime输入法Emoji与符号滤镜](https://gitee.com/englianhu/rime_OpenCC_emoji_symbols)
 - [礼逆袭上的输入法－Gcin（支持词音、注音、拼音、仓颉、呒虾米）](https://magiclen.org/gcin)
@@ -653,7 +666,11 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 <iframe width="400" height="225" src="https://youtu.be/embed/j-YFB_HTt2s" title="数学帝国始皇帝 - 炎黄子孙" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/j-YFB_HTt2s)*
+
 <iframe width="400" height="225" src="https://youtu.be/embed/auPaUFDYuBc" title="数学剑法 - 独孤九剑" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/auPaUFDYuBc)*
 
 ![*道家既赢家，走向道家算卜。*](诸子百家考工记/陈省身 - 走向数学.png){width=400}
 
@@ -767,6 +784,8 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 <iframe width="400" height="225" src="https://youtu.be/embed/roq7hcgVTqk" title="了解 Popularity of R Programming 作为一种编程语言的流行度（四分钟微学习）ENG Subtitle" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/roq7hcgVTgk)*
+
 *一九九四年澳洲Ross & Robert研发R鄀统计编程语言。*
 
 - [「七龍珠總整理」所有的RR人造人 | 一次看完壹至廿壹號人造人 以及那些你可能沒看過的人造人 | 人造人九號、十七與十八號合體、人造人八千號？！](https://youtu.be/_yD7IZYnIUU)
@@ -791,6 +810,8 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 上图画中话叙述秦国史与近代史（秦孝公提拔商鞅变法清君侧、美国US独立战争史和马来西亚MY大汉山赤印度人酋长赤帝《三国志》、扶苏的苏联十月革命或持续黄种人胡亥的辛亥革命，建立万里长城抵御北方凶悍的游牧民族匈奴掠夺天然资源和搞垮经济——高科技高频量化对冲）和美国（大象共和国如果本土化和爱国就沦为赤印度人的巫术国度，外来的英国习俗文化宗教语言终究是英国人的资产）独立战争史，值得咱们中华民族省思。「世袭制道家黄河文明、黄埔军校、黄种人，拯救亚洲人」，东亚各种族需要各种族遵守回各自祖籍的习俗文化宗教语言法律，多元习俗文化宗教语言，才不会种族互相厮杀，导致洋番渔翁得利，重返亚洲。至于东南亚的巫贼巫婆回教徒累赘民族一律杀无赦！
 
 <iframe width="400" height="225" src="https://youtu.be/embed/ONtyQcRsaUw" title="「空城计」MY大汉山世袭制法家可兰经回教刑事法典习俗文化宗教语言断肢法巫贼巫婆非法回教徒巫术份子和赤印度人酋长宗教司甘地/土司乩童刘瑾貹和世袭制法家可兰经回教刑事法典习俗文化宗教语言断肢法巫贼巫婆非法回教徒巫术份子 -自杀式恐怖袭击- 红军🚩" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/ONtyQcRsaUw)*
 
 ## 克拉克太阳谷（二零一九年：阿里之旅）
 
@@ -2546,11 +2567,15 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 <iframe width="400" height="225" src="https://youtu.be/embed/mV5IQbd0o0U" title="謝霆鋒 Nicholas Tse《黃種人》[Official MV]" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/mV5IQbd0o0U)*
+
 ## 黄氏与黄河文明
 
 ### 黄氏江夏堂与林氏西河堂
 
 <iframe width="400" height="225" src="https://youtu.be/embed/Q5bSoiFxwFE" title="先秦列国疆域变化 Pre-Qin China: Every Year" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/Q5bSoiFxwFE)*
 
 ### 黄氏江夏堂与吴氏至德堂
 
@@ -2571,9 +2596,11 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 ##### 杏林与精子
 
-<iframe width="400" height="225" src="https://youtu.be/embed/5uysBWFXex8" title="《成都》趙雷（成都街景）分別總是在九月♫" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+> <iframe width="400" height="225" src="https://youtu.be/embed/5uysBWFXex8" title="《成都》趙雷（成都街景）分別總是在九月♫" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+> 
+> *从北京（三国时期称为「北平」，统计之都、经管之家）到成都（三国时期蜀国国都称为「蜀都」，而礼逆袭操作系统最高权限是`sudo su`建立蜀都；在天愿做比翼鸟，在地愿做连理枝。）*
 
-*从北京（三国时期称为「北平」，统计之都、经管之家）到成都（三国时期蜀国国都称为「蜀都」，而礼逆袭操作系统最高权限是`sudo su`建立蜀都；在天愿做比翼鸟，在地愿做连理枝。）*
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/5uysBWFXex8)*
 
 > 直到所有的灯都熄灭了也不停留…🎶
 
@@ -2604,7 +2631,11 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 <iframe width="400" height="225" src="https://youtu.be/embed/Ff202w8-j7s" title="有3000年歷史的「守宮砂」，真能辨別女子貞操？有沒有科學依據？[酒窩趣科普] #趣味歷史#歷史科普#古代歷史" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/Ff202w8-j7s)*
+
 <iframe width="400" height="225" src="https://youtu.be/embed/nbMbxkFN2a8" title="「抖音」计量经济学霸ξ诗 - hypothesis test" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/nbMbxkFN2a8)*
 
 ##### 姓氏双木林
 
@@ -2788,9 +2819,15 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 <iframe width="400" height="225" src="https://youtu.be/embed/8TnfsmpRlFk" title="「三维地图」一口气讲完秦国卅八位国君,以及五百圆三年历史，它们为秦始皇统一六国打下了哪些基础？" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/8TnfsmpRlFk)*
+
 <iframe width="400" height="225" src="https://youtu.be/embed/5UpXZKu0M3E" title="《秦灭六国统一中国》演示动画" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/5UpXZKu0M3E)*
+
 <iframe width="400" height="225" src="https://youtu.be/embed/uI1LOAaVm9g" title="中國第一個皇帝，秦始皇 | 老高與小茉 Mr & Mrs Gao" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/uI1LOAaVm9g)*
 
 ### 十二生肖
 
@@ -2840,6 +2877,8 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 > [峇冬新村（Tiram Buruk/Tiram Setia），于一九五八年创立，位于雪兰莪州瓜雪县，村民的籍贯主要为福建。占地约圆英亩的峇东新村大部份的村民都是油棕园园主，进入新村时可看到罗里载送油棕的痕迹…](https://www.facebook.com/MYChineseNewVillage/posts/pfbid06jZRa3s6CxrXRgh8V7YJFhLcU8fMLAb6eFYkXooVRr7FNn2occX4Zh6qkWh7vJEol)
 > 
 > <iframe width="400" height="225" src="https://youtu.be/embed/tNTuFtDnJDk" title="δ「Tiktok」故郷 ふるさと" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+> 
+> *出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/tNTuFtDnJDk)*
 > 
 > *世袭制道教徒十二生肖赢家黄氏江夏堂联富本人的曾祖父黄福全，清末光绪年间从满洲到星洲——峇东新村开垦一百亩农地，鸦片战争时期和杨清廉（商业大亨杨忠礼之父）俩是咱们瓜雪县最富裕的土豪，最后因为染上鸦片毒瘾而死。*
 > 
@@ -2914,9 +2953,13 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 
 <iframe width="400" height="225" src="https://youtu.be/embed/AEsk9DBoIq4" title="🚩🔆🏹🌟👊🚀🦔「大秦赋」拨款建寺庙与发展咱们中华民族新村" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-<iframe width="400" height="225" src="https://youtu.be/embed/nyj_dbXfj6I" title="春风若有桃花意，落花时节又逢君" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/AEsk9DBoIq4)*
 
-*黄河文明、鬼谷传奇、河南中原女子：春风若有桃花意，落花时节又逢君。*
+> <iframe width="400" height="225" src="https://youtu.be/embed/nyj_dbXfj6I" title="春风若有桃花意，落花时节又逢君" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+> 
+> *黄河文明、鬼谷传奇、河南中原女子：春风若有桃花意，落花时节又逢君。*
+
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/nyj_dbXfj6I)*
 
 > **《世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊》**<br>
 世风日下，人心不古；<br>
@@ -3088,6 +3131,8 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 ##### 大数定律
 
 <iframe width="400" height="225" src="https://youtu.be/embed/qMmlwttfad8" title="「抖音」加油不放弃" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+
+*出处：[「油管」瓜雪RHU花园加德士油站隔壁第三巷门牌卅二号的土司乩童世袭制法家刘氏彭城堂瑾貹/美国伐木的国父法官瓦盛顿/印度国父宗教司甘地/《魔戒三部曲》咕噜/时光机器二零零二白骨精](https://youtu.be/qMmlwttfad8)*
 
 借鉴咱们赢家黄氏江夏堂和春秋战国史，咱们世袭制道教徒如何在目前的七大洲五大洋一统天下呢？请查阅[🌟秦人牧马之《商君书》](#🌟秦人牧马之《商君书》)和[前瞻科研](#前瞻科研)，愚生世袭制道教徒赢家黄氏江夏堂联富只顾自身与家眷亲属，修身齐家平天下。目前正在着手科研高频量化对冲、道家、易经、夜观星象、风水学、姓氏堂号子嗣贞节牌坊、一系列与咱们世袭制道教徒赢家黄氏江夏堂，秦人崛起的方针、路线、概念、「文言文编程大秦赋」/「大秦赋」操作系统与「自然对数算筹」/「算筹」电子仪器：
 
