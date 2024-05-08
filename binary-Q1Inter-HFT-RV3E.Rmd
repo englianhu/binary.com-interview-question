@@ -5027,6 +5027,7 @@ options(warn = 0)
 - [有了人工智能，从此程序员只写注释，不写代码？| 手把手安装自动写代码人工智能——Code Whisperer](https://www.youtube.com/watch?v=TIpRA6iwNus)
 - [Ansible vs Puppet vs Chef – 2021 配置管理工具比较](https://www.incredibuild.cn/blog/ansible-vs-puppet-vs-chef-2021-peizhiguanligongjubijiao)
 - [「博客园」企业级自动化运维工具——puppet详解](https://www.cnblogs.com/along21/p/10369858.html)
+- 咱们世袭制道教徒宗教与科技产品「大秦赋」操作系统登陆后的界面是个银河系再专注放大到用户所在的互联网协议地址，可借鉴[星图地球](https://online.geovisearth.com/browser)
 
 ##### 电子仪器与硬件
 
