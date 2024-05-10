@@ -966,6 +966,7 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 - [「沧浪」秦国怎样提升军队战斗力](https://www.bilibili.com/video/BV1Kx42117rj)
     - [「知乎」MIDAS：混频数据回归](https://zhuanlan.zhihu.com/p/343307253)
     - [MIDAS：混频数据回归](https://www.lianxh.cn/news/8ab193e6f04cc.html)
+- [®ωοrld](https://github.com/scibrokes/r-world)
 
 ##### 长信侯法家嫪毐
 
@@ -1182,6 +1183,8 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 《最近比较烦🎶》
 
 **🇬🇧英国立博🚩红军百年老店**
+
+在自修和科研，详情请查阅[雷欧（简历）](https://www.rpubs.com/englianhu/ryo-cn)
 
 ![**](诸子百家考工记/Scicom Appreciation Certificate.png){width=400}
 
@@ -3796,6 +3799,9 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 - 时辰
 
 [Forecasting ARIMA vs ARIMAX vs Dynamic Regression](https://rpubs.com/Bardock123/561991)分析气象学与工作日，文献中的数据`c('Date', 'Temperature', 'Humidity', 'Windspeed', 'Count', 'All_workdays')`筹算日期、气候温度、空气湿度、风速。
+
+- [如何把地球的各个地方都变成四季如春的城市](https://haokan.baidu.com/v?pd=wisenatural&vid=15391996299814601036)
+- [如何合理开发地球？怎样才能让地球每个地方都四季如春](https://haokan.baidu.com/v?pd=wisenatural&vid=12551087415215636065)
 
 > 经过查询，`lhmetools`是个水文学（水文学是科研地球上有关气象学和海洋、天文学是科研宇宙与太空）数据分析程序包，可以分析孔明借东风、水淹七军、控制气候导致农产品丰收或歉收（咱们道教徒易经中的算卜：五谷丰收，风调雨顺），例如旱季或烟貍、沙漠地区人造雨、久旱逢甘露。
 > 
