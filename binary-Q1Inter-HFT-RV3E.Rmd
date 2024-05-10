@@ -5270,6 +5270,7 @@ options(warn = 0)
 - [如何根据科学，过目不忘和充耳不忘（英）]()
 - [为非计数家而写的计数|机数（英）]()
 - []()
+- [「栈溢出」二零二三年网站学术总汇](https://survey.stackoverflow.co/2023/?fbclid=IwZXh0bgNhZW0CMTAAAR0FuQC5PHTIcEelsf76aEpgWFW7-JEqaiws4_00hj9S4N9LtZg97ks8-hg_aem_ARvrcz62eOmT9xTuo3QJdueEE4o0QOa9_Wc_q-piwlQNs7SqktXvyu84gPF2ozFSYbbzouzKFuV6mW8x-BHIg2Su#section-admired-and-desired-programming-scripting-and-markup-languages)
 
 **拯救亚洲人，削蕃外洲人。**
 
