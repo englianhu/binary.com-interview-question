@@ -967,6 +967,7 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
     - [「知乎」MIDAS：混频数据回归](https://zhuanlan.zhihu.com/p/343307253)
     - [MIDAS：混频数据回归](https://www.lianxh.cn/news/8ab193e6f04cc.html)
 - [®ωοrld](https://github.com/scibrokes/r-world)
+- [贞节牌坊与轮回](#贞节牌坊与轮回)
 
 ##### 长信侯法家嫪毐
 
@@ -5264,13 +5265,13 @@ options(warn = 0)
 - 三、了解与学习、实践、回测、校对并检讨才预测
 - 四、根据以上三个学习方式，轮回与进化论
 
-借鉴教育学家兼儒家孔子、教育学家兼法家荀子、教育学家兼经济学家管子，有关入门算卜、有效的自修学习成为数术家之道相关资源，请查阅：
+借鉴教育学家兼儒家孔子、教育学家兼法家荀子、教育学家兼经济学家管子、教育学家兼纵横家鬼谷子等，有关入门算卜、有效的自修学习成为数术家之道相关资源，请查阅：
 
 - [学习能力与进度分类（英）]()
 - [如何根据科学，过目不忘和充耳不忘（英）]()
 - [为非计数家而写的计数|机数（英）]()
 - []()
-- [「栈溢出」二零二三年网站学术总汇](https://survey.stackoverflow.co/2023/?fbclid=IwZXh0bgNhZW0CMTAAAR0FuQC5PHTIcEelsf76aEpgWFW7-JEqaiws4_00hj9S4N9LtZg97ks8-hg_aem_ARvrcz62eOmT9xTuo3QJdueEE4o0QOa9_Wc_q-piwlQNs7SqktXvyu84gPF2ozFSYbbzouzKFuV6mW8x-BHIg2Su#section-admired-and-desired-programming-scripting-and-markup-languages)
+- [「栈溢出」二零二三年网站总汇](https://survey.stackoverflow.co/2023/?fbclid=IwZXh0bgNhZW0CMTAAAR0FuQC5PHTIcEelsf76aEpgWFW7-JEqaiws4_00hj9S4N9LtZg97ks8-hg_aem_ARvrcz62eOmT9xTuo3QJdueEE4o0QOa9_Wc_q-piwlQNs7SqktXvyu84gPF2ozFSYbbzouzKFuV6mW8x-BHIg2Su#section-admired-and-desired-programming-scripting-and-markup-languages)
 
 **拯救亚洲人，削蕃外洲人。**
 
