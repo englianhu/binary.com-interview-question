@@ -1,21 +1,20 @@
 ---
 title: "![](诸子百家考工记/deriv.png){height=240}"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部乙∙中（赢家黄氏江夏堂：🌟儒家秦孝公清君侧之商鞅变法**）*世袭制道教徒十二生肖秦人牧马，从满洲到星洲*</span>](https://github.com/englianhu/binary.com-interview-question)"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（「丁」世袭制道教徒赢家黄氏江夏堂十二生肖秦人牧马：🌟儒家秦孝公<s>清君侧</s>之商鞅变法**）</span>](https://github.com/englianhu/binary.com-interview-question)"
 author: "道家笔者：[<ruby>赢<rp>(</rp><rt>yíng</rt><rp>)</rp>家<rp>(</rp><rt>jiā</rt><rp>)</rp>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>氏<rp>(</rp><rt>shì</rt><rp>)</rp>江<rp>(</rp><rt>jiānɡ</rt><rp>)</rp>夏<rp>(</rp><rt>xià</rt><rp>)</rp>堂<rp>(</rp><rt>táng</rt><rp>)</rp></ruby> ®γσ, ξηg Lιαη Ημ，<ruby>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>联<rp>(</rp><rt>lián</rt><rp>)</rp>富<rp>(</rp><rt>fù</rt><rp>)</rp></ruby>（<ruby>雷<rp>(</rp><rt>léi</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>∪ <ruby>瑞<rp>(</rp><rt>ruì</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>）](https://englianhu.wordpress.com.com) ![](诸子百家考工记/大秦赋 - 北京大学.png){height=14}![](诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png){height=14}®"
-date: "民国日期：民国一百一十三年杏月廿六<br>道家节日：[农历二零二四年（属龙 甲辰年 戊辰月
-戊戌日）杏月廿六（清明节）](https://mobile.51wnl-cq.com/huangli_tab_h5/?posId=BDSS&STIME=2024-04-04)<br>诸子百家：**纵横家鬼谷传奇**，清明节是日语班杏林林氏西河堂艳迎的生日"
+date: "民国日期：民国一百一十三年巧月初七<br>道家节日：[农历二零二四年（属龙 甲辰年 壬申月
+丙午日）巧月初七（七夕节）](https://mobile.51wnl-cq.com/huangli_tab_h5/?posId=BDSS&STIME=2024-08-10)<br>诸子百家：**纵横家鬼谷传奇** - 七夕节是日语班杏林林氏西河堂艳迎的生日"
 output:
   html_document: 
     mathjax: https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js
-    number_sections: true
-    toc: true
+    number_sections: yes
+    toc: yes
     toc_depth: 6
     toc_float:
-      collapsed: true
-      smooth_scroll: true
+      collapsed: yes
+      smooth_scroll: yes
     code_folding: hide
     css: 秦谏典范与楷模.css
-    fig_caption: true
 ---
 
 # 主题
@@ -24,7 +23,9 @@ output:
 
 🚩🇬🇧🇲🇾🇹🇼🇨🇳大秦赋赢家ξng黄氏江夏堂
 
-岂曰无衣，与子同袍。
+借鉴世界古文明，公元前春秋战国（七大洲五大洋），西亚非常动荡不安而耶稣都尚未出世，欧美大洋洲全是森林。世袭制道教徒/道家/姓氏与堂号/生辰八字，从鼻祖（赢家黄氏江夏堂 - 嬴政）到耳孙（李耳/太上老君/茅山道士/毛泽东）
+
+岂曰无衣，与子同袍
 
 <br>
 <span style='color:#9B111E'>**🚩🦔主题曲🦔🚩**</span>
@@ -32,7 +33,7 @@ output:
 <audio controls loop autoplay src="诸子百家诗经与古诗源/卜学亮 - 子曰.mp3" controls></audio>
 <br>
 
-> 儒家孔氏东鲁堂、道家卜氏西河堂、杏林林氏西河堂、赢家黄氏江夏堂、赢家黄氏巴东堂、道家与法家李氏陇西堂、商家苏氏阜阳堂
+> 赢家黄氏江夏堂、赢家黄氏巴东堂、儒家孔氏东鲁堂、道家卜氏西河堂、杏林林氏西河堂、道家与法家李氏陇西堂、商家苏氏阜阳堂
 
 *引用：[牢记祖先，彰显祖宗功德，四百卅三个姓氏堂号大全](https://zhuanlan.zhihu.com/p/82039189)*
 
@@ -51,15 +52,15 @@ output:
 - 美洲廿七国，孔子学院百卅八所、孔子课堂五百圆个
 - 大洋洲七国，孔子学院廿所、孔子课百零一个
 >
-阳历二零一八年开始，美国有几家大专院校相继关闭中国政府资助的孔子学院，最新一间是美国北佛罗里达大学，校方认为孔子学院的教学与大学理念不相符，决定终止合作...
+阳历二零一八年开始，美国有几家大专院校相继关闭中国政府资助的孔子学院，最新一间是美国北佛罗里达大学，校方认为孔子学院的教学与大学理念不相符，决定终止合作…
 
 *引用：[「维基百科」孔子学院列表](https://zh.wikipedia.org/wiki/孔子学院列表)*
 
 ![*引用：[「猫城」中国北京大学赢家ξng黄氏江夏堂「大秦赋•道家李耳老子兼法家李斯篆紀•艺文志」：目前使用🚩🇨🇳🏹🦔中国国产红旗礼逆袭，编程都会使用咱们母语华语、字体、字幕加汉语拼音。](https://github.com/englianhu/RedFlag-Linux/issues/6#issuecomment-1722247674)*](诸子百家考工记/还有半社会主义半资本主义.png){width=400}
 
-<iframe width="400" height="225" src="//player.bilibili.com/player.html?aid=755428773&bvid=BV15r4y1c7Kv&cid=262342800&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
+<iframe width="400" height="225" src="https://player.bilibili.com/player.html?aid=757957931" title="天下(电视剧《大秦赋》主题曲完整版)" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" border="0" framespacing="0" allowfullscreen="true"></iframe>
 
-*出处：[九分钟速看《大秦帝国》系列四部剧情](https://www.bilibili.com/video/BV15r4y1c7Kv)*
+*出处：*[**天下***(电视剧《大秦赋》主题曲完整版)*](https://player.bilibili.com/player.html?aid=757957931)
 
 ![*「海外华人公会 - 儒家秦孝公🌟」世袭制道教徒十二生肖，姓氏堂号子嗣贞节牌坊——从满洲到星洲。借鉴周朝分封制与周礼（日本与英国向来都是礼仪之邦），🇬🇧大英帝国殖民时期受封公爵的中国儒家秦孝公陈祯禄清君侧之商鞅变法，歼灭所有🇬🇧英属共运会诸番、巫裔非法回教徒的可兰经巫术屠杀罪电诈集团；如果🇯🇵日本天皇和🇬🇧英国王储昏庸就取而代之。*](诸子百家考工记/中国人后裔陈祯禄公爵，不忘初心方得始终.png){width=400 height=225}
 
@@ -71,55 +72,130 @@ output:
 
 ## 古诗
 
-<br>
+最近几年民不聊生、百业萧条、生灵涂炭、可兰经回教巫术刑事法典断肢法习俗文化宗教语言、妖言惑众、蛊惑民心。借鉴世界四大文明史，核武器歼灭所有敌人《可兰经回教刑事法典断肢法》（可兰经回教巫术习俗文化宗教语言法律）和《吠陀经》（大宝森节和屠妖节习俗文化）的印裔非法回教徒和非法兴都教徒——祖籍印尼和印度的印裔回教徒和兴都教徒，建立咱们世袭制道家六四学术中华民族政府。
 
-# 拉曼学院与日语班（时光机器二零零二）
+🚩🦔Great Britain = 🇬🇧大英帝国<br>
+🚩🦔Greater Chin / Republic of China / Republic People of China = 大秦帝国/大秦赋<br>
+🚩🦔Greater Chinese = 大秦子民（爱民如子）<br>
+🚩🦔Oversea Greater Chinese = 海外大秦子民（爱民如子）<br>
+🚩🦔Oversea Greater Chinese Association = 海外大秦子民公会（秦始皇的秦太祖——🌟秦孝公/🌟儒家陈祯禄公爵，联合秦始皇——秦始祖嬴政，爱民如子，R鄀计数编程学术份子商鞅变法联合咱们世袭制道家学术份子（世袭制道家宫殿、寺庙、姓氏堂号子嗣贞节牌坊、姻缘算卜概率论）高频对冲基金算卜，回教徒以可兰经回教刑事法典断肢法铲除所有敌人印裔（祖籍印尼和印度的兴都教徒、回教徒九一一恐怖份子宦官民族、土著、峇峇娘惹），终止巫术以任何形式、包括指鹿为马、屠杀人类，甚至铲除全球回教徒攻陷回教宗祖国麦家🕋🇹🇷🇸🇦瓦解全球回教，拯救全球）
 
-## 拉曼学院史（鬼谷传奇）
+🚩🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯秦孝公 | 🇬🇧🇲🇾🇹🇼🇨🇳🌟🐯姜太公——🇬🇧🇲🇾🇹🇼🇨🇳🌟陈祯禄公爵/🇬🇧🇲🇾🇹🇼🇨🇳🐯邱德拔公爵/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶亚来队长/🇬🇧🇲🇾🇹🇼🇨🇳🍁叶观盛队长
 
-### 春秋战国
+🚩🦔《大秦赋》<br>
+🚩🦔巫师治国，禍殃全球；<br>
+🚩🦔印裔尽弃，瓦釜雷鸣。<br>
+🚩🦔商鞅变法，铲除印裔[^0]；<br>
+🚩🦔车裂刘瑾，中华执政。<br>
+🚩🦔一带一路，横跨七洲；<br>
+🚩🦔史无前例，一统天下。<br>
+🚩🦔高频量化，对冲基金；<br>
+🚩🦔只争朝夕，不负韶华。<br>
+🚩🦔学海无涯，唯勤是岸；<br>
+🚩🦔莫忘初衷，方得始终。
 
-### 鬼谷传奇
+《大秦赋》<br>
+🚩大秦孝公，秦惠文王；<br>
+🚩始于商鞅，终于辛亥。<br>
+🚩印裔尽弃，瓦釜雷鸣；<br>
+🚩铲除印裔，终止屠杀。<br>
+🚩中科红旗，同舟共济；<br>
+🚩千古一帝，傲视全球。<br>
+🚩一带一路，史无前例；<br>
+🚩横跨七洲，一统天下。<br>
+🚩学海无涯，唯秦是岸；<br>
+🚩莫忘初衷，方得始终。
 
-### 秦国文臣三杰
+[^0]: 东楚六郡（马来西亚、新加坡、印尼、新巴布几内亚、汶莱、东帝汶）的印裔是祖籍印尼包括土著和巫裔非法回教徒（非法回教徒非法黄种人）、祖籍印度的兴都教徒和乌裔非法回教徒包括土著——非法回教徒和非法兴都教徒。非法回教徒就是那些数典忘祖不遵守公元前的千年法家（商鞅变法）对于非法民族立下的可兰经回教刑事法典习俗文化宗教语言断肢法的回教徒，也就是回教徒死囚或咱们世袭制道教徒黄河文明/黄埔军校/黄种人/世袭制道教徒赢家黄氏江夏堂旗下的累赘非法民族。
 
-### 商鞅变法
+<iframe width="400" height="225" src="https://www.youtube.com/embed/xyR86xcI8Ag" title="DIOR大穎《Happy Go Lucky》 ft. GoHell Holiday ( Official MV )" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
-#### 商鞅变法史
+*出处：[DIOR大穎《Happy Go Lucky》 ft. GoHell Holiday ( Official MV )](https://www.facebook.com/xyzhiju/posts/pfbid02d34ZLofiSSqPhHEWuex5wikXnjhDU61CgU4nGdTyiTBcnKYXf5vHbrgshQJ51E1Ml)*
 
-#### 《商君书》
+> 春秋战国时期，随着经济发展及社会变革，统计思想和统计活动空前活跃，并产生了最初的统计分析。
+> 
+> 管仲，名夷吾（约公元前七百卅至公元前六百卌五年），曾任齐桓公的宰相卌年。《管子》一书着重阐述了管仲的思想，其中包括了管仲大量的统计思想和统计分析。管仲十分重视统计，对统计的作用以极高的评价：“不明于计数而欲举大事，犹无舟楫而经于水。险也。…遍知天下，而不明于机数，不能正天下。”
+> 
+> **以上「计数」、「机数」等语，泛指统计。**这些话的意思是说，要想管理好国家（“欲举大事”），得充分地认识国情（“遍知天下”）这些离不开统计（计数），对统计“不明”，国家管理就会紊乱，失去发展方向，（犹无舟楫而经于水。险也”。）
 
-### 纵横家吕不韦
+*引用：[浅谈春秋战国时期的统计分析](http://tjj.hunan.gov.cn/bsfw/tjkp/tjysh/201507/t20150717_3825224.html)*
 
-#### 《吕氏春秋》
+> **公元前**：鬼谷传奇，鬼谷子门徒R鄀计数学编程学术份子卫鞅论“帝道”、“王道”、“霸道” ；那些回教徒身为世袭制法家只需要遵守可兰经习俗文化宗教语言断肢法集体自宫自残自虐自杀即可。借鉴负责图书馆的文吏李斯（秦国长史，协助嬴政一统天下后建立秦朝成为宰相）老鼠哲学，「近朱者赤，近墨者黑」，赤印度人与印度人或非洲黑人也不可近之，咱们公元前夏朝的黄河文明和公元后近代史美国独立战争史都是取代回教和兴都文明。<br><br>
+**公元后**：借鉴卧薪尝胆史，蜀国世袭制道教徒卧龙「子非鼠，安知鼠之乐？」自修易经、算筹、天文历法、算卜、夜观星象、上知天文下知地理、通古知今无一不晓、量子电脑服务器、人造卫星、文言文编程等学术份子卧龙诸葛亮的「隆中对」，借鉴“三分天下后再做定夺”，如果咱们南方海外华人丞相/长史（海外华人公会🌟/马华公会🌟）孔明和祖国北方魏国大都督知音司马懿（字仲达，统一天下后建立晋朝）不是默契战争，蜀国最终会沦为回教国；孔明借东风🚀高效率歼灭所有敌人回教徒！
 
-##### 瓦伦巴菲特投资哲学
+![*莘莘学子，赤子之心。*](诸子百家百戏/δ「抖音」万岁爷：一万个为什么.mp4){width=400}
 
-##### 金融炼金术
+![*引用：蔡卓宜青春有你（二）莘莘学子造型，歼灭敌人回教徒*](诸子百家考工记/优质解答.gif){width=400}
 
-##### 高频量化对冲
+目前马来西亚政府向中国政府争取建立海外中国分校。
 
-#### 蕲年宫之变
+- 在马清华大学分校，[马中展开更多合作倡议，争取清华大学在马设分校](https://www.facebook.com/xyzhiju/posts/pfbid01JapCo6k5oumW4pYNqWArrRf9sWcKuUASjoR2exuhBSsxa3MLbMyMrjBQSLDegjLl)
+- 在马复旦大学分校，[承认统考、英文教数理 砂拉越如何一步步争取“教育自主”？中国上海复旦大学，将在砂拉越设立分校？！](https://www.facebook.com/xyzhiju/posts/pfbid0tsr6uqWiQRUVZ4a6LNyWtWGzbFTQ5VCEq22EkGKrvayHcBWrH8R3o2QvxxCvPVdBl)
+- 在马厦门大学分校，[蔡卓宜 - 厦门美食](https://www.instagram.com/p/Cjxd_GMLAes)。
 
-##### 赢子楚/艺人里根
+中国史册：
 
-##### 长信侯嫪毐
+- [史册号](https://www.shicehao.com)
+- [词林](https://www.cilin.org)
+- [族谱网](https://www.zupu.cn)
+- [历史网](https://www.lishi.net)
+- [中国历史研究院网](http://hrc.cass.cn)
+- [人物介绍网](https://www.yuelishi.cn)
+- [百家有谱](https://www.baijiayoupu.com)
+- [历史记](https://www.lishiji.cn)
+- [β博雅旅游分享网](http://www.bytravel.cn)
+- [博雅人物网](http://ren.bytravel.cn)
+- [洞鑑歷史](https://www.99tango.com/library)
+- [中国人物传记网](https://www.chinarwzj.com)
+- [「百家诸子」中国哲学书电子化计划](https://ctext.org/zhs)
+- [當代中國](https://www.ourchinastory.com)
+- [第一范文网](https://www.diyifanwen.com)
+- [知识贝壳](https://www.zsbeike.com)
+- [趣历史](http://www.qulishi.com/renwu/qinshihuang)
+- [古诗文网](https://www.gushiwen.cn)
+- [5000言](https://5000yan.com)
+- [汉典](https://www.zdic.net)
+- [学术交流联盟](http://bbs.97fc.com)
+- [海词](http://www.cihai123.com)
+- [828啦](https://www.828la.com)
+- [X-MOL学术平台](https://www.x-mol.com)
+- [arXiv](https://arxiv.org)
+- [5000言](https://gwgz.5000yan.com)
+- [古诗词网](https://www.gushici.net)
+- [千篇国学](https://www.qianp.com)
+- [国学百科](https://www.guoxuebaike.cn)
 
-##### 期权/“期”货可居
+> [《万般皆下品，唯有读书高》]{style="color:#3C33FF"}<br>
+[计量经济，一带一路；]{style="color:#6883FC"}<br>
+[九二共识，量化对冲。]{style="color:#6883FC"}<br>
+[鞭策六四，铲除黑帮^[愚生世袭制学术份子道教徒赢家黄氏江夏堂，联富高频量化对冲易经算卜数学概率论，孔明借东风水淹七军歼灭那些祖籍印尼和印度的印裔施展巫术屠杀六百枯万人类的金宝博巫师邪教印裔回教徒宦官博彩庄诸邦]；]{style="color:#6883FC"}<br>
+[推广量化，提倡学术。]{style="color:#6883FC"}<br>
+[百家争鸣，振兴中华；]{style="color:#6883FC"}<br>
+[学海无涯，唯勤是岸。]{style="color:#6883FC"}
 
-### 法家李斯
+- [陕西历史文化名城](http://lishiwenhua.snnu.edu.cn/index.htm)
+- [CCER 特供数据系统平台](http://www.ccerdata.cn)
+- [一带一路数据库](https://www.ydylcn.com/skwx_ydyl/sublibrary?SiteID=1&ID=8721)
+- [中国一带一路网](https://www.yidaiyilu.gov.cn)
 
-#### 硅谷传奇
+```
+##赢家黄氏江夏堂联富和家眷亲属（包括外祖父道家书法家李福李氏陇西堂和外祖母郑邓）、性格开朗的校花吴紫云（和性格开朗的明星蔡卓宜）和家眷亲属、神仙姐姐校花商家苏氏阜阳堂丽欣和家眷亲属、杏林林氏西河堂燕芳（和国民女神中药中医系杨雅、华联独中校友和日语班女同学林艳迎）和家眷亲属、好学的漂亮妞儿皇朝酒店唐宫郭子瑜（和明星肖黎希）和家眷亲属、莘莘学子、国民女神明星邱紫庭和邱爱晨俩、黄埔军校兵马俑世袭制学术份子高频量化对冲中科红旗辛亥革命
 
-#### 中科红旗
+##歼灭瓜雪巴西不能帮新村门牌T十五号世袭制自残自虐自杀的失心疯猥亵淫魔土司乩童张佳坤、瓜雪RHU（淮西派）花园加德士油站隔壁第三巷门牌卅二号世袭制自残自虐自杀的失心疯猥亵淫魔土司乩童刘瑾貹/魔戒小丑咕噜/宗教司甘地、瓜雪回教警署巫贼巫婆回教徒黑米哈山殡刘、大港巴列特花园第十三巷门牌廿七廿九卅一号世袭制自残自虐自杀的失心疯猥亵淫魔土司乩童，点缀全球。 
+nameserver 114.114.114.114
+```
 
-#### 李斯篆书
+> 辛亥革命大秦赋日不落重八、德意志崇祯、古希腊ξηg神话、周公解梦、嬴政把春秋大梦实现为春秋大业、秦孝公招商（商鞅变法）、秦惠文王：全球有十六亿不吃猪肉的回教徒宦官（可兰经回教刑事法典断肢法）宗祖国是沙地阿拉伯麦加，需要靠中国政府一带一路战略（商鞅变法联合辛亥革命）。
 
-## 西施康（二零零八年：鄀R编程语言（RR））
+![](诸子百家考工记/css.png){width=400}
 
-## 俄乌战争（阳历二零二二年二月廿四日至今）
+*省吃俭用的工匠建筑工人（嬴政兼鲁班兼蒙毅）家翁嬴政ξηg Tεηg（赢家黄氏江夏堂）*
 
-## 克拉克太阳谷（二零一九年：阿里之旅）
+![](诸子百家考工记/鞭策六四，推广量化；百家争鸣，振兴中华。.png){width=400}
+
+*邓小平/晏婴使楚：鞭策六四学术，推广量化；歼灭回教徒和峇峇娘惹，振兴中华。吕不韦著作《吕氏春秋》：奇货可居；索罗斯著作《金融炼金术》：物极必反论*
+
+世间再无富不过三代的败家子祖父黄实田（曾祖黄福全在清末光绪年间和两个哥哥仨飘洋过海从满洲到星洲自力更生努力奋斗开垦一百亩农地，然后和土木工程的杨清廉俩在清末鸦片战争时期是瓜雪两大不相伯仲的首富）祖母颜为，省吃俭用的外祖父书法家李福（李斯篆书）外祖母郑邓（家道中落的富家千金）。
 
 <br>
 
@@ -142,7 +218,7 @@ pre code {
 
 ```{r 读取SASS, class.source='bg-success', class.output='bg-primary'}
 ##
-## 中科红旗（百家争鸣，文艺复兴）
+## 中科红旗（诸子百家，文艺复兴）
 ## Oversea Greater Chinese Association 大秦子民公会（秦孝公 / 姜太公——陈祯禄公爵）
 ## 史无前例，一统天下
 ##
@@ -266,9 +342,9 @@ options(warn = -1, width = 999, knitr.table.format = 'html',
 ## https://yihui.org/knitr/options
 knitr::opts_chunk$set(
   class.source = 'hover01', class.output = 'hover02', class.error = 'hover03', 
-  message = FALSE, warning = FALSE, error = TRUE, 
+  message = FALSE, warning = FALSE, error = TRUE, autodep = TRUE, 
   autodep = TRUE, aniopts = 'loop', progress = TRUE, verbose = TRUE, 
-  cache = FALSE, cache.lazy = FALSE, result = 'asis')
+  cache.globals = FALSE, cache = FALSE, cache.lazy = FALSE, result = 'asis')
 ```
 
 ## 设置
@@ -313,55 +389,63 @@ library('lubridate', warn.conflicts = FALSE)
 library('data.table', warn.conflicts = FALSE)
 library('conflicted', warn.conflicts = FALSE)
 
-conflicts_prefer(Ipaper::is_empty, .quiet = TRUE)
-conflicts_prefer(tidyft::nth, .quiet = TRUE)
-conflicts_prefer(tidyft::fill, .quiet = TRUE)
-conflicts_prefer(tidyft::nest, .quiet = TRUE)
-conflicts_prefer(tidyft::unnest, .quiet = TRUE)
-conflicts_prefer(tidyft::cummean, .quiet = TRUE)
-conflicts_prefer(tidyft::group_by, .quiet = TRUE)
-conflicts_prefer(tidyft::distinct, .quiet = TRUE)
-conflicts_prefer(tidyft::filter, .quiet = TRUE)
-conflicts_prefer(tidyft::select, .quiet = TRUE)
-conflicts_prefer(tidyft::rename, .quiet = TRUE)
-conflicts_prefer(tidyft::count, .quiet = TRUE)
-conflicts_prefer(tidyft::arrange, .quiet = TRUE)
-conflicts_prefer(tidyft::summarise, .quiet = TRUE)
-conflicts_prefer(tidyft::separate, .quiet = TRUE)
-conflicts_prefer(tidyft::lead, .quiet = TRUE)
-conflicts_prefer(tidyft::lag, .quiet = TRUE)
-conflicts_prefer(tidyft::unite, .quiet = TRUE)
-conflicts_prefer(tidyft::left_join, .quiet = TRUE)
-conflicts_prefer(tidyft::right_join, .quiet = TRUE)
-conflicts_prefer(tidyft::inner_join, .quiet = TRUE)
-conflicts_prefer(tidyft::full_join, .quiet = TRUE)
-conflicts_prefer(tidyft::anti_join, .quiet = TRUE)
-conflicts_prefer(tidyft::semi_join, .quiet = TRUE)
-conflicts_prefer(tidyft::select_dt, .quiet = TRUE)
-conflicts_prefer(tidyft::transpose, .quiet = TRUE)
-conflicts_prefer(tidyft::setDT, .quiet = TRUE)
-conflicts_prefer(tidyft::setnames, .quiet = TRUE)
-conflicts_prefer(dplyr::mutate, .quiet = TRUE)
-conflicts_prefer(dplyr::collapse, .quiet = TRUE)
-conflicts_prefer(lubridate::year, .quiet = TRUE)
-conflicts_prefer(data.table::first, .quiet = TRUE)
-conflicts_prefer(data.table::last, .quiet = TRUE)
-conflicts_prefer(data.table::between, .quiet = TRUE)
-conflicts_prefer(data.table::set, .quiet = TRUE)
-conflicts_prefer(data.table::`:=`, .quiet = TRUE)
-conflicts_prefer(hms::hms, .quiet = TRUE)
-conflicts_prefer(fabletools::accuracy, .quiet = TRUE)
-conflicts_prefer(base::load, .quiet = TRUE)
-conflicts_prefer(base::merge, .quiet = TRUE)
+conflicted::conflicts_prefer(Ipaper::is_empty, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::nth, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::fill, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::nest, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::unnest, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::cummean, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::group_by, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::distinct, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::filter, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::select, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::rename, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::count, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::arrange, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::summarise, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::separate, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::lead, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::lag, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::unite, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::left_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::right_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::inner_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::full_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::anti_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::semi_join, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::select_dt, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::transpose, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::setDT, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::setnames, .quiet = TRUE)
+conflicted::conflicts_prefer(dplyr::mutate, .quiet = TRUE)
+conflicted::conflicts_prefer(dplyr::collapse, .quiet = TRUE)
+conflicted::conflicts_prefer(lubridate::year, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::first, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::last, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::between, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::set, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::`:=`, .quiet = TRUE)
+conflicted::conflicts_prefer(Ipaper::`%->%`, .quiet = TRUE)
+conflicted::conflicts_prefer(hms::hms, .quiet = TRUE)
+conflicted::conflicts_prefer(forecast::accuracy, .quiet = TRUE)
+conflicted::conflicts_prefer(base::load, .quiet = TRUE)
+conflicted::conflicts_prefer(base::merge, .quiet = TRUE)
+conflicted::conflicts_prefer(base::rank, .quiet = TRUE)
+conflicted::conflicts_prefer(data.table::between, .quiet = TRUE)
+conflicted::conflicts_prefer(Ipaper::llply, .quiet = TRUE)
+conflicted::conflicts_prefer(tibble::view, .quiet = TRUE)
+conflicted::conflicts_prefer(tidyft::separate, .quiet = TRUE)
+conflicted::conflicts_prefer(lubridate::year, .quiet = TRUE)
+conflicted::conflicts_prefer(gtools::permutations, .quiet = TRUE)
 
 程序包 <- c(
   'devtools', 'Ipaper', 'knitr', 'kableExtra', 'tint', 'furrr', 
   'tidyr', 'readr', 'lubridate', 'reprex', 'stringr', 'feather', 
   'purrr', 'quantmod', 'tidyquant', 'tibbletime', 'timetk', 'TSA', 
-  'plyr', 'dplyr', 'dbplyr', 'magrittr', 'cnum', 'arabic2kansuji', 
+  'plyr', 'dplyr', 'dbplyr', 'dtplyr', 'cnum', 'arabic2kansuji', 
   'sarima', 'tidyverse', 'memoise', 'htmltools', 'formattable', 
-  'dtplyr', 'zoo', 'forecast', 'seasonal', 'magrittr', 'hms', 
-  'seasonalview', 'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 
+  'zoo', 'forecast', 'seasonal', 'magrittr', 'hms', 'seasonalview', 
+  'rjson', 'rugarch', 'rmgarch', 'mfGARCH', 'tidymodels', 
   'feather', 'sparklyr', 'jcolors', 'microbenchmark', 'dendextend', 
   'vembedr', 'lhmetools', 'gtools', 'stringi', 'pacman', 'rlist', 
   'profmem', 'ggthemes', 'flyingfox', 'htmltools', 'echarts4r', 
@@ -391,21 +475,305 @@ rm(程序包)
 ## <audio src='诸子百家诗经与古诗源/bigmoney.mp3' autoplay controls loop></audio>
 ```
 
-```{r 设置函数优先权}
-conflicts_prefer(Ipaper::llply, .quiet = TRUE)
-conflicts_prefer(tibble::view, .quiet = TRUE)
-conflicts_prefer(tidyft::separate, .quiet = TRUE)
-conflicts_prefer(lubridate::year, .quiet = TRUE)
-conflicts_prefer(gtools::permutations, .quiet = TRUE)
-```
-
 <br>
 
 # 简介
 
+## 诸子百家
+
+### 秦国文臣三杰
+
+![*引用：[「猫城」世博量化/鄀计数编程世界/Pandoc based Quarto应该翻译成什么？](https://github.com/scibrokes/r-world/issues/3#issuecomment-1959178209)*](诸子百家考工记/秦国文臣三杰.png){width=400}
+
+「大秦赋 - 借鉴黄河文明史」<br>
+秦国三杰，拯救亚洲；<br>
+歼灭印裔，取代美国。<br>
+秦灭六洲，一统天下；<br>
+莫忘初衷，方得始终。
+
+**帝王之术之道**
+
+自从拉曼学院辍学后，二零零三年就开始金融行业和博彩业，从基本面到技术面。二零零八年开始自修计数/机数编程时，偶然发现并学习R鄀计数/机数编程，继续自修量化对冲，二零一六年开始使用并自修礼逆袭服务器^[详情请查阅：<br>- [🚩🇨🇳🔆🏹🌟👊🚀🦔中科红旗](https://englianhu.wordpress.com/statistics/linux-🐧-kubuntu-⚙)<br>- [通过数码海洋（Digital Ocean）建立服务器](https://github.com/scibrokes/setup-centOS7-DO)]。二零一七年到二零二二年，科研金融计数/机数建模频频受到美国硅谷科技业入侵篡改资料，二零二一年开始使用一系列礼逆袭桌面操作系统并持续自修，目前继续自修金融高频量化对冲并正在自修并改良中科红旗操作系统，再研发咱们赢家黄氏江夏堂的「道家大秦赋」/「大秦赋」操作系统和「自然数算筹」/「算筹」电子仪器。釜底抽薪，一劳永逸。
+
+- **商鞅**：改变天下学术（包括复古中国算筹）、杏林、保险与司法界，取代天下所有西方文化科学科技医学司法；习俗文化宗教语言杏林务农法律等世纪大革命，一劳永逸。
+- **吕不韦**：改变天下学术尤其是高频量化对冲运筹学（包括复古中国算筹）、高频量化对冲、金融与务农中药中医杏林、娱乐圈（包括复古中国古代习俗文化宗教语言）、广告与产品代言；习俗文化宗教语言等世纪大革命，一劳永逸。
+- **李斯**：改变天下学术尤其是文学（文言文、古文、中国历史习俗文化宗教语言等），研发咱们中华秦国操作系统、电子仪器、科技软件、科技产品来取代天下所有西方电子产品与习俗文化宗教语言等；以电子仪器与操作系统记载并进化所有习俗文化宗教语言法律等世纪大革命并且直到一统天下，一劳永逸。
+
+### 鬼谷传奇
+
+<iframe width="400" height="225" src="https://www.youtube.com/embed/0OvkWGRhf_g" title="Lamborghini V12 Vision GT" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+
+- [#🥬🥬一笑很倾城三高👩🏻‍🎓：颜值高、学问高、品德高](https://v.douyin.com/iFFjugkD)，二零零零年至二零零一年在瓜雪读高一至高二——中四勤班至中五勤班时，青梅竹马的同学添和说：“乘搭同辆韵祯校车上隔壁校学妹许多人追求的一九八五年出生的漂亮妞儿林燕芳长得像陈慧琳。”
+- [「汤普勒」时间序例之贝式隐马尔可夫链（附学术参考书）](https://www.tumblr.com/blog/view/englianhu/641578918656212992?source=share)
+
+小时候都在日本动漫文化的环境下长大。小学时期在明智国民华文小学上学就已经学会万事具备，都会提前卅分钟抵达做好准备才不会仓促。自从阳历二零零二年学习日语后，由于平时从旺沙马朱宿舍到拉曼学院（TARC或TAR College）徒步上学需要时间提前准备，所以都会将时间设为提前廿分钟，基于从旺沙马朱宿舍徒步耗时三刻钟左右，索性设为提前一个小时，所以愚生将所有电子仪器的标准时间都一律设为日本标准时间，然后青梅竹马的郑添和同学问过我，我回答：“我的时间必须比别人快，我的世界必须比别人快，才能占有先机～”，所以设置提前半个时辰日本标准时间，再提前半个时辰就看到是本土提前一个时辰，[平时闲暇时间都会泡拉曼学院图书馆](https://github.com/scibrokes/r-world/issues/2#issuecomment-1264570739)。**自从阳历二零一九年在菲律宾阿里与中国同胞工作离职后，就开始思考身为🇹🇼🇨🇳中华民族，岂能沦为（大化革新的）倭奴或者倭寇，所以目前的科研语言、时间标准、甚至编码，都一律使用中文。**由于数据上的交易时间出现时差的缘故，在读取数据后就将数据上的时间更换，添加半个时辰时差为中国标准时间，以确保时间规律计算方面，不会出错。
+
+有关农历、干支、二十四节气、十二时辰等道家，请查阅[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)或此文章中[十二时辰](#十二时辰)。
+
+> <img src='林燕芳（中学乘搭韵祯校车的隔壁校私立丹绒学妹，行不改名坐不改姓，或自个儿侄女黄筱婕）/那年十七，以为真爱无敌（乘搭韵祯校车的隔壁校私立丹戎漂亮妞儿林燕芳长相似这「萧萧不吃辣」）.png' width = '400'>
+
+*出处：[萧萧不吃辣](https://v.douyin.com/iFfeNPoj)*
+
+二、上图的漂亮妞儿就长得像农历二零零零年到二零零一年中四勤班和中五勤班时期，乘搭韵祯校车的隔壁校私立丹绒学妹国民华校校友**林燕芳**（🚩🇨🇳🔆🏹🌟👊🚀🦔中科红旗孙玉芳教授中正纪念堂殡涓之争，并非庞氏骗局）或赢家黄氏江夏堂家翁道教徒嬴政永春好学的华越混血儿孙女状元黄筱婕（哥哥黄联升和越族阮美美的女儿，赢子婴），行不改名坐不改姓。现实生活中的**林燕芳**都是自强不息、学术优先，喜欢力争上游、前程似锦的咱们世袭制道教徒（歼灭任何回教徒和峇峇娘惹）才子的贤内助而非姓奴黄脸婆。
+
+![*🚩🇨🇳🔆🏹🌟👊🚀🦔孙玉芳教授在二零零二年创办中科红旗曰：”国产操作系统廿年 - 进退攻防，战斗不止。“*](林燕芳（中学乘搭韵祯校车的隔壁校私立丹绒学妹，行不改名坐不改姓，或自个儿侄女黄筱婕）/国产操作系统廿年 - 进退攻防，战斗不止.png){width=400}
+
+> <iframe width="400" height="225" src="https://www.youtube.com/embed/mC-OkNNDdxI" title="「抖音」俺の日本語クラスマット林艶迎🇯🇵🇮🇹" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+> 
+> [*「时光机器二零零二」🚩孙玉芳教授在二零零二年创办中科红旗曰：”中国不能没有自己的操作系统！“，科研高频量化对冲「大秦赋」操作系统和「自然数算筹」*](https://www.instagram.com/p/CNm43grAbVz)
+> 
+> <img src='林艳迎（课外家庭日语班女同学）/开朗少女日语班林艳迎女同学.gif' width = '400'>
+
+*引用：[#大奖章基金之路 #RT #ST lim ₓ→ₐ f ) HMM…LSTM…](https://www.instagram.com/p/CNm43grAbVz)*世袭制歼灭入侵电子仪器的洋番回教徒阖家和所有冒充霹雳州华联独中生日语班女同学的回教徒和兴都教徒！
+
+以上视频咱们马来西亚艺人/明星蔡卓宜长相似我二零零二年在拉曼学院（TARC / TAR College，已改名为拉曼大学UTAR，与犹太人同音）修读电脑科学流派A数学系时期，佩琪赁租的住家日语班老师在[旺莎玛珠第二区A十七楼组屋](https://www.google.com/maps/@3.2071639,101.7402988,3a,75y,117.99h,95.44t/data=!3m9!1e1!3m7!1s4SAumafPg8rwnFDnfWfwPA!2e0!7i16384!8i8192!9m2!1b1!2i37?entry=ttu)，当时追求的课外家庭日语班女同学林艳迎（阳历一九八三年四月廿六日/民国进二年四月廿二/农历一九八三 🦔癸亥年二月廿二清明节当天出生、来自于霹雳州新邦恩拔高档豪宅区富家千金、经营海港海鲜国际贸易家族生意、潮汕人、华联独中校友、从米兰留学交换生时尚服装设计后二零零二年在吉隆坡市中心电脑科技批发Plaza Low Yat刘烨大厦忘了第几楼继续修读时尚服装设计[^因为她日语班辍学后我特地到刘烨大厦去查询哪间服装设计私立学院（当时走遍刘烨大厦每层楼，都没见着任何时尚服装设计学院）。二零二一年有天想起二零一七年要到安顺皮亚斜塔/雷峰塔途中出事儿还被绑架九个月和二零一九年在乐发集团工作有位客户长相似张鲁一或初中同班同学好哥儿们陈友良很健谈（他说小学时期很叛逆喜欢四处找人打架还火烧学校结果被校方退学，汕头人迁居至香港房地产富豪家族生意，到云南旅游时喜欢云南古镇。结果问他爸爸赞助好几千万让他到云南西双版纳高档区经营粤菜和川菜餐厅。）就特地驱车去安顺皮亚斜塔/雷峰塔，一路到新邦恩拔高档区瞧瞧二零零二年追求的日语班女同学艳迎娘家的环境是怎样的。]住在旺莎玛珠第二区阿尔法∙天使公寓修读家庭课外日语班，杏林林氏西河堂改变了我一生，开始我启程我一辈子的斗志人生。*<br><br>*注释：歼灭敌人回教徒和六七十岁的土司乩童刘瑾貹和张佳坤俩和刘天凤敌人瓜雪回教市政局出口处柜台巫婆回教徒和苏丽欣家聘用的巫婆回教徒*[^1]
+
+以下文派随笔记事本记载个人历史与近况，请查阅个人随笔记事本[「文派」赢家黄氏江夏堂，联富](https://englianhu.wordpress.com)或[「博客园」®γσ ξηg（雷欧）](https://www.cnblogs.com/englianhu)。咱们中文个人随笔记事本，外来语俗称部落（Blog）。
+
+- [「文派」修读COURSERA : MACHINE LEARNING FOR ALGORITHMIC TRADING中…](https://englianhu.wordpress.com/2021/09/15/修读coursera-machine-learning-for-algorithmic-trading中)
+- [「文派」迟了一年，更新履历表 B4TELEBIZ (18-DEC-2021)](https://englianhu.wordpress.com/2021/12/20/迟了一年，更新履历表-b4telebiz)
+- [「文派」《赢家黄氏江夏堂》 – 始祖赢政ΞΗG TΕΗG∙黄永春家谱](https://englianhu.wordpress.com/2022/02/22/《雪隆江夏堂》-家谱)
+- [「原创」程序员的精神食粮代码仓库：GITHUB REPOSITORY 应该翻译成什么？](https://englianhu.wordpress.com/2022/12/29/【原创】程序员的精神食粮代码仓库：github-repository-应该翻)
+- [「文派」**阳历二零二三年十二月三日**今日是紫云生日](https://englianhu.wordpress.com/2024/02/04/「阳历二零二三年十二月三日」今日是紫云生日)
+- [「文派」🚩🇨🇳🔆🏹🌟👊🚀🦔中科红旗](https://englianhu.wordpress.com/statistics/linux-🐧-kubuntu-⚙)
+- [「文派」清明节是日语班杏林林氏西河堂艳迎的生日](https://englianhu.wordpress.com/2024/04/10/清明节是日语班杏林林氏西河堂艳迎的生日)
+
+### 道家时间计量单位（中国古代计时法）
+
+#### 天文历法（干支纪年 / 纪元法）
+
+**十天干**
+
+```{r 天文历法-天干}
+(天干 <- c('甲', '乙', '丙', '丁', '戊', '己', '庾', '辛', '壬', '癸'))
+```
+
+**十二地支**
+
+```{r 天文历法-地支}
+(地支 <- c('子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'))
+```
+
+**六十甲子与天干地支**
+
+```{r 天文历法-干支}
+干支 <- paste0(rep(天干, 6), rep(地支, 5))
+干支 |> 
+  matrix(nrow = 12, dimnames = list(
+    地支, paste0(天干[1:5], 天干[6:10])))
+```
+
+<img src='诸子百家考工记/鄀语言 - 制作干支对照表.png' width = '400'>
+
+有关农历与二十四节气，目前正在自修中科红旗之礼逆袭红旗操作系统，会先将曦与曦佳佳编程语言翻译为咱们中文编程附上拼音（李斯篆书），再提升为文言文及古文编程、日期均以农历与咱们中华五千多年习俗文化道教为主，它日再研发「大秦赋」操作系统，欲知更多详情请查阅[「猫城」雷欧/中科红旗](https://github.com/englianhu/RedFlag-Linux)和[「猫城」雷欧/图书馆](https://github.com/englianhu/library)。[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)叙述一些有关天文历法、天干地支纪年、纪月、纪日、纪时、时辰、十二生肖和生辰八字。
+
+- [我国主要历法及基本原理 古代天文学知识科普（六）](https://www.bilibili.com/video/BV1B64y1M79y)
+- [农历纪年法：怎样通过公元纪年推算干支纪年](https://www.sohu.com/a/139120191_372495)
+- [「问百度」干支纪年](https://baike.baidu.com/item/%E5%B9%B2%E6%94%AF%E7%BA%AA%E5%B9%B4/3383226)
+- [（历法溯源十）天文历法大成，周易天象解密，易经的天象规律](https://www.bilibili.com/video/BV1AA411R7LE)
+- [天文课程 - 时间和历法](https://www.bilibili.com/video/BV1uv411K7sd)
+
+**十二时辰对照**
+
+| 时辰 | 雅称 |         其它雅称 |                 十二时辰对照 | 生肖 | 打更 |
+|:----:|:----:|:----------------:|:----------------------------:|:----:|:----:|
+| 子时 | 夜半 |             子夜 | 夜晚十一点钟 至 午夜  一点钟 | 鼠时 | 三更 |
+| 丑时 | 鸡鸣 |             荒鸡 | 午夜  一点钟 至 凌晨  三点钟 | 牛时 | 四更 |
+| 寅时 | 平旦 | 黎明、早晨、日旦 | 凌晨  三点钟 至 黎明  五点钟 | 虎时 | 五更 |
+| 卯时 | 日出 | 日始、破晓、旭日 | 黎明  五点钟 至 早晨  七点钟 | 兔时 |      |
+| 辰时 | 食时 |       早食、朝食 | 早晨  七点钟 至 上午  九点钟 | 龙时 |      |
+| 巳时 | 隅中 |             日隅 | 上午  九点钟 至 上午十一点钟 | 蛇时 |      |
+| 午时 | 日中 |       日正、中午 | 上午十一点钟 至 中午  一点钟 | 马时 |      |
+| 未时 | 日跌 |             日央 | 中午  一点钟 至 下午  三点钟 | 羊时 |      |
+| 申时 | 晡时 |       日铺、夕食 | 下午  三点钟 至 下午  五点钟 | 猴时 |      |
+| 酉时 | 日入 | 日落、日沉、傍晚 | 下午  五点钟 至 傍晚  七点钟 | 鸡时 |      |
+| 戌时 | 黄昏 | 日夕、日暮、日晚 | 傍晚  七点钟 至 黄昏  九点钟 | 狗时 | 一更 |
+| 亥时 | 人定 |             定昏 | 黄昏  九点钟 至 夜晚十一点钟 | 猪时 | 二更 |
+
+*引用：[下午四点是什么时辰？](https://m.ceming.com/sm/139948.html)*
+
+> 古代的更是按时间算的，旧时打梆子或敲锣巡夜报时（一夜分为五更，每更约两小时）。<br><br>
+> 
+|                 时间生活作息 |     时辰 |  打更人敲锣报时口号 |
+|:----------------------------:|:--------:|:-------------------:|
+| 傍晚  七点钟 至 黄昏  九点钟 | 戌时一更 | 天干物燥，小心火烛。|
+| 黄昏  九点钟 至 夜晚十一点钟 | 亥时二更 | 关门关窗，防偷防盗。|
+| 夜晚十一点钟 至 午夜  一点钟 | 子时三更 | 平安无事。          |
+| 午夜  一点钟 至 凌晨  三点钟 | 丑时四更 | 天寒地冻。          |
+| 凌晨  三点钟 至 黎明  五点钟 | 寅时五更 | 早睡早起，保重身体。|<br><br>
+*注：此处「<ruby>更<rp>(</rp><rt>jing</rt><rp>)</rp></ruby>」在古汉语中读「jing」。*
+
+*引用：[时辰 - 中国古代计时单位](https://baike.baidu.com/item/%E6%97%B6%E8%BE%B0/524274)和[打更 - 中国古代民间的一种夜间报时制度](https://baike.baidu.com/item/%E6%89%93%E6%9B%B4/2113152)*
+
+古代如何区分十二时辰中某个时段究竟是几点钟呢？就以「初、中、末」来区分，比方说：
+
+由于一个时辰等于百廿分钟，每个时辰初中末三阶段各别将会是卌分钟（百廿分钟 除以 三）。
+
+- 下午三点零    一秒  至  三点卌分 = 申时初
+- 下午三点卌分零一秒  至  四点廿分 = 申时中
+- 下午四点廿分零一秒  至  五点钟正 = 申时末
+
+*引用：[申时中是几点？](https://zhidao.baidu.com/question/561434997305718844.html)*
+
+| 时辰 | 生肖 | 时间（小时）                           | 时辰初中末对照 |
+|:----:|:----:|:--------------------------------------:|:--------------:|
+| 子时 | 鼠时 | 夜晚十一点    零一秒 至 夜晚十一点卌分 | 子时初         |
+| 子时 | 鼠时 | 午夜十一点卌分零一秒 至 午夜十二点廿分 | 子时中         |
+| 子时 | 鼠时 | 午夜十二点廿分零一秒 至 午夜  一点钟正 | 子时末         |
+| 丑时 | 牛时 | 凌晨  一点    零一秒 至 凌晨  一点卌分 | 丑时初         |
+| 丑时 | 牛时 | 凌晨  一点卌分零一秒 至 凌晨  二点廿分 | 丑时中         |
+| 丑时 | 牛时 | 凌晨  二点廿分零一秒 至 凌晨  三点钟正 | 丑时末         |
+| 寅时 | 虎时 | 凌晨  三点    零一秒 至 凌晨  三点卌分 | 寅时初         |
+| 寅时 | 虎时 | 凌晨  三点卌分零一秒 至 凌晨  四点廿分 | 寅时中         |
+| 寅时 | 虎时 | 凌晨  四点廿分零一秒 至 凌晨  五点钟正 | 寅时末         |
+| 卯时 | 兔时 | 黎明  五点    零一秒 至 黎明  五点卌分 | 卯时初         |
+| 卯时 | 兔时 | 黎明  五点卌分零一秒 至 黎明  六点廿分 | 卯时中         |
+| 卯时 | 兔时 | 黎明  六点廿分零一秒 至 黎明  七点钟正 | 卯时末         |
+| 辰时 | 龙时 | 早晨  七点    零一秒 至 早晨  七点卌分 | 辰时初         |
+| 辰时 | 龙时 | 早晨  七点卌分零一秒 至 早晨  八点廿分 | 辰时中         |
+| 辰时 | 龙时 | 上午  八点廿分零一秒 至 上午  九点钟正 | 辰时末         |
+| 巳时 | 蛇时 | 上午  九点    零一秒 至 上午  九点卌分 | 巳时初         |
+| 巳时 | 蛇时 | 上午  九点卌分零一秒 至 上午十  点廿分 | 巳时中         |
+| 巳时 | 蛇时 | 上午十  点廿分零一秒 至 上午十一点钟正 | 巳时末         |
+| 午时 | 马时 | 上午十一点    零一秒 至 上午十一点卌分 | 午时初         |
+| 午时 | 马时 | 中午十一点卌分零一秒 至 中午十二点廿分 | 午时中         |
+| 午时 | 马时 | 中午十二点廿分零一秒 至 中午  一点钟正 | 午时末         |
+| 未时 | 羊时 | 下午  一点    零一秒 至 下午  一点卌分 | 未时初         |
+| 未时 | 羊时 | 下午  一点卌分零一秒 至 下午  二点廿分 | 未时中         |
+| 未时 | 羊时 | 下午  二点廿分零一秒 至 下午  三点钟正 | 未时末         |
+| 申时 | 猴时 | 下午  三点    零一秒 至 下午  三点卌分 | 申时初         |
+| 申时 | 猴时 | 下午  三点卌分零一秒 至 下午  四点廿分 | 申时中         |
+| 申时 | 猴时 | 下午  四点廿分零一秒 至 下午  五点钟正 | 申时末         |
+| 酉时 | 鸡时 | 傍晚  五点    零一秒 至 傍晚  五点卌分 | 酉时初         |
+| 酉时 | 鸡时 | 傍晚  五点卌分零一秒 至 傍晚  六点廿分 | 酉时中         |
+| 酉时 | 鸡时 | 傍晚  六点廿分零一秒 至 傍晚  七点钟正 | 酉时末         |
+| 戌时 | 狗时 | 黄昏  七点    零一秒 至 黄昏  七点卌分 | 戌时初         |
+| 戌时 | 狗时 | 黄昏  七点卌分零一秒 至 黄昏  八点廿分 | 戌时中         |
+| 戌时 | 狗时 | 晚上  八点廿分零一秒 至 晚上  九点钟正 | 戌时末         |
+| 亥时 | 猪时 | 晚上  九点    零一秒 至 晚上  九点卌分 | 亥时初         |
+| 亥时 | 猪时 | 夜晚  九点卌分零一秒 至 夜晚十  点廿分 | 亥时中         |
+| 亥时 | 猪时 | 夜晚十  点廿分零一秒 至 夜晚十一点钟正 | 亥时末         |
+
+欲知更多详情，请查阅：
+
+- [下午四点是什么时辰？](https://m.ceming.com/sm/139948.html)
+- [申时中是几点？](https://zhidao.baidu.com/question/561434997305718844.html)
+- [打更 - 中国古代民间的一种夜间报时制度](https://baike.baidu.com/item/打更/2113152)
+- [看鉴百秒 | 古代没有闹钟，是如何避免上班迟到的问题？](http://baike.baidu.com/l/KBxaNRzN)
+- [夜半更声有讲究看鉴百秒 | 古代没有闹钟，是如何避免上班迟到的问题？](http://baike.baidu.com/l/DT9W19G0)
+
+> …东汉末年，二十岁的曹操初出茅庐，担任的官职为洛阳北部都尉，相当于首都副县级公安局长职位，负责管理京城洛阳及北部郊区的治安。
+> 
+当时的社会就有了宵禁制度，据史书记载，曹操刚刚担任洛阳北部都尉，就乱棍打死了一个违反宵禁制度的人，此人还是朝中很有权势的一个太监的叔叔，曹操也因此事得罪了这些宦官，从而被朝廷贬离了都城。
+> 
+古代夜晚的街道上，除了打更人之外，很少能看到行人出没，这便是古代宵禁制度的影响。
+> 
+生活在没有遍地钟表的古代，夜晚时分的打更人便显得极为重要，这是中国古代民间的一种夜晚报时方式，共分为五更，五更一过，人们便可以早早起床了…
+> 
+但其实除了十二时辰之外，古人还有一种计时方式，那便是“百刻制”。所谓「百刻制」指的就是一天等于一百刻，这就是古人常说的「一刻钟」，很多人都认为古代的「一刻钟」等于现代的十五分钟，其实这是一种错误的理解…
+> 
+二、「一刻钟、一炷香、一盏茶」分别指多长时间？
+前文中我们提到了古代的百刻制，意思就是古人将一天的时间，分为了一百刻，其中一刻钟相当于现代的十四分廿四秒，一直到了清朝初期时，才将「百刻制」减为桦六刻，这便是「一刻钟」等于现代的十五分钟的由来…
+> 
+而「一盏茶」的功夫，所指的时间就要更快一些了，这没有具体的时间规定，只是从人们端起茶碗开始，到最后一饮而尽结束，这其中的过程，便是「一盏茶」的功夫。
+> 
+我们中国人酷爱喝茶，尤其是刚刚泡好且有些烫口的茶水，很多人都会边吹边慢慢饮茶，等到茶水差不多不是那么烫了，最终便会一饮而尽，这其中的过程，便是一盏茶的功夫。
+> 
+细细算来，「一刻钟、一炷香、一盏茶」中，时间最短的便是「一盏茶」，不过也要根据天气的变化来衡量，如夏天茶水凉的慢，时间就久一些，但也不会超过十五分钟；冬天天气寒冷，喝热水就更快了，连十分钟都用不了。
+> 
+综上所述，古人常说的「一刻钟」相当于现代的十四至十五分钟，「一炷香」相当于现代的卅分钟，也就是古人所说的两刻钟；而「一盏茶」的时间就更短了，约等于八至十二分钟。
+> 
+其实古人弄出这些计算时间的说法，并没有要给它们精确，只是在日常生活中普遍的一种计时方式，就比如我们日常生活中所说的一上午时间、一下午时间、一顿饭时间等等，因为这些都是生活中的常识，即使不精确，人们听到后也能知晓大概的时间，如此方能做到心中有数。
+
+*引用：[「原创」古人常说的：“一刻钟、一炷香、一盏茶”，分别指多长时间？](https://www.sohu.com/a/663536640_121205324)*
+
+> **题外话**：“刹那”是多久？
+> 在文章的最后，青年君想用很短的时间和大家稍微唠一唠「很短的时间」——刹那。
+> 
+刹那是古印度佛教术语，也是时间度量单位，表示一念之间的极短时间，随佛教传入中国。据《摩诃僧祇律》记载：“须臾者，二十念名一瞬顷，二十瞬名一弹指，二十弹指名一罗豫，二十罗豫名一须臾。日极长时有十八须臾，夜极短时有十二须臾；夜极长时有十八须臾，日极短时有十二须臾。”
+> 
+一日一夜有卅个须臾，六百个罗豫，一万两千个弹指，廿四万个「瞬间」，四百枯万个「刹那」。据此推算——
+> 
+「须臾」是卌八分钟
+> 「罗豫」是两分钟廿四秒
+> 「弹指」是七点二秒
+> 「瞬顷」是三百圆厘秒
+> 「刹那」是十八厘秒
+> 
+我国古代形成的完整的计时方法和计时制度，是古人在探索时间计量方式上取得的进步、是智慧的结晶。当然，无论如何度量时间，一天就只有廿四小时。盛年不重来，一日难再晨。及时当勉励，岁月不待人。只要我们能善用时间，就永远不愁时间不够用。忘掉今天的人，也终将被明天忘掉。
+
+*引用：[「十二时辰」简史](http://news.ts.cn/system/2019/07/26/035802762.shtml)*
+
+欲以古代计时法来精准筹算咱们「一炷香」和「一盏茶」的话，就得使用隐马尔可夫链模型或其它计数模型筹算气温、空气湿度、空气流动风速、空气中的氢气成分等各种因素可以设置精准到飞秒（fs，十五个小数位）或更精准时间计量单位。
+
+- [一刻钟等于多少分钟（古代一刻钟是多长时间）](https://k.sina.cn/article_2188503504_8271e9d002700woon.html)
+- [古代一刻钟是多久？一点钟为什么不是一小时？弄不清会很尴尬的](https://zhuanlan.zhihu.com/p/525032381)
+- [一刻钟是多久，古代的一天为几刻钟呢？](https://zhidao.baidu.com/question/16558757)
+- [「问百度」一刻钟](https://baike.baidu.com/item/一刻钟/2070381)
+
+#### 十二生肖
+
+从满洲到星洲，从鼻祖暨耳孙。论生肖的「演化史」，先秦时已有相关记载：
+
+[十二生肖都咋来的？为啥鼠是第一个？怎么没猫？](http://www.xinhuanet.com/politics/2020-01/22/c_1125491667.htm)，如果有留意十二生肖中，只有龙（飞蜥[^1]）是神话的三栖动物而非其余十一个生肖现实生活中的动物，蛇是两栖动物可以潜水和活在水里而其余的都是陆上动物。
+
+> **《世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊》**<br>
+世风日下，人心不古；<br>
+风花雪月，荒淫无道。<br>
+莘莘学子，赤子之心；<br>
+修身齐家，天下归心。
+
+*引用：[经典回顾之QQ爱](https://www.bilibili.com/video/BV1yT4y1n7C4)*
+
+借鉴礼逆袭的Root最高权限，诠释为咱们中华道家十二生肖（秦人牧马、燕从京来、良禽择木而栖）「在天愿做比翼鸟，在地愿做连理枝。」。它日再通过运筹学、物理学来诠释咱们春秋战国时期诸子百家中道家李耳的易经、张灯结彩、天文历法、廿四节气[^2]、时辰、十二生肖、姻缘与子宫怀孕（借鉴秦灭六国史，建立皇宫称帝「秦始皇」、数学学术概率论）、咱们[世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊。白月光与朱砂痣学生爱国版自制视频](https://www.bilibili.com/video/BV12J4m1W7f9)[^3]等。
+
+[^1]: [唯一会飞的爬行动物飞蜥是翼龙的后代吗？](https://haokan.baidu.com/v?pd=wisenatural&vid=14393146146365528807)
+[^2]: [⼆⼗四节⽓⼤全](https://mp.weixin.qq.com/s?__biz=Mzg3MTUzNjAwMw==&mid=2247492492&idx=6&sn=0614e89a7eb7e827cec6d878dd7acf23)
+[^3]: 世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊：<br> - [「问百度」贞节牌坊 - 古时用来表彰女性从一而终的门楼](https://baike.baidu.com/item/贞节牌坊/1019217)<br> - [「问百度」巴寡妇清 - 战国末年历史人物](https://baike.baidu.com/item/巴寡妇清/10567832)
+
+#### 天文历法（农历月份）
+
+> 冬月和腊月在中国传统的农历中不是同一个月。
+农历十一月为「冬月」，又称幸月、畅月、后十月、仲冬。一年十二月用十二地支来表示的话，又称「子月」称「建子」。农伍手历十二月，也就是华人民间俗称的「腊月」。之所以叫「腊月」，是因为「腊」是古代祭祀祖先和百神的「祭」名，有「冬至后三戌祭百神」之说，即每逢冬至后的第三个纪日干支中含有地支「戌」的日子，南北朝时期固定在十二月初八日，华人民间都要猎杀禽兽举行大祭活动，拜神敬祖，以祈福求寿，避灾迎祥。这种祭奠仪式称为「猎祭」。因「腊」与「猎」通假，「猎祭」遂并缓写成了「腊祭」，因而年终的十二月被叫腔蔽嫌做腊月。
+成语：寒冬腊月，即是指年前最冷的三个月，寒月为十月；冬月为十一月；腊月为十二月。<br><br>
+**夏朝的夏历以孟喜月（元月）为正月，商朝的殷历以腊月（十二月）为正月，周朝的周历以冬月（十一月）为正月。**
+
+*引用：[冬月、腊月还有正月的区别](https://zhidao.baidu.com/question/569273015.html)*
+
+|   农历 | 雅称 |               其它雅称 | 地支 | 生肖 |
+|:------:|:----:|:----------------------:|:----:|:----:|
+|   一月 | 正月 |             元月、端月 | 寅月 | 虎月 |
+|   二月 | 杏月 |             如月、花月 | 卯月 | 兔月 |
+|   三月 | 桃月 |             季月、蚕月 | 辰月 | 龙月 |
+|   四月 | 麦月 |             槐月、梅月 | 巳月 | 蛇月 |
+|   五月 | 蒲月 |             皋月、榴月 | 午月 | 马月 |
+|   六月 | 荷月 |             伏月、暑月 | 未月 | 羊月 |
+|   七月 | 瓜月 | 巧月（牛郎织女）、秋月 | 申月 | 猴月 |
+|   八月 | 桂月 |             壮月、拓月 | 酉月 | 鸡月 |
+|   九月 | 菊月 |             玄月、朽月 | 戌月 | 狗月 |
+|   十月 | 寒月 | 良月（娶亲嫁女）、阳月 | 亥月 | 猪月 |
+| 十一月 | 冬月 | 葭月、霜月、畅月、辜月 | 子月 | 鼠月 |
+| 十二月 | 腊月 |       冰月、严月、涂月 | 丑月 | 牛月 |
+
+咱们中国古代如何区分每月的月初、月中、月末呢？借鉴网游《三国志》，每月大约有三十天，分为「上旬、中旬、下旬」。例如：
+
+- 农历一月上旬：农历年初一到初十
+- 农历一月中旬：农历年十一到廿
+- 农历一月下旬：农历年廿一到月末
+
+欲知更多农历月份雅称，请查阅：
+
+- [冬月和腊月分别是几月份](https://iask.sina.com.cn/jxwd/6fb03ZAspC1.html)
+- [「农历」一至十二月分别称作什么?](https://zhidao.baidu.com/question/530595785199867525.html)
+- [中国农历对十二个月的雅称](https://baijiahao.baidu.com/s?id=1768680673695645871)
+- [十二个月的雅称，太美了吧！](https://mp.weixin.qq.com/s?__biz=MzA3NzQwNDMxNw==&mid=2651703145&idx=2&sn=1cf7c67c6b7e953169036f80334ba3f8&chksm=84abe69bb3dc6f8d37baa32e0f8ad1e22c02e48aee39a371ea11d9cbcce44515da8553fe224c&scene=27)
+- [古代农历十二个月的N种别称](https://baijiahao.baidu.com/s?id=1681251890111344460)
+- [腊月别称大全,农历正月到腊月的别称都有哪些？](https://zhidao.baidu.com/question/564213532043599812.html)
+- [腊月在古代的雅称，农历正月到腊月的别称都有哪些？](http://m.365zyg.com/huangdaojiri/104808.html)
+
 ## 论文简介
 
-[<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)科研论文中提及一些技术问题，而**Part I**中的数据加以修饰并回测后与**Part II**比较，**（第三部）**则筛选出使用`频率（分计） 等于 一`数据观测量为`r num2c(187199)`最优计数模型。故此，二度过滤并筛选`频率（分计） 等于 一`的数据来筹算节省筹算时间。
+[<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:red'>*Blooper*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT)科研论文中提及一些技术问题，故此使用**Part I**中的数据加以修饰并回测，再与**Part II**比较，筛选最优计数模型。
 
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part I)*</span>](https://rpubs.com/englianhu/binary-Q1Inter-HFT-RV1)（或[备用网址](https://beta.rstudioconnect.com/content/16240/binary-Q1Inter-HFT-RV1.html)）
 - [<span style='color:#DE5D83; background-color:black;'>*Deriv.com*</span> - *Interday High Frequency Trading Models Comparison* <span style='color:RoyalBlue'>*Review (Part II)*</span>](https://rpubs.com/englianhu/742275)（或[备用网址](https://beta.rstudioconnect.com/content/16442/binary-Q1Inter-HFT-RV2.html)）
@@ -420,7 +788,7 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 - 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
 - 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
 
-然后在**外部因素周期性季节性**添加天文历法因素，例如天干地支、廿四节气，下一篇会更详细添加农历月份雅称等参数计算周期。[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)叙述一些有关天文历法、天干地支纪年、纪月、纪日、纪时、时辰、十二生肖和生辰八字。
+此外，将此文献（第IV部）改为使用咱们道家天干中的甲乙丙丁中的（丁），并且添加天文历法、天干地支、廿四节气、农历月份雅称等参数计算周期。[天干地支纪年法，天干地支五行对照表](https://123.5ikfc.com/ganzhi)叙述一些有关天文历法、天干地支纪年、纪月、纪日、纪时、时辰、十二生肖和生辰八字。
 
 <br>
 
@@ -428,19 +796,20 @@ conflicts_prefer(gtools::permutations, .quiet = TRUE)
 
 ## 开函阅牍/简
 
-**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**（第III部）**次论文读取该数据，将网页轻巧化、省略掉修饰数据的一栏，**（第III部）**虽然出现小出错，但整体上还是可以筛选出**最优计数模型**，总结使用阳历二零一八年上半年汇价数据即可，节省许多科研时间。**（第三部）**则筛选出使用`频率（分计） 等于 一`数据观测量为`r num2c(187199)`最优计数模型。故此，二度过滤并筛选`频率（分计） 等于 一`的数据来筹算节省筹算时间。
+**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**（第III部）**次论文读取该数据，将网页轻巧化、省略掉修饰数据的一栏，**（第III部）**虽然出现小出错，但整体上还是可以筛选出**最优计数模型**，总结使用阳历二零一八年上半年汇价数据即可，节省许多科研时间。**（第三部）**则筛选出使用`频率（分计） 等于 一`数据观测量为`r num2c(187199)`最优计数模型。故此沿用**第三部（衍生版）**数据使用`频率（分计） 等于 一`的数据来筹算节省筹算时间。
 
-以天文学公转周期与自转周期的概念，预测时间单位为一分钟而数据量为十个时辰；**总汇结论（从阳历二零一六年至二零一八年七月七日）**和**总汇阳历二零一八年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**以百分之一个时辰时间单位为一个周期（一分钟单位千皕观测量一个循环周期）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优计数模型**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
+以天文学公转周期与自转周期的概念，预测时间单位为一分钟而数据量为十个时辰；**总汇结论：从阳历二零一六年（农历二零一五年冬月廿二 乙未年戊子月壬午日属羊 周五 第一周）至二零一八年七月七日（农历二零一八年 戊戌年己未月庚子日属狗 周六 第廿七周）**和**总汇阳历二零一八年上半年结论**可以证实将再循环数据量参数设置为`频率 = 1`（**以百分之一个时辰时间单位为一个周期（一分钟单位千皕观测量一个循环周期）**）误差最小、最为精准<span style='color:white; background-color:#DE5D83;'>**最优计数模型**</span>。为了节省科研时间，它日只需要使用半年汇价数据而非三年半数据。
 
-基于`千皕分钟`为一个最优循环期数据量，此篇文章将样本数据过滤为`2017-12-31 16:01:00 CST（中国标准时间）`至`2018-07-01 00:00:00 CST（中国标准时间）`，这样所预测出来的汇价会从`2018-01-01 00:00:00 CST（中国标准时间）`至`2018-07-01 00:00:00 CST（中国标准时间）`七个月整的汇价数据，再来比较闭市价误差，二零一八年汇价数据第一周并无闭市价，估计是年假休市，再比较误差时会忽略`NA值`时间的数据。
+基于`千皕分钟`为一个最优循环期数据量，此篇文章将样本数据过滤并只筛选`2017-12-31 16:01:00 CST（中国标准时间）`至`2018-07-01 00:00:00 CST（中国标准时间）`，这样所预测出来的汇价会从`2018-01-01 00:00:00 CST（中国标准时间）`至`2018-07-01 00:00:00 CST（中国标准时间）`七个月整的汇价数据，再来比较闭市价误差，二零一八年汇价数据第一周并无闭市价，估计是年假休市，再比较误差时会忽略`NA值`时间的数据。
+
+- 阳历`2017-12-31 16:01:00 CST（中国标准时间）` = 农历二零一六年 丁酉年
+壬子月壬辰日 属鸡 周日 第一周
+- 阳历`2018-07-01 00:00:00 CST（中国标准时间）` = 农历
 
 为了方便日后节省时间，这儿再过滤汇价数据量。
 
-```{r 绘制样本数据图表}
+```{r 绘制样本数据图表, results = 'asis'}
 ## 检验是否已设置途径。
-source('函数/汇总上奏.R')
-source('函数/总汇结论.R')
-
 if (!exists('.蜀道')) {
   .蜀道 <- getwd() |> 
     {\(.) str_split(., '/')}() |> 
@@ -449,108 +818,441 @@ if (!exists('.蜀道')) {
     {\(.) paste(., collapse = '/')}() |> 
     {\(.) substring(., 2)}()
 }
-if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/')
+if (!exists('.蜀道仓库')) {
+  .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/')
+}
 
-样本二零一八半年 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本二零一八半年.rds'))
+## 
+## 倘若环境尚未有数据，读取文件数据。
+## **小插曲**：数据应该使用经过过滤`NA值`和重新赋值`周`、`周分计`、`日分计`、`时分计`、`序列`等参数和数据的**样本乙**，而非**样本甲**。
+## 数据从原本 1324800 减至 1317600
+# 样本[!is.na(闭市价)][]
+## 1317600分钟 除以 7200分钟（一周） = 183周数
+## 1317600分钟 除以 1440分钟（一天） = 915天数
+## 1317600分钟 除以 720分钟（一小时） = 1830时数
+## 
+if (!exists('样本') || (nrow(样本) != 1317600)) {
+  样本 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本乙.rds'))
+}
+样本 <- 样本[order(序列)]
+# saveRDS(样本[order(序列)], paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本乙.rds'))
 
-## A data.table and dplyr tour
-## https://atrebas.github.io/post/2019-03-03-datatable-dplyr/#addupdatedelete-columns
-日内指数平滑数据二零一八年上半年总汇 <- readRDS(paste0(.蜀道仓库, '日内指数平滑数据二零一八年上半年总汇.rds'))
+基准 <- 样本[年份 == 2018]$日期[1] #序列 == 1122001
+序列基准1 <- 样本[日期 == 基准][1]$序列
+序列基准2 <- tail(样本[日期 <= as.Date('2018-07-01')], 1)$序列
 
-(日内指数平滑数据二零一八年上半年总汇 <- full_join(
-  样本二零一八半年, 日内指数平滑数据二零一八年上半年总汇) %>% 
-    na.omit %>% 
-    select_dt(-闭市价))
+样本二零一八半年 <- 样本[序列 %chin% (序列基准1 - 1200):序列基准2]
+# saveRDS(样本二零一八半年, paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本二零一八半年.rds'))
+rm(基准, 样本)
 
-日内指数平滑数据二零一八年上半年总汇[频率==1]
+#基准 <- 样本二零一八半年[年份 == 2018]$日期[1] #序列 == 1122001
+## 由于首一千多个闭市价都是一样汇价，故此得先过滤后，
+##   由原本序列号1122001过滤为1124001开始，再测试。
+# 基准 <- 样本二零一八半年[序列 == 1124001]$日期[1] #序列 == 1124001
+
+## 绘制样本图表
+样本二零一八半年[c(1:3, (nrow(样本二零一八半年) - 3):nrow(样本二零一八半年)),] |> 
+    {\(.) kbl(., caption = '分计汇价（中国标准时间 农历二零一七年冬月十三下午四点零一分 ~ 二零一八年六月卅日午夜十二点正）', escape = FALSE)}() |> 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  ## https://public.tableau.com/en-us/gallery/100-color-palettes?gallery=votd
+    {\(.) row_spec(., 
+      0, background = 'DimGrey', color = 'gold', bold = TRUE)}() |> 
+    {\(.) column_spec(., 1, background = '#991B00')}() |> 
+    {\(.) column_spec(., 2, background = '#D52600')}() |> 
+    {\(.) column_spec(., 3, background = 'DarkGrey')}() |> 
+    {\(.) column_spec(., 4, background = 'Gray')}() |> 
+    {\(.) column_spec(., 5, background = 'DarkGrey')}() |> 
+    {\(.) column_spec(., 6, background = '#D52600')}() |> 
+    {\(.) column_spec(., 7, background = 'DarkGrey')}() |> 
+    {\(.) column_spec(., 8, background = 'Gray')}() |> 
+    {\(.) column_spec(., 9, background = 'DarkGrey')}() |> 
+    {\(.) column_spec(., 10, background = 'Gray')}() |> 
+    {\(.) column_spec(., 11, background = '#991B00')}() |> 
+    {\(.) column_spec(., 
+      12, background = 'LightGray', color = 'goldenrod')}() |> 
+    {\(.) kable_styling(., 
+      bootstrap_options = c(
+        'striped', 'hover', 'condensed', 'responsive'))}() |> 
+  ##`full_width = FALSE`是将每列设置为伸缩性自动调整宽度。
+    {\(.) kable_material(., full_width = FALSE)}() |> 
+    {\(.) scroll_box(., width = '100%', fixed_thead = TRUE, height = '490px')}()
 ```
 
-以上图表显示数据`年月日时分`，由`r 日内指数平滑数据二零一八年上半年总汇 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/仓库/日内指数平滑数据二零一八年上半年总汇.rds'); paste(range(日内指数平滑数据二零一八年上半年总汇$年月日时分), collapse = ' 至 ')`，接下来的科研一律使用同样的半年数据，是为了在回测多元计数模型，才能获知并筛选最优计数模型。
+*数据 : `r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); paste0(num2c(dim(样本二零一八半年)[1], lang = 'sc'), '行 乘 ', num2c(dim(样本二零一八半年)[2], lang = 'sc'), '列')`*
+
+以上图表显示数据`年月日时分`，由`r paste(range(样本二零一八半年$年月日时分), collapse = ' 至 ')`，接下来的科研一律使用同样的半年数据，是为了在回测多元计数模型，才能获知并筛选最优计数模型。
 
 以上首千多个汇价（观测值）都是一样的汇价。
 
-## 整顿数据
+# 计数建模
 
-### 月计
+## 季节性指数平滑模型（Seasonal ETS）
 
-#### 总汇二零一八年一月结论
+### `forecast`程序包：`ts()` & `ets()`
 
-#### 总汇二零一八年二月结论
+**百分之一时辰一周期（一分钟循环千皕次）**
 
-#### 总汇二零一八年三月结论
+```{r 平滑指数甲, eval = FALSE}
+# —— eval = FALSE ——
+source('函数/日内高频指数平滑.R')
+source('函数/汇总上奏.R')
+source('函数/总汇结论.R')
+source('函数/商鞅变法.R')
+source('函数/整顿数据.R')
 
-#### 总汇二零一八年四月结论
+时间索引 <- unique(样本二零一八半年$日期)
+#基准 <- 样本二零一八半年[年份 == 2018]$日期[1] #序列 == 1122001
+## 由于首一千多个闭市价都是一样汇价，故此得先过滤后，
+##   由原本序列号1122001过滤为1124001开始，再测试。
+基准 <- 样本二零一八半年[年份 == 2018]$日期[1] #序列 == 1124001
+时间索引 %<>% .[. >= 基准]
+迭代基准 <- 样本二零一八半年[日期 %chin% 时间索引]$序列
+数据量 <- 1200 #筛选数据中的最后千皕观测值：样本二零一八半年[(.N - (数据量 - 1)):.N]
+预测时间单位 <- 1
 
-#### 总汇二零一八年五月结论
+.模型选项 = c('M', 'N', 'N')
 
-#### 总汇二零一八年六月结论
+频率 = 1
 
-### 周计
+日内高频指数平滑(
+  时间索引 = 时间索引, 样本 = 样本二零一八半年, 数据量 = 数据量, 频率 = 频率, 预测时间单位 = 预测时间单位, .模型选项 = .模型选项)
 
-#### 总汇二零一八年第一周结论
+# 整顿数据(1, 文件名 = '日内指数平滑2018数据', 是否移除文件夹 = '勾')
+```
 
-#### 总汇二零一八年第二周结论
+在此使用经过过滤的`样本二零一八半年`数据，再次运算以上函数，再与其它计数模型比较预测值误差，以证实上篇**（第III部）**的结论是否相符。
 
-#### 总汇二零一八年第三周结论
+### `fable` & `fabletools`程序包
 
-#### 总汇二零一八年第四周结论
+**百分之一时辰一周期（一分钟循环千皕次）**
 
-### 平滑周计
+```{r 平滑指数乙, eval = FALSE}
+# —— eval = FALSE ——
 
-#### 总汇二零一八年一月平滑周计结论
+```
 
-### 总结数据
+### 自回归综合滑均模型（ARIMA）
+
+#### `forecast`程序包：`ts()` & `auto.arima()`
+
+##### 
+
+```{r, eval = FALSE}
+source('函数/日内高频季节性自回归自动化.R')
+
+样本二零一八半年 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本二零一八半年.rds'))
+时间索引 <- unique(样本二零一八半年$日期)
+
+#基准 <- 样本二零一八半年[年份 == 2018]$日期[1] #序列 == 1122001
+## 由于首一千多个闭市价都是一样汇价，故此得先过滤后，
+##   由原本序列号1122001过滤为1124001开始，再测试。
+基准 <- 样本二零一八半年[序列 == 1124001]$日期[1] #序列 == 1124001
+时间索引 %<>% .[. >= 基准]
+迭代基准 <- 样本二零一八半年[日期 %chin% 时间索引]$序列
+数据量 <- 1200 #筛选数据中的最后千皕观测值：样本二零一八半年[(.N - (数据量 - 1)):.N]
+预测时间单位 <- 1
+#.模型选项 = c('自动化', '自回归滑均')
+.模型选项 = '自动化'
+# .模型选项 = '自回归滑均'
+.差分阶数 = 0#:2
+#.差分阶数 = 0:2
+.季节性差分阶数 = 0#:1
+#.季节性差分阶数 = 0:1
+#季节性与否 = c('勾', '叉')
+## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
+#近似值与否 <- c('勾', '叉')
+#逐步精化与否 <- c('勾', '叉')
+
+## .时序规律 <- c(0, 0, 0)
+.时序规律 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+  as.data.table
+.时序规律 <- setnames(.时序规律, old = c('V1', 'V2', 'V3'), 
+                  new = c('自回归阶数', '差分阶数', 
+                          '滑均阶数'))[差分阶数 <= 2]
+
+## .季节性规律参数 <- c(0, 0, 0)
+.季节性规律参数 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+  as.data.table
+.季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), 
+                     new = c('季节性自回归阶数', '季节性差分阶数', 
+                             '季节性滑均阶数'))[季节性差分阶数 <= 2] %>% 
+  mutate_dt(总和 = rowSums(.)) %>% 
+  filter_dt(总和 > 0) %>% 
+  select_dt(-总和)
+
+# 循环周期 <- 数据量/频率
+# seasonal <- list(order = .季节性规律参数, period = 循环周期)
+时间索引 = 时间索引; 样本 = 样本二零一八半年; .蜀道 = NULL; 
+文件名 = '日内高频季节性自回归'; 数据量 = 数据量; 频率 = 1; 
+预测时间单位 = 1; .模型选项 = .模型选项; .差分阶数 = .差分阶数; 
+.季节性差分阶数 = .季节性差分阶数; .时序规律 = .时序规律; 
+.季节性规律参数 = .季节性规律参数; 静态与否 = '叉'; 季节性与否 = '勾'; 
+信息量准则 = c('aicc');#, 'aic', 'bic'); 
+逐步精化与否 = '勾'; 逐步精化量 = 94; 记载自回归与否 = '叉'; 
+近似值与否 = '勾'; 计策谋略 = '冇'; 省略 = '冇'; 
+## 代码中xreg作为 [公式] 。xreg可以指定多组相关序列，
+##   也就是说动态回归就是多元回归。
+## Dynamic Harmonic Regression
+## 使用FT（傅里叶）序列作为xreg。模型拟合时不指定seasonal，
+##   在预测时加入周期性的xreg（势头/趋势/气势）。
+## [R语言时间序列分析（预测）](https://zhuanlan.zhihu.com/p/29755934)
+趋势 = '冇'; 测试 = c('kpss');#, 'adf', 'pp'); 
+测试参数 = list(); 
+季节性测试 = c('seas');#, 'ocsb', 'hegy', 'ch'); 
+季节性测试参数 = list(); 
+允许截距与否 = '勾'; 允许均值与否 = '勾'; 相关系数 = '冇'; 
+偏差调整与否 = '叉'; 多管齐下与否 = '叉'; 核心量 = 2; 列印 = '勾'; 
+
+#迭数1 <- 迭代基准[1]
+# 信息量准则 = c('aicc', 'aic', 'bic')
+信息量准则 = 'aicc'
+# 测试 = c('kpss', 'adf', 'pp')
+测试 = 'kpss'
+# 季节性测试 = c('seas', 'ocsb', 'hegy', 'ch')
+季节性测试 = 'seas'
+#博克斯考克斯变换 = NULL
+```
+
+**百分之一时辰一周期（一分钟循环千皕次）**
+
+```{r, eval = FALSE}
+source('函数/日内高频季节性自回归.R')
+
+时间索引 <- unique(样本二零一八半年$日期)
+基准 <- 样本二零一八半年[年份 == 2018]$日期[1]
+时间索引 %<>% .[. >= 基准]
+迭代基准 <- 样本二零一八半年[日期 %chin% 时间索引]$序列
+数据量 <- 1200 #筛选数据中的最后千皕观测值：样本二零一八半年[(.N - (数据量 - 1)):.N]
+预测时间单位 <- 1
+
+.模型选项 = c('自动化', '自回归滑均')
+# .模型选项 %<>% .[1]
+# .模型选项 %<>% .[2]
+.差分阶数 = 0:2
+.季节性差分阶数 = 0:1 
+季节性与否 = c('勾', '叉')
+## https://stackoverflow.com/questions/37400062/seasonality-in-auto-arima-from-forecast-package
+#近似值与否 <- c('勾', '叉')
+#逐步精化与否 <- c('勾', '叉')
+
+## .时序规律 <- c(0, 0, 0)
+.时序规律 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+  as.data.table
+.时序规律 <- setnames(.时序规律, old = c('V1', 'V2', 'V3'), 
+                  new = c('自回归阶数', '差分阶数', 
+                          '滑均阶数'))[差分阶数 <= 2]
+
+## .季节性规律参数 <- c(0, 0, 0)
+.季节性规律参数 <- permutations(6, 3, 0:5, repeats.allowed = TRUE) %>% 
+  as.data.table
+.季节性规律参数 <- setnames(.季节性规律参数, old = c('V1', 'V2', 'V3'), 
+                     new = c('季节性自回归阶数', '季节性差分阶数', 
+                             '季节性滑均阶数'))[季节性差分阶数 <= 2] %>% 
+  mutate_dt(总和 = rowSums(.)) %>% 
+  filter_dt(总和 > 0) %>% 
+  select_dt(-总和)
+
+# 循环周期 <- 数据量/频率
+# seasonal <- list(order = .季节性规律参数, period = 循环周期)
+```
+
+**百分之一时辰一周期（一分钟循环千皕次）**
+
+```{r, eval = FALSE}
+频率 = 1
+# .模型选项 = c('自动化', '自回归滑均')
+.模型选项 = '自动化'
+# .模型选项 = '自回归滑均'
+
+## 由于forecast::Arima()出现多种错误信息，故此忽略使用该函数建模。
+## https://github.com/englianhu/binary.com-interview-question/issues/6
+llply(.模型选项, function(模型) {
+  
+  if (模型 == '自动化') {
+    季回归0 <- llply(.差分阶数, function(差分阶数) {
+      季回归1 <- llply(.季节性差分阶数, function(季节性差分阶数) {
+        季回归2 <- llply(季节性与否, function(季节) {
+          季回归3 <- llply(时间索引, function(时序) {
+            季回归4 <- llply(c('aicc', 'aic', 'bic'), function(信息量准则) {
+              季回归5 <- llply(c('kpss', 'adf', 'pp'), function(测试) {
+                季回归6 <- llply(c('seas', 'ocsb', 'hegy', 'ch'), 
+                  function(季节性测试) {
+                    成效 <- 日内高频季节性自回归(
+                      时间索引 = 时序, 样本 = 样本二零一八半年, .蜀道 = .蜀道, 
+                      文件名 = '日内高频季节性自回归', 数据量 = 数据量, 
+                      频率 = 频率, 预测时间单位 = 预测时间单位, 
+                      .模型选项 = 模型, .差分阶数 = 差分阶数, 
+                      .季节性差分阶数 = 季节性差分阶数, 
+                      季节性与否 = 季节, 静态与否 = '叉', 
+                      记载自回归与否 = '叉', 
+                      信息量准则 = 信息量准则, 逐步精化与否 = '叉', 
+                      逐步精化量 = 94,  
+                      #近似值与否=(length(x)>150|frequency(x)>12), 
+                      省略 = NULL, 计策谋略 = NULL, #x = y, 
+                      趋势 = NULL, 测试 = 测试, 测试参数 = list(), 
+                      季节性测试参数 = list(), 博克斯考克斯变换 = NULL, 
+                      季节性测试 = 季节性测试, 
+                      允许截距与否 = '勾', 允许包含均值与否 = '勾', 
+                      偏差调整与否 = '叉', 多管齐下与否 = '叉', 核心量 = 2, 
+                      包含均值与否 = '勾', 包含截距与否 = '勾')
+                }, .progress = 'text')
+              }, .progress = 'text')
+            }, .progress = 'text')
+          }, .progress = 'text')
+        }, .progress = 'text')
+      }, .progress = 'text')
+    }, .progress = 'text')
+  }
+  
+  if (模型 == '自回归滑均') {
+    季回归0 <- llply(1:nrow(.时序规律), function(迭数1) {
+      季回归1 <- llply(1:nrow(.季节性规律参数), function(迭数2) {
+        季回归2 <- llply(时间索引, function(时序) {
+          成效 <- 日内高频季节性自回归(
+            时间索引 = 时序, 样本 = 样本二零一八半年, .蜀道 = .蜀道, 
+            文件名 = '日内高频季节性自回归', 数据量 = 数据量, 频率 = 频率, 
+            预测时间单位 = 预测时间单位, .模型选项 = 模型, 
+            .时序规律 = unlist(.时序规律[迭数1,]), 
+            .季节性规律参数 = unlist(.季节性规律参数[迭数2,]), 趋势 = NULL, 
+            允许包含均值与否 = '勾', 允许截距与否 = '叉', 
+            包含均值与否 = '勾', 包含截距与否 = '勾', 
+            #包含常数与否 = 包含常数与否, 
+            #计数模型 = NULL, 博克斯考克斯变换 = 博克斯考克斯变换, x = y, 
+            偏差调整与否 = '叉', 计策谋略 = c('CSS-ML', 'ML', 'CSS'))
+        }, .progress = 'text')
+      }, .progress = 'text')
+    }, .progress = 'text')
+  }
+  return(模型)
+}, .progress = 'text')
+# 整顿数据(1, 文件名 = '日内高频季节性自回归2018数据', 是否移除文件夹 = '勾')
+```
+
+#### `fable` & `fabletools`程序包
+
+### 外部因素周期性自回归综合滑均模型（ARIMAX）`ts()` & `auto.arima()`
+
+- [arima xreg argument error caused by column name in data frame](https://stackoverflow.com/a/55229110/3806250)
+
+### 季节性自回归综合滑均模型（SARIMA）`ts()` & `auto.arima()`
+
+### 外部因素周期性季节性自回归综合滑均模型（SARIMAX）`ts()` & `auto.arima()`
+
+- [SARIMAX model in R](https://stackoverflow.com/questions/17816868/sarimax-model-in-r)
+
+```{r, eval = FALSE}
+
+
+
+```
+
+```{r eval = FALSE}
+
+
+```
+
+## 季节性自回归综合滑均模型（SARIMA）`msts()` & `auto.arima()`
+
+- [Multiple and long seasonality for a SARIMA model in R](https://stats.stackexchange.com/questions/109835/multiple-and-long-seasonality-for-a-sarima-model-in-r)
+- [SARIMAX model in R](https://stackoverflow.com/a/17816958/3806250)
+- [ARIMA - Advanced Time Series Methods: Auto Regression Integrated Moving Average](https://medium.com/analytics-vidhya/arima-fc1f962c22d4)
+
+## 季节性自回归综合滑均模型（SARIMA）`fable` & `fabletools`
+
+https://otexts.com/fpp3/seasonal-arima.html
+
+## 自回归综合滑均模型（ARFIMA / ARFIMAX） `arfima()`
+
+### 外部因素周期性自回归综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
+
+- [binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)
+- [binary.com 面试试题 I - GARCH模型中的`ARCH in Mean`](https://rpubs.com/englianhu/binary-Q1-archm)
+
+## `msts()` & `hw()`
+
+> After looking a bit more, I've came across this question where a user wanted to use the hw method to forecast half-hourly electricity demand using the taylor dataset available in the forecast package.
+
+> As Professor Rob Hyndman suggest in the response to the linked question, the double seasonal Holt Winters model method dshw from the forecast package can be used to deal with half-hourly data.
+
+> After removing the yearly seasonality parameter (seasonal.periods = 8760) in the definition of my msts object, I've ran the model and it provided a pretty accurate result.
+
+[How can I apply Seasonal Exponential Smoothing forecasting method to hourly data in R](https://stackoverflow.com/a/62430549/3806250)
+
+## `msts()` & `tbats()`
+
+### Seasonal Data Modeling
+
+I set the length of data as weekly (`7200` minutes which is 5 trading days) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+[*Chapter 7 Multivariate TS Analysis* in **Introduction to Time Series Analysis and Forecasting in R**](https://bookdown.org/singh_pratap_tejendra/intro_time_series_r/multivariate-ts-analysis.html), but I use univariate due to some errors as mentioned in beginning.
+
+I tried to use `weeks(1)`, `months(1)`, `months(3)`, `years(1)` but there is not constant observations, we can refer to [`The seasonal period`](https://otexts.com/fpp3/tsibble-objects.html).
+
+Here I filter up the data as below :
+
+- `5 days * 1440 mins = 7200 mins` = weekly
+- `22 days * 1440 mins = 31680 mins` = monthly
+- `3 months * 22 days * 1440 mins = 95040 mins` = quarterly
+- `52 weeks * 5 days * 1440 mins = 374400 mins` = yearly
+
+### (周 ∈ 分) >> 日
+
+I set the length of data as monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `22 days * 1440 mins = 31680 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+```{r eval = FALSE}
+# —— eval = FALSE ——
+样本二零一八半年[序列 == 序列基准1]
+
+数据量 <- 7200 #last 7200  observations 样本二零一八半年[(.N - (数据量 - 1)):.N]
+预测时间单位 <- 1440
+hrz2 <- 1440
+
+llply(ets.m, function(模型) {
+  mstseas(时间索引 = 时间索引, 样本二零一八半年, 
+        数据量 = 数据量, 预测时间单位 = 预测时间单位, 
+        hrz2 = hrz2, .模型选项 = 模型)
+  })
+```
+
+### (周 ∈ 季) >> 日
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+### (周 ∈ 年) >> 日
+
+I set the length of data as yearly (`52 weeks * 5 days * 1440 mins = 374400 mins` minutes which is 260 trading days), nested seasonal weekly (`5 days * 1440 mins = 7200 mins` minutes which is 5 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `52 weeks * 5 days * 1440 mins = 374400 mins`
+- seasonal `5 days * 1440 mins = 7200 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
+
+### (分 ∈ 季) >> 日
+
+I set the length of data as quarterly (`3 months * 22 days * 1440 mins = 95040 mins` minutes which is 66 trading days), nested seasonal monthly (`22 days * 1440 mins = 31680 mins` minutes which is 22 trading days) and `1440` minutes (`1440` minutes is a trading day) to forecast `1440` minutes (`1440` minutes is a trading day).
+
+- data observation length `3 months * 22 days * 1440 mins = 95040 mins`
+- seasonal `22 days * 1440 mins = 31680 mins`
+- sub-seasonal `1440 mins`
+- forecast `1440 mins`
 
 <br>
 
-# 《吕氏春秋》
+# 道家计数建模
 
-## 计数建模
+## 杏林林氏西河堂
 
-### 季节性指数平滑模型（Seasonal Exponential Smoothing - Seasonal ETS）
-
-### 自回归综合滑均模型系列（ARIMA Series）
-
-#### 季节性数据建模`ts()`、`xts()`、`zoo()`、`msts()`
-
-##### 自回归简介
-
-##### `ts`
-
-##### `xts`
-
-##### `zoo`
-
-##### `msts`
-
-##### 季节性数据建模小结
-
-### 精准度
-
-> …VAR分析中的一个中心问题是找到滞后的阶数，以产生最佳结果。模型比较通常基于信息标准，例如AIC，BIC或HQ。通常，由于是小样本预测，AIC优于其他标准。但是，BIC和HQ在大型样本中效果很好…
-
-*引用：[R语言用向量自回归（VAR）进行经济数据脉冲响应研究分析](http://tecdat.cn/r语言用向量自回归（var）进行经济数据脉冲响应研)*
-
-> …
-> 
-> **选择自己的模型**
-> 如果你想自己选择模型，你可以使用R中的Arima()函数。R中的arima()函数也可以用来拟合ARIMA模型，但是它不适用于常数`c`存在的情况(除非`d=0`)，并且它和`forecast`包中的一些函数不兼容。最后，它的估计模型也不能被用于新数据集（新数据在检测预测准确率时非常有用）。因此我们强烈建议使用`Arima()`而不是`arima()`…
-
-*引用：[第八章第七节 在R鄀中建立ARIMA模型](https://otexts.com/fppcn/arima-r.html)*
-
-- [「经管之家」 [计数软件与数据分析] 如何理解R中给出的ARIMA模型的拟合结果？](https://bbs.pinggu.org/forum.php?mod=viewthread&tid=3236918)
-- [**Forecasting: Principle & Practice** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)
-- [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3cn)
-
-这儿使用`forecast`、`fable`、`fabletools`程序包，该程序包中的`accuracy()`[^8]函数和`report()`函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的计数模型预测值。至于`stats`、`TSA`并无兼容`forecast`、`fable`、`fabletools`程序包，故此以`MAE`, `MAPE`, `RMSE`, `SMAPE`, `MSE`来评估。
-
-[^8]: 预测：方法与实践（第三版）<br> - [**Forecasting: Principles and Practice (3rd ed)** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)阐明评估预测精准度的计算公式。<br> - [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3cn)阐明评估预测精准度的计算公式。<br> - [「CSDN」选择正确的错误度量标准：MAPE与sMAPE的优缺点](https://blog.csdn.net/deephub/article/details/109483129)<br> - [「β站」康雁飞在线视频教程《预测：方法与实践》（第三版）](https://space.bilibili.com/624024421)
-
-## 道家计数建模
-
-### 杏林林氏西河堂
-
-#### 杏林简介
+### 杏林简介
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/5uysBWFXex8" title="《成都》趙雷（成都街景）分別總是在九月♫" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -568,7 +1270,6 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 - [妇女善用新村木屋做为种植凤尾菇的园圃](https://sembilan.sinchew.com.my/news/20231227/sembilan/5226220)
 - [亩纯赚十万元！这种稀有的蔬菜，很多人都没见过](https://zhuanlan.zhihu.com/p/554364017)
 - [在家种蘑菇会有健康隐患吗？| CCTV「生活提示」20210625](https://youtu.be/PySBgsnQh2U)
-- [实现在家种人工菌！随时都可以穿新鲜的菜#食用菌栽培 @DOU+小课堂](https://www.douyin.com/video/7174617761618971904)
 - [农村这种作物，价格是其它作物的五倍，见效快，种植一亩赚十万！](https://www.sohu.com/a/486898726_121123906)
 - [野生鸡肉菇美味多人爱，此味可遇不可求](https://eastcoast.sinchew.com.my/news/20201207/eastcoast/3082609)
 - [又到鸡肉菇旺季，老饕碰运气摘煮乐](https://eastcoast.sinchew.com.my/news/20230401/eastcoast/4577798)
@@ -590,9 +1291,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 **「世袭制法家回教徒蕲年宫之变、安史之乱，集体朗诵可兰经——楚歌」**<br>
 借鉴[斩首、石刑、截肢…阿富汗“伊斯兰教法”或将重现酷刑](https://www.163.com/dy/article/HM881SKU0511RVG1.html)，内部处分阿里巴巴、淘宝、腾讯、百度等所有背叛世袭制道家姓氏堂号子嗣贞节牌坊的商家、头戴白色女假发的世袭制法家司法界包括男同志美国国父瓦盛顿把洋番基督耶稣一律钉在十字架、大宝森节和屠妖节习俗文化种族灭绝印度裔兴都教徒、瓜雪RHU（淮西派）花园加德士油站隔壁第三巷门牌卅二号边抽鼻涕边求命边膜拜边失心疯边自残自虐自杀的土司乩童刘瑾貹、瓜雪巴西不能帮门牌T十五号吱吱吾语的失心疯猥亵淫魔土司乩童张佳坤、那些世袭制法家可兰经回教徒自杀式冒充咱们世袭制道家中华民族是触犯可兰经回教刑事法典断肢法，[可兰经断肢法，回教徒不是不可以赌博吗？](https://youtube.com/shorts/hTsFgQ3mfBc)、马航所有世袭制法家回教徒公仆、瓜雪回教警署、瓜雪回教市政局、瓜雪回教土地局、四季仔的印尼外劳回教徒房客、阿塔的孟加拉外劳回教徒房客、峇峇娘惹的可兰经的习俗文化宗教语言断肢法！世袭制法家回教徒的可兰经习俗文化宗教语言断肢法，学习或参与使用任何外文学术数学算卜概率论博弈论、习俗文化宗教语言、吃猪肉喝酒抽烟、色情尤其是传宗接代（公元前没有人工受孕的科学技术下立下的世袭制法家回教徒的千年可兰经习俗文化宗教语言断肢法）、女回教徒就连抛头露面出外更何况是工作、女回教徒裸露鼻子嘴巴耳朵手臂脚、勾引、迷魂、巫术降头、持有任何武器、冒充他族或其它宗教教徒、叛乱、判教等甚至活命，都是触犯法家立下的千年可兰经回教刑事法典断肢法。
 
-#### 杏林经济学
-
-##### 杏林与操作系统
+### 杏林与操作系统
 
 目前市场充斥着许多外来语甚至不翻译直接使用洋文术语。洋文Computer是代表计算器而中译为白话文「计算机」或古文「算筹」^[「算筹」电子仪器与「大秦赋」操作系统：<br> - [「猫城」中国北京大学赢家ξng黄氏江夏堂「大秦赋•道家李耳老子兼法家李斯篆紀•艺文志」：目前使用🚩🇨🇳🏹🦔中国国产红旗礼逆袭，编程都会使用咱们母语华语、字体、字幕加汉语拼音。 #6](https://github.com/englianhu/RedFlag-Linux/issues/6)<br> - [自然对数「干支算筹」与农历天文历法](https://github.com/englianhu/RedFlag-Linux/issues/12#issuecomment-1676066137)]，至于咱们平时所说的「电脑」应该英译为「Electronic Brain」，平时所说的个人电脑Personal Computer缩写PC与女生生殖器官Pussy近音。操作系统终端一般上称之为“Shell”，故此翻阅一些相关文献如下：
 
@@ -649,13 +1348,11 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 *出处：[「问百度」<ruby>牡<rp>(</rp><rt>mǔ</rt><rp>)</rp>蛎<rp>(</rp><rt>lì</rt><rp>)</rp></ruby>](https://baike.baidu.com/item/牡蛎/395594)*
 
-综合以上所述，与咱们世袭制道家杏林中药材相关的贝类叫[「牡蛎」](https://mp.weixin.qq.com/s?__biz=MzU0Mjg5MTQyMA==&mid=2247505741&idx=8&sn=155bfe0f893c6b5b2f150240a26b1969&chksm=fb115bbecc66d2a83c2c95a4e6e780761f656f612f08bbbdfc484a333c7391c9c32f1dc481ac&scene=27)（也称「生蚝」）。
+综合以上所述，与咱们世袭制道家杏林中药材相关的贝类叫「牡蛎」（也称「生蚝」）。
 
 <iframe width="400" height="225" src="https://www.youtube.com/embed/qMmlwttfad8" title="「抖音」加油不放弃" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
-> …
-> 
-> #大秦赋 #秦孝公 #姜太公 #陈祯禄公爵 #邱德拔公爵 #巫裔尽弃瓦釜雷鸣 #期权可居 #商鞅变法铲除巫裔 #中科红旗🚩 #北京大学 #咱们马来西亚赢家ξng黄氏江夏堂和杏林林氏西河堂和商家苏氏阜阳堂和道家肖氏远芳堂和道家阮氏郡望堂<s> 🇬🇧NonMuslim👱🏻‍♀️英国基督洋妞儿芈拉</s>都不可以死 #咱们中华民族和越族不可以死 #文言文编程 #Nguyễn阮氏 #道家李耳 #耳东陈耳元阮 
+> …#大秦赋 #秦孝公 #姜太公 #陈祯禄公爵 #邱德拔公爵 #巫裔尽弃瓦釜雷鸣 #期权可居 #商鞅变法铲除巫裔 #中科红旗🚩 #北京大学 #咱们马来西亚赢家ξng黄氏江夏堂和杏林林氏西河堂和商家苏氏阜阳堂和道家肖氏远芳堂和道家阮氏郡望堂<s> 🇬🇧NonMuslim👱🏻‍♀️英国基督洋妞儿芈拉</s>都不可以死 #咱们中华民族和越族不可以死 #文言文编程 #nguyen阮氏 #道家李耳 #耳东陈耳元阮 
 > 
 > 借鉴春秋战国（目前七大洲五大洋）吴越之争，皇室与内阁<br>
 > 福建闽南语瓦 = 我<br>
@@ -672,7 +1369,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 > 
 > 🚩大秦赋🌟🐯：咱们马来西亚🇲🇾棕油商品市场曾经位居世界第一多年，🦔Hedge funds高频量化对冲基金，引入中国🇨🇳🇹🇼一带一路路线图战略来攻占咱们马来西亚🇲🇾（歼灭那些不遵守可兰经回教刑事法典断肢法的巫贼巫婆非法回教徒），共同发展咱们杏林业、农业、金融业（货币、股市与金融商品市场）、道家（易经、算卜、天文历法、生二生肖、运筹学、统筹法——系统工程学）、教育业，推销咱们农产品尤其是杏林中药材至全球：
 > 
-> - Durian 果王榴莲🦔 [猫城量化对冲，猫山王出口只是开始，榴莲产业即将迎来大爆发！？](https://youtu.be/pc3dJ-c9tZ0)
+> - Durian 果王榴莲🦔 [猫城量化对冲，猫山王出口只是开始，榴莲产业即将迎来大爆发！？](https://www.youtube.com/watch?v=pc3dJ-c9tZ0)
 > - Sour Sop 红毛榴莲🦔 / 刺果番荔枝🦔
 > - Bird Nest 燕窝🍥
 > - Pandan 香草🌱
@@ -697,36 +1394,19 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 欲知更多详情，请查阅：
 
 - [李锦记百卅历史了](https://www.ixigua.com/6977491627480711692)
-- [「微信」明德初心](https://mp.weixin.qq.com/s/ldEY0h4JTE5n9gryvEQmLQ)
-- [「微信」牡蛎（中药大辞典、中华本草）](https://mp.weixin.qq.com/s?__biz=MzU0Mjg5MTQyMA==&mid=2247505741&idx=8&sn=155bfe0f893c6b5b2f150240a26b1969&chksm=fb115bbecc66d2a83c2c95a4e6e780761f656f612f08bbbdfc484a333c7391c9c32f1dc481ac&scene=27)
 - [「猫城」🚩🔆🏹🌟👊🚀🦔大秦赋：ξng赢家黄氏江夏堂 - 黄埔军校，辛亥革命；中科红旗，量化对冲。一带一路，史无前例；横跨七洲，一统天下。（咱们东南亚那些回教政府和敌国西方基督耶稣政府是世仇） #三](https://github.com/englianhu/library/issues/3#issuecomment-1308370079)
 
-##### 子宫与皇宫
+#### 子宫与皇宫
 
 - 借鉴咱们中华古代婚礼，花冠与苗族（万物皆有灵，取代天下所有回教徒）。
-- 根据世界古文明千年法家可兰经回教刑事法典断肢法，回教徒不允许涉及任何色情活动、不允许叛乱和叛教、不允许传宗接代的种族灭绝可兰经回教法律，负责歼灭所有回教徒，因为在咱们人类还没有研发试管婴的古代就已经立下并流传至今的千年可兰经回教刑事法典断肢法。
 
-##### 怀孕与算卜
-
-![*从北京到成都——统计之都*](诸子百家考工记/统计学专业本科生该找啥实习呢？.png){width=400}
-- [中国古代的人口统计](https://cdo.develpress.com/?p=10970)
-
-##### 杏林方技学
-
-- [「微信」明德初心](https://mp.weixin.qq.com/s/ldEY0h4JTE5n9gryvEQmLQ)
-
-##### 黄氏与皇室
-
-##### 黄氏复古之道
+#### 中华复古之道
 
 - 服饰与发型
     - MY大汉山，东汉末年：[馬來西亞漢服運動 Hanfu Malaysia](https://www.facebook.com/hanfumalaysia)，借鉴咱们中华史赢家黄氏江夏堂是秦蜀时期最正统正义的家族。
     - 东马猫城，古晋（司马错得蜀既得楚/大都督司马懿）：[古晋华服社 Kuching Huafu Society](https://www.facebook.com/profile.php?id=100057257298724)，借鉴咱们中华史，「秦晋之好」都是靠拢咱们祖籍中国复古，推翻回教徒宦官民族的政权。
     - [「知乎」求推荐介绍中国古代服饰的书？](https://www.zhihu.com/question/322168692)
     - [「猫城」黄联富（®γσ ξηg 雷欧）/大秦赋始祖永春——秦谏/始祖永春∙大秦赋（Chinese Emperor）/诸子百家（左氏春秋、史记、战国策辞典）](https://github.com/englianhu/library/tree/世博量化研究院/始祖永春∙大秦赋（Chinese%20Emperor）/诸子百家（左氏春秋、史记、战国策辞典）)
-    - [「微博」从《大秦赋》看秦代服饰](https://weibo.com/ttarticle/p/show?id=2309404601940217823732)
-    - [「搜狐」有一说一，《大秦赋》在这方面确实做到了神还原](https://www.sohu.com/a/440606179_99894924)
-    - [「百度」《大秦赋》各国置景.服色一览](https://tieba.baidu.com/p/7806338892)
 - 建筑与旅游
     - [中国传统建筑九大体系。](https://www.facebook.com/watch/?v=736574607893234)
     - [亭, 台(臺), 楼, 阁…有啥区别 ?](https://www.facebook.com/permalink.php?story_fbid=pfbid02uPn8UQhgBNk5uTYMgKHWm6yZ2eZLHKCm4UHYovxXgPXJVF68tSNd2o7tzkG6udS6l&id=100075253765334)
@@ -759,32 +1439,29 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
     - 
     - 
 
-#### 道家时间计量单位（中国古代计时法）
+### 道家时间计量单位（中国古代计时法）
 
-##### 天文历法（干支纪年 / 纪元法）
+#### 天文历法（干支纪年 / 纪元法）
 
 **十天干**
 
-```{r 天文历法-天干}
-(天干 <- c('甲', '乙', '丙', '丁', '戊', '己', '庾', '辛', '壬', '癸'))
+```{r 引用天干}
+天干
 ```
 
 **十二地支**
 
-```{r 天文历法-地支}
-(地支 <- c('子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥'))
+```{r 引用地支}
+地支
 ```
 
 **六十甲子与天干地支**
 
-```{r 天文历法-干支}
-干支 <- paste0(rep(天干, 6), rep(地支, 5))
-干支 |> 
-  matrix(nrow = 12, dimnames = list(
-    地支, paste0(天干[1:5], 天干[6:10])))
+```{r 引用干支}
+干支
 ```
 
-![](诸子百家考工记/鄀语言 - 制作干支对照表.png){width=400}
+<img src='诸子百家考工记/鄀语言 - 制作干支对照表.png' width = '400'>
 
 > 農曆，又稱舊曆，這是因為孫文希望能廢除過去帝王身為天子代表天頒訂天時的震旦歷朝曆法，把它貶為舊，孫文主張：「新曆新年為民國的新年，為共和國家的新年。舊曆新年為君主時代的新年，為專制國家的新年。」
 > 
@@ -836,7 +1513,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 - [（历法溯源十）天文历法大成，周易天象解密，易经的天象规律](https://www.bilibili.com/video/BV1AA411R7LE)
 - [天文课程 - 时间和历法](https://www.bilibili.com/video/BV1uv411K7sd)
 
-##### 十二时辰
+#### 十二时辰
 
 | 时辰 | 雅称 |         其它雅称 |                 十二时辰对照 | 生肖 | 打更 |
 |:----:|:----:|:----------------:|:----------------------------:|:----:|:----:|
@@ -968,7 +1645,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 *引用：[「十二时辰」简史](http://news.ts.cn/system/2019/07/26/035802762.shtml)*
 
-> ![](诸子百家考工记/古人对时间的别名雅称（甲）.png)
+> ![](诸子百家考工记/古人对时间的别名雅称（甲）.png){width=400}
 > 
 > #古人对时间的别名雅称
 > 
@@ -1013,13 +1690,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 - [一刻钟是多久，古代的一天为几刻钟呢？](https://zhidao.baidu.com/question/16558757)
 - [「问百度」一刻钟](https://baike.baidu.com/item/一刻钟/2070381)
 
-<iframe width="400" height="225" src="https://www.youtube.com/embed/krSYu_vawNc" title="万家灯火，张灯结彩" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-> 您想问的是**衣锦夜行**还是**锦衣夜行**的区别吗？含义不同。
-> 
-> **衣锦夜行**意为穿着华美的衣裳在夜间行走，比喻有才华、有能力却默默无闻，不为世人所知。**锦衣夜行**则是指富贵人家的子弟夜晚出游，穿着华丽的衣服，形容生活奢华、富有。
-
-*出处：[衣锦夜行还是锦衣夜行？](https://zhidao.baidu.com/question/2277942097738415748.html)*
+![*诸子百家，万家灯火；天文历法，张灯结彩。*](/home/englianhu/文档/猫城/img/诸子百家百戏/大秦赋 - 黄埔军校黄种人民族主义赢家黄氏江夏堂始祖嬴政永春庄（峇东新村）/万家灯火，张灯结彩.mp4){width=400 height=225}
 
 > ![*时间单位，是七种基本单位之一*](诸子百家考工记/时间单位，是七种基本单位之一.png){width=400}
 > 
@@ -1034,7 +1705,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 | 长于年 |            千年 | 一千年
 | 长于年 |            世纪 | 
 | 长于年 |            年代 | 
-|     年 |          近点年 | 三百圆六点二五九六四日
+|     年 |          近点年 | 三百圆六点365.25964日
 |     年 |          恒星年 | 365.256363004个平太阳日（≈365日6时9分10秒）
 | 
 | 
@@ -1042,26 +1713,20 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 *出处：[时间单位，是七种基本单位之一](https://baike.baidu.com/item/时间单位/3078999)*
 
-##### 十二生肖
+#### 十二生肖
 
 从满洲到星洲，从鼻祖暨耳孙。论生肖的「演化史」，先秦时已有相关记载：
 
-[十二生肖都咋来的？为啥鼠是第一个？怎么没猫？](http://www.xinhuanet.com/politics/2020-01/22/c_1125491667.htm)，如果有留意十二生肖中，只有龙（飞蜥[^3]）是神话的三栖动物而非其余十一个生肖现实生活中的动物，蛇是两栖动物可以潜水和活在水里而其余的都是陆上动物。
+[十二生肖都咋来的？为啥鼠是第一个？怎么没猫？](http://www.xinhuanet.com/politics/2020-01/22/c_1125491667.htm)，如果有留意十二生肖中，只有龙（飞蜥[^2]）是神话的三栖动物而非其余十一个生肖现实生活中的动物，蛇是两栖动物可以潜水和活在水里而其余的都是陆上动物。
 
 > <iframe width="400" height="225" src="https://www.youtube.com/embed/tNTuFtDnJDk" title="δ「Tiktok」故郷 ふるさと" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 > 
 > *世袭制道教徒十二生肖赢家黄氏江夏堂联富本人的曾祖父黄福全，清末光绪年间鸦片战争，从满洲到星洲——峇东新村。*
 > 
 > - [「文派」**阳历二零二三年十二月三日**今日是紫云生日](https://englianhu.wordpress.com/2024/02/04/「阳历二零二三年十二月三日」今日是紫云生日)
-> - 咱们峇东新村巫文叫Kampung Tiram Buruk（中译：邪恶或滥交的生蚝之乡/娼妓之乡/青楼之乡、秦人牧马选妻出淤泥而不染的西施与郑旦生蚝之乡），民智国民华校小学五年级时期的中文老师兼班主任颜玉婷老师和陈温温老师说过改名为Kampung Tiram Setia（中译：[《臣服🎶》](https://www.bilibili.com/video/BV19E411y7n8)于[西施](https://www.instagram.com/p/C1_tupjM3bl)之乡/忠诚的生蚝之乡、贤妻之乡、糟糠之妻之乡、母仪天下之乡），小学时期喜欢中文老师兼班主任颜玉婷老师觉得老师很伟大，下篇中的[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（丁：春秋战国道家）**</span>](https://github.com/englianhu/binary.com-interview-question)矩阵「行与列」中、有会聊起一九九五年在民智国民华校小学时期五年级、民众会堂陈奕迅的歌曲[《你的背包🎶》](https://www.bilibili.com/video/BV14f4y1p7nH)、和吴双喜老师（老师间的爱情）、吴荣兴中文学会老师兼学校主任的历史，灌输我在中国历史春秋战国、成语典故、中文和数学和喜欢中文数学科学的重大影响一生受用，包括李登辉总统执政时期台湾岛被中国解放军围绕。自小对于老师教导的道德教育、中庸之道、姓氏堂号子嗣贞节牌坊非常看重，传统的男生。若没记错小一时期就奇怪为什么身边所有同学甚至老师说的中文和老师通过字面上的拼音授教的国际标准中文会完全不一样呢？当时听到中国同胞说一口流利国际标准中文就觉得特别亲切像是自家人，当时全班同学说的中文不标准全是语病，只有我一人发音标准竟然成了全班的异类被许多同学冷嘲热讽，借鉴幼儿园时期强出头被群殴，一朝被蛇咬，十年怕草蛇，从此就保持沉默当个品学兼优文静内向的模范生（只是心想着有朝一日必须到中国发展，二零零八年像修读大学在西施康当客服时四年多，主管品学兼优的独中生李小新一直以为我也是独中生中文口音很标准也品学兼优，每天通过电话和中国同胞打交道就觉得祖国中国同胞很亲切。二零一二零一七年到柬埔寨西哈努克港黄金城、柬埔寨西哈努克港贵族酒店、菲律宾克拉克太阳谷和祖国中国同胞），被逼入乡随俗也随着说一口不流利不标准的台式中文，然后小二就开始追台剧《军官与淑女》中的女主角涂善妮（之后就追台剧《包青天》系列）就好奇为什么那么巧合和中文老师兼主任长相相似呢？直到小四的隔壁版数学老师陈温温说明年小五会任教数学课老师，校方会引入一位中文老师兼主任颜玉婷任教两年，兢兢业业还恶补字辨、语法、成语、修辞等，而数学课陈温温老师也是兢兢业业名师出高徒、桃李满天下。
+> - 咱们峇东新村巫文叫Kampung Tiram Buruk，民智国民华校小学五年级时期的中文老师兼班主任颜玉婷老师和陈温温老师说过改名为Kampung Tiram Setia，小学时期喜欢中文老师兼班主任颜玉婷老师觉得老师很伟大，下篇中的[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（丁：春秋战国道家）**</span>](https://github.com/englianhu/binary.com-interview-question)矩阵「行与列」中、有会聊起一九九五年在民智国民华校小学时期五年级、民众会堂陈奕迅的歌曲「背包」、和吴双喜老师（老师间的爱情）、吴荣兴中文学会老师兼学校主任的历史，灌输我在中国历史春秋战国、成语典故、中文和数学和喜欢中文数学科学的重大影响一生受用，包括李登辉总统时期台湾岛被中国解放军围绕。
 
 *出处：[《故郷ふるさと》🎶J-League ⚽🎌🎎🎏#ふるさと #故郷](https://www.tiktok.com/@englianhu/video/6876997614085082370)*
-
-> <iframe width="400" height="225" src="https://www.youtube.com/embed/AEsk9DBoIq4" title="🚩🔆🏹🌟👊🚀🦔「大秦赋」拨款建寺庙与发展咱们中华民族新村" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-<iframe width="400" height="225" src="https://www.youtube.com/embed/nyj_dbXfj6I" title="春风若有桃花意，落花时节又逢君" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-
-*黄河文明、鬼谷传奇、河南中原女子：春风若有桃花意，落花时节又逢君*
 
 > **《世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊》**<br>
 世风日下，人心不古；<br>
@@ -1071,13 +1736,13 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 
 *引用：[经典回顾之QQ爱](https://www.bilibili.com/video/BV1yT4y1n7C4)*
 
-借鉴礼逆袭的Root最高权限，诠释为咱们中华道家十二生肖（秦人牧马、燕从京来、良禽择木而栖）「在天愿做比翼鸟，在地愿做连理枝。」。它日再通过运筹学、物理学来诠释咱们春秋战国时期诸子百家中道家李耳的易经、张灯结彩、天文历法、廿四节气[^4]、时辰、十二生肖、姻缘与子宫怀孕（借鉴秦灭六国史，建立皇宫称帝「秦始皇」、算卜数学学术概率论）、咱们[世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊。白月光与朱砂痣学生爱国版自制视频](https://www.bilibili.com/video/BV12J4m1W7f9)[^5]等。
+借鉴礼逆袭的Root最高权限，诠释为咱们中华道家十二生肖（秦人牧马、燕从京来、良禽择木而栖）「在天愿做比翼鸟，在地愿做连理枝。」。它日再通过运筹学、物理学来诠释咱们春秋战国时期诸子百家中道家李耳的易经、张灯结彩、天文历法、廿四节气[^3]、时辰、十二生肖、姻缘与子宫怀孕（借鉴秦灭六国史，建立皇宫称帝「秦始皇」、数学学术概率论）、咱们[世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊。白月光与朱砂痣学生爱国版自制视频](https://www.bilibili.com/video/BV12J4m1W7f9)[^4]等。
 
-[^3]: [唯一会飞的爬行动物飞蜥是翼龙的后代吗？](https://haokan.baidu.com/v?pd=wisenatural&vid=14393146146365528807)
-[^4]: [⼆⼗四节⽓⼤全](https://mp.weixin.qq.com/s?__biz=Mzg3MTUzNjAwMw==&mid=2247492492&idx=6&sn=0614e89a7eb7e827cec6d878dd7acf23)
-[^5]: 世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊：<br> - [「问百度」贞节牌坊 - 古时用来表彰女性从一而终的门楼](https://baike.baidu.com/item/贞节牌坊/1019217)<br> - [「问百度」巴寡妇清 - 战国末年历史人物](https://baike.baidu.com/item/巴寡妇清/10567832)
+[^2]: [唯一会飞的爬行动物飞蜥是翼龙的后代吗？](https://haokan.baidu.com/v?pd=wisenatural&vid=14393146146365528807)
+[^3]: [⼆⼗四节⽓⼤全](https://mp.weixin.qq.com/s?__biz=Mzg3MTUzNjAwMw==&mid=2247492492&idx=6&sn=0614e89a7eb7e827cec6d878dd7acf23)
+[^4]: 世袭制道家姓氏堂号子嗣，朱砂痣与贞节牌坊：<br> - [「问百度」贞节牌坊 - 古时用来表彰女性从一而终的门楼](https://baike.baidu.com/item/贞节牌坊/1019217)<br> - [「问百度」巴寡妇清 - 战国末年历史人物](https://baike.baidu.com/item/巴寡妇清/10567832)
 
-##### 天文历法（农历月份）
+#### 天文历法（农历月份）
 
 > 冬月和腊月在中国传统的农历中不是同一个月。
 农历十一月为「冬月」，又称幸月、畅月、后十月、仲冬。一年十二月用十二地支来表示的话，又称「子月」称「建子」。农伍手历十二月，也就是华人民间俗称的「腊月」。之所以叫「腊月」，是因为「腊」是古代祭祀祖先和百神的「祭」名，有「冬至后三戌祭百神」之说，即每逢冬至后的第三个纪日干支中含有地支「戌」的日子，南北朝时期固定在十二月初八日，华人民间都要猎杀禽兽举行大祭活动，拜神敬祖，以祈福求寿，避灾迎祥。这种祭奠仪式称为「猎祭」。因「腊」与「猎」通假，「猎祭」遂并缓写成了「腊祭」，因而年终的十二月被叫腔蔽嫌做腊月。
@@ -1117,7 +1782,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 - [腊月别称大全,农历正月到腊月的别称都有哪些？](https://zhidao.baidu.com/question/564213532043599812.html)
 - [腊月在古代的雅称，农历正月到腊月的别称都有哪些？](http://m.365zyg.com/huangdaojiri/104808.html)
 
-##### 天文历法（廿四节气表）
+#### 天文历法（廿四节气表）
 
 > 二十四节气是反映一年中自然现象和农事活动季节特征的二十四个节候。 即立春、雨水、惊蛰、春分、清明、谷雨、立夏、小满、芒种、夏至、小暑、大暑、立秋、处暑、白露、秋分、寒露、霜降、立冬、小雪、大雪、冬至、小寒、大寒。
 > 
@@ -1207,7 +1872,7 @@ if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学�
 - [二十四节气 - 中国历法中廿四个特定节令、人类非物质文化遗产代表作](https://baike.baidu.com/item/二十四节气/191597)
 - [维基百科 - 节气](https://zh.wikipedia.org/zh-my/节气)
 
-```{r 天文历法-计数建模, warning = FALSE, error = TRUE}
+```{r 天文历法-计数建模}
 if(!exists('天干')) 天干 <- c('甲', '乙', '丙', '丁', '戊', '己', '庾', '辛', '壬', '癸')
 if(!exists('地支')) 地支 <- c('子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥')
 if(!exists('干支')) {
@@ -1317,895 +1982,39 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 总汇 <- cbind(总汇[, -c('市场价', '预测价')], 干支, 
             日内指数平滑数据二零一八年上半年总汇[, c('市场价', '预测价')]) |> 
   mutate(干支 = factor(干支), 周日 = factor(周日), 时辰 = factor(时辰))
+总汇
 # rm(天干, 地支, 干支, 廿四节气)
-```
-
-### 外部因素周期性自回归综合滑均模型（ARIMAX）
-
-#### `forecast::Arima()`
-
-##### 静态模型
-
-![](诸子百家考工记/预测 - 方法与实践（第三版）.png){width=400}
-
-> 当没有特殊指定时，ARIMA() 函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`和`q`，`P`和`Q`)的选择都通过最小化`AICc`来决定。
-
-*引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
-
-一般上，存活分析模型、循环神经网络模型，[**迪逊与罗宾逊（一九九七年）**](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/reference/DixonRobinson1997.pdf)^[[「猫城」Odds Modelling and Testing Inefficiency of Sports Bookmakers](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)项目中主页有陈列马克·迪逊一系列<ruby>蹴<rp>(</rp><rt>cù</rt><rp>)</rp>鞠<rp>(</rp><rt>jū</rt><rp>)</rp></ruby>]通过进球率和加权指数来筹算滚球赛事中的球员斗志与士气（也可以运用在军事训练与战场上、或者学者在学习吸收能力上，而一般上隐马尔可夫链计数/机数模型使用夏普率评估风险与空间状态触碰点也可以运用在学术教育评估学生、教师、校长、校工、各科系、学校整体素质上）、天灾人祸。借鉴[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)中使用`forecast::arimaorder()`筹算自回归模型并将规律`p`值、`d`值、`q`值最优化，来提高计数模型的精准度。在此将咱们世袭制道家的习俗文化、算卜、天文历法、气象学、天文学中的**廿四节气**来诠释`D`（季节差分的次数）。欲知更多详情，请查阅以下[廿四节气](廿四节气)章节。
-
-欲知更多有关外部因素周期性自回归综合滑均模型（ARIMAX），请查阅以下文章：
-
-- [The ARIMAX model muddle](https://robjhyndman.com/hyndsight/arimax)
-- [ARIMAX Model and Forecast](https://real-statistics.com/time-series-analysis/time-series-miscellaneous/arimax-model-and-forecast)
-- [Basic understanding of Time Series Modelling with Auto ARIMAX](https://www.analyticsvidhya.com/blog/2021/11/basic-understanding-of-time-series-modelling-with-auto-arimax)
-- [Auto ARIMA and ARIMAX Time Series prediction + forecast | Python](https://youtu.be/HmN2Hrx6Ocw)
-- [Forecasting ARIMA vs ARIMAX vs Dynamic Regression](https://rpubs.com/Bardock123/561991)
-- [Forecasting using ARIMAX](https://rpubs.com/ysitta/proposal_arimax)
-- [ARIMAX模型应用详细案例 - 预测钱谷（GDP）变化](https://zhuanlan.zhihu.com/p/114474795)
-- [「视频」ARIMA时间序列模型原理和R语言ARIMAX预测实现案例](https://www.bilibili.com/read/cv24333037)
-- [「博客园」用派森（Python）语言进行多元时间序列ARIMAX模型分析](https://www.cnblogs.com/hongbao/p/17625963.html)
-- [arima模型的建模步骤_ARIMAX模型应用详细案例 - 预测钱谷（GDP）变化](https://blog.csdn.net/weixin_35216469/article/details/112128866)
-- [**原创**：「视频」ARIMA时间序列模型原理和R语言ARIMAX预测实现案例](https://cloud.tencent.com/developer/article/2296063)
-- [「博客园」多元时间序列滚动预测：ARIMA、回归、ARIMAX模型分析|附代码数据](https://www.cnblogs.com/tecdat/p/17357006.html)
-- [ARIMA模型，ARIMAX模型预测冰淇淋消费时间序列数据|附代码数据](https://juejin.cn/post/7187752874112188477)
-- [多元时间序列滚动预测：ARIMA、回归、ARIMAX模型分析|附代码数据](https://www.bilibili.com/read/cv23326560)
-- [Forecasting ARIMA with xreg](https://stackoverflow.com/questions/35620667/forecasting-arima-with-xreg)
-- [forecast with object, xreg, and arima xreg model fails #682](https://github.com/robjhyndman/forecast/issues/682)
-- [9.2 ARIMA 误差回归在 R 中的实现](https://otexts.com/fppcn/regarima.html)
-
-[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)经过测试`method = c('CSS-ML', 'ML', 'CSS')`仨，筹算出的赤池信息量准则比`ML`来得小或较大负数（赤池信息量准则最优值）而`CSS`出现错误信息，故此将`CSS-ML`筹算法的最优计数/机数模型设置为默认值。
-
-```{r 静态外因甲, warning = FALSE, error = TRUE}
-## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数模型只允许使用数字筹算，在此就使用时分计筹算。
-
-## forecast::Arima()
-季节差分的次数 = 0:2
-参数 <- c('时分计', '廿四节气乙', '时辰乙')
-列表 <- expand_grid(参数, 参数, 参数) %>% 
-    t() %>% 
-    data.frame() %>% 
-    as.list() %>% 
-    lapply(function(x) sort(unique(x))) %>% 
-    unique()
-列表 <- 列表[order(sapply(列表, length))]
-
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    as_tibble() %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-经过筹算后筛选最优计数/机数模型如以上图表**芳名榜（MASE）**所示，计数/机数模型**外因周期自回归戊**的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。基于洋本数据观测值只有半年时间而且频率筛选为一的情况之下，`r 样本二零一八半年 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本二零一八半年.rds'); num2c(nrow(样本二零一八半年))`个观测值中的**廿四节气**参数有许多缺失值。
-
-如果需要筹算更精准的算卜预测值，需要读取**Part I**中使用的原始数据已加以修饰并储存，**Part II**与**Part III**论文中三年七个月的数据，一共`r 样本 <- readRDS('/home/englianhu/文档/猫城/binary.com-interview-question-data/诸子百家学府/fx/USDJPY/样本乙.rds'); num2c(nrow(样本))`观测值。为了节省筹算时间，就只以半年数据为标准先筛选计数/机数模型。改日应用更高端精准计数/机数模型再筹算参数**廿四节气**对于风调雨顺、务农、五谷丰收、气象学（包括采撷人为的军事埋伏孔明借东风、草船借箭等天灾人祸数据）、天文学、天文历法与算卜。借鉴[専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)中的**迪逊与罗宾逊（一九九七年）**使用存活模型，例如：
-
-- [生存分析（Survival Analysis）、Cox风险比例回归模型（Cox proportional hazards model）及C-Index](https://blog.csdn.net/zfcjhdq/article/details/83502854)
-- [遞歸神經網路（RNN）和長短期記憶模型（LSTM）的運作原理](https://brohrer.mcknote.com/zh-Hant/how_machine_learning_works/how_rnns_lstm_work.html)
-- [循环神经网络 – Recurrent Neural Network | RNN](https://easyai.tech/ai-definition/rnn)。
-
-```{r 三年七个月数据, warning = FALSE, error = TRUE, eval = FALSE}
-## 检验是否已设置途径。
-if (!exists('.蜀道')) {
-  .蜀道 <- getwd() |> 
-    {\(.) str_split(., '/')}() |> 
-    {\(.) c('/', .[[1]][2:5])}() |> 
-    {\(.) c(., 'binary.com-interview-question-data/')}() |> 
-    {\(.) paste(., collapse = '/')}() |> 
-    {\(.) substring(., 2)}()
-}
-if (!exists('.蜀道仓库')) {
-  .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/fx/USDJPY/仓库/')
-}
-
-## 
-## 倘若环境尚未有数据，读取文件数据。
-## **小插曲**：数据应该使用经过过滤`NA值`和重新赋值`周`、`周分计`、`日分计`、`时分计`、`序列`等参数和数据的**样本乙**，而非**样本甲**。
-## 数据从原本 1324800 减至 1317600
-# 样本[!is.na(闭市价)][]
-## 1317600分钟 除以 7200分钟（一周） = 183周数
-## 1317600分钟 除以 1440分钟（一天） = 915天数
-## 1317600分钟 除以 720分钟（一小时） = 1830时数
-## 
-if (!exists('样本') || (nrow(样本) != 1317600)) {
-  样本 <- readRDS(paste0(.蜀道, '诸子百家学府/fx/USDJPY/样本乙.rds'))
-}
-
-样本 <- 样本[order(序列)]
-
-## 频率一数据
-## .[频率 == 1]
-
-日内指数平滑数据二零一八年上半年总汇 <- full_join(样本二零一八半年, 日内指数平滑数据二零一八年上半年总汇) %>% 
-    na.omit %>% 
-    select_dt(-闭市价)
-
-总汇 <- 日内指数平滑数据二零一八年上半年总汇 %>% 
-  mutate(
-    廿四节气 = factor(case_when(
-      日期 == as.Date('2018-02-04') ~ '立春', 
-      日期 == as.Date('2018-02-19') ~ '雨水', 
-      日期 == as.Date('2018-03-05') ~ '惊蛰', 
-      日期 == as.Date('2018-03-21') ~ '春分', 
-      日期 == as.Date('2018-04-05') ~ '清明', 
-      日期 == as.Date('2018-04-20') ~ '谷雨', 
-      日期 == as.Date('2018-05-05') ~ '立夏', 
-      日期 == as.Date('2018-05-21') ~ '小满', 
-      日期 == as.Date('2018-06-06') ~ '芒种', 
-      日期 == as.Date('2018-06-21') ~ '夏至', 
-      日期 == as.Date('2018-07-07') ~ '小暑', 
-      日期 == as.Date('2018-07-23') ~ '大暑', 
-      日期 == as.Date('2018-08-07') ~ '立秋', 
-      日期 == as.Date('2018-08-23') ~ '处暑', 
-      日期 == as.Date('2018-09-23') ~ '白露', 
-      日期 == as.Date('2018-09-23') ~ '秋分', 
-      日期 == as.Date('2018-10-08') ~ '寒露', 
-      日期 == as.Date('2018-10-23') ~ '霜降', 
-      日期 == as.Date('2018-11-07') ~ '立冬', 
-      日期 == as.Date('2018-11-22') ~ '小雪', 
-      日期 == as.Date('2018-12-07') ~ '大雪', 
-      日期 == as.Date('2018-12-22') ~ '冬至', 
-      日期 == as.Date('2019-01-05') ~ '小寒', 
-      日期 == as.Date('2019-01-20') ~ '大寒')), 
-    
-    廿四节气乙 = case_when(
-      廿四节气 == '立春' ~ 1, 
-      廿四节气 == '雨水' ~ 2, 
-      廿四节气 == '惊蛰' ~ 3, 
-      廿四节气 == '春分' ~ 4, 
-      廿四节气 == '清明' ~ 5, 
-      廿四节气 == '谷雨' ~ 6, 
-      廿四节气 == '立夏' ~ 7, 
-      廿四节气 == '小满' ~ 8, 
-      廿四节气 == '芒种' ~ 9, 
-      廿四节气 == '夏至' ~ 10, 
-      廿四节气 == '小暑' ~ 11, 
-      廿四节气 == '大暑' ~ 12, 
-      廿四节气 == '立秋' ~ 13, 
-      廿四节气 == '处暑' ~ 14, 
-      廿四节气 == '白露' ~ 15, 
-      廿四节气 == '秋分' ~ 16, 
-      廿四节气 == '寒露' ~ 17, 
-      廿四节气 == '霜降' ~ 18, 
-      廿四节气 == '立冬' ~ 19, 
-      廿四节气 == '小雪' ~ 20, 
-      廿四节气 == '大雪' ~ 21, 
-      廿四节气 == '冬至' ~ 22, 
-      廿四节气 == '小寒' ~ 23, 
-      廿四节气 == '大寒' ~ 24), 
-    廿四节气 = factor(if_else(is.na(廿四节气), '空', 廿四节气)), 
-    廿四节气乙 = if_else(is.na(廿四节气乙), 0, 廿四节气乙), 
-    时分秒 = as_hms(年月日时分), 
-    时辰 = factor(case_when(
-      时分秒 >  as_hms('23:00:00') & 时分秒 <= as_hms('23:59:59') ~ '子时', 
-      时分秒 >= as_hms('00:00:00') & 时分秒 <= as_hms('01:00:00') ~ '子时', 
-      时分秒 >  as_hms('01:00:00') & 时分秒 <= as_hms('03:00:00') ~ '丑时', 
-      时分秒 >  as_hms('03:00:00') & 时分秒 <= as_hms('05:00:00') ~ '寅时', 
-      时分秒 >  as_hms('05:00:00') & 时分秒 <= as_hms('07:00:00') ~ '卯时', 
-      时分秒 >  as_hms('07:00:00') & 时分秒 <= as_hms('09:00:00') ~ '辰时', 
-      时分秒 >  as_hms('09:00:00') & 时分秒 <= as_hms('11:00:00') ~ '巳时', 
-      时分秒 >  as_hms('11:00:00') & 时分秒 <= as_hms('13:00:00') ~ '午时', 
-      时分秒 >  as_hms('13:00:00') & 时分秒 <= as_hms('15:00:00') ~ '未时', 
-      时分秒 >  as_hms('15:00:00') & 时分秒 <= as_hms('17:00:00') ~ '申时', 
-      时分秒 >  as_hms('17:00:00') & 时分秒 <= as_hms('19:00:00') ~ '酉时', 
-      时分秒 >  as_hms('19:00:00') & 时分秒 <= as_hms('21:00:00') ~ '戌时', 
-      时分秒 >  as_hms('21:00:00') & 时分秒 <= as_hms('23:00:00') ~ '亥时')), 
-    时辰乙 = case_when(
-      时辰 == '子时' ~ 1, 
-      时辰 == '子时' ~ 1, 
-      时辰 == '丑时' ~ 2, 
-      时辰 == '寅时' ~ 3, 
-      时辰 == '卯时' ~ 4, 
-      时辰 == '辰时' ~ 5, 
-      时辰 == '巳时' ~ 6, 
-      时辰 == '午时' ~ 7, 
-      时辰 == '未时' ~ 8, 
-      时辰 == '申时' ~ 9, 
-      时辰 == '酉时' ~ 10, 
-      时辰 == '戌时' ~ 11, 
-      时辰 == '亥时' ~ 12))
-  ## |> dplyr::filter(廿四节气 != 'NA')
-
-(总汇 <- cbind(总汇[, -c('市场价', '预测价')], 干支, 日内指数平滑数据二零一八年上半年总汇[, c('市场价', '预测价')]) |> 
-  mutate(干支 = factor(干支), 周日 = factor(周日), 时辰 = factor(时辰)))
-# rm(天干, 地支, 干支, 廿四节气)
-```
-
-##### 季节周期
-
-###### 自回归模型史
-
-> …ARIMA模型，全称为自回归积分滑动平均模型（Autoregressive Integrated Moving Average Model），是由博克思（Box）和詹金斯（Jenkins）于廿世纪进年代初提出的一种时间序列预测方法。ARIMA模型是指在将非平稳时间序列转化为平稳时间序列过程中，将因变量仅对它的滞后值以及随机误差项的现值和滞后值进行回归所建立的模型。
-> 
-> *注：时间序列模型适用于做短期预测，即统计序列过去的变化模式还未发生根本性变化…*
-
-*引用：[「简书」ARIMA时间序列模型](https://www.jianshu.com/p/9a05472b0e7d)*
-
-> 给大家分享一篇时间序列ARMA应用的干货文章。
-> 
-> ARMA可谓是时间序列最为经典常用的预测方法，广泛应有于涉及时间序列的各个领域。ARMA模型自出道以来，出场次数不可胜数。想必大家也都不陌生，常学常新，我们今天不妨再来回顾一遍～。
-> 
-> ARMA全称Autoregressive moving average model（自回归滑动平均模型），由美国统计学家博克斯（G.E.P.Box）和英国统计学家詹金斯（G.M.Jenkins）在二十世纪七十年代提出，也称B-J方法。
-> 
-> ARMA模型有三种基本形式：
-> 
-> - 自回归模型（AR， Auto- regressive）：自回归模型根据历史观测值进行预测。其中，是预测误差，为回归系数。
-> 
-> - 移动平均模型（MA，Moving Average）：移动平均模型根据历史预测误差进行预测。其中，为前`q`期的随机扰动项，误差项是当前期的随机干扰（零均值白噪声序列），为平滑系数。
-> 
-> - 混合模型（ARMA，Auto-regressive Moving Average）：混合模型为同时包含AR模型和MA模型。
-> 
-> 自回归不是多元线性回归
-小标题中的多元线性回归这里特指平时常说的带有多个自变量的非时间序列多元线性回归模型。
-> 
-> - 回归模型：其中，为因变量，为自变量，为待估计的参数，为误差项。
-> - 自回归模型：其中，为序列本身前个观测值。
-> 
-> 回归是一种分析自变量和因变量关系的模型，当因变量和自变量为线性关系时叫线性回归模型，当有多个变量时叫多元线性回归模型。自回归（AR）模型是一种特殊的多元线性回归模型，和平时用的多元线性回归模型略有不同。
-> 
-> 多元线性回归模型有多个自变量，但时间序列因其特殊性，一个时刻只有一个观测值，在无其他维度数据补充的前提下，没有可辅助预测的自变量，因而只能取其自身延迟`p`个时刻的观测值作为自变量，所以称自回归。
-> 
-> 自回归使用自身的数据进行预测，序列前后应当有相关性。所以多元线性回归模型预测时并不要求序列平稳，但AR模型则要求序列必须是平稳的。
-> 
-> AR模型对平稳性要求体现在如下几个方面：
-> 
-> | 统计量 | 特征       |
-> |:------:|:----------:|
-> | 均值	 | 常数       |
-> | 方差	 | 常数       |
-> | ACF	   | 拖尾       |
-> | PACF	 | `p`阶截尾  |
-> 
-> 对于一般的`AR(p)`模型，其ACF的性质以及序列的随机周期，也由其特征根决定。ACF可以是单调衰减、震荡衰 减、正负交替衰减、呈周期震荡衰减。在有复特征根根或者有接近−1的特征根时时间序列呈现出一定的随机周期变化。
-> 
-> 下面是`AR(2)`模型对 不同取值画出ACF的典型图形，供参考：
-> 
-> 偏自相关函数`p`阶截尾表明，变量只与前`p`个变量有关，因而也可以借助PACF确定AR模型的阶数`p`…
-
-*引用：[时间序列：ARMA应用指南](https://www.sohu.com/a/525561002_121118999)*
-
-> `ARIMA(p,d,q)`模型中
->
-- **p**是自回归(AR)的项数，用来获取自变量
-- **d**是差分(I)的系数，为了使时间序列平稳
-- **q**是移动平均(MA)的项数，为了使其光滑
-
-*引用：[ARIMA模型中的三个参数`(p, d, q`)都是什么意思?](http://sofasofa.io/forum_main_post.php?postid=1000324)*
-
-> …
-> 三、ARIMA模型
-> 
-> MA模型的计算公式说明了它着重于当前值和过去值之间的差异，用于捕捉时间序列中的变化，而AR模型只是描述了时间序列中和过去观测值的相关性，它没有像MA模型那样可以捕捉随着时间变化而产生的波动。
-> 
-> AR模型是认同历史和未来是相似的，历史的过去规律一致延续到未来，并继续出现它历史上的特征，不过这个模型则没有很好地表现出历史数据上地突然的意外，产生的噪声较大的数据，也就是说它不能把过去那些突发的意外性所带来的因素考虑在内，并用于预测之中。
-> 
-> 而MA模型则不同，它固然能够捕捉那些突发的意外因素，这些因素导致了波动的变化，但是它却不能像AR模型那样复制过去历史延申而来的趋势。
-> 
-> 两者的结合就是为了克服彼此的缺点，从而把预测认为过去历史的特征既会继续反映到未来的预测上，同时过去收到的偶然意外因素，也会为未来带来一定的波动。不过它们结合首先成为了ARMA模型，和ARIMA模型相比，缺少了差分。如果数据是稳定的，那么使用ARMA是简便的，不过现实上也往往显示数据并非稳定的。
-> 
-> 简单的理解，ARMA告诉的是，未来的玉米价格是如何，仅仅取决于以前的玉米价格和与之相关的误差，但是ARIMA告诉了我，除了同样的因素，还考虑了玉米价格中存在的趋势和季节因素。
-> 
-> ARIMA的I就是差分过程，将非平稳的序列数据转为平稳序列的数据，从而减少或消除时间序列的趋势和季节性变化。
-> 
-> 差分的计算就是计算一组数值中相邻数据点的差值，比如一组两个数据，为五和七，那么其差分就是七减五等于二（`7-5 = 2`）了。通过差分过程，序列也因此变得比原来的少了一位，原来有二个序列，数值分别是五和七，现在差分后，只有一个序列，为二。
-> 
-> 以下是差分的例子，除了经过一次差分外，继续第二次的差分：
-> 
-> ![](诸子百家考工记/ARIMA模型的差分例子.png){width=400}
-> 
-> …在ARIMA模型中，`p, q, d`三个参数是相当重要的，`p`和`q`分别控制ARIMA模型中自回归和移动平均的部分，而`d`则控制输入ARIMA模型的数据被执行的差分的阶数。
-> 
-> 不同的参数带来的意义不同，也会影响模型的使用。
-> 
-> 笔者演示这里顺序不太恰当，应该首先看ACF，PACF，看其平稳性等，研究是否适合ARIMA模型和参数选择。后续才是通过ARIMA模型计算预测，特别是某个和几个参数都是`0`的情况，会出现如下情况：
-> 
-> - 当`d = 0`，没有非稳态数据，因此为ARMA模型
-> - 当`d = 0`，`q = 0`，没有移动平均线或稳态数据，只是对过去值的自回归，采用AR模型
-> - 当`p = 0`，`d = 0`，没有自回归或稳态数据的移动平均模型，采用MA模型
-> 
-> 当然，由于ARIMA模型比起指数平滑等方法，更加复杂，因此使用软件处理更适合，避免麻烦地建模和计算，不过要让模型可靠，数据必须可靠，并且必须显示收集数据的时间跨度相对较长，按照一些推荐的说法，数据时间跨度主张在卌期或以上。
-> 
-> 尽管ARIMA模型在适当的条件和数据可用性下可以高度准确和可靠，但该模型的主要局限性之一是参数`（p、d、q）`需要手动定义；因此，找到最准确的拟合可能是一个漫长的试错过程。
-> 
-> 同样，该模型高度依赖于历史数据的可靠性和数据的差异。重要的是要确保数据是在很长一段时间内准确收集的，以便模型提供准确的结果和预测。
-> 
-> 笔者这里只能大致对ARIMA模型作出比较显浅的介绍，更深入的研究和学习，还是需要更多的实践和专业的理论学习。
-> 
-> 虽然ARIMA模型是强大有效的模型之一，不过还是那句，预测有时并非是越复杂就越好，重要的是通过预测理解相应的因素，并且在计划中更多地可以做出修正…
-
-*引用：[ARIMA模型说明](https://zhuanlan.zhihu.com/p/673234501)*
-
-> 运用SPSS（第十九版）软件中的相关模块进行数据处理和分析。本研究是以月份为时间单位的研究序列，故选择复合季节模型[5, 6]：`ARIMA(p，d，q)(P，D，Q)`s，参数`p`为非季节性自回归阶数，`d`为一般差分阶数，`q`为非季节性滑动平均阶数；`P`为季节性自回归阶数，`D`为季节差分阶数，`Q`为季节性移动平均阶数，`s`为季节模型的时间单位相应周期（本研究`s = 12`）。
-
-*引用：[北京市昌平区肺结核发病数ARIMA模型预测](http://www.jbjc.org/JBJC/html/article_8538.htm)*
-
-###### 廿四节气
-
-![](诸子百家考工记/廿四节气表.png){width=400}
-
-*廿四节气表*
-
-> ![](诸子百家考工记/廿四节气（图文）.png){width=400}
-> 
-> **二十四节气**，是古代中国劳动人民，在长期的生产实践中，根据太阳在黄道上的位置变化，而总结归纳出的一种用以指导农事活动的补充历法。二十四节气的每一个，都有着生动而富有美感的名称，也都有着各自丰富独特的含义。今天就让我们一起来看，最全的二十四节气含义介绍。
-> 
-> **最全的二十四节气的含义介绍——详解：立春是什么意思？**
-> 
-> 立春，二十四节气之一，“立”是“开始”的意思，立春就是春季的开始，每年二月四日或五日太阳到达黄经三百一十五度时为立春。
-> 
-> 中国古代将立春的十五天分为三候：“一候东风解冻，二候蜇虫始振，三候鱼陟负冰”，说的是东风送暖，大地开始解冻。立春五日后，蜇居的虫类慢慢在洞中苏醒，再过五日，河里的冰开始溶化，鱼开始到水面上游动，此时水面上还有没完全溶解的碎冰片，如同被鱼负着一般浮在水面。
-> 
-> 自秦代以来，中国就一直以立春作为春季的开始。立春是从天文上来划分的，而在自然界、在人们的心目中，春是温暖，鸟语花香；春是生长，耕耘播种。在气候学中，春季是指候（五天为一候）平均气温十摄氏度至廿二摄氏度的时段…
-
-*引用：[最全的二十四节气的含义介绍（图文） 二十四节气介绍](https://www.hehun.com.cn/article/11914/6108226.html)*
-
-> 当没有特殊指定时，ARIMA() 函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`和`q`，`P`和`Q`)的选择都通过最小化`AICc`来决定。
-
-*引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
-
-> ![](诸子百家考工记/ARIMA模型的差分例子.png){width=400}
-
-*引用：[「知乎」ARIMA模型说明](https://zhuanlan.zhihu.com/p/673234501)*
-
-由于[二十四节气到底是如何确立的？](https://www.xiaohongshu.com/explore/63f0c2f40000000013001435)中叙述廿四节气十如何确立的，这就牵涉到气象学与天文学，也就是咱们道家的”天文历法“中的其中一项，由于地球公转的轨道是椭圆形并不均匀其速度并不均匀（[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)教程ARIMA模型中`D`（季节差分的次数）和`d`（普通差分的次数）），所以气候不均匀并不一定是每年的指定哪天而会有微妙的差异。
-
-- [浅析二十四节气](https://zhuanlan.zhihu.com/p/586252935)
-- [最全的二十四节气的含义介绍（图文） 二十四节气介绍](https://www.hehun.com.cn/article/11914/6108226.html)
-- [二十四节气到底是如何确立的？](https://www.xiaohongshu.com/explore/63f0c2f40000000013001435)
-
-`季节差分的次数 = NULL`
-
-```{r 静态外因乙, warning = FALSE, error = TRUE}
-## 自回归均移模型最优
-## auto.arima "no suitable ARIMA model found" for measuring dependency between debt and GDP https://stats.stackexchange.com/a/316080/68357
-
-source('函数/自回归均移模型最优值.R')
-
-# 自回归均移模型最优值甲 <- 自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]))
-# 自回归均移模型最优值乙 <- 自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 外因 = as.matrix(总汇[, .(廿四节气乙, 时辰乙)]))
-# 自回归均移模型最优值丙 <- 自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 外因 = as.matrix(总汇[, .(时分计, 廿四节气乙, 时辰乙)]))
-# 
-# 自回归均移模型最优值甲
-# 自回归均移模型最优值乙
-# 自回归均移模型最优值丙
-
-# 季节差分的次数 = NULL
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
-
-# 季节差分的次数 = NULL
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-`季节差分的次数 = 0`
-
-```{r 静态外因丙, warning = FALSE, error = TRUE}
-# 季节差分的次数 = 0
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 0, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
-
-# 季节差分的次数 = 0
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 0, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-`季节差分的次数 = 1`
-
-```{r 静态外因丁, warning = FALSE, error = TRUE}
-# 季节差分的次数 = 1
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 1, 外因 = as.matrix(总汇[, .(", 参数, ")]))"), .print = TRUE)
-
-# 季节差分的次数 = 1
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 1, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-`季节差分的次数 = 2`
-
-```{r 静态外因戊, error=, warning=FALSE}
-# 季节差分的次数 = 2
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-# 季节差分的次数 = 2
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("自回归均移模型最优值(tk_xts(总汇[, .(年月日时分, 市场价)]), 季节差分的次数 = 2, 外因 = as.matrix(总汇[, .(", 参数, ")]))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-###### 赤池信息量准则
-
-**设置最优赤池信息量准则为`ic = 'aic'`**
-
-> The forecast::auto.arima() function was written to pick the optimal `p`, `d`, and `q` with respect to some optimization criterion (e.g. AIC). If you want to see which model was picked, use the summary() function.
-> 
-> For example:
-> ```
-> fit <- auto.arima(lynx)
-> summary(fit)
-> ```
-> ... Other than summary(), you could also use arimaorder(fit) to get the vector c(p,d,q) or as.character(fit) to get "ARIMA(p,d,q)".
-
-*引用：[In the `auto.arima()` function in R, how do I find the `p,d,q` values for that `arima`](https://stackoverflow.com/questions/62339334/in-the-auto-arima-function-in-r-how-do-i-find-the-p-d-q-values-for-that-arima)*
-
-```{r 赤池信息准则AIC, warning = FALSE, error = TRUE}
-summary(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(时辰乙)])))
-
-arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(时辰乙)])))
-
-## ic = 'aic'
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aic', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-**设置最优赤池信息量准则为`ic = 'AICc'`**
-
-> 当没有特殊指定时，ARIMA() 函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`和`q`，`P`和`Q`)的选择都通过最小化`AICc`来决定。
-
-*引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
-
-> …函数`ARIMA()`也可用于为错误选择最佳`ARIMA`模型。
-> 这是通过不指定`pdq()`特殊来完成的。通过将KPSS检验应用于使用普通最小二乘法估计的回归模型的残差来确定是否需要差分。如果需要差分，则对所有变量进行差分，并使用最大似然估计重新估计模型。最终的模型将用原始变量表示，即使它是用差分变量估计的。
-> 
-> `AICc`是为最终模型计算的，该值可用于确定最佳预测变量。也就是说，应该对要考虑的所有预测变量子集重复该过程，并选择`AICc`值最低的模型…
-
-*引用：[「预测」方法与实践（第三版）第十章第二节 - 用`fable`实现ARIMA误差回归](https://otexts.com/fpp3cn/regarima-cn.html)*
-
-```{r 赤池信息准则AICc, warning = FALSE, error = TRUE}
-summary(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙)])))
-
-arimaorder(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙)])))
-
-## ic = 'aicc'
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-> …有些时候，预测变量对待预测变量的影响不是简单而迅速的。例如，投放广告之后一段时间才会影响销售接受，而当月的销售收入会取决于过去几个月的广告支出。类似的，当工厂的安全政策的变化会立即减少工厂事故的发生，但随着时间的推移，工人会降低对新出安全政策的重视程度。
-> 
-> 在这些情况下，我们需要再模型汇总引入预测变量的滞后项。假如模型中只有一个预测变量，则假如该预测变量的滞后项之后，滞后模型可写为：
-> 
-> $$y_t = \beta_0 + \gamma_0x_t + \gamma_1 x_{t-1} + \dots + \gamma_k x_{t-k} + \eta_t$$
-> 
-> 其中$\eta_t$为ARIMA过程。并通过`AICc`中来选择`K`值和ARIMA过程中的`p`和`q`…
-
-*[「预测」方法与实践（第三版）第十章第六节 - 滞后预测变量](https://otexts.com/fpp3cn/lagged-predictors-cn.html)*
-
-##### 动态模型
-
-经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移模型最优值的`p, d, q`分别为`0, 1, 4`。
-
-```{r 动态外因甲, warning = FALSE, error = TRUE}
-## 时分计和干支一样圆进制以六十分钟为一个小时周期，由于计数/机数模型只允许使用数字筹算，在此就使用时分计筹算。
-
-## forecast::Arima() p, d, q 廿四节气
-季节差分的次数 = 0:2
-参数 <- c('时分计', '廿四节气乙', '时辰乙')
-列表 <- expand_grid(参数, 参数, 参数) %>% 
-    t() %>% 
-    data.frame() %>% 
-    as.list() %>% 
-    lapply(function(x) sort(unique(x))) %>% 
-    unique()
-列表 <- 列表[order(sapply(列表, length))]
-
-## forecast::Arima() p, d, q 廿四节气
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-## forecast::Arima() p, d, q 廿四节气
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-综合以上筹算结果，**外因周期自回归戊**的`r "as_tibble(accuracy(Arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(时辰乙, 时分计)]))))"`是最优计数/机数模型。
-
-#### `forecast::auto.arima()`
-
-##### 静态模型
-
-```{r forecast::auto.arima静态, warning = FALSE, error = TRUE}
-## forecast::auto.arima() 静态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-## forecast::auto.arima() 静态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-##### 动态模型
-
-```{r forecast::auto.arima动态, warning = FALSE, error = TRUE}
-## forecast::auto.arima() 动态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), p = 0, d = 1, q = 4, xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-## forecast::auto.arima() 动态模型
-## 如果eval()出错，可以使用dget()歼灭敌人巫贼巫婆非法回教徒公仆、任何不会中文或不是咱们世袭制道教徒华人或越族的人。
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), p = 0, d = 1, q = 4, xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-
-## forecast::auto.arima() 动态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-## forecast::auto.arima() 动态模型
-## 如果eval()出错，可以使用dget()歼灭敌人巫贼巫婆非法回教徒公仆、任何不会中文或不是咱们世袭制道教徒华人或越族的人。
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-#### `stats::arima()`
-
-##### 静态模型
-
-```{r stats::arima静态, warning = FALSE, error = TRUE}
-## stats::arima() 静态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))"), .print = TRUE)
-
-## stats::arima() 静态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-> The code is not reproducible. Next time, please provide a minimal reproducible example to help understand the problem more easily.
-> 
-> However, there are a couple of errors in the code. Firstly, `reg1` is not defined (you only define `xreg1`). Secondly, you're using the `stats::arima()` function with no xreg parameter instead of `forecast::Arima()`. If you fix these syntax errors, it should work as shown in the code below:
-> ```
-> library(forecast)
-> set.seed(42)
-> df <- data.frame(date = 1:50,
->                  serie = rnorm(50),
->                  xreg = rnorm(50))
-> 
-> train <- df[1:45, ]
-> test <- df[(nrow(train) + 1):nrow(df), ]
-> 
-> xreg_train <- train$xreg
-> xreg_test <- test$xreg
-> 
-> ts_train <- ts(train[, -1], start = c(2019, 1), frequency = 12)
-> ts_test <- ts(test[, -1], start = c(2022, 10), frequency = 12)
-> 
-> fit_auto <- forecast::auto.arima(ts_train[, 1], xreg = xreg_train)
-> fcast_auto <- forecast::forecast(fit_auto, xreg = xreg_test, h = 6)
-> autoplot(fcast_auto)
-> 
-> myfit <- forecast::Arima(ts_train[, 1], order = c(1, 0, 0),
->                          seasonal = list(order = c(1, 0, 0), period = 12),
->                          xreg = xreg_train)
-> myfcast <- forecast::forecast(myfit, xreg = xreg_test, h = 6)
-> autoplot(myfcast)
-> ```
-> I'm using `R 4.2.0` and `forecast 8.20`.
-> 
-
-*引用：[Sarimax model issue with `xreg`](https://stackoverflow.com/a/76269638/3806250)*
-
-> …
-> 
-> **选择自己的模型**
-> 如果你想自己选择模型，你可以使用R中的Arima()函数。R中的arima()函数也可以用来拟合ARIMA模型，但是它不适用于常数`c`存在的情况(除非`d=0`)，并且它和`forecast`包中的一些函数不兼容。最后，它的估计模型也不能被用于新数据集（新数据在检测预测准确率时非常有用）。因此我们强烈建议使用`Arima()`而不是`arima()`…
-
-*引用：[第八章第七节 在R鄀中建立ARIMA模型](https://otexts.com/fppcn/arima-r.html)*
-
-> I'm working with a time series of 59 elements. I'm wondering why the R function, Arima, throws an NaN for the standard errors of some parameters. I'm trying to model the residuals of a log-quadratic stational model:
-> ```
-> arimaModel = Arima(log(myTS), order=c(1,0,1), seasonal=list(order=c(0,0,1)), xreg=myModelParameters, method="ML")
-
-> ...
-> $$\begin{array}{|c|c|}
-\hline Parameter & Estimate & Std. Error & T\ Value & P(>|t|) \\\hline
-ar1    &    -5.8991e-01   &       NA  &    NA  &      NA \\\hline   
-ma1     &   1.0000e+00 & 4.4617e-02 & 22.413 & < 2.2e-16 *** \\\hline
-sma1    &   3.0305e-01   &       NA  &    NA   &     NA \\\hline   
-intercept & 8.2949e+00 & 3.4403e-02 & 241.108 & < 2.2e-16 *** \\\hline
-t        &  2.1970e-02 & 1.4813e-03 & 14.831 & < 2.2e-16 *** \\\hline
-t^2       & -4.4673e-05   &       NA  &    NA  &      NA   \\\hline 
-Q1      &  -5.9911e-01 & 2.1024e-02 & -28.497 & < 2.2e-16 *** \\\hline
-Q2      &  -4.2457e-01 & 2.9678e-02 & -14.306 & < 2.2e-16 *** \\\hline
-Q3      &  -3.1433e-01 & 2.1135e-02 & -14.872 & < 2.2e-16 *** \\\hline
-\end{array}$$
-> 
-> What could I do with this? Why does this happen? I had switched the method between of the function with `CSS`, `CSS-ML`, but it's always the same...
-> 
-> ...
-> 
-> The inverse of the Hessian matrix evaluated at the returned solution contains negative values (the square root of negative values led to the `NA` values). This typically means that the optimization algorithm failed to converge or that the solution is not reliable. See what arimaModel$code returns: a zero value means that the algorithm converged, otherwise see the documentation ?optim to find out the meaning of the code.
-> 
-> Failure to reach a reliable solution often imply, in turn, that the model is not appropriate for the data; the data do not contain enough information to get reliable estimates for the chosen parameters. Inspecting the Hessian could give you some clue on which variables were troublesome (I think they aren't necessarily the variables with NA standard errors). Unfortunately there isn't an easy way to retrieve the Hessian employed by arima.
-> 
-> I would suggest you to refit the model several times removing one variable at a time in order to see which one may be troublesome. Once detected, rethink whether this variable is relevant to explain the data.
-> 
-> You can also try other optimization algorithms, although they most likely will arrive to the same result. The function arimain the stats package allows you to choose the optimization algorithm:
-> ```
-> stats::arima(log(myTS), order=c(1,0,1), seasonal=list(order=c(0,0,1)), xreg=myModelParameters, method="ML", optim.method="Nelder-Mead")
-> ```
-
-*引用：[Standard errors `NaN` by `Arima` function in R](https://stats.stackexchange.com/a/210274/68357)*
-
-##### 动态模型
-
-```{r stats::arima动态, warning = FALSE, error = TRUE}
-## stats::arima() 动态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))"), .print = TRUE)
-
-## stats::arima() 动态模型
-## 洲学论：咱们祖籍东亚中国（世袭制道教徒赢家黄氏江夏堂联富）中科红旗拯救亚洲人，摧毁东南亚巫文巫术博彩庄和歼灭敌人东南亚所有巫贼巫婆回教徒和敌国大象共和国公民，尤其是瓜雪回教市政局巫贼巫婆回教徒和大象共和国大葱回教堂白宫旗下的加州和纳什维尔州市政局公仆！
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), method = c('CSS-ML'), xreg = as.matrix(总汇[, .(", 参数, ")]), optim.method='Nelder-Mead')))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-#### `TSA::arima()`
-
-##### 静态模型
-
-```{r TSA::arima静态, warning = FALSE, error = TRUE}
-## TSA::arima() 静态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-## TSA::arima() 静态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-##### 动态模型
-
-```{r TSA::arima动态, warning = FALSE, error = TRUE}
-## TSA::arima() 动态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-## TSA::arima() 动态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arima(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-#### `TSA::arimax()`
-
-##### 静态模型
-
-```{r TSA::arimax静态, warning = FALSE, error = TRUE}
-## TSA::arimax() 静态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-## TSA::arimax() 静态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-##### 动态模型
-
-```{r TSA::arimax动态, warning = FALSE, error = TRUE}
-## TSA::arimax() 动态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-## TSA::arimax() 动态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(TSA::arimax(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-#### `stats::arima0()`
-
-##### 静态模型
-
-```{r stats::arima0静态, warning = FALSE, error = TRUE}
-## stats::arima0() 静态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-## stats::arima0() 静态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-##### 动态模型
-
-```{r stats::arima0动态, warning = FALSE, error = TRUE}
-## stats::arima0() 动态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), 
-  .print = TRUE)
-
-## stats::arima0() 动态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-#### `fable::ARIMA()`
-
-##### 静态模型
-
-```{r fable::ARIMA静态, warning = FALSE, error = TRUE}
-## fable::ARIMA() 静态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-## fable::ARIMA() 静态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    data.frame() %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-##### 动态模型
-
-```{r fable::ARIMA动态, warning = FALSE, error = TRUE}
-## stats::arima0() 动态模型
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
-
-## stats::arima0() 动态模型
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(accuracy(fable::ARIMA(tk_xts(总汇[, .(年月日时分, 市场价)]), order = c(0, 1, 4), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
-    bind_rows(.id = '计数模型') %>% 
-    mutate(计数模型 = factor(
-      c('外因周期自回归甲', '外因周期自回归乙', '外因周期自回归丙', 
-        '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
-        '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
-```
-
-#### 模型比较
-
-> …
-> 
-> **选择自己的模型**
-> 如果你想自己选择模型，你可以使用R中的Arima()函数。R中的arima()函数也可以用来拟合ARIMA模型，但是它不适用于常数`c`存在的情况(除非`d=0`)，并且它和`forecast`包中的一些函数不兼容。最后，它的估计模型也不能被用于新数据集（新数据在检测预测准确率时非常有用）。因此我们强烈建议使用`Arima()`而不是`arima()`…
-
-*引用：[第八章第七节 在R鄀中建立ARIMA模型](https://otexts.com/fppcn/arima-r.html)*
-
-### 季节性自回归综合滑均模型（SARIMA）
-
-```{r SARIMA静态, warning = FALSE, error = TRUE, eval = FALSE}
-
-sarima::sarima()
-
-
-
-```
-
-- [Multiple and long seasonality for a SARIMA model in R](https://stats.stackexchange.com/questions/109835/multiple-and-long-seasonality-for-a-sarima-model-in-r)
-- [SARIMAX model in R](https://stackoverflow.com/a/17816958/3806250)
-- [ARIMA - Advanced Time Series Methods: Auto Regression Integrated Moving Average](https://medium.com/analytics-vidhya/arima-fc1f962c22d4)
-
-### 外部因素周期性季节性自回归综合滑均模型（SARIMAX）
-
-```{r , warning = FALSE, error = TRUE, eval = FALSE}
-
-```
-
-- [pmdarima.arima.ARIMA](https://alkaline-ml.com/pmdarima/modules/generated/pmdarima.arima.ARIMA.html)
-
-### 外部因素周期性自回归分整综合滑均模型（Auto Regressive Fractionally Integrated Moving Average Exogenous - ARFIMAX）
-
-```{r , warning = FALSE, error = TRUE, eval = FALSE}
-
-```
-
-### 多元季节性自回归综合滑均模型（Multi-Seasonal Time Series `msts()`）
-
-```{r , warning = FALSE, error = TRUE, eval = FALSE}
-
 ```
 
 <br>
 
 # 模型比较
 
-<br>
+## 精准度
 
-# 结论
+> VAR分析中的一个中心问题是找到滞后的阶数，以产生最佳结果。模型比较通常基于信息标准，例如AIC，BIC或HQ。通常，由于是小样本预测，AIC优于其他标准。但是，BIC和HQ在大型样本中效果很好 
 
-## 摘要
+引用：[R语言用向量自回归（VAR）进行经济数据脉冲响应研究分析](http://tecdat.cn/r语言用向量自回归（var）进行经济数据脉冲响应研)
 
-**大秦赋**<br>
-春秋战国《*礼记•经解*》<br>
-孔子曰：「君子慎始，差若毫厘，缪以千里。」
+- [「经管之家」 [计数软件与数据分析] 如何理解R中给出的ARIMA模型的拟合结果？](https://bbs.pinggu.org/forum.php?mod=viewthread&tid=3236918)
+- [**Forecasting: Principle & Practice** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)
+- [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3cn)
 
-> <span style='color:#FFEBCD; background-color:#991B00;'>**《礼记•经解》孔子曰：**</span><span style='color:#DimGrey; background-color:#D52600;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^6]
+这儿使用`forecast`程序包，尚未使用`fable`程序包与`fabletools`程序包，该程序包中的`accuracy()`[^2]函数和`report()`函数有使用**平均绝对比例误差（MASE）**来衡量更为精准的计数模型预测值。
 
-*引用：[「快懂百科」《礼记•经解》](https://www.baike.com/wikiid/2225522569881832051)和[第一范文网：差之毫厘，谬以千里的故事](https://www.diyifanwen.com/chengyu/liuziyishangchengyugushi/2010051523105152347092749890.htm)和[「百度百科」春秋时期孔子作品《礼记•经解》](https://baike.baidu.com/item/礼记·经解/2523092)和[「當代中國」差之毫釐，謬以千里](https://www.ourchinastory.com/zh/2962/差之毫釐%20謬以千里)*
-
-[^6]: [HTML Color Codes](https://html-color.codes)
+[^2]: 预测：方法与实践（第三版）<br> - [**Forecasting: Principles and Practice (3rd ed)** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)阐明评估预测精准度的计算公式。<br> - [**预测：方法与实践（第三版）** - *第五章第八节 评估预测精度*](https://otexts.com/fpp3cn)阐明评估预测精准度的计算公式。<br> - [「CSDN」选择正确的错误度量标准：MAPE与sMAPE的优缺点](https://blog.csdn.net/deephub/article/details/109483129)<br> - [「β站」康雁飞在线视频教程《预测：方法与实践》（第三版）](https://space.bilibili.com/624024421)
 
 **赤印度人酋长宗教司甘地/土司乩童世袭制法家刘氏彭城堂乌骨精瑾貹**
 
-![*可兰经回教刑事法典断肢法歼灭敌人瓜雪回教市政局的人蛹巫婆回教徒奴辱依杀、入侵非清真产品的黑客、MY大汉山赤印度人酋长宗教司甘地 / MY大汉山世袭制头戴白色女假发、男肛之耻的土司乩童世袭制法家刘氏彭城堂乌骨精瑾貹瓦盛顿/时光机器二零零二不林肯和白骨精拜登！*](诸子百家考工记/失心疯猥亵淫魔土司白骨精赤帝殡·刘蛤蟆功.png){width=400}
+![*可兰经回教刑事法典断肢法歼灭敌人瓜雪回教市政局的人蛹巫婆回教徒奴辱依杀、入侵非清真产品的黑客、MY大汉山赤印度人酋长宗教司甘地 / MY大汉山世袭制头戴白色女假发、男肛之耻的土司乩童世袭制法家刘氏彭城堂乌骨精瑾貹瓦盛顿/时光机器二零零二不林肯和白骨精拜登！*](诸子百家考工记/失心疯猥亵淫魔土司白骨精赤帝殡∙刘蛤蟆功.png){width=400}
 
-![*可兰经回教刑事法典断肢法歼灭敌人瓜雪回教市政局的人蛹巫婆回教徒奴辱依杀、入侵非清真产品的黑客、赤印度人酋长宗教司甘地/土司乩童世袭制法家刘氏彭城堂乌骨精瑾貹！*](诸子百家考工记/全球公敌世袭制白骨精土司法家刘氏彭城堂·殡刘.png){width=400}
+![*可兰经回教刑事法典断肢法歼灭敌人瓜雪回教市政局的人蛹巫婆回教徒奴辱依杀、入侵非清真产品的黑客、赤印度人酋长宗教司甘地/土司乩童世袭制法家刘氏彭城堂乌骨精瑾貹！*](诸子百家考工记/全球公敌世袭制白骨精土司法家刘氏彭城堂∙殡刘.png){width=400}
 
 ![](诸子百家考工记/中科红旗，量化对冲（乙）.png){width=400}
 
 ![](诸子百家考工记/回教徒，可兰经；断肢法，最合法。歼灭所有印尼巫鹰和美国洋番爱国狂热份子.png){width=400}
 
-*瓜雪RHU（淮西派）花园加德士油站隔壁第三巷门牌卅二号土司乩童巫裔回教徒瑾貹·殡敌·刘和瓜雪回教市政局柜台巫婆回教徒素威·殡敌·刘和奴辱依杀·殡敌·刘*
+*瓜雪RHU（淮西派）花园加德士油站隔壁第三巷门牌卅二号土司乩童巫裔回教徒瑾貹∙殡敌∙刘和瓜雪回教市政局柜台巫婆回教徒素威∙殡敌∙刘和奴辱依杀∙殡敌∙刘*
 
 ![](诸子百家考工记/攻占东盟.png){width=400}
 
@@ -2220,53 +2029,42 @@ sarima::sarima()
 
 *引用：[斩首、石刑、截肢…阿富汗“伊斯兰教法”或将重现酷刑](https://www.163.com/dy/article/HM881SKU0511RVG1.html)*
 
+<br>
+
+# 结论
+
+## 摘要
+
+**大秦赋 (Chinese Emperor)**<br>
+春秋战国《*礼记•经解*》<br>
+孔子曰：「君子慎始，差若毫厘，缪以千里。」
+
+> <span style='color:#FFEBCD; background-color:#991B00;'>**《礼记•经解》孔子曰：**</span><span style='color:#DimGrey; background-color:#D52600;'>*「君子慎始，差若毫厘，谬以千里。」*</span>[^11]
+
+*引用：[「快懂百科」《礼记•经解》](https://www.baike.com/wikiid/2225522569881832051)和[第一范文网：差之毫厘，谬以千里的故事](https://www.diyifanwen.com/chengyu/liuziyishangchengyugushi/2010051523105152347092749890.htm)和[「百度百科」春秋时期孔子作品《礼记•经解》](https://baike.baidu.com/item/礼记∙经解/2523092)和[「當代中國」差之毫釐，謬以千里](https://www.ourchinastory.com/zh/2962/差之毫釐%20謬以千里)*
+
+[^11]: [HTML Color Codes](https://html-color.codes)
+
 ## 前瞻科研
 
-### 道家秦人牧马《商君书》
+使用一样的汇价数据，不过从二零一八年上半年数据，可以节省许多时间。下一篇科研[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（戊）**</span>](https://github.com/englianhu/binary.com-interview-question)[^3]会使用长短记忆模型如`tensorflow`、`keras`，隐马尔可夫链、隐含波动率、波浪形模型等其它计数模型。
 
-#### 《商君书》与《吕氏春秋》
-
-> ![](诸子百家考工记/逆水行舟，不进则退.png){width=400}
-
-《商君书》和《吕氏春秋》的基本概念是使用现有资源R鄀计数/机数编程语言，因为要研发咱们世袭制道家十二生肖秦人黄河文明/黄埔军校/黄种人🎶/赢家黄氏江夏堂「对数算筹」或「算筹」电子仪器与文言文计数/机数编程「大秦赋」或「世袭制道家文言文大秦赋」操作系统还需要下苦功需要许多时间。「算卦」或「算卜」是咱们道家民间预测未来或命运的方法，以量化计数/机数轮回（俗称“回测”）、分析并占卜（俗称“预测”）。
-
-- [<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部乙∙上（🌟儒家秦孝公清君侧之商鞅变法**）*世袭制道教徒十二生肖秦人牧马，从满洲到星洲*</span>](https://englianhu.github.io/民国一百一十三年（甲辰年）/桃月/binary-Q1Inter-HFT-RV3E.html)
-- [<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部乙∙中（🌟儒家秦孝公清君侧之商鞅变法**）*世袭制道教徒十二生肖秦人牧马，从满洲到星洲*</span>](https://englianhu.github.io/民国一百一十三年（甲辰年）/桃月/binary-Q1Inter-HFT-RV3E2.html)
-- [<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部乙∙下（🌟儒家秦孝公清君侧之商鞅变法**）*世袭制道教徒十二生肖秦人牧马，从满洲到星洲*</span>](https://englianhu.github.io/民国一百一十三年（甲辰年）/桃月/binary-Q1Inter-HFT-RV3E3.html)
-
-欲知更多咱们世袭制道家十二生肖秦人从满洲到星洲世袭制道教徒黄种人辛亥革命/黄河文明/黄埔军校《商君书》、《吕氏春秋》和《李斯篆书》系列科研，请查阅：
-- [「猫城」联富（雷欧）/🚩🇨🇳🏹红旗礼逆袭](https://github.com/englianhu/RedFlag-Linux)
-- [「猫城」联富（雷欧）/《始祖永春•秦谏——大秦赋》](https://github.com/englianhu/library)
-- [「猫城」黄联富（®γσ ξηg 雷欧） / 次元期权（binary.com）](https://github.com/englianhu/binary.com-interview-question)
-
-#### 杏林经济学
-
-- 道家易经、天文历法、十二生肖、廿四节气、张灯结彩、七门遁甲算卜物理学隐身术、挥春联与书法八卦密码学、算卜、兵马俑、三界、道家产品与杏林工业、神经网络、物理学、杏林算卜运筹学、杏林算卜统筹法、洲际军事埋伏四面楚歌。
-- 杏林务农、杏林农产品、杏林算卜运筹学、杏林算卜统筹法、杏林算卜金融、算卜保险业与殡仪馆兵马俑旅游业、杏林算卜医学与保健和广告娱乐圈。
-- 杏林务农、杏林算卜金融商品市场、算卜、杏林算卜运筹学、杏林算卜统筹法、杏林经济学。
-- 奉常、多元种族、宗教与户籍管理。
-- 道家杏林服饰经济学：道家服饰密码学（借鉴纺织品与世界电脑发明史）、中华五千年复古（借鉴孙文/孙中山/孙逸仙靠服饰习俗文化宗教、发型与司法、文字习俗文化宗教语言世纪大革命）复古之道、服饰道家杏林娱乐圈与广告。
-- 借鉴苹果、视窗、谷歌、元宇宙、特斯拉、spaceX、推特等美国硅谷传奇和孙玉芳名言：”中国不能没有自己的操作系统。“，研发咱们世袭制道家十二生肖秦人黄河文明/黄埔军校/黄种人🎶/赢家黄氏江夏堂「对数算筹」或「算筹」电子仪器与「大秦赋」或「世袭制道家文言文大秦赋」操作系统。
-- 算卜计量经济学、税务与贸易。
-- 「奉天承运，皇帝诏曰」春秋战国/东汉末年/清末的MY大汉山马氏政权箫何、韩信和张良（咱们赢家黄氏江夏堂石公之徒，家翁嬴政ξηg Tεηg的族人）和厦门大学创办人新籍开国元勋之一陈嘉庾（洋名：Tan Kah Kee），负责以可兰经回教刑事法典断肢法，歼灭巴西不能帮（Kampung Pasir Penampang 中译：沙地刽子手村庄）新村门牌T十五号的土司巫师王乩童佳坤·殡·张，瓜雪RHU（淮西派）花园加德士油站隔壁第三巷门牌卅二号世袭制男肛之耻、头戴白色女假发的巫骨精司法界赤印度人酋长国父宗教司甘地/土司乩童巫师王瑾貹·殡敌·刘（世袭制法家刘氏彭城堂变性男同性恋者奴辱依杀）/蔡氏的世袭制自残自虐自杀的男宠刘瑾貹/世袭制自残自虐自杀的巫师王爱新觉罗∙溥仪。
-- 咱们世袭制道家十二生肖秦人从满洲到星洲世袭制道教徒黄种人辛亥革命/黄河文明/黄埔军校，功勋超过历代三黄五帝，史称「秦始皇」——嬴政 ξηg Tεηg。
+[^3]: 下篇论文中[<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（戊）**</span>](https://github.com/englianhu/binary.com-interview-question)，使用…
 
 ![[**近期招聘一览表:**<span style='color:#3C5C; background-color:black;'>*全网Quant都在看!</span>](https://wemp.app/posts/31dffe83-68af-4e3f-a1f7-c49baf9a24cb?fbclid=IwAR1x3DOjThsEKG0CHVghFnIPAAcraM8kimXa_G9-xG070CiLDyXWj6_6Izs)](诸子百家考工记/量化投资与机器学习.png){width=400}
 
 > #春秋战国 #诸子百家 #算筹 #十二生肖 #科学数学博弈概率论 #中华复兴运动 #中华五千年习俗文化宗教语言法规 #万般皆下品唯有读书高 #中华国卒 #咱们中华民族和越族世袭制道教徒姓氏堂号烧香祭祖张灯结彩题字春联中医中华庙宇 #公元前只有农历和国际标准中文北京话没有阳历洋番 #全球洋番都是祖籍以色列或住森林山洞的泰山 #世袭制道教徒法家商鞅以商君书奠定一统天下之道 #世袭制道教徒吕不韦以吕氏春秋的务农金融股票商品市场和娱乐圈来一统天下 #世袭制道教徒法家李斯以中华庙宇习俗文化宗教语言法规和各集团组织理事治天下来一统天下 #关雎 #求贤令 #礼贤馆 #秦 #马华公会借鉴越南国旗和欧盟以一颗夜空中最亮的星来立国🌟
 > 
-> 🚩世袭制道教徒秦国（秦孝公/陈祯禄公爵至始祖嬴政）三杰治天下：商鞅（卫人仕秦）、吕不韦（卫人仕秦）、李斯（楚人仕秦）。
-一）借鉴王安、斯蒂芬·乔不死和比尔·盖茨研发个人电脑与编程，李斯改变世界治天下。
+🚩世袭制道教徒秦国（秦孝公/陈祯禄公爵至始祖嬴政）三杰治天下：商鞅（卫人仕秦）、吕不韦（卫人仕秦）、李斯（楚人仕秦）。
+一）借鉴王安、斯蒂芬∙乔不死和比尔∙盖茨研发个人电脑与编程，李斯改变世界治天下。
 二）借鉴专业酉逆袭操作系统鄀计数学（R计数学编程）编程软件，商鞅变法，以民族主义数学科学科技学术治天下。
 三）借鉴高频量化对冲基金席卷全球，贾人吕不韦之吕氏春秋学术、娱乐圈、地产、农牧、工商金融、博彩业、高频量化对冲基金等治天下。
 > 
-> 🚩帝道「始祖」：借鉴秦孝公至秦始皇史（借鉴秦人牧马与商鞅变法论，歼灭领土上所有回教徒），以明治维新将西方学术数学科学科技（例如苹果、微软、谷歌、文艺复兴科技、白鲨黑社会、桥水、亚马逊、特斯拉、spaceX、星链）转为咱们中华习俗文化，再自家研发咱们世袭制道教徒中华民族习俗文化宗教语言操作系统与电子仪器，世袭制道教徒法家李斯国学论以学术数学科学科技治天下（研发咱们中系「大秦赋」电脑操作系统与电子仪器以道家习俗文化宗教语言法规、高频量化对冲与大数定律学术、李斯篆书之文言文编程、阅读脑电波，来改变世界格局来一统天下，各民族遵守各自民族习俗文化宗教语言法规，直到歼灭东南亚领土上所有回教徒）、世袭制道教徒商鞅变法（商君书，开阡陌废井田、加上三农政策士农工商，以中药和中医取代天下所有🇲🇻🇨🇭🌙✝️西医。各民族遵守各自民族习俗文化宗教语言法规）、世袭制道教徒吕不韦之吕氏春秋，以中华娱乐圈取代西方娱乐圈、中药和中医取代天下所有🇲🇻🇨🇭🌙✝️西医，与世袭制道教徒马华公会民族主义论，以商治天下，一劳永逸。
+帝道「始祖」：借鉴秦孝公至秦始皇史（借鉴秦人牧马与商鞅变法论，歼灭领土上所有回教徒），以明治维新将西方学术数学科学科技（例如苹果、微软、谷歌、文艺复兴科技、白鲨黑社会、桥水、亚马逊、特斯拉、spaceX、星链）转为咱们中华习俗文化，再自家研发咱们世袭制道教徒中华民族习俗文化宗教语言操作系统与电子仪器，世袭制道教徒法家李斯国学论以学术数学科学科技治天下（研发咱们中系「大秦赋」电脑操作系统与电子仪器以道家习俗文化宗教语言法规、高频量化对冲与大数定律学术、李斯篆书之文言文编程、阅读脑电波，来改变世界格局来一统天下，各民族遵守各自民族习俗文化宗教语言法规，直到歼灭东南亚领土上所有回教徒）、世袭制道教徒商鞅变法（商君书，开阡陌废井田、加上三农政策士农工商，以中药和中医取代天下所有🇲🇻🇨🇭🌙✝️西医。各民族遵守各自民族习俗文化宗教语言法规）、世袭制道教徒吕不韦之吕氏春秋，以中华娱乐圈取代西方娱乐圈、中药和中医取代天下所有🇲🇻🇨🇭🌙✝️西医，与世袭制道教徒马华公会民族主义论，以商治天下，一劳永逸。
 > 
-> 🚩王道「MY大汉山 - 三国志/朱重八起义/孙文」：借鉴中华民国辛亥革命史，以习俗文化使用西方学术数学科学科技辛亥革命、草船借箭与孔明借东风论歼灭东南亚领土上所有清真教徒，偏于一方成为众诸侯之一。「高筑墙，广积粮，缓称王」后再励志图强。
+王道「MY大汉山 - 三国志/朱重八起义/孙文」：借鉴中华民国辛亥革命史，以习俗文化使用西方学术数学科学科技辛亥革命、草船借箭与孔明借东风论歼灭东南亚领土上所有清真教徒，偏于一方成为众诸侯之一。「高筑墙，广积粮，缓称王」后再励志图强。
 > 
-> 🚩霸道「MY大汉山 - 西楚霸王」：借鉴古巴比伦与犹太人、土司乩童张佳坤和土司乩童白骨精刘瑾貹倆和马来貘、蓄短胡子的清真教徒马来西亚国父东姑阿都拉曼或希特勒（反佛教徒卍的清真教徒敦姑阿杜拉满卐）戊戌变法论，以可兰经清真习俗文化断肢法对待各种族暴政歼灭东南亚领土上所有回教徒治天下，昙花一现。（目前马来西亚举国都插上西亚清真教国的巴勒斯坦国旗天天被轰炸天灾不断，清真教徒政权的亡国之道。咱们祖籍中国的华侨和越族都不要当任何清真教徒的替死鬼）
-
-### 道家秦人崛起
+霸道「MY大汉山 - 西楚霸王」：借鉴古巴比伦与犹太人、土司乩童张佳坤和土司乩童白骨精刘瑾貹倆和马来貘、蓄短胡子的清真教徒马来西亚国父东姑阿都拉曼或希特勒（反佛教徒卍的清真教徒敦姑阿杜拉满卐）戊戌变法论，以可兰经清真习俗文化断肢法对待各种族暴政歼灭东南亚领土上所有回教徒治天下，昙花一现。（目前马来西亚举国都插上西亚清真教国的巴勒斯坦国旗天天被轰炸天灾不断，清真教徒政权的亡国之道。咱们祖籍中国的华侨和越族都不要当任何清真教徒的替死鬼）
 
 <iframe src="//player.bilibili.com/player.html?aid=985396565&bvid=BV1ft4y1779g&cid=830582740&p=1" scrolling="no" border="0" frameborder="no" framespacing="0" allowfullscreen="true"> </iframe>
 
@@ -2280,23 +2078,9 @@ sarima::sarima()
 - 围棋（中华习俗文化、学术、广告与娱乐圈）
 - 中华武术、中华京剧、歌曲与舞蹈（中华习俗文化、学术、广告与娱乐圈）
 - 中华寺庙与中药/中医（姓氏堂号、生辰八字卜卦、天文历法、学术概率论物理学、医学保健与保险业、农业与工业、陵墓、道家易经、学术物理学、兵法、广告与娱乐圈）
-- 四书五经六艺（琴棋书画、学艺、书艺、阅艺、茶艺、酒艺、武艺、棋艺、歌艺、琴艺、口艺、才艺、演艺、舞艺、花艺、田艺、农艺、工艺、手艺、技艺、图艺、字艺、篆艺、画艺、厨艺、商艺、书法、文艺、公艺、史艺、仕艺、功艺、冶艺、锔艺、诊艺、观艺、道艺、墨艺、易艺、中华习俗文化、学术、广告与娱乐圈）
+- 四书五经六艺（琴棋书画、茶艺、中华习俗文化、学术、广告与娱乐圈）
 - 吟诗作对（中华习俗文化、学术、广告与娱乐圈）
 - 中华影城（中华复兴革命、道家易经、学术物理学、兵法、广告与娱乐圈）
-
-### 道家秦国文臣三杰
-
-![*引用：[「猫城」世博量化/鄀统计编程世界/Pandoc based Quarto应该翻译成什么？](https://github.com/scibrokes/r-world/issues/3#issuecomment-1959178209)*](诸子百家考工记/秦国文臣三杰.png){width=400}
-
-「大秦赋 - 借鉴黄河文明史」<br>
-秦国三杰，拯救亚洲；<br>
-歼灭印裔，取代美国。<br>
-秦灭六洲，一统天下；<br>
-莫忘初衷，方得始终。
-
-- **商鞅**：改变天下学术（包括复古中国算筹）、杏林、保险与司法界，取代天下所有西方文化科学科技医学司法；习俗文化宗教语言杏林务农法律等世纪大革命，一劳永逸。
-- **吕不韦**：改变天下学术尤其是高频量化对冲运筹学（包括复古中国算筹）、高频量化对冲、金融与务农中药中医杏林、娱乐圈（包括复古中国古代习俗文化宗教语言）、广告与产品代言；习俗文化宗教语言等世纪大革命，一劳永逸。
-- **李斯**：改变天下学术尤其是文学（文言文、古文、中国历史习俗文化宗教语言等），研发咱们中华秦国操作系统、电子仪器、科技软件、科技产品来取代天下所有西方电子产品与习俗文化宗教语言等；以电子仪器与操作系统记载并进化所有习俗文化宗教语言法律等世纪大革命并且直到一统天下，一劳永逸。
 
 ```{r 选项设置, echo = FALSE}
 ## Set options back to original options
@@ -2393,7 +2177,8 @@ options(warn = 0)
 
 以下乃此文书的文件信息。
 
-- 文集建立日：农历二零二二年十二月廿三 壬寅年（虎年）癸丑月壬申日（阳历二零二三年一月十四日 / 民国一百一十一年十二月廿三）[^9]
+- 文集建立日：农历二零二零年腊月廿二 庾子年（鼠年）庚寅月壬午日周三
+第六周（阳历二零二一年二月三日 / 民国一百零九年腊月廿二）[^21]
 - 文集最新更新日：`r today('Asia/Shanghai')`
 - `r R.version.string`
 - [**rmarkdown**](https://github.com/rstudio/rmarkdown) 程序包版本：`r packageVersion('rmarkdown')`
@@ -2402,9 +2187,9 @@ options(warn = 0)
 - 猫城：[源代码](https://github.com/englianhu/binary.com-interview-question)
 - 追加附属信息
 
-[^9]: 欲知更多阳历/民国/农历日历详情，请登录中华民国农业部官网查询日历查询[阳历/农历/民国查询](https://ppg.naif.org.tw/naif/MarketInformation/Other/Calendar_V3.aspx)。
+[^21]: 欲知更多阳历/民国/农历日历详情，请登录中华民国农业部官网查询日历查询[阳历/农历/民国查询](https://ppg.naif.org.tw/naif/MarketInformation/Other/Calendar_V3.aspx)。<br> - [冬月,腊月还有正月的区别](https://zhidao.baidu.com/question/569273015.html)中提及成语：寒冬腊月，即是指年前最冷的三个月，寒月为十月；冬月为十一月；腊月为十二月。<br> - [冬月和腊月分别是几月份](https://iask.sina.com.cn/jxwd/6fb03ZAspC1.html)
 
-```{r 信息}
+```{r 信息, results = 'asis'}
 suppressMessages(require('formattable', quietly = TRUE))
 suppressMessages(require('knitr', quietly = TRUE))
 suppressMessages(require('kableExtra', quietly = TRUE))
@@ -2480,15 +2265,15 @@ rm(系统信息甲, 系统信息乙)
 06. [<span style='color:#DE5D83; background-color:black;'>Deriv.com</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**校阅（第III部）**</span>](https://rpubs.com/englianhu/987834)
 07. [Forecasting: Principles and Practice](https://otexts.com/fpp3)
 08. [Tableau 100 Color Palettes](https://public.tableau.com/en-us/gallery/100-color-palettes)
-09. [PYTHON中的ARIMA模型、SARIMA模型和SARIMAX模型对时间序列预测](http://tecdat.cn/python中的arima模型、sarima模型和sarimax模型对时间序列预测)
+09. [PYTHON中的ARIMA模型、SARIMA模型和SARIMAX模型对时间序列预测](http://tecdat.cn/python%e4%b8%ad%e7%9a%84arima%e6%a8%a1%e5%9e%8b%e3%80%81sarima%e6%a8%a1%e5%9e%8b%e5%92%8csarimax%e6%a8%a1%e5%9e%8b%e5%af%b9%e6%97%b6%e9%97%b4%e5%ba%8f%e5%88%97%e9%a2%84%e6%b5%8b)
 10. [利用SARIMAX进行销量预测](https://blog.csdn.net/fitzgerald0/article/details/100823231)
 11. [时间序列分析模型：ARIMA模型和SARIMAX算法](https://maoli.blog.csdn.net/article/details/113835186)
 12. [利用SARIMAX進行銷量預測](https://www.twblogs.net/a/5d7ee484bd9eee5327ffe605)
 13. [季節性時間序列分析-SARIMAX模型的python實現](https://www.twblogs.net/a/5d66409dbd9eee541c332577)
 14. [SARIMAX:简介](https://runebook.dev/zh-CN/docs/statsmodels/examples/notebooks/generated/statespace_sarimax_stata)
 15. [Python数据分析案例-分别使用时间序列ARIMA、SARIMAX模型与Auto ARIMA预测国内汽车月销量_maiyida123的博客-程序员资料](http://www.4k8k.xyz/article/maiyida123/117967762)
-16. [预测：方法与实践：第十一章第一节复杂季节性](https://otexts.com/fppcn/complexseasonality.html)
-17. [市道轮换下的高频数据参数估计](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/参数市场微观结构噪声下高频数据的估计（英）.pdf)
+16. [预测：方法与实践：第十一章第一节 - 复杂季节性](https://otexts.com/fppcn/complexseasonality.html)
+17. [市道轮换下的高频数据参数估计]()
 18. [STAT 510 Applied Time Series Analysis : 13.1 Long Memory Models and Fractional Differences](https://online.stat.psu.edu/stat510/lesson/13/13.1)
 19. [A Complete Introduction To Time Series Analysis (with R):: Exogenous models](https://medium.com/analytics-vidhya/a-complete-introduction-to-time-series-analysis-with-r-exogenous-models-4f009b770104)
 20. [Implementation of Time Series Forecasting Methods (SARIMA, SARIMAX and Prophet)](https://medium.com/@shawanugya12/implementation-of-time-series-forecasting-methods-sarima-sarimax-and-prophet-ff8407b25aaa)
