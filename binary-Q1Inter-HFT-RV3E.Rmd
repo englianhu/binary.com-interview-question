@@ -1,6 +1,6 @@
 ---
 title: "![](诸子百家考工记/deriv.png){height=240}"
-subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数尤物 <span style='color:#4E79A7'>**第三部乙∙上（世袭制道教徒赢家黄氏江夏堂十二生肖秦人牧马：🌟儒家秦孝公<s>清君侧</s>之商鞅变法**）</span>](https://github.com/englianhu/binary.com-interview-question)"
+subtitle: "[<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数尤物 <span style='color:#4E79A7'>**第三部∙乙（**鬼谷传奇**世袭制道教徒赢家黄氏江夏堂十二生肖秦人牧马：🌟儒家秦孝公<s>清君侧</s>之商鞅变法**）</span>](https://github.com/englianhu/binary.com-interview-question)"
 author: "道家笔者：[<ruby>赢<rp>(</rp><rt>yíng</rt><rp>)</rp>家<rp>(</rp><rt>jiā</rt><rp>)</rp>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>氏<rp>(</rp><rt>shì</rt><rp>)</rp>江<rp>(</rp><rt>jiānɡ</rt><rp>)</rp>夏<rp>(</rp><rt>xià</rt><rp>)</rp>堂<rp>(</rp><rt>táng</rt><rp>)</rp></ruby> ®γσ, ξηg Lιαη Ημ，<ruby>黄<rp>(</rp><rt>huáng</rt><rp>)</rp>联<rp>(</rp><rt>lián</rt><rp>)</rp>富<rp>(</rp><rt>fù</rt><rp>)</rp></ruby>（<ruby>雷<rp>(</rp><rt>léi</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>∪ <ruby>瑞<rp>(</rp><rt>ruì</rt><rp>)</rp>欧<rp>(</rp><rt>ōu</rt><rp>)</rp></ruby>）](https://englianhu.wordpress.com.com) ![](诸子百家考工记/大秦赋 - 北京大学.png){height=14}![](诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png){height=14}®"
 date: "🔆民国日期：民国一百一十三年杏月廿六<br>☯道家节日：[农历二零二四年（属龙 甲辰年 戊辰月
 戊戌日）杏月廿六（清明节）](https://mobile.51wnl-cq.com/huangli_tab_h5/?posId=BDSS&STIME=2024-04-04)<br>诸子百家：**纵横家鬼谷传奇**，清明节是大学刺绣系🧶课外家庭日语班杏林林氏西河堂，艳迎的生日"
@@ -38,17 +38,17 @@ output:
 
 > **发问：**
 > 
-> 二十弱冠、三十而立、四十不惑、五十知天命、六十花甲子、七十古来稀、八十为<ruby>耄<rp>(</rp><rt>qin</rt><rp>)</rp>耋<rp>(</rp><rt>qín</rt><rp>)</rp></ruby>^[**耄耋**两字连用代称八、九十岁<br>**期颐**：百岁之人]、九十是什么？
+> 二十弱冠、三十而立、四十不惑、五十知天命、六十花甲子、七十古来稀、八十为<ruby>耄<rp>(</rp><rt>mào</rt><rp>)</rp>耋<rp>(</rp><rt>dié</rt><rp>)</rp></ruby>^[**<ruby>耄<rp>(</rp><rt>mào</rt><rp>)</rp>耋<rp>(</rp><rt>dié</rt><rp>)</rp></ruby>**两字连用代称八、九十岁<br>**<ruby>期<rp>(</rp><rt>qī</rt><rp>)</rp>颐<rp>(</rp><rt>yí</rt><rp>)</rp></ruby>**：百岁之人]、九十是什么？
 > 
 > **解答：**
 > 
 > 人初生叫婴儿，不满周岁称<ruby>襁<rp>(</rp><rt>qiǎng</rt><rp>)</rp>褓<rp>(</rp><rt>bǎo</rt><rp>)</rp></ruby>。
 > 两至三岁称孩提。
-> 女孩七岁称髫年。男孩七岁称韶年。
+> 女孩七岁称<ruby>髫<rp>(</rp><rt>tiáo</rt><rp>)</rp></ruby>年。男孩七岁称<ruby>韶<rp>(</rp><rt>sháo</rt><rp>)</rp></ruby>年。
 > 十岁以下称黄口。
-> 十三岁至十五岁称舞勺之年。
+> 十三岁至十五岁称舞<ruby>勺<rp>(</rp><rt>sháo</rt><rp>)</rp></ruby>之年。
 > 十五岁至廿岁称舞象之年。
-> 女孩十二岁称金钗之年。
+> 女孩十二岁称金<ruby>钗<rp>(</rp><rt>chāi</rt><rp>)</rp></ruby>之年。
 > 女孩十三岁称豆蔻年华。
 > 女孩十五岁称及笄之年。
 > 十六岁称碧玉年华；
@@ -237,6 +237,12 @@ output:
 > **以上「计数」、「机数」等语，泛指统计。**这些话的意思是说，要想管理好国家（“欲举大事”），得充分地认识国情（“遍知天下”）这些离不开统计（计数），对统计“不明”，国家管理就会紊乱，失去发展方向，（犹无舟楫而经于水。险也”。）
 
 *引用：[浅谈春秋战国时期的统计分析](http://tjj.hunan.gov.cn/bsfw/tjkp/tjysh/201507/t20150717_3825224.html)*
+
+> 鬼谷子是春秋战国时期最具神秘色彩的人物，是道家祖师之一，一生学识广博，又开创纵横家学派，被誉为千古奇人。民间流传他是神通广大的智者，具有未卜先知的能力。与先秦时期的孔子、孟子、韩非子等诸子百家的圣贤齐名，都是在华夏历史上留有浓墨重彩的人。
+> 
+> 鬼谷子，本名王禅，他创建鬼谷门派，道号玄微子。虽然他自己的事迹很少流传在世，是个不出世的高人，但是他的徒弟却个个名扬天下。鬼谷子的徒弟有苏秦、张仪、孙膑、庞涓、商鞅、吕不韦、白起、李牧、王翦、甘茂、乐毅、毛遂、赵奢等数百位精英，其中，八个徒弟最为知名，下面为大家详细叙说…
+
+*出处：[鬼谷子的徒弟有哪些？](https://baijiahao.baidu.com/s?id=1750073704016307331)*
 
 > **公元前**：鬼谷传奇，鬼谷子门徒R鄀计数学编程学术份子卫鞅论“帝道”、“王道”、“霸道” ；那些回教徒身为世袭制法家只需要遵守可兰经习俗文化宗教语言断肢法集体自宫自残自虐自杀即可。借鉴负责图书馆的文吏李斯（秦国长史，协助嬴政一统天下后建立秦朝成为宰相）老鼠哲学，「近朱者赤，近墨者黑」，赤印度人与印度人或非洲黑人也不可近之，咱们公元前夏朝的黄河文明和公元后近代史美国独立战争史都是取代回教和兴都文明。RR（Robert & Rose鄀计数|机数编程语言与《七龙珠之人造人》）从英俄到（世袭制道教徒十二生肖——赢家黄氏江夏堂黄种人的秦国、黄河文明、廉政公署、Security Firm金融市场与证券行）秦朝。
 > 
@@ -730,6 +736,17 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 <br>
 
 # 简介
+
+## 动态尤物
+
+引用愚生旧作[「猫城」Bookdown Contest Submission Odds Modelling and Testing Inefficiency of Sports Bookmakers](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/bookdown-contest-submission-odds-modelling-and-testing-inefficiency-of-sports-bookmakers.pdf)，将加权指数分类为四项来回测：
+
+- 整年（赛季）常数/加权指数
+- 每周变动加权指数
+- 每日变动加权指数
+- 跳帧数据动态加权指数
+
+结果**跳帧数据动态加权指数**最为精准，所以以下所有数据都会经过回测、筹算、占卜、才来比较精准度。
 
 ## 论文简介
 
@@ -2100,19 +2117,6 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 - [**Forecasting: Principle & Practice** - *5.8 Evaluating point forecast accuracy*](https://otexts.com/fpp3/accuracy.html)
 - [Regression Model Accuracy Metrics: R-square, AIC, BIC, Cp and more](http://www.sthda.com/english/articles/38-regression-model-validation/158-regression-model-accuracy-metrics-r-square-aic-bic-cp-and-more/#google_vignette)
 
-#### 尤物比较
-
-## 动态尤物
-
-引用愚生旧作[「猫城」Bookdown Contest Submission Odds Modelling and Testing Inefficiency of Sports Bookmakers](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/bookdown-contest-submission-odds-modelling-and-testing-inefficiency-of-sports-bookmakers.pdf)，将加权指数分类为四项来回测：
-
-- 整年（赛季）常数/加权指数
-- 每周变动加权指数
-- 每日变动加权指数
-- 跳帧数据动态加权指数
-
-结果**跳帧数据动态加权指数**最为精准。
-
 <br>
 
 # 结论
@@ -2391,7 +2395,7 @@ options(warn = 0)
 > 
 > 推薦連接：
 > 
-> - **乐高的发明故事**：[三次大火使"乐高"创造了奇迹，乐高的发明故事](https://youtu.com/YuPXrq3almQ)
+> - **乐高的发明故事**：[三次大火使"乐高"创造了奇迹，乐高的发明故事](https://youtu.be/YuPXrq3almQ)
 > - **世界上第一部电影**：[世界上第一部电影，来的太突然了，电影的发明]() 
 > - **世界上第一支股票**：[世界上第一支股票，阿姆斯特丹，因欧洲人需要胡椒，股票的发明故事]()
 > - **潜水艇的发明**：[九艘早期潜水艇 ，潜水艇发明史]()
@@ -2422,7 +2426,7 @@ options(warn = 0)
 - [「计算机网络发展史」你在网上勇闯天涯时用的网络，是如何发展至今的呢？](https://youtu.be/CjAl6jODHq8)
 - [「雎䴘」openEuler（中译：开源欧拉）](https://gitee.com/openeuler)
 
-###### BIOS微型操作系统
+###### 基本输入输出微型操作系统
 
 ##### 演员的自我修养
 
