@@ -74,14 +74,16 @@
   - <s>GO-GARCH</s>
   - <s>Copula-GARCH</s>
 
-为了着手于高频量化对冲数据计数/机数建模，尝试审查并整顿数据，文献[次元期权面试试题一 - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value)和文献[次元期权面试试题一 - 多变量数据缺失值管理（乙）](http://rpubs.com/englianhu/handle-multivariate-missing-value)但单变量建模出现一些错误（一些是人为的美国洋番黑客洲际入侵犯罪），文献中使用多种弥补数据缺失值的计数/机数筹算方法如`interpolatan`、`kalman`、`locf`和`ma`。. The [次元期权面试题一 - 日间高频交易计数/机数建模比较（英）](http://rpubs.com/englianhu/binary-Q1Inter-HFT)比较了ts、msts、SARIMA、mcsGARCH、<s>midasr、midas-garch、Levy process</s> 计数/机数模型。
+为了着手于高频量化对冲数据计数/机数建模，尝试审查并整顿数据，文献[「鄀客栈」次元期权面试试题一 - 单变量数据缺失值管理](http://rpubs.com/englianhu/handle-missing-value)和文献[「鄀客栈」次元期权面试试题一 - 多变量数据缺失值管理（乙）](http://rpubs.com/englianhu/handle-multivariate-missing-value)但单变量建模出现一些错误（一些是人为的美国洋番黑客洲际入侵犯罪），文献中使用多种弥补数据缺失值的计数/机数筹算方法如`interpolatan`、`kalman`、`locf`和`ma`。. The [次元期权面试题一 - 日间高频交易计数/机数建模比较（英）](http://rpubs.com/englianhu/binary-Q1Inter-HFT)比较了ts、msts、SARIMA、mcsGARCH、<s>midasr、midas-garch、Levy process</s> 计数/机数模型。
 
 ### 第一题第二章）<span style='color:red'>幕后花絮</span>
 
-Initially, I wrote a shiny app (as showing in below gif file) but it is heavily budden for loading. Kindly browse over [ShinyApp](https://beta.rstudioconnect.com/content/2367/) (Kindly refer to [binary.com Interview Question I - Lasso, Elastic-Net and Ridge Regression](http://rpubs.com/englianhu/binary-Q1L-EN-R) for more information) which contain the questions and answers of 3 questions. For the staking model, I simply forecast the highest and lowest price, and then : 
+原本，愚生编写个闪霓应用（如下动态图）奈何读取速度、筹算与运行效率并不高，欲知更多详情请浏览[闪霓应用（ShinyApp）](https://beta.rstudioconnect.com/content/2367)并查阅[「鄀客栈」binary.com Interview Question I - Lasso, Elastic-Net and Ridge Regression](http://rpubs.com/englianhu/binary-Q1L-EN-R)以了解详情。该应用包含三个面试题与解答。投注策略方面，纯粹筹算并占卜最高汇价与最低汇价，然后：
 
-- Kelly criterion and using highest or lowest price for closing transaction, otherwise using closing price if the forecasted lowest/highest price is not occur.
-- Placed $100 an each of the forecasted variance value and do the settlement based on the real variance value. 
+- 使用汇价数据中的最高与最低汇价并采用凯利标准尤物来筹算，并占卜闭市汇价。当数据中拥有缺失值或没有最高与最低汇价观测值的时候，就以闭市汇价来筹算并占卜下一个时间单位的汇价。
+- 根据筹算并占卜出来的占卜值的方差来决定投注门槛，比方说筹算并占卜出最高汇价的方差最高价、最低汇价的方差最低价。在拥有优势的情况之下下注一百元，然后依照闭市汇价来结算盈亏。
+
+*借鉴[解密复兴科技 - 基于隐蔽马尔科夫模型的时序分析方法](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/图书馆/解密复兴科技%20-%20基于隐蔽马尔科夫模型的时序分析方法.pdf)，它日会筹算夏普率来评估风险与优势后才决定最佳投注时机（最佳建仓/开仓时机与最佳清仓时机）。*
 
 <img src='诸子百家考工记/20170113_104005.gif' width='360'>
 
@@ -181,8 +183,13 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 - [Deriv.com - Interday & Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://rpubs.com/englianhu/742275)（或[备用网址](https://beta.rstudioconnect.com/content/16442/binary-Q1Inter-HFT-RV2.html)）
 - 金融衍生 - 筛选日内高频量化交易统计模型（第III部）
   - [<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://rpubs.com/englianhu/HFT-RV3)
-  - [<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部乙∙上（赢家黄氏江夏堂：🌟儒家秦孝公清君侧之商鞅变法**）*世袭制道教徒十二生肖秦人牧马，从满洲到星洲*</span>](https://englianhu.github.io/民国一百一十三年（甲辰年）/杏月/binary-Q1Inter-HFT-RV3E.html)
-- <span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（「丁」赢家黄氏江夏堂：🌟儒家秦孝公清君侧之商鞅变法）**_世袭制道教徒十二生肖秦人牧马，从满洲到星洲_</span>
+  - [<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部∙乙（西周之末：春秋战国——总结平滑指数尤物）](https://englianhu.github.io/民国一百一十三年（甲辰年）/杏月/binary-Q1Inter-HFT-RV3E.html)
+- <span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（「丁」赢家黄氏江夏堂：🌟儒家秦孝公<s>清君侧</s>之商鞅变法）**_世袭制道教徒十二生肖秦人牧马，从满洲到星洲_</span>
+
+它日学习投资风险管理与夏普率，欲知更多详情，请查阅：
+
+- [解密复兴科技 - 基于隐蔽马尔科夫模型的时序分析方法](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/图书馆/解密复兴科技%20-%20基于隐蔽马尔科夫模型的时序分析方法.pdf)
+- [解读量化投资 - 西蒙斯用公式打败市场的故事](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/图书馆/解读量化投资%20-%20西蒙斯用公式打败市场的故事.pdf)
 
 ### 二）<span style='color:red'>幕后花絮</span>
 
