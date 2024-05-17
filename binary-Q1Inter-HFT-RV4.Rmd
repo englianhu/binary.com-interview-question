@@ -5396,6 +5396,29 @@ options(warn = 0)
 - [外因周期性自回归综合滑均尤物（ARIMAX）](外因周期性自回归综合滑均尤物（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移尤物最优值的`p, d, q, P, D, Q, s`分别为`0, 1, 4, 0, 0, 0, 0`。
 - [平滑周计](#平滑周计)美国洲际犯罪案！
 - [马王之争（争取承接🇬🇧英国立博🚩红军百年老店操盘与科研项目）](#马王之争（争取承接🇬🇧英国立博🚩红军百年老店操盘与科研项目）)
+- 目前美企[「统计之都」RStudio用户界面中文汉化翻译介绍与使用说明](https://d.cosx.org/d/424852-rstudioyong-hu-jie-mian-zhong-wen-yi-hua-fan-yi-jie-shao-yu-shi-yong-shuo-ming)已类似以前的微软视窗推出中文版，入侵咱们世袭制道教徒黄种人的亚洲市场。
+
+```{r 红宝石编程, eval=FALSE}
+output$ryo_kr <- renderUI({
+    if (!file.exists('www/ryo-kr.html')) {
+      return(tags$div(class = 'Missing-Data-Class',
+        HTML('<ruby>건설<rp>(</rp><rt>geonseol</rt><rp>)</rp>중<rp>(</rp><rt>jung</rt><rp>)</rp></ruby> !'))
+      )
+    }
+    includeHTML('www/ryo-kr.html')
+  })
+```
+
+如何通过运行代码，将打印出来的数据框内容字母上标音，可查阅：
+
+- [「统计之都」使用 Ruby Text](https://d.cosx.org/d/423088-ruby-text)
+- [「猫城」Apply Ruby-Text on shiny #3612](https://github.com/rstudio/shiny/issues/3612)
+
+不过通过`data.frame()`或`tibble`相关函数，就无法在字幕上标音。
+
+- [外因周期性自回归综合滑均尤物（ARIMAX）](外因周期性自回归综合滑均尤物（ARIMAX）)章节中的[`forecast::Arima()`](#`forecast::Arima()`)，经过[廿四节气](#廿四节气)筹算季节周期后，得知自回归均移尤物最优值的`p, d, q, P, D, Q, s`分别为`0, 1, 4, 0, 0, 0, 0`。
+- [平滑周计](#平滑周计)美国洲际犯罪案！
+- [马王之争（争取承接🇬🇧英国立博🚩红军百年老店操盘与科研项目）](#马王之争（争取承接🇬🇧英国立博🚩红军百年老店操盘与科研项目）)
 - 目前美企[RStudio用户界面中文汉化翻译介绍与使用说明](https://d.cosx.org/d/424852-rstudioyong-hu-jie-mian-zhong-wen-yi-hua-fan-yi-jie-shao-yu-shi-yong-shuo-ming)已类似以前的微软视窗推出中文版，入侵咱们世袭制道教徒黄种人的亚洲市场。
 
 > 在`/usr/lib/rstudio/resources/app/resources/themes/css`路径下找到了`fonts.css`文件，代码如下：
