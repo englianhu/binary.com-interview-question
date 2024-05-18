@@ -714,6 +714,8 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 *引用：[「问百度」中国历史朝代](https://baike.baidu.com/item/中国历史朝代/4056123)*
 
+- [字典网](https://www.cidianwang.com/nianhao/zhouchao_0a340.htm)
+
 #### 尤物
 
 > 古代的文物，就叫金石学。元明清三朝，扩大了金石学使用范围，添加了书画，玉石，瓷器，杂件等，历代遗留下的东西，就叫古物。在明代及清初，又有一种说法，叫骨董，古董。到清朝乾隆年间，又叫古玩。到了民国，又叫做文物。现在文物和古玩词语同用，古玩在民间使用，文物为官方语言。
@@ -781,6 +783,7 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 - [「抖音」云梦山](https://v.douyin.com/iYV1gFFw)
 - [「海外抖音」如是江南](https://www.tiktok.com/@nametho171)
 - [「抖音」总要去一趟现实版的仙侠世界吧，奔赴一场仙剑的梦！#仙剑 #望仙谷](https://www.douyin.com/discover?modal_id=7346462334371646783)
+- [「豆瓣」鬼谷子简介](https://movie.douban.com/review/10572551)
 
 <iframe width="400" height="225" src="https://youtube.com/embed/0OvkWGRhf_g" title="Lamborghini V12 Vision GT" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
