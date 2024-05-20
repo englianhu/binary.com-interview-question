@@ -119,6 +119,56 @@ if (天朝 %in% 朝代) {
     页 <- 10
     链 <- c('https://www.cidianwang.com/nianhao/beichao_b4c32.htm', paste0('https://www.cidianwang.com/nianhao/beichao_b4c32_', 1:页, '.htm'))
   }
+  ## 西夏
+  if (天朝 == '西夏') {
+    页 <- 9
+    链 <- c('https://www.cidianwang.com/nianhao/xixia_e9818.htm', paste0('https://www.cidianwang.com/nianhao/xixia_e9818_', 1:页, '.htm'))
+  }
+  ## 南北朝
+  if (天朝 == '南北朝') {
+    页 <- 8
+    链 <- c('https://www.cidianwang.com/nianhao/nanbeichao_93342.htm', paste0('https://www.cidianwang.com/nianhao/nanbeichao_93342_', 1:页, '.htm'))
+  }
+  ## 南朝
+  if (天朝 == '南朝') {
+    页 <- 8
+    链 <- c('https://www.cidianwang.com/nianhao/nanchao_662ae.htm', paste0('https://www.cidianwang.com/nianhao/nanchao_662ae_', 1:页, '.htm'))
+  }
+  ## 北宋
+  if (天朝 == '北宋') {
+    页 <- 8
+    链 <- c('https://www.cidianwang.com/nianhao/beisong_d5762.htm', paste0('https://www.cidianwang.com/nianhao/beisong_d5762_', 1:页, '.htm'))
+  }
+  ## 周朝
+  if (天朝 == '周朝') {
+    页 <- 19
+    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+  }
+  ## 周朝
+  if (天朝 == '周朝') {
+    页 <- 19
+    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+  }
+  ## 周朝
+  if (天朝 == '周朝') {
+    页 <- 19
+    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+  }
+  ## 周朝
+  if (天朝 == '周朝') {
+    页 <- 19
+    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+  }
+  ## 周朝
+  if (天朝 == '周朝') {
+    页 <- 19
+    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+  }
+  ## 周朝
+  if (天朝 == '周朝') {
+    页 <- 19
+    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+  }
   ## 周朝
   if (天朝 == '周朝') {
     页 <- 19
@@ -136,18 +186,22 @@ if (天朝 %in% 朝代) {
 
 
 
-年号 <- plyr::ldply(链, function(椠) {
-  椠 <- 椠 %>% 
+
+年号 <- plyr::ldply(1:length(链), function(迭) {
+  椠 <- 链[迭] %>% 
     read_html() %>% 
     html_element('.left') %>% 
     html_text2() %>% 
     str_split('\n') %>% 
     unlist()
   ## 第一次出现的朝代是选项，所以正则表达式匹配第二次出现的朝代标题。
-  序 <- grep(paste0('^', 天朝, '$'), 椠)[2]
-  椠[序:length(椠)]
-  版 <- matrix(椠[-1], ncol = 2, byrow = TRUE, dimnames = list(NULL, c('年份', '明细')))
+  序甲 <- grep(paste0('^', 天朝, '$'), 椠)[2]
+  序乙 <- grep(paste0('^', 迭, '$'), 椠)
+  椠 <- 椠[(序甲 + 3):(序乙 - 1)]
+  椠 <- 椠[!椠 %in% 椠[grep('第一页|上一页', 椠)]]
+  版 <- matrix(椠, ncol = 2, byrow = TRUE, dimnames = list(NULL, c('年份', '明细')))
 }, .progress = 'text')
+
 # saveRDS(周朝年号, paste0(.蜀道书轩, '椠周朝年号.rds'))
 # 周朝年号 <- readRDS(paste0(.蜀道书轩, '椠周朝年号.rds'))
 
