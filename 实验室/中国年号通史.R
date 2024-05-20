@@ -109,15 +109,15 @@ if (天朝 %in% 朝代) {
     页 <- 10
     链 <- c('https://www.cidianwang.com/nianhao/liaoguo_e6927.htm', paste0('https://www.cidianwang.com/nianhao/liaoguo_e6927_', 1:页, '.htm'))
   }
-  ## 周朝
-  if (天朝 == '周朝') {
-    页 <- 19
-    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+  ## 东汉
+  if (天朝 == '东汉') {
+    页 <- 9
+    链 <- c('https://www.cidianwang.com/nianhao/donghan_80711.htm', paste0('https://www.cidianwang.com/nianhao/donghan_80711_', 1:页, '.htm'))
   }
-  ## 周朝
-  if (天朝 == '周朝') {
-    页 <- 19
-    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+  ## 北朝
+  if (天朝 == '北朝') {
+    页 <- 10
+    链 <- c('https://www.cidianwang.com/nianhao/beichao_b4c32.htm', paste0('https://www.cidianwang.com/nianhao/beichao_b4c32_', 1:页, '.htm'))
   }
   ## 周朝
   if (天朝 == '周朝') {
