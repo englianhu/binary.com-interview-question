@@ -264,9 +264,9 @@ output:
 - [「油管」乔帮主vs比尔盖茨,怎样才不算枉活一生,解说《硅谷传奇》](https://youtu.be/TFxeUZ-jo98)
 - [「问百度」晏子使楚的故事视频](https://haokan.baidu.com/v?vid=13350677048444321131)。
 
-<iframe width="400" height="225" src="https://www.youtube.com/embed/e7HCsYNMERE" title="「油管」「抖音」春风若有桃花意，落花时节又逢君" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="400" height="225" src="https://www.youtube.com/embed/nyj_dbXfj6I" title="「油管」「抖音」春风若有桃花意，落花时节又逢君" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
-*出处：[「油管」「抖音」春风若有桃花意，落花时节又逢君](https://youtube.com/shorts/e7HCsYNMERE)*
+*出处：[「油管」「抖音」春风若有桃花意，落花时节又逢君](https://youtube.com/shorts/nyj_dbXfj6I)*
 
 **世袭制道教徒十二生肖秦人牧马**
 
@@ -714,6 +714,7 @@ rm(程序包)
 *出处：[荀子](https://www.worldhistory.org/trans/zh/1-19040)*
 
 > …
+> 
 > …
 > 
 > - 诸子：指的是中国先秦时期管子、孔子、墨子、老子、庄子、孟子、荀子等学术思想的代表人物；
@@ -894,7 +895,7 @@ rm(程序包)
 
 *[出处：「四川师范大学学报」司马错与蜀道研究的回顾与展望——“司马错入蜀及其重大历史意义”学术研讨会综述](https://wkxb.sicnu.edu.cn/Publish/202311/20231103180843473.pdf)*
 
-```{r 朝代年号, error=TRUE}
+```{r 朝代年号, error=TRUE, eval = FALSE}
 ## 秦国 China，秦人 Chinese
 ## 司马错得蜀既得楚
 if (!exists('.蜀道')) {
@@ -906,8 +907,8 @@ if (!exists('.蜀道')) {
     {\(.) substring(., 2)}()
 }
 
-if (!exists('.蜀道仓库')) .蜀道仓库 <- paste0(.蜀道, '诸子百家学府/世界文明史/')
-if (!dir.exists(.蜀道仓库))  dir.create(.蜀道仓库)
+if (!exists('.蜀道书轩')) .蜀道书轩 <- paste0(.蜀道, '诸子百家学府/中国年号通史/')
+if (!dir.exists(.蜀道书轩))  dir.create(.蜀道书轩)
 
 链 <- c('.cbov1618288725', '.jlfm1618288727', '.ciju1618288729', '.bbci1618288731', '.ywpp1618288732', '.ycyo1618288734', '.hlua1618288735', '.mfoi1618288737', '.xnvk1618288739', '.rieb1618288740', '.pljd1618288742', '.alot1618288744', '.hahg1618288745', '.uzis1618288747', '.gafp1618288749', '.qzin1618288750', '.gmrx1618288752', '.hewg1618288753', '.lezv1618288755', '.lcpj1618288757')
 names(链) <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:19, '.htm'))
@@ -923,6 +924,52 @@ names(链) <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0(
     .[1:41]
   版 <- matrix(表[-1], ncol = 2, byrow = TRUE, dimnames = list(NULL, c('年份', '明细')))
 }, .progress = 'text')
+# saveRDS(周朝年号, paste0(.蜀道书轩, '椠周朝年号.rds'))
+# 周朝年号 <- readRDS(paste0(.蜀道书轩, '椠周朝年号.rds'))
+
+简 <- strsplit(周朝年号$明细, '，|：')
+列甲 <- 简 %>% 
+  lapply(length) %>% 
+  unlist()
+限甲 <- 列甲 %>% 
+  max()
+
+限乙 <- lapply(简, function(迭) grep('在位皇帝', 迭)) %>% 
+  unlist() %>% 
+  max()
+
+牍 <- lapply(1:length(简), function(迭甲) {
+  列乙[迭甲] = grep('在位皇帝', 简[[迭甲]])
+  差乙 = 限乙 - 列乙[迭甲]
+  空乙 = rep(NA, 差乙)
+  if (差乙 > 0) {
+    牍 <- c(简[[迭甲]][1:(列乙[[迭甲]] - 差乙)], 空乙, 简[[迭甲]][列乙[[迭甲]]:列甲[[迭甲]]]) 
+  } else {
+    牍 <- 简[[迭甲]]
+  }})
+
+列乙 <- lapply(简, function(迭) grep('在位皇帝', 迭)) %>% 
+  unlist()
+
+限丙 <- lapply(牍, function(迭) grep('年号', 迭)) %>% 
+  unlist() %>% 
+  max()
+
+牍 <- lapply(1:length(牍), function(迭甲) {
+    列丙[迭甲] = grep('年号', 牍[[迭甲]])
+    差丙 = 限丙 - 列丙[迭甲]
+    空丙 = rep(NA, 差丙)
+    if (差丙 > 0) {
+      牍 <- c(牍[[迭甲]][1:(列丙[[迭甲]] - 差丙)], 空丙, 牍[[迭甲]][列丙[[迭甲]]:限丙]) 
+    } else {
+      牍 <- 牍[[迭甲]]
+    }
+    牍 <- c(牍, rep(NA, 限甲 - length(牍)))
+}) %>% 
+    unlist %>% 
+    matrix(ncol = 限甲, byrow = TRUE, dimnames = list(
+      NULL, c('参数甲', '干支', '参数乙', '生肖', '参数丙', '朝代甲', '朝代乙', '朝代丙', '参数丁', '在位皇帝甲', 
+              '在位皇帝乙', '参数戊', '年号甲', '年号乙')))
 
 周朝年号乙 <- 周朝年号 %>% 
     as_tibble %>% 
@@ -934,105 +981,62 @@ names(链) <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0(
                     as.numeric() %>% 
                     cnum::num2c(lang = 'sc')}) %>% 
             unlist(), 
-        年份 = if_else(substr(年份, 1, 3) == '公元前', paste0('公元前', 年份乙, '年'), 年份乙) %>% factor, 
+        年份 = if_else(substr(年份, 1, 3) == '公元前', paste0('公元前', 年份乙, '年'), 年份乙) %>% 
+          factor, 
         年份乙 = -cnum::c2num(年份乙))
 
-周朝明细 <- str_split_fixed(周朝年号$明细, '，|：', 21) %>% 
-  as_tibble()
-## 周朝明细 <- 周朝明细[, colSums(is.na(周朝明细)) < nrow(周朝明细)]
-周朝明细 <- 周朝明细[colSums((as.matrix(周朝明细 == ''))) < nrow(周朝明细)]
-周朝明细 %<>% .[-c(1, 3, 5)]
-names(周朝明细) <- c('干支', '生肖', '朝代甲', '朝代乙', '朝代丙', '在位皇帝甲', '在位皇帝乙', '在位皇帝丙', '年号甲', '年号乙', '年号丙')
-周朝明细 %<>% 
-    plyr::llply(str_replace_all, '在位皇帝|年号', '') %>% 
-    data.frame() %>% 
-    as_tibble()
+牍 <- cbind(周朝年号乙[c('年份', '年份乙')], 牍[, -grep('参数', colnames(牍))]) %>% 
+  as_tibble() %>% 
+  dplyr::mutate_if(is.character, factor)
+rm(链, 周朝年号, 简, 列甲, 限甲, 列乙, 限乙, 列丙, 限丙, 周朝年号乙)
 
-周朝明细 %>% 
-    dplyr::mutate(
-        在位皇帝甲 = case_when(
-            is.na(在位皇帝甲) & grepl('[^年]$', 在位皇帝乙) ~ 在位皇帝乙, 
-            !is.na(在位皇帝甲) ~ 在位皇帝甲
-            ), 
-        在位皇帝乙 = case_when(
-            is.na(在位皇帝乙) & !is.na(在位皇帝丙) & grepl('[^年]$', 在位皇帝丙) ~ 在位皇帝丙, 
-            !is.na(在位皇帝乙) & grepl('[^年]$', 在位皇帝乙) & !is.na(在位皇帝丙) & grepl('[^年]$', 在位皇帝丙) & (在位皇帝乙 == 在位皇帝甲) ~ 在位皇帝丙, 
-            !is.na(在位皇帝乙) ~ 在位皇帝乙
-        ), 
-        年号甲 = case_when(
-            is.na(年号甲) & !is.na(在位皇帝丙) & grepl('[年]$', 在位皇帝丙) ~ 在位皇帝丙, 
-            is.na(年号甲) & !is.na(年号乙) & grepl('[年]$', 年号乙) ~ 年号乙, 
-            !is.na(年号甲) ~ 年号甲
-        ), 
-        年号乙 = case_when(
-            !is.na(年号乙) & !is.na(年号甲) & grepl('[年]$', 年号甲) & (年号甲 == 年号乙) ~ 年号丙, 
-            is.na(年号乙) & !is.na(年号丙) & grepl('[年]$', 年号丙) ~ 年号丙, 
-            !is.na(年号乙) & !is.na(年号甲) & grepl('[年]$', 年号乙) & (年号甲 != 年号乙) ~ 年号乙, 
-            !is.na(年号乙) ~ 年号乙
-        ), 
-        年号丙 = case_when(
-            !is.na(年号丙) & !is.na(年号乙) & grepl('[年]$', 年号乙) & (年号丙 != 年号乙) ~ 年号丙, 
-        ), 
-        在位皇帝丙 = case_when(
-            !is.na(在位皇帝丙) & !is.na(在位皇帝乙) & grepl('[^年]$', 在位皇帝丙) & (在位皇帝丙 != 在位皇帝乙) ~ 在位皇帝丙
-        ))
-
-周朝明细乙 <- 周朝明细 %>% 
-    tidyr::unite('朝代丁', NA.:NA..1, remove = FALSE) %>% 
-    tidyr::unite('朝代戊', NA..1:NA..2, remove = FALSE) %>% 
-    tidyr::unite('在位皇帝甲', NA..2:NA..3, remove = FALSE) %>% 
-    tidyr::unite('在位皇帝乙', NA..3:NA..4, remove = FALSE) %>% 
-    tidyr::unite('在位皇帝丙', NA..4:NA..5, remove = FALSE) %>% 
-    tidyr::unite('在位皇帝丁', NA..5:NA..6, remove = FALSE) %>% 
-    tidyr::unite('在位皇帝戊', NA..6:NA..7, remove = FALSE) %>% 
-    tidyr::unite('在位皇帝己', NA..7:NA..8, remove = FALSE) %>% 
-    tidyr::unite('年号甲', NA..9:NA..10, remove = FALSE) %>% 
-    tidyr::unite('年号乙', NA..10:NA..11, remove = FALSE) %>% 
-    tidyr::unite('年号丙', NA..11:NA..12, remove = FALSE) %>% 
-    mutate(
-      '年号己' = NA..12, `NA.` = NULL, `NA..1` = NULL, `NA..2` = NULL, 
-      `NA..3` = NULL, `NA..4` = NULL, `NA..5` = NULL, `NA..6` = NULL, 
-      `NA..7` = NULL, `NA..8` = NULL, `NA..9` = NULL, `NA..10` = NULL, 
-      `NA..11` = NULL, `NA..12` = NULL) %>% 
-  plyr::llply(str_replace_all, '^_', '') %>% 
-  data.frame() %>% 
-  as_tibble()
-
-周朝明细乙 %<>% 
-    plyr::llply(str_replace_all, '^_', '') %>% 
-    plyr::llply(str_replace_all, '_(.*)', '') %>% 
-    data.frame() %>% 
-    as_tibble() %>% 
-    dplyr::mutate(
-        年号己 = if_else((年号己 == '' | 年号己 == 年号丙), NA, 年号己), 
-        年号丙 = if_else((年号丙 == '' | 年号丙 == 年号乙), NA, 年号丙), 
-        年号乙 = if_else((年号乙 == '' | 年号乙 == 年号甲), NA, 年号乙), 
-        年号甲 = if_else((年号甲 == '' | 年号甲 == 在位皇帝己), NA, 年号甲), 
-        在位皇帝己 = if_else((在位皇帝己 == '' | 在位皇帝己 == 在位皇帝戊), NA, 在位皇帝己), 
-        在位皇帝戊 = if_else((在位皇帝戊 == '' | 在位皇帝戊 == 在位皇帝丁), NA, 在位皇帝戊), 
-        在位皇帝丁 = if_else((在位皇帝丁 == '' | 在位皇帝丁 == 在位皇帝丙), NA, 在位皇帝丁), 
-        在位皇帝丙 = if_else((在位皇帝丙 == '' | 在位皇帝丙 == 在位皇帝乙), NA, 在位皇帝丙), 
-        在位皇帝乙 = if_else((在位皇帝乙 == '' | 在位皇帝乙 == 在位皇帝甲), NA, 在位皇帝乙), 
-        在位皇帝甲 = if_else((在位皇帝甲 == '' | 在位皇帝甲 == 朝代戊), NA, 在位皇帝甲), 
-        朝代戊 = if_else((朝代戊 == '' | 朝代戊 == 朝代丁), NA, 朝代戊), 
-        朝代丁 = if_else((朝代丁 == '' | 朝代丁 == 朝代丙), NA, 朝代丁), 
-        朝代丙 = if_else((朝代丙 == '' | 朝代丙 == 朝代乙), NA, 朝代丙))
-
-  # 版甲 <- 版[[1]][, 1]
-  # 版乙 <- 版[[1]][, 2] %>% 
-  #  str_split('，|：')
-  # 序甲 <- 版乙[[1]] %>% 
-  #   grep('在位皇帝', .)
-  # 序乙 <- 版乙[[1]] %>% 
-  #   grep('年号', .)
-  # 简 <- 版乙[[2]][c(1, 3, 5, 序甲, 序乙)]
+fwrite(牍, paste0(.蜀道书轩, '周朝年号.csv'))
 
 ## 愚生于此，以一年内更迭六个朝代、六位君主、六个国号为样本。
-名 <- c('农历干支', '生肖', '朝代甲', '朝代乙', '朝代丙', '朝代丁', '朝代戊', '朝代己', '朝代数', '在位皇帝甲', '在位皇帝乙', '在位皇帝丙', '在位皇帝丁', '在位皇帝戊', '在位皇帝己', '年号甲', '年号乙', '年号丙', '年号丁', '年号戊', '年号己')
-集 <- data.frame(周朝年号[c('年份', '年份乙')], matrix(rep(NA, nrow(周朝年号) * 21), ncol = 21, dimnames = list(NULL, 名))) %>% 
-  as_tibble()
-集
+# 名 <- c('农历干支', '生肖', '朝代甲', '朝代乙', '朝代丙', '朝代丁', '朝代戊', '朝代己', '朝代数', '在位皇帝甲', '在位皇帝乙', '在位皇帝丙', '在位皇帝丁', '在位皇帝戊', '在位皇帝己', '年号甲', '年号乙', '年号丙', '年号丁', '年号戊', '年号己')
+# 集 <- data.frame(周朝年号[c('年份', '年份乙')], matrix(rep(NA, nrow(周朝年号) * 21), ncol = 21, dimnames = list(NULL, 名))) %>% 
+#   as_tibble()
+# 集
 ```
+
+```{r 读取朝代年号, results = 'asis', error = TRUE}
+## 秦国 China，秦人 Chinese
+## 司马错得蜀既得楚
+if (!exists('.蜀道')) {
+  .蜀道 <- getwd() |> 
+    {\(.) str_split(., '/')}() |> 
+    {\(.) c('/', .[[1]][2:5])}() |> 
+    {\(.) c(., 'binary.com-interview-question-data/')}() |> 
+    {\(.) paste(., collapse = '/')}() |> 
+    {\(.) substring(., 2)}()
+}
+
+if (!exists('.蜀道书轩')) .蜀道书轩 <- paste0(.蜀道, '诸子百家学府/中国年号通史/')
+if (!dir.exists(.蜀道书轩))  dir.create(.蜀道书轩)
+
+周朝年号 <- fread(paste0(.蜀道书轩, '周朝年号.csv'), stringsAsFactors = TRUE)
+周朝年号  %>% 
+  kbl(caption = '**周朝（春秋战国）**', escape = FALSE) %>% 
+  ## https://www.w3schools.com/cssref/css_colors.asp
+  row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
+  column_spec(1, background = 'CornflowerBlue', color = 'yellow') %>% 
+  #column_spec(2, background = '#556DAC') %>% 
+  column_spec(2, background = 'LightSlateGrey') %>% 
+  column_spec(3, background = 'LightGray') %>% 
+  column_spec(4, background = 'Gainsboro') %>% 
+  column_spec(5, background = 'LightGray') %>% 
+  column_spec(6, background = 'Gainsboro') %>% 
+  column_spec(7, background = 'LightGray') %>% 
+  column_spec(8, background = 'Gainsboro') %>% 
+  column_spec(9, background = 'Gainsboro') %>% 
+  column_spec(10, background = 'LightGray') %>% 
+  column_spec(11, background = 'Gainsboro') %>% 
+  kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
+  kable_material(full_width = FALSE) %>% 
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
+```
+
+*数据 : `r paste0(cnum::num2c(dim(周朝年号)[1], lang = 'sc'), '行 乘 ', cnum::num2c(dim(周朝年号)[2], lang = 'sc'), '列')`*
 
 - [「词典网」首页>>年号>>周朝历代皇帝顺序>>周朝年号表>>周朝干支纪年](https://www.cidianwang.com/nianhao/zhouchao_0a340.htm)
 - [辭典附錄「中國歷代帝王年表」](https://dict.revised.moe.edu.tw/appendix.jsp?ver=0&ID=2&la=0&powerMode=0)
@@ -1087,10 +1091,12 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
     年份 ==  1038 ~ '西夏', 
     年份 ==  1271 ~ '元朝'
     年份 ==  1368 ~ '明朝', 
-    年份 ==  1636 ~ '清朝'), 
+    年份 ==  1636 ~ '清朝',
+    年份 ==  1912 ~ '中华民国', 
+    年份 ==  1949 ~ '中华人民共和国'), 
   年号 = case_when(
-    年份 == ''
-  ), 
+    年份 ==  -221 ~ '始皇', 
+    年份 ==     0 ~ '元寿'), 
   国事 = case_when(
     年份 == -1100 ~ '姜太公钓鱼', 
     年份 ==  -771 ~ '周平王即位，东周开始', 
@@ -1120,20 +1126,23 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
     年份 ==  -221 ~ '秦始皇登基', 
     年份 ==     0 ~ '基督耶稣临盆', 
     年份 ==   194 ~ '曹操崛起', 
-    年份 ==    ~ '', 
-    年份 ==    ~ '', 
-    年份 ==    ~ '', 
-    年份 ==    ~ ''
-    年份 ==   ~ '', 
-    年份 ==   ~ '', 
+    年份 ==   207 ~ '卧龙出渊', 
+    年份 ==   220 ~ '曹丕魏文帝登基', 
+    年份 ==   221 ~ '刘备汉烈祖登基', 
+    年份 ==   222 ~ '孙权吴大帝登基'
+    年份 ==   266 ~ '晋武帝司马炎登基', 
+    年份 ==   317 ~ '晋元帝司马睿登基', 
     年份 ==   ~ '', 
     年份 ==  ~ '', 
     年份 ==  1868 ~ '明治维新', 
     年份 ==  1871 ~ '岩仓使欧', 
     年份 ==  ~ ''), 
   钱谷 = case_when(
+    年份 ==  -770 ~ NA, 
+    年份 ==  -475 ~ NA, 
     年份 ==  -221 ~ NA, 
-    年份 ==     0 ~ NA), 
+    年份 ==     0 ~ NA, 
+    年份 ==   221 ~ NA), 
   战役 = case_when(
     年份 == -1046 ~ '武王伐纣', 
     年份 ==  -684 ~ '长勺（sháo）之战', 
@@ -1437,7 +1446,7 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 [^6]: <ruby>版<rp>(</rp><rt>bǎn</rt><rp>)</rp></ruby>：相比椠短和窄的长方形木板，两面刨光以供书写。
 [^7]: <ruby>方<rp>(</rp><rt>fāng</rt><rp>)</rp></ruby>：正方形的版。
 [^8]: <ruby>牍<rp>(</rp><rt>dú</rt><rp>)</rp></ruby>：狭长又薄的小竹片或木条，称为「简」。南方多竹简，北方多木简。<br><br>刚劈成的简很湿，无法写字，要用火烤干脱水后记录在上面的文字可以保存上千年。烤制过程称为「汗青」，也称「杀青」、「汗简」。后来，人们把汗青特指史册。文天祥的《过零丁洋》诗句：“人生自古谁无死，留取丹心照汗背。”<br><br>罄竹难书：用尽南山的竹子做竹简，都写不完他的罪行，用来强调某些人所犯的罪恶之多。
-[^9]:  <ruby>简<rp>(</rp><rt>jiǎn</rt><rp>)</rp></ruby>或<ruby>牒<rp>(</rp><rt>dié</rt><rp>)</rp></ruby>：
+[^9]:  <ruby>简<rp>(</rp><rt>jiǎn</rt><rp>)</rp></ruby>或<ruby>牒<rp>(</rp><rt>dié</rt><rp>)</rp></ruby>：狭长又薄的小竹片或木条，称为“简”。南方多竹简，北方多木简。
 [^10]: <ruby>函<rp>(</rp><rt>hán</rt><rp>)</rp></ruby>：将牍和简捆扎在一起叫做函。
 [^11]: <ruby>策<rp>(</rp><rt>cè</rt><rp>)</rp></ruby>或<ruby>册<rp>(</rp><rt>cè</rt><rp>)</rp></ruby>：较长的文章或书使用多个简，须按顺序编号、排齐，然后用绳子、丝线或牛皮条编串起来，叫做「策」或者「册」。
 [^12]: <ruby>觚<rp>(</rp><rt>gū</rt><rp>)</rp></ruby>：用木头削成多面的棱形， 可多至七、 八个面。一般比较长，可以长至枯多公分，容字较多，常用来抄写《急就篇》、《苍颉篇》等字书(见字典)，也可用作记事、打草稿或练字。
