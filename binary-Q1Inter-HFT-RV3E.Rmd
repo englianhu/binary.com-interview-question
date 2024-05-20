@@ -1309,9 +1309,6 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
   column_spec(6, background = 'Gainsboro') %>% 
   column_spec(7, background = 'LightGray') %>% 
   column_spec(8, background = 'Gainsboro') %>% 
-  column_spec(9, background = 'Gainsboro') %>% 
-  column_spec(10, background = 'LightGray') %>% 
-  column_spec(11, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
