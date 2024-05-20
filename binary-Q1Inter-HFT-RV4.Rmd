@@ -617,7 +617,7 @@ conflicted::conflicts_prefer(formattable::percent, .quiet = TRUE)
   'feather', 'sparklyr', 'jcolors', 'microbenchmark', 'dendextend', 
   'vembedr', 'lhmetools', 'gtools', 'stringi', 'pacman', 'rlist', 
   'profmem', 'ggthemes', 'flyingfox', 'htmltools', 'echarts4r', 
-  'viridis', 'hrbrthemes', 'profvis', 'fable', 'fabletools', 
+  'viridis', 'hrbrthemes', 'profvis', 'fable', 'fabletools', 'rvest', 
   'fable.prophet', 'Metrics', 'MLmetrics')#, 'Rfast', 'Rfast2')
 
 ## cnum 是協助處理中文數字的R套件，提供轉換、識別及抽取中文數字的函數。
