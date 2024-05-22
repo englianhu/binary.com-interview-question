@@ -1526,6 +1526,24 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 - [简牍](https://baike.baidu.com/item/简牍/2043791)
 - [隶书](https://baike.baidu.com/item/隶书/835864)
 
+> “章”、“节”、“卷”、“篇”、“辑”、“集”、“部”等划分有规范性的用法么？
+更多的还有中文作品中也会用Chapter，Part等等…
+> 
+> …可以参考中国新闻出版行业标准《科技文献的章节编号方法》（CY/T35-2001）http://www.xwcbj.gd.gov.cn/news/upload/masl/images/20100112/20101012093325_275.pdf和《丛刊刊名信息的表示》（CY/T34-2001）。前者提到了“章”、“节”、“卷”、“册”的划分和标注，后者提到了“辑”的编号…
+
+*出处：[「知乎」“章”、“节”、“卷”、“篇”、“辑”、“集”、“部”等划分有规范性的用法么](https://www.zhihu.com/question/20362742)*
+
+借鉴RMarkdown最高限制的六次元标题，如何区分记载文本的标题与章节的规范或典范。
+
+- [「知乎」“章”、“节”、“卷”、“篇”、“辑”、“集”、“部”等划分有规范性的用法么](https://www.zhihu.com/question/20362742)
+- [「一卷书」的「卷」是怎样一个单位？](https://www.zhihu.com/question/20821237)
+- [中国古人书写载体：椠、版、方、牍、简、牒、策、觚、帛、纸](https://baijiahao.baidu.com/s?id=1781595015562599076)
+- [小说中的篇，章，部，回这几个量词有什么区别](https://zhidao.baidu.com/question/316864039.html)
+- [如何用英文表示文章分段用的“篇、章、节”？](https://zhidao.baidu.com/question/533723183.html)
+- [大仙儿语文知识积累，带你掌握高考语文必备知识点](https://www.zhihu.com/pin/1363223662141865984)
+- [长篇章回小说,是章与回有什么联系?](https://qb.zuoyebang.com/xfe-question/question/662c6e85e6f061d4ac6d23e23988219a.html)
+- [诗歌的“章、首、节”](https://www.zgshige.com/c/2018-05-18/6215619.shtml)
+
 ## 季节性指数平滑尤物（Seasonal Exponential Smoothing - Seasonal ETS）
 
 ### 开函阅牍/简
