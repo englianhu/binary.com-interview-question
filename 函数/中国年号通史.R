@@ -363,13 +363,11 @@
             as.numeric() %>% 
             cnum::num2c(lang = 'sc')}) %>% 
         unlist(), 
-      年份 = if_else(substr(年份, 1, 3) == '公元前', paste0('公元前', 年份乙, '年'), 年份乙) %>% 
-        factor, 
+      年份 = if_else(substr(年份, 1, 3) == '公元前', paste0('公元前', 年份乙, '年'), 年份乙), 
       年份乙 = -cnum::c2num(年份乙))
   
   年号通史 <- cbind(年号乙[c('年份', '年份乙')], 年号通史) %>% 
-    as_tibble() %>% 
-    dplyr::mutate_if(is.character, factor)
+    as_tibble()
   rm(简, 朝代序, 朝代列, 君主序, 君主列, 年号序, 年号列, 年号, 年号乙)
   
   if (levels(年号通史$农历干支) == '农历干支') 年号通史$农历干支 <- NULL
