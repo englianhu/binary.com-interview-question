@@ -137,158 +137,151 @@
       页 <- 8
       链 <- c('https://www.cidianwang.com/nianhao/beisong_d5762.htm', paste0('https://www.cidianwang.com/nianhao/beisong_d5762_', 1:页, '.htm'))
     }
+    ## 晋朝
+    if (天朝 == '晋朝') {
+      页 <- 19
+      链 <- c('https://www.cidianwang.com/nianhao/jinchao_78b45.htm', paste0('https://www.cidianwang.com/nianhao/jinchao_78b45_', 1:页, '.htm'))
+    }
     ## 周朝
     if (天朝 == '周朝') {
       页 <- 19
       链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
     }
-  ## 周朝
-  if (天朝 == '周朝') {
-    页 <- 19
-    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
-  }
-  ## 周朝
-  if (天朝 == '周朝') {
-    页 <- 19
-    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
-  }
-  ## 周朝
-  if (天朝 == '周朝') {
-    页 <- 19
-    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
-  }
-  ## 周朝
-  if (天朝 == '周朝') {
-    页 <- 19
-    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
-  }
-  ## 周朝
-  if (天朝 == '周朝') {
-    页 <- 19
-    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
-  }
-  ## 周朝
-  if (天朝 == '周朝') {
-    页 <- 19
-    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
-  }
-  ## 周朝
-  if (天朝 == '周朝') {
-    页 <- 19
-    链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    ## 周朝
+    if (天朝 == '周朝') {
+      页 <- 19
+      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    }
+    ## 周朝
+    if (天朝 == '周朝') {
+      页 <- 19
+      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    }
+    ## 周朝
+    if (天朝 == '周朝') {
+      页 <- 19
+      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    }
+    ## 周朝
+    if (天朝 == '周朝') {
+      页 <- 19
+      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    }
+    ## 周朝
+    if (天朝 == '周朝') {
+      页 <- 19
+      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    }
+    ## 周朝
+    if (天朝 == '周朝') {
+      页 <- 19
+      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    }
+    
+    
   }
   
+  年号 <- plyr::ldply(1:length(链), function(迭) {
+    椠 <- 链[迭] %>% 
+      read_html() %>% 
+      html_element('.left') %>% 
+      html_text2() %>% 
+      str_split('\n') %>% 
+      unlist()
+    
+    ## 第一次出现的朝代是选项，所以正则表达式匹配第二次出现的朝代标题。
+    序甲 <- grep(paste0('^', 天朝, '$'), 椠)[2]
+    序乙 <- grep(paste0('^', 迭, '$'), 椠)
+    椠 <- 椠[(序甲 + 3):(序乙 - 1)]
+    椠 <- 椠[!椠 %in% 椠[grep('第一页|上一页', 椠)]]
+    版 <- matrix(椠, ncol = 2, byrow = TRUE, dimnames = list(NULL, c('年份', '明细')))
+  }, .progress = 'text')
   
+  ## 椠明细
+  简 <- strsplit(年号$明细, '，|：')
   
-}
-
-
-
-
-年号 <- plyr::ldply(1:length(链), function(迭) {
-  椠 <- 链[迭] %>% 
-    read_html() %>% 
-    html_element('.left') %>% 
-    html_text2() %>% 
-    str_split('\n') %>% 
-    unlist()
-  ## 第一次出现的朝代是选项，所以正则表达式匹配第二次出现的朝代标题。
-  序甲 <- grep(paste0('^', 天朝, '$'), 椠)[2]
-  序乙 <- grep(paste0('^', 迭, '$'), 椠)
-  椠 <- 椠[(序甲 + 3):(序乙 - 1)]
-  椠 <- 椠[!椠 %in% 椠[grep('第一页|上一页', 椠)]]
-  版 <- matrix(椠, ncol = 2, byrow = TRUE, dimnames = list(NULL, c('年份', '明细')))
-}, .progress = 'text')
-
-# saveRDS(周朝年号, paste0(.蜀道书轩, '椠周朝年号.rds'))
-# 周朝年号 <- readRDS(paste0(.蜀道书轩, '椠周朝年号.rds'))
-
-## 椠明细
-简 <- strsplit(年号$明细, '，|：')
-
-if (!exists('天干')) 天干 <- c('甲', '乙', '丙', '丁', '戊', '己', '庾', '辛', '壬', '癸')
-if (!exists('地支')) 地支 <- c('子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥')
-if (!exists('干支')) 干支 <- paste0(rep(天干, 6), rep(地支, 5))
-
-## 序列号
-朝代序 <- lapply(简, function(牒) grep('朝代', 牒)) %>% 
-  unlist
-君主序 <- lapply(简, function(牒) grep('在位皇帝', 牒)) %>% 
-  unlist
-年号序 <- lapply(简, function(牒) grep('年号', 牒)) %>% 
-  unlist
-
-## 朝代列表
-朝代列 <- lapply(1:length(简), function(迭) 简[[迭]][朝代序[迭]:(君主序[迭] - 1)])
-限 <- 朝代列 %>% 
-  lapply(length) %>% 
-  unlist() %>% 
-  max()
-朝代列 <- lapply(1:length(简), function(迭) {
-  空 = rep(NA, 限 - length(朝代列[[迭]]))
-  牒 = c(朝代列[[迭]], 空)
-  names(牒) <- c('朝代', paste0('朝代', 天干[1:(length(牒) - 1)]))
-  牒
-})
-
-## 君主列表
-君主列 <- lapply(1:length(简), function(迭) 简[[迭]][君主序[迭]:(年号序[迭] - 1)])
-限 <- 君主列 %>% 
-  lapply(length) %>% 
-  unlist() %>% 
-  max()
-君主列 <- lapply(1:length(简), function(迭) {
-  空 = rep(NA, 限 - length(君主列[[迭]]))
-  牒 = c(君主列[[迭]], 空)
-  names(牒) <- c('在位皇帝', paste0('在位皇帝', 天干[1:(length(牒) - 1)]))
-  牒
+  if (!exists('天干')) 天干 <- c('甲', '乙', '丙', '丁', '戊', '己', '庾', '辛', '壬', '癸')
+  if (!exists('地支')) 地支 <- c('子', '丑', '寅', '卯', '辰', '巳', '午', '未', '申', '酉', '戌', '亥')
+  if (!exists('干支')) 干支 <- paste0(rep(天干, 6), rep(地支, 5))
+  
+  ## 序列号
+  朝代序 <- lapply(简, function(牒) grep('朝代', 牒)) %>% 
+    unlist
+  君主序 <- lapply(简, function(牒) grep('在位皇帝', 牒)) %>% 
+    unlist
+  年号序 <- lapply(简, function(牒) grep('年号', 牒)) %>% 
+    unlist
+  
+  ## 朝代列表
+  朝代列 <- lapply(1:length(简), function(迭) 简[[迭]][朝代序[迭]:(君主序[迭] - 1)])
+  限 <- 朝代列 %>% 
+    lapply(length) %>% 
+    unlist() %>% 
+    max()
+  朝代列 <- lapply(1:length(简), function(迭) {
+    空 <- rep(NA, 限 - length(朝代列[[迭]]))
+    牒 <- c(朝代列[[迭]], 空)
+    names(牒) <- c('朝代', paste0('朝代', 天干[1:(length(牒) - 1)]))
+    牒
   })
-
-## 年号列表
-年号列 <- lapply(1:length(简), 
-              function(迭) 简[[迭]][(年号序[迭]):length(简[[迭]])])
-限 <- 年号列 %>% 
-  lapply(length) %>% 
-  unlist() %>% 
-  max()
-年号列 <- lapply(1:length(简), function(迭) {
-  空 <- rep(NA, 限 - length(年号列[[迭]]))
-  牒 <- c(年号列[[迭]], 空)
-  names(牒) <- c('年号', paste0('年号', 天干[1:(length(牒) - 1)]))
-  牒
-})
-
-年号通史 <- ldply(1:length(简), function(迭) {
-  牒 <- 简[[迭]][1:(朝代序[[迭]] - 1)]
-  names(牒) = c('农历干支', '干支', '十二生肖', '生肖')
-  牒 <- c(牒, 朝代列[[迭]], 君主列[[迭]], 年号列[[迭]])
-}) %>% 
-  as_tibble()
-
-年号乙 <- 战国年号 %>% 
-  # as_tibble %>% 
-  mutate(
-    年份乙 = 年份 %>% 
-      str_extract_all('[0-9]') %>% 
-      plyr::ldply(., function(迭) { 
-        paste0(迭, collapse = '') %>% 
-          as.numeric() %>% 
-          cnum::num2c(lang = 'sc')}) %>% 
-      unlist(), 
-    年份 = if_else(substr(年份, 1, 3) == '公元前', paste0('公元前', 年份乙, '年'), 年份乙) %>% 
-      factor, 
-    年份乙 = -cnum::c2num(年份乙))
-
-年号通史 <- cbind(年号乙[c('年份', '年份乙')], 年号通史) %>% 
-  as_tibble() %>% 
-  dplyr::mutate_if(is.character, factor)
-rm(简, 朝代序, 朝代列, 君主序, 君主列, 年号序, 年号列, 年号乙)
-
-if (levels(年号通史$农历干支) == '农历干支') 年号通史$农历干支 <- NULL
-if (levels(年号通史$十二生肖) == '生肖') 年号通史$十二生肖 <- NULL
-if (levels(年号通史$朝代) == '朝代') 年号通史$朝代 <- NULL
-if (levels(年号通史$在位皇帝) == '在位皇帝') 年号通史$在位皇帝 <- NULL
-if (levels(年号通史$年号) == '年号') 年号通史$年号 <- NULL
-
-
+  
+  ## 君主列表
+  君主列 <- lapply(1:length(简), function(迭) 简[[迭]][君主序[迭]:(年号序[迭] - 1)])
+  限 <- 君主列 %>% 
+    lapply(length) %>% 
+    unlist() %>% 
+    max()
+  君主列 <- lapply(1:length(简), function(迭) {
+    空 <- rep(NA, 限 - length(君主列[[迭]]))
+    牒 <- c(君主列[[迭]], 空)
+    names(牒) <- c('在位皇帝', paste0('在位皇帝', 天干[1:(length(牒) - 1)]))
+    牒
+  })
+  
+  ## 年号列表
+  年号列 <- lapply(1:length(简), function(迭) 简[[迭]][(年号序[迭]):length(简[[迭]])])
+  限 <- 年号列 %>% 
+    lapply(length) %>% 
+    unlist() %>% 
+    max()
+  年号列 <- lapply(1:length(简), function(迭) {
+    空 <- rep(NA, 限 - length(年号列[[迭]]))
+    牒 <- c(年号列[[迭]], 空)
+    names(牒) <- c('年号', paste0('年号', 天干[1:(length(牒) - 1)]))
+    牒
+  })
+  
+  年号通史 <- ldply(1:length(简), function(迭) {
+    牒 <- 简[[迭]][1:(朝代序[[迭]] - 1)]
+    names(牒) = c('农历干支', '干支', '十二生肖', '生肖')
+    牒 <- c(牒, 朝代列[[迭]], 君主列[[迭]], 年号列[[迭]])
+  }) %>% 
+    as_tibble()
+  
+  年号乙 <- 战国年号 %>% 
+    mutate(
+      年份乙 = 年份 %>% 
+        str_extract_all('[0-9]') %>% 
+        plyr::ldply(., function(迭) {
+          paste0(迭, collapse = '') %>% 
+            as.numeric() %>% 
+            cnum::num2c(lang = 'sc')}) %>% 
+        unlist(), 
+      年份 = if_else(substr(年份, 1, 3) == '公元前', paste0('公元前', 年份乙, '年'), 年份乙) %>% 
+        factor, 
+      年份乙 = -cnum::c2num(年份乙))
+  
+  年号通史 <- cbind(年号乙[c('年份', '年份乙')], 年号通史) %>% 
+    as_tibble() %>% 
+    dplyr::mutate_if(is.character, factor)
+  rm(简, 朝代序, 朝代列, 君主序, 君主列, 年号序, 年号列, 年号乙)
+  
+  if (levels(年号通史$农历干支) == '农历干支') 年号通史$农历干支 <- NULL
+  if (levels(年号通史$十二生肖) == '生肖') 年号通史$十二生肖 <- NULL
+  if (levels(年号通史$朝代) == '朝代') 年号通史$朝代 <- NULL
+  if (levels(年号通史$在位皇帝) == '在位皇帝') 年号通史$在位皇帝 <- NULL
+  if (levels(年号通史$年号) == '年号') 年号通史$年号 <- NULL
+  
+  return()
+}
 
