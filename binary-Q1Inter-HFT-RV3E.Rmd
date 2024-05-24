@@ -1128,6 +1128,9 @@ if (!exists('.蜀道')) {
 if (!exists('.蜀道书轩')) .蜀道书轩 <- paste0(.蜀道, '诸子百家学府/中国年号通史/')
 if (!dir.exists(.蜀道书轩))  dir.create(.蜀道书轩)
 
+
+source('函数/中国年号通史.R')
+
 链 <- c('.cbov1618288725', '.jlfm1618288727', '.ciju1618288729', '.bbci1618288731', '.ywpp1618288732', '.ycyo1618288734', '.hlua1618288735', '.mfoi1618288737', '.xnvk1618288739', '.rieb1618288740', '.pljd1618288742', '.alot1618288744', '.hahg1618288745', '.uzis1618288747', '.gafp1618288749', '.qzin1618288750', '.gmrx1618288752', '.hewg1618288753', '.lezv1618288755', '.lcpj1618288757')
 names(链) <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:19, '.htm'))
 
