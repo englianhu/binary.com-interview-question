@@ -17,7 +17,7 @@
   
   生肖 <- c('鼠', '牛', '虎', '兔', '龙', '蛇', '马', '羊', '猴', '鸡', '狗', '猪')
   
-  朝代 <- c('唐朝', '宋朝', '元朝', '明朝', '清朝', '周朝', '三皇五帝', '商朝', '东周', '夏朝', '汉朝', '大理', '春秋', '西周', '战国', '西汉', '辽国', '东汉', '北朝', '西夏', '南北朝', '南朝', '北宋', '晋朝', '南宋', '北魏', '十六国', '金朝', '东晋', '吴越', '前凉', '三国', '南朝宋', '南平', '南朝梁', '南汉', '五代十国', '孙吴', '西晋', '西秦', '曹魏', '马楚', '成汉', '前秦', '蜀汉', '北凉', '南唐', '隋朝', '闽国', '杨吴')
+  朝代 <- c('唐朝', '宋朝', '元朝', '明朝', '清朝', '周朝', '三皇五帝', '三黄五帝', '商朝', '东周', '夏朝', '汉朝', '大理', '春秋', '西周', '战国', '西汉', '辽国', '东汉', '北朝', '西夏', '南北朝', '南朝', '北宋', '晋朝', '南宋', '北魏', '十六国', '金朝', '东晋', '吴越', '前凉', '三国', '南朝宋', '南平', '南朝梁', '南汉', '五代十国', '孙吴', '西晋', '西秦', '曹魏', '马楚', '成汉', '前秦', '蜀汉', '北凉', '南唐', '隋朝', '闽国', '杨吴')
   
   帝王 <- c('秦始皇嬴政', '清圣祖玄烨', '清高宗弘历', '清世宗胤禛', '明太祖朱元璋', '明成祖朱棣', '蒙古太祖铁木真', '西汉武帝刘彻', '西汉文帝刘恒', '元世祖忽必烈', '北宋徽宗赵佶', '北宋太祖赵匡胤', '唐玄宗李隆基', '周武曌武则天', '唐太宗李世民', '唐高宗李治', '隋文帝杨坚', '隋炀帝杨广', '东周赧王姬延', '秦昭襄王嬴稷', '西夏仁宗李仁孝', '西周穆王姬满', '西夏崇宗李乾顺', '东周平王姬宜臼', '东周显王姬扁', '辽圣宗耶律隆绪', '明神宗朱翊钧', '南朝梁高祖萧衍', '辽道宗耶律洪基', '明世宗朱厚熜', '西周宣王姬静', '东周敬王姬匄', '北宋仁宗赵祯', '南宋理宗赵昀', '三国蜀汉后主刘禅', '西周厉王姬胡', '南宋高宗赵构', '元惠宗妥欢帖睦尔', '清德宗载湉', '殷商武乙子瞿', '东周襄王姬郑', '东汉光武帝刘秀', '东汉献帝刘协', '成汉武帝李雄', '南宋宁宗赵扩', '清宣宗旻宁', '殷商纣王子辛', '北朝北魏世祖拓跋焘', '东周贞定王姬介', '金世宗完颜雍')
   
@@ -139,45 +139,139 @@
     }
     ## 晋朝
     if (天朝 == '晋朝') {
-      页 <- 19
+      页 <- 7
       链 <- c('https://www.cidianwang.com/nianhao/jinchao_78b45.htm', paste0('https://www.cidianwang.com/nianhao/jinchao_78b45_', 1:页, '.htm'))
     }
-    ## 周朝
-    if (天朝 == '周朝') {
-      页 <- 19
-      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    ## 南宋
+    if (天朝 == '南宋') {
+      页 <- 7
+      链 <- c('https://www.cidianwang.com/nianhao/nansong_76a07.htm', paste0('https://www.cidianwang.com/nianhao/nansong_76a07_', 1:页, '.htm'))
     }
-    ## 周朝
-    if (天朝 == '周朝') {
-      页 <- 19
-      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    ## 北魏
+    if (天朝 == '北魏') {
+      页 <- 7
+      链 <- c('https://www.cidianwang.com/nianhao/beiwei_982ed.htm', paste0('https://www.cidianwang.com/nianhao/beiwei_982ed_', 1:页, '.htm'))
     }
-    ## 周朝
-    if (天朝 == '周朝') {
-      页 <- 19
-      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    ## 十六国
+    if (天朝 == '十六国') {
+      页 <- 6
+      链 <- c('https://www.cidianwang.com/nianhao/shiliuguo_c0b84.htm', paste0('https://www.cidianwang.com/nianhao/shiliuguo_c0b84_', 1:页, '.htm'))
     }
-    ## 周朝
-    if (天朝 == '周朝') {
-      页 <- 19
-      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    ## 金朝
+    if (天朝 == '金朝') {
+      页 <- 5
+      链 <- c('https://www.cidianwang.com/nianhao/jinchao_2f4da.htm', paste0('https://www.cidianwang.com/nianhao/jinchao_2f4da_', 1:页, '.htm'))
     }
-    ## 周朝
-    if (天朝 == '周朝') {
-      页 <- 19
-      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    ## 东晋
+    if (天朝 == '东晋') {
+      页 <- 5
+      链 <- c('https://www.cidianwang.com/nianhao/dongjin_7fea2.htm', paste0('https://www.cidianwang.com/nianhao/dongjin_7fea2_', 1:页, '.htm'))
     }
-    ## 周朝
-    if (天朝 == '周朝') {
-      页 <- 19
-      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    ## 吴越
+    if (天朝 == '吴越') {
+      页 <- 3
+      链 <- c('https://www.cidianwang.com/nianhao/wuyue_6a285.htm', paste0('https://www.cidianwang.com/nianhao/wuyue_6a285_', 1:页, '.htm'))
     }
-    ## 周朝
-    if (天朝 == '周朝') {
-      页 <- 19
-      链 <- c('https://www.cidianwang.com/nianhao/zhouchao_0a340.htm', paste0('https://www.cidianwang.com/nianhao/zhouchao_0a340_', 1:页, '.htm'))
+    ## 前凉
+    if (天朝 == '前凉') {
+      页 <- 3
+      链 <- c('https://www.cidianwang.com/nianhao/qianliang_5de73.htm', paste0('https://www.cidianwang.com/nianhao/qianliang_5de73_', 1:页, '.htm'))
     }
-    
+    ## 三国
+    if (天朝 == '三国') {
+      页 <- 3
+      链 <- c('https://www.cidianwang.com/nianhao/sanguo_36d4c.htm', paste0('https://www.cidianwang.com/nianhao/sanguo_36d4c_', 1:页, '.htm'))
+    }
+    ## 南朝宋
+    if (天朝 == '南朝宋') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/nanchaosong_0e8df.htm', paste0('https://www.cidianwang.com/nianhao/nanchaosong_0e8df_', 1:页, '.htm'))
+    }
+    ## 南平
+    if (天朝 == '南平') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/nanping_d301d.htm', paste0('https://www.cidianwang.com/nianhao/nanping_d301d_', 1:页, '.htm'))
+    }
+    ## 南朝梁
+    if (天朝 == '南朝梁') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/nanchaoliang_dfe6c.htm', paste0('https://www.cidianwang.com/nianhao/nanchaoliang_dfe6c_', 1:页, '.htm'))
+    }
+    ## 南汉
+    if (天朝 == '南汉') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/nanhan_c820a.htm', paste0('https://www.cidianwang.com/nianhao/nanhan_c820a_', 1:页, '.htm'))
+    }
+    ## 五代十国
+    if (天朝 == '五代十国') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/wudaishiguo_5a803.htm', paste0('https://www.cidianwang.com/nianhao/wudaishiguo_5a803_', 1:页, '.htm'))
+    }
+    ## 孙吴
+    if (天朝 == '孙吴') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/sunwu_92ea8.htm', paste0('https://www.cidianwang.com/nianhao/sunwu_92ea8_', 1:页, '.htm'))
+    }
+    ## 西晋
+    if (天朝 == '西晋') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/xijin_8d2ec.htm', paste0('https://www.cidianwang.com/nianhao/xijin_8d2ec_', 1:页, '.htm'))
+    }
+    ## 西秦
+    if (天朝 == '西秦') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/xiqin_4970a.htm', paste0('https://www.cidianwang.com/nianhao/xiqin_4970a_', 1:页, '.htm'))
+    }
+    ## 曹魏
+    if (天朝 == '曹魏') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/caowei_20ec0.htm', paste0('https://www.cidianwang.com/nianhao/caowei_20ec0_', 1:页, '.htm'))
+    }
+    ## 马楚
+    if (天朝 == '马楚') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/machu_f9150.htm', paste0('https://www.cidianwang.com/nianhao/machu_f9150_', 1:页, '.htm'))
+    }
+    ## 成汉
+    if (天朝 == '成汉') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/chenghan_db547.htm', paste0('https://www.cidianwang.com/nianhao/chenghan_db547_', 1:页, '.htm'))
+    }
+    ## 前秦
+    if (天朝 == '前秦') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/qianqin_1d2e0.htm', paste0('https://www.cidianwang.com/nianhao/qianqin_1d2e0_', 1:页, '.htm'))
+    }
+    ## 蜀汉
+    if (天朝 == '蜀汉') {
+      页 <- 2
+      链 <- c('https://www.cidianwang.com/nianhao/shuhan_e2ebc.htm', paste0('https://www.cidianwang.com/nianhao/shuhan_e2ebc_', 1:页, '.htm'))
+    }
+    ## 北凉
+    if (天朝 == '北凉') {
+      页 <- 1
+      链 <- c('https://www.cidianwang.com/nianhao/beiliang_fec3b.htm', paste0('https://www.cidianwang.com/nianhao/beiliang_fec3b_', 1:页, '.htm'))
+    }
+    ## 南唐
+    if (天朝 == '南唐') {
+      页 <- 1
+      链 <- c('https://www.cidianwang.com/nianhao/nantang_b1086.htm', paste0('https://www.cidianwang.com/nianhao/nantang_b1086_', 1:页, '.htm'))
+    }
+    ## 隋朝
+    if (天朝 == '隋朝') {
+      页 <- 1
+      链 <- c('https://www.cidianwang.com/nianhao/suichao_8e69b.htm', paste0('https://www.cidianwang.com/nianhao/suichao_8e69b_', 1:页, '.htm'))
+    }
+    ## 闽国
+    if (天朝 == '闽国') {
+      页 <- 1
+      链 <- c('https://www.cidianwang.com/nianhao/minguo_a98ce.htm', paste0('https://www.cidianwang.com/nianhao/minguo_a98ce_', 1:页, '.htm'))
+    }
+    ## 杨吴
+    if (天朝 == '杨吴') {
+      页 <- 1
+      链 <- c('https://www.cidianwang.com/nianhao/yangwu_81d1b.htm', paste0('https://www.cidianwang.com/nianhao/yangwu_81d1b_', 1:页, '.htm'))
+    }
     
   }
   
@@ -282,6 +376,6 @@
   if (levels(年号通史$在位皇帝) == '在位皇帝') 年号通史$在位皇帝 <- NULL
   if (levels(年号通史$年号) == '年号') 年号通史$年号 <- NULL
   
-  return()
+  return(年号通史)
 }
 
