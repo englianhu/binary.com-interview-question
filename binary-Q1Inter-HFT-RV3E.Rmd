@@ -1128,25 +1128,35 @@ if (!exists('.蜀道')) {
 if (!exists('.蜀道书轩')) .蜀道书轩 <- paste0(.蜀道, '诸子百家学府/中国年号通史/')
 if (!dir.exists(.蜀道书轩))  dir.create(.蜀道书轩)
 
-source('函数/中国年号通史.R')
+source('函数/採撷年号.R')
 
 朝代 <- c('唐朝', '宋朝', '元朝', '明朝', '清朝', '周朝', '三皇五帝', '三黄五帝', '商朝', '东周', '夏朝', '汉朝', '大理', '春秋', '西周', '战国', '西汉', '辽国', '东汉', '北朝', '西夏', '南北朝', '南朝', '北宋', '晋朝', '南宋', '北魏', '十六国', '金朝', '东晋', '吴越', '前凉', '三国', '南朝宋', '南平', '南朝梁', '南汉', '五代十国', '孙吴', '西晋', '西秦', '曹魏', '马楚', '成汉', '前秦', '蜀汉', '北凉', '南唐', '隋朝', '闽国', '杨吴')
 ## lapply(朝代, function(朝) {
-##   天朝 <- 中国年号通史(朝)
+##   天朝 <- 採撷年号(朝)
 ##   fwrite(天朝, paste0(.蜀道书轩, 天朝, '年号.csv'))
 ## })
 
 天朝 <- '周朝'
-周朝 <- 中国年号通史(天朝)
+周朝 <- 採撷年号(天朝)
 ## fwrite(周朝, paste0(.蜀道书轩, 天朝, '年号.csv'))
 
+天朝 <- '西周'
+西周 <- 採撷年号(天朝)
+## fwrite(西周, paste0(.蜀道书轩, 天朝, '年号.csv'))
+
+天朝 <- '东周'
+东周 <- 採撷年号(天朝)
+## fwrite(东周, paste0(.蜀道书轩, 天朝, '年号.csv'))
+
 天朝 <- '春秋'
-春秋 <- 中国年号通史(天朝)
+春秋 <- 採撷年号(天朝)
 ## fwrite(春秋, paste0(.蜀道书轩, 天朝, '年号.csv'))
 
 天朝 <- '战国'
-战国 <- 中国年号通史(天朝)
+战国 <- 採撷年号(天朝)
 ## fwrite(战国, paste0(.蜀道书轩, 天朝, '年号.csv'))
+
+rm(天朝, 周朝, 西周, 东周, 春秋, 战国)
 
 ## 
 ## > 周朝 %>% 
@@ -1206,18 +1216,59 @@ if (!exists('.蜀道')) {
 if (!exists('.蜀道书轩')) .蜀道书轩 <- paste0(.蜀道, '诸子百家学府/中国年号通史/')
 if (!dir.exists(.蜀道书轩))  dir.create(.蜀道书轩)
 
-周朝年号 <- fread(paste0(.蜀道书轩, '周朝年号.csv')) %>% 
-  as_tibble()
-春秋年号 <- fread(paste0(.蜀道书轩, '春秋年号.csv')) %>% 
-  as_tibble()
-战国年号 <- fread(paste0(.蜀道书轩, '战国年号.csv')) %>% 
-  as_tibble()
-周朝 <- plyr::join_all(list(周朝年号, 春秋年号, 战国年号))
-rm(周朝年号, 春秋年号, 战国年号)
+# 周朝年号 <- fread(paste0(.蜀道书轩, '周朝年号.csv')) %>% 
+#   mutate_if(is.character, na_if, '') %>% 
+#   tibble()
+# 西周年号 <- fread(paste0(.蜀道书轩, '西周年号.csv')) %>% 
+#   mutate_if(is.character, na_if, '') %>% 
+#   tibble()
+# 东周年号 <- fread(paste0(.蜀道书轩, '东周年号.csv')) %>% 
+#   mutate_if(is.character, na_if, '') %>% 
+#   tibble()
+# 春秋年号 <- fread(paste0(.蜀道书轩, '春秋年号.csv')) %>% 
+#   mutate_if(is.character, na_if, '') %>% 
+#   as_tibble()
+# 战国年号 <- fread(paste0(.蜀道书轩, '战国年号.csv')) %>% 
+#   mutate_if(is.character, na_if, '') %>% 
+#   as_tibble()
+# 周朝 <- plyr::join_all(list(周朝年号, 西周年号, 东周年号, 春秋年号, 战国年号)) %>% 
+#   as_tibble()
+# rm(周朝年号, 西周年号, 东周年号, 春秋年号, 战国年号)
+# 
+# 周朝 <- 周朝[c('年份', '年份乙', '干支', '生肖', '朝代甲', '朝代乙', '朝代丙', '在位皇帝甲', '在位皇帝乙', '在位皇帝丙', '在位皇帝丁', '年号甲', '年号乙', '年号丙')]
 
-周朝 <- 周朝[c('年份', '年份乙', '干支', '生肖', '朝代甲', '朝代乙', '朝代丙', '在位皇帝甲', '在位皇帝乙', '在位皇帝丙', '在位皇帝丁', '年号甲', '年号乙', '年号丙')]
+## We can use mutate_if
+## 
+# df <- df %>%
+#         mutate_if(is.factor, funs(factor(replace(., .=="", NA))))
+# 
+# df <- df %>% mutate_if(is.factor, list(~factor(replace(., .=="", NA))))
+# 
+## With dplyr 0.8.0, we can also do
+# 
+# df %>% 
+#    mutate_if(is.factor, na_if, y = "") 
+## or change the funs (which is getting deprecated to list as @Frederick mentioned in the comments)
+# 
+# df %>%
+#   mutate_if(is.factor, list(~ na_if(., "")))
+## Or using base R we can assign the specific levels to NA
+# 
+# j1 <- sapply(df, is.factor)
+# df[j1] <- lapply(df[j1], function(x) {is.na(x) <- levels(x)==""; x})
+# data
+# df <- data.frame(col1 = c("", "A", "B", ""), col2 = c("A", "", "", "C"),
+#         col3 = 1:4)
+## 
+## *出处：[R `dplyr` method to replace all empty factors with NA](https://stackoverflow.com/questions/43059897/r-dplyr-method-to-replace-all-empty-factors-with-na)*
 
-rbindlist(周朝年号, 春秋年号, 战国年号)  %>% 
+source('函数/集成年号.R')
+朝代 <- c('唐朝', '宋朝', '元朝', '明朝', '清朝', '周朝', '三皇五帝', '三黄五帝', '商朝', '东周', '夏朝', '汉朝', '大理', '春秋', '西周', '战国', '西汉', '辽国', '东汉', '北朝', '西夏', '南北朝', '南朝', '北宋', '晋朝', '南宋', '北魏', '十六国', '金朝', '东晋', '吴越', '前凉', '三国', '南朝宋', '南平', '南朝梁', '南汉', '五代十国', '孙吴', '西晋', '西秦', '曹魏', '马楚', '成汉', '前秦', '蜀汉', '北凉', '南唐', '隋朝', '闽国', '杨吴')
+
+天朝 <- c('周朝', '西周', '东周', '春秋', '战国')
+周朝 <- 集成年号(天朝)
+
+周朝 %>% 
   kbl(caption = '**周朝（春秋战国）**', escape = FALSE) %>% 
   ## https://www.w3schools.com/cssref/css_colors.asp
   row_spec(0, background = 'DimGrey', color = '#7B1113') %>% 
@@ -1233,6 +1284,9 @@ rbindlist(周朝年号, 春秋年号, 战国年号)  %>%
   column_spec(9, background = 'Gainsboro') %>% 
   column_spec(10, background = 'LightGray') %>% 
   column_spec(11, background = 'Gainsboro') %>% 
+  column_spec(12, background = 'LightGray') %>% 
+  column_spec(13, background = 'Gainsboro') %>% 
+  column_spec(14, background = 'LightGray') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')

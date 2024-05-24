@@ -1,4 +1,4 @@
-中国年号通史 <- function(天朝 = '战国') {
+採撷年号 <- function(天朝 = '战国') {
   ## 秦国 China，秦人 Chinese
   ## 司马错得蜀既得楚
   if (!exists('.蜀道')) {
