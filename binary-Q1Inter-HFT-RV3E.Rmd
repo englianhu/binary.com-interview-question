@@ -1292,7 +1292,7 @@ source('函数/集成年号.R')
   scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
 ```
 
-*数据 : `r paste0(cnum::num2c(dim(周朝年号)[1], lang = 'sc'), '行 乘 ', cnum::num2c(dim(周朝年号)[2], lang = 'sc'), '列')`*
+*数据 : `r paste0(cnum::num2c(dim(周朝)[1], lang = 'sc'), '行 乘 ', cnum::num2c(dim(周朝)[2], lang = 'sc'), '列')`*
 
 - [「词典网」首页>>年号>>周朝历代皇帝顺序>>周朝年号表>>周朝干支纪年](https://www.cidianwang.com/nianhao/zhouchao_0a340.htm)
 - [辭典附錄「中國歷代帝王年表」](https://dict.revised.moe.edu.tw/appendix.jsp?ver=0&ID=2&la=0&powerMode=0)
@@ -1746,7 +1746,10 @@ source('函数/总汇结论.R')
   column_spec(8, background = 'Gainsboro') %>% 
   kable_styling(bootstrap_options = c('striped', 'hover', 'condensed', 'responsive')) %>% 
   kable_material(full_width = FALSE) %>% 
-  scroll_box(width = '100%', fixed_thead = TRUE, height =*数据 : `r paste0(cnum::num2c(dim(日内指数平滑数据二零一八年一月结论)[1], lang = 'sc'), '行 乘 ', cnum::num2c(dim(日内指数平滑数据二零一八年一月结论)[2], lang = 'sc'), '列')`*
+  scroll_box(width = '100%', fixed_thead = TRUE, height = '500px')
+```
+
+*数据 : `r paste0(cnum::num2c(dim(日内指数平滑数据二零一八年一月结论)[1], lang = 'sc'), '行 乘 ', cnum::num2c(dim(日内指数平滑数据二零一八年一月结论)[2], lang = 'sc'), '列')`*
 
 ##### 总汇二零一八年二月结论
 

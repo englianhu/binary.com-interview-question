@@ -1,4 +1,4 @@
-集成年号 <- function(天朝 = NULL) {
+集成年号 <- function(天朝 = NULL, 进度 = '叉') {
   ## 秦国 China，秦人 Chinese
   ## 司马错得蜀既得楚
   if (!exists('.蜀道')) {
@@ -25,11 +25,20 @@
   if (!is.null(天朝) & !all(天朝 %in% 朝代)) stop(cat(c('## 错误信息 ##\n天朝必须在以下列表中：\n', paste(朝代, collapse = '、'))))
   if (is.null(天朝)) 天朝 <- 朝代
   
-  年号 <- plyr::llply(天朝, function(朝) {
-    fread(paste0(.蜀道书轩, 朝, '年号.csv')) %>% 
-    mutate_if(is.character, na_if, '') %>% 
-    as_tibble()
-  }, .progress = 'text')
+  if (!进度 %in% c('勾', '叉')) stop(cat(c('## 错误信息 ##\n进度必须是“勾”或“叉”。\n')))
+  if (进度 == '勾') {
+    年号 <- plyr::llply(天朝, function(朝) {
+      fread(paste0(.蜀道书轩, 朝, '年号.csv')) %>% 
+        mutate_if(is.character, na_if, '') %>% 
+        as_tibble()
+    }, .progress = 'text')
+  } else {
+    年号 <- plyr::llply(天朝, function(朝) {
+      fread(paste0(.蜀道书轩, 朝, '年号.csv')) %>% 
+        mutate_if(is.character, na_if, '') %>% 
+        as_tibble()
+    })
+  }
   names(年号) <- 天朝
   
   ## 椠明细
