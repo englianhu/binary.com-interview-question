@@ -305,7 +305,7 @@ output:
 
 ### 为你写诗🎶
 
-<iframe width="400" height="225" src="https://youtube.com/embed/ayWNab6dQaY" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+<iframe width="400" height="225" src="https://youtube.com/embed/ayWNab6dQaY" title="吳克羣《為你寫詩》" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
 *出处：[吳克羣《為你寫詩》Official 完整版MV「HD」](https://youtu.be/ayWNab6dQaY)*
 
@@ -342,10 +342,6 @@ output:
 🚩横跨七洲，一统天下。<br>
 🚩学海无涯，唯秦是岸；<br>
 🚩莫忘初衷，方得始终。
-
-<iframe width="400" height="225" src="https://youtube.com/embed/xyR86xcI8Ag" title="DIOR大穎《Happy Go Lucky》 ft. GoHell Holiday ( Official MV )" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
-
-*出处：[DIOR大穎《Happy Go Lucky》 ft. GoHell Holiday ( Official MV )](https://www.facebook.com/xyzhiju/posts/pfbid02d34ZLofiSSqPhHEWuex5wikXnjhDU61CgU4nGdTyiTBcnKYXf5vHbrgshQJ51E1Ml)*
 
 ### 文明史
 
