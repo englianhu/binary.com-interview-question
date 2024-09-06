@@ -1231,7 +1231,10 @@ rm(朝代, 年号, 国事, 钱谷, 战役, 战果)
 - [Office是什么（office是什么软件类型）](https://zhuanlan.zhihu.com/p/509070923)
 - [基本的办公软件有哪些](https://docs.pingcode.com/ask/12161.html)
 - [「兴证计算机」海外研究系列之办公软件 —— Microsoft Office](https://finance.sina.cn/stock/relnews/us/2020-09-09/detail-iivhuipp3286371.d.html)
+- [汇编语言之GNU ARM](https://cloud.tencent.com/developer/article/1866970)
+- 
 - [「CFD Online」Fortran 90 faster than C/C++](https://www.cfd-online.com/Forums/main/10885-fortran-90-faster-than-c-c.html#post40854)，公式翻译编程语言是咱们天下第一个高级编程语言，而文件后缀是*.fr，如同儒家的门徒另起茅庐创办法家的荀子。借鉴gfortran-gc++、shinyUI和shinyServer的概念，可以将用户互动与数码筹算分类双管齐下，曦编程语言用于前台用户界面互动与显卡驱动程序并行，而公式翻译编程语言用于后台筹算数码数据与内存运作并行。翻译俩后再改良架构与语法，以文言计数编程统一编程语言。
+- [整理几个适合超微半导体中央处理单位的礼逆袭发行版](https://www.ecscoupon.com/4252.html)
 
 **从硅谷传奇到鬼谷传奇**
 
