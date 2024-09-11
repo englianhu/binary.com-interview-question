@@ -1302,8 +1302,8 @@ rm(朝代, 年号, 国事, 钱谷, 战役, 战果)
 
 🚩借鉴美国电脑发展历史，Fortran（Formula Translation的简称，公式翻译编程语言）与曦编程语言历史，会将目前的曦语言翻译并改良，使用咱们公元前的李斯篆书「文言文」文言计数编程并研发咱们「大秦赋算筹」。
 
-- 
-- 
+- [「猫城」🚩🔆🏹🌟👊🚀🦔大秦赋：「世袭制道教自然对数进制大秦赋算筹」取代所有西方，包括阿拉伯数字和回教徒语言（包括巫术、货币、习俗文化、可兰经断肢法）、基督耶稣洋番（包括耶稣纪年法、货币、习俗文化、耶稣受难日、头戴白色老嬷嬷假发的基督洋番同性恋司法） #12](https://github.com/englianhu/zhongkehongqi/issues/12)
+- [「博客园」自然常数e的由来以及计算机为什么是二进制](https://www.cnblogs.com/elliotchenzichang/p/16293757.html)
 - [「猫城」中国北京大学赢家ξng黄氏江夏堂「大秦赋•道家李耳老子兼法家李斯篆紀•艺文志」：目前使用🚩🇨🇳🏹🦔中国国产红旗礼逆袭，编程都会使用咱们母语华语、字体、字幕加汉语拼音。#六](https://github.com/englianhu/RedFlag-Linux/issues/6)
 - [「雎虒」黄联富（®γσ ξηg 雷欧）/丙语言编译器](https://gitee.com/englianhu/bingyuyanbianyiqi)
 - [易语言](https://www.dywt.com.cn/pdown.htm)
