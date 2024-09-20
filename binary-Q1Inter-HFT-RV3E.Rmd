@@ -3280,7 +3280,8 @@ options(warn = 0)
 - [下篇：国产六大中央处理单位的春秋战国（附下载）](https://www.eet-china.com/mp/a75720.html)
 - [「图享」国产六大中央处理单位的春秋战国](https://www.instagram.com/p/CYRDpsdJO2R)
 - [「计算机网络发展史」你在网上勇闯天涯时用的网络，是如何发展至今的呢？](https://youtu.be/CjAl6jODHq8)
-- [「雎䴘」openEuler（中译：开源欧拉）](https://gitee.com/openeuler)
+- [「雎䴘/鴡鷉」openEuler（中译：开源欧拉）](https://gitee.com/openeuler)
+- [「雎䴘/鴡鷉」火龙操作系统](https://gitee.com/englianhu/huolongcaozuoxitong)
 
 ###### 基本输入输出微型操作系统
 
