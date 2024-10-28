@@ -1410,6 +1410,8 @@ saveRDS(天下简史, paste0(.鬼谷书轩, '天下简史.rds'))
 ```
 
 ```{r 读取天下简史, error = TRUE}
+.鬼谷书轩 <- str_replace_all(.蜀道书轩, 'binary.com-interview-question-data' ,'zhongkehongqi-cangku')
+
 天下简史 <- readRDS(paste0(.鬼谷书轩, '天下简史.rds'))
 ```
 
