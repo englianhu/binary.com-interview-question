@@ -94,6 +94,10 @@ output:
 
 *出处：[七十古稀、八十耄耋、九十是什么？](https://m.ximalaya.com/ask/q6379714)*
 
+![](诸子百家考工记/中华利益用语.png)
+
+*出处：[「元宇宙」中华礼仪用语](https://www.facebook.com/englianhu/posts/pfbid07Z4mfJPiQseeU3zsssJyJUpnKmgpt7dibNVZeZ1ttnnXmJGBYxc72sDQDSqC8byVl)*
+
 ### 道家
 
 #### 祖宗十八代
@@ -242,6 +246,8 @@ output:
 > ...
 
 *引用：[祖宗十八代](#祖宗十八代)*
+
+[「道家」祖宗十八代，祖与父的规律](https://youtube.com/shorts/lAMpkTC2ls0)
 
 祖母称为“王母”（王母娘娘），而王母的先生祖父称为“王父“（玉皇大帝或玉帝）。「<ruby></rt><rp>)</rp>姒<rp>(</rp><rt>sì</rt><rp>)</rp></ruby>」字，其本义为古代兄弟之妻年长者。
 
@@ -1085,9 +1091,29 @@ rm(样本二零一八半年)
 
 ## 计量单位
 
+
 <iframe width="400" height="225" src="https://youtube.com/embed/lNP6aJF-mfI" title="「数学课」时间单位" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 *出处：[「数学课」时间单位](https://youtu.be/lNP6aJF-mfI)*
+
+> |   年   |   年（计量单位） |
+> |:------:|:----------------:|
+> | 一岁   |             一年 |
+> | 一旬^[一、十天叫一旬，一个月分上、中、下三旬。<br>二、十岁也叫一旬。] |  十年 |
+> | 一记   |           十二年 |
+> | 一代   |           廿五年 |
+> | 一世   |             卅年 |
+> | 一甲子 |             圆年 |
+> | 一世纪 |           一百年 |
+> | 一运   |         三百圆年 |
+> | 一会   |     一万零八百年 |
+> | 一元   | 十二万九千六百年 |
+> 
+> <iframe width="400" height="225" src="https://youtube.com/embed/CZMVGJpFVmM" title="道家年份的计量单位" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+
+*出处：[「油管」道家年份的计量单位](https://youtube.com/shorts/CZMVGJpFVmM)*
+
+借鉴以上以“年”为计量单位，就谈及秦史「蕲年宫之变」与春节放鞭炮赶走凶残的年兽的”年“。关于“年”的传说有很多版本，其中一个广为流传的故事是关于一种名为“年”的怪兽。传说中，”年”是一种头长触角、凶猛异常的怪兽，每到除夕便会出来伤人。为了驱赶“年”兽，人们采取了各种方法，如放鞭炮、挂红灯笼等，这些习俗逐渐演变成了春节的庆祝活动。
 
 > ![*时间单位，是七种基本单位之一*](诸子百家考工记/时间单位，是七种基本单位之一.png){width=400}
 > 
@@ -1113,8 +1139,11 @@ rm(样本二零一八半年)
 
 *出处：[时间单位，是七种基本单位之一](https://baike.baidu.com/item/时间单位/3078999)*
 
+相关资源与参考文献：
+
 - [刹那、一瞬间、一眨眼、片刻、一刻分别都是多长时间](https://m.ximalaya.com/ask/q7556240)
 - [「问百度」一瞬间、一刹那、一眨眼、一弹指哪个的时间比较长](https://zhidao.baidu.com/question/2277831541092651108.html)
+- [「油管」道家年份的计量单位](https://youtube.com/shorts/CZMVGJpFVmM)
 
 ## 天文历法（干支纪年 / 纪元法）
 
