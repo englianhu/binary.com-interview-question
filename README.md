@@ -183,8 +183,8 @@ For question 3, due to the question doesn't states we only bet on the matches wh
 - [Deriv.com - Interday & Intraday High Frequency Trading Models Comparison <span style='color:#4E79A7'>**Review (Part II)**</span>](https://rpubs.com/englianhu/742275)（或[备用网址](https://beta.rstudioconnect.com/content/16442/binary-Q1Inter-HFT-RV2.html)）
 - 金融衍生 - 筛选日内高频量化交易统计模型（第III部）
   - [<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易统计模型 <span style='color:#4E79A7'>**（第III部）**</span>](https://rpubs.com/englianhu/HFT-RV3)
-  - [<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部∙乙（西周之末：春秋战国——总结平滑指数尤物）](https://englianhu.github.io/民国一百一十三年（甲辰年）/寒月/binary-Q1Inter-HFT-RV3E.html)
-- <span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**（「丁」赢家黄氏江夏堂：🌟儒家秦孝公<s>清君侧</s>之商鞅变法）**_世袭制道教徒十二生肖秦人牧马，从满洲到星洲_</span>
+  - [<span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数模型 <span style='color:#4E79A7'>**第三部∙乙（春秋战国《晏子春秋》——总结平滑指数尤物）](https://englianhu.github.io/民国一百一十三年（甲辰年）/寒月/binary-Q1Inter-HFT-RV3E.html)
+- <span style='color:#DE5D83; background-color:black;'>金融衍生</span> - 筛选日内高频量化交易计数尤物 <span style='color:#4E79A7'>（**「丁」世袭制道教徒赢家黄氏江夏堂十二生肖秦人牧马：🌟儒家秦孝公<s>清君侧</s>之商鞅变法**）</span>
 
 它日学习投资风险管理与夏普率，欲知更多详情，请查阅：
 
