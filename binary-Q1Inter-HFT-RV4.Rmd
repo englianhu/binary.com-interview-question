@@ -1086,28 +1086,26 @@ rm(样本二零一八半年)
 根据以上黄历的诠释，包括咱们《万年历》中有提供彩券万字图辞典（如[4Dmoon](https://www.4dmoon.com/zh-cn/4d-dictionary)中的万字图辞典）。相关资源与参考文献：
 
 - [农历跟黄历有什么区别？别被搞混了](https://www.huangli.com/wenhua/14780.html)
-- 
-
+- [「问百度」黄历](https://baike.baidu.com/item/黄历/2151571)
 
 ## 计量单位
-
 
 <iframe width="400" height="225" src="https://youtube.com/embed/lNP6aJF-mfI" title="「数学课」时间单位" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
 
 *出处：[「数学课」时间单位](https://youtu.be/lNP6aJF-mfI)*
 
-> |   年   |   年（计量单位） |
-> |:------:|:----------------:|
-> | 一岁   |             一年 |
-> | 一旬^[一、十天叫一旬，一个月分上、中、下三旬。<br>二、十岁也叫一旬。] |  十年 |
-> | 一记   |           十二年 |
-> | 一代   |           廿五年 |
-> | 一世   |             卅年 |
-> | 一甲子 |             圆年 |
-> | 一世纪 |           一百年 |
-> | 一运   |         三百圆年 |
-> | 一会   |     一万零八百年 |
-> | 一元   | 十二万九千六百年 |
+> | 古人时间 | 年（时间计量单位） |
+> |:--------:|:------------------:|
+> |   一岁   |               一年 |
+> |   一旬^[一、十天叫一旬，一个月分上、中、下三旬。<br>二、十岁也叫一旬。] |  十年 |
+> |   一记   |             十二年 |
+> |   一代   |             廿五年 |
+> |   一世   |               卅年 |
+> |   一甲子 |               圆年 |
+> |   一世纪 |             一百年 |
+> |   一运   |           三百圆年 |
+> |   一会   |       一万零八百年 |
+> |   一元   |   十二万九千六百年 |
 > 
 > <iframe width="400" height="225" src="https://youtube.com/embed/CZMVGJpFVmM" title="道家年份的计量单位" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
 
@@ -1724,7 +1722,7 @@ if (!exists('总汇')) {
 
 > 当没有特殊指定时，`ARIMA()`函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`和`q`，`P`和`Q`)的选择都通过最小化`AICc`来决定。
 
-*引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
+*引用：[「算卜」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
 
 一般上，存活分析尤物、循环神经网络尤物，[棣逊与罗宾逊（一九九七年∙英）](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers/blob/世博量化研究院/reference/DixonRobinson1997.pdf)^[**马克∙迪逊**一系列<ruby>蹴<rp>(</rp><rt>cù</rt><rp>)</rp>鞠<rp>(</rp><rt>jū</rt><rp>)</rp></ruby>科研文献，请查阅：<br> - [「文派」専業研究人 -決戦- 蹴球賭け屋 (世界先頭の體育賭け屋に潰して殺るの人)](https://englianhu.wordpress.com/sportsbook/boffins-vs-bookies-the-man-who-broke-the-world-leading-bookmakers)<br> - [「猫城」黄联富（®γσ ξηg 雷欧）/赔率建模与测试低效率的体育博彩庄家（英）](https://github.com/scibrokes/odds-modelling-and-testing-inefficiency-of-sports-bookmakers)]通过进球率和加权指数来筹算滚球赛事中的球员斗志与士气（也可以运用在军事训练与战场上、或者学者在学习吸收能力上，而一般上隐马尔可夫链计数/机数尤物使用夏普率评估风险与空间状态触碰点也可以运用在学术教育评估学生、教师、校长、校工、各科系、学校整体素质上）、天灾人祸。借鉴[binary.com 面试试题 I - GARCH模型中的`ARIMA(p,d,q)`参数最优化](https://rpubs.com/englianhu/binary-Q1FiGJRGARCH)中使用`forecast::arimaorder()`筹算自回归尤物并将规律`p`值、`d`值、`q`值最优化，来提高计数尤物的精准度。在此将咱们世袭制道家的习俗文化、算卜、天文历法、气象学、天文学中的**廿四节气**来诠释`D`（季节差分的次数）。欲知更多详情，请查阅以下[廿四节气](廿四节气)章节。
 
@@ -1934,13 +1932,13 @@ if (!exists('样本') || (nrow(样本) != 1317600)) {
 
 > 当没有特殊指定时，ARIMA() 函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`和`q`，`P`和`Q`)的选择都通过最小化`AICc`来决定。
 
-*引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
+*引用：[「算卜」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
 
 > ![](诸子百家考工记/ARIMA尤物的差分例子.png){width=400}
 
 *引用：[「知乎」ARIMA模型说明](https://zhuanlan.zhihu.com/p/673234501)*
 
-由于[二十四节气到底是如何确立的？](https://www.xiaohongshu.com/explore/63f0c2f40000000013001435)中叙述廿四节气十如何确立的，这就牵涉到气象学与天文学，也就是咱们道家的”天文历法“中的其中一项，由于地球公转的轨道是椭圆形并不均匀其速度并不均匀，[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)教程ARIMA尤物中`D`（季节差分的次数）和`d`（普通差分的次数），所以气候不均匀并不一定是每年的指定哪天而会有微妙的差异。
+由于[二十四节气到底是如何确立的？](https://www.xiaohongshu.com/explore/63f0c2f40000000013001435)中叙述廿四节气十如何确立的，这就牵涉到气象学与天文学，也就是咱们道家的”天文历法“中的其中一项，由于地球公转的轨道是椭圆形并不均匀其速度并不均匀，[「算卜」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)教程ARIMA尤物中`D`（季节差分的次数）和`d`（普通差分的次数），所以气候不均匀并不一定是每年的指定哪天而会有微妙的差异。
 
 - [浅析二十四节气](https://zhuanlan.zhihu.com/p/586252935)
 - [最全的二十四节气的含义介绍（图文） 二十四节气介绍](https://www.hehun.com.cn/article/11914/6108226.html)
@@ -2090,14 +2088,14 @@ rm(赤池信息准则AIC)
 
 > 当没有特殊指定时，ARIMA() 函数使用`unitroot_nsdiffs()` 来决定`D`（季节差分的次数）和`d`（普通差分的次数）。与非季节`ARIMA`模型一样，模型参数(`p`和`q`，`P`和`Q`)的选择都通过最小化`AICc`来决定。
 
-*引用：[「预测」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
+*引用：[「算卜」方法与实践（第三版）第九章第九节 - 季节性ARIMA模型](https://otexts.com/fpp3cn/seasonal-arima-cn.html)*
 
 > …函数`ARIMA()`也可用于为错误选择最佳`ARIMA`模型。
 > 这是通过不指定`pdq()`特殊来完成的。通过将KPSS检验应用于使用普通最小二乘法估计的回归模型的残差来确定是否需要差分。如果需要差分，则对所有变量进行差分，并使用最大似然估计重新估计模型。最终的模型将用原始变量表示，即使它是用差分变量估计的。
 > 
 > `AICc`是为最终模型计算的，该值可用于确定最佳预测变量。也就是说，应该对要考虑的所有预测变量子集重复该过程，并选择`AICc`值最低的模型…
 
-*引用：[「预测」方法与实践（第三版）第十章第二节 - 用`fable`实现ARIMA误差回归](https://otexts.com/fpp3cn/regarima-cn.html)*
+*引用：[「算卜」方法与实践（第三版）第十章第二节 - 用`fable`实现ARIMA误差回归](https://otexts.com/fpp3cn/regarima-cn.html)*
 
 ```{r 赤池信息准则AICc, warning=FALSE, error=TRUE}
 summary(forecast::auto.arima(tk_xts(总汇[, .(年月日时分, 市场价)]), ic = 'aicc', xreg = as.matrix(总汇[, .(时辰乙)])))
@@ -2127,7 +2125,7 @@ rm(赤池信息准则AICc)
 > 
 > 其中$\eta_t$为ARIMA过程。并通过`AICc`中来选择`K`值和ARIMA过程中的`p`和`q`…
 
-*[「预测」方法与实践（第三版）第十章第六节 - 滞后预测变量](https://otexts.com/fpp3cn/lagged-predictors-cn.html)*
+*引用：[「算卜」方法与实践（第三版）第十章第六节 - 滞后预测变量](https://otexts.com/fpp3cn/lagged-predictors-cn.html)*
 
 ###### 周期与节气结论
 
@@ -2544,10 +2542,15 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 ```{r stats::arima0普通, warning=FALSE, error=TRUE}
 ## stats::arima0() 胭脂水粉
-l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))"), .print = TRUE)
+l_ply(list.apply(列表, paste, collapse = ', '), function(参数) {
+  半成品 = paste0("as_tibble(stats::predict(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")])), n.ahead = 1))")
+  
+  ## xreg = XXX
+  predict(半成品, n.ahead = 1)
+  }, .print = TRUE)
 
 ## stats::arima0() 胭脂水粉
-(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(forecast::accuracy(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")]))))")), function(参数) eval(parse(text = 参数))) %>% 
+(奏章 <- llply(llply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_tibble(stats::predict(stats::arima0(tk_xts(总汇[, .(年月日时分, 市场价)]), xreg = as.matrix(总汇[, .(", 参数, ")])), n.ahead = 1))")), function(参数) eval(parse(text = 参数))) %>% 
     bind_rows(.id = '计数尤物') %>% 
     data.frame() %>% 
     dplyr::mutate(计数尤物 = factor(
@@ -2555,6 +2558,20 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
         '外因周期自回归丁', '外因周期自回归戊', '外因周期自回归己', 
         '外因周期自回归庾')), '芳名榜（MASE）' = base::rank(MASE, ties.method = 'min')))
 ```
+
+>>>> ```
+>>>> #train_exp <- exp_trial[,1][1:150]    
+>>>> #train_inc <- exp_trial[,2][1:150] 
+>>>> ```
+>>>> ![](诸子百家考工记/样本数据（xreg与newxreg）.png)
+>>> 
+>>> The model used `train_inc` to make the model. It needs more `train_inc` values in order to finish the prediction. Think of it this way, you built the model in the form `train_exp_t0 = b1 + b2 * train_exp_t-1 + b3 * train_inc_t0`. With that model in hand, if someone provides a value for `train_exp_t-1` (which is yesterday's consumption) and one for `train_inc_t0` (today's income value) the model will return a `train_exp_t0` (today's consumption). You need to provide it with some `train_inc` values to get a y out.
+>>>
+>> what will be the code for `forecast.Arima`?...in place of `predict(fit, newxreg=new_train_inc)`...how to use `forecast.arima.`?...and what is the difference between using `predict` and `forecast.arima`?
+> 
+> `forecast` is better. You can use it the same way as predict just change 'newxreg' to 'xreg'. If you want details check out everything you can find on Rob Hyndman, he's the author, and a really smart person.
+
+*引用：[Getting an error "`xreg` and `newxreg` have different numbers of columns"](https://stackoverflow.com/a/37642448/3806250)*
 
 ##### 周期季节性尤物
 
@@ -2607,6 +2624,14 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 ```
 
 #### 尤物比较
+
+>> You are clearly using the `forecast` package already. So use `Arima` from the `forecast` package, not `arima` from the `stats` package...
+> 
+> Thanks a lot. It took me hours until I post it here. The problem caused from the package `TSA`. Now, I used "forecast" package and "stats" package and they work fine and give same results.
+
+*引用：[「栈溢出」arima function summary returns In training accuracy(object, test, d, D) : test elements must be within sample](https://stackoverflow.com/a/70911018/3806250)*
+
+如上所述，由于`forecast`、`fable`与`fabletools`系列拥有完善的计数造物配套，而且该程序包作者夫子（澳洲夫子/春秋战国中的赵国夫子——赵人）和一位学者道出`TSA`程序包有误，故此忽略其它程序包。
 
 ### 季节性自回归综合滑均尤物（SARIMA）
 
