@@ -2660,6 +2660,13 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 
 如上所述，由于`forecast`、`fable`与`fabletools`系列拥有完善的计数造物配套，而且该程序包作者夫子（澳洲夫子/春秋战国中的赵国夫子——赵人）和一位学者道出`TSA`程序包有误，故此忽略其它程序包。
 
+相关资源与参考文献：
+
+- [「腾讯」如何修复这个"'xreg‘和'newxreg’有不同的列数“错误？](https://cloud.tencent.cn/developer/information/如何修复这个"'xreg‘和'newxreg’有不同的列数“错误？-video)
+- [「猫城」Error: 'xreg' and 'newxreg' have different numbers of columns #808](https://github.com/robjhyndman/forecast/issues/808#issuecomment-516611290)
+- [「栈溢出」arima function summary returns In training accuracy(object, test, d, D) : test elements must be within sample](https://stackoverflow.com/a/70911018/3806250)
+- [「腾讯」如何修复这个"'xreg‘和'newxreg’有不同的列数“错误？](https://cloud.tencent.com/developer/ask/sof/1419747)
+
 ### 季节性自回归综合滑均尤物（SARIMA）
 
 ```{r SARIMA普通, warning=FALSE, error=TRUE, eval=FALSE}
