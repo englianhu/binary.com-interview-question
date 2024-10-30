@@ -973,7 +973,7 @@ rm(程序包)
 
 ## 季节性指数平滑尤物（Seasonal Exponential Smoothing - Seasonal ETS）
 
-### 开函阅牍/简
+### 开函阅牍/开函阅简
 
 此文献的数据中的默认预测价就是延续上篇使用最基本的季节性指数平滑尤物（Seasonal Exponential Smoothing - Seasonal ETS）计数/机数尤物，而且筹算出使用最少观测值来达到最精准的算卜结果，才来使用较高端的计数/机数尤物，以节省筹算时间与资源：
 
