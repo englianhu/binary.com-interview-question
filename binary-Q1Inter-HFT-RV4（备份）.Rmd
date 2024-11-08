@@ -3808,7 +3808,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 > ```
 > Hope this helps.
 
-*引用：[「栈溢出」Forecasting ARIMA with `xreg`](https://stackoverflow.com/a/35637688/3806250)*使用`Arima(xreg=fourier(K=...), ...)`来协调外来因素，找出最优规律。
+*引用：[「栈滥」Forecasting ARIMA with `xreg`](https://stackoverflow.com/a/35637688/3806250)*使用`Arima(xreg=fourier(K=...), ...)`来协调外来因素，找出最优规律。
 
 #### `forecast::auto.arima()`
 
@@ -3881,7 +3881,7 @@ l_ply(list.apply(列表, paste, collapse = ', '), function(参数) paste0("as_ti
 > ```
 > Hope this helps.
 
-*引用：[「栈溢出」Forecasting ARIMA with `xreg`](https://stackoverflow.com/a/35637688/3806250)*使用`Arima(xreg=fourier(K=...), ...)`来协调外来因素，找出最优规律。
+*引用：[「栈滥」Forecasting ARIMA with `xreg`](https://stackoverflow.com/a/35637688/3806250)*使用`Arima(xreg=fourier(K=...), ...)`来协调外来因素，找出最优规律。
 
 #### `stats::arima()`
 
@@ -4269,7 +4269,7 @@ sarima::sarima()
 
 ![*礼逆袭系统文件框架*](诸子百家考工记/礼逆袭系统文件框架.png){width=400}
 
-![*逆水行舟，不进则退*](诸子百家考工记/逆水行舟，不进则退.png){width=400}
+![*逆水行舟，不进则退*](诸子百家考工记/逆水行舟，不进则退（乙）.png){width=400}
 
 **人无远虑，必有近忧**
 
@@ -4289,7 +4289,7 @@ sarima::sarima()
 
 有关自回归计数|机数尤物相关文献，可查阅：
 
-- [「栈溢出」Forecasting ARIMA with `xreg`](https://stackoverflow.com/a/35637688/3806250)*使用`Arima(xreg=fourier(K=...), ...)`来协调外来因素，找出最优规律。
+- [「栈滥」Forecasting ARIMA with `xreg`](https://stackoverflow.com/a/35637688/3806250)*使用`Arima(xreg=fourier(K=...), ...)`来协调外来因素，找出最优规律。
 - [解密复兴科技 - 基于隐蔽马尔科夫模型的时序分析方法](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/解密复兴科技%20-%20基于隐蔽马尔科夫模型的时序分析方法.pdf)
 
 欲知更多咱们世袭制道家十二生肖秦人从满洲到星洲世袭制道教徒黄种人辛亥革命/黄河文明/黄埔军校《商君书》、《吕氏春秋》和《李斯篆书》系列科研，请查阅：
@@ -4595,7 +4595,9 @@ options(warn = 0)
 - [为非计数家而写的计数|机数（英）](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/为非计数家而写的计数%7C机数（英）.pdf)
 - [如何成为伟大的管家（英）](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/如何成为伟大的管家（英）.pdf)
 - [二零二三年网站总汇（英）](https://github.com/englianhu/binary.com-interview-question/blob/世博量化研究院/图书馆/二零二三年网站总汇（英）.pdf)
-- [「栈溢出」二零二三年网站总汇（英）](https://survey.stackoverflow.co/2023/?fbclid=IwZXh0bgNhZW0CMTAAAR0FuQC5PHTIcEelsf76aEpgWFW7-JEqaiws4_00hj9S4N9LtZg97ks8-hg_aem_ARvrcz62eOmT9xTuo3QJdueEE4o0QOa9_Wc_q-piwlQNs7SqktXvyu84gPF2ozFSYbbzouzKFuV6mW8x-BHIg2Su#section-admired-and-desired-programming-scripting-and-markup-languages)
+- [「栈滥」[^23]二零二三年网站总汇（英）](https://survey.stackoverflow.co/2023/?fbclid=IwZXh0bgNhZW0CMTAAAR0FuQC5PHTIcEelsf76aEpgWFW7-JEqaiws4_00hj9S4N9LtZg97ks8-hg_aem_ARvrcz62eOmT9xTuo3QJdueEE4o0QOa9_Wc_q-piwlQNs7SqktXvyu84gPF2ozFSYbbzouzKFuV6mW8x-BHIg2Su#section-admired-and-desired-programming-scripting-and-markup-languages)
+
+[^23]: >**文献与案例**<br><br>基本概念<br><br>>- 泛型栈（Stack）<br>>      - 栈是一种后进先出（LIFO, Last In First Out）的数据结构。栈中最后添加的元素最先被移除。可以把栈想象成一叠盘子，最后放上去的盘子最先被拿走。<br>>- 泛型队列（Queue）<br>>      - 队列是一种先进先出（FIFO, First In First Out）的数据结构。队列中第一个添加的元素最先被移除。可以把队列想象成排队买票，最先排队的人最先买到票。<br><br>*出处：[泛型栈（Stack）和泛型队列（Queue）](https://www.loserme.com/archives/2dBCW0Zp)*<br><br>根据以上「泛型栈」诠释为毫无节制、刻舟求剑、海底捞月、治标不治本，可译为「栈滥」最为恰当，借鉴苹果公司一条龙服务产品、孙玉芳教授之名言和愚生目前自修并科研咱们世袭制道教自然对数大秦赋算筹，那些使用它人产品或没有釜底抽薪，一劳永逸的门面功夫。<br><br>- 方案一：栈滥<br>- 方案二：栈涝<br>- 方案三：栈氾<br>- 方案四：栈涔<br><br>*出处：[「猫城」`stackoverflow`该译名啥？#七](https://github.com/scibrokes/owner/issues/7)*
 
 **拯救亚洲人，削蕃外洲人。**
 
