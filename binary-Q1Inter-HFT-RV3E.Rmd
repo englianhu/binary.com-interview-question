@@ -643,7 +643,7 @@ pre code {
 }
 </style>
 
-```{r 读取SASS, class.source='bg-success', class.output='bg-primary', error = TRUE}
+```{r 读取SASS, class.source='bg-success', class.output='bg-primary', error=TRUE}
 ##
 ## 中科红旗（诸子百家，文艺复兴）
 ## Oversea Greater Chinese Association 大秦子民公会（秦孝公 / 姜太公——陈祯禄公爵）
@@ -752,7 +752,7 @@ h5 { color: #92AAC7; }
   }
 ```
 
-```{r 编织选项, class.source='hover01', class.output='hover02', error = TRUE}
+```{r 编织选项, class.source='hover01', class.output='hover02', error=TRUE}
 ## 更换时间区域，保留日期时间。
 Sys.setenv(TZ = 'Asia/Shanghai')
 
@@ -769,7 +769,7 @@ options(warn = -1, width = 999, knitr.table.format = 'html',
 ## https://yihui.org/knitr/options
 knitr::opts_chunk$set(
   class.source = 'hover01', class.output = 'hover02', class.error = 'hover03', 
-  message = FALSE, warning = FALSE, error = TRUE, autodep = TRUE, 
+  message = FALSE, warning = FALSE, error=TRUE, autodep = TRUE, 
   autodep = TRUE, aniopts = 'loop', progress = TRUE, verbose = TRUE, 
   cache.globals = FALSE, cache = FALSE, cache.lazy = FALSE, result = 'asis')
 ```
@@ -778,7 +778,7 @@ knitr::opts_chunk$set(
 
 读取以下所需程序包。
 
-```{r 读取程序包, error = TRUE}
+```{r 读取程序包, error=TRUE}
 ## 读取程序包、设置编织与环境选项。
 ## 3210448065@qq.com
 ## leiou123
@@ -1121,7 +1121,7 @@ rm(程序包)
 
 *[出处：「四川师范大学学报」司马错与蜀道研究的回顾与展望——“司马错入蜀及其重大历史意义”学术研讨会综述](https://wkxb.sicnu.edu.cn/Publish/202311/20231103180843473.pdf)*
 
-```{r 朝代年号, error=TRUE, eval = FALSE}
+```{r 朝代年号, error=TRUE, eval=FALSE}
 ## 秦国 China，秦人 Chinese
 ## 司马错得蜀既得楚
 if (!exists('.蜀道')) {
@@ -1211,7 +1211,7 @@ rm(天朝, 周朝, 西周, 东周, 春秋, 战国)
 
 ### 周史
 
-```{r 读取朝代年号, results = 'asis', error = TRUE}
+```{r 读取朝代年号, results = 'asis', error=TRUE}
 ## 秦国 China，秦人 Chinese
 ## 司马错得蜀既得楚
 if (!exists('.蜀道')) {
@@ -1315,7 +1315,7 @@ source('函数/集成年号.R')
 
 随便到神料店或书局即可购买到诸子百家各版本的《万年历》而年份会五花八门、百家争艳，而愚生在二零零三年在书店随意所购的是内蒙古出版社发行的**《万年历》（珍藏版）**上注释着**公元一八二八年至二一二八年**，作者是李福俊的一九九九年之作（而愚生之外祖父是书法家李福，一般上咱们道家民间信仰的玉皇大帝和王母娘娘乃外祖父与外祖母。母亲之母称之为“王母”而母亲之父称之为“王父”。一九九九年是愚生在地南再也中学报读初中三，有关初中三历史好哥儿们陈友良与[「猫城」阿里彩票](https://github.com/englianhu/ali-zonghui)工作时认识个长相似陈友良的斯蒂芬∙乔布斯/《大秦赋》中饰演赢政的艺人张鲁一/韩星张东健，更多详情请查阅：[「文派」《赢家黄氏江夏堂》 – 始祖赢政ΞΗG TΕΗG∙黄永春家谱](https://englianhu.wordpress.com/2022/02/22/《雪隆江夏堂》-家谱)和[「阳历二零二三年十二月三日」今日是校花紫云生日](https://englianhu.wordpress.com/2024/02/04/「阳历二零二三年十二月三日」今日是紫云生日/)）。
 
-《万年历》中开始的公元一八二八戊子年（第五甲子年轮回的老鼠）是美国民主党创党者兼第一任主席安德鲁∙杰克逊当选美国第七任总统，之后农历二零一九年到菲律宾克拉克市（Clark中译为“书记”、“秘书”、“掌柜”、“尚书”、“会计”，而最接近的地名是“会稽”。）的Sun Valley（中译“阳城”）的东方集团旗下的乐发集团旗下的阿里公司工作，行政院长兼大股东外号称“眼镜”，详情请查阅[「文派」迟了一年，更新履历表 B4Telebiz (18-DEC-2021)](https://englianhu.wordpress.com/2021/12/20/迟了一年，更新履历表-b4telebiz/)。而仙台操作系统、杏林经济学、UTAR拉曼大学相关信息，可查阅[「猫城」通过数码海洋（Digital Ocean）建立服务器](https://github.com/scibrokes/setup-centOS7-DO)。
+上图《万年历》中开始的公元一八二八戊子年（第五甲子年轮回的老鼠）是美国民主党创党者兼第一任主席安德鲁∙杰克逊当选美国第七任总统，之后农历二零一九年到菲律宾克拉克市（Clark中译为“书记”、“秘书”、“掌柜”、“尚书”、“会计”，而最接近的地名是“会稽”。）的Sun Valley（中译“阳城”）的东方集团旗下的乐发集团旗下的阿里公司工作，行政院长兼大股东外号称“眼镜”，详情请查阅[「文派」迟了一年，更新履历表 B4Telebiz (18-DEC-2021)](https://englianhu.wordpress.com/2021/12/20/迟了一年，更新履历表-b4telebiz/)。而仙台操作系统、杏林经济学、UTAR拉曼大学相关信息，可查阅[「猫城」通过数码海洋（Digital Ocean）建立服务器](https://github.com/scibrokes/setup-centOS7-DO)。
 
 **吴越春秋**
 
@@ -1325,7 +1325,7 @@ source('函数/集成年号.R')
 
 ![](诸子百家考工记/鄀语言 - 制作干支对照表.png){width=400}
 
-```{r 天干地支, error = TRUE}
+```{r 天干地支, error=TRUE}
 ## 辑写此篇论文的时间二零二四年为甲辰年
 ## 从公元前七七零年到公元前二二一年，由于公元第一年为元年，故此扣除元年前的零年。
 ## 2024 - (-770) - 1 = 2793
@@ -1342,7 +1342,7 @@ cat('天干：', 天干, '\n地支：', 地支, '\n干支：', 干支, '\n')
 
 ### 天下简史
 
-```{r 天下简史, eval = FALSE, error = TRUE}
+```{r 天下简史, eval=FALSE, error=TRUE}
 ## 辑写此篇论文的时间二零二四年为甲辰年
 ## 从公元前七七零年到公元前二二一年，由于公元第一年为元年，故此扣除元年前的零年。
 ## 2024 - (-770) - 1 = 2793
@@ -1419,13 +1419,13 @@ rm(朝代, 年号, 国事, 钱谷, 战役, 战果)
 saveRDS(天下简史, paste0(.鬼谷书轩, '天下简史.rds'))
 ```
 
-```{r 读取天下简史, error = TRUE}
+```{r 读取天下简史, error=TRUE}
 .鬼谷书轩 <- str_replace_all(.蜀道书轩, 'binary.com-interview-question-data' ,'zhongkehongqi-cangku')
 
 天下简史 <- readRDS(paste0(.鬼谷书轩, '天下简史.rds'))
 ```
 
-```{r 天下简史绘图, results = 'asis', error = TRUE}
+```{r 天下简史绘图, results = 'asis', error=TRUE}
 ## 秦国 China，秦人 Chinese
 ## 司马错得蜀既得楚
 天下简史 %>% 
@@ -1707,7 +1707,7 @@ saveRDS(天下简史, paste0(.鬼谷书轩, '天下简史.rds'))
 
 为了方便日后节省时间，这儿再过滤汇价数据量。
 
-```{r 绘制样本数据图表, error = TRUE}
+```{r 绘制样本数据图表, error=TRUE}
 ## 检验是否已设置途径。
 source('函数/汇总上奏.R')
 source('函数/总汇结论.R')
@@ -1747,7 +1747,7 @@ rm(样本二零一八半年)
 
 ##### 总汇二零一八年一月结论
 
-```{r 日内指数平滑数据二零一八年一月总汇, error = TRUE}
+```{r 日内指数平滑数据二零一八年一月总汇, error=TRUE}
 source('函数/总汇结论.R')
 日内指数平滑数据二零一八年一月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
 
@@ -1765,7 +1765,7 @@ source('函数/总汇结论.R')
 # eval(parse(text = paste0('(日内指数平滑数据二零一八年一月结论 <- readRDS(\'', .蜀道仓库, '日内指数平滑数据二零一八年一月结论.rds\') |> as_tibble())')))
 ```
 
-```{r 日内指数平滑数据二零一八年一月结论, results = 'asis', error = TRUE}
+```{r 日内指数平滑数据二零一八年一月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年一月结论 %>% 
   dplyr::mutate(
@@ -1834,7 +1834,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年二月结论
 
-```{r 日内指数平滑数据二零一八年二月总汇, error = TRUE}
+```{r 日内指数平滑数据二零一八年二月总汇, error=TRUE}
 日内指数平滑数据二零一八年二月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 2]
 
 #日内指数平滑数据二零一八年二月结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年二月总汇, 文件名 = '日内指数平滑数据二零一八年二月', 是否储存结论 = '勾')
@@ -1845,7 +1845,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年二月结论, results = 'asis', error = TRUE}
+```{r 日内指数平滑数据二零一八年二月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年二月结论 %>% 
   dplyr::mutate(
@@ -1914,7 +1914,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年三月结论
 
-```{r 日内指数平滑数据二零一八年三月总汇, error = TRUE}
+```{r 日内指数平滑数据二零一八年三月总汇, error=TRUE}
 日内指数平滑数据二零一八年三月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 3]
 
 #日内指数平滑数据二零一八年三月结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年三月总汇, 文件名 = '日内指数平滑数据二零一八年三月', 是否储存结论 = '勾')
@@ -1925,7 +1925,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年三月结论, results = 'asis', error = TRUE}
+```{r 日内指数平滑数据二零一八年三月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年三月结论 %>% 
   dplyr::mutate(
@@ -1994,7 +1994,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年四月结论
 
-```{r 日内指数平滑数据二零一八年四月总汇, error = TRUE}
+```{r 日内指数平滑数据二零一八年四月总汇, error=TRUE}
 日内指数平滑数据二零一八年四月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 4]
 
 #日内指数平滑数据二零一八年四月结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年四月总汇, 文件名 = '日内指数平滑数据二零一八年四月', 是否储存结论 = '勾')
@@ -2005,7 +2005,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年四月结论, results = 'asis', error = TRUE}
+```{r 日内指数平滑数据二零一八年四月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年四月结论 %>% 
   dplyr::mutate(
@@ -2074,7 +2074,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年五月结论
 
-```{r 日内指数平滑数据二零一八年五月总汇, error = TRUE}
+```{r 日内指数平滑数据二零一八年五月总汇, error=TRUE}
 日内指数平滑数据二零一八年五月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 5]
 
 #日内指数平滑数据二零一八年五月结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年五月总汇, 文件名 = '日内指数平滑数据二零一八年五月', 是否储存结论 = '勾')
@@ -2085,7 +2085,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年五月结论, results = 'asis', error = TRUE}
+```{r 日内指数平滑数据二零一八年五月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年五月结论 %>% 
   dplyr::mutate(
@@ -2154,7 +2154,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年六月结论
 
-```{r 日内指数平滑数据二零一八年六月总汇, error = TRUE}
+```{r 日内指数平滑数据二零一八年六月总汇, error=TRUE}
 日内指数平滑数据二零一八年六月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 6]
 
 #日内指数平滑数据二零一八年六月结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年六月总汇, 文件名 = '日内指数平滑数据二零一八年六月', 是否储存结论 = '勾')
@@ -2165,7 +2165,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年六月结论, results = 'asis', error = TRUE}
+```{r 日内指数平滑数据二零一八年六月结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年六月结论 %>% 
   dplyr::mutate(
@@ -2236,7 +2236,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年第一周结论
 
-```{r 日内指数平滑数据二零一八年第一周总汇, error = TRUE}
+```{r 日内指数平滑数据二零一八年第一周总汇, error=TRUE}
 日内指数平滑数据二零一八年第一周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
 
 #日内指数平滑数据二零一八年第一周结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年第一周总汇, 文件名 = '日内指数平滑数据二零一八年第一周', 是否储存结论 = '勾')
@@ -2246,7 +2246,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年第一周结论, results = 'asis', error = TRUE}
+```{r 日内指数平滑数据二零一八年第一周结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年第一周结论 %>% 
   dplyr::mutate(
@@ -2315,7 +2315,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年第二周结论
 
-```{r 日内指数平滑数据二零一八年第二周总汇, error = TRUE}
+```{r 日内指数平滑数据二零一八年第二周总汇, error=TRUE}
 日内指数平滑数据二零一八年第二周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
 
 #日内指数平滑数据二零一八年第二周结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年第二周总汇, 文件名 = '日内指数平滑数据二零一八年第二周', 是否储存结论 = '勾')
@@ -2326,7 +2326,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年第二周结论, results = 'asis', error = TRUE}
+```{r 日内指数平滑数据二零一八年第二周结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年第二周结论 %>% 
   dplyr::mutate(
@@ -2395,7 +2395,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年第三周结论
 
-```{r 日内指数平滑数据二零一八年第三周总汇, error = TRUE}
+```{r 日内指数平滑数据二零一八年第三周总汇, error=TRUE}
 日内指数平滑数据二零一八年第三周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
 
 #日内指数平滑数据二零一八年第三周结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年第三周总汇, 文件名 = '日内指数平滑数据二零一八年第三周', 是否储存结论 = '勾')
@@ -2406,7 +2406,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年第三周结论, results = 'asis', error = TRUE}
+```{r 日内指数平滑数据二零一八年第三周结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年第三周结论 %>% 
   dplyr::mutate(
@@ -2475,7 +2475,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年第四周结论
 
-```{r 日内指数平滑数据二零一八年第四周总汇, error = TRUE}
+```{r 日内指数平滑数据二零一八年第四周总汇, error=TRUE}
 日内指数平滑数据二零一八年第四周总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
 
 #日内指数平滑数据二零一八年第四周结论 <- 总汇结论(总汇 = 日内指数平滑数据二零一八年第四周总汇, 文件名 = '日内指数平滑数据二零一八年第四周', 是否储存结论 = '勾')
@@ -2486,7 +2486,7 @@ source('函数/总汇结论.R')
     as_tibble())
 ```
 
-```{r 日内指数平滑数据二零一八年第四周结论, results = 'asis', error = TRUE}
+```{r 日内指数平滑数据二零一八年第四周结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年第四周结论 %>% 
   dplyr::mutate(
@@ -2557,7 +2557,7 @@ source('函数/总汇结论.R')
 
 ##### 总汇二零一八年一月平滑周计结论
 
-```{r 日内指数平滑数据二零一八年一月平滑周计总汇, error = TRUE}
+```{r 日内指数平滑数据二零一八年一月平滑周计总汇, error=TRUE}
 source('函数/总汇结论.R')
 日内指数平滑数据二零一八年一月总汇 <- 日内指数平滑数据二零一八年上半年总汇[, 月份 := data.table::month(年月日时分)][月份 == 1]
 
@@ -2577,7 +2577,7 @@ source('函数/总汇结论.R')
 - [Subset rows corresponding to max value by group using data.table](https://stackoverflow.com/a/16574176/3806250)
 - [`data.table`: Slice both dimensions, list of string columns](https://stackoverflow.com/questions/24937134/data-table-slice-both-dimensions-list-of-string-columns)
 
-```{r 日内指数平滑数据二零一八年一月平滑周计结论, results = 'asis', error = TRUE}
+```{r 日内指数平滑数据二零一八年一月平滑周计结论, results = 'asis', error=TRUE}
 ## 这儿将精准度调整至卅位数，round(…, 30)
 日内指数平滑数据二零一八年一月平滑周计结论 %>% 
   dplyr::mutate(
@@ -2784,7 +2784,7 @@ source('函数/总汇结论.R')
 **百分之一时辰一周期（一分钟循环千皕次）**
 
 ```{r Arima-ts, error=TRUE, eval=FALSE}
-# —— eval = FALSE ——
+# —— eval=FALSE ——
 source('函数/季节性自回归自动化.R')
 source('函数/整顿数据.R')
 
@@ -2815,7 +2815,7 @@ source('函数/整顿数据.R')
 ### `xts`
 
 ```{r Arima-xts, error=TRUE, eval=FALSE}
-# —— eval = FALSE ——
+# —— eval=FALSE ——
 source('函数/季节性自回归自动化.R')
 source('函数/整顿数据.R')
 
@@ -2861,7 +2861,7 @@ source('函数/整顿数据.R')
 ### `zoo`
 
 ```{r Arima-zoo, error=TRUE, eval=FALSE}
-# —— eval = FALSE ——
+# —— eval=FALSE ——
 source('函数/季节性自回归自动化.R')
 source('函数/整顿数据.R')
 
@@ -2892,7 +2892,7 @@ source('函数/整顿数据.R')
 ### `msts`
 
 ```{r Arima-msts, error=TRUE, eval=FALSE}
-# —— eval = FALSE ——
+# —— eval=FALSE ——
 source('函数/季节性自回归自动化.R')
 source('函数/整顿数据.R')
 
@@ -2927,7 +2927,7 @@ source('函数/整顿数据.R')
 
 ### 季节性数据建模结论
 
-```{r 初步尤物比较, error = TRUE}
+```{r 初步尤物比较, error=TRUE}
 # 蜀道
 if (!exists('.蜀道')) {
   .蜀道 <- getwd() |> 
@@ -3180,7 +3180,7 @@ rm(日内指数平滑数据二零一八年一月总汇, 日内指数平滑数据
 - **吕不韦**：改变天下学术尤其是高频量化对冲运筹学（包括复古中国算筹）、高频量化对冲、金融与务农中药中医杏林、娱乐圈（包括复古中国古代习俗文化宗教语言）、广告与产品代言；习俗文化宗教语言等世纪大革命，一劳永逸。
 - **李斯**：改变天下学术尤其是文学（文言文、古文、中国历史习俗文化宗教语言等），研发咱们中华秦国操作系统、电子仪器、科技软件、科技产品来取代天下所有西方电子产品与习俗文化宗教语言等；以电子仪器与操作系统记载并进化所有习俗文化宗教语言法律等世纪大革命并且直到一统天下，一劳永逸。
 
-```{r 选项设置, echo=FALSE, error = TRUE}
+```{r 选项设置, echo=FALSE, error=TRUE}
 ## Set options back to original options
 options(warn = 0)
 ```
@@ -3382,7 +3382,7 @@ options(warn = 0)
 
 *出处：[「猫城」🚩🔆🏹🌟👊🚀🦔大秦赋：「甘石星经，周髀算经；诸子百家，干支算筹」取代阿拉伯数字和回教徒语言（包括巫术、货币、习俗文化、可兰经断肢法）#十二](_Originally posted by @englianhu in https://github.com/englianhu/RedFlag-Linux/issues/12#issuecomment-1676066137_)*
 
-借鉴[「人物传记」秦惠文王的一生——彪悍到不需要解释](http://www.360doc.com/content/20/0620/09/11532035_919501336.shtml)，在「大秦赋算筹」甚至在微型操作系统上的时间，由原本的天下昔日霸主大英帝国格林治标准时间GMT的纬经度，改为咱们世袭制道教徒十二生肖秦国“北京”或“咸阳”或“洛阳/洛邑”时间为标准。
+借鉴[「人物传记」秦惠文王的一生——彪悍到不需要解释](http://www.360doc.com/content/20/0620/09/11532035_919501336.shtml)，在「大秦赋算筹」甚至在微型操作系统上的时间，由原本的天下昔日霸主大英帝国格林治标准时间GMT的纬经度，改为咱们世袭制道教徒十二生肖秦人之秦国“北京”或“咸阳”或“洛阳/洛邑”时间为标准。
 
 ##### 演员的自我修养
 
@@ -3403,10 +3403,10 @@ options(warn = 0)
     - 个人史：完全没有头绪的情况之下，如何入门？
         - 只有花招却没有深厚内功的情况之下，如何自修呢？
         - 阅读许多相关科研文献与文章后，筛选并开始自修并学习最上层武功秘籍。借鉴[「抖音」《台商的故事》中的黄朝阳](https://v.douyin.com/iYbXps8c)的励志故事，要做就要做世界第一！
-    - 
-    - 
-- 三、了解与学习、实践、回测、校对并检讨才预测
-- 四、根据以上三个学习方式，轮回与进化论
+        - 报读网课，例如[考试啦！](https://www.coursera.org)。
+        - [知乎](https://www.zhihu.com/)、[简书](https://www.jianshu.com/)、[栈溢出](https://stackoverflow.com/)、[猫城](https://www.github.com)、[CSDN](https://www.csdn.net/)、[统计之都](http://d.cosx.org/)、[经管之家](https://bbs.pinggu.org/)、[移动终端操作系统社区](https://forum.posit.co/)等。
+- 三、了解与学习、实践、回测、校对并检讨才预测。
+- 四、根据以上三个学习方式，轮回与进化论。
 
 借鉴教育学家兼儒家孔子、教育学家兼法家荀子、教育学家兼经济学家管子、教育学家兼纵横家鬼谷子等，有关入门算卜、有效的自修学习成为数术家之道相关资源，请查阅：
 
@@ -3564,7 +3564,7 @@ output$ryo_kr <- renderUI({
 
 [^23]: 欲知更多阳历/民国/农历日历详情，请登录中华民国农业部官网查询日历查询[阳历/农历/民国查询](https://ppg.naif.org.tw/naif/MarketInformation/Other/Calendar_V3.aspx)。
 
-```{r 信息, error = TRUE}
+```{r 信息, error=TRUE}
 suppressAll(lib(c('formattable', 'knitr', 'kableExtra', 'magittr', 'devtools', 'rsconnect')))
 
 系统信息甲 <- session_info()$platform |> 
