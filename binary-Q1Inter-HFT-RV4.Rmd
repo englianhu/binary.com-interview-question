@@ -2908,6 +2908,17 @@ options(warn = 0)
 
 咱们亚洲被大日本帝国和大英帝国殖民时期受封公爵的陈祯禄（在亚洲和欧洲古代君主制国家，公爵比伯爵和侯爵的官职大，比公爵官职高的只有皇室，也就是日本天皇万岁爷和英国国王。先清君侧，再攻占英国，最后才攻占日本），咱们🌟海外华人公会从日本和英国独立后都是根据中华民国的国民学术路线，秦孝公清君侧之商鞅变法，歼灭所有不遵守各自宗教语言习俗文化的非法民族，尤其是巫贼巫婆非法回教徒！
 
+借鉴《封神榜》与购买彩券万字概念，小万代表凡是只关注榜上三甲（领导或万字图中的头条重大事件）而大万是需要关注榜上三甲（世界一战，二战是德意日仨联盟）与全部理事或管理层，至于没有上榜的咱们百姓个人顾好个人就好。有关详细的大楷小楷、大乔小乔、大篆小篆中的「大小之别」，请查阅咱们道家算卜概率论彩券万字的“大万”与“小万”。
+
+元宇宙网站 https://www.facebook.com/ 网站，添加个`?local=xx_XX`，小写是代表语言而大写是代表国家，即可查看元宇宙公司幕后通过计数造物、投资组合原理部署出来的所有国家道地信息，范例如下：
+- https://www.facebook.com/?locale=en_GB
+- https://www.facebook.com/?locale=zh_GB
+- https://www.facebook.com/?locale=zh_CN
+- https://www.facebook.com/?locale=zh_TW
+- https://www.facebook.com/?locale=zh_HK
+- https://www.facebook.com/?locale=zh_MY
+- https://www.facebook.com/?locale=en_MY
+
 ![*中国不能没有自己的操作系统——记中科红旗董事长、著名科学家孙玉芳教授*](诸子百家考工记/中国不能没有自己的操作系统——记中科红旗董事长、著名科学家孙玉芳教授.png){width=400}
 
 目前最迫切的是需要查看礼逆袭操作系统框架，有个类似鄀编程语言`devtools`程序包一样，方便修改和编写操作系统的工具，先翻译再加密现有操作系统并研发咱们赢家黄氏江夏堂「大秦赋」或「文言文大秦赋」操作系统，先查阅以下连接：
@@ -3243,7 +3254,7 @@ output$ryo_kr <- renderUI({
 > 世风日下，人心不古；<br>
 > 莘莘学子，赤子之心。
 
-*引用：[`forecast::Arima(xreg = XXXX)`咱们道家易经、天文历法、廿四节气、十二时辰、算卜与气象学，孔明借东风与草船借箭出现错误信息#九](https://github.com/englianhu/binary.com-interview-question/issues/9#issuecomment-2041903143)*
+*引用：[「猫城」forecast::Arima(xreg = XXXX)咱们周易（洲学论拯救亚洲人）道家易经、天文历法、廿四节气、十二时辰、算卜与气象学，<s>「兵法廿四篇」之孔明借东风与草船借箭出现错误信息</s>司马错得蜀既得楚#九](https://github.com/englianhu/binary.com-interview-question/issues/9#issuecomment-2041903143)*
 
 ## 文书明细
 
