@@ -2979,6 +2979,7 @@ options(warn = 0)
 
 借鉴万物皆有灵和阅读脑电波赢政思想录，所谓的户籍管理中的一项，就是视频中的[人工智障检测《国产凌凌漆》名场面](https://www.bilibili.com/video/BV1Cd4y1R7jT)是可以通过人造卫星以光速来侦测地球上万物一举一动，就能通过量子电脑的计数/机数量化分析来分辨机器人、僵尸、正常人，甚至《魔戒三部曲》中的幽灵军团、兵马俑、幽灵以下有些软件、编程代码与视频，日后得学习：
 
+- [「元宇宙」港星周星驰的BB机发家史](https://www.facebook.com/share/p/1AvnCiprpk/)和TRON操作系统都是个借鉴。
 - [人工智障检测《国产凌凌漆》名场面](https://www.bilibili.com/video/BV1Cd4y1R7jT)中的[「猫城」OW-YOLO（具有区分已知与未知能力的全新检测器）](https://github.com/englianhu/OW-YOLO)初步侦测物体技术。
 - [Analyze a Soccer game using Tensorflow Object Detection and OpenCV](https://towardsdatascience.com/analyse-a-soccer-game-using-tensorflow-object-detection-and-opencv-e321c230e8f2)
 - [有了人工智能，从此程序员只写注释，不写代码？| 手把手安装自动写代码人工智能——Code Whisperer](https://www.youtube.com/watch?v=TIpRA6iwNus)
