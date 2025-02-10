@@ -7,6 +7,28 @@
 
 [<img src='诸子百家考工记/红旗礼逆袭.gif' height='20' width='47'>](https://www.chinaredflag.cn) [<img src='诸子百家考工记/赢家黄氏江夏堂.png' height='20'>](https://englianhu.wordpress.com) [<img src='诸子百家考工记/赢家ξng黄氏江夏堂 - 量化对冲（中）.png' height='20'>](https://gitee.com/englianhu) [<img src='诸子百家考工记/大秦赋 - 北京大学.png' height='20'>](https://www.pku.edu.cn)
 
+# 春秋战国，诸子百家
+
+## 阴阳师
+
+*[「问百度」邹衍](https://baike.baidu.com/item/邹衍/43532)*
+
+**天文学**
+
+**阴阳眼**
+
+**道衍师傅**
+
+**金融衍生产品**
+
+**金融阴阳烛**
+
+## 次元期权创办人
+
+法国人Sireau Jean-Yves（中译“肖”）
+
+- https://yingwenming.com/meaning/Jean-Yves
+
 # 次元期权（binary.com）<span style='color:#DE5D83; background-color:black;'>**量化分析员/量化交易员**面试题</span>
 
 **大秦赋 (Chinese Emperor)**<br>
