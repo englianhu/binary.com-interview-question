@@ -25,9 +25,10 @@
 
 ## 次元期权创办人
 
-法国人Sireau Jean-Yves（中译“肖”）
+法国人Sireau Jean-Yves（中译“肖•让伊夫”）
 
-- https://yingwenming.com/meaning/Jean-Yves
+- [「英文名」Jean-Yves的基本信息](https://yingwenming.com/meaning/Jean-Yves)在法语中含义是“生命力强且精神永在的约翰”。
+- [「翻译网」jean-yves](https://context.reverso.net/翻译/英语-中文/jean-yves)
 
 # 次元期权（binary.com）<span style='color:#DE5D83; background-color:black;'>**量化分析员/量化交易员**面试题</span>
 
