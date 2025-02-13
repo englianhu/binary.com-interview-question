@@ -11,7 +11,8 @@
 
 ## 阴阳师
 
-*[「问百度」邹衍](https://baike.baidu.com/item/邹衍/43532)*
+- [齐国三邹](https://m.sohu.com/a/414825485_99988073)
+- [「问百度」邹衍](https://baike.baidu.com/item/邹衍/43532)
 
 **天文学**
 
